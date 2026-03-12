@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_notification_delegate.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/ash/child_accounts/time_limits/persisted_app_info.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/prefs/pref_service.h"
@@ -636,7 +636,7 @@ TEST_F(AppActivityRegistryTest, RestoredApplicationInformation) {
 
   // Now let's test that the app activity are stored appropriately.
   const base::ListValue& list =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(ash::prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -678,7 +678,7 @@ TEST_F(AppActivityRegistryTest, RemoveUninstalledApplications) {
 
   // Now let's test that the app activity are stored appropriately.
   const base::ListValue& list =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(ash::prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -696,7 +696,7 @@ TEST_F(AppActivityRegistryTest, RemoveUninstalledApplications) {
   registry().OnSuccessfullyReported(base::Time::Now());
 
   const base::ListValue& new_list =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(ash::prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> final_app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -716,7 +716,7 @@ TEST_F(AppActivityRegistryTest, RemoveOldEntries) {
   CreateAppActivityForApp(kApp1, base::Hours(1));
   CreateAppActivityForApp(kApp2, base::Hours(1));
 
-  prefs()->SetInt64(prefs::kPerAppTimeLimitsLastSuccessfulReportTime,
+  prefs()->SetInt64(ash::prefs::kPerAppTimeLimitsLastSuccessfulReportTime,
                     start_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   task_environment()->AdvanceClock(base::Days(30));
@@ -727,7 +727,7 @@ TEST_F(AppActivityRegistryTest, RemoveOldEntries) {
 
   // Now let's test that the app activity are stored appropriately.
   const base::ListValue& list =
-      prefs()->GetList(prefs::kPerAppTimeLimitsAppActivities);
+      prefs()->GetList(ash::prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> app_infos =
       PersistedAppInfo::PersistedAppInfosFromList(

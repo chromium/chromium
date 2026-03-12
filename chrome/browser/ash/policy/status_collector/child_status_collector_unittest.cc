@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
@@ -367,8 +368,9 @@ class ChildStatusCollectorTest : public testing::Test {
         base::OnceClosure(),
         base::BindOnce(
             [](int64_t duration, PrefService* profile_pref_service_) {
-              EXPECT_EQ(duration, profile_pref_service_->GetInteger(
-                                      prefs::kChildScreenTimeMilliseconds));
+              EXPECT_EQ(duration,
+                        profile_pref_service_->GetInteger(
+                            ash::prefs::kChildScreenTimeMilliseconds));
             },
             duration, pref_service()));
   }
@@ -755,7 +757,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   {
     ash::app_time::AppTimeLimitsPolicyBuilder builder;
     builder.SetAppActivityReportingEnabled(/* enabled */ false);
-    testing_profile()->GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
+    testing_profile()->GetPrefs()->SetDict(ash::prefs::kPerAppTimeLimitsPolicy,
                                            builder.value().Clone());
   }
 

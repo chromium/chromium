@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -15,7 +16,6 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -57,7 +57,7 @@ bool IsDeviceOwnedByChild() {
 
 // static
 void ParentAccessService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kParentAccessCodeConfig);
+  registry->RegisterDictionaryPref(ash::prefs::kParentAccessCodeConfig);
 }
 
 // static

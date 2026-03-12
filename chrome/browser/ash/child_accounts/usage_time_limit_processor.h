@@ -14,6 +14,7 @@
 #include <set>
 #include <unordered_map>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -198,8 +199,8 @@ std::set<PolicyType> UpdatedPolicyTypes(const base::DictValue& old_policy,
                                         const base::DictValue& new_policy);
 
 // Returns the active time limit polices in `time_limit_prefs`.
-// `time_limit_prefs` is the value of prefs::kUsageTimeLimit which stores the
-// usage time limit preference of a user.
+// `time_limit_prefs` is the value of ash::prefs::kUsageTimeLimit which stores
+// the usage time limit preference of a user.
 std::set<PolicyType> GetEnabledTimeLimitPolicies(
     const base::DictValue& time_limit_prefs);
 

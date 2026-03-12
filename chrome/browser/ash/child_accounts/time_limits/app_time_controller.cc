@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/functional/bind.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -208,9 +208,10 @@ AppTimeController::TestApi::web_time_activity_provider() {
 
 // static
 void AppTimeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(prefs::kPerAppTimeLimitsLastResetTime, 0);
-  registry->RegisterDictionaryPref(prefs::kPerAppTimeLimitsPolicy);
-  registry->RegisterDictionaryPref(prefs::kPerAppTimeLimitsAllowlistPolicy);
+  registry->RegisterInt64Pref(ash::prefs::kPerAppTimeLimitsLastResetTime, 0);
+  registry->RegisterDictionaryPref(ash::prefs::kPerAppTimeLimitsPolicy);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kPerAppTimeLimitsAllowlistPolicy);
 }
 
 AppTimeController::AppTimeController(
@@ -247,8 +248,9 @@ AppTimeController::~AppTimeController() {
 void AppTimeController::Init() {
   PrefService* pref_service = profile_->GetPrefs();
   RegisterProfilePrefObservers(pref_service);
-  TimeLimitsAllowlistPolicyUpdated(prefs::kPerAppTimeLimitsAllowlistPolicy);
-  TimeLimitsPolicyUpdated(prefs::kPerAppTimeLimitsPolicy);
+  TimeLimitsAllowlistPolicyUpdated(
+      ash::prefs::kPerAppTimeLimitsAllowlistPolicy);
+  TimeLimitsPolicyUpdated(ash::prefs::kPerAppTimeLimitsPolicy);
 
   // Restore the last reset time. If reset time has have been crossed, triggers
   // AppActivityRegistry to clear up the running active times of applications.
@@ -319,20 +321,20 @@ void AppTimeController::RegisterProfilePrefObservers(
   // Using base::Unretained(this) is safe here because when |pref_registrar_|
   // gets destroyed, it will remove the observers from PrefService.
   pref_registrar_->Add(
-      prefs::kPerAppTimeLimitsPolicy,
+      ash::prefs::kPerAppTimeLimitsPolicy,
       base::BindRepeating(&AppTimeController::TimeLimitsPolicyUpdated,
                           base::Unretained(this)));
   pref_registrar_->Add(
-      prefs::kPerAppTimeLimitsAllowlistPolicy,
+      ash::prefs::kPerAppTimeLimitsAllowlistPolicy,
       base::BindRepeating(&AppTimeController::TimeLimitsAllowlistPolicyUpdated,
                           base::Unretained(this)));
 }
 
 void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
-  DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsPolicy);
+  DCHECK_EQ(pref_name, ash::prefs::kPerAppTimeLimitsPolicy);
 
   const base::DictValue& policy =
-      pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
+      pref_registrar_->prefs()->GetDict(ash::prefs::kPerAppTimeLimitsPolicy);
 
   std::map<AppId, AppLimit> app_limits = policy::AppLimitsFromDict(policy);
 
@@ -369,10 +371,10 @@ void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
 
 void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
     const std::string& pref_name) {
-  DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsAllowlistPolicy);
+  DCHECK_EQ(pref_name, ash::prefs::kPerAppTimeLimitsAllowlistPolicy);
 
   const base::DictValue& policy = pref_registrar_->prefs()->GetDict(
-      prefs::kPerAppTimeLimitsAllowlistPolicy);
+      ash::prefs::kPerAppTimeLimitsAllowlistPolicy);
 
   // Figure out a way to avoid cloning
   AppTimeLimitsAllowlistPolicyWrapper wrapper(&policy);
@@ -420,14 +422,14 @@ void AppTimeController::OnAppInstalled(const AppId& app_id) {
   }
 
   const base::DictValue& allowlist_policy = pref_registrar_->prefs()->GetDict(
-      prefs::kPerAppTimeLimitsAllowlistPolicy);
+      ash::prefs::kPerAppTimeLimitsAllowlistPolicy);
   AppTimeLimitsAllowlistPolicyWrapper wrapper(&allowlist_policy);
   if (std::ranges::contains(wrapper.GetAllowlistAppList(), app_id)) {
     app_registry_->SetAppAllowlisted(app_id);
   }
 
   const base::DictValue& policy =
-      pref_registrar_->prefs()->GetDict(prefs::kPerAppTimeLimitsPolicy);
+      pref_registrar_->prefs()->GetDict(ash::prefs::kPerAppTimeLimitsPolicy);
 
   // Update the application's time limit.
   const std::map<AppId, AppLimit> limits = policy::AppLimitsFromDict(policy);
@@ -488,7 +490,7 @@ void AppTimeController::OnResetTimeReached() {
 void AppTimeController::RestoreLastResetTime() {
   PrefService* pref_service = profile_->GetPrefs();
   int64_t reset_time =
-      pref_service->GetInt64(prefs::kPerAppTimeLimitsLastResetTime);
+      pref_service->GetInt64(ash::prefs::kPerAppTimeLimitsLastResetTime);
 
   if (reset_time == 0) {
     SetLastResetTime(base::Time::Now());
@@ -525,7 +527,7 @@ void AppTimeController::SetLastResetTime(base::Time timestamp) {
   PrefService* service = profile_->GetPrefs();
   DCHECK(service);
   service->SetInt64(
-      prefs::kPerAppTimeLimitsLastResetTime,
+      ash::prefs::kPerAppTimeLimitsLastResetTime,
       last_limits_reset_time_.ToDeltaSinceWindowsEpoch().InMicroseconds());
   service->CommitPendingWrite();
 }

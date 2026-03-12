@@ -3099,6 +3099,75 @@ inline constexpr char kRecommendedPrintersBlocklist[] =
 inline constexpr char kUserPrintersAllowed[] =
     "native_printing.user_native_printers_allowed";
 
+//-----------------------------------------------------------------------------
+// Child account related Prefs
+//-----------------------------------------------------------------------------
+
+// Amount of screen time that a child user has used in the current day.
+inline constexpr char kChildScreenTimeMilliseconds[] = "child_screen_time";
+
+// TimeDelta pref to record the accumulated Chrome browser app usage for family
+// user metrics.
+inline constexpr char kFamilyUserMetricsChromeBrowserEngagementDuration[] =
+    "family_user.metrics.chrome_browser_engagement_duration";
+
+// Integer pref to record the day id (number of days since origin of time) when
+// family user metrics were last recorded.
+inline constexpr char kFamilyUserMetricsDayId[] = "family_user.metrics.day_id";
+
+// TimeDelta pref to record the accumulated user session duration for family
+// user metrics.
+inline constexpr char kFamilyUserMetricsSessionEngagementDuration[] =
+    "family_user.metrics.session_engagement_duration";
+
+// Dictionary pref containing the configuration used to verify Parent Access
+// Code. The data is sent through the ParentAccessCodeConfig policy, which is
+// set for child users only, and kept on the known user storage.
+inline constexpr char kKnownUserParentAccessCodeConfig[] =
+    "child_user.parent_access_code.config";
+
+// Dictionary pref containing configuration used to verify Parent Access Code.
+// Controlled by ParentAccessCodeConfig policy.
+inline constexpr char kParentAccessCodeConfig[] =
+    "child_user.parent_access_code.config";
+
+// Dictionary pref containing the allowed urls, schemes and applications
+// that would not be blocked by per app time limits.
+inline constexpr char kPerAppTimeLimitsAllowlistPolicy[] =
+    "child_user.per_app_time_limits.allowlist";
+
+// List pref containing app activity and state for each application.
+inline constexpr char kPerAppTimeLimitsAppActivities[] =
+    "child_user.per_app_time_limits.app_activities";
+
+// Int64 to specify the last timestamp the AppActivityRegistry was reset.
+inline constexpr char kPerAppTimeLimitsLastResetTime[] =
+    "child_user.per_app_time_limits.last_reset_time";
+
+// Int64 to specify the last timestamp the app activity has been successfully
+// reported.
+inline constexpr char kPerAppTimeLimitsLastSuccessfulReportTime[] =
+    "child_user.per_app_time_limits.last_successful_report_time";
+
+// Int64 to specify the latest AppLimit update timestamp from.
+inline constexpr char kPerAppTimeLimitsLatestLimitUpdateTime[] =
+    "child_user.per_app_time_limits.latest_limit_update_time";
+
+// Dictionary pref containing the per-app time limits configuration for
+// child user. Controlled by PerAppTimeLimits policy.
+inline constexpr char kPerAppTimeLimitsPolicy[] =
+    "child_user.per_app_time_limits.policy";
+
+// Last state of the screen time limit.
+inline constexpr char kScreenTimeLastState[] = "screen_time.last_state";
+
+// A dictionary containing the latest Time Limits override authorized by parent
+// access code.
+inline constexpr char kTimeLimitLocalOverride[] = "screen_time.local_override";
+
+// A dictionary preference holding the usage time limit definitions for a user.
+inline constexpr char kUsageTimeLimit[] = "screen_time.limit";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

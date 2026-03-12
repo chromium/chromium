@@ -940,16 +940,6 @@ inline constexpr char kTextToSpeechPitch[] = "settings.tts.speech_pitch";
 // system volume, and higher than 1.0 is louder.
 inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 
-// A dictionary containing the latest Time Limits override authorized by parent
-// access code.
-inline constexpr char kTimeLimitLocalOverride[] = "screen_time.local_override";
-
-// A dictionary preference holding the usage time limit definitions for a user.
-inline constexpr char kUsageTimeLimit[] = "screen_time.limit";
-
-// Last state of the screen time limit.
-inline constexpr char kScreenTimeLastState[] = "screen_time.last_state";
-
 // Boolean pref indicating whether the message displayed on the login screen for
 // the managed guest session should be the full warning or not.
 // True means the full warning should be displayed.
@@ -982,9 +972,6 @@ inline constexpr char kTPMUpdateOnNextRebootNotificationShown[] =
 inline constexpr char kNetBiosShareDiscoveryEnabled[] =
     "network_file_shares.netbios_discovery.enabled";
 
-// Amount of screen time that a child user has used in the current day.
-inline constexpr char kChildScreenTimeMilliseconds[] = "child_screen_time";
-
 // Last time the kChildScreenTimeMilliseconds was saved.
 inline constexpr char kLastChildScreenTimeSaved[] =
     "last_child_screen_time_saved";
@@ -1007,52 +994,6 @@ inline constexpr char kReleaseNotesSuggestionChipTimesLeftToShow[] =
 // Shares for Chrome OS feature.
 inline constexpr char kNTLMShareAuthenticationEnabled[] =
     "network_file_shares.ntlm_share_authentication.enabled";
-
-// Dictionary pref containing configuration used to verify Parent Access Code.
-// Controlled by ParentAccessCodeConfig policy.
-inline constexpr char kParentAccessCodeConfig[] =
-    "child_user.parent_access_code.config";
-
-// List pref containing app activity and state for each application.
-inline constexpr char kPerAppTimeLimitsAppActivities[] =
-    "child_user.per_app_time_limits.app_activities";
-
-// Int64 to specify the last timestamp the AppActivityRegistry was reset.
-inline constexpr char kPerAppTimeLimitsLastResetTime[] =
-    "child_user.per_app_time_limits.last_reset_time";
-
-// Int64 to specify the last timestamp the app activity has been successfully
-// reported.
-inline constexpr char kPerAppTimeLimitsLastSuccessfulReportTime[] =
-    "child_user.per_app_time_limits.last_successful_report_time";
-
-// Int64 to specify the latest AppLimit update timestamp from.
-inline constexpr char kPerAppTimeLimitsLatestLimitUpdateTime[] =
-    "child_user.per_app_time_limits.latest_limit_update_time";
-
-// Dictionary pref containing the per-app time limits configuration for
-// child user. Controlled by PerAppTimeLimits policy.
-inline constexpr char kPerAppTimeLimitsPolicy[] =
-    "child_user.per_app_time_limits.policy";
-
-// Dictionary pref containing the allowed urls, schemes and applications
-// that would not be blocked by per app time limits.
-inline constexpr char kPerAppTimeLimitsAllowlistPolicy[] =
-    "child_user.per_app_time_limits.allowlist";
-
-// Integer pref to record the day id (number of days since origin of time) when
-// family user metrics were last recorded.
-inline constexpr char kFamilyUserMetricsDayId[] = "family_user.metrics.day_id";
-
-// TimeDelta pref to record the accumulated user session duration for family
-// user metrics.
-inline constexpr char kFamilyUserMetricsSessionEngagementDuration[] =
-    "family_user.metrics.session_engagement_duration";
-
-// TimeDelta pref to record the accumulated Chrome browser app usage for family
-// user metrics.
-inline constexpr char kFamilyUserMetricsChromeBrowserEngagementDuration[] =
-    "family_user.metrics.chrome_browser_engagement_duration";
 
 // List of preconfigured network file shares.
 inline constexpr char kNetworkFileSharesPreconfiguredShares[] =
@@ -2964,11 +2905,6 @@ inline constexpr char kArcAppInstallEventLoggingEnabled[] =
 inline constexpr char kRemoveUsersRemoteCommand[] =
     "remove_users_remote_command";
 
-// Dictionary pref containing the configuration used to verify Parent Access
-// Code. The data is sent through the ParentAccessCodeConfig policy, which is
-// set for child users only, and kept on the known user storage.
-inline constexpr char kKnownUserParentAccessCodeConfig[] =
-    "child_user.parent_access_code.config";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // String which specifies where to store the disk cache.

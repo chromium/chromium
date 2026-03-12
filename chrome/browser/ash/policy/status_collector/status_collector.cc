@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/time/clock.h"
@@ -87,7 +88,7 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kUserActivityTimes);
   registry->RegisterTimePref(prefs::kLastChildScreenTimeReset, base::Time());
   registry->RegisterTimePref(prefs::kLastChildScreenTimeSaved, base::Time());
-  registry->RegisterIntegerPref(prefs::kChildScreenTimeMilliseconds, 0);
+  registry->RegisterIntegerPref(ash::prefs::kChildScreenTimeMilliseconds, 0);
 
   AppInfoGenerator::RegisterProfilePrefs(registry);
 }

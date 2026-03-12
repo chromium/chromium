@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "base/time/default_tick_clock.h"
 #include "base/unguessable_token.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_notification_delegate.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/persisted_app_info.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -133,10 +133,11 @@ bool AppActivityRegistry::AppDetails::IsLimitEqual(
 
 // static
 void AppActivityRegistry::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kPerAppTimeLimitsAppActivities);
-  registry->RegisterInt64Pref(prefs::kPerAppTimeLimitsLastSuccessfulReportTime,
-                              0);
-  registry->RegisterInt64Pref(prefs::kPerAppTimeLimitsLatestLimitUpdateTime, 0);
+  registry->RegisterListPref(ash::prefs::kPerAppTimeLimitsAppActivities);
+  registry->RegisterInt64Pref(
+      ash::prefs::kPerAppTimeLimitsLastSuccessfulReportTime, 0);
+  registry->RegisterInt64Pref(
+      ash::prefs::kPerAppTimeLimitsLatestLimitUpdateTime, 0);
 }
 
 AppActivityRegistry::AppActivityRegistry(
@@ -445,7 +446,7 @@ AppActivityRegistry::GenerateAppActivityReport(
   }
 
   const base::ListValue& list =
-      pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
+      pref_service_->GetList(ash::prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> applications_info =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -497,7 +498,7 @@ void AppActivityRegistry::OnSuccessfullyReported(base::Time timestamp) {
 
   // Update last successful report time.
   pref_service_->SetInt64(
-      prefs::kPerAppTimeLimitsLastSuccessfulReportTime,
+      ash::prefs::kPerAppTimeLimitsLastSuccessfulReportTime,
       timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
@@ -529,7 +530,7 @@ bool AppActivityRegistry::UpdateAppLimits(
 
   // Update the latest app limit update.
   pref_service_->SetInt64(
-      prefs::kPerAppTimeLimitsLatestLimitUpdateTime,
+      ash::prefs::kPerAppTimeLimitsLatestLimitUpdateTime,
       latest_app_limit_update_.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   return policy_updated;
@@ -671,7 +672,7 @@ void AppActivityRegistry::OnTimeLimitAllowlistChanged(
 void AppActivityRegistry::SaveAppActivity() {
   {
     ScopedListPrefUpdate update(pref_service_,
-                                prefs::kPerAppTimeLimitsAppActivities);
+                                ash::prefs::kPerAppTimeLimitsAppActivities);
     base::ListValue& list = update.Get();
 
     const base::Time now = base::Time::Now();
@@ -745,7 +746,7 @@ void AppActivityRegistry::OnResetTimeReached(base::Time timestamp) {
 
 void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
   ScopedListPrefUpdate update(pref_service_,
-                              prefs::kPerAppTimeLimitsAppActivities);
+                              ash::prefs::kPerAppTimeLimitsAppActivities);
 
   base::ListValue& list = update.Get();
 
@@ -1122,8 +1123,8 @@ void AppActivityRegistry::WebTimeLimitReached(base::Time timestamp) {
 void AppActivityRegistry::InitializeRegistryFromPref() {
   DCHECK(pref_service_);
 
-  int64_t last_limits_updates =
-      pref_service_->GetInt64(prefs::kPerAppTimeLimitsLatestLimitUpdateTime);
+  int64_t last_limits_updates = pref_service_->GetInt64(
+      ash::prefs::kPerAppTimeLimitsLatestLimitUpdateTime);
 
   latest_app_limit_update_ = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(last_limits_updates));
@@ -1133,7 +1134,7 @@ void AppActivityRegistry::InitializeRegistryFromPref() {
 
 void AppActivityRegistry::InitializeAppActivities() {
   const base::ListValue& list =
-      pref_service_->GetList(prefs::kPerAppTimeLimitsAppActivities);
+      pref_service_->GetList(ash::prefs::kPerAppTimeLimitsAppActivities);
 
   const std::vector<PersistedAppInfo> applications_info =
       PersistedAppInfo::PersistedAppInfosFromList(
@@ -1183,8 +1184,8 @@ PersistedAppInfo AppActivityRegistry::GetPersistedAppInfoForApp(
 }
 
 bool AppActivityRegistry::ShouldCleanUpStoredPref() {
-  int64_t last_time =
-      pref_service_->GetInt64(prefs::kPerAppTimeLimitsLastSuccessfulReportTime);
+  int64_t last_time = pref_service_->GetInt64(
+      ash::prefs::kPerAppTimeLimitsLastSuccessfulReportTime);
 
   if (last_time == 0) {
     return false;

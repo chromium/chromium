@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -119,7 +119,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, BedAndScreenTimeLimitMetrics) {
       /*quota*/ kOneHour,
       /*last_updated=*/base::Time::Now());
 
-  GetPrefs()->SetDict(prefs::kUsageTimeLimit, policy_content.Clone());
+  GetPrefs()->SetDict(ash::prefs::kUsageTimeLimit, policy_content.Clone());
 
   histogram_tester_.ExpectBucketCount(
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
@@ -167,7 +167,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
       /*created_at=*/base::Time::Now() - kOneDay,
       /*duration=*/base::Hours(2));
-  GetPrefs()->SetDict(prefs::kUsageTimeLimit, policy_content.Clone());
+  GetPrefs()->SetDict(ash::prefs::kUsageTimeLimit, policy_content.Clone());
 
   // The override time limit policy would not get reported since the difference
   // between reported and created time are greater than 1 day.
@@ -188,7 +188,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
       /*created_at=*/base::Time::Now() - base::Hours(23),
       /*duration=*/base::Hours(2));
-  GetPrefs()->SetDict(prefs::kUsageTimeLimit, policy_content.Clone());
+  GetPrefs()->SetDict(ash::prefs::kUsageTimeLimit, policy_content.Clone());
 
   // The override time limit policy would get reported since the created
   // time and reported time are within 1 day.
@@ -245,7 +245,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppTimeLimitMetrics) {
                                            base::Hours(1), base::Time::Now()));
 
     builder.SetResetTime(6, 0);
-    GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
+    GetPrefs()->SetDict(ash::prefs::kPerAppTimeLimitsPolicy,
                         builder.value().Clone());
   }
 

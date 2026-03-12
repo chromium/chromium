@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/child_accounts/family_user_chrome_activity_metrics.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -33,7 +33,7 @@ const char FamilyUserChromeActivityMetrics::
 void FamilyUserChromeActivityMetrics::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterTimeDeltaPref(
-      prefs::kFamilyUserMetricsChromeBrowserEngagementDuration,
+      ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration,
       base::TimeDelta());
 }
 
@@ -53,14 +53,14 @@ FamilyUserChromeActivityMetrics::~FamilyUserChromeActivityMetrics() {
 
 void FamilyUserChromeActivityMetrics::OnNewDay() {
   base::TimeDelta unreported_duration = pref_service_->GetTimeDelta(
-      prefs::kFamilyUserMetricsChromeBrowserEngagementDuration);
+      ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration);
   if (unreported_duration <= base::TimeDelta())
     return;
   base::UmaHistogramCustomTimes(kChromeBrowserEngagementDurationHistogramName,
                                 unreported_duration, kMinChromeDuration,
                                 kMaxChromeDuration, kChromeDurationBuckets);
   pref_service_->ClearPref(
-      prefs::kFamilyUserMetricsChromeBrowserEngagementDuration);
+      ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration);
 }
 
 void FamilyUserChromeActivityMetrics::SetActiveSessionStartForTesting(
@@ -119,9 +119,9 @@ void FamilyUserChromeActivityMetrics::UpdateUserEngagement(
   } else {
     if (base::Time() < active_duration_start_ && active_duration_start_ < now) {
       base::TimeDelta unreported_duration = pref_service_->GetTimeDelta(
-          prefs::kFamilyUserMetricsChromeBrowserEngagementDuration);
+          ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration);
       pref_service_->SetTimeDelta(
-          prefs::kFamilyUserMetricsChromeBrowserEngagementDuration,
+          ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration,
           unreported_duration + now - active_duration_start_);
     }
 

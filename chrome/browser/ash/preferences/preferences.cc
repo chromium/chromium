@@ -767,7 +767,7 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   pref_change_registrar_.Add(ash::prefs::kUserTimezone, callback);
   pref_change_registrar_.Add(ash::prefs::kResolveTimezoneByGeolocationMethod,
                              callback);
-  pref_change_registrar_.Add(::prefs::kParentAccessCodeConfig, callback);
+  pref_change_registrar_.Add(ash::prefs::kParentAccessCodeConfig, callback);
   for (auto* copy_pref : kCopyToKnownUserPrefs) {
     pref_change_registrar_.Add(copy_pref, callback);
   }
@@ -1330,12 +1330,12 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
   }
 
-  if (pref_name == ::prefs::kParentAccessCodeConfig ||
+  if (pref_name == ash::prefs::kParentAccessCodeConfig ||
       reason != REASON_PREF_CHANGED) {
-    if (prefs_->IsManagedPreference(::prefs::kParentAccessCodeConfig) &&
+    if (prefs_->IsManagedPreference(ash::prefs::kParentAccessCodeConfig) &&
         user_->IsChild()) {
       const base::DictValue& value =
-          prefs_->GetDict(::prefs::kParentAccessCodeConfig);
+          prefs_->GetDict(ash::prefs::kParentAccessCodeConfig);
       parent_access::ParentAccessService::Get().UpdateConfigForUser(
           user_->GetAccountId(), value.Clone());
     } else {

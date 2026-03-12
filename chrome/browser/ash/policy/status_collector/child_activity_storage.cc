@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -71,12 +72,12 @@ void ChildActivityStorage::StoreChildScreenTime(base::Time activity_day_start,
   DCHECK(activity_day_start <= today_start);
 
   base::TimeDelta previous_activity = base::Milliseconds(
-      pref_service_->GetInteger(prefs::kChildScreenTimeMilliseconds));
+      pref_service_->GetInteger(ash::prefs::kChildScreenTimeMilliseconds));
 
   // If this activity window belongs to the current day, the screen time pref
   // should be updated.
   if (activity_day_start == today_start) {
-    pref_service_->SetInteger(prefs::kChildScreenTimeMilliseconds,
+    pref_service_->SetInteger(ash::prefs::kChildScreenTimeMilliseconds,
                               (previous_activity + activity).InMilliseconds());
     pref_service_->SetTime(prefs::kLastChildScreenTimeSaved, now);
     pref_service_->CommitPendingWrite();

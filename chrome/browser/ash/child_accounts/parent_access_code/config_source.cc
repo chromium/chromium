@@ -7,11 +7,11 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -41,7 +41,7 @@ ConfigSource::ConfigSource(PrefService* local_state)
     }
 
     const base::Value* dictionary = known_user.FindPath(
-        user->GetAccountId(), prefs::kKnownUserParentAccessCodeConfig);
+        user->GetAccountId(), ash::prefs::kKnownUserParentAccessCodeConfig);
     if (dictionary) {
       LoadConfigForUser(user->GetAccountId(), dictionary->GetDict());
     }
@@ -60,18 +60,18 @@ void ConfigSource::UpdateConfigForUser(const AccountId& account_id,
 #endif  // DCHECK_IS_ON()
 
   user_manager::KnownUser known_user(&local_state_.get());
-  known_user.SetPath(account_id, ::prefs::kKnownUserParentAccessCodeConfig,
+  known_user.SetPath(account_id, ash::prefs::kKnownUserParentAccessCodeConfig,
                      base::Value(std::move(config)));
 
-  const base::Value* dictionary =
-      known_user.FindPath(account_id, prefs::kKnownUserParentAccessCodeConfig);
+  const base::Value* dictionary = known_user.FindPath(
+      account_id, ash::prefs::kKnownUserParentAccessCodeConfig);
   CHECK(dictionary);
   LoadConfigForUser(account_id, dictionary->GetDict());
 }
 
 void ConfigSource::RemoveConfigForUser(const AccountId& account_id) {
   user_manager::KnownUser(&local_state_.get())
-      .RemovePref(account_id, ::prefs::kKnownUserParentAccessCodeConfig);
+      .RemovePref(account_id, ash::prefs::kKnownUserParentAccessCodeConfig);
 }
 
 void ConfigSource::LoadConfigForUser(const AccountId& account_id,

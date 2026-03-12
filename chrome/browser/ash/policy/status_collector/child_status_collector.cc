@@ -15,6 +15,7 @@
 #include <sstream>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -177,7 +178,7 @@ ChildStatusCollector::~ChildStatusCollector() {
 base::TimeDelta ChildStatusCollector::GetActiveChildScreenTime() {
   UpdateChildUsageTime();
   return base::Milliseconds(
-      pref_service_->GetInteger(prefs::kChildScreenTimeMilliseconds));
+      pref_service_->GetInteger(ash::prefs::kChildScreenTimeMilliseconds));
 }
 
 // static
@@ -237,7 +238,7 @@ void ChildStatusCollector::UpdateChildUsageTime() {
   // Reset screen time if it has not been reset today.
   if (reset_time > pref_service_->GetTime(prefs::kLastChildScreenTimeReset)) {
     pref_service_->SetTime(prefs::kLastChildScreenTimeReset, now);
-    pref_service_->SetInteger(prefs::kChildScreenTimeMilliseconds, 0);
+    pref_service_->SetInteger(ash::prefs::kChildScreenTimeMilliseconds, 0);
     pref_service_->CommitPendingWrite();
   }
 
@@ -304,7 +305,7 @@ bool ChildStatusCollector::GetAppActivity(
     base::UmaHistogramMemoryKB(kReportSizeHistogramName, size_in_bytes / 1024);
 
     int64_t last_successful_report_time_int = pref_service_->GetInt64(
-        prefs::kPerAppTimeLimitsLastSuccessfulReportTime);
+        ash::prefs::kPerAppTimeLimitsLastSuccessfulReportTime);
     if (last_successful_report_time_int > 0) {
       base::Time last_successful_report_time =
           base::Time::FromDeltaSinceWindowsEpoch(

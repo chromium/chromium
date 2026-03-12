@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/time/time.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -74,7 +74,7 @@ class FamilyUserMetricsServiceTest : public testing::Test {
   }
 
   int GetDayIdPref() {
-    return GetPrefService()->GetInteger(prefs::kFamilyUserMetricsDayId);
+    return GetPrefService()->GetInteger(ash::prefs::kFamilyUserMetricsDayId);
   }
 
   content::BrowserTaskEnvironment task_environment_{

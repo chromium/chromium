@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_policy_builder.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -453,7 +453,7 @@ TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
     builder.AddAppLimit(kApp2, AppLimit(AppRestriction::kTimeLimit,
                                         kOneHour / 2, base::Time::Now()));
     builder.SetResetTime(6, 0);
-    profile().GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
+    profile().GetPrefs()->SetDict(ash::prefs::kPerAppTimeLimitsPolicy,
                                   builder.value().Clone());
   }
 
@@ -502,7 +502,7 @@ TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
   // |last_reset_time|.
   last_reset_time = last_reset_time - kDay;
   profile().GetPrefs()->SetInt64(
-      prefs::kPerAppTimeLimitsLastResetTime,
+      ash::prefs::kPerAppTimeLimitsLastResetTime,
       last_reset_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 
   InstantiateController();
@@ -535,7 +535,7 @@ TEST_F(AppTimeControllerTest, MetricsTest) {
     builder.AddAppLimit(absent_app, app_limit);
     builder.AddAppLimit(kApp2, blocked_app);
     builder.SetResetTime(6, 0);
-    profile().GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
+    profile().GetPrefs()->SetDict(ash::prefs::kPerAppTimeLimitsPolicy,
                                   builder.value().Clone());
   }
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -175,7 +175,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
 
   EXPECT_EQ(kHalfHour,
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 
   // Test multiple browsers.
   std::unique_ptr<aura::Window> window =
@@ -197,7 +197,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
                         apps::InstanceState::kDestroyed);
   EXPECT_EQ(base::Hours(1),
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 
   // Test date change.
   task_environment()->FastForwardBy(base::Days(1));
@@ -205,7 +205,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, Basic) {
 
   EXPECT_EQ(base::TimeDelta(),
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
   histogram_tester.ExpectTimeBucketCount(
       FamilyUserChromeActivityMetrics::
           kChromeBrowserEngagementDurationHistogramName,
@@ -229,7 +229,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, ClockBackward) {
       0);
   EXPECT_EQ(base::TimeDelta(),
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 }
 
 // Tests destroying FamilyUserChromeActivityMetrics. OnAppInactive() will be
@@ -252,7 +252,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest,
       0);
   EXPECT_EQ(kHalfHour,
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 
   // Test restart.
   InitiateFamilyUserChromeActivityMetrics();
@@ -271,7 +271,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest,
       0);
   EXPECT_EQ(base::Hours(1),
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 }
 
 TEST_F(FamilyUserChromeActivityMetricsTest, ScreenStateChange) {
@@ -290,7 +290,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, ScreenStateChange) {
                         kInactiveInstanceState);
   EXPECT_EQ(kOneMinute,
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 
   // Test the screen off for 1 day.
   SetScreenOff(true);
@@ -300,7 +300,7 @@ TEST_F(FamilyUserChromeActivityMetricsTest, ScreenStateChange) {
 
   EXPECT_EQ(base::TimeDelta(),
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
   histogram_tester.ExpectTimeBucketCount(
       FamilyUserChromeActivityMetrics::
           kChromeBrowserEngagementDurationHistogramName,
@@ -336,14 +336,14 @@ TEST_F(FamilyUserChromeActivityMetricsTest, MockLockAndUnclockScreen) {
 
   EXPECT_EQ(base::Minutes(2),
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
 
   task_environment()->FastForwardBy(base::Days(1));
   OnNewDay();
 
   EXPECT_EQ(base::TimeDelta(),
             pref_service()->GetTimeDelta(
-                prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
+                ash::prefs::kFamilyUserMetricsChromeBrowserEngagementDuration));
   histogram_tester.ExpectTimeBucketCount(
       FamilyUserChromeActivityMetrics::
           kChromeBrowserEngagementDurationHistogramName,

@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -39,7 +39,7 @@ constexpr base::TimeDelta kUsageTimeLimitWarningTime = base::Minutes(15);
 // Otherwise, requesting lock does not work.
 constexpr base::TimeDelta kCheckLoginDelay = base::Seconds(15);
 
-// Dictionary keys for prefs::kScreenTimeLastState.
+// Dictionary keys for ash::prefs::kScreenTimeLastState.
 constexpr char kScreenStateLocked[] = "locked";
 constexpr char kScreenStateCurrentPolicyType[] = "active_policy";
 constexpr char kScreenStateTimeUsageLimitEnabled[] = "time_usage_limit_enabled";
@@ -68,9 +68,9 @@ AuthDisabledReason ConvertLockReason(
 
 // static
 void ScreenTimeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kScreenTimeLastState);
-  registry->RegisterDictionaryPref(prefs::kTimeLimitLocalOverride);
-  registry->RegisterDictionaryPref(prefs::kUsageTimeLimit);
+  registry->RegisterDictionaryPref(ash::prefs::kScreenTimeLastState);
+  registry->RegisterDictionaryPref(ash::prefs::kTimeLimitLocalOverride);
+  registry->RegisterDictionaryPref(ash::prefs::kUsageTimeLimit);
 }
 
 ScreenTimeController::ScreenTimeController(content::BrowserContext* context)
@@ -79,7 +79,7 @@ ScreenTimeController::ScreenTimeController(content::BrowserContext* context)
       clock_(base::DefaultClock::GetInstance()),
       next_state_timer_(std::make_unique<base::OneShotTimer>()),
       usage_time_limit_warning_timer_(std::make_unique<base::OneShotTimer>()),
-      last_policy_(pref_service_->GetDict(prefs::kUsageTimeLimit).Clone()),
+      last_policy_(pref_service_->GetDict(ash::prefs::kUsageTimeLimit).Clone()),
       time_limit_notifier_(context) {
   session_manager::SessionManager::Get()->AddObserver(this);
   UsageTimeStateNotifier::GetInstance()->AddObserver(this);
@@ -88,7 +88,7 @@ ScreenTimeController::ScreenTimeController(content::BrowserContext* context)
   SystemClockClient::Get()->AddObserver(this);
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      prefs::kUsageTimeLimit,
+      ash::prefs::kUsageTimeLimit,
       base::BindRepeating(&ScreenTimeController::OnPolicyChanged,
                           base::Unretained(this)));
 
@@ -150,9 +150,9 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
       system::TimezoneSettings::GetInstance()->GetTimezone();
   std::optional<usage_time_limit::State> last_state = GetLastStateFromPref();
   const base::DictValue& time_limit =
-      pref_service_->GetDict(prefs::kUsageTimeLimit);
+      pref_service_->GetDict(ash::prefs::kUsageTimeLimit);
   const base::DictValue& local_override =
-      pref_service_->GetDict(prefs::kTimeLimitLocalOverride);
+      pref_service_->GetDict(ash::prefs::kTimeLimitLocalOverride);
 
   // TODO(agawronska): Usage timestamp should be passed instead of second |now|.
   usage_time_limit::State state = usage_time_limit::GetState(
@@ -246,7 +246,7 @@ void ScreenTimeController::OnAccessCodeValidation(
       std::nullopt);
   // Replace previous local override stored in pref, because PAC can only be
   // entered if previous override is not active anymore.
-  pref_service_->SetDict(prefs::kTimeLimitLocalOverride,
+  pref_service_->SetDict(ash::prefs::kTimeLimitLocalOverride,
                          local_override.ToDictionary());
   pref_service_->CommitPendingWrite();
 
@@ -350,14 +350,15 @@ void ScreenTimeController::SaveCurrentStateToPref(
   state_dict.Set(kScreenStateNextUnlockTime,
                  state.next_unlock_time.InSecondsFSinceUnixEpoch());
 
-  pref_service_->SetDict(prefs::kScreenTimeLastState, std::move(state_dict));
+  pref_service_->SetDict(ash::prefs::kScreenTimeLastState,
+                         std::move(state_dict));
   pref_service_->CommitPendingWrite();
 }
 
 std::optional<usage_time_limit::State>
 ScreenTimeController::GetLastStateFromPref() {
   const base::DictValue& last_state =
-      pref_service_->GetDict(prefs::kScreenTimeLastState);
+      pref_service_->GetDict(ash::prefs::kScreenTimeLastState);
   usage_time_limit::State result;
   if (last_state.empty())
     return std::nullopt;
@@ -439,9 +440,9 @@ void ScreenTimeController::UsageTimeLimitWarning() {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
   const base::DictValue& time_limit =
-      pref_service_->GetDict(prefs::kUsageTimeLimit);
+      pref_service_->GetDict(ash::prefs::kUsageTimeLimit);
   const base::DictValue& local_override =
-      pref_service_->GetDict(prefs::kTimeLimitLocalOverride);
+      pref_service_->GetDict(ash::prefs::kTimeLimitLocalOverride);
 
   std::optional<base::TimeDelta> remaining_usage =
       usage_time_limit::GetRemainingTimeUsage(time_limit, &local_override, now,

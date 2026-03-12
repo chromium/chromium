@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -122,7 +121,7 @@ class ScreenTimeControllerTest : public MixinBasedInProcessBrowserTest {
 
   void MockChildScreenTime(base::TimeDelta used_time) {
     child_profile_->GetPrefs()->SetInteger(
-        ::prefs::kChildScreenTimeMilliseconds, used_time.InMilliseconds());
+        ash::prefs::kChildScreenTimeMilliseconds, used_time.InMilliseconds());
   }
 
   bool IsLocked() {

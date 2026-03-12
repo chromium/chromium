@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/policy/status_collector/child_status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -52,7 +52,7 @@ ChildStatusReportingService::ChildStatusReportingService(
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
-      prefs::kUsageTimeLimit,
+      ash::prefs::kUsageTimeLimit,
       base::BindRepeating(
           &ChildStatusReportingService::OnTimeLimitsPolicyChanged,
           base::Unretained(this)));
@@ -66,7 +66,7 @@ ChildStatusReportingService::~ChildStatusReportingService() = default;
 void ChildStatusReportingService::CreateStatusUploaderIfNeeded(
     policy::CloudPolicyClient* client) {
   const base::DictValue& time_limit =
-      pref_change_registrar_->prefs()->GetDict(prefs::kUsageTimeLimit);
+      pref_change_registrar_->prefs()->GetDict(ash::prefs::kUsageTimeLimit);
   const base::TimeDelta new_day_reset_time =
       usage_time_limit::GetTimeUsageLimitResetTime(time_limit);
 
