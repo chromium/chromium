@@ -63,7 +63,6 @@ ConnectJobFactory::~ConnectJobFactory() = default;
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     url::SchemeHostPort endpoint,
     const ProxyChain& proxy_chain,
-    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,
@@ -78,9 +77,9 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
   return CreateConnectJob(
-      Endpoint(std::move(endpoint)), proxy_chain, traffic_annotation,
-      proxy_annotation_tag, allowed_bad_certs, alpn_mode, force_tunnel,
-      privacy_mode, resolution_callback, request_priority, socket_tag,
+      Endpoint(std::move(endpoint)), proxy_chain, proxy_annotation_tag,
+      allowed_bad_certs, alpn_mode, force_tunnel, privacy_mode,
+      resolution_callback, request_priority, socket_tag,
       network_anonymization_key, secure_dns_policy,
       disable_cert_network_fetches, common_connect_job_params, delegate);
 }
@@ -89,7 +88,6 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     bool using_ssl,
     HostPortPair endpoint,
     const ProxyChain& proxy_chain,
-    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     bool force_tunnel,
     PrivacyMode privacy_mode,
@@ -102,8 +100,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     ConnectJob::Delegate* delegate) const {
   SchemelessEndpoint schemeless_endpoint{using_ssl, std::move(endpoint)};
   return CreateConnectJob(
-      std::move(schemeless_endpoint), proxy_chain, traffic_annotation,
-      proxy_annotation_tag,
+      std::move(schemeless_endpoint), proxy_chain, proxy_annotation_tag,
       /*allowed_bad_certs=*/{}, ConnectJobFactory::AlpnMode::kDisabled,
       force_tunnel, privacy_mode, resolution_callback, request_priority,
       socket_tag, network_anonymization_key, secure_dns_policy,
@@ -114,7 +111,6 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     Endpoint endpoint,
     const ProxyChain& proxy_chain,
-    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,
@@ -129,9 +125,9 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
   ConnectJobParams connect_job_params = ConstructConnectJobParams(
-      endpoint, proxy_chain, traffic_annotation, proxy_annotation_tag,
-      allowed_bad_certs, alpn_mode, force_tunnel, privacy_mode,
-      resolution_callback, network_anonymization_key, secure_dns_policy,
+      endpoint, proxy_chain, proxy_annotation_tag, allowed_bad_certs, alpn_mode,
+      force_tunnel, privacy_mode, resolution_callback,
+      network_anonymization_key, secure_dns_policy,
       disable_cert_network_fetches, common_connect_job_params,
       proxy_dns_network_anonymization_key_);
 

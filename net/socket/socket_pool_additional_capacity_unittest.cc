@@ -381,7 +381,6 @@ class MockClientSocketPool : public ClientSocketPool {
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
@@ -396,7 +395,6 @@ class MockClientSocketPool : public ClientSocketPool {
   int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
       PreconnectCompletionCallback callback,

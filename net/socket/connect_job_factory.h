@@ -86,7 +86,6 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   std::unique_ptr<ConnectJob> CreateConnectJob(
       url::SchemeHostPort endpoint,
       const ProxyChain& proxy_chain,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       ConnectJobFactory::AlpnMode alpn_mode,
@@ -107,7 +106,6 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       bool using_ssl,
       HostPortPair endpoint,
       const ProxyChain& proxy_chain,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       bool force_tunnel,
       PrivacyMode privacy_mode,
@@ -123,7 +121,6 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   virtual std::unique_ptr<ConnectJob> CreateConnectJob(
       Endpoint endpoint,
       const ProxyChain& proxy_chain,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       ConnectJobFactory::AlpnMode alpn_mode,

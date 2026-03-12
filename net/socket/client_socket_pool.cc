@@ -203,7 +203,6 @@ base::DictValue ClientSocketPool::NetLogGroupIdParams(const GroupId& group_id) {
 std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
     GroupId group_id,
     scoped_refptr<SocketParams> socket_params,
-    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority request_priority,
     SocketTag socket_tag,
@@ -245,10 +244,10 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
                          : ConnectJobFactory::AlpnMode::kHttpAll;
 
   return connect_job_factory_->CreateConnectJob(
-      group_id.destination(), GetProxyChain(), traffic_annotation,
-      proxy_annotation_tag, socket_params->allowed_bad_certs(), alpn_mode,
-      force_tunnel, group_id.privacy_mode(), resolution_callback,
-      request_priority, socket_tag, group_id.network_anonymization_key(),
+      group_id.destination(), GetProxyChain(), proxy_annotation_tag,
+      socket_params->allowed_bad_certs(), alpn_mode, force_tunnel,
+      group_id.privacy_mode(), resolution_callback, request_priority,
+      socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), group_id.disable_cert_network_fetches(),
       common_connect_job_params_, delegate);
 }

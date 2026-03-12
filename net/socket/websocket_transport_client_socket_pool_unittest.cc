@@ -47,7 +47,6 @@
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -202,12 +201,11 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST_P(WebSocketTransportClientSocketPoolTest, Basic) {
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_FALSE(handle.is_initialized());
   EXPECT_FALSE(handle.socket());
@@ -227,12 +225,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, SetResolvePriorityOnInit) {
     ClientSocketHandle handle;
     EXPECT_EQ(
         ERR_IO_PENDING,
-        handle.Init(
-            group_id_, params_,
-            MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-            std::nullopt /* proxy_annotation_tag */, priority, SocketTag(),
-            ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-            ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource()));
+        handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                    priority, SocketTag(),
+                    ClientSocketPool::RespectLimits::ENABLED,
+                    callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                    &pool_, NetLogWithSource()));
     EXPECT_EQ(priority, host_resolver_->last_request_priority());
   }
 }
@@ -244,17 +241,15 @@ TEST_P(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
   ClientSocketHandle handle;
   EXPECT_EQ(
       ERR_IO_PENDING,
-      handle.Init(
-          ClientSocketPool::GroupId(std::move(endpoint), PRIVACY_MODE_DISABLED,
-                                    NetworkAnonymizationKey(),
-                                    SecureDnsPolicy::kAllow,
-                                    /*disable_cert_network_fetches=*/false),
-          ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle.Init(ClientSocketPool::GroupId(
+                      std::move(endpoint), PRIVACY_MODE_DISABLED,
+                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                      /*disable_cert_network_fetches=*/false),
+                  ClientSocketPool::SocketParams::CreateForHttpForTesting(),
+                  std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
+                  SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource()));
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_NAME_NOT_RESOLVED));
   EXPECT_THAT(handle.resolve_error_info().error, IsError(ERR_DNS_TIMED_OUT));
   EXPECT_THAT(handle.connection_attempts(),
@@ -269,13 +264,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
   ClientSocketHandle handle;
   EXPECT_EQ(
       ERR_IO_PENDING,
-      handle.Init(
-          group_id_, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  kDefaultPriority, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
+                  ClientSocketPool::ProxyAuthCallback(), &pool_,
+                  NetLogWithSource()));
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_CONNECTION_FAILED));
   EXPECT_THAT(
       handle.connection_attempts(),
@@ -286,13 +279,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
   host_resolver_->set_synchronous_mode(true);
   EXPECT_EQ(
       ERR_CONNECTION_FAILED,
-      handle.Init(
-          group_id_, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  kDefaultPriority, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
+                  ClientSocketPool::ProxyAuthCallback(), &pool_,
+                  NetLogWithSource()));
   EXPECT_THAT(
       handle.connection_attempts(),
       testing::ElementsAre(ConnectionAttempt(
@@ -372,13 +363,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, CancelRequestClearGroup) {
   ClientSocketHandle handle;
   EXPECT_EQ(
       ERR_IO_PENDING,
-      handle.Init(
-          group_id_, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  kDefaultPriority, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
+                  ClientSocketPool::ProxyAuthCallback(), &pool_,
+                  NetLogWithSource()));
   handle.Reset();
 }
 
@@ -390,22 +379,18 @@ TEST_P(WebSocketTransportClientSocketPoolTest, TwoRequestsCancelOne) {
 
   EXPECT_EQ(
       ERR_IO_PENDING,
-      handle.Init(
-          group_id_, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  kDefaultPriority, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
+                  ClientSocketPool::ProxyAuthCallback(), &pool_,
+                  NetLogWithSource()));
   EXPECT_EQ(
       ERR_IO_PENDING,
-      handle2.Init(
-          group_id_, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle2.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                   kDefaultPriority, SocketTag(),
+                   ClientSocketPool::RespectLimits::ENABLED,
+                   callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &pool_, NetLogWithSource()));
 
   handle.Reset();
 
@@ -420,26 +405,22 @@ TEST_P(WebSocketTransportClientSocketPoolTest, ConnectCancelConnect) {
   TestCompletionCallback callback;
   EXPECT_EQ(
       ERR_IO_PENDING,
-      handle.Init(
-          group_id_, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  kDefaultPriority, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
+                  ClientSocketPool::ProxyAuthCallback(), &pool_,
+                  NetLogWithSource()));
 
   handle.Reset();
 
   TestCompletionCallback callback2;
   EXPECT_EQ(
       ERR_IO_PENDING,
-      handle.Init(
-          group_id_, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback2.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()));
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  kDefaultPriority, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED,
+                  callback2.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource()));
 
   host_resolver_->set_synchronous_mode(true);
   // At this point, handle has two ConnectingSockets out for it.  Due to the
@@ -513,7 +494,6 @@ void RequestSocketOnComplete(const ClientSocketPool::GroupId& group_id,
 
   int rv = handle->Init(
       group_id, ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt /* proxy_annotation_tag */, LOWEST, SocketTag(),
       ClientSocketPool::RespectLimits::ENABLED, nested_callback->callback(),
       ClientSocketPool::ProxyAuthCallback(), pool, NetLogWithSource());
@@ -531,7 +511,6 @@ TEST_P(WebSocketTransportClientSocketPoolTest, RequestTwice) {
   TestCompletionCallback second_result_callback;
   int rv = handle.Init(
       group_id_, ClientSocketPool::SocketParams::CreateForHttpForTesting(),
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       std::nullopt /* proxy_annotation_tag */, LOWEST, SocketTag(),
       ClientSocketPool::RespectLimits::ENABLED,
       base::BindOnce(&RequestSocketOnComplete, group_id_, &handle, &pool_,
@@ -610,12 +589,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleReset) {
 TEST_P(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleDelete) {
   TestCompletionCallback callback;
   auto handle = std::make_unique<ClientSocketHandle>();
-  int rv = handle->Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle->Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                   LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                   &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -680,12 +658,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_FALSE(handle.is_initialized());
   EXPECT_FALSE(handle.socket());
@@ -722,12 +699,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_FALSE(handle.is_initialized());
   EXPECT_FALSE(handle.socket());
@@ -752,12 +728,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_FALSE(handle.is_initialized());
   EXPECT_FALSE(handle.socket());
@@ -780,12 +755,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, IPv4HasNoFallback) {
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_FALSE(handle.is_initialized());
   EXPECT_FALSE(handle.socket());
@@ -818,12 +792,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, IPv6InstantFail) {
   host_resolver_->set_synchronous_mode(true);
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsOk());
   ASSERT_TRUE(handle.socket());
 
@@ -851,12 +824,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_FALSE(handle.socket());
 
@@ -884,12 +856,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   ASSERT_FALSE(handle.socket());
 
@@ -933,12 +904,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   TestCompletionCallback callback;
   ClientSocketHandle handle;
   base::TimeTicks start(base::TimeTicks::Now());
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_CONNECTION_FAILED));
@@ -982,12 +952,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, Suspend) {
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_IO_SUSPENDED));
   EXPECT_THAT(handle.connection_attempts(),
               testing::ElementsAre(
@@ -1014,12 +983,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(callback.GetResult(rv), IsError(ERR_NETWORK_IO_SUSPENDED));
   EXPECT_THAT(handle.connection_attempts(),
               testing::ElementsAre(
@@ -1048,12 +1016,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, OverallTimeoutApplies) {
   TestCompletionCallback callback;
   ClientSocketHandle handle;
 
-  int rv = handle.Init(
-      group_id_, params_,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      std::nullopt /* proxy_annotation_tag */, LOW, SocketTag(),
-      ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-      ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
+  int rv =
+      handle.Init(group_id_, params_, std::nullopt /* proxy_annotation_tag */,
+                  LOW, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+                  callback.callback(), ClientSocketPool::ProxyAuthCallback(),
+                  &pool_, NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Wait until just before the expected timeout, and check that the request
@@ -1335,13 +1302,11 @@ TEST_P(WebSocketTransportClientSocketPoolTest, NetworkAnonymizationKey) {
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkAnonymizationKey,
       SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
   EXPECT_THAT(
-      handle.Init(
-          group_id, params_,
-          MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-          std::nullopt /* proxy_annotation_tag */, kDefaultPriority,
-          SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-          callback.callback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-          NetLogWithSource()),
+      handle.Init(group_id, params_, std::nullopt /* proxy_annotation_tag */,
+                  kDefaultPriority, SocketTag(),
+                  ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
+                  ClientSocketPool::ProxyAuthCallback(), &pool_,
+                  NetLogWithSource()),
       IsError(ERR_IO_PENDING));
 
   ASSERT_EQ(1u, host_resolver_->last_id());

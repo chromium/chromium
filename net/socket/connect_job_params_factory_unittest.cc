@@ -361,7 +361,6 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpoint) {
   const url::SchemeHostPort kEndpoint(url::kHttpScheme, "test", 82);
   ConnectJobParams params = ConstructConnectJobParams(
       kEndpoint, ProxyChain::Direct(),
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
@@ -382,7 +381,6 @@ TEST_P(ConnectJobParamsFactoryTest, UnencryptedEndpointWithoutScheme) {
       /*using_ssl=*/false, HostPortPair("test", 82)};
   ConnectJobParams params = ConstructConnectJobParams(
       kEndpoint, ProxyChain::Direct(),
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       /*proxy_annotation_tag=*/std::nullopt,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
@@ -407,9 +405,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpoint) {
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 82);
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, ProxyChain::Direct(),
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -439,9 +435,7 @@ TEST_P(ConnectJobParamsFactoryTest, EncryptedEndpointWithoutScheme) {
   const ConnectJobFactory::SchemelessEndpoint kEndpoint{
       /*using_ssl=*/true, HostPortPair("test", 4433)};
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, ProxyChain::Direct(),
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -470,9 +464,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxy) {
   ProxyChain proxy_chain = ProxyChain::FromSchemeHostAndPort(
       ProxyServer::SCHEME_HTTPS, "proxy", 443);
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -513,9 +505,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaQuicProxy) {
                                          443),
   });
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -544,9 +534,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxy) {
   ProxyChain proxy_chain = ProxyChain::FromSchemeHostAndPort(
       ProxyServer::SCHEME_HTTPS, "proxy", 443);
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -600,9 +588,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxy) {
                                          443),
   });
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -637,9 +623,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpProxy) {
   ProxyChain proxy_chain =
       ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP, "proxy", 80);
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -678,9 +662,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaSOCKSProxy) {
   ProxyChain proxy_chain = ProxyChain::FromSchemeHostAndPort(
       ProxyServer::SCHEME_SOCKS4, "proxy", 999);
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -713,9 +695,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaSOCKSProxy) {
   ProxyChain proxy_chain = ProxyChain::FromSchemeHostAndPort(
       ProxyServer::SCHEME_SOCKS5, "proxy", 999);
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -754,9 +734,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpEndpointViaHttpsProxyViaHttpsProxy) {
                                          443),
   });
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -822,9 +800,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaHttpsProxy) {
                                          443),
   });
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -898,9 +874,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaHttpsProxyViaQuicProxy) {
                                          443),
   });
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -958,9 +932,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaQuicProxyViaQuicProxy) {
                                          443),
   });
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),
@@ -1004,9 +976,7 @@ TEST_P(ConnectJobParamsFactoryTest, HttpsEndpointViaMixedProxyChain) {
                                          443),
   });
   ConnectJobParams params = ConstructConnectJobParams(
-      kEndpoint, proxy_chain,
-      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-      TRAFFIC_ANNOTATION_FOR_TESTS,
+      kEndpoint, proxy_chain, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*allowed_bad_certs=*/{}, alpn_mode(),
       /*force_tunnel=*/false, privacy_mode(), OnHostResolutionCallback(),
       kEndpointNak, secure_dns_policy(), disable_cert_network_fetches(),

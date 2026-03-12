@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "net/http/http_stream_factory.h"
 
 #include <stdint.h>
@@ -68,7 +69,6 @@
 #include "net/socket/connect_job.h"
 #include "net/socket/mock_client_socket_pool_manager.h"
 #include "net/socket/next_proto.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 // This file can be included from net/http even though
 // it is in net/websockets because it doesn't
 // introduce any link dependency to net/websockets.
@@ -501,7 +501,6 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
@@ -517,7 +516,6 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
   int RequestSockets(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
       ClientSocketPool::PreconnectCompletionCallback callback,
@@ -2053,11 +2051,9 @@ TEST_P(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
         /*disable_cert_network_fetches=*/false);
     int rv = connection->Init(
-        group_id, socket_params,
-        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        /*proxy_annotation_tag=*/std::nullopt, MEDIUM, SocketTag(),
-        ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
-        ClientSocketPool::ProxyAuthCallback(),
+        group_id, socket_params, std::nullopt /* proxy_annotation_tag */,
+        MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+        callback.callback(), ClientSocketPool::ProxyAuthCallback(),
         session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                ProxyChain::Direct()),
         NetLogWithSource());
