@@ -2007,7 +2007,6 @@ if (is_android) {
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/engagement",
-      "//chrome/browser/engagement:impl",
       "//chrome/browser/enterprise/data_controls",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/glic:browser_tests",

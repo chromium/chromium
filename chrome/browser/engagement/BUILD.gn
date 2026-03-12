@@ -4,8 +4,11 @@
 
 source_set("engagement") {
   sources = [
+    "history_aware_site_engagement_service.cc",
     "history_aware_site_engagement_service.h",
+    "important_sites_util.cc",
     "important_sites_util.h",
+    "site_engagement_service_factory.cc",
     "site_engagement_service_factory.h",
   ]
   public_deps = [
@@ -16,17 +19,8 @@ source_set("engagement") {
     "//components/site_engagement/content",
     "//url",
   ]
-}
-
-source_set("impl") {
-  sources = [
-    "history_aware_site_engagement_service.cc",
-    "important_sites_util.cc",
-    "site_engagement_service_factory.cc",
-  ]
 
   deps = [
-    ":engagement",
     "//chrome/browser/bookmarks",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/history",
@@ -43,11 +37,6 @@ source_set("impl") {
     "//net",
     "//third_party/abseil-cpp:absl",
   ]
-
-  # Standard for impl targets; provides access to browser headers (e.g.
-  # installable_utils.h) via allow_circular_includes_from set in
-  # chrome/browser/BUILD.gn.
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("unit_tests") {
@@ -62,7 +51,6 @@ source_set("unit_tests") {
 
   deps = [
     ":engagement",
-    ":impl",
     "//chrome/browser/bookmarks",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/history",

@@ -1324,10 +1324,6 @@ static_library("browser") {
     "//chrome/browser/content_settings:content_settings_util_impl",
     "//chrome/browser/content_settings:impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependency when
-    # c/b/webapps/installable/installable_utils.h gets componentized.
-    "//chrome/browser/engagement:impl",
-
     # TODO(crbug.com/353332589): Remove this circular dependency once the
     # following headers get componentized:
     # c/b/enterprise/browser_management/management_service_factory.h
@@ -1665,7 +1661,6 @@ static_library("browser") {
     "//chrome/browser/download",
     "//chrome/browser/download:status_text_builder_utils",
     "//chrome/browser/engagement",
-    "//chrome/browser/engagement:impl",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/enterprise/platform_auth:features",
