@@ -646,7 +646,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AddAccountToDevice.HostedDomainFetchDuration.{Status}"
-    units="ms" expires_after="2026-04-01">
+    units="ms" expires_after="2027-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>
