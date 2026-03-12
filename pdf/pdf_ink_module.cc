@@ -24,6 +24,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "pdf/draw_utils/page_boundary_intersect.h"
 #include "pdf/input_utils.h"
@@ -451,10 +452,10 @@ bool PdfInkModule::OnKeyDown(const blink::WebKeyboardEvent& event) {
     client_->StrokeStarted();
     current_tool_state_.emplace<TextHighlightState>();
     text_highlight_state().initiated_by_keyboard = true;
-    std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
+    base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
         undo_redo_model_.StartAdd();
-    CHECK(discards.has_value());
-    ApplyUndoRedoDiscards(discards.value());
+    CHECK(lowest_discard.has_value());
+    ApplyUndoRedoDiscards(lowest_discard.value());
   }
 
   text_highlight_state().highlight_strokes = GetTextSelectionAsStrokes();
@@ -782,10 +783,10 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   // Invalidate area around this one point.
   client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
 
-  std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
+  base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
       undo_redo_model_.StartAdd();
-  CHECK(discards.has_value());
-  ApplyUndoRedoDiscards(discards.value());
+  CHECK(lowest_discard.has_value());
+  ApplyUndoRedoDiscards(lowest_discard.value());
 
   // Remember this location and timestamp to support invalidating all of the
   // area between this location and the next position, and to possibly
@@ -954,10 +955,10 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
   CHECK(!state.erasing);
   state.erasing = true;
 
-  std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
+  base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
       undo_redo_model_.StartRemove();
-  CHECK(discards.has_value());
-  ApplyUndoRedoDiscards(discards.value());
+  CHECK(lowest_discard.has_value());
+  ApplyUndoRedoDiscards(lowest_discard.value());
 
   EraseHelper(position, page_index);
 
@@ -1140,10 +1141,10 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
     ApplyUndoRedoCommands(undo_redo_model_.Undo());
   }
 
-  std::optional<PdfInkUndoRedoModel::DiscardedAddCommands> discards =
+  base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
       undo_redo_model_.StartAdd();
-  CHECK(discards.has_value());
-  ApplyUndoRedoDiscards(discards.value());
+  CHECK(lowest_discard.has_value());
+  ApplyUndoRedoDiscards(lowest_discard.value());
 
   // Notifying the client will update the text selection.
   client_->OnTextOrLinkAreaClick(position, click_count);
@@ -1775,20 +1776,19 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
 }
 
 void PdfInkModule::ApplyUndoRedoDiscards(
-    const PdfInkUndoRedoModel::DiscardedAddCommands& discards) {
-  if (discards.empty()) {
+    std::optional<InkStrokeId> lowest_discard) {
+  if (!lowest_discard.has_value()) {
     return;
   }
 
-  // Although `discards` contain the full set of IDs to discard, only the first
-  // ID is needed here. This is because the `page_ink_strokes` values in
-  // `strokes_` are in sorted order. All elements in `page_ink_strokes` with the
-  // first ID or larger IDs can be discarded.
-  const InkStrokeId start_id = *discards.begin();
+  // `page_ink_strokes` values in `strokes_` are in sorted order, so all
+  // elements in `page_ink_strokes` with the start ID or larger IDs can be
+  // discarded.
   for (auto& [page_index, page_ink_strokes] : strokes_) {
-    // Find the first element in `page_ink_strokes` whose ID >= `start_id`.
+    // Find the first element in `page_ink_strokes` whose ID >=
+    // `lowest_discard.value()`.
     auto start = std::ranges::lower_bound(
-        page_ink_strokes, start_id, {},
+        page_ink_strokes, lowest_discard.value(), {},
         [](const FinishedStrokeState& state) { return state.id; });
     auto end = page_ink_strokes.end();
     for (auto it = start; it < end; ++it) {

@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "pdf/buildflags.h"
 #include "pdf/pdf_ink_ids.h"
@@ -60,12 +61,6 @@ class PdfInkUndoRedoModel {
 
   using Commands = std::variant<std::monostate, AddCommands, RemoveCommands>;
 
-  // Set of IDs used for drawing to discard. This does not use `IdType`, because
-  // model shapes are pre-existing and cannot be discarded.
-  // TODO(crbug.com/408976048): Use a different ID type to support text
-  // annotations.
-  using DiscardedAddCommands = std::set<InkStrokeId>;
-
   PdfInkUndoRedoModel();
   PdfInkUndoRedoModel(const PdfInkUndoRedoModel&) = delete;
   PdfInkUndoRedoModel& operator=(const PdfInkUndoRedoModel&) = delete;
@@ -74,20 +69,28 @@ class PdfInkUndoRedoModel {
   // For all Add / Remove methods:
   // - The expected usage is: 1 StartOp call, any number of Op(Variant) calls,
   //   1 FinishOp call.
-  // - StartOp returns a non-null, but possible empty value on success. Returns
-  //   nullopt if any requirements are not met.
+  // - StartOp returns the lowest annotation ID among added elements to discard,
+  //   or nullopt if there are no elements to discard on success. Returns
+  //   `std::monostate` if any requirements are not met.
   // - Op(Variant) and FinishOp return true on success. Return false if any
   //   requirements are not met.
-  // - Must not return false in production code. Returning false is only allowed
-  //   in tests to check failure modes without resorting to death tests.
+  // - Must not return `std::monostate` or false in production code. Returning
+  //   `std::monostate` or false is only allowed in tests to check failure modes
+  //   without resorting to death tests.
 
   // Starts recording add commands. If the current commands stack position is
   // not at the top of the stack, then this discards all entries from the
-  // current position to the top of the stack. The caller can discard its
-  // entries with IDs that match the returned values.
+  // current position to the top of the stack. Returns the lowest annotation ID
+  // among added elements to discard. Since IDs are added in increasing order,
+  // all elements with the same ID or larger IDs can be discarded. This does not
+  // return `InkModeledShapeId`, because model shapes are pre-existing and
+  // cannot be discarded.
+  // TODO(crbug.com/408976048): Use a different ID type to support text
+  // annotations.
   // Must be called before Add().
   // Must not be called while another add/remove has been started.
-  [[nodiscard]] std::optional<DiscardedAddCommands> StartAdd();
+  [[nodiscard]] base::expected<std::optional<InkStrokeId>, std::monostate>
+  StartAdd();
   // Records adding an annotation identified by `id`.
   // Must be called between StartAdd() and FinishAdd().
   // Callers must ensure that IDs added are in increasing order.
@@ -100,11 +103,17 @@ class PdfInkUndoRedoModel {
 
   // Starts recording remove commands. If the current commands stack position is
   // not at the top of the stack, then this discards all entries from the
-  // current position to the top of the stack. The caller can discard its
-  // entries with IDs that match the returned values.
+  // current position to the top of the stack. Returns the lowest annotation ID
+  // among added elements to discard. Since IDs are added in increasing order,
+  // all elements with the same ID or larger IDs can be discarded. This does not
+  // return `InkModeledShapeId`, because model shapes are pre-existing and
+  // cannot be discarded.
+  // TODO(crbug.com/408976048): Use a different ID type to support text
+  // annotations.
   // Must be called before Remove().
   // Must not be called while another add/remove has been started.
-  [[nodiscard]] std::optional<DiscardedAddCommands> StartRemove();
+  [[nodiscard]] base::expected<std::optional<InkStrokeId>, std::monostate>
+  StartRemove();
   // Records erasing an annotation identified by `id`.
   // Must be called between StartRemove() and FinishRemove().
   // `id` must not be in any `RemoveCommands` on the commands stack.
@@ -129,7 +138,7 @@ class PdfInkUndoRedoModel {
 
  private:
   template <typename T>
-  std::optional<DiscardedAddCommands> StartImpl();
+  base::expected<std::optional<InkStrokeId>, std::monostate> StartImpl();
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
   bool HasIdInAddCommands(IdType id) const;

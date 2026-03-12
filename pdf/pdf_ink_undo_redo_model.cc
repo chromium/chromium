@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
+#include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 
 namespace chrome_pdf {
@@ -37,7 +38,7 @@ PdfInkUndoRedoModel::PdfInkUndoRedoModel() = default;
 
 PdfInkUndoRedoModel::~PdfInkUndoRedoModel() = default;
 
-std::optional<PdfInkUndoRedoModel::DiscardedAddCommands>
+base::expected<std::optional<InkStrokeId>, std::monostate>
 PdfInkUndoRedoModel::StartAdd() {
   return StartImpl<AddCommands>();
 }
@@ -98,7 +99,7 @@ bool PdfInkUndoRedoModel::FinishAdd() {
   return true;
 }
 
-std::optional<PdfInkUndoRedoModel::DiscardedAddCommands>
+base::expected<std::optional<InkStrokeId>, std::monostate>
 PdfInkUndoRedoModel::StartRemove() {
   return StartImpl<RemoveCommands>();
 }
@@ -226,29 +227,29 @@ PdfInkUndoRedoModel::GetRemoveCommands(const Commands& commands) {
 }
 
 template <typename T>
-std::optional<PdfInkUndoRedoModel::DiscardedAddCommands>
+base::expected<std::optional<InkStrokeId>, std::monostate>
 PdfInkUndoRedoModel::StartImpl() {
   CHECK(!commands_stack_.empty());
   CHECK_LT(stack_position_, commands_stack_.size());
 
-  DiscardedAddCommands discarded_commands;
+  std::optional<InkStrokeId> lowest_discard;
   auto& commands = commands_stack_[stack_position_];
   const bool has_commands = GetCommandsType(commands) != CommandsType::kNone;
   if (stack_position_ == commands_stack_.size() - 1) {
     if (has_commands) {
       // Cannot start when adding/removing already started.
-      return std::nullopt;
+      return base::unexpected(std::monostate());
     }
   } else {
     CHECK(has_commands);  // Invariant 2.
 
-    // Record the add commands to discard.
+    // Find the lowest add command to discard.
     for (size_t i = stack_position_; i < commands_stack_.size(); ++i) {
       if (GetCommandsType(commands_stack_[i]) == CommandsType::kAdd) {
-        for (IdType id : GetAddCommands(commands_stack_[i]).value()) {
-          bool inserted =
-              discarded_commands.insert(std::get<InkStrokeId>(id)).second;
-          CHECK(inserted);
+        const IdSet& id_set = GetAddCommands(commands).value();
+        if (!id_set.empty()) {
+          lowest_discard = std::get<InkStrokeId>(*id_set.begin());
+          break;
         }
       }
     }
@@ -266,7 +267,7 @@ PdfInkUndoRedoModel::StartImpl() {
   // Safe to reuse `commands`, which references an element inside of
   // `commands_stack_`. See note above the resize() call regarding safety.
   commands = T();
-  return discarded_commands;
+  return lowest_discard;
 }
 
 bool PdfInkUndoRedoModel::IsAtTopOfStackWithGivenCommandType(
