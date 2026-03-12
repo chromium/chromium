@@ -636,9 +636,11 @@ allow_unsafe = false
 
 [crate.strum.extra_kv]
 allow_unsafe = false
+multiversion_cleanup_bug = "https://crbug.com/491518606"
 
 [crate.strum_macros.extra_kv]
 allow_unsafe = false
+multiversion_cleanup_bug = "https://crbug.com/491518606"
 
 [crate.subtle.extra_kv]
 allow_unsafe = false
