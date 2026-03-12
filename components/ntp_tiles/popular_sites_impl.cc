@@ -60,8 +60,6 @@ namespace {
 
 const char kPopularSitesURLFormat[] =
     "https://www.gstatic.com/%ssuggested_sites_%s_%s.json";
-const char kPopularSitesURLFormatWithArm[] =
-    "https://www.gstatic.com/%ssuggested_sites_%s_%s_%d.json";
 const char kPopularSitesDefaultDirectory[] = "chrome/ntp/";
 const char kPopularSitesDefaultCountryCode[] = "DEFAULT";
 const char kPopularSitesDefaultVersion[] = "5";
@@ -86,15 +84,6 @@ GURL GetPopularSitesURL(const std::string& directory,
 
   return GURL(base::StringPrintf(kPopularSitesURLFormat, directory.c_str(),
                                  country.c_str(), version.c_str()));
-}
-
-GURL GetPopularSitesURLWithArm(const std::string& directory,
-                               const std::string& country,
-                               const std::string& version,
-                               int arm) {
-  return GURL(base::StringPrintf(kPopularSitesURLFormatWithArm,
-                                 directory.c_str(), country.c_str(),
-                                 version.c_str(), arm));
 }
 
 // Extract the country from the default search engine if the default search
@@ -406,19 +395,9 @@ GURL PopularSitesImpl::GetURLToFetch() {
 
   const GURL override_url =
       GURL(prefs_->GetString(prefs::kPopularSitesOverrideURL));
-  if (override_url.is_valid()) {
-    return override_url;
-  }
-
-  if (base::FeatureList::IsEnabled(kPopularSitesRefreshUs)) {
-    int arm = kPopularSitesRefreshUsArm.Get();
-    if (arm >= 1 && arm <= 3 &&
-        (country == "US" || country == kPopularSitesDefaultCountryCode)) {
-      return GetPopularSitesURLWithArm(directory, country, version, arm);
-    }
-  }
-
-  return GetPopularSitesURL(directory, country, version);
+  return override_url.is_valid()
+             ? override_url
+             : GetPopularSitesURL(directory, country, version);
 }
 
 std::string PopularSitesImpl::GetDirectoryToFetch() {

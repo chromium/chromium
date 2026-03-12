@@ -21,9 +21,4 @@ BASE_FEATURE(kNtpMostLikelyFaviconsFromServerFeature,
              "NTPMostLikelyFaviconsFromServer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPopularSitesRefreshUs, base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kPopularSitesRefreshUsArm{&kPopularSitesRefreshUs,
-                                                        "arm", 0};
-
 }  // namespace ntp_tiles
