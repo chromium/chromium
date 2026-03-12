@@ -20,7 +20,8 @@ import './secure_dns_v2.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
-import {SecureDnsMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import type {PrivacyPageBrowserProxy, SecureDnsSetting} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
+import {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -208,13 +209,19 @@ export class SettingsSecurityPageV2Element extends
         value: JavascriptOptimizerSetting,
       },
 
+      isSecureDnsManagedByProxy_: {
+        type: Boolean,
+        value: false,
+      },
+
       shouldHideBundles_: {
         type: Boolean,
         computed: 'computeShouldHideBundles_(' +
             'prefs.generated.safe_browsing.*, ' +
             'prefs.dns_over_https.mode.*, ' +
             'prefs.generated.javascript_optimizer.*, ' +
-            'enableBundledSecuritySettingsSecureDnsV2_)',
+            'enableBundledSecuritySettingsSecureDnsV2_, ' +
+            'isSecureDnsManagedByProxy_)',
       },
     };
   }
@@ -250,6 +257,7 @@ export class SettingsSecurityPageV2Element extends
   declare private javascriptGuardrailsStateTextMap_: Object;
   declare private safeBrowsingOff_: SafeBrowsingSetting[];
   declare private safeBrowsingStateTextMap_: Object;
+  declare private isSecureDnsManagedByProxy_: boolean;
   declare private shouldHideBundles_: boolean;
 
   private lastFocusTime_: number|undefined;
@@ -259,10 +267,23 @@ export class SettingsSecurityPageV2Element extends
   private securitySettingsBundleStateOnOpen_: SecuritySettingsBundleSetting;
   private isRouteSecurity_: boolean = true;
   private eventTracker_: EventTracker = new EventTracker();
+  private browserProxy_: PrivacyPageBrowserProxy =
+      PrivacyPageBrowserProxyImpl.getInstance();
   private hatsBrowserProxy_: HatsBrowserProxy =
       HatsBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.browserProxy_.getSecureDnsSetting().then(
+        (setting: SecureDnsSetting) => this.onSecureDnsPrefsChanged_(setting));
+
+    this.addWebUiListener(
+        'secure-dns-setting-changed',
+        (setting: SecureDnsSetting) => this.onSecureDnsPrefsChanged_(setting));
+  }
 
   override ready() {
     super.ready();
@@ -326,6 +347,11 @@ export class SettingsSecurityPageV2Element extends
    */
   private onFocus_() {
     this.lastFocusTime_ = this.hatsBrowserProxy_.now();
+  }
+
+  private onSecureDnsPrefsChanged_(setting: SecureDnsSetting) {
+    this.isSecureDnsManagedByProxy_ =
+        setting.managementMode !== SecureDnsUiManagementMode.NO_OVERRIDE;
   }
 
   /**
@@ -647,10 +673,12 @@ export class SettingsSecurityPageV2Element extends
       return true;
     }
 
-    if (this.enableBundledSecuritySettingsSecureDnsV2_ &&
-        this.getPref('dns_over_https.mode').enforcement ===
-            chrome.settingsPrivate.Enforcement.ENFORCED) {
-      return true;
+    if (this.enableBundledSecuritySettingsSecureDnsV2_) {
+      if (this.getPref('dns_over_https.mode').enforcement ===
+              chrome.settingsPrivate.Enforcement.ENFORCED ||
+          this.isSecureDnsManagedByProxy_) {
+        return true;
+      }
     }
 
     if (this.getPref('generated.javascript_optimizer').enforcement ===
