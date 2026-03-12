@@ -69,10 +69,11 @@ declare global {
 customElements.define(TestError5Element.is, TestError5Element);
 
 // Case1.6: Class with
-//  1) Incorrect order method definition order
-//  2) Usage of this.dispatchEvent(new CustomEvent(...))
-//  3) Usage of incorrect dollar sign notation.
-//  4) Usage of CustomEvent type without a type parameter.
+//  1) Inconsistent DOM name suffix.
+//  2) Incorrect order method definition order
+//  3) Usage of this.dispatchEvent(new CustomEvent(...))
+//  4) Usage of incorrect dollar sign notation.
+//  5) Usage of CustomEvent type without a type parameter.
 export class TestError6Element extends CrLitElement {
   override render() {
     return '';
@@ -83,7 +84,7 @@ export class TestError6Element extends CrLitElement {
   }
 
   static get is() {
-    return 'test-error6';
+    return 'test-error6-element';
   }
 
   static override get properties() {
@@ -132,7 +133,7 @@ export class TestError6Element extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'test-error6': TestError6Element;
+    'test-error6-element': TestError6Element;
   }
 }
 
@@ -203,6 +204,21 @@ declare global {
 }
 
 customElements.define(TestError10ElementFoo.is, TestError10ElementFoo);
+
+// Case1.11: Class with inconsistent class name.
+export class TestError11Element extends CrLitElement {
+  static get is() {
+    return 'test-other-error11';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'test-other-error11': TestError11Element;
+  }
+}
+
+customElements.define(TestError11Element.is, TestError11Element);
 
 
 /* Cases with no violations below. */

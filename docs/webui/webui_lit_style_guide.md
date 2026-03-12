@@ -374,7 +374,8 @@ export function getHtml(this: MyCrLitElement) {
 Where the pattern to derive the class and file names from the DOM name is
 
 * DOM name: `foo-bar-baz`
-* Class name candidates: `FooBarBazElement`, or `BarBazElement`, or `BazElement`
+* Class name candidates: `<OptionalPrefix>FooBarBazElement`, or `BarBazElement`,
+  or `BazElement`
 * File name candidates: `foo_bar_baz.{css,html,ts}`, `bar_baz.{css,html,ts}` or
   `baz.{css,html,ts}`,
 

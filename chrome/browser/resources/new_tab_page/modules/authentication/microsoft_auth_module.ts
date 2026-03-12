@@ -36,7 +36,7 @@ const MicrosoftAuthModuleElementBase = I18nMixinLit(CrLitElement);
  */
 export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
   static get is() {
-    return 'ntp-microsoft-authentication-module';
+    return 'ntp-microsoft-auth-module';
   }
 
   static override get styles() {
@@ -106,7 +106,7 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'ntp-microsoft-authentication-module': MicrosoftAuthModuleElement;
+    'ntp-microsoft-auth-module': MicrosoftAuthModuleElement;
   }
 }
 

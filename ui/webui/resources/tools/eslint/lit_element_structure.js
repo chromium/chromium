@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import assert from 'node:assert';
+import path from 'node:path';
 
 import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 
@@ -65,16 +66,6 @@ class ClassInfo {
         isCrLitElementSubclass(node, this.context.sourceCode.ast);
     if (!this.isLitElement) {
       return;
-    }
-
-    if (!node.id.name.endsWith('Element')) {
-      this.context.report({
-        node: node,
-        messageId: 'incorrectClassName',
-        data: {
-          className: node.id.name,
-        },
-      });
     }
 
     this.node = node;
@@ -275,6 +266,65 @@ class ClassInfo {
     });
   }
 
+  runConsistentClassDomNameCheck() {
+    if (!this.isLitElement) {
+      return;
+    }
+
+    if (!this.node.id.name.endsWith('Element')) {
+      this.context.report({
+        node: this.node,
+        messageId: 'incorrectClassNameSuffix',
+        data: {
+          className: this.node.id.name,
+        },
+      });
+      return;
+    }
+
+    if (this.domName === '') {
+      // Handle case where the element is used as a super class for other
+      // elements and has no DOM name.
+      return;
+    }
+
+    if (this.domName.endsWith('-element')) {
+      this.context.report({
+        node: this.node,
+        messageId: 'incorrectDomNameSuffix',
+        data: {
+          domName: this.domName,
+        },
+      });
+      return;
+    }
+
+    const domNameParts = this.domName.split('-');
+    const isClassNameConsistent = domNameParts.some((_, i) => {
+      const candidateSuffix =
+          dashCaseToCamelCase('-' + domNameParts.slice(i).join('-')) +
+          'Element';
+
+      // Allow a class name prefix that does not exist in the DOM name, only if
+      // all the DOM name parts are reflected in the class name.
+      return i === 0 ? this.node.id.name.endsWith(candidateSuffix) :
+                       candidateSuffix === this.node.id.name;
+    });
+
+    if (isClassNameConsistent) {
+      return;
+    }
+
+    this.context.report({
+      node: this.node,
+      messageId: 'inconsistentClassName',
+      data: {
+        className: this.node.id.name,
+        domName: this.domName,
+      },
+    });
+  }
+
   runMethodDefinitionOrderCheck() {
     if (!this.isLitElement || !this.node) {
       return;
@@ -319,8 +369,12 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
           'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...))..',
       useFireHelperWithEventName:
           'Use this.fire(...) instead of this.dispatchEvent(new CustomEvent(...)), for event \'{{eventName}}\'.',
-      incorrectClassName:
-          'CrLitElement subclass {{className}} should end with the \'Element\' suffix.',
+      incorrectClassNameSuffix:
+          'Class name \'{{className}}\' should end with the \'Element\' suffix.',
+      incorrectDomNameSuffix:
+          'DOM name \'{{domName}}\' should not end with the \'-element\' suffix.',
+      inconsistentClassName:
+          'Naming of class/dom pair {{className}} ↔ {{domName}} is inconsistent.',
       incorrectDollarSignNotation:
           'Use camelCase instead of dash-case for DOM ids, change this.$[\'{{dashCaseName}}\'] to this.$.{{camelCaseName}}.',
       incorrectMethodDefinitionOrder:
@@ -450,6 +504,7 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
         currentClassInfo.runMissingStaticIsGetterCheck();
         currentClassInfo.runMissingSuperCallsCheck();
         currentClassInfo.runMethodDefinitionOrderCheck();
+        currentClassInfo.runConsistentClassDomNameCheck();
       },
       ['Program > TSModuleDeclaration[kind=global] > TSModuleBlock > TSInterfaceDeclaration[id.name="HTMLElementTagNameMap"] > TSInterfaceBody > TSPropertySignature'](
           node) {

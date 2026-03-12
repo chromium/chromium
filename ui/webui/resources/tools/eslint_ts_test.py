@@ -241,7 +241,9 @@ class EslintTsTest(unittest.TestCase):
     self.assertTrue(_EXPECTED_STRING in str(context.exception))
 
     _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR = "Inconsistent method definition order in class %(className)s. Expected %(expectedOrder)s, found %(actualOrder)s"
-    _EXPECTED_INCORRECT_CLASS_NAME_ERROR = 'CrLitElement subclass %(className)s should end with the \'Element\' suffix'
+    _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR = 'Class name \'%(className)s\' should end with the \'Element\' suffix'
+    _EXPECTED_INCONSISTENT_CLASS_NAME_ERROR = 'Naming of class/dom pair %(className)s ↔ %(domName)s is inconsistent'
+    _EXPECTED_INCORRECT_DOM_NAME_SUFFIX_ERROR = 'DOM name \'%(domName)s\' should not end with the \'-element\' suffix'
     _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR = 'Use camelCase instead of dash-case for DOM ids, change this.$[\'%(dashCaseName)s\'] to this.$.%(camelCaseName)s'
     _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR = "Missing customElements.define(%(className)s.is, %(className)s) call"
     _EXPECTED_MISSING_STATIC_GET_IS_ERROR = "Missing 'static get is() {...}' for web component class %(className)s"
@@ -287,6 +289,9 @@ class EslintTsTest(unittest.TestCase):
             'lifecycleMethods': ', '.join(super_call_required_methods),
         },
         # Case 1.6
+        _EXPECTED_INCORRECT_DOM_NAME_SUFFIX_ERROR % {
+            'domName': 'test-error6-element',
+        },
         _EXPECTED_INCONSISTENT_METHOD_DEFINITION_ORDER_ERROR % {
             'className':
                 'TestError6Element',
@@ -315,20 +320,25 @@ class EslintTsTest(unittest.TestCase):
             'name': '_otherEvent',
         },
         # Case 1.7
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestError7ElementFoo',
         },
         # Case 1.8
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestError8ElementFoo',
         },
         # Case 1.9
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestError9ElementFoo',
         },
         # Case 1.10
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestError10ElementFoo',
+        },
+        # Case 1.11
+        _EXPECTED_INCONSISTENT_CLASS_NAME_ERROR % {
+            'className': 'TestError11Element',
+            'domName': 'test-other-error11',
         },
     ]
     for e in errors:
@@ -352,7 +362,7 @@ class EslintTsTest(unittest.TestCase):
             'className': 'TestNoError1Element',
             'lifecycleMethods': ', '.join(super_call_required_methods)
         },
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestNoError1Element',
         },
         # Case 2.2
@@ -370,10 +380,13 @@ class EslintTsTest(unittest.TestCase):
             'className': 'TestNoError2Element',
             'lifecycleMethods': ', '.join(super_call_required_methods),
         },
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestNoError2Element',
         },
         # Case 2.3
+        _EXPECTED_INCORRECT_DOM_NAME_SUFFIX_ERROR % {
+            'domName': 'test-no-error3',
+        },
         _EXPECTED_MISSING_STATIC_GET_IS_ERROR % {
             'className': 'TestNoError3Element',
         },
@@ -396,8 +409,12 @@ class EslintTsTest(unittest.TestCase):
             'actualOrder':
                 '',
         },
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestNoError3Element',
+        },
+        _EXPECTED_INCONSISTENT_CLASS_NAME_ERROR % {
+            'className': 'TestNoError3Element',
+            'domName': 'test-no-error3',
         },
         _EXPECTED_USE_FIRE_HELPER_WITH_EVENT_NAME_ERROR % {
             'eventName': 'bar-updated',
@@ -415,7 +432,7 @@ class EslintTsTest(unittest.TestCase):
             'name': '_otherEvent2',
         },
         # Case 2.4
-        _EXPECTED_INCORRECT_CLASS_NAME_ERROR % {
+        _EXPECTED_INCORRECT_CLASS_NAME_SUFFIX_ERROR % {
             'className': 'TestNoError4Element',
         },
     ]

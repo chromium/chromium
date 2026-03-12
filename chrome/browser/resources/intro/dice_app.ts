@@ -12,13 +12,13 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './dice_app.css.js';
 import {getHtml} from './dice_app.html.js';
 
-export interface DiceAppElement {
+export interface IntroAppElement {
   $: {
     viewManager: CrViewManagerElement,
   };
 }
 
-export class DiceAppElement extends CrLitElement {
+export class IntroAppElement extends CrLitElement {
   static get is() {
     return 'intro-app';
   }
@@ -55,8 +55,8 @@ export class DiceAppElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'intro-app': DiceAppElement;
+    'intro-app': IntroAppElement;
   }
 }
 
-customElements.define(DiceAppElement.is, DiceAppElement);
+customElements.define(IntroAppElement.is, IntroAppElement);

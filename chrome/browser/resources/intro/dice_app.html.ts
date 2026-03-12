@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {DiceAppElement} from './dice_app.js';
+import type {IntroAppElement} from './dice_app.js';
 
-export function getHtml(this: DiceAppElement) {
+export function getHtml(this: IntroAppElement) {
   return html`<!--_html_template_start_-->
 <cr-view-manager id="viewManager">
   <div id="splash" slot="view">

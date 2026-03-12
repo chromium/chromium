@@ -62,8 +62,8 @@ class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
         <li>List item 2</li>
       </ul>
       <span style="display: block;">Span text</span>
-      <help-bubble-mixin-container id="container-element">
-      </help-bubble-mixin-container>
+      <help-bubble-mixin-test-container id="container-element">
+      </help-bubble-mixin-test-container>
     </div>`;
   }
 
@@ -90,7 +90,7 @@ customElements.define(
 // HelpBubbleMixinTestContainerElement
 export class HelpBubbleMixinTestContainerElement extends CrLitElement {
   static get is() {
-    return 'help-bubble-mixin-container';
+    return 'help-bubble-mixin-test-container';
   }
 
   override render() {
