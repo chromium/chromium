@@ -615,9 +615,6 @@
   <message name="IDS_COUNTRY_DROPDOWN_TITLE" desc="Title of country selection dropdown menu" meaning="Small title near country dropdown menu suggesting that this is a country selector.">
     Country
   </message>
-  <message name="IDS_OOBE_WELCOME_NEXT_BUTTON_TEXT" desc="Text on 'Start to use ChromeOS' button" meaning="This is the text label displayed on the 'Next' button for the first ChromeOS initial device setup screen ('Welcome screen').">
-    Let's go
-  </message>
   <message name="IDS_OOBE_OK_BUTTON_TEXT" desc="Text on 'OK' button" meaning="This is 'OK' text for all 'OK' buttons on ChromeOS initial device setup screens.">
     OK
   </message>
@@ -710,28 +707,6 @@
   </message>
   <message name="IDS_TIMEZONE_DROPDOWN_LABEL" desc="Navigation label attached to the 'List of timezones' dropdown menu on ChromeOS Timezone initial device setup screen" meaning="The menu itself displays only current timezone name. But for accessibility mode we need full description of this menu. So this label suggests that activating a menu will allow to change current timezone.">
     Select timezone
-  </message>
-  <message name="IDS_OOBE_EULA_SECTION_TITLE" desc="Title of Terms of Service screen">
-    Google terms of service
-  </message>
-  <if expr="reven">
-    <message name="IDS_OOBE_EULA_IFRAME_LABEL" desc="Accessibility label on an iframe with full ChromeOS Terms text">
-      Google ChromeOS Flex Terms contents
-    </message>
-    <message name="IDS_OOBE_EULA_ADDITIONAL_TERMS" desc="Text of the Link to Google Chrome and ChromeOS additional terms">
-      Google Chrome and ChromeOS Flex Additional Terms
-    </message>
-  </if>
-  <if expr="not reven">
-    <message name="IDS_OOBE_EULA_IFRAME_LABEL" desc="Accessibility label on an iframe with full ChromeOS Terms text">
-      Google ChromeOS Terms contents
-    </message>
-    <message name="IDS_OOBE_EULA_ADDITIONAL_TERMS" desc="Text of the Link to Google Chrome and ChromeOS additional terms">
-      Google Chrome and ChromeOS Additional Terms
-    </message>
-  </if>
-  <message name="IDS_OOBE_EULA_ACCEPT_AND_CONTINUE_BUTTON_TEXT" desc="Label on a button on the Title of Terms of Service OOBE screen to accept EULA and continue.">
-    Accept and continue
   </message>
   <message name="IDS_OOBE_ACCESSIBLE_SCREEN_NAME" desc="Text that is spoken when requesting OOBE screen name">
     Login Dialog
