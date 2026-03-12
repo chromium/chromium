@@ -1,0 +1,15 @@
+Name: Mold Linker
+Short Name: mold
+Version: 2.40.4
+Update Mechanism: Manual
+License: MIT
+License File: LICENSE
+Security Critical: No
+Shipped: no
+URL: https://github.com/rui314/mold
+
+Description:
+A Linux linker optimized for speed.
+
+Local Modifications:
+None
