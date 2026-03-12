@@ -1,0 +1,16 @@
+<!--
+@AURALINUX-DENY:*
+@AURALINUX-ALLOW:NAME-CHANGED*
+-->
+<!DOCTYPE html>
+<button id="btn1" commandfor="menu" command="show-menu">Button 1</button>
+<menulist id="menu" style="display: block;">
+  <menuitem>Item</menuitem>
+</menulist>
+<script>
+  function go() {
+    // Verify that opening the popover invalidates the accessibility cache,
+    // causing the menulist to adopt its implicit name from the invoker.
+    document.getElementById('btn1').click();
+  }
+</script>

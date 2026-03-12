@@ -1,0 +1,7 @@
+[document web]
+++[section]
+++++[push button] name='Open Main Menu' label-for=[panel] name-from:contents
+++++[panel] name='Open Main Menu' labelled-by=[push button] name-from:related-element
+++++++[menu item] name='Submenu' label-for=[panel] name-from:contents
+++++[panel] name='Submenu' labelled-by=[menu item] name-from:related-element
+++++++[menu item] name='Item 1' name-from:contents

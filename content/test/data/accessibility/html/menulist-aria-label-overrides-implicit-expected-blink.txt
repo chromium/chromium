@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button name='Implicit Button Name' nameFrom=contents
+++++++++staticText name='Implicit Button Name' nameFrom=contents
+++++++++++inlineTextBox name='Implicit Button Name' nameFrom=contents
+++++++group name='Aria Label Name' nameFrom=attribute ispopup=auto
+++++++++menuItem name='Item' nameFrom=contents
+++++++++++staticText name='Item' nameFrom=contents
+++++++++++++inlineTextBox name='Item' nameFrom=contents

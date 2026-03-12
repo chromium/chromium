@@ -1,0 +1,5 @@
+[document web]
+++[section]
+++++[push button] name='Implicit Button Name' name-from:contents
+++++[panel] name='Aria Label Name' name-from:attribute
+++++++[menu item] name='Item' name-from:contents

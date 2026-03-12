@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button name='Open Menu' nameFrom=contents
+++++++++staticText name='Open Menu' nameFrom=contents
+++++++++++inlineTextBox name='Open Menu' nameFrom=contents
+++++++group name='Open Menu' nameFrom=relatedElement ispopup=auto
+++++++++menuItem name='Item 1' nameFrom=contents
+++++++++++staticText name='Item 1' nameFrom=contents
+++++++++++++inlineTextBox name='Item 1' nameFrom=contents

@@ -1406,4 +1406,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
   RunEventTest(FILE_PATH_LITERAL("carousel-with-links.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithExperimentalWebFeaturesTest,
+                       MenuListInvokerNameChange) {
+  RunEventTest(FILE_PATH_LITERAL("menulist-invoker-name-change.html"));
+}
+
 }  // namespace content

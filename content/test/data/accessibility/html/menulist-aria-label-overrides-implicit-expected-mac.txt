@@ -1,0 +1,5 @@
+AXWebArea
+++AXGroup
+++++AXButton AXTitle='Implicit Button Name'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Aria Label Name'
+++++++AXMenuItem AXTitle='Item'

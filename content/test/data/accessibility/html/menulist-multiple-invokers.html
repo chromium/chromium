@@ -1,0 +1,19 @@
+<!--
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:nameFrom=*
+@AURALINUX-ALLOW:name*
+@AURALINUX-ALLOW:labelled-by*
+@MAC-ALLOW:AXTitle
+@MAC-ALLOW:AXDescription
+-->
+<!DOCTYPE html>
+<button id="btn1" commandfor="menu" command="show-menu">Button 1</button>
+<button id="btn2" commandfor="menu" command="show-menu">Button 2</button>
+<menulist id="menu">
+  <menuitem>Item 1</menuitem>
+</menulist>
+<script>
+  window.addEventListener('load', () => {
+    btn2.click();
+  });
+</script>

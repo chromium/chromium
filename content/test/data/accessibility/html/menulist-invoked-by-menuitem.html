@@ -1,0 +1,24 @@
+<!--
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:nameFrom=*
+@AURALINUX-ALLOW:name*
+@AURALINUX-ALLOW:labelled-by*
+@MAC-ALLOW:AXTitle
+@MAC-ALLOW:AXDescription
+-->
+<!DOCTYPE html>
+<button id="btn" commandfor="main-menu" command="show-menu">Open Main Menu</button>
+<menulist id="main-menu">
+  <!-- Using toggle-menu is required because blink's GetInvokedSubmenu only creates a submenu relationship for toggle-menu.
+       If show-menu is used, the menuitem isn't recognized as a submenu invoker, and clicking it just closes the main menu. -->
+  <menuitem id="submenu-invoker" commandfor="submenu" command="toggle-menu">Submenu</menuitem>
+</menulist>
+<menulist id="submenu">
+  <menuitem>Item 1</menuitem>
+</menulist>
+<script>
+  window.addEventListener('load', () => {
+    btn.click();
+    document.getElementById('submenu-invoker').click();
+  });
+</script>

@@ -1,7 +1,7 @@
 [document web]
 ++[section]
-++++[push button] name='Show Menu'
-++++[panel]
+++++[push button] name='Show Menu' label-for=[panel]
+++++[panel] name='Show Menu' labelled-by=[push button]
 ++++++[panel]
 ++++++++[check menu item] name='Checkbox 1' checked checkable checkable:true
 ++++++++[check menu item] name='Checkbox 2' checkable checkable:true

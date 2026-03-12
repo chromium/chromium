@@ -1,8 +1,8 @@
 [document web] sensitive
 ++[section] sensitive
-++++[push button] name='Show Menu' sensitive details=[panel] details-from:popover-target
+++++[push button] name='Show Menu' sensitive label-for=[panel] details=[panel] details-from:popover-target
 ++++[menu item] name='Orphan Disabled'
-++++[panel] sensitive details-for=[push button]
+++++[panel] name='Show Menu' sensitive labelled-by=[push button] details-for=[push button]
 ++++++[menu item] name='Item 1' sensitive
 ++++++[menu item] name='Item 2'
 ++++++[panel] sensitive

@@ -1,0 +1,18 @@
+<!--
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:nameFrom=*
+@AURALINUX-ALLOW:name*
+@AURALINUX-ALLOW:labelled-by*
+@MAC-ALLOW:AXTitle
+@MAC-ALLOW:AXDescription
+-->
+<!DOCTYPE html>
+<button id="btn" commandfor="menu" command="show-menu">Implicit Button Name</button>
+<menulist id="menu" aria-label="Aria Label Name">
+  <menuitem>Item</menuitem>
+</menulist>
+<script>
+  window.addEventListener('load', () => {
+    btn.click();
+  });
+</script>

@@ -7,7 +7,7 @@ rootWebArea
 ++++++menuItem name='Orphan Disabled' restriction=disabled
 ++++++++staticText name='Orphan Disabled'
 ++++++++++inlineTextBox name='Orphan Disabled'
-++++++group ispopup=auto
+++++++group name='Show Menu' ispopup=auto
 ++++++++menuItem name='Item 1'
 ++++++++++staticText name='Item 1'
 ++++++++++++inlineTextBox name='Item 1'
