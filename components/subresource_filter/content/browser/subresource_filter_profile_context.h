@@ -45,17 +45,12 @@ class SubresourceFilterProfileContext : public KeyedService {
 
   ~SubresourceFilterProfileContext() override;
 
-  SubresourceFilterContentSettingsManager* settings_manager() {
-    return settings_manager_.get();
-  }
-
-  AdsInterventionManager* ads_intervention_manager() {
-    return ads_intervention_manager_.get();
-  }
-
-  content_settings::CookieSettings* cookie_settings() {
-    return cookie_settings_.get();
-  }
+  // Accessors for the owned objects. The objects become invalid when
+  // Shutdown() is called and it is invalid to call the methods after
+  // the call to Shutdown().
+  SubresourceFilterContentSettingsManager* settings_manager();
+  AdsInterventionManager* ads_intervention_manager();
+  content_settings::CookieSettings* cookie_settings();
 
   // Can be used to attach an embedder-level object to this object. Can only be
   // invoked once. |embedder_data| will be destroyed before the other objects
@@ -66,17 +61,11 @@ class SubresourceFilterProfileContext : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  std::unique_ptr<SubresourceFilterContentSettingsManager> settings_manager_;
+  // Stores the objects owned by this instance, ensuring the correct
+  // construction and destruction orders.
+  class Storage;
 
-  // Manages ads interventions that have been triggered on previous
-  // navigations.
-  std::unique_ptr<AdsInterventionManager> ads_intervention_manager_;
-
-  scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-
-  // NOTE: Declared after the objects above to ensure that it is destroyed
-  // before them.
-  std::unique_ptr<EmbedderData> embedder_data_;
+  std::unique_ptr<Storage> storage_;
 };
 
 }  // namespace subresource_filter
