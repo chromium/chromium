@@ -38,7 +38,7 @@
   newCopy.commandHandler = self.commandHandler;
   newCopy.incognitoAvailable = self.incognitoAvailable;
   newCopy.index = self.index;
-  newCopy.menuElementsProvider = self.menuElementsProvider;
+  newCopy.actionsProvider = self.actionsProvider;
   return newCopy;
 }
 

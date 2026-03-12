@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 
-@protocol ContentSuggestionsMenuElementsProvider;
+@protocol ContentSuggestionsActionsProvider;
 @class FaviconView;
 @protocol MagicStackModuleContentViewDelegate;
 
@@ -26,8 +26,8 @@
 @property(nonatomic, strong, readonly) FaviconView* faviconView;
 
 // Provider of menu actions for this tile.
-@property(nonatomic, weak) id<ContentSuggestionsMenuElementsProvider>
-    menuElementsProvider;
+@property(nonatomic, weak) id<ContentSuggestionsActionsProvider>
+    actionsProvider;
 
 // Tap gesture recognizer for this view.
 @property(nonatomic, strong) UITapGestureRecognizer* tapRecognizer;

@@ -30,8 +30,8 @@ source_set("ui") {
 
 source_set("public") {
   sources = [
+    "content_suggestions_actions_provider.h",
     "content_suggestions_image_data_source.h",
-    "content_suggestions_menu_elements_provider.h",
     "content_suggestions_view_controller_audience.h",
     "user_account_image_update_delegate.h",
   ]

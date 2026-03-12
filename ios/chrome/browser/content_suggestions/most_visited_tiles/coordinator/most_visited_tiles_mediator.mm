@@ -36,9 +36,9 @@
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/content_suggestions_tile_saver.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_actions_provider.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_menu_elements_provider.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
@@ -98,7 +98,7 @@ GURL GetValidUrl(NSString* urlString) {
 
 }  // namespace
 
-@interface MostVisitedTilesMediator () <ContentSuggestionsMenuElementsProvider,
+@interface MostVisitedTilesMediator () <ContentSuggestionsActionsProvider,
                                         MostVisitedSitesObserving>
 @end
 
@@ -221,7 +221,7 @@ GURL GetValidUrl(NSString* urlString) {
     item.commandHandler = self;
     item.incognitoAvailable = _incognitoAvailable;
     item.index = index;
-    item.menuElementsProvider = self;
+    item.actionsProvider = self;
     index++;
     [_freshMostVisitedItems addObject:item];
   }
@@ -281,81 +281,6 @@ GURL GetValidUrl(NSString* urlString) {
   _URLLoadingBrowserAgent->Load(params);
 }
 
-- (void)openNewTabWithMostVisitedItem:(MostVisitedItem*)item
-                            incognito:(BOOL)incognito
-                              atIndex:(NSInteger)index
-                            fromPoint:(CGPoint)point {
-  if (incognito && IsIncognitoModeDisabled(_prefService)) {
-    // This should only happen when the policy changes while the option is
-    // presented.
-    return;
-  }
-  [self logMostVisitedOpening:item atIndex:index];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:point];
-}
-
-- (void)openNewTabWithMostVisitedItem:(MostVisitedItem*)item
-                            incognito:(BOOL)incognito
-                              atIndex:(NSInteger)index {
-  if (incognito && IsIncognitoModeDisabled(_prefService)) {
-    // This should only happen when the policy changes while the option is
-    // presented.
-    return;
-  }
-  [self logMostVisitedOpening:item atIndex:index];
-  [self openNewTabWithURL:item.URL incognito:incognito originPoint:CGPointZero];
-}
-
-- (void)openNewTabWithMostVisitedItem:(MostVisitedItem*)item
-                            incognito:(BOOL)incognito {
-  [self openNewTabWithMostVisitedItem:item
-                            incognito:incognito
-                              atIndex:item.index];
-}
-
-- (void)pinOrUnpinMostVisited:(MostVisitedItem*)item {
-  GURL url = item.URL;
-  __weak MostVisitedTilesMediator* weakSelf = self;
-  if (_mostVisitedSites->HasCustomLink(url)) {
-    // Remove the custom link.
-    if (_mostVisitedSites->DeleteCustomLink(url)) {
-      [self showSnackbarWithMessage:
-                l10n_util::GetNSString(
-                    IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_UNPINNED)
-                         undoAction:^{
-                           [weakSelf undoLastPinAction];
-                           RecordSnackbarUndoUserAction(/*undo_pin=*/NO);
-                         }];
-    }
-    return;
-  }
-  if (!_mostVisitedSites->AddCustomLink(url,
-                                        base::SysNSStringToUTF16(item.title))) {
-    return;
-  }
-  _engagementTracker->NotifyEvent(
-      feature_engagement::events::kIOSPinMVTSiteUsed);
-  // Show snackbar message.
-  [self showSnackbarWithMessage:
-            l10n_util::GetNSString(
-                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED)
-                     undoAction:^{
-                       [weakSelf undoLastPinAction];
-                       RecordSnackbarUndoUserAction(/*undo_pin=*/YES);
-                     }];
-}
-
-- (void)removeMostVisited:(MostVisitedItem*)item {
-  [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
-  [self blockMostVisitedURL:item.URL];
-  __weak MostVisitedTilesMediator* weakSelf = self;
-  [self showSnackbarWithMessage:l10n_util::GetNSString(
-                                    IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)
-                     undoAction:^{
-                       [weakSelf allowMostVisitedURL:item.URL];
-                     }];
-}
-
 - (void)moveMostVisitedItem:(MostVisitedItem*)item toIndex:(NSUInteger)index {
   _mostVisitedSites->ReorderCustomLink(item.URL, index);
   RecordReorderUserAction();
@@ -366,85 +291,36 @@ GURL GetValidUrl(NSString* urlString) {
   RecordAddSiteUserAction();
 }
 
-- (void)openModalToEditPinnedSite:(MostVisitedItem*)item {
-  [self.contentSuggestionsHandler showPinnedSiteEditorForItem:item];
-}
-
-#pragma mark - ContentSuggestionsMenuProvider
+#pragma mark - ContentSuggestionsActionsProvider
 
 - (NSArray<UIMenuElement*>*)defaultContextMenuElementsForItem:
                                 (MostVisitedItem*)item
                                                      fromView:(UIView*)view {
   // Record that this context menu was shown to the user.
   RecordMenuShown(kMenuScenarioHistogramMostVisitedEntry);
+  return [self actionsForItem:item fromView:view];
+}
 
-  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-
-  CGPoint centerPoint = [view.superview convertPoint:view.center toView:nil];
-
-  __weak MostVisitedTilesMediator* weakSelf = self;
-  [menuElements addObject:[self.actionFactory actionToOpenInNewTabWithBlock:^{
-                  [weakSelf openNewTabWithMostVisitedItem:item
-                                                incognito:NO
-                                                  atIndex:item.index
-                                                fromPoint:centerPoint];
-                }]];
-
-  UIAction* incognitoAction =
-      [self.actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
-        [weakSelf openNewTabWithMostVisitedItem:item
-                                      incognito:YES
-                                        atIndex:item.index
-                                      fromPoint:centerPoint];
-      }];
-
-  if (IsIncognitoModeDisabled(_prefService)) {
-    // Disable the "Open in Incognito" option if the incognito mode is
-    // disabled.
-    incognitoAction.attributes = UIMenuElementAttributesDisabled;
-  }
-
-  [menuElements addObject:incognitoAction];
-
-  if (base::ios::IsMultipleScenesSupported()) {
-    UIAction* newWindowAction = [self.actionFactory
-        actionToOpenInNewWindowWithURL:item.URL
-                        activityOrigin:WindowActivityContentSuggestionsOrigin];
-    [menuElements addObject:newWindowAction];
-  }
-
-  CrURL* URL = [[CrURL alloc] initWithGURL:item.URL];
-  [menuElements addObject:[self.actionFactory actionToCopyURL:URL]];
-
-  [menuElements addObject:[self.actionFactory actionToShareWithBlock:^{
-                  [weakSelf.contentSuggestionsDelegate shareURL:item.URL
-                                                          title:item.title
-                                                       fromView:view];
-                }]];
-  if (item.isPinned) {
-    CHECK(IsContentSuggestionsCustomizable(), base::NotFatalUntil::M148);
-    [menuElements
-        addObject:[self.actionFactory
-                      actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
-                        [weakSelf openModalToEditPinnedSite:item];
-                      }]];
-    [menuElements addObject:[self.actionFactory
-                                actionToUnpinSiteFromMostVisitedTileWithBlock:^{
-                                  [weakSelf pinOrUnpinMostVisited:item];
-                                }]];
-  } else {
-    if (IsContentSuggestionsCustomizable()) {
-      [menuElements addObject:[self.actionFactory
-                                  actionToPinSiteToMostVisitedTileWithBlock:^{
-                                    [weakSelf pinOrUnpinMostVisited:item];
-                                  }]];
+- (NSArray<UIAccessibilityCustomAction*>*)
+    accessibilityCustomActionsForItem:(MostVisitedItem*)item
+                             fromView:(UIView*)view {
+  NSArray<UIAction*>* actions = [self actionsForItem:item fromView:view];
+  NSMutableArray<UIAccessibilityCustomAction*>* accessibilityActions =
+      [[NSMutableArray alloc] init];
+  for (UIAction* action in actions) {
+    if (action.attributes & UIMenuElementAttributesDisabled) {
+      continue;
     }
-    [menuElements addObject:[self.actionFactory actionToRemoveWithBlock:^{
-                    [weakSelf removeMostVisited:item];
-                  }]];
+    [accessibilityActions
+        addObject:[[UIAccessibilityCustomAction alloc]
+                       initWithName:action.title
+                      actionHandler:^BOOL(
+                          UIAccessibilityCustomAction* customAction) {
+                        [action performWithSender:view target:nil];
+                        return YES;
+                      }]];
   }
-
-  return menuElements;
+  return accessibilityActions;
 }
 
 #pragma mark - MostVisitedTilesPinnedSiteMutator
@@ -499,6 +375,144 @@ GURL GetValidUrl(NSString* urlString) {
 }
 
 #pragma mark - Private
+
+// Open the URL corresponding to the `item` in a new tab, `incognito` or not.
+// Animate the opening of a new tab from `point`.
+// The item has to be a Most Visited item.
+- (void)openNewTabWithMostVisitedItem:(MostVisitedItem*)item
+                            incognito:(BOOL)incognito
+                              atIndex:(NSInteger)index
+                            fromPoint:(CGPoint)point {
+  if (incognito && IsIncognitoModeDisabled(_prefService)) {
+    // This should only happen when the policy changes while the option is
+    // presented.
+    return;
+  }
+  [self logMostVisitedOpening:item atIndex:index];
+  [self openNewTabWithURL:item.URL incognito:incognito originPoint:point];
+}
+
+// Pins or unpins the item to/from the most visited tile, depending on whether
+// the item is already pinned or not.
+- (void)pinOrUnpinMostVisited:(MostVisitedItem*)item {
+  GURL url = item.URL;
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  if (_mostVisitedSites->HasCustomLink(url)) {
+    // Remove the custom link.
+    if (_mostVisitedSites->DeleteCustomLink(url)) {
+      [self showSnackbarWithMessage:
+                l10n_util::GetNSString(
+                    IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_UNPINNED)
+                         undoAction:^{
+                           [weakSelf undoLastPinAction];
+                           RecordSnackbarUndoUserAction(/*undo_pin=*/NO);
+                         }];
+    }
+    return;
+  }
+  if (!_mostVisitedSites->AddCustomLink(url,
+                                        base::SysNSStringToUTF16(item.title))) {
+    return;
+  }
+  _engagementTracker->NotifyEvent(
+      feature_engagement::events::kIOSPinMVTSiteUsed);
+  // Show snackbar message.
+  [self showSnackbarWithMessage:
+            l10n_util::GetNSString(
+                IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_SNACKBAR_PINNED)
+                     undoAction:^{
+                       [weakSelf undoLastPinAction];
+                       RecordSnackbarUndoUserAction(/*undo_pin=*/YES);
+                     }];
+}
+
+// Removes the most visited `item`.
+- (void)removeMostVisited:(MostVisitedItem*)item {
+  [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
+  [self blockMostVisitedURL:item.URL];
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  [self showSnackbarWithMessage:l10n_util::GetNSString(
+                                    IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)
+                     undoAction:^{
+                       [weakSelf allowMostVisitedURL:item.URL];
+                     }];
+}
+
+// Opens the modal for user to edit an existing pinned site on the most visited
+// tiles.
+- (void)openModalToEditPinnedSite:(MostVisitedItem*)item {
+  [self.contentSuggestionsHandler showPinnedSiteEditorForItem:item];
+}
+
+- (NSArray<UIAction*>*)actionsForItem:(MostVisitedItem*)item
+                             fromView:(UIView*)view {
+  NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
+
+  CGPoint centerPoint = [view.superview convertPoint:view.center toView:nil];
+
+  __weak MostVisitedTilesMediator* weakSelf = self;
+  [actions addObject:[self.actionFactory actionToOpenInNewTabWithBlock:^{
+             [weakSelf openNewTabWithMostVisitedItem:item
+                                           incognito:NO
+                                             atIndex:item.index
+                                           fromPoint:centerPoint];
+           }]];
+
+  UIAction* incognitoAction =
+      [self.actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+        [weakSelf openNewTabWithMostVisitedItem:item
+                                      incognito:YES
+                                        atIndex:item.index
+                                      fromPoint:centerPoint];
+      }];
+
+  if (IsIncognitoModeDisabled(_prefService)) {
+    // Disable the "Open in Incognito" option if the incognito mode is
+    // disabled.
+    incognitoAction.attributes = UIMenuElementAttributesDisabled;
+  }
+
+  [actions addObject:incognitoAction];
+
+  if (base::ios::IsMultipleScenesSupported()) {
+    UIAction* newWindowAction = [self.actionFactory
+        actionToOpenInNewWindowWithURL:item.URL
+                        activityOrigin:WindowActivityContentSuggestionsOrigin];
+    [actions addObject:newWindowAction];
+  }
+
+  CrURL* URL = [[CrURL alloc] initWithGURL:item.URL];
+  [actions addObject:[self.actionFactory actionToCopyURL:URL]];
+
+  [actions addObject:[self.actionFactory actionToShareWithBlock:^{
+             [weakSelf.contentSuggestionsDelegate shareURL:item.URL
+                                                     title:item.title
+                                                  fromView:view];
+           }]];
+  if (item.isPinned) {
+    CHECK(IsContentSuggestionsCustomizable(), base::NotFatalUntil::M148);
+    [actions addObject:[self.actionFactory
+                           actionToEditPinnedSiteOnMostVisitedTileWithBlock:^{
+                             [weakSelf openModalToEditPinnedSite:item];
+                           }]];
+    [actions addObject:[self.actionFactory
+                           actionToUnpinSiteFromMostVisitedTileWithBlock:^{
+                             [weakSelf pinOrUnpinMostVisited:item];
+                           }]];
+  } else {
+    if (IsContentSuggestionsCustomizable()) {
+      [actions addObject:[self.actionFactory
+                             actionToPinSiteToMostVisitedTileWithBlock:^{
+                               [weakSelf pinOrUnpinMostVisited:item];
+                             }]];
+    }
+    [actions addObject:[self.actionFactory actionToRemoveWithBlock:^{
+               [weakSelf removeMostVisited:item];
+             }]];
+  }
+
+  return actions;
+}
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {

@@ -10,12 +10,10 @@
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_title_source.h"
 
-@protocol ContentSuggestionsMenuElementsProvider;
+@protocol ContentSuggestionsActionsProvider;
 @class FaviconAttributes;
 class GURL;
 @protocol MostVisitedTilesCommands;
-
-// Item containing a Most Visited suggestion.
 @interface MostVisitedItem : NSObject <UIContentConfiguration>
 
 // Text for the title and the accessibility label of the cell.
@@ -39,8 +37,8 @@ class GURL;
 // Index position of this item.
 @property(nonatomic, assign) int index;
 // Provider of menu elements for the contentSuggestions component.
-@property(nonatomic, weak) id<ContentSuggestionsMenuElementsProvider>
-    menuElementsProvider;
+@property(nonatomic, weak) id<ContentSuggestionsActionsProvider>
+    actionsProvider;
 
 @end
 
