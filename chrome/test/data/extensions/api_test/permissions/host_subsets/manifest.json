@@ -3,9 +3,8 @@
   "description": "Tests requesting, querying, and removing host permissions that are a subset of the optional permissions.",
   "version": "1",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "service_worker": "background.js"
   },
-  "optional_permissions": ["http://*/*", "ftp://ftp.example.com/*"],
-  "manifest_version": 2
+  "optional_host_permissions": ["http://*/*", "ftp://ftp.example.com/*"],
+  "manifest_version": 3
 }

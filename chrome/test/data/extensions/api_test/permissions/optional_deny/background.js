@@ -13,26 +13,20 @@ var NO_BOOKMARKS_PERMISSION =
 chrome.test.getConfig(function(config) {
 
   function doReq(domain, callback) {
-    var req = new XMLHttpRequest();
     var url = domain + ":PORT/extensions/test_file.txt";
     url = url.replace(/PORT/, config.testServer.port);
 
     chrome.test.log("Requesting url: " + url);
-    req.open("GET", url, true);
-
-    req.onload = function() {
-      assertEq(200, req.status);
-      assertEq("Hello!", req.responseText);
+    fetch(url).then(function(response) {
+      assertEq(200, response.status);
+      return response.text();
+    }).then(function(text) {
+      assertEq("Hello!", text);
       callback(true);
-    };
-
-    req.onerror = function() {
-      chrome.test.log("status: " + req.status);
-      chrome.test.log("text: " + req.responseText);
+    }).catch(function(error) {
+      chrome.test.log(error.toString());
       callback(false);
-    };
-
-    req.send(null);
+    });
   }
 
   chrome.test.runTests([

@@ -2,10 +2,9 @@
    "name": "permissions failure apitest",
    "description": "permissions failure extension",
    "version": "0.1",
-   "manifest_version": 2,
+   "manifest_version": 3,
    "background": {
-     "persistent": false,
-     "scripts": ["background.js"]
+     "service_worker": "background.js"
    },
    "permissions": [ ]
 }

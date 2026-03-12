@@ -2,9 +2,9 @@
    "name": "Test functions requiring no permission to use (apitest)",
    "description": "permissions always allowed extension",
    "version": "0.1",
-   "manifest_version": 2,
+   "manifest_version": 3,
    "background": {
-     "scripts": ["background.js"]
+     "service_worker": "background.js"
    },
    "permissions": [ ]
 }

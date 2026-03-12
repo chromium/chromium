@@ -3,23 +3,26 @@
    "description": "permissions/optional",
    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDkprt3BRSqoikAhSygI6VUzDLt18cKODYmkaa/dwPp4dboyz93RSB+v76grbqsNWrJjkrEwRD3QFeBYBq7h27XAMV4X5XvWjmWQBkRTBQyQI8cZd7M9dgfKrI3EqX9OJvd/wTJkC0dgF47nwWRa/Tvwl7Y66GwEEUjpn2MTv4klwIDAQAB",
    "version": "0.1",
-   "manifest_version": 2,
+   "manifest_version": 3,
    "background": {
-     "scripts": ["background.js"],
-     "persistent": true
-   },
+     "service_worker": "background.js"
+  },
    "content_scripts": [{
      "matches": ["http://contentscript.com/*"],
      "js": ["content_script.js"]
    }],
    "permissions": [
-     "management",
-     "http://a.com/*"
-   ],
+    "management"
+  ],
+  "host_permissions": [
+    "http://a.com/*"
+  ],
    "optional_permissions": [
      "bookmarks",
      "cookies",
-     "background",
+     "background"
+   ],
+   "optional_host_permissions": [
      "http://*.c.com/*"
    ]
 }

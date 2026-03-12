@@ -12,17 +12,15 @@ function requestListener() {
 
 var tests = [
   function testDirectoryListing() {
-    var request = new XMLHttpRequest();
-    request.addEventListener("load", requestListener);
-    request.open("GET", test_dir);
-    request.send();
+    fetch(test_dir).then(requestListener).catch(function(err) {
+      chrome.test.fail(err.toString());
+    });
   },
 
   function testFile() {
-    var request = new XMLHttpRequest();
-    request.addEventListener("load", requestListener);
-    request.open("GET", test_dir + "/empty.html");
-    request.send();
+    fetch(test_dir + "/empty.html").then(requestListener).catch(function(err) {
+      chrome.test.fail(err.toString());
+    });
   }
 ];
 

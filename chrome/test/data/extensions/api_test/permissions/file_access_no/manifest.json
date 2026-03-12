@@ -1,10 +1,9 @@
 {
   "name": "file_access_no",
   "version": "1",
-  "manifest_version": 2,
-  "optional_permissions": ["file:///*"],
+  "manifest_version": 3,
+  "optional_host_permissions": ["file:///*"],
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   }
 }

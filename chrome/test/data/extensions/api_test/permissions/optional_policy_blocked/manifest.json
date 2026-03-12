@@ -2,9 +2,9 @@
    "name": "permissions/optional_policy_blocked",
    "description": "permissions/optional_policy_blocked",
    "version": "0.1",
-   "manifest_version": 2,
+   "manifest_version": 3,
    "background": {
-     "scripts": ["background.js"]
+     "service_worker": "background.js"
    },
    "optional_permissions": [
      "bookmarks",
