@@ -22,11 +22,6 @@
 namespace indigo {
 namespace {
 
-MATCHER_P2(SizeIsInRange, min_size, max_size, "") {
-  return arg.width() >= min_size.width() && arg.width() <= max_size.width() &&
-         arg.height() >= min_size.height() && arg.height() <= max_size.height();
-}
-
 class IndigoOnboardingDialogBrowserTest : public InteractiveBrowserTest {
  protected:
   void OpenDialog(tabs::TabInterface& tab, const GURL& url) {
@@ -54,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, ShowAndClose) {
       CheckView(
           IndigoOnboardingDialog::kWebViewId,
           [](views::WebView* web_view) { return web_view->GetPreferredSize(); },
-          SizeIsInRange(gfx::Size(480, 360), gfx::Size(480, 600))),
+          gfx::Size(800, 600)),
       Do([&]() { dialog_->Close(); }),
       WaitForHide(IndigoOnboardingDialog::kWebViewId),
       Check([&]() { return WasDialogClosed(); }));
