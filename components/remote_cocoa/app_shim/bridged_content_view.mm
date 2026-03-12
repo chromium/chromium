@@ -840,11 +840,21 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 }
 
 - (void)contextMenuKeyDown:(NSEvent*)event {
+  base::apple::OwnedNSEvent owned_event(event);
+  ui::KeyEvent original_event(owned_event);
+
+  // Dispatch the original key event first so that existing handlers (if any)
+  // take priority over the context menu.
+  [self handleKeyEvent:&original_event];
+  if (original_event.handled()) {
+    return;
+  }
+
   int event_flags = [event isARepeat] ? ui::EF_IS_REPEAT : ui::EF_NONE;
   ui::KeyEvent context_menu_event(ui::EventType::kKeyPressed, ui::VKEY_APPS,
                                   ui::DomCode::CONTEXT_MENU, event_flags);
 
-  context_menu_event.SetNativeEvent(base::apple::OwnedNSEvent(event));
+  context_menu_event.SetNativeEvent(owned_event);
   if ([self dispatchKeyEventToMenuController:&context_menu_event]) {
     return;
   }
