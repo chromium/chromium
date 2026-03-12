@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.compositor.layouts.phone.stack;
+package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.Context;
 import android.hardware.SensorManager;
@@ -35,10 +35,10 @@ public class StackScroller {
         mFlywheel = true;
         mScrollerX = new SplineStackScroller(context);
         mScrollerY = new SplineStackScroller(context);
-        initContants();
+        initConstants();
     }
 
-    private static void initContants() {
+    private static void initConstants() {
         // This controls the viscous fluid effect (how much of it)
         sViscousFluidScale = 8.0f;
         // must be set to 1.0 (used in viscousFluid())
@@ -64,7 +64,7 @@ public class StackScroller {
      * the X direction.
      *
      * @param index What multiple of the snap distance (i.e. it can be multiplied by the snap
-     *              distance) we were closest to when a touch down event was received.
+     *     distance) we were closest to when a touch down event was received.
      */
     public final void setCenteredXSnapIndexAtTouchDown(int index) {
         mScrollerX.setCenteredSnapIndexAtTouchDown(index);
@@ -75,14 +75,13 @@ public class StackScroller {
      * the Y direction.
      *
      * @param index What multiple of the snap distance (i.e. it can be multiplied by the snap
-     *              distance) we were closest to when a touch down event was received.
+     *     distance) we were closest to when a touch down event was received.
      */
     public final void setCenteredYSnapIndexAtTouchDown(int index) {
         mScrollerY.setCenteredSnapIndexAtTouchDown(index);
     }
 
     /**
-     *
      * Returns whether the scroller has finished scrolling.
      *
      * @return True if the scroller has finished scrolling, false otherwise.
@@ -140,7 +139,7 @@ public class StackScroller {
     }
 
     /**
-     * Sets where the scroll will end.  Valid only for "fling" scrolls.
+     * Sets where the scroll will end. Valid only for "fling" scrolls.
      *
      * @param x The final X offset as an absolute distance from the origin.
      */
@@ -162,8 +161,8 @@ public class StackScroller {
     }
 
     /**
-     * Call this when you want to know the new location. If it returns true, the
-     * animation is not yet finished.
+     * Call this when you want to know the new location. If it returns true, the animation is not
+     * yet finished.
      */
     public boolean computeScrollOffset(long time) {
         if (isFinished()) {
@@ -216,14 +215,13 @@ public class StackScroller {
     /**
      * Start scrolling by providing a starting point and the distance to travel.
      *
-     * @param startX Starting horizontal scroll offset in pixels. Positive
-     *        numbers will scroll the content to the left.
-     * @param startY Starting vertical scroll offset in pixels. Positive numbers
-     *        will scroll the content up.
-     * @param dx Horizontal distance to travel. Positive numbers will scroll the
-     *        content to the left.
-     * @param dy Vertical distance to travel. Positive numbers will scroll the
-     *        content up.
+     * @param startX Starting horizontal scroll offset in pixels. Positive numbers will scroll the
+     *     content to the left.
+     * @param startY Starting vertical scroll offset in pixels. Positive numbers will scroll the
+     *     content up.
+     * @param dx Horizontal distance to travel. Positive numbers will scroll the content to the
+     *     left.
+     * @param dy Vertical distance to travel. Positive numbers will scroll the content up.
      * @param duration Duration of the scroll in milliseconds.
      */
     public void startScroll(int startX, int startY, int dx, int dy, long startTime, int duration) {
@@ -241,8 +239,8 @@ public class StackScroller {
      * @param maxX Maximum valid X value
      * @param minY Minimum valid Y value
      * @param maxY Minimum valid Y value
-     * @return true if a springback was initiated, false if startX and startY were
-     *          already within the valid range.
+     * @return true if a springback was initiated, false if startX and startY were already within
+     *     the valid range.
      */
     public boolean springBack(
             int startX, int startY, int minX, int maxX, int minY, int maxY, long time) {
@@ -255,29 +253,25 @@ public class StackScroller {
     }
 
     /**
-     * Start scrolling based on a fling gesture. The distance traveled will
-     * depend on the initial velocity of the fling.
+     * Start scrolling based on a fling gesture. The distance traveled will depend on the initial
+     * velocity of the fling.
      *
      * @param startX Starting point of the scroll (X)
      * @param startY Starting point of the scroll (Y)
      * @param velocityX Initial velocity of the fling (X) measured in pixels per second.
      * @param velocityY Initial velocity of the fling (Y) measured in pixels per second
-     * @param minX Minimum X value. The scroller will not scroll past this point
-     *            unless overX > 0. If overfling is allowed, it will use minX as
-     *            a springback boundary.
-     * @param maxX Maximum X value. The scroller will not scroll past this point
-     *            unless overX > 0. If overfling is allowed, it will use maxX as
-     *            a springback boundary.
-     * @param minY Minimum Y value. The scroller will not scroll past this point
-     *            unless overY > 0. If overfling is allowed, it will use minY as
-     *            a springback boundary.
-     * @param maxY Maximum Y value. The scroller will not scroll past this point
-     *            unless overY > 0. If overfling is allowed, it will use maxY as
-     *            a springback boundary.
-     * @param overX Overfling range. If > 0, horizontal overfling in either
-     *            direction will be possible.
-     * @param overY Overfling range. If > 0, vertical overfling in either
-     *            direction will be possible.
+     * @param minX Minimum X value. The scroller will not scroll past this point unless overX > 0.
+     *     If overfling is allowed, it will use minX as a springback boundary.
+     * @param maxX Maximum X value. The scroller will not scroll past this point unless overX > 0.
+     *     If overfling is allowed, it will use maxX as a springback boundary.
+     * @param minY Minimum Y value. The scroller will not scroll past this point unless overY > 0.
+     *     If overfling is allowed, it will use minY as a springback boundary.
+     * @param maxY Maximum Y value. The scroller will not scroll past this point unless overY > 0.
+     *     If overfling is allowed, it will use maxY as a springback boundary.
+     * @param overX Overfling range. If > 0, horizontal overfling in either direction will be
+     *     possible.
+     * @param overY Overfling range. If > 0, vertical overfling in either direction will be
+     *     possible.
      */
     public void fling(
             int startX,
@@ -330,9 +324,8 @@ public class StackScroller {
     }
 
     /**
-     * Stops the animation. Contrary to {@link #forceFinished(boolean)},
-     * aborting the animating causes the scroller to move to the final x and y
-     * positions.
+     * Stops the animation. Contrary to {@link #forceFinished(boolean)}, aborting the animating
+     * causes the scroller to move to the final x and y positions.
      *
      * @see #forceFinished(boolean)
      */
@@ -602,7 +595,8 @@ public class StackScroller {
             mFinished = false;
             mCurrVelocity = velocity;
             mVelocity = velocity;
-            mDuration = mSplineDuration = 0;
+            mDuration = 0;
+            mSplineDuration = 0;
             mStartTime = time;
             mCurrentPosition = start;
             mStart = start;
