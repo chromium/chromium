@@ -20,6 +20,17 @@ source_set("features") {
   ]
 }
 
+source_set("metrics") {
+  sources = [
+    "metrics.cc",
+    "metrics.h",
+  ]
+  deps = [
+    "//base",
+    "//components/on_device_translation:public",
+  ]
+}
+
 source_set("on_device_translation") {
   sources = [
     "component_manager.cc",
@@ -28,8 +39,6 @@ source_set("on_device_translation") {
     "file_operation_proxy_impl.h",
     "installer.cc",
     "installer.h",
-    "metrics.cc",
-    "metrics.h",
     "service_controller.cc",
     "service_controller.h",
     "service_controller_manager.cc",
@@ -41,6 +50,7 @@ source_set("on_device_translation") {
   ]
   public_deps = [
     ":features",
+    ":metrics",
     ":public",
     "//components/prefs",
     "//content/public/browser",

@@ -314,6 +314,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Translate.OnDeviceTranslation.TranslationLength" units="int"
+    expires_after="2027-03-01">
+  <owner>danft@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Logs the length of the text that is given as input to the
+    on-device-translation Translator.
+  </summary>
+</histogram>
+
 <histogram
     name="Translate.OnDeviceTranslation.{LanguageRole}.{SupportedLanguage}.CharacterCount"
     units="int" expires_after="2027-03-01">
@@ -322,6 +332,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the character count of the user input when the translator.translate()
     API is called categorized by the source and the target language.
+  </summary>
+  <token key="LanguageRole" variants="LanguageRole"/>
+  <token key="SupportedLanguage" variants="SupportedLanguage"/>
+</histogram>
+
+<histogram
+    name="Translate.OnDeviceTranslation.{LanguageRole}.{SupportedLanguage}.TranslationLength"
+    units="int" expires_after="2027-03-01">
+  <owner>danft@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Logs the text length given as input to on-device-translation Translator.
   </summary>
   <token key="LanguageRole" variants="LanguageRole"/>
   <token key="SupportedLanguage" variants="SupportedLanguage"/>
@@ -775,6 +797,29 @@ chromium-metrics-reviews@google.com.
 
     This is recorded when a translation (both manual and automatic) is started.
   </summary>
+</histogram>
+
+<histogram name="Translate.TranslatorApi.TranslationLength" units="int"
+    expires_after="2027-03-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Logs the text length of the user input when the translator.translate() API
+    is called.
+  </summary>
+</histogram>
+
+<histogram
+    name="Translate.TranslatorApi.{LanguageRole}.{SupportedLanguage}.TranslationLength"
+    units="int" expires_after="2027-03-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-builtin-ai@google.com</owner>
+  <summary>
+    Logs the text length of the user input when the translator.translate() API
+    is called categorized by the source and the target language.
+  </summary>
+  <token key="LanguageRole" variants="LanguageRole"/>
+  <token key="SupportedLanguage" variants="SupportedLanguage"/>
 </histogram>
 
 <histogram

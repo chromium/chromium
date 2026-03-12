@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ON_DEVICE_TRANSLATION_METRICS_H_
 #define COMPONENTS_ON_DEVICE_TRANSLATION_METRICS_H_
 
+#include <cstddef>
 #include <string_view>
 
 namespace on_device_translation {
@@ -38,13 +39,19 @@ void RecordOnDeviceTranslationCallForLanguagePair(std::string_view action_name,
                                                   std::string_view target_lang);
 
 // Record the character count UMA for:
-// Translate.OnDeviceTranslation.CharacterCount
-// Translate.OnDeviceTranslation.Source.${source_lang}.CharacterCount
-// Translate.OnDeviceTranslation.Target.${target_lang}.CharacterCount
-void RecordTranslationCharacterCount(std::string_view source_lang,
+// Translate.TranslatorApi.TranslationLength
+// Translate.TranslatorApi.Source.${source_lang}.TranslationLength
+// Translate.TranslatorApi.Target.${target_lang}.TranslationLength
+void RecordTranslatorApiTranslationLength(std::string_view source_lang,
+                                          std::string_view target_lang,
+                                          size_t length);
+// Record the character count UMA for:
+// Translate.OnDeviceTranslation.TranslationLength
+// Translate.OnDeviceTranslation.Source.${source_lang}.TranslationLength
+// Translate.OnDeviceTranslation.Target.${target_lang}.TranslationLength
+void RecordOnDeviceTranslationLength(std::string_view source_lang,
                                      std::string_view target_lang,
-                                     int character_count);
-
+                                     size_t length);
 }  // namespace on_device_translation
 
 #endif  // COMPONENTS_ON_DEVICE_TRANSLATION_METRICS_H_

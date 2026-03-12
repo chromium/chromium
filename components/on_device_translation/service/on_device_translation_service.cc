@@ -8,19 +8,24 @@
 
 #include "base/functional/bind.h"
 #include "base/types/pass_key.h"
+#include "components/on_device_translation/metrics.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/on_device_translation/service/translate_kit_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace on_device_translation {
-
+namespace {
 // TranslateKitTranslator provides translation functionalities based on the
 // Translator from TranslateKitClient.
 class TranslateKitTranslator : public mojom::Translator {
  public:
-  explicit TranslateKitTranslator(TranslateKitClient::Translator* translator)
-      : translator_(translator) {
+  explicit TranslateKitTranslator(std::string source_lang,
+                                  std::string target_lang,
+                                  TranslateKitClient::Translator* translator)
+      : source_lang_(std::move(source_lang)),
+        target_lang_(std::move(target_lang)),
+        translator_(translator) {
     CHECK(translator_);
   }
   ~TranslateKitTranslator() override = default;
@@ -31,6 +36,7 @@ class TranslateKitTranslator : public mojom::Translator {
   // `mojom::Translator` overrides:
   void Translate(const std::string& input,
                  TranslateCallback translate_callback) override {
+    RecordOnDeviceTranslationLength(source_lang_, target_lang_, input.size());
     CHECK(translator_);
     std::move(translate_callback).Run(translator_->Translate(input));
   }
@@ -42,10 +48,13 @@ class TranslateKitTranslator : public mojom::Translator {
   }
 
  private:
+  std::string source_lang_;
+  std::string target_lang_;
   // Owned by the TranslateKitClient managed by OnDeviceTranslationService.
   // The lifetime must be longer than this instance.
   raw_ptr<TranslateKitClient::Translator> translator_;
 };
+}  // namespace
 
 // static
 std::unique_ptr<OnDeviceTranslationService>
@@ -98,9 +107,9 @@ void OnDeviceTranslationService::CreateTranslator(
     std::move(create_translator_callback).Run(maybe_translator.error());
     return;
   }
-  translators_.Add(
-      std::make_unique<TranslateKitTranslator>(maybe_translator.value()),
-      std::move(receiver));
+  translators_.Add(std::make_unique<TranslateKitTranslator>(
+                       source_lang, target_lang, maybe_translator.value()),
+                   std::move(receiver));
   std::move(create_translator_callback)
       .Run(mojom::CreateTranslatorResult::kSuccess);
 }

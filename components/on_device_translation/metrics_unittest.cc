@@ -165,15 +165,28 @@ TEST_F(TranslationMetricsTest, RecordLanguageTranslatorApiCallForLanguagePair) {
   }
 }
 
-TEST_F(TranslationMetricsTest, RecordTranslationCharacterCount) {
+TEST_F(TranslationMetricsTest, RecordTranslatorApiTranslationLength) {
   base::HistogramTester histogram_tester;
-  RecordTranslationCharacterCount("en", "es", 100);
+  RecordTranslatorApiTranslationLength("en", "es", 100);
   histogram_tester.ExpectUniqueSample(
-      "Translate.OnDeviceTranslation.CharacterCount", 100, 1);
+      "Translate.TranslatorApi.TranslationLength", 100, 1);
   histogram_tester.ExpectUniqueSample(
-      "Translate.OnDeviceTranslation.SourceLanguage.en.CharacterCount", 100, 1);
+      "Translate.TranslatorApi.SourceLanguage.en.TranslationLength", 100, 1);
   histogram_tester.ExpectUniqueSample(
-      "Translate.OnDeviceTranslation.TargetLanguage.es.CharacterCount", 100, 1);
+      "Translate.TranslatorApi.TargetLanguage.es.TranslationLength", 100, 1);
+}
+
+TEST_F(TranslationMetricsTest, RecordOnDeviceTranslationLength) {
+  base::HistogramTester histogram_tester;
+  RecordOnDeviceTranslationLength("en", "es", 100);
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.TranslationLength", 100, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.SourceLanguage.en.TranslationLength", 100,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Translate.OnDeviceTranslation.TargetLanguage.es.TranslationLength", 100,
+      1);
 }
 }  // namespace
 }  // namespace on_device_translation

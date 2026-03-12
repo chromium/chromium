@@ -59,7 +59,8 @@ bool Translator::VerifyPrerequisites(
 
   RecordTranslatorApiCallForLanguagePair("Translate", source_lang_,
                                          target_lang_);
-  RecordTranslationCharacterCount(source_lang_, target_lang_, input.size());
+  RecordTranslatorApiTranslationLength(source_lang_, target_lang_,
+                                       input.size());
 
   // https://github.com/webmachinelearning/translation-api/pull/38: "If |input|
   // is the empty string, or otherwise consists of no translatable content
