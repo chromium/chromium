@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_mediator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_web_view_proxy_observer.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
@@ -110,7 +111,7 @@ void FullscreenWebStateObserver::DidStartLoading(web::WebState* web_state) {
   // considered as being in the SameDocument by the NavigationContext, so the
   // toolbar isn't shown in the DidFinishNavigation. For example this is
   // needed to load AMP pages from Google Search Result Page.
-  controller_->ExitFullscreen(FullscreenExitReason::kForcedByCode);
+  controller_->ExitFullscreen(FullscreenModeTransitionTrigger::kForcedByCode);
 }
 
 void FullscreenWebStateObserver::WebStateDestroyed(web::WebState* web_state) {

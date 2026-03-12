@@ -111,9 +111,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Apple Calendar"/>
 </enum>
 
-<!-- LINT.IfChange(FullscreenModeTransitionReason) -->
+<!-- LINT.IfChange(FullscreenModeTransitionTrigger) -->
 
-<enum name="FullscreenModeTransitionReason">
+<enum name="FullscreenModeTransitionTrigger">
   <int value="0" label="UserControlled"/>
   <int value="1" label="ForcedByCode"/>
   <int value="2" label="UserInitiatedFinishedByCode"/>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="NoChange"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h:FullscreenModeTransitionReason) -->
+<!-- LINT.ThenChange(//ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h:FullscreenModeTransitionTrigger) -->
 
 <!-- LINT.IfChange(GeminiViewState) -->
 

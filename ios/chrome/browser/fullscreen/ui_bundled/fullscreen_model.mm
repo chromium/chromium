@@ -91,8 +91,8 @@ void FullscreenModel::ResetForNavigation() {
   if (IsForceFullscreenMode()) {
     return;
   }
-  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionReasonHistogram,
-                                FullscreenModeTransitionReason::kForcedByCode);
+  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
+                                FullscreenModeTransitionTrigger::kForcedByCode);
   progress_ = 1.0;
   scrolling_ = false;
   start_scrolling_time_ = std::nullopt;
@@ -468,12 +468,12 @@ void FullscreenModel::SetProgress(CGFloat progress) {
 
   if (progress == 0.0 && progress_ > 0.0) {
     base::UmaHistogramEnumeration(
-        kEnterFullscreenModeTransitionReasonHistogram,
-        FullscreenModeTransitionReason::kUserControlled);
+        kEnterFullscreenModeTransitionTriggerHistogram,
+        FullscreenModeTransitionTrigger::kUserControlled);
   } else if (progress == 1.0 && progress_ < 1.0) {
     base::UmaHistogramEnumeration(
-        kExitFullscreenModeTransitionReasonHistogram,
-        FullscreenModeTransitionReason::kUserControlled);
+        kExitFullscreenModeTransitionTriggerHistogram,
+        FullscreenModeTransitionTrigger::kUserControlled);
   }
 
   progress_ = progress;
