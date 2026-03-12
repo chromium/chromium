@@ -1877,11 +1877,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "contextual-tasks-expand-button",
-    "owners": ["mdjones@google.com", "chrome-contextual-tasks-eng@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "contextual-tasks-suggestions-enabled",
     "owners": ["dianaou@google.com", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 150

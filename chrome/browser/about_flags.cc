@@ -12299,13 +12299,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksContextLibrary)},
 
-    {"contextual-tasks-expand-button",
-     contextual_tasks::flag_descriptions::kContextualTasksExpandButtonName,
-     contextual_tasks::flag_descriptions::
-         kContextualTasksExpandButtonDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksExpandButton)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"create-new-tab-group-app-menu-top-level",
      flag_descriptions::kCreateNewTabGroupAppMenuTopLevelName,

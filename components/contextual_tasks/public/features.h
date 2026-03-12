@@ -43,10 +43,6 @@ BASE_DECLARE_FEATURE(
 // param.
 BASE_DECLARE_FEATURE(kEnableNotifyZeroStateRenderedCapability);
 
-// Replace the overflow menu in the side panel with an explicit button to move
-// the thread to a new tab.
-BASE_DECLARE_FEATURE(kContextualTasksExpandButton);
-
 // If enabled, adds the Sec-CH-UA-Full-Version-List header to all network
 // requests initiated from within an embedded Co-Browse <webview>.
 BASE_DECLARE_FEATURE(kContextualTasksSendFullVersionListEnabled);
@@ -274,8 +270,6 @@ extern const char kContextualTasksContextLibraryName[];
 extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];
 extern const char kContextualTasksContextDescription[];
-extern const char kContextualTasksExpandButtonName[];
-extern const char kContextualTasksExpandButtonDescription[];
 extern const char kContextualTasksSuggestionsEnabledName[];
 extern const char kContextualTasksSuggestionsEnabledDescription[];
 
