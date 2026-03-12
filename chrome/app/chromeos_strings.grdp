@@ -2372,32 +2372,8 @@
   <message name="IDS_STATUSBAR_NETWORK_DEVICE_ETHERNET" desc="Label for an ethernet network device.">
     Ethernet
   </message>
-  <message name="IDS_STATUSBAR_NETWORK_DEVICE_WIFI" desc="Label for a wifi network device.">
-    Wi-Fi
-  </message>
-  <message name="IDS_STATUSBAR_NETWORK_DEVICE_CELLULAR" desc="Label for a cellular network device.">
-    Mobile data
-  </message>
 
   <!-- Status bar -->
-  <message name="IDS_STATUSBAR_NETWORK_DEVICE_ENABLE" desc="Enable the network device.">
-    Enable <ph name="NETWORKDEVICE">$1<ex>Wifi</ex></ph>
-  </message>
-  <message name="IDS_STATUSBAR_NETWORK_DEVICE_DISABLE" desc="Disable the network device.">
-    Disable <ph name="NETWORKDEVICE">$1<ex>Wifi</ex></ph>
-  </message>
-  <message name="IDS_STATUSBAR_NETWORK_DEVICE_STATUS" desc="The status of the network device.">
-    <ph name="NETWORKDEVICE">$1<ex>Wifi</ex></ph>: <ph name="STATUS">$2<ex>Connecting</ex></ph>
-  </message>
-  <message name="IDS_STATUSBAR_NETWORK_MENU_ITEM_INDENT" desc="A menu item label with an indentation. For left-to-right languages, we use 3 spaces on the left.">
-    '''   <ph name="LABEL">$1<ex>Wifi SSID</ex></ph>'''
-  </message>
-  <message name="IDS_STATUSBAR_NETWORK_OPEN_PROXY_SETTINGS_DIALOG" desc="The menu item in the network menu button at login screen for opening the options dialog">
-    Proxy settings...
-  </message>
-  <message name="IDS_STATUSBAR_NETWORK_MORE" desc="Message for last link in the network menu requesting more technical and less common stuff (proxy settings, IP and hardware addresses)">
-    More...
-  </message>
   <message name="IDS_STATUSBAR_NO_NETWORKS_MESSAGE" desc="No networks are available">
     No networks are available
   </message>
