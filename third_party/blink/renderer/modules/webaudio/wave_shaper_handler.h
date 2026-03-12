@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_WAVE_SHAPER_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_WAVE_SHAPER_HANDLER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_over_sample_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
@@ -21,7 +22,7 @@ class WaveShaperHandler final : public AudioHandler {
   static scoped_refptr<WaveShaperHandler> Create(AudioNode&, float sample_rate);
   ~WaveShaperHandler() override;
 
-  void SetCurve(const float* curve_data, unsigned curve_length);
+  void SetCurve(base::span<const float> curve);
   const Vector<float>* Curve() const;
   void SetOversample(V8OverSampleType::Enum oversample);
   V8OverSampleType::Enum Oversample() const;
@@ -40,11 +41,10 @@ class WaveShaperHandler final : public AudioHandler {
   double LatencyTime() const override;
   void PullInputs(uint32_t frames_to_process) override;
 
-  void WaveShaperCurveValues(float* destination,
-                             const float* source,
+  void WaveShaperCurveValues(base::span<float> destination,
+                             base::span<const float> source,
                              uint32_t frames_to_process,
-                             const float* curve_data,
-                             int curve_length);
+                             base::span<const float> curve_data);
 
   const float sample_rate_;
   const unsigned render_quantum_frames_;
@@ -63,7 +63,7 @@ class WaveShaperHandler final : public AudioHandler {
 
   // `curve_` represents the non-linear shaping curve.  It can be read on the
   // main thread without holding `process_lock_`.
-  std::unique_ptr<Vector<float>> curve_;
+  Vector<float> curve_;
 
   // Can be read on the main thread without holding `process_lock_`.
   V8OverSampleType::Enum oversample_ = V8OverSampleType::Enum::kNone;

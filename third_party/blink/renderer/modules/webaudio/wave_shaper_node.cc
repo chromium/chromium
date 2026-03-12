@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_node.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -68,25 +69,24 @@ WaveShaperHandler& WaveShaperNode::GetWaveShaperHandler() const {
   return static_cast<WaveShaperHandler&>(Handler());
 }
 
-void WaveShaperNode::SetCurveImpl(const float* curve_data,
-                                  size_t curve_length,
+void WaveShaperNode::SetCurveImpl(base::span<const float> curve,
                                   ExceptionState& exception_state) {
   CHECK(IsMainThread());
 
-  unsigned length = static_cast<unsigned>(curve_length);
+  unsigned length = static_cast<unsigned>(curve.size());
 
-  if (curve_data) {
-    if (!base::CheckedNumeric<unsigned>(curve_length).AssignIfValid(&length)) {
+  if (!curve.empty()) {
+    if (!base::CheckedNumeric<unsigned>(curve.size()).AssignIfValid(&length)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
           "The curve length exceeds the maximum supported length");
       return;
     }
-    if (length < 2) {
+    if (curve.size() < 2) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
-          ExceptionMessages::IndexExceedsMinimumBound<unsigned>("curve length",
-                                                                length, 2));
+          ExceptionMessages::IndexExceedsMinimumBound<unsigned>(
+              "curve length", curve.size(), 2));
       return;
     }
   }
@@ -96,7 +96,7 @@ void WaveShaperNode::SetCurveImpl(const float* curve_data,
   // Initialize() and Uninitialize(), changing the number of kernels.
   DeferredTaskHandler::GraphAutoLocker context_locker(context());
 
-  GetWaveShaperHandler().SetCurve(curve_data, length);
+  GetWaveShaperHandler().SetCurve(curve);
 }
 
 void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
@@ -104,9 +104,9 @@ void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
   CHECK(IsMainThread());
 
   if (curve) {
-    SetCurveImpl(curve->Data(), curve->length(), exception_state);
+    SetCurveImpl(curve->AsSpan(), exception_state);
   } else {
-    SetCurveImpl(nullptr, 0, exception_state);
+    SetCurveImpl(base::span<const float>(), exception_state);
   }
 }
 
@@ -114,7 +114,7 @@ void WaveShaperNode::setCurve(const Vector<float>& curve,
                               ExceptionState& exception_state) {
   CHECK(IsMainThread());
 
-  SetCurveImpl(curve.data(), curve.size(), exception_state);
+  SetCurveImpl(base::span<const float>(curve), exception_state);
 }
 
 NotShared<DOMFloat32Array> WaveShaperNode::curve() const {

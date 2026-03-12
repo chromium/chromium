@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_WAVE_SHAPER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_WAVE_SHAPER_NODE_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
@@ -64,9 +65,7 @@ class WaveShaperNode final : public AudioNode {
   void ReportWillBeDestroyed() final;
 
  private:
-  void SetCurveImpl(const float* curve_data,
-                    size_t curve_length,
-                    ExceptionState&);
+  void SetCurveImpl(base::span<const float> curve, ExceptionState&);
   WaveShaperHandler& GetWaveShaperHandler() const;
 };
 

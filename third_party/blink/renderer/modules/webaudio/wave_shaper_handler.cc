@@ -38,21 +38,19 @@ namespace {
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 
 // Computes value of the WaveShaper
-double WaveShaperCurveValue(float input,
-                            const float* curve_data,
-                            int curve_length) {
+double WaveShaperCurveValue(float input, base::span<const float> curve) {
   // Calculate a virtual index based on input -1 -> +1 with -1 being
   // curve[0], +1 being curve[curveLength - 1], and 0 being at the center of
   // the curve data. Then linearly interpolate between the two points in the
   // curve.
-  const double virtual_index = 0.5 * (input + 1) * (curve_length - 1);
+  const double virtual_index = 0.5 * (input + 1) * (curve.size() - 1);
   double output;
   if (virtual_index < 0) {
     // input < -1, so use curve[0]
-    output = curve_data[0];
-  } else if (virtual_index >= curve_length - 1) {
+    output = curve[0];
+  } else if (virtual_index >= curve.size() - 1) {
     // input >= 1, so use last curve value
-    UNSAFE_TODO(output = curve_data[curve_length - 1]);
+    output = curve[curve.size() - 1];
   } else {
     // The general case where -1 <= input < 1, where 0 <= virtualIndex <
     // curveLength - 1, so interpolate between the nearest samples on the
@@ -61,8 +59,8 @@ double WaveShaperCurveValue(float input,
     const unsigned index2 = index1 + 1;
     const double interpolation_factor = virtual_index - index1;
 
-    const double value1 = UNSAFE_TODO(curve_data[index1]);
-    const double value2 = UNSAFE_TODO(curve_data[index2]);
+    const double value1 = curve[index1];
+    const double value2 = curve[index2];
 
     output =
         (1.0 - interpolation_factor) * value1 + interpolation_factor * value2;
@@ -112,31 +110,29 @@ WaveShaperHandler::~WaveShaperHandler() {
   }
 }
 
-void WaveShaperHandler::SetCurve(const float* curve_data,
-                                 unsigned curve_length) {
+void WaveShaperHandler::SetCurve(base::span<const float> curve) {
   DCHECK(IsMainThread());
 
   // This synchronizes with process().
   base::AutoLock process_locker(process_lock_);
 
-  if (curve_length == 0 || !curve_data) {
-    curve_ = nullptr;
+  if (curve.empty()) {
+    curve_.clear();
     tail_time_ = 0;
     return;
   }
 
   // Copy the curve data, if any, to our internal buffer.
-  curve_ = std::make_unique<Vector<float>>(curve_length);
-  UNSAFE_TODO(memcpy(curve_->data(), curve_data, sizeof(float) * curve_length));
+  curve_ = Vector<float>(curve);
 
   // Compute the curve output for a zero input, and set the tail time.
-  const double output = WaveShaperCurveValue(0.0, curve_data, curve_length);
+  const double output = WaveShaperCurveValue(0.0, curve);
   tail_time_ = output == 0 ? 0 : std::numeric_limits<double>::infinity();
 }
 
 const Vector<float>* WaveShaperHandler::Curve() const {
   DCHECK(IsMainThread());
-  return curve_.get();
+  return curve_.empty() ? nullptr : &curve_;
 }
 
 void WaveShaperHandler::SetOversample(V8OverSampleType::Enum oversample) {
@@ -251,24 +247,22 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
       DCHECK_EQ(source_bus->NumberOfChannels(), kernels_.size());
       DCHECK_EQ(frames_to_process, render_quantum_frames_);
 
-      const float* curve_data = curve_ ? curve_->data() : nullptr;
-      const int curve_length = curve_ ? curve_->size() : 0;
-
       // For each channel of our input, process using the corresponding
       // WaveShaperKernel into the output channel.
       for (unsigned i = 0; i < kernels_.size(); ++i) {
-        if (!curve_data || !curve_length) {
+        if (curve_.empty()) {
           // Act as "straight wire" pass-through if no curve is set.
-          UNSAFE_TODO(memcpy(destination_bus->Channel(i)->MutableData(),
-                             source_bus->Channel(i)->Data(),
-                             sizeof(float) * frames_to_process));
+          destination_bus->Channel(i)
+              ->MutableSpan()
+              .first(frames_to_process)
+              .copy_from(
+                  source_bus->Channel(i)->Span().first(frames_to_process));
         } else {
           switch (oversample_) {
             case V8OverSampleType::Enum::kNone:
-              WaveShaperCurveValues(destination_bus->Channel(i)->MutableData(),
-                                    source_bus->Channel(i)->Data(),
-                                    frames_to_process, curve_data,
-                                    curve_length);
+              WaveShaperCurveValues(destination_bus->Channel(i)->MutableSpan(),
+                                    source_bus->Channel(i)->Span(),
+                                    frames_to_process, curve_);
               break;
 
             case V8OverSampleType::Enum::k2X: {
@@ -279,9 +273,8 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
                   temp_span);
 
               // Process at 2x up-sampled rate.
-              WaveShaperCurveValues(temp_span.data(), temp_span.data(),
-                                    frames_to_process * 2, curve_data,
-                                    curve_length);
+              WaveShaperCurveValues(temp_span, temp_span, frames_to_process * 2,
+                                    curve_);
 
               kernels_[i]->down_sampler_->Process(
                   temp_span, destination_bus->Channel(i)->MutableSpan().first(
@@ -299,9 +292,8 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
               kernels_[i]->up_sampler2_->Process(temp_span, temp_span2);
 
               // Process at 4x up-sampled rate.
-              WaveShaperCurveValues(temp_span2.data(), temp_span2.data(),
-                                    frames_to_process * 4, curve_data,
-                                    curve_length);
+              WaveShaperCurveValues(temp_span2, temp_span2,
+                                    frames_to_process * 4, curve_);
 
               kernels_[i]->down_sampler2_->Process(temp_span2, temp_span);
               kernels_[i]->down_sampler_->Process(
@@ -414,14 +406,15 @@ void WaveShaperHandler::PullInputs(uint32_t frames_to_process) {
 
 // Like WaveShaperCurveValue, but computes the values for a vector of
 // inputs.
-void WaveShaperHandler::WaveShaperCurveValues(float* destination,
-                                              const float* source,
-                                              uint32_t frames_to_process,
-                                              const float* curve_data,
-                                              int curve_length) {
+void WaveShaperHandler::WaveShaperCurveValues(
+    base::span<float> destination,
+    base::span<const float> source,
+    uint32_t frames_to_process,
+    base::span<const float> curve_data) {
   DCHECK_LE(frames_to_process, virtual_index_.size());
   // Index into the array computed from the source value.
   float* virtual_index = virtual_index_.Data();
+  const size_t curve_length = curve_data.size();
 
   // virtual_index[k] =
   //   ClampTo(0.5 * (source[k] + 1) * (curve_length - 1),
@@ -429,9 +422,9 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
   //           static_cast<float>(curve_length - 1))
 
   // Add 1 to source puttting result in virtual_index
-  vector_math::Vsadd(source, 1, 1, virtual_index, 1, frames_to_process);
+  vector_math::Vsadd(source.data(), 1, 1, virtual_index, 1, frames_to_process);
 
-  // Scale virtual_index in place by (curve_lenth -1)/2
+  // Scale virtual_index in place by (curve_length -1)/2
   vector_math::Vsmul(virtual_index, 1, 0.5 * (curve_length - 1), virtual_index,
                      1, frames_to_process);
 
@@ -441,15 +434,13 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
 
   // index = floor(virtual_index)
   DCHECK_LE(frames_to_process, index_.size());
-  float* index = index_.Data();
+  base::span<float> index = index_.as_span();
 
   // v1 and v2 hold the curve_data corresponding to the closest curve
   // values to the source sample.  To save memory, v1 will use the
   // destination array.
   DCHECK_LE(frames_to_process, v1_.size());
   DCHECK_LE(frames_to_process, v2_.size());
-  float* v1 = v1_.Data();
-  float* v2 = v2_.Data();
 
   // Interpolation factor: virtual_index - index.
   DCHECK_LE(frames_to_process, f_.size());
@@ -464,37 +455,40 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
     // one = 1
     __m128i one = _mm_set1_epi32(1);
 
-    // Do 4 eleemnts at a time
+    // Do 4 elements at a time
+    base::span<float> virtual_index_span = virtual_index_.as_span();
     for (int loop = 0; loop < loop_limit; ++loop, k += 4) {
       // v = virtual_index[k]
-      __m128 v = _mm_loadu_ps(UNSAFE_TODO(virtual_index + k));
+      __m128 v = _mm_loadu_ps(virtual_index_span.subspan(k, 4u).data());
 
       // index1 = static_cast<int>(v);
       __m128i index1 = _mm_cvttps_epi32(v);
 
       // v = static_cast<float>(index1) and save result to index[k:k+3]
       v = _mm_cvtepi32_ps(index1);
-      _mm_storeu_ps(UNSAFE_TODO(&index[k]), v);
+      _mm_storeu_ps(index.subspan(k, 4u).data(), v);
 
       // index2 = index2 + 1;
       __m128i index2 = _mm_add_epi32(index1, one);
 
       // Convert index1/index2 to arrays of 32-bit int values that are our
       // array indices to use to get the curve data.
-      int32_t* i1 = reinterpret_cast<int32_t*>(&index1);
-      int32_t* i2 = reinterpret_cast<int32_t*>(&index2);
+      alignas(16) int32_t i1[4];
+      alignas(16) int32_t i2[4];
+      _mm_store_si128(reinterpret_cast<__m128i*>(i1), index1);
+      _mm_store_si128(reinterpret_cast<__m128i*>(i2), index2);
 
       // Get the curve_data values and save them in v1 and v2,
       // carefully clamping the values.  If the input is NaN, index1
       // could be 0x8000000.
-      UNSAFE_TODO(v1[k] = curve_data[ClampTo(i1[0], 0, max_index)]);
-      UNSAFE_TODO(v2[k] = curve_data[ClampTo(i2[0], 0, max_index)]);
-      UNSAFE_TODO(v1[k + 1] = curve_data[ClampTo(i1[1], 0, max_index)]);
-      UNSAFE_TODO(v2[k + 1] = curve_data[ClampTo(i2[1], 0, max_index)]);
-      UNSAFE_TODO(v1[k + 2] = curve_data[ClampTo(i1[2], 0, max_index)]);
-      UNSAFE_TODO(v2[k + 2] = curve_data[ClampTo(i2[2], 0, max_index)]);
-      UNSAFE_TODO(v1[k + 3] = curve_data[ClampTo(i1[3], 0, max_index)]);
-      UNSAFE_TODO(v2[k + 3] = curve_data[ClampTo(i2[3], 0, max_index)]);
+      v1_[k] = curve_data[ClampTo(i1[0], 0, max_index)];
+      v2_[k] = curve_data[ClampTo(i2[0], 0, max_index)];
+      v1_[k + 1] = curve_data[ClampTo(i1[1], 0, max_index)];
+      v2_[k + 1] = curve_data[ClampTo(i2[1], 0, max_index)];
+      v1_[k + 2] = curve_data[ClampTo(i1[2], 0, max_index)];
+      v2_[k + 2] = curve_data[ClampTo(i2[2], 0, max_index)];
+      v1_[k + 3] = curve_data[ClampTo(i1[3], 0, max_index)];
+      v2_[k + 3] = curve_data[ClampTo(i2[3], 0, max_index)];
     }
   }
 #elif defined(CPU_ARM_NEON)
@@ -509,9 +503,10 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
     int32x4_t one = vdupq_n_s32(1);
     int32x4_t max = vdupq_n_s32(max_index);
 
+    base::span<float> virtual_index_span = virtual_index_.as_span();
     for (int loop = 0; loop < loop_limit; ++loop, k += 4) {
       // v = virtual_index
-      float32x4_t v = vld1q_f32(UNSAFE_TODO(virtual_index + k));
+      float32x4_t v = vld1q_f32(virtual_index_span.subspan(k, 4u).data());
 
       // index1 = static_cast<int32_t>(v), then clamp to a valid index range
       // for curve_data
@@ -520,7 +515,7 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
 
       // v = static_cast<float>(v) and save it away for later use.
       v = vcvtq_f32_s32(index1);
-      vst1q_f32(UNSAFE_TODO(&index[k]), v);
+      vst1q_f32(index.subspan(k, 4u).data(), v);
 
       // index2 = index1 + 1, then clamp to a valid range for curve_data.
       int32x4_t index2 = vaddq_s32(index1, one);
@@ -528,20 +523,20 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
 
       // Save index1/2 so we can get the individual parts.  Aligned to
       // 16 bytes for vst1q instruction.
-      int32_t i1[4] __attribute__((aligned(16)));
-      int32_t i2[4] __attribute__((aligned(16)));
+      alignas(16) int32_t i1[4];
+      alignas(16) int32_t i2[4];
       vst1q_s32(i1, index1);
       vst1q_s32(i2, index2);
 
       // Get curve elements corresponding to the indices.
-      UNSAFE_TODO(v1[k] = curve_data[i1[0]]);
-      UNSAFE_TODO(v2[k] = curve_data[i2[0]]);
-      UNSAFE_TODO(v1[k + 1] = curve_data[i1[1]]);
-      UNSAFE_TODO(v2[k + 1] = curve_data[i2[1]]);
-      UNSAFE_TODO(v1[k + 2] = curve_data[i1[2]]);
-      UNSAFE_TODO(v2[k + 2] = curve_data[i2[2]]);
-      UNSAFE_TODO(v1[k + 3] = curve_data[i1[3]]);
-      UNSAFE_TODO(v2[k + 3] = curve_data[i2[3]]);
+      v1_[k] = curve_data[i1[0]];
+      v2_[k] = curve_data[i2[0]];
+      v1_[k + 1] = curve_data[i1[1]];
+      v2_[k + 1] = curve_data[i2[1]];
+      v1_[k + 2] = curve_data[i1[2]];
+      v2_[k + 2] = curve_data[i2[2]];
+      v1_[k + 3] = curve_data[i1[3]];
+      v2_[k + 3] = curve_data[i2[3]];
     }
   }
 #endif
@@ -549,16 +544,16 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
   // Compute values for index1 and load the curve_data corresponding to
   // indices.
   for (; k < frames_to_process; ++k) {
-    unsigned index1 = ClampTo(
-        static_cast<unsigned>(UNSAFE_TODO(virtual_index[k])), 0, max_index);
+    unsigned index1 =
+        ClampTo(static_cast<unsigned>(virtual_index_[k]), 0, max_index);
     unsigned index2 = ClampTo(index1 + 1, 0, max_index);
-    UNSAFE_TODO(index[k] = index1);
-    UNSAFE_TODO(v1[k] = curve_data[index1]);
-    UNSAFE_TODO(v2[k] = curve_data[index2]);
+    index_[k] = index1;
+    v1_[k] = curve_data[index1];
+    v2_[k] = curve_data[index2];
   }
 
   // f[k] = virtual_index[k] - index[k]
-  vector_math::Vsub(virtual_index, 1, index, 1, f, 1, frames_to_process);
+  vector_math::Vsub(virtual_index, 1, index.data(), 1, f, 1, frames_to_process);
 
   // Do the linear interpolation of the curve data:
   // destination[k] = v1[k] + f[k]*(v2[k] - v1[k])
@@ -567,9 +562,11 @@ void WaveShaperHandler::WaveShaperCurveValues(float* destination,
   // 2. v2[k] = f[k]*v2[k] = f[k]*(v2[k] - v1[k])
   // 3. destination[k] = destination[k] + v2[k]
   //                   = v1[k] + f[k]*(v2[k] - v1[k])
-  vector_math::Vsub(v2, 1, v1, 1, v2, 1, frames_to_process);
-  vector_math::Vmul(f, 1, v2, 1, v2, 1, frames_to_process);
-  vector_math::Vadd(v2, 1, v1, 1, destination, 1, frames_to_process);
+  vector_math::Vsub(v2_.Data(), 1, v1_.Data(), 1, v2_.Data(), 1,
+                    frames_to_process);
+  vector_math::Vmul(f, 1, v2_.Data(), 1, v2_.Data(), 1, frames_to_process);
+  vector_math::Vadd(v2_.Data(), 1, v1_.Data(), 1, destination.data(), 1,
+                    frames_to_process);
 }
 
 }  // namespace blink
