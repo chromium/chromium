@@ -78,9 +78,9 @@ ImmersiveModeControllerMac::RevealedLock::~RevealedLock() {
 
 ImmersiveModeControllerMac::ImmersiveModeControllerMac(
     BrowserWindowInterface* browser,
-    bool tab_strip_in_overlay_widget)
+    bool separate_tab_strip)
     : ImmersiveModeController(browser),
-      tab_strip_in_overlay_widget_(tab_strip_in_overlay_widget) {}
+      separate_tab_strip_(separate_tab_strip) {}
 
 ImmersiveModeControllerMac::~ImmersiveModeControllerMac() {
   CHECK(!views::WidgetObserver::IsInObserverList());
@@ -103,8 +103,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
   if (enabled) {
     // Vertical tab strip should stay visible and will not be reparented to the
     // tab overlay.
-    if (tab_strip_in_overlay_widget_ &&
-        !browser_view_->ShouldDrawVerticalTabStrip()) {
+    if (separate_tab_strip_ && !browser_view_->ShouldDrawVerticalTabStrip()) {
       tab_widget_height_ = browser_view_->tab_strip_view()->height();
       tab_widget_height_ += static_cast<BrowserFrameViewMac*>(
                                 browser_view_->browser_widget()->GetFrameView())
@@ -191,7 +190,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // when transitioning to full screen. Call it now.
     OnViewBoundsChanged(browser_view_->top_container());
   } else {
-    if (tab_strip_in_overlay_widget_) {
+    if (separate_tab_strip_) {
       browser_view_->tab_overlay_widget()->Hide();
       browser_view_->tab_strip_view()->SetBorder(nullptr);
     }
@@ -332,11 +331,6 @@ void ImmersiveModeControllerMac::OnContentFullscreenChanged(
   }
 }
 
-void ImmersiveModeControllerMac::OnVerticalTabStripModeChanged() {
-  SetTabStripInOverlayWidget(
-      browser_view_->UsesImmersiveFullscreenTabbedMode());
-}
-
 void ImmersiveModeControllerMac::OnDidChangeFocus(views::View* focused_before,
                                                   views::View* focused_now) {
   if (browser_view_->top_container()->Contains(focused_now) ||
@@ -362,8 +356,7 @@ void ImmersiveModeControllerMac::OnViewBoundsChanged(
   // OnViewBoundsChanged does not get called.
   // tab_overlay_widget size should only be set if we aren't drawing the
   // vertical tabstrip.
-  if (tab_strip_in_overlay_widget_ &&
-      !browser_view_->ShouldDrawVerticalTabStrip()) {
+  if (separate_tab_strip_ && !browser_view_->ShouldDrawVerticalTabStrip()) {
     gfx::Size new_size(bounds.width(), tab_widget_height_);
     browser_view_->tab_overlay_widget()->SetSize(new_size);
     browser_view_->tab_overlay_view()->SetSize(new_size);
@@ -385,36 +378,6 @@ void ImmersiveModeControllerMac::LockDestroyed() {
 
 void ImmersiveModeControllerMac::SetTabNativeWidgetID(uint64_t widget_id) {
   tab_native_widget_id_ = widget_id;
-}
-
-void ImmersiveModeControllerMac::SetTabStripInOverlayWidget(
-    bool tab_strip_in_overlay_widget) {
-  if (tab_strip_in_overlay_widget_ == tab_strip_in_overlay_widget) {
-    return;
-  }
-  tab_strip_in_overlay_widget_ = tab_strip_in_overlay_widget;
-
-  if (enabled_) {
-    // If immersive mode is already enabled, we must toggle it to re-trigger the
-    // reparenting and native overlay creation logic with the new tab mode.
-    SetEnabled(false);
-
-    // If we are moving away from a separate tab strip, we must explicitly clear
-    // the native widget ID. The remote Cocoa layer uses this ID to decide
-    // whether to create a tabbed immersive controller (which reserves space
-    // for a top tab strip). Clearing it ensures a single-overlay controller
-    // is used instead, preventing an empty space artifact above the toolbar.
-    if (!tab_strip_in_overlay_widget_) {
-      SetTabNativeWidgetID(0);
-    }
-    SetEnabled(true);
-  } else {
-    // If immersive mode is not enabled, we just need to update the internal
-    // state of whether the tab strip is in a separate overlay widget.
-    if (!tab_strip_in_overlay_widget_) {
-      SetTabNativeWidgetID(0);
-    }
-  }
 }
 
 void ImmersiveModeControllerMac::MoveChildren(views::Widget* from_widget,
