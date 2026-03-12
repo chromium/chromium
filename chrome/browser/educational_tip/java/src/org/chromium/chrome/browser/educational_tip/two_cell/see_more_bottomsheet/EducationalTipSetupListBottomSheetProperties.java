@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.educational_tip.two_cell;
+package org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -12,12 +12,12 @@ import java.util.List;
 
 /** The properties associated with rendering the educational tip bottom sheet. */
 @NullMarked
-public class EducationalTipBottomSheetProperties {
+public class EducationalTipSetupListBottomSheetProperties {
     public static final WritableObjectPropertyKey<String> BOTTOM_SHEET_TITLE =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> BOTTOM_SHEET_DESCRIPTION =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<List<EducationalTipBottomSheetItem>>
+    public static final WritableObjectPropertyKey<List<EducationalTipSetupListBottomSheetItem>>
             BOTTOM_SHEET_LIST_ITEMS = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> BOTTOM_SHEET_LIST_ITEMS_ON_CLICK =
             new WritableObjectPropertyKey<>();

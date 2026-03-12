@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProviderFactory;
 import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetCoordinator;
+import org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetItem;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -118,9 +120,12 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
         EducationalTipCardProvider item1Provider = mProviders.get(mItem1Type);
         EducationalTipCardProvider item2Provider = mProviders.get(mItem2Type);
 
-        EducationalTipBottomSheetCoordinator educationalTipBottomSheetCoordinator =
-                getEducationalTipBottomSheetCoordinator();
-        mModel.set(SEE_MORE_CLICK_HANDLER, educationalTipBottomSheetCoordinator::showBottomSheet);
+        EducationalTipSetupListBottomSheetCoordinator
+                educationalTipSetupListBottomSheetCoordinator =
+                        getEducationalTipSetupListBottomSheetCoordinator();
+        mModel.set(
+                SEE_MORE_CLICK_HANDLER,
+                educationalTipSetupListBottomSheetCoordinator::showBottomSheet);
 
         // Refresh Slot 1
         if (item1Provider != null) {
@@ -160,23 +165,26 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
     }
 
     @NonNull
-    private EducationalTipBottomSheetCoordinator getEducationalTipBottomSheetCoordinator() {
-        Supplier<List<EducationalTipBottomSheetItem>> bottomSheetSupplier =
+    private EducationalTipSetupListBottomSheetCoordinator
+            getEducationalTipSetupListBottomSheetCoordinator() {
+        Supplier<List<EducationalTipSetupListBottomSheetItem>> bottomSheetSupplier =
                 () -> {
-                    List<EducationalTipBottomSheetItem> output = new ArrayList<>();
+                    List<EducationalTipSetupListBottomSheetItem> output = new ArrayList<>();
                     for (@ModuleType int type : mCurrentRankedModuleTypes) {
                         EducationalTipCardProvider provider = mProviders.get(type);
                         if (provider != null) {
                             SetupListCompletable.CompletionState completionState =
                                     SetupListCompletable.getCompletionState(provider, type);
                             output.add(
-                                    new EducationalTipBottomSheetItem(provider, completionState));
+                                    new EducationalTipSetupListBottomSheetItem(
+                                            provider, completionState));
                         }
                     }
                     return output;
                 };
 
-        return new EducationalTipBottomSheetCoordinator(mActionDelegate, bottomSheetSupplier);
+        return new EducationalTipSetupListBottomSheetCoordinator(
+                mActionDelegate, bottomSheetSupplier);
     }
 
     /**

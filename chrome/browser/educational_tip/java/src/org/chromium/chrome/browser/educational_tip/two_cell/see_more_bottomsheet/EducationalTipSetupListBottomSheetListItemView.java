@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.educational_tip.two_cell;
+package org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 /**
- * The list item view within a {@link EducationalTipBottomSheetListContainerView} that is in a
- * bottom sheet.
+ * The list item view within a {@link EducationalTipSetupListBottomSheetListContainerView} that is
+ * in a bottom sheet.
  */
 @NullMarked
 public class EducationalTipSetupListBottomSheetListItemView extends ConstraintLayout {
@@ -27,7 +27,8 @@ public class EducationalTipSetupListBottomSheetListItemView extends ConstraintLa
     private TextView mTitle;
     private TextView mDescription;
 
-    public EducationalTipSetupListBottomSheetListItemView(Context context, @Nullable AttributeSet attrs) {
+    public EducationalTipSetupListBottomSheetListItemView(
+            Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 

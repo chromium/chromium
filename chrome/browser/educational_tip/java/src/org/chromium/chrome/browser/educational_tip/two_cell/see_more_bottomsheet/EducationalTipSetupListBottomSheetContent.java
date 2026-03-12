@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.educational_tip.two_cell;
+package org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet;
 
 import android.content.Context;
 import android.view.View;
@@ -14,8 +14,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet content of the educational tip two-cell layout. */
 @NullMarked
-public class EducationalTipBottomSheetContent implements BottomSheetContent {
-    // TODO(crbug.com/479597724): Implement BottomSheetContent and add relevant tests.
+public class EducationalTipSetupListBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final Context mContext;
 
@@ -23,7 +22,7 @@ public class EducationalTipBottomSheetContent implements BottomSheetContent {
      * @param context Context of the bottom sheet.
      * @param contentView Main view for the bottom sheet.
      */
-    public EducationalTipBottomSheetContent(Context context, View contentView) {
+    public EducationalTipSetupListBottomSheetContent(Context context, View contentView) {
         mContext = context;
         mContentView = contentView;
     }

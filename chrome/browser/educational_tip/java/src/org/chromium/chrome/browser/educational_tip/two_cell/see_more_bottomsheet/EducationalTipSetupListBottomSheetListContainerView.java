@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.educational_tip.two_cell;
+package org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -23,12 +23,10 @@ import java.util.List;
  * bottom sheet.
  */
 @NullMarked
-public class EducationalTipBottomSheetListContainerView extends LinearLayout {
-    // TODO(crbug.com/479597724): Implement container view.
-
+public class EducationalTipSetupListBottomSheetListContainerView extends LinearLayout {
     @Nullable private Runnable mDismissBottomSheetRunnable;
 
-    public EducationalTipBottomSheetListContainerView(
+    public EducationalTipSetupListBottomSheetListContainerView(
             Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -40,12 +38,13 @@ public class EducationalTipBottomSheetListContainerView extends LinearLayout {
      * @param rankedEducationalTips list of {@link EducationalTipCardProvider} that will be
      *     displayed in the container.
      */
-    public void renderSetUpList(List<EducationalTipBottomSheetItem> rankedEducationalTips) {
+    public void renderSetUpList(
+            List<EducationalTipSetupListBottomSheetItem> rankedEducationalTips) {
         // Clears all previous list items.
         destroy();
 
         for (int i = 0; i < rankedEducationalTips.size(); i++) {
-            EducationalTipBottomSheetItem item = rankedEducationalTips.get(i);
+            EducationalTipSetupListBottomSheetItem item = rankedEducationalTips.get(i);
             EducationalTipCardProvider educationalTip = item.provider;
             EducationalTipSetupListBottomSheetListItemView listItemView =
                     (EducationalTipSetupListBottomSheetListItemView) createListItemView();

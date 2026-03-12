@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.educational_tip.two_cell;
+package org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS_ON_CLICK;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_TITLE;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS_ON_CLICK;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_TITLE;
 
 import android.content.Context;
 
@@ -44,29 +44,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-/** Unit tests for {@link EducationalTipBottomSheetCoordinator} */
+/** Unit tests for {@link EducationalTipSetupListBottomSheetCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class})
-public class EducationalTipBottomSheetCoordinatorUnitTest {
+public class EducationalTipSetupListBottomSheetCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private EducationTipModuleActionDelegate mActionDelegate;
-    @Mock private Supplier<List<EducationalTipBottomSheetItem>> mEducationalTipCardProviderSupplier;
+
+    @Mock
+    private Supplier<List<EducationalTipSetupListBottomSheetItem>>
+            mEducationalTipCardProviderSupplier;
 
     private Context mContext;
-    private List<EducationalTipBottomSheetItem> mListOfEducationalTipBottomSheetItem;
+    private List<EducationalTipSetupListBottomSheetItem>
+            mListOfEducationalTipSetupListBottomSheetItem;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
         when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
-        mListOfEducationalTipBottomSheetItem = createListOfEducationalTipBottomSheetItem();
+        mListOfEducationalTipSetupListBottomSheetItem = createListOfEducationalTipBottomSheetItem();
         when(mEducationalTipCardProviderSupplier.get())
-                .thenReturn(mListOfEducationalTipBottomSheetItem);
+                .thenReturn(mListOfEducationalTipSetupListBottomSheetItem);
 
         List<Integer> moduleTypeList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
@@ -78,11 +82,12 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testShowBottomSheet() {
-        EducationalTipBottomSheetCoordinator educationalTipBottomSheetCoordinator =
-                new EducationalTipBottomSheetCoordinator(
-                        mActionDelegate, mEducationalTipCardProviderSupplier);
-        PropertyModel model = educationalTipBottomSheetCoordinator.getModelForTesting();
-        educationalTipBottomSheetCoordinator.showBottomSheet();
+        EducationalTipSetupListBottomSheetCoordinator
+                educationalTipSetupListBottomSheetCoordinator =
+                        new EducationalTipSetupListBottomSheetCoordinator(
+                                mActionDelegate, mEducationalTipCardProviderSupplier);
+        PropertyModel model = educationalTipSetupListBottomSheetCoordinator.getModelForTesting();
+        educationalTipSetupListBottomSheetCoordinator.showBottomSheet();
 
         Assert.assertEquals(
                 "Bottom sheet title should be default",
@@ -95,20 +100,21 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
         Assert.assertEquals(
                 "Bottom sheet list items should be set",
                 model.get(BOTTOM_SHEET_LIST_ITEMS),
-                mListOfEducationalTipBottomSheetItem);
+                mListOfEducationalTipSetupListBottomSheetItem);
         verify(mBottomSheetController).requestShowContent(any(), /* animate= */ eq(true));
     }
 
     @Test
     @SmallTest
     public void testDismissBottomSheet() {
-        EducationalTipBottomSheetCoordinator educationalTipBottomSheetCoordinator =
-                new EducationalTipBottomSheetCoordinator(
-                        mActionDelegate, mEducationalTipCardProviderSupplier);
-        PropertyModel model = educationalTipBottomSheetCoordinator.getModelForTesting();
+        EducationalTipSetupListBottomSheetCoordinator
+                educationalTipSetupListBottomSheetCoordinator =
+                        new EducationalTipSetupListBottomSheetCoordinator(
+                                mActionDelegate, mEducationalTipCardProviderSupplier);
+        PropertyModel model = educationalTipSetupListBottomSheetCoordinator.getModelForTesting();
 
         // 1. Verify dismissal with animation.
-        educationalTipBottomSheetCoordinator.dismissBottomSheet(true);
+        educationalTipSetupListBottomSheetCoordinator.dismissBottomSheet(true);
         verify(mBottomSheetController).hideContent(any(), eq(true));
 
         // 2. Verify dismissal without animation (triggered by item click).
@@ -118,8 +124,9 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
         verify(mBottomSheetController).hideContent(any(), eq(false));
     }
 
-    private List<EducationalTipBottomSheetItem> createListOfEducationalTipBottomSheetItem() {
-        List<EducationalTipBottomSheetItem> output = new ArrayList<>();
+    private List<EducationalTipSetupListBottomSheetItem>
+            createListOfEducationalTipBottomSheetItem() {
+        List<EducationalTipSetupListBottomSheetItem> output = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             EducationalTipCardProvider provider =
                     EducationalTipCardProviderFactory.createInstance(
@@ -128,7 +135,7 @@ public class EducationalTipBottomSheetCoordinatorUnitTest {
                             null,
                             mActionDelegate,
                             () -> {});
-            output.add(new EducationalTipBottomSheetItem(provider, null));
+            output.add(new EducationalTipSetupListBottomSheetItem(provider, null));
         }
         return output;
     }

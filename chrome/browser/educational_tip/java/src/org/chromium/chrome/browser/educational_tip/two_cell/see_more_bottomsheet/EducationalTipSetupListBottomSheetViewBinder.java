@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.educational_tip.two_cell;
+package org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet;
 
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS_ON_CLICK;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_TITLE;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS_ON_CLICK;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_TITLE;
 
 import android.view.View;
 import android.widget.TextView;
@@ -19,7 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** ViewBinder for a generic two-cell educational tip bottom sheet. */
 @NullMarked
-public class EducationalTipBottomSheetViewBinder {
+public class EducationalTipSetupListBottomSheetViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == BOTTOM_SHEET_TITLE) {
             TextView title = view.findViewById(R.id.setup_list_bottom_sheet_title);
@@ -28,11 +28,11 @@ public class EducationalTipBottomSheetViewBinder {
             TextView description = view.findViewById(R.id.setup_list_bottom_sheet_description);
             description.setText(model.get(BOTTOM_SHEET_DESCRIPTION));
         } else if (propertyKey == BOTTOM_SHEET_LIST_ITEMS) {
-            EducationalTipBottomSheetListContainerView listContainerView =
+            EducationalTipSetupListBottomSheetListContainerView listContainerView =
                     view.findViewById(R.id.setup_list_bottom_sheet_container_view);
             listContainerView.renderSetUpList(model.get(BOTTOM_SHEET_LIST_ITEMS));
         } else if (propertyKey == BOTTOM_SHEET_LIST_ITEMS_ON_CLICK) {
-            EducationalTipBottomSheetListContainerView listContainerView =
+            EducationalTipSetupListBottomSheetListContainerView listContainerView =
                     view.findViewById(R.id.setup_list_bottom_sheet_container_view);
             listContainerView.setDismissBottomSheet(model.get(BOTTOM_SHEET_LIST_ITEMS_ON_CLICK));
         }

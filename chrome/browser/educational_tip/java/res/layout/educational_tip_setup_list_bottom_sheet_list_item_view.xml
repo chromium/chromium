@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipSetupListBottomSheetListItemView
+<org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetListItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -62,4 +62,4 @@ found in the LICENSE file.
         app:layout_constraintStart_toEndOf="@id/list_item_description"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
-</org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipSetupListBottomSheetListItemView>
+</org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetListItemView>

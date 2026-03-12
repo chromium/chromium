@@ -59,7 +59,7 @@ found in the LICENSE file.
                 android:gravity="center_horizontal"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
-            <org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetListContainerView
+            <org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetListContainerView
                 android:id="@+id/setup_list_bottom_sheet_container_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

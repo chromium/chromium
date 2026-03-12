@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.educational_tip.two_cell;
+package org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet;
 
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS_ON_CLICK;
-import static org.chromium.chrome.browser.educational_tip.two_cell.EducationalTipBottomSheetProperties.BOTTOM_SHEET_TITLE;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_DESCRIPTION;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_LIST_ITEMS_ON_CLICK;
+import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_TITLE;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -29,21 +29,22 @@ import java.util.function.Supplier;
  * fetching and preparing the content for the bottom sheet.
  */
 @NullMarked
-public class EducationalTipBottomSheetCoordinator {
+public class EducationalTipSetupListBottomSheetCoordinator {
     private final Context mContext;
     private final BottomSheetContent mBottomSheetContent;
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
 
-    private final Supplier<List<EducationalTipBottomSheetItem>>
+    private final Supplier<List<EducationalTipSetupListBottomSheetItem>>
             mRankedEducationalTipProviderSupplier;
 
     /**
      * @param actionDelegate The instance of {@link EducationTipModuleActionDelegate}.
      */
-    public EducationalTipBottomSheetCoordinator(
+    public EducationalTipSetupListBottomSheetCoordinator(
             EducationTipModuleActionDelegate actionDelegate,
-            Supplier<List<EducationalTipBottomSheetItem>> rankedEducationalTipProviderSupplier) {
+            Supplier<List<EducationalTipSetupListBottomSheetItem>>
+                    rankedEducationalTipProviderSupplier) {
         mRankedEducationalTipProviderSupplier = rankedEducationalTipProviderSupplier;
         mContext = actionDelegate.getContext();
         mBottomSheetController = actionDelegate.getBottomSheetController();
@@ -52,11 +53,13 @@ public class EducationalTipBottomSheetCoordinator {
                         .inflate(
                                 R.layout.educational_tip_setup_list_see_more_bottom_sheet_layout,
                                 /* root= */ null);
-        mBottomSheetContent = new EducationalTipBottomSheetContent(mContext, contentView);
+        mBottomSheetContent = new EducationalTipSetupListBottomSheetContent(mContext, contentView);
 
-        mModel = new PropertyModel.Builder(EducationalTipBottomSheetProperties.ALL_KEYS).build();
+        mModel =
+                new PropertyModel.Builder(EducationalTipSetupListBottomSheetProperties.ALL_KEYS)
+                        .build();
         PropertyModelChangeProcessor.create(
-                mModel, contentView, EducationalTipBottomSheetViewBinder::bind);
+                mModel, contentView, EducationalTipSetupListBottomSheetViewBinder::bind);
 
         mModel.set(
                 BOTTOM_SHEET_LIST_ITEMS_ON_CLICK, () -> dismissBottomSheet(/* animate= */ false));
