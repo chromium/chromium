@@ -39,11 +39,7 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.util.List;
 
-/**
- * Prompt that asks users to confirm saving an entity imported from a form submission.
- *
- * <p>TODO: crbug.com/460410690 - Write render tests.
- */
+/** Prompt that asks users to confirm saving an entity imported from a form submission. */
 @NullMarked
 public class AutofillAiSaveUpdateEntityPrompt {
     private final AutofillAiSaveUpdateEntityPromptController mController;
