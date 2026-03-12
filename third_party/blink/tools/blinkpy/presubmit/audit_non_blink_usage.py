@@ -3019,6 +3019,12 @@ _CONFIG = [
         ],
         'allowed': ['base::NoDestructor', 'base::flat_map']
     },
+    {
+        'paths': [
+            'third_party/blink/common/scheduler/web_scheduler_tracked_feature.cc',
+        ],
+        'allowed': ['base::NoDestructor']
+    },
 ]
 
 

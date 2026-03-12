@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
@@ -172,9 +173,10 @@ std::map<std::string, WebSchedulerTrackedFeature> MakeShortNameToFeature() {
 
 const std::map<std::string, WebSchedulerTrackedFeature>&
 ShortStringToFeatureMap() {
-  static const std::map<std::string, WebSchedulerTrackedFeature>
-      short_name_to_feature = MakeShortNameToFeature();
-  return short_name_to_feature;
+  static const base::NoDestructor<
+      std::map<std::string, WebSchedulerTrackedFeature>>
+      short_name_to_feature(MakeShortNameToFeature());
+  return *short_name_to_feature;
 }
 
 }  // namespace
