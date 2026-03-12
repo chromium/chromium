@@ -3,10 +3,12 @@ sergeyu@chromium.org
 tommi@chromium.org
 
 # For Cast-related changes.
-per-file cast_*, mirroring_service*=file://media/cast/OWNERS
+per-file cast_*=file://media/cast/OWNERS
+per-file mirroring_service*=file://media/cast/OWNERS
 
 # For EME changes.
-per-file *cdm*, *encrypted*=file://media/cdm/OWNERS
+per-file *cdm*=file://media/cdm/OWNERS
+per-file *encrypted*=file://media/cdm/OWNERS
 
 # For Media Engagement changes.
 per-file *media_engagement*=evliu@google.com

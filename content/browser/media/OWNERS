@@ -12,4 +12,6 @@ per-file active_media_session_controller*=file://services/media_session/OWNERS
 per-file media_internals_audio_focus_helper*=file://services/media_session/OWNERS
 per-file media_keys_listener_manager*=file://services/media_session/OWNERS
 
-per-file *cdm*, key_system*, encrypted*=file://media/cdm/OWNERS
+per-file *cdm*=file://media/cdm/OWNERS
+per-file key_system*=file://media/cdm/OWNERS
+per-file encrypted*=file://media/cdm/OWNERS
