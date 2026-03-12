@@ -10583,8 +10583,7 @@
                         "GlicDefaultTabContextSetting",
                         "GlicEnableMultiInstanceBasedOnTier",
                         "GlicLiveModeOnlyGlow",
-                        "GlicMultiInstance",
-                        "GlicMultiTab"
+                        "GlicMultiInstance"
                     ]
                 }
             ]
