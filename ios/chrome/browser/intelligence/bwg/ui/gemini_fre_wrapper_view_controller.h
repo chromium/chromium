@@ -1,17 +1,17 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_FRE_WRAPPER_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_FRE_WRAPPER_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_FRE_WRAPPER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_FRE_WRAPPER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
 @protocol GeminiConsentMutator;
 
-// UIViewController that owns BWGPromo and BWGConsent view controllers and
+// UIViewController that owns GeminiPromo and GeminiConsent view controllers and
 // manages their transitions.
-@interface BWGFREWrapperViewController : UIViewController
+@interface GeminiFREWrapperViewController : UIViewController
 
 // Initializes the navigation controller.
 // If `showPromo` is YES, the navigation controller will display the promo.
@@ -34,4 +34,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_BWG_FRE_WRAPPER_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UI_GEMINI_FRE_WRAPPER_VIEW_CONTROLLER_H_

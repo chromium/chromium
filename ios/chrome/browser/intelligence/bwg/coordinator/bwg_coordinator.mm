@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -47,7 +47,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   BWGMediator* _mediator;
 
   // Wrapper view controller for the First Run Experience (FRE) UI.
-  BWGFREWrapperViewController* _FREWrapperViewController;
+  GeminiFREWrapperViewController* _FREWrapperViewController;
 
   // Handler for sending BWG commands.
   id<BWGCommands> _BWGCommandsHandler;
@@ -148,7 +148,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
     }
   }
 
-  _FREWrapperViewController = [[BWGFREWrapperViewController alloc]
+  _FREWrapperViewController = [[GeminiFREWrapperViewController alloc]
          initWithPromo:showPromo
       isAccountManaged:[self isManagedAccount]];
   _FREWrapperViewController.sheetPresentationController.delegate = self;

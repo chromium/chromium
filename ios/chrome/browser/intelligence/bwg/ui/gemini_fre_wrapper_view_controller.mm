@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_mutator.h"
@@ -35,14 +35,14 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 
 }  // namespace
 
-@interface BWGFREWrapperViewController () <GeminiPromoViewControllerDelegate>
+@interface GeminiFREWrapperViewController () <GeminiPromoViewControllerDelegate>
 
 // The main scroll view for the content.
 @property(nonatomic, strong) UIScrollView* contentScrollView;
 
 @end
 
-@implementation BWGFREWrapperViewController {
+@implementation GeminiFREWrapperViewController {
   // The Gemini Promo View Controller.
   GeminiPromoViewController* _promoViewController;
   // The Gemini Consent View Controller.
@@ -102,7 +102,7 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-  __weak BWGFREWrapperViewController* weakSelf = self;
+  __weak GeminiFREWrapperViewController* weakSelf = self;
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
