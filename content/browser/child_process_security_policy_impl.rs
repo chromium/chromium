@@ -24,6 +24,8 @@ mod ffi {
         fn is_web_safe_scheme(scheme: &str) -> bool;
         fn can_commit_scheme_in_any_process(scheme: &str) -> bool;
         fn clear_web_safe_scheme_for_testing(scheme: &str);
+        fn register_pseudo_scheme(scheme: &str);
+        fn is_pseudo_scheme(scheme: &str) -> bool;
     }
 }
 
@@ -33,11 +35,33 @@ mod ffi {
 // copy is not desirable.
 fn register_web_safe_scheme(scheme: &str) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+
+    debug_assert!(
+        !cpsp.schemes_ok_to_request_in_any_process.contains(scheme),
+        "Add schemes at most once."
+    );
+    debug_assert!(
+        !cpsp.schemes_ok_to_commit_in_any_process.contains(scheme),
+        "Add schemes at most once."
+    );
+    debug_assert!(!cpsp.pseudo_schemes.contains(scheme), "Web-safe implies not pseudo.");
+
     cpsp.schemes_ok_to_request_in_any_process.insert(scheme.to_string());
     cpsp.schemes_ok_to_commit_in_any_process.insert(scheme.to_string());
 }
 fn register_web_safe_request_only_scheme(scheme: &str) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+
+    debug_assert!(
+        !cpsp.schemes_ok_to_request_in_any_process.contains(scheme),
+        "Add schemes at most once."
+    );
+    debug_assert!(
+        !cpsp.schemes_ok_to_commit_in_any_process.contains(scheme),
+        "Add schemes at most once."
+    );
+    debug_assert!(!cpsp.pseudo_schemes.contains(scheme), "Web-safe implies not pseudo.");
+
     cpsp.schemes_ok_to_request_in_any_process.insert(scheme.to_string());
 }
 fn is_web_safe_scheme(scheme: &str) -> bool {
@@ -52,6 +76,26 @@ fn clear_web_safe_scheme_for_testing(scheme: &str) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.schemes_ok_to_request_in_any_process.remove(scheme);
     cpsp.schemes_ok_to_commit_in_any_process.remove(scheme);
+    cpsp.pseudo_schemes.remove(scheme);
+}
+fn register_pseudo_scheme(scheme: &str) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+
+    debug_assert!(!cpsp.pseudo_schemes.contains(scheme), "Add schemes at most once.");
+    debug_assert!(
+        !cpsp.schemes_ok_to_request_in_any_process.contains(scheme),
+        "Pseudo implies not web-safe."
+    );
+    debug_assert!(
+        !cpsp.schemes_ok_to_commit_in_any_process.contains(scheme),
+        "Pseudo implies not web-safe."
+    );
+
+    cpsp.pseudo_schemes.insert(scheme.to_string());
+}
+fn is_pseudo_scheme(scheme: &str) -> bool {
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.pseudo_schemes.contains(scheme)
 }
 
 /// Defines a global policy object that tracks security information for child
@@ -63,13 +107,17 @@ fn clear_web_safe_scheme_for_testing(scheme: &str) {
 /// This object supports being accessed from different threads and guards access
 /// to its internal data with a Mutex.
 pub struct ChildProcessSecurityPolicyImpl {
-    /// Tracks the list of web-safe schemes that are ok to request from any
+    /// Tracks the set of web-safe schemes that are ok to request from any
     /// renderer process.
     schemes_ok_to_request_in_any_process: HashSet<String>,
-    /// Tracks the list of schemes that are ok to commit in any renderer
+    /// Tracks the set of schemes that are ok to commit in any renderer
     /// process. These are generally a subset of
     /// `schemes_ok_to_request_in_any_process`.
     schemes_ok_to_commit_in_any_process: HashSet<String>,
+    /// Tracks the set of pseudo schemes, which do not actually represent
+    /// retrievable URLs. For example, most of the URLs in the "about" scheme
+    /// (apart from `about:blank` and `about:srcdoc`) are aliases to other URLs.
+    pseudo_schemes: HashSet<String>,
     // TODO(crbug.com/482216433): this will also eventually track per-process
     // state.
 }
@@ -81,6 +129,7 @@ impl ChildProcessSecurityPolicyImpl {
         Self {
             schemes_ok_to_request_in_any_process: HashSet::new(),
             schemes_ok_to_commit_in_any_process: HashSet::new(),
+            pseudo_schemes: HashSet::new(),
         }
     }
     /// Private function to get a reference to the singleton instance of

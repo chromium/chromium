@@ -406,9 +406,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // cannot be requested like normal URLs.  There is no mechanism for revoking
   // pseudo schemes.
   void RegisterPseudoScheme(const std::string& scheme);
+  void RegisterPseudoScheme_Cpp(const std::string& scheme);
 
   // Returns true iff |scheme| has been registered as pseudo scheme.
   bool IsPseudoScheme(const std::string& scheme);
+  bool IsPseudoScheme_Cpp(const std::string& scheme);
 
   // Upon creation, child processes should register themselves by calling this
   // this method exactly once. This call must be made on the UI thread.
