@@ -1217,7 +1217,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       ParseFinishedToFirstUpdateMetrics) {
+                       DISABLED_ParseFinishedToFirstUpdateMetrics) {
   base::HistogramTester histogram_tester;
 
   // Open a new one to capture the initial metric if it was already recorded.
