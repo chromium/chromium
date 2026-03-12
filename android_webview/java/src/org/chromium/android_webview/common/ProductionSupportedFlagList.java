@@ -1255,11 +1255,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "VariationsStickyNoopTest", "No-op flag for testing sticky study activation."),
         Flag.baseFeature(
-                "VariationsStickyPersistence",
-                "Controls how prefs are written and persisted for tracking sticky study activation."
-                    + " Note: The actual behavior is controlled by a feature param, but disabling"
-                    + " the feature will use the default param value (no special persistence)."),
-        Flag.baseFeature(
                 BlinkFeatures.TEXT_SCALE_META_TAG,
                 "When enabled, <meta name=\"text-scale\" content=\"scale\"> takes effect"),
         Flag.baseFeature(
