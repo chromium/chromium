@@ -253,6 +253,7 @@ static const MimeInfo kSecondaryMappings[] = {
     {"message/rfc822", "eml"},
     {"text/calendar", "ics"},
     {"text/html", "ehtml"},
+    {"text/markdown", "md"},
     {"text/plain", "txt,text"},
     {"text/vtt", "vtt"},
     {"text/x-sh", "sh"},

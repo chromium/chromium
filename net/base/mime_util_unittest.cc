@@ -49,6 +49,7 @@ TEST(MimeUtilTest, GetWellKnownMimeTypeFromExtension) {
       {FILE_PATH_LITERAL("csv"), "text/csv"},
       {FILE_PATH_LITERAL("mkv"), "video/matroska"},
       {FILE_PATH_LITERAL("mka"), "audio/matroska"},
+      {FILE_PATH_LITERAL("md"), "text/markdown"},
       {FILE_PATH_LITERAL("not an extension / for sure"), nullptr},
       {containsNullByte, nullptr}};
 
@@ -110,6 +111,13 @@ TEST(MimeUtilTest, ExtensionTest) {
       {FILE_PATH_LITERAL("csv"), {"text/csv"}},
       {FILE_PATH_LITERAL("mkv"), {"video/matroska"}},
       {FILE_PATH_LITERAL("mka"), {"audio/matroska"}},
+      {FILE_PATH_LITERAL("md"),
+       {
+           "text/markdown",
+#if BUILDFLAG(IS_IOS)
+           "text/x-markdown",  // System override for iOS.
+#endif
+       }},
       {FILE_PATH_LITERAL("not an extension / for sure"), {}},
       {containsNullByte, {}}};
 
