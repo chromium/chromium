@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -312,7 +313,7 @@ int TransportClientSocketPool::RequestSockets(
 
   Request request(nullptr /* no handle */, CompletionOnceCallback(),
                   ProxyAuthCallback(), IDLE, SocketTag(),
-                  RespectLimits::ENABLED, NO_IDLE_SOCKETS, std::move(params),
+                  RespectLimits::ENABLED, NO_IDLE_SOCKETS, params,
                   proxy_annotation_tag, net_log);
 
   // Cleanup any timed-out idle sockets.
@@ -336,23 +337,19 @@ int TransportClientSocketPool::RequestSockets(
   base::RepeatingCallback<void(int)> preconnect_done_closure =
       base::BarrierCallback<int>(
           num_sockets,
-          base::BindOnce(
-              [](PreconnectCompletionCallback callback,
-                 std::vector<int> results) {
-                int result = OK;
-                if (base::FeatureList::IsEnabled(
-                        net::features::
-                            kEnableErrorCodePropagationForPreconnect)) {
-                  CHECK(!results.empty());
-                  // TODO(crbug.com/453308537): Consider more sophisticated
-                  // error code propagation logic.
-                  result = *std::max_element(results.begin(), results.end());
-                }
-                base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                    FROM_HERE,
-                    base::BindOnce(std::move(callback), result == OK));
-              },
-              std::move(callback)));
+          // The `preconnect_done_closure` is called when the connect job
+          // is complete and destructed. Generally, `TransportClientSocketPool`
+          // outlives the `ConnectJob`. One exception for this is when
+          // `TransportClientSocketPool` is destroyed and we are cancelling the
+          // existing `ConnectJob`. In this case, `preconnect_done_closure` will
+          // be post tasked after the last `ConnectJob` is destroyed, meaning
+          // that the closure may be called after the
+          // `TransportClientSocketPool` is destroyed. Therefore, we need to
+          // pass the closure to the task runner asynchronously.
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &TransportClientSocketPool::OnPreconnectConnectJobComplete,
+              weak_factory_.GetWeakPtr(), std::move(callback), group_id, params,
+              proxy_annotation_tag, net_log)));
   int pending_connect_job_count = 0;
   for (int num_iterations_left = num_sockets;
        group->NumActiveSocketSlots() < num_sockets && num_iterations_left > 0;
@@ -1499,6 +1496,55 @@ TransportClientSocketPool::RefreshGroup(GroupMap::iterator it,
     return RemoveGroup(it);
   }
   return ++it;
+}
+
+void TransportClientSocketPool::OnPreconnectConnectJobComplete(
+    PreconnectCompletionCallback callback,
+    const GroupId& group_id,
+    scoped_refptr<SocketParams> socket_params,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const NetLogWithSource& net_log,
+    std::vector<int> results) {
+  int result = OK;
+  std::unique_ptr<ClientSocketHandle> handle;
+  if (base::FeatureList::IsEnabled(
+          net::features::kEnableErrorCodePropagationForPreconnect)) {
+    CHECK(!results.empty());
+    // TODO(crbug.com/453308537): Consider more sophisticated
+    // error code propagation logic.
+    result = *std::max_element(results.begin(), results.end());
+    if (result == OK) {
+      // We check if we still have an idle socket in the group, since the
+      // actual request may have retrieved the socket before this callback is
+      // invoked, resulting in no idle sockets in the group.
+      if (HasActiveSocket(group_id) && IdleSocketCountInGroup(group_id) > 0) {
+        handle = std::make_unique<ClientSocketHandle>();
+        int rv = handle->Init(
+            group_id, std::move(socket_params), proxy_annotation_tag, IDLE,
+            SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+            base::DoNothing(), ProxyAuthCallback(), this, net_log);
+
+        // Since we checked that we have an idle socket in the group, we
+        // should never get ERR_IO_PENDING here.
+        CHECK_NE(rv, ERR_IO_PENDING);
+
+        // However, there is a slight chance that the socket is not usable (e.g.
+        // the socket is being closed due to network connection failures or
+        // flakiness), thus handle->Init might return an error. If that happens,
+        // we cannot hand out the socket to the callback, and we should reset
+        // the handle.
+        // We should also consider this case as a failure for the preconnect,
+        // since no socket can be reused.
+        if (rv != OK) {
+          handle.reset();
+          result = rv;
+        }
+      }
+    }
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), result == OK, std::move(handle)));
 }
 
 TransportClientSocketPool::Group::Group(

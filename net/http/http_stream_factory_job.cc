@@ -1369,7 +1369,9 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
       SchemeHostPortForSupportsSpdy(), request_info_.network_anonymization_key);
 }
 
-void HttpStreamFactory::Job::OnPreconnectSocketsComplete(bool success) {
+void HttpStreamFactory::Job::OnPreconnectSocketsComplete(
+    bool success,
+    std::unique_ptr<ClientSocketHandle> handle) {
   // The preconnect callback only provides a boolean indicating success or
   // failure. We convert this to a `net::Error` to use the existing logic
   // which uses `int` to pass around the errors as an argument including

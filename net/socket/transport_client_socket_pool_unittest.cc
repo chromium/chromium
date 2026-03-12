@@ -968,8 +968,9 @@ TEST_P(TransportClientSocketPoolTest, CancelActiveRequestWithPendingRequests) {
 
   // Now, kMaxSocketsPerGroup requests should be active.  Let's cancel them.
   ASSERT_LE(kMaxSocketsPerGroup, static_cast<int>(requests()->size()));
-  for (int i = 0; i < kMaxSocketsPerGroup; i++)
+  for (int i = 0; i < kMaxSocketsPerGroup; i++) {
     (*requests())[i]->handle()->Reset();
+  }
 
   // Let's wait for the rest to complete now.
   for (size_t i = kMaxSocketsPerGroup; i < requests()->size(); ++i) {
@@ -989,12 +990,14 @@ TEST_P(TransportClientSocketPoolTest, FailingActiveRequestWithPendingRequests) {
   ASSERT_LE(kNumRequests, kMaxSockets);  // Otherwise the test will hang.
 
   // Queue up all the requests
-  for (int i = 0; i < kNumRequests; i++)
+  for (int i = 0; i < kNumRequests; i++) {
     EXPECT_THAT(StartRequest("a", kDefaultPriority), IsError(ERR_IO_PENDING));
+  }
 
-  for (int i = 0; i < kNumRequests; i++)
+  for (int i = 0; i < kNumRequests; i++) {
     EXPECT_THAT((*requests())[i]->WaitForResult(),
                 IsError(ERR_CONNECTION_FAILED));
+  }
 }
 
 TEST_P(TransportClientSocketPoolTest, IdleSocketLoadTiming) {
@@ -2296,13 +2299,14 @@ TEST_P(TransportClientSocketPoolTest,
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kPendingFailing);
 
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<bool, std::unique_ptr<ClientSocketHandle>> result;
 
   int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 1,
                                  result.GetCallback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  EXPECT_FALSE(result.Get());
+  EXPECT_FALSE(result.Get<bool>());
+  EXPECT_FALSE(result.Get<std::unique_ptr<ClientSocketHandle>>());
 }
 
 TEST_P(TransportClientSocketPoolTest,
@@ -2314,13 +2318,14 @@ TEST_P(TransportClientSocketPoolTest,
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kPendingFailing);
 
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<bool, std::unique_ptr<ClientSocketHandle>> result;
 
   int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 2,
                                  result.GetCallback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  EXPECT_FALSE(result.Get());
+  EXPECT_FALSE(result.Get<bool>());
+  EXPECT_FALSE(result.Get<std::unique_ptr<ClientSocketHandle>>());
 }
 
 TEST_P(TransportClientSocketPoolTest,
@@ -2332,13 +2337,48 @@ TEST_P(TransportClientSocketPoolTest,
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kPending);
 
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<bool, std::unique_ptr<ClientSocketHandle>> result;
 
   int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 2,
                                  result.GetCallback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  EXPECT_TRUE(result.Get());
+  EXPECT_TRUE(result.Get<bool>());
+  EXPECT_TRUE(result.Get<std::unique_ptr<ClientSocketHandle>>());
+  EXPECT_TRUE(
+      result.Get<std::unique_ptr<ClientSocketHandle>>()->is_initialized());
+}
+
+TEST_P(
+    TransportClientSocketPoolTest,
+    ErrorCodePropagationForPreconnect_Enabled_PreconnectSocketUsedByActualRequest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kEnableErrorCodePropagationForPreconnect);
+
+  client_socket_factory_.set_default_client_socket_type(
+      MockTransportClientSocketFactory::Type::kPending);
+
+  base::test::TestFuture<bool, std::unique_ptr<ClientSocketHandle>> result;
+
+  int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 1,
+                                 result.GetCallback(), NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback callback;
+  ClientSocketHandle actual_request_handle;
+  rv = actual_request_handle.Init(
+      group_id_, params_, std::nullopt /* proxy_annotation_tag */, LOW,
+      SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
+      callback.callback(), ClientSocketPool::ProxyAuthCallback(), pool_.get(),
+      NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  EXPECT_TRUE(actual_request_handle.is_initialized());
+
+  EXPECT_TRUE(result.Get<bool>());
+  EXPECT_FALSE(result.Get<std::unique_ptr<ClientSocketHandle>>());
 }
 
 TEST_P(TransportClientSocketPoolTest,
@@ -2357,13 +2397,16 @@ TEST_P(TransportClientSocketPoolTest,
   };
   client_socket_factory_.SetRules(rules);
 
-  base::test::TestFuture<bool> result;
+  base::test::TestFuture<bool, std::unique_ptr<ClientSocketHandle>> result;
 
   int rv = pool_->RequestSockets(group_id_, params_, std::nullopt, 2,
                                  result.GetCallback(), NetLogWithSource());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
-  EXPECT_TRUE(result.Get());
+  EXPECT_TRUE(result.Get<bool>());
+  EXPECT_TRUE(result.Get<std::unique_ptr<ClientSocketHandle>>());
+  EXPECT_TRUE(
+      result.Get<std::unique_ptr<ClientSocketHandle>>()->is_initialized());
 }
 
 // Test that SocketTag passed into TransportClientSocketPool is applied to

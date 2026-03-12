@@ -594,15 +594,29 @@ void MockClientSocketFactory::SignalJobs() {
 }
 
 class TestPreconnectCompletionCallback
-    : public internal::TestCompletionCallbackTemplate<bool> {
+    : public internal::TestCompletionCallbackBaseInternal {
  public:
   TestPreconnectCompletionCallback() = default;
   ~TestPreconnectCompletionCallback() override = default;
 
-  base::OnceCallback<void(bool)> callback() {
+  base::OnceCallback<void(bool, std::unique_ptr<ClientSocketHandle>)>
+  callback() {
     return base::BindOnce(&TestPreconnectCompletionCallback::SetResult,
                           base::Unretained(this));
   }
+
+  bool WaitForResult() {
+    internal::TestCompletionCallbackBaseInternal::WaitForResult();
+    return result_;
+  }
+
+ private:
+  void SetResult(bool result, std::unique_ptr<ClientSocketHandle> handle) {
+    result_ = result;
+    DidSetResult();
+  }
+
+  bool result_ = false;
 };
 
 void MockClientSocketFactory::SignalJob(size_t job) {

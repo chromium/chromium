@@ -759,6 +759,15 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
                                   const base::TimeTicks& now,
                                   const char* net_log_reason_utf8);
 
+  // Called when a preconnect connect job completes.
+  void OnPreconnectConnectJobComplete(
+      PreconnectCompletionCallback callback,
+      const GroupId& group_id,
+      scoped_refptr<SocketParams> socket_params,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const NetLogWithSource& net_log,
+      std::vector<int> results);
+
   GroupMap group_map_;
 
   // Map of the ClientSocketHandles for which we have a pending Task to invoke a
