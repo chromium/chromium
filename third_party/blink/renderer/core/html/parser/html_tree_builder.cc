@@ -360,7 +360,7 @@ void HTMLTreeBuilder::FragmentParsingContext::Init(
     ContainerNode* fragment_target,
     Element* context_element) {
   DCHECK(fragment_target);
-  DCHECK((RuntimeEnabledFeatures::DocumentPatchingEnabled() &&
+  DCHECK((RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled() &&
           ((fragment_target == context_element) ||
            fragment_target->IsShadowRoot() &&
                To<ShadowRoot>(fragment_target)->host() == context_element)) ||

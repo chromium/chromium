@@ -443,7 +443,7 @@ bool HTMLConstructionSite::SanitizeIfNeeded(HTMLConstructionSiteTask& task) {
   // TODO(nrosenthal): sanitize also reparenting etc?
   CHECK(task.operation == HTMLConstructionSiteTask::Operation::kInsert ||
         task.operation == HTMLConstructionSiteTask::Operation::kInsertText);
-  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() || !task.child ||
+  if (!RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled() || !task.child ||
       !sanitizer_) {
     return true;
   }

@@ -383,7 +383,7 @@ HTMLDocumentParser::HTMLDocumentParser(
                                                       report_errors, options_));
 
   if (parser_content_policy == kAllowScriptingContentAndMarkAsParserInserted) {
-    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+    CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
     script_runner_ = HTMLParserScriptRunner::Create(
         ReentryPermit(), &fragment_target->GetDocument(), this);
   }

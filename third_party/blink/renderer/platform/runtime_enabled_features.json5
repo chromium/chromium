@@ -2206,7 +2206,7 @@
       copied_from_base_feature_if: "overridden",
     },
     // https://chromestatus.com/feature/5111042975465472
-    // document.patch, <template patchfor> etc.
+    // <template patchfor> etc.
     {
       name: "DocumentPatching",
       status: "experimental",
@@ -3806,6 +3806,13 @@
         "default": "experimental",
       },
       base_feature: "none",
+    },
+    {
+      // https://chromestatus.com/feature/5054329641893888
+      // streamHTML, appendHTML, etc.
+      name: "NewHTMLSettingMethods",
+      status: "experimental",
+      depends_on: ["SetHTMLCanRunScripts", "TrustedTypesCreateParserOptions"]
     },
     // This is a killswitch flag, shipped in M144. It can be removed in M146.
     {

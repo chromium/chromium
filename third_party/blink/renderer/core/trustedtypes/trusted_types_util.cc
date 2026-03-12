@@ -134,14 +134,14 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
              "This script element was modified without use of TrustedScript "
              "assignment and the 'default' policy failed to execute.";
     case kTrustedHTMLParserOptionsTransform:
-      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
       return "This document requires 'TrustedParserOptions' assignment.";
     case kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted:
-      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
       return "The TrustedParserOptions parser options transform failed and no "
              "'default' policy for 'TrustedParserOptions' has been defined.";
     case kTrustedHTMLParserOptionsTransformAndDefaultPolicyFailed:
-      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      CHECK(RuntimeEnabledFeatures::NewHTMLSettingMethodsEnabled());
       return "The TrustedParserOptions parser options transform failed and the "
              "'default' policy failed to execute.";
   }

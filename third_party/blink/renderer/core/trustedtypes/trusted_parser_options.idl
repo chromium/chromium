@@ -4,7 +4,7 @@
 
 [
     Exposed=(Window, Worker),
-    RuntimeEnabled=DocumentPatching
+    RuntimeEnabled=TrustedTypesCreateParserOptions
 ]
 interface TrustedParserOptions {
   readonly attribute (Sanitizer or SanitizerConfig or SanitizerPresets) sanitizer;
