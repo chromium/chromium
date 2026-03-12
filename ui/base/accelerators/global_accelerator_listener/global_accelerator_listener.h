@@ -93,6 +93,8 @@ class GlobalAcceleratorListener {
   // is struck. Only called for keys that have an observer registered.
   void NotifyKeyPressed(const ui::Accelerator& accelerator);
 
+  size_t accelerator_map_size() const { return accelerator_map_.size(); }
+
  private:
   // The following methods are implemented by platform-specific implementations
   // of this class.

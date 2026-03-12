@@ -44,6 +44,8 @@ class BaseGlobalAcceleratorListenerForTesting final
     registered_accelerators_.erase(accelerator);
   }
 
+  using ui::GlobalAcceleratorListener::accelerator_map_size;
+
   MOCK_CONST_METHOD0(IsRegistrationHandledExternally, bool());
   MOCK_METHOD5(OnCommandsChanged,
                void(const std::string&,
@@ -99,6 +101,8 @@ class GlobalAcceleratorListenerTest : public testing::Test {
     ui_listener_ = nullptr;
   }
 
+  size_t accelerator_map_size() { return ui_listener_->accelerator_map_size(); }
+
   GlobalAcceleratorListener::Observer* GetObserver() { return observer_.get(); }
 
   BaseGlobalAcceleratorListenerForTesting* GetUIListener() {
@@ -142,6 +146,22 @@ TEST_F(GlobalAcceleratorListenerTest, SuspendsShortcutHandling) {
 
   // Clean up registration.
   listener->UnregisterAccelerator(accelerator_b, GetObserver());
+}
+
+TEST_F(GlobalAcceleratorListenerTest, SuspendsShortcutHandlingUnregister) {
+  GlobalAcceleratorListener* listener = GetUIListener();
+  const ui::Accelerator accelerator_b(ui::VKEY_B, ui::EF_NONE);
+
+  EXPECT_TRUE(listener->RegisterAccelerator(accelerator_b, GetObserver()));
+
+  listener->SetShortcutHandlingSuspended(true);
+  EXPECT_TRUE(listener->IsShortcutHandlingSuspended());
+  EXPECT_EQ(accelerator_map_size(), 1u);
+
+  listener->UnregisterAccelerator(accelerator_b, GetObserver());
+  EXPECT_EQ(accelerator_map_size(), 0u);
+
+  listener->SetShortcutHandlingSuspended(false);
 }
 
 TEST_F(GlobalAcceleratorListenerTest, IsRegistrationHandledExternally) {
