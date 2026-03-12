@@ -72,11 +72,6 @@ class CORE_EXPORT GapIntersection {
            extra_state_->overlap_state != OverlapWindowState::kNone;
   }
 
-  OverlapWindowState GetOverlapState() const {
-    CHECK(HasOverlapState());
-    return extra_state_->overlap_state;
-  }
-
   bool IsOverlapWindowOpen() const {
     return HasOverlapState() &&
            extra_state_->overlap_state == OverlapWindowState::kWindowOpen;

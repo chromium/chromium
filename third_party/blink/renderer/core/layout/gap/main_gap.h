@@ -40,7 +40,6 @@ class CORE_EXPORT MainGap {
         gap_segment_state_ranges_(other.gap_segment_state_ranges_),
         spanner_main_gap_type_(other.spanner_main_gap_type_) {}
 
-  void SetGapOffset(LayoutUnit offset) { gap_offset_ = offset; }
   LayoutUnit GetGapOffset() const { return gap_offset_; }
 
   bool HasCrossGapsBefore() const {
@@ -64,15 +63,8 @@ class CORE_EXPORT MainGap {
     range_of_cross_gaps_after_.Increment(cross_gap_index);
   }
 
-  void SetRangeOfCrossGapsBefore(const CrossGapRange& range) {
-    range_of_cross_gaps_before_ = range;
-  }
   const CrossGapRange& RangeOfCrossGapsBefore() const {
     return range_of_cross_gaps_before_;
-  }
-
-  void SetRangeOfCrossGapsAfter(const CrossGapRange& range) {
-    range_of_cross_gaps_after_ = range;
   }
 
   blink::String ToString(bool verbose = false) const;

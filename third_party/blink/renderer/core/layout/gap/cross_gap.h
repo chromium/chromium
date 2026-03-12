@@ -91,13 +91,9 @@ class CORE_EXPORT CrossGap {
   }
   EdgeIntersectionState GetEdgeIntersectionState() const { return edge_state_; }
 
-  bool StartsAtEdge() const {
-    return edge_state_ == kStart || edge_state_ == kBoth;
-  }
   bool EndsAtEdge() const {
     return edge_state_ == kEnd || edge_state_ == kBoth;
   }
-  bool GapIntersectsContainerEdge() const { return edge_state_ != kNone; }
 
   bool HasGapSegmentStateRanges() const {
     return gap_segment_state_ranges_.has_value();
