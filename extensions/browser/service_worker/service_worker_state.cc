@@ -181,28 +181,21 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
   }
 
   if (renderer_state() != RendererState::kNotActive) {
-    auto renderer_state_debug = renderer_state_;
-    base::debug::Alias(&renderer_state_debug);
+    // Must be set because the renderer state must have gone through
+    // `kInitialized`, and set the `worker_id`.
     CHECK(worker_id_.has_value());
     auto preexisting_version_id = worker_id_->version_id;
-    auto preexisting_token = *worker_id_->start_token;
     auto new_version_id = worker_id.version_id;
-    auto new_token = *worker_id.start_token;
-    base::debug::Alias(&preexisting_version_id);
-    base::debug::Alias(&new_version_id);
-    if (preexisting_token != new_token &&
-        preexisting_version_id >= new_version_id &&
-        service_worker_context_->IsLiveServiceWorkerWithToken(
-            preexisting_version_id, preexisting_token)) {
-      // We received an initialization signal for an older (or equal) worker
-      // version with a different token, while the worker we are currently
-      // tracking is still live. Record a crash dump for investigation and drop
-      // the stale IPC to prevent overwriting the current worker's state.
-      base::debug::DumpWithoutCrashing();
+    if (new_version_id < preexisting_version_id) {
+      // Drop the IPC message. It is from a stale worker version.
+      // TODO(andreaorru): we can also see a stale service worker instance with
+      // the same `version_id` and an "older" service worker token. However, we
+      // do not currently have a way to order service worker tokens. We should
+      // introduce a sequence id.
       return;
     }
-    // TODO(andreaorru): if the preexisting version_id / service worker token is
-    // not valid anymore, should we untrack it from ProcessManager here?
+    // TODO(andreaorru): if the preexisting `version_id` / service worker token
+    // is not valid anymore, should we untrack it from `ProcessManager` here?
   }
 
   SetWorkerId(worker_id);
@@ -216,6 +209,23 @@ void ServiceWorkerState::RendererDidStartServiceWorkerContext(
   if (!service_worker_context_->IsLiveServiceWorkerWithToken(
           worker_id.version_id, *worker_id.start_token)) {
     // Drop the IPC message. It is from a stale worker instance.
+    return;
+  }
+
+  if (renderer_state() != RendererState::kInitialized) {
+    // We should always see `RendererDidInitializeServiceWorkerContext`
+    // before `RendererDidStartServiceWorkerContext`, so if that's not the
+    // case, we drop this IPC message, because it must be from a stale service
+    // worker.
+    return;
+  }
+
+  // Must be set because the renderer state is `kInitialized`.
+  CHECK(worker_id_.has_value());
+  if (worker_id.start_token != worker_id_->start_token) {
+    // Drop the IPC message. It's from a different worker instance than the one
+    // associated with the `RendererDidInitializeServiceWorkerContext`, so it
+    // must be stale.
     return;
   }
 
