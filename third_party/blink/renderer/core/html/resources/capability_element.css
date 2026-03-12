@@ -10,11 +10,11 @@
 @namespace "http://www.w3.org/1999/xhtml";
 
 permission, geolocation, install, usermedia {
-  background-color:#efefef;
+  background-color: ButtonFace;
   border: solid 1px #767676;
   box-sizing: content-box !important;
   border-radius: 3px;
-  color: #000000;
+  color: ButtonText;
   cursor: pointer;
   display: inline-block;
   font-weight: normal;
