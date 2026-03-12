@@ -39,6 +39,14 @@ message ContextualTasksContextQuality {
 
   // The mode of tab selection. `aggregate_tab_score` is set based on the mode.
   TabSelectionMode tab_selection_mode = 5 [features = { field_presence: EXPLICIT }];
+
+  // Cosine similarity between the query embedding and the active tab title
+  // embedding.
+  float query_active_tab_title_similarity = 6 [features = { field_presence: EXPLICIT }];
+
+  // Cosine similarity scores between the query embedding and embeddings of
+  // up to N (currently 10) passages from the active tab.
+  repeated float query_active_tab_passage_similarities = 7;
 }
 
 // Next ID: 10
@@ -65,11 +73,12 @@ message ContextualTasksTabContext {
   // while it was in the foreground).
   int64 seconds_of_last_visit = 6 [features = { field_presence: EXPLICIT }];
 
-  // Cosine similarity between the query embedding and the tab title embedding.
+  // Cosine similarity between the query embedding and the candidate tab title
+  // embedding.
   float query_title_similarity = 7 [features = { field_presence: EXPLICIT }];
 
   // Cosine similarity scores between the query embedding and embeddings of
-  // up to N (currently 10) passages from the tab.
+  // up to N (currently 10) passages from the candidate tab.
   repeated float query_passage_similarities = 8;
 
   // Cosine similarity between the active tab's title and this candidate tab's
