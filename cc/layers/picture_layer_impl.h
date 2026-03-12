@@ -423,6 +423,8 @@ class CC_EXPORT PictureLayerImpl
       const gfx::Rect& coverage_rect,
       float coverage_scale,
       float ideal_contents_scale) override;
+  void WillProcessReadyToDrawTile(
+      const TilingSetCoverageIterator<PictureLayerTiling>& iter) override;
   void DidAppendQuad(viz::DrawQuad* quad) override;
 
   bool AppendQuadForTile(TilingSetCoverageIterator<PictureLayerTiling> iter,
@@ -440,8 +442,6 @@ class CC_EXPORT PictureLayerImpl
                          AppendQuadsCustomSharedData* custom_data) override;
 
  private:
-  void WillProcessReadyToDrawTile(
-      const TilingSetCoverageIterator<PictureLayerTiling>& iter);
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
 };

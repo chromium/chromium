@@ -128,6 +128,11 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                   bool needs_blending,
                   bool nearest_neighbor);
 
+  // Invoked when a tile is determined to be ready to draw, allowing subclasses
+  // to perform any subclass-specific side effects.
+  virtual void WillProcessReadyToDrawTile(
+      const TilingSetCoverageIterator<Tiling>& iter) {}
+
   // Invoked after a quad has been appended to allow subclasses to perform any
   // subclass-specific validation or tracking.
   virtual void DidAppendQuad(viz::DrawQuad* quad) {}
@@ -510,6 +515,8 @@ bool TileBasedLayerImpl<Tiling>::AppendQuad(
   if (!tile || !tile->IsReadyToDraw()) {
     return false;
   }
+
+  WillProcessReadyToDrawTile(iter);
 
   if (auto resource_id = tile->GetResourceId()) {
     gfx::RectF texture_rect = iter.texture_rect();

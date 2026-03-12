@@ -395,15 +395,9 @@ bool PictureLayerImpl::AppendQuadForTile(
   gfx::Rect geometry_rect = iter.geometry_rect();
   uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
 
-  bool has_draw_quad = false;
-  auto* tile = *iter;
-  if (tile && tile->IsReadyToDraw()) {
-    WillProcessReadyToDrawTile(iter);
-
-    has_draw_quad = AppendQuad(
-        iter, render_pass, shared_quad_state, offset_geometry_rect,
-        offset_visible_geometry_rect, needs_blending, nearest_neighbor_);
-  }
+  bool has_draw_quad = AppendQuad(
+      iter, render_pass, shared_quad_state, offset_geometry_rect,
+      offset_visible_geometry_rect, needs_blending, nearest_neighbor_);
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
