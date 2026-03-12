@@ -82,14 +82,14 @@ void LogPrimaryAccountChangeMetrics(
 
     case PrimaryAccountChangeEvent::Type::kSet:
       DCHECK(event_details.GetSetPrimaryAccountAccessPoint().has_value());
-      base::UmaHistogramEnumeration(
+      profile_metrics_service->UmaHistogramEnumeration(
           "Signin.SyncOptIn.Completed",
           event_details.GetSetPrimaryAccountAccessPoint().value());
       break;
 
     case PrimaryAccountChangeEvent::Type::kCleared:
       DCHECK(event_details.GetClearPrimaryAccountSource().has_value());
-      base::UmaHistogramEnumeration(
+      profile_metrics_service->UmaHistogramEnumeration(
           "Signin.SyncTurnOff.Completed",
           event_details.GetClearPrimaryAccountSource().value());
       break;

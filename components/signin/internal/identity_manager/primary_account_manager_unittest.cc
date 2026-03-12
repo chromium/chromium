@@ -1166,6 +1166,62 @@ TEST_F(PrimaryAccountManagerTest, PerProfileMetrics) {
   histogram_tester_.ExpectUniqueSample("Signin.SignOut.Completed.Profile2",
                                        ProfileSignout::kTest, 1);
 }
+
+TEST_F(PrimaryAccountManagerTest, PerProfileMetricsSync) {
+  // First PrimaryAccountManager with `context1`, records metric for both
+  // `Profile1` and non-profile specific.
+  metrics::ProfileMetricsContext context1(1);
+  CreatePrimaryAccountManager(context1);
+
+  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(
+      AddToAccountTracker(GaiaId("gaia_id"), "user@gmail.com"));
+  manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
+                                  AccessPoint::kStartPage);
+
+  histogram_tester_.ExpectUniqueSample("Signin.SyncOptIn.Completed",
+                                       AccessPoint::kStartPage, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SyncOptIn.Completed.Profile1",
+                                       AccessPoint::kStartPage, 1);
+
+  manager_->ClearPrimaryAccount(ProfileSignout::kTest);
+
+  histogram_tester_.ExpectUniqueSample("Signin.SyncTurnOff.Completed",
+                                       ProfileSignout::kTest, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SyncTurnOff.Completed.Profile1",
+                                       ProfileSignout::kTest, 1);
+
+  ShutDownManager();
+
+  // Second PrimaryAccountManager with `context2`, records metric for both
+  // `Profile2` and non-profile specific.
+  metrics::ProfileMetricsContext context2(2);
+  CreatePrimaryAccountManager(context2);
+
+  CoreAccountInfo account_info2 = account_tracker()->GetAccountInfo(
+      AddToAccountTracker(GaiaId("gaia_id2"), "user2@gmail.com"));
+  manager_->SetPrimaryAccountInfo(account_info2, ConsentLevel::kSync,
+                                  AccessPoint::kStartPage);
+
+  // Does not impact already recorded `Profie1` metric. Non profile specific
+  // metric accumulates.
+  histogram_tester_.ExpectUniqueSample("Signin.SyncOptIn.Completed",
+                                       AccessPoint::kStartPage, 2);
+  histogram_tester_.ExpectUniqueSample("Signin.SyncOptIn.Completed.Profile1",
+                                       AccessPoint::kStartPage, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SyncOptIn.Completed.Profile2",
+                                       AccessPoint::kStartPage, 1);
+
+  manager_->ClearPrimaryAccount(ProfileSignout::kTest);
+
+  // Does not impact already recorded `Profie1` metric. Non profile specific
+  // metric accumulates.
+  histogram_tester_.ExpectUniqueSample("Signin.SyncTurnOff.Completed",
+                                       ProfileSignout::kTest, 2);
+  histogram_tester_.ExpectUniqueSample("Signin.SyncTurnOff.Completed.Profile1",
+                                       ProfileSignout::kTest, 1);
+  histogram_tester_.ExpectUniqueSample("Signin.SyncTurnOff.Completed.Profile2",
+                                       ProfileSignout::kTest, 1);
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)

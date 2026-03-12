@@ -3604,7 +3604,7 @@ kept as long as profile signout is possible -->
   <summary>Tracks where FirstSetupComplete bit is set from.</summary>
 </histogram>
 
-<histogram name="Signin.SyncOptIn.Completed" enum="SigninAccessPoint"
+<histogram name="Signin.SyncOptIn.Completed{Profile}" enum="SigninAccessPoint"
     expires_after="2026-07-26">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
@@ -3614,7 +3614,10 @@ kept as long as profile signout is possible -->
     original access point associated with this event. This is recorded when the
     user chooses to opt-in, whether they chose to proceed with the default
     settings or to open the sync settings first.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndexSignin"/>
 </histogram>
 
 <histogram name="Signin.SyncOptIn.IdentityPill.SyncAtShowCount"
@@ -3696,15 +3699,18 @@ kept as long as profile signout is possible -->
   <token key="AccessPoint" variants="SigninPromoAccessPoint"/>
 </histogram>
 
-<histogram name="Signin.SyncTurnOff.Completed" enum="SigninSignoutProfile"
-    expires_after="2026-07-26">
+<histogram name="Signin.SyncTurnOff.Completed{Profile}"
+    enum="SigninSignoutProfile" expires_after="2026-07-26">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records that the user turned off sync, and logs the original access point
     associated with this event.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndexSignin"/>
 </histogram>
 
 <histogram name="Signin.Timestamps.Android.Fullscreen.{Event}" units="ms"
