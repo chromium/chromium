@@ -137,8 +137,10 @@ class GeminiThreadSyncBridgeWithInitSpecificsTest
   void SetUp() override {
     store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
     AddInitialSpecifics();
+    ON_CALL(processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<GeminiThreadSyncBridge>(
-        mock_processor_.CreateForwardingProcessor(),
+        processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
     base::RunLoop run_loop;
     bridge_->AddObserver(&observer_);
@@ -175,6 +177,15 @@ class GeminiThreadSyncBridgeWithInitSpecificsTest
     return data;
   }
 
+  bool ThreadExists(const std::string& server_id) {
+    for (const auto& thread : bridge_->GetThreads()) {
+      if (server_id == thread.server_id) {
+        return true;
+      }
+    }
+    return false;
+  }
+
  private:
   void AddInitialSpecifics() {
     std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
@@ -204,6 +215,7 @@ class GeminiThreadSyncBridgeWithInitSpecificsTest
     loop.Run();
   }
 
+  testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> processor_;
   std::unique_ptr<syncer::DataTypeStore> store_;
   testing::NiceMock<MockObserver> observer_;
 };
@@ -301,6 +313,29 @@ TEST_F(GeminiThreadSyncBridgeWithInitSpecificsTest, GetThreads) {
   EXPECT_EQ(kInitTitle, threads[0].title);
   EXPECT_EQ(kInitLastTurnTimeUnixEpochMillis,
             threads[0].last_turn_time.InMillisecondsSinceUnixEpoch());
+}
+
+TEST_F(GeminiThreadSyncBridgeWithInitSpecificsTest, RemoveThread) {
+  EXPECT_FALSE(ThreadExists("00000000-0000-0000-0000-000000000003"));
+  syncer::EntityChangeList entity_change_list;
+  syncer::EntityData data =
+      CreateEntityData("00000000-0000-0000-0000-000000000003", "new_title", 52);
+  std::string storage_key = bridge()->GetStorageKey(data);
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateAdd(storage_key, std::move(data)));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(entity_change_list));
+  EXPECT_TRUE(ThreadExists("00000000-0000-0000-0000-000000000003"));
+  int new_idx = bridge()->GetThreads()[0].server_id ==
+                        "00000000-0000-0000-0000-000000000003"
+                    ? 0
+                    : 1;
+  EXPECT_EQ(52, bridge()
+                    ->GetThreads()[new_idx]
+                    .last_turn_time.InMillisecondsSinceUnixEpoch());
+  EXPECT_EQ("new_title", bridge()->GetThreads()[new_idx].title);
+  bridge()->DeleteThread(bridge()->GetThreads()[new_idx]);
+  EXPECT_FALSE(ThreadExists("00000000-0000-0000-0000-000000000003"));
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "components/contextual_tasks/internal/ai_thread_sync_bridge.h"
 
 #include "base/functional/callback_helpers.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -206,6 +207,26 @@ std::vector<Thread> AiThreadSyncBridge::GetThreads() const {
         thread_entity.specifics().conversation_turn_id());
   }
   return threads;
+}
+
+void AiThreadSyncBridge::DeleteThread(const Thread& thread) {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return;
+  }
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
+      data_type_store_->CreateWriteBatch();
+
+  change_processor()->Delete(thread.server_id,
+                             syncer::DeletionOrigin::Unspecified(),
+                             batch->GetMetadataChangeList());
+
+  ai_thread_entities_.erase(thread.server_id);
+  batch->DeleteData(thread.server_id);
+
+  data_type_store_->CommitWriteBatch(
+      std::move(batch),
+      base::BindOnce(&AiThreadSyncBridge::OnDataTypeStoreCommit,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AiThreadSyncBridge::AddObserver(Observer* observer) {
