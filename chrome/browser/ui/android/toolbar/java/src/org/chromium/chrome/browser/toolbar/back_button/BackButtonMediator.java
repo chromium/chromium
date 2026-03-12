@@ -82,8 +82,8 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
 
         mModel.set(
                 BackButtonProperties.CLICK_LISTENER,
-                (metaState) -> {
-                    onBackPressed.onClickWithMeta(metaState);
+                (metaState, buttonState) -> {
+                    onBackPressed.onClickWithMeta(metaState, buttonState);
                     updateButtonEnabledState();
                 });
         mModel.set(

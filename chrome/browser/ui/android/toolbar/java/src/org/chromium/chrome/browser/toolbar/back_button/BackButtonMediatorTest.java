@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Looper;
+import android.view.MotionEvent;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -157,8 +158,15 @@ public class BackButtonMediatorTest {
 
     @Test
     public void testClick_shouldForwardCallToParent() {
-        mModel.get(BackButtonProperties.CLICK_LISTENER).onClickWithMeta(0);
-        verify(mOnBackPressed).onClickWithMeta(0);
+        mModel.get(BackButtonProperties.CLICK_LISTENER).onClickWithMeta(0, 0);
+        verify(mOnBackPressed).onClickWithMeta(0, 0);
+    }
+
+    @Test
+    public void testMiddleClick_shouldForwardCallToParent() {
+        mModel.get(BackButtonProperties.CLICK_LISTENER)
+                .onClickWithMeta(0, MotionEvent.BUTTON_TERTIARY);
+        verify(mOnBackPressed).onClickWithMeta(0, MotionEvent.BUTTON_TERTIARY);
     }
 
     @Test

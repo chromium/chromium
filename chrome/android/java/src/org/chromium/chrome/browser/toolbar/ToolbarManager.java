@@ -1807,16 +1807,18 @@ public class ToolbarManager
                 || (getNewTabPageForCurrentTab() != null);
     }
 
-    private void back(int metaState) {
+    private void back(int metaState, int buttonState) {
         setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
         boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
-        if (hasControl && hasShift) {
+        boolean isMiddleClick = (buttonState & MotionEvent.BUTTON_TERTIARY) != 0;
+
+        if ((hasControl && hasShift) || (isMiddleClick && hasShift)) {
             // Holding ALT is allowed as well (reference desktop behavior).
             final boolean isSuccess =
                     mToolbarTabController.backInNewTab(/* foregroundNewTab= */ true);
             if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewForegroundTab");
-        } else if (hasControl) {
+        } else if (hasControl || isMiddleClick) {
             final boolean isSuccess =
                     mToolbarTabController.backInNewTab(/* foregroundNewTab= */ false);
             if (isSuccess) RecordUserAction.record("MobileToolbarBackInNewBackgroundTab");

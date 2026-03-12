@@ -72,7 +72,9 @@ class BookmarkBarButton extends LinearLayout {
      */
     public void setClickCallback(@Nullable ClickWithMetaStateCallback callback) {
         setOnClickListener(
-                callback != null ? (v) -> callback.onClickWithMeta(mLastEventMetaState) : null);
+                callback != null
+                        ? (v) -> callback.onClickWithMeta(mLastEventMetaState, /* buttonState= */ 0)
+                        : null);
     }
 
     /**

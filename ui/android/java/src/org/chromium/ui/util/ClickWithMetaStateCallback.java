@@ -10,6 +10,11 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 @FunctionalInterface
 public interface ClickWithMetaStateCallback {
-    /** Called when a click occurs. {@param metaState} is the meta key state at the time. */
-    void onClickWithMeta(int metaState);
+    /**
+     * Called when a click occurs.
+     *
+     * @param metaState The meta key state at the time.
+     * @param buttonState The mouse button state.
+     */
+    void onClickWithMeta(int metaState, int buttonState);
 }

@@ -373,7 +373,7 @@ public class WebAppHeaderLayoutCoordinator extends EmptyTabObserver
         mBackButtonCoordinator =
                 new BackButtonCoordinator(
                         backButton,
-                        (ignored) -> {
+                        (metaState, buttonState) -> {
                             if (mMediator != null) mMediator.goBack();
                         },
                         mThemeColorProvider,

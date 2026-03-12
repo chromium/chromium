@@ -289,7 +289,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
     // Private methods.
 
     // TODO(crbug.com/394614779): Open in popup window instead of bookmark manager.
-    private void onAllBookmarksButtonClick(int metaState) {
+    private void onAllBookmarksButtonClick(int metaState, int buttonState) {
         // Open the manager iff the active profile and model are unchanged to prevent accidentally
         // opening the manager for the wrong profile/model. We will only record the click event if
         // this guard passes, so the data shows only actions that resulted in a change.
@@ -1047,7 +1047,7 @@ class BookmarkBarMediator implements BookmarkBarItemsProvider.Observer {
                 new PropertyModel.Builder(BookmarkBarButtonProperties.ALL_KEYS)
                         .with(
                                 BookmarkBarButtonProperties.CLICK_CALLBACK,
-                                (metaState) -> clickCallback.accept(item, metaState))
+                                (metaState, buttonState) -> clickCallback.accept(item, metaState))
                         .with(BookmarkBarButtonProperties.KEY_LISTENER, keyListener)
                         .with(
                                 BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
