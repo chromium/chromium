@@ -548,8 +548,9 @@ export class ContextualTasksAppElement extends CrLitElement {
     restartAnimations(this.$.composebox);
     restartAnimations(this.$.composeboxHeaderWrapper);
 
-    if (this.$.nameShimmer) {
-      restartAnimations(this.$.nameShimmer);
+    const nameShimmer = this.shadowRoot.getElementById('nameShimmer');
+    if (nameShimmer) {
+      restartAnimations(nameShimmer);
     }
 
     // Restart the composebox glow animation.
