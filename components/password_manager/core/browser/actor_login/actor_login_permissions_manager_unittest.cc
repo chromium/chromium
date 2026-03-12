@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -33,6 +35,11 @@ class MockObserver : public ActorLoginPermissionsManager::Observer {
   MOCK_METHOD(void, OnPermissionsChanged, (), (override));
 };
 
+class MockActorLoginPermissionService : public ActorLoginPermissionService {
+ public:
+  MOCK_METHOD(void, ListAllPermissions, (ListPermissionsResult), (override));
+};
+
 PasswordForm CreateApprovedForm(const std::string& signon_realm,
                                 const std::u16string& username) {
   PasswordForm form =
@@ -50,11 +57,12 @@ class ActorLoginPermissionsManagerTest : public testing::Test {
     test_sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
     profile_store_->Init(/*affiliated_match_helper=*/nullptr);
     account_store_->Init(/*affiliated_match_helper=*/nullptr);
-    actor_login_permission_service_ =
-        std::make_unique<ActorLoginPermissionServiceImpl>();
+    ON_CALL(actor_login_permission_service_, ListAllPermissions)
+        .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(
+            std::vector<FederatedPermission>()));
     permissions_manager_ = std::make_unique<ActorLoginPermissionsManagerImpl>(
-        &affiliation_service_, actor_login_permission_service_.get(),
-        profile_store_, account_store_);
+        &affiliation_service_, &actor_login_permission_service_, profile_store_,
+        account_store_);
     WaitForPasswordStore();
   }
 
@@ -80,7 +88,7 @@ class ActorLoginPermissionsManagerTest : public testing::Test {
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(false));
   scoped_refptr<TestPasswordStore> account_store_ =
       base::MakeRefCounted<TestPasswordStore>(IsAccountStore(true));
-  std::unique_ptr<ActorLoginPermissionServiceImpl>
+  testing::NiceMock<MockActorLoginPermissionService>
       actor_login_permission_service_;
   std::unique_ptr<ActorLoginPermissionsManagerImpl> permissions_manager_;
 };
@@ -93,7 +101,7 @@ TEST_F(ActorLoginPermissionsManagerTest, InitiallyEmpty) {
   EXPECT_TRUE(future.Get().empty());
 }
 
-TEST_F(ActorLoginPermissionsManagerTest, GetAll) {
+TEST_F(ActorLoginPermissionsManagerTest, GetAllPermissions_OnlyPassword) {
   base::RunLoop run_loop;
   MockObserver observer;
   permissions_manager_->AddObserver(&observer);
@@ -161,6 +169,105 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission) {
   permissions_manager_->GetAllPermissions(GetSyncService(),
                                           future.GetCallback());
   EXPECT_THAT(future.Get(), IsEmpty());
+#endif
+}
+
+TEST_F(ActorLoginPermissionsManagerTest, GetAllPermissions_OnlyFederated) {
+  FederatedPermission federated_permission_1;
+  federated_permission_1.rp_embedder_origin = "https://example.com/";
+  federated_permission_1.chosen_account_email = "user1";
+
+  FederatedPermission federated_permission_2;
+  federated_permission_2.rp_embedder_origin = "https://example.com/";
+  federated_permission_2.chosen_account_email = "user2";
+
+  EXPECT_CALL(actor_login_permission_service_, ListAllPermissions)
+      .WillOnce(base::test::RunOnceCallback<0>(std::vector<FederatedPermission>{
+          federated_permission_1, federated_permission_2}));
+
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          future.GetCallback());
+  base::flat_set<password_manager::ActorLoginPermission> permissions =
+      future.Get();
+
+  EXPECT_EQ(permissions.size(), 2u);
+
+  EXPECT_THAT(base::ToVector(permissions,
+                             [](const auto& p) {
+                               return std::pair(p.username,
+                                                p.domain_info.signon_realm);
+                             }),
+              testing::UnorderedElementsAre(
+                  std::pair(u"user1", "https://example.com/"),
+                  std::pair(u"user2", "https://example.com/")));
+}
+
+TEST_F(ActorLoginPermissionsManagerTest,
+       GetAllPermissions_FederatedAndPassword) {
+  base::RunLoop run_loop;
+  MockObserver observer;
+  permissions_manager_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnPermissionsChanged)
+      .WillOnce(Return())
+      .WillOnce(testing::Invoke(&run_loop, &base::RunLoop::Quit));
+
+  profile_store_->AddLogin(CreateApprovedForm("https://example.com", u"user1"));
+  profile_store_->AddLogin(
+      CreateApprovedForm("https://password.com", u"password_user"));
+
+  run_loop.Run();
+
+  FederatedPermission federated_permission_1;
+  federated_permission_1.rp_embedder_origin = "https://example.com/";
+  federated_permission_1.chosen_account_email = "user1";
+
+  FederatedPermission federated_permission_2;
+  federated_permission_2.rp_embedder_origin = "https://example.com/";
+  federated_permission_2.chosen_account_email = "user2";
+
+  FederatedPermission federated_permission_3;
+  federated_permission_3.rp_embedder_origin = "https://other.com/";
+  federated_permission_3.chosen_account_email = "user1";
+
+  EXPECT_CALL(actor_login_permission_service_, ListAllPermissions)
+      .WillOnce(base::test::RunOnceCallback<0>(std::vector<FederatedPermission>{
+          federated_permission_1, federated_permission_2,
+          federated_permission_3}));
+
+  base::test::TestFuture<base::flat_set<password_manager::ActorLoginPermission>>
+      future;
+  permissions_manager_->GetAllPermissions(GetSyncService(),
+                                          future.GetCallback());
+  base::flat_set<password_manager::ActorLoginPermission> permissions =
+      future.Get();
+
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(permissions.size(), 4u);
+  EXPECT_THAT(base::ToVector(permissions,
+                             [](const auto& p) {
+                               return std::pair(p.username,
+                                                p.domain_info.signon_realm);
+                             }),
+              testing::UnorderedElementsAre(
+                  std::pair(u"user1", "https://example.com/"),
+                  std::pair(u"password_user", "https://password.com/"),
+                  std::pair(u"user2", "https://example.com/"),
+                  std::pair(u"user1", "https://other.com/")));
+#else
+  // Grouper is not supported on Android yet, so password permissions are not
+  // returned.
+  EXPECT_EQ(permissions.size(), 3u);
+  EXPECT_THAT(
+      base::ToVector(permissions,
+                     [](const auto& p) {
+                       return std::pair(p.username, p.domain_info.signon_realm);
+                     }),
+      testing::UnorderedElementsAre(std::pair(u"user1", "https://example.com/"),
+                                    std::pair(u"user2", "https://example.com/"),
+                                    std::pair(u"user1", "https://other.com/")));
 #endif
 }
 

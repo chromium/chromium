@@ -39,6 +39,7 @@ source_set("permissions_manager_impl") {
     ":common",
     "//base",
     "//components/affiliations/core/browser:affiliations",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/actor_login/internal:permission_service_impl",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/browser/ui",

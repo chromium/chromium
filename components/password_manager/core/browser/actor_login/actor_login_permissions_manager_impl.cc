@@ -10,6 +10,7 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/sync/service/sync_service.h"
 
@@ -21,10 +22,43 @@ void MergePermissions(
         password_permissions,
     ActorLoginPermissionsManager::GetAllPermissionsResult callback,
     std::vector<FederatedPermission> federated_permissions) {
-  base::flat_set<password_manager::ActorLoginPermission> merged_permissions =
-      password_permissions;
-  // TODO(crbug.com/481214101): Merge permissions.
-  std::move(callback).Run(std::move(merged_permissions));
+  std::vector<password_manager::ActorLoginPermission> merged_permissions(
+      password_permissions.begin(), password_permissions.end());
+
+  std::vector<std::pair<std::u16string, std::string>> password_permissions_keys;
+  password_permissions_keys.reserve(password_permissions.size());
+  for (const password_manager::ActorLoginPermission& password_permission :
+       password_permissions) {
+    password_permissions_keys.emplace_back(
+        password_permission.username,
+        password_permission.domain_info.signon_realm);
+  }
+  base::flat_set<std::pair<std::u16string, std::string>>
+      password_permissions_hash_set(std::move(password_permissions_keys));
+
+  for (const FederatedPermission& federated_permission :
+       federated_permissions) {
+    std::u16string username =
+        base::UTF8ToUTF16(federated_permission.chosen_account_email);
+    if (!password_permissions_hash_set.contains(std::make_pair(
+            username, federated_permission.rp_embedder_origin))) {
+      password_manager::ActorLoginPermission permission;
+      permission.username = username;
+      permission.domain_info.signon_realm =
+          federated_permission.rp_embedder_origin;
+      permission.domain_info.name = password_manager::GetShownOrigin(
+          url::Origin::Create(GURL(federated_permission.rp_embedder_origin)));
+      permission.domain_info.url =
+          GURL(federated_permission.rp_embedder_origin);
+      // Favicon is not populated.
+      merged_permissions.push_back(std::move(permission));
+    }
+  }
+
+  // TODO(crbug.com/486089293): Clean permission username conflicts.
+  std::move(callback).Run(
+      base::flat_set<password_manager::ActorLoginPermission>(
+          std::move(merged_permissions)));
 }
 }  // namespace
 
