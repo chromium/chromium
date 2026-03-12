@@ -46,6 +46,12 @@ gfx::Rect NativeFrameView::GetWindowBoundsForClientBounds(
 }
 
 int NativeFrameView::NonClientHitTest(const gfx::Point& point) {
+  if (!non_client_hit_test_callback_.is_null()) {
+    if (auto result = non_client_hit_test_callback_.Run(point); result) {
+      return result.value();
+    }
+  }
+
   return widget_->client_view()->NonClientHitTest(point);
 }
 
