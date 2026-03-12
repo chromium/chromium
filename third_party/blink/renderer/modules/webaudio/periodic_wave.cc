@@ -32,6 +32,7 @@
 #include <array>
 #include <memory>
 
+#include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/build_config.h"
@@ -269,13 +270,13 @@ void PeriodicWaveImpl::WaveDataForFundamentalFrequency(
   // v_ratio is 0.5 if freq <= 0.  Otherwise preserve v_ratio.
   v_ratio = _mm_or_ps(v_ratio, _mm_andnot_ps(pos, _mm_set1_ps(0.5)));
 
-  const float* ratio = reinterpret_cast<float*>(&v_ratio);
+  const std::array<float, 4> ratio =
+      base::bit_cast<std::array<float, 4>>(v_ratio);
 
-  std::array<float, 4> cents_above_lowest_frequency
-      __attribute__((aligned(16)));
+  alignas(16) std::array<float, 4> cents_above_lowest_frequency;
 
   for (int k = 0; k < 4; ++k) {
-    cents_above_lowest_frequency[k] = log2f(UNSAFE_TODO(ratio[k])) * 1200;
+    cents_above_lowest_frequency[k] = log2f(ratio[k]) * 1200;
   }
 
   __m128 v_pitch_range =
@@ -305,16 +306,17 @@ void PeriodicWaveImpl::WaveDataForFundamentalFrequency(
 
   const __m128 table_factor =
       _mm_sub_ps(v_pitch_range, _mm_cvtepi32_ps(v_index1));
-  _mm_storeu_ps(table_interpolation_factor.data(), table_factor);
+  table_interpolation_factor =
+      base::bit_cast<std::array<float, 4>>(table_factor);
 
-  const unsigned* range_index1 = reinterpret_cast<const unsigned*>(&v_index1);
-  const unsigned* range_index2 = reinterpret_cast<const unsigned*>(&v_index2);
+  const std::array<unsigned, 4> range_index1 =
+      base::bit_cast<std::array<unsigned, 4>>(v_index1);
+  const std::array<unsigned, 4> range_index2 =
+      base::bit_cast<std::array<unsigned, 4>>(v_index2);
 
   for (unsigned k = 0; k < 4; ++k) {
-    lower_wave_data[k] =
-        band_limited_tables_[UNSAFE_TODO(range_index2[k])]->as_span();
-    higher_wave_data[k] =
-        band_limited_tables_[UNSAFE_TODO(range_index1[k])]->as_span();
+    lower_wave_data[k] = band_limited_tables_[range_index2[k]]->as_span();
+    higher_wave_data[k] = band_limited_tables_[range_index1[k]]->as_span();
   }
 }
 #elif defined(CPU_ARM_NEON)
@@ -340,19 +342,19 @@ void PeriodicWaveImpl::WaveDataForFundamentalFrequency(
   // zeroes.
   v_ratio = vbslq_f32(pos, v_ratio, vdupq_n_f32(0.5));
 
-  float ratio[4] __attribute__((aligned(16)));
-  vst1q_f32(ratio, v_ratio);
+  const std::array<float, 4> ratio =
+      base::bit_cast<std::array<float, 4>>(v_ratio);
 
-  float cents_above_lowest_frequency[4] __attribute__((aligned(16)));
+  alignas(16) std::array<float, 4> cents_above_lowest_frequency;
 
   for (int k = 0; k < 4; ++k) {
-    UNSAFE_TODO(cents_above_lowest_frequency[k]) =
-        log2f(UNSAFE_TODO(ratio[k])) * 1200;
+    cents_above_lowest_frequency[k] = log2f(ratio[k]) * 1200;
   }
 
-  float32x4_t v_pitch_range = vaddq_f32(
-      vdupq_n_f32(1.0), vmulq_f32(vld1q_f32(cents_above_lowest_frequency),
-                                  vdupq_n_f32(1 / cents_per_range_)));
+  float32x4_t v_pitch_range =
+      vaddq_f32(vdupq_n_f32(1.0),
+                vmulq_f32(vld1q_f32(cents_above_lowest_frequency.data()),
+                          vdupq_n_f32(1 / cents_per_range_)));
 
   v_pitch_range = vmaxq_f32(v_pitch_range, vdupq_n_f32(0));
   v_pitch_range = vminq_f32(v_pitch_range, vdupq_n_f32(NumberOfRanges() - 1));
@@ -361,21 +363,19 @@ void PeriodicWaveImpl::WaveDataForFundamentalFrequency(
   uint32x4_t v_index2 = vaddq_u32(v_index1, vdupq_n_u32(1));
   v_index2 = vminq_u32(v_index2, vdupq_n_u32(NumberOfRanges() - 1));
 
-  uint32_t range_index1[4] __attribute__((aligned(16)));
-  uint32_t range_index2[4] __attribute__((aligned(16)));
-
-  vst1q_u32(range_index1, v_index1);
-  vst1q_u32(range_index2, v_index2);
+  const std::array<uint32_t, 4> range_index1 =
+      base::bit_cast<std::array<uint32_t, 4>>(v_index1);
+  const std::array<uint32_t, 4> range_index2 =
+      base::bit_cast<std::array<uint32_t, 4>>(v_index2);
 
   const float32x4_t table_factor =
       vsubq_f32(v_pitch_range, vcvtq_f32_u32(v_index1));
-  vst1q_f32(table_interpolation_factor.data(), table_factor);
+  table_interpolation_factor =
+      base::bit_cast<std::array<float, 4>>(table_factor);
 
   for (int k = 0; k < 4; ++k) {
-    lower_wave_data[k] =
-        band_limited_tables_[UNSAFE_TODO(range_index2[k])]->as_span();
-    higher_wave_data[k] =
-        band_limited_tables_[UNSAFE_TODO(range_index1[k])]->as_span();
+    lower_wave_data[k] = band_limited_tables_[range_index2[k]]->as_span();
+    higher_wave_data[k] = band_limited_tables_[range_index1[k]]->as_span();
   }
 }
 #else
