@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -22,6 +23,24 @@ namespace webid {
 
 using testing::_;
 using testing::NiceMock;
+
+class TestPageActionObserver : public page_actions::PageActionObserver {
+ public:
+  explicit TestPageActionObserver(actions::ActionId action_id)
+      : page_actions::PageActionObserver(action_id) {}
+
+  void OnPageActionIconShown(
+      const page_actions::PageActionState& page_action) override {
+    visible_ = true;
+  }
+
+  void OnPageActionIconHidden(
+      const page_actions::PageActionState& page_action) override {
+    visible_ = false;
+  }
+
+  bool visible_ = false;
+};
 
 class MockDelegate : public AccountSelectionView::Delegate {
  public:
@@ -166,11 +185,20 @@ class FedCmAmbientUiDisabledBrowserTest : public FedCmAmbientUiBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  TestPageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp);
 
   // Verify chip is showing by checking that we didn't show the dialog widget
   // yet.
   EXPECT_FALSE(view()->GetDialogWidget());
+  EXPECT_TRUE(observer.visible_);
 
   // Simulate click on the omnibox chip.
   view()->OnPageActionClicked();
@@ -180,6 +208,13 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
   // After activation, the dialog widget should be shown for sign-up (new user).
   EXPECT_TRUE(view()->GetDialogWidget());
   EXPECT_TRUE(view()->GetDialogWidget()->IsVisible());
+
+  // The Page Action icon should still be visible while the modal is shown.
+  EXPECT_TRUE(observer.visible_);
+
+  // Closing the widget should hide the Page Action icon.
+  view()->Close(/*notify_delegate=*/false, /*hide_widget=*/false);
+  EXPECT_FALSE(observer.visible_);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {

@@ -98,19 +98,6 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 }
 
 void FedCmAccountSelectionView::OnPageActionClicked() {
-  if (tab_) {
-    if (auto* features = tab_->GetTabFeatures()) {
-      if (auto* controller = features->page_action_controller()) {
-        controller->Hide(kActionFederation);
-        controller->HideSuggestionChip(kActionFederation);
-      }
-    }
-  }
-
-  // Passing false to hide_dialog_widget_after_idp_login_popup_ to ensure the
-  // widget is shown.
-  hide_dialog_widget_after_idp_login_popup_ = false;
-
   if (!delegate_ || idp_list_.empty() || accounts_.empty() || !rp_data_) {
     return;
   }
@@ -118,6 +105,28 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
   bool is_returning = accounts_.size() == 1u &&
                       accounts_[0]->browser_trusted_login_state ==
                           content::IdentityRequestAccount::LoginState::kSignIn;
+
+  if (tab_) {
+    if (auto* features = tab_->GetTabFeatures()) {
+      if (auto* controller = features->page_action_controller()) {
+        if (is_returning) {
+          // For sign-in users, we want to hide the entire page action since we
+          // are immediately logging the user in.
+          controller->Hide(kActionFederation);
+          controller->HideAnchoredMessage(kActionFederation);
+        } else {
+          // For sign-up users, we want to hide the expanded suggestion chip
+          // (showing the "Sign up with idp.com") but keep the page action icon
+          // (with the user's profile picture) in the omnibox.
+          controller->HideSuggestionChip(kActionFederation);
+        }
+      }
+    }
+  }
+
+  // Passing false to hide_dialog_widget_after_idp_login_popup_ to ensure the
+  // widget is shown.
+  hide_dialog_widget_after_idp_login_popup_ = false;
 
   if (is_returning) {
     // For sign-in users with only one account logged in we show an anchored
@@ -236,12 +245,11 @@ bool FedCmAccountSelectionView::Show(
         dialog_type_ = DialogType::AMBIENT;
         return true;
       }
-    }
-
-    if (tab_) {
-      if (auto* features = tab_->GetTabFeatures()) {
-        if (auto* controller = features->page_action_controller()) {
-          controller->Hide(kActionFederation);
+      if (tab_) {
+        if (auto* features = tab_->GetTabFeatures()) {
+          if (auto* controller = features->page_action_controller()) {
+            controller->Hide(kActionFederation);
+          }
         }
       }
     }
