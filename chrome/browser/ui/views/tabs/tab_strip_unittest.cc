@@ -534,7 +534,7 @@ TEST_P(TabStripTest, TabNeedsAttentionBlocked) {
   // Block tab1.
   tabs::TabData data;
   data.blocked = true;
-  tab1->SetDataForTesting(data);
+  tab1->SetData(data);
 
   EXPECT_FALSE(IsShowingAttentionIndicator(tab1));
   controller_->SelectTab(0, dummy_event_);
@@ -553,7 +553,7 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
   // Set needs attention.
   tabs::TabData data;
   data.needs_attention = true;
-  tab1->SetDataForTesting(data);
+  tab1->SetData(data);
 
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
   controller_->SelectTab(0, dummy_event_);

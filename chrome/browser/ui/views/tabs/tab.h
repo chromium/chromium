@@ -32,7 +32,6 @@
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view_observer.h"
 
-enum class TabChangeType;
 class TabCloseButton;
 class TabSlotController;
 class TabIcon;
@@ -49,8 +48,6 @@ class View;
 
 namespace tabs {
 enum class TabAlert;
-class TabDataObserver;
-struct TabData;
 }
 
 namespace glic {
@@ -163,7 +160,7 @@ class Tab : public gfx::AnimationDelegate,
 
   // Sets the data this tabs displays. Should only be called after Tab is added
   // to widget hierarchy.
-  void SetDataForTesting(tabs::TabData data);
+  void SetData(tabs::TabData data);
 
   // Redraws the loading animation if one is visible. Otherwise, no-op. The
   // `elapsed_time` parameter is shared between tabs and used to keep the
@@ -264,9 +261,6 @@ class Tab : public gfx::AnimationDelegate,
 
   void CloseButtonPressed(const ui::Event& event);
 
-  void OnTabDataChanged(TabChangeType tab_change_type,
-                        const tabs::TabData& tab_data);
-
   // The tab handle associated with the view.
   const tabs::TabHandle tab_handle_;
 
@@ -328,16 +322,12 @@ class Tab : public gfx::AnimationDelegate,
 
   std::unique_ptr<TabCloseButtonObserver> tab_close_button_observer_;
 
-  std::unique_ptr<tabs::TabDataObserver> tab_data_observer_;
-
   // Freezing vote held while the tab is collapsed.
   std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 
   base::CallbackListSubscription root_name_changed_subscription_;
-
-  base::CallbackListSubscription tab_data_change_subscription_;
 
   base::WeakPtrFactory<Tab> weak_ptr_factory_{this};
 };
