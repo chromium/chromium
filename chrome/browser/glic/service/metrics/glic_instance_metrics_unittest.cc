@@ -225,6 +225,22 @@ TEST_F(GlicInstanceMetricsTest, OnOpen_DoesNotOverrideInitialEntrypoint) {
             GlicEntrypoint::kTopChromeButton);
 }
 
+TEST_F(GlicInstanceMetricsTest, InitialInvocationSource_OnlyRecordedOnce) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
+                    /*is_showing=*/false);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.InitialInvocationSource",
+      mojom::InvocationSource::kTopChromeButton, 1);
+
+  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options,
+                    /*is_showing=*/false);
+  // Should still be 1 sample of kTopChromeButton.
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.InitialInvocationSource",
+      mojom::InvocationSource::kTopChromeButton, 1);
+}
+
 TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
