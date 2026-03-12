@@ -10,32 +10,11 @@
 #include "base/functional/callback_helpers.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
-#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "media/capture/video/video_capture_device.h"
+#include "media/capture/video/video_frame_receiver_types.h"
 
 namespace media {
-
-struct CAPTURE_EXPORT ReadyFrameInBuffer {
-  ReadyFrameInBuffer();
-  ReadyFrameInBuffer(
-      int buffer_id,
-      int frame_feedback_id,
-      std::unique_ptr<
-          VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-          buffer_read_permission,
-      mojom::VideoFrameInfoPtr frame_info);
-  ReadyFrameInBuffer(ReadyFrameInBuffer&& other);
-  ~ReadyFrameInBuffer();
-
-  ReadyFrameInBuffer& operator=(ReadyFrameInBuffer&& other);
-
-  int buffer_id;
-  int frame_feedback_id;
-  std::unique_ptr<VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>
-      buffer_read_permission;
-  mojom::VideoFrameInfoPtr frame_info;
-};
 
 // Adapter for a VideoFrameReceiver to notify once frame consumption is
 // complete. VideoFrameReceiver requires owning an object that it will destroy

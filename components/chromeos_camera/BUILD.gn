@@ -27,10 +27,7 @@ source_set("mjpeg_decode_accelerator") {
 }
 
 source_set("mojo_mjpeg_decode_accelerator") {
-  visibility = [
-    "//content/browser",
-    "//media/capture:capture_lib",
-  ]
+  visibility = [ "//media/capture/video/chromeos" ]
 
   sources = [
     "mojo_mjpeg_decode_accelerator.cc",

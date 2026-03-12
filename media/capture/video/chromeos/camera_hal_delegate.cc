@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -47,7 +48,7 @@ namespace {
 constexpr int32_t kDefaultFps = 30;
 constexpr char kVirtualPrefix[] = "VIRTUAL_";
 
-const absl::flat_hash_set<int32_t> module_id_set = {
+constexpr auto module_id_set = base::MakeFixedFlatSet<int32_t>({
     static_cast<int32_t>(
         CameraHalDelegate::PopularCamPeriphModuleID::kLifeCamHD3000_Microsoft),
     static_cast<int32_t>(
@@ -81,7 +82,7 @@ const absl::flat_hash_set<int32_t> module_id_set = {
         CameraHalDelegate::PopularCamPeriphModuleID::k808Camera9_Generalplus),
     static_cast<int32_t>(
         CameraHalDelegate::PopularCamPeriphModuleID::kNexiGoN60FHD_2MUVC),
-};
+});
 
 constexpr base::TimeDelta kEventWaitTimeoutSecs = base::Seconds(1);
 

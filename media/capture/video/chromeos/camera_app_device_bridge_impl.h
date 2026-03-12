@@ -7,15 +7,20 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/singleton.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread.h"
 #include "media/capture/capture_export.h"
-#include "media/capture/video/chromeos/camera_app_device_impl.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace media {
+
+class CameraAppDeviceImpl;
 
 // A singleton bridge class between Chrome Camera App and Video Capture Service
 // which helps to construct CameraAppDevice for communication between these two

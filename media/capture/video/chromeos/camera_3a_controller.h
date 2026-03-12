@@ -11,9 +11,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
+#include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
-#include "media/capture/video/chromeos/request_manager.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace media {
 

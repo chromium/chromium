@@ -9,7 +9,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
-#include "media/capture/video/chromeos/camera_hal_delegate.h"
 #include "media/capture/video/video_capture_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -18,7 +17,13 @@ class SharedImageInterface;
 class GpuChannelHost;
 }
 
+namespace base {
+class SequencedTaskRunner;
+}
+
 namespace media {
+
+class CameraHalDelegate;
 
 using MojoMjpegDecodeAcceleratorFactoryCB = base::RepeatingCallback<void(
     mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>)>;

@@ -12,6 +12,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/chromeos/camera_app_device_impl.h"
+#include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
 

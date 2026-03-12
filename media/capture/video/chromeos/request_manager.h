@@ -19,14 +19,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/capture/mojom/image_capture.mojom.h"
-#include "media/capture/video/chromeos/camera_app_device_impl.h"
 #include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
-#include "media/capture/video/chromeos/request_builder.h"
-#include "media/capture/video/chromeos/stream_buffer_manager.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,6 +32,9 @@
 namespace media {
 
 class CameraBufferFactory;
+class CameraAppDeviceImpl;
+class RequestBuilder;
+class StreamBufferManager;
 
 // The JPEG transport header as defined by Android camera HAL v3 API.  The JPEG
 // transport header is at the end of the blob buffer filled by the HAL.

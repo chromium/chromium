@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_system.h"

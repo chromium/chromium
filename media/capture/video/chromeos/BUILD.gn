@@ -1,0 +1,224 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("chromeos") {
+  visibility = [
+    ":test_support",
+    ":unit_tests",
+    "//media/capture:capture_lib",
+  ]
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+  sources = [
+    "camera_3a_controller.cc",
+    "camera_3a_controller.h",
+    "camera_app_device_bridge_impl.cc",
+    "camera_app_device_bridge_impl.h",
+    "camera_app_device_impl.cc",
+    "camera_app_device_impl.h",
+    "camera_app_device_provider_impl.cc",
+    "camera_app_device_provider_impl.h",
+    "camera_auto_framing_state_observer.cc",
+    "camera_auto_framing_state_observer.h",
+    "camera_buffer_factory.cc",
+    "camera_buffer_factory.h",
+    "camera_device_context.cc",
+    "camera_device_context.h",
+    "camera_device_delegate.cc",
+    "camera_device_delegate.h",
+    "camera_effects_observer.cc",
+    "camera_effects_observer.h",
+    "camera_hal_delegate.cc",
+    "camera_hal_delegate.h",
+    "camera_hal_dispatcher_impl.cc",
+    "camera_hal_dispatcher_impl.h",
+    "camera_metadata_utils.cc",
+    "camera_metadata_utils.h",
+    "camera_sw_privacy_switch_state_observer.cc",
+    "camera_sw_privacy_switch_state_observer.h",
+    "camera_trace_utils.cc",
+    "camera_trace_utils.h",
+    "capture_metadata_dispatcher.h",
+    "display_rotation_observer.cc",
+    "display_rotation_observer.h",
+    "gpu_memory_buffer_tracker_cros.cc",
+    "gpu_memory_buffer_tracker_cros.h",
+    "jpeg_accelerator_provider.cc",
+    "jpeg_accelerator_provider.h",
+    "mojo_service_manager_observer.cc",
+    "mojo_service_manager_observer.h",
+    "pixel_format_utils.cc",
+    "pixel_format_utils.h",
+    "request_builder.cc",
+    "request_builder.h",
+    "request_manager.cc",
+    "request_manager.h",
+    "scoped_video_capture_jpeg_decoder.cc",
+    "scoped_video_capture_jpeg_decoder.h",
+    "stream_buffer_manager.cc",
+    "stream_buffer_manager.h",
+    "system_event_monitor_impl.cc",
+    "system_event_monitor_impl.h",
+    "token_manager.cc",
+    "token_manager.h",
+    "vendor_tag_ops_delegate.cc",
+    "vendor_tag_ops_delegate.h",
+    "video_capture_device_chromeos_delegate.cc",
+    "video_capture_device_chromeos_delegate.h",
+    "video_capture_device_chromeos_halv3.cc",
+    "video_capture_device_chromeos_halv3.h",
+    "video_capture_device_factory_chromeos.cc",
+    "video_capture_device_factory_chromeos.h",
+    "video_capture_features_chromeos.cc",
+    "video_capture_features_chromeos.h",
+    "video_capture_jpeg_decoder.h",
+    "video_capture_jpeg_decoder_impl.cc",
+    "video_capture_jpeg_decoder_impl.h",
+  ]
+
+  public_deps = [
+    "//ash/webui/camera_app_ui:document_scanning",
+    "//media/capture:capture_base",
+    "//media/capture:capture_device_specific",
+    "//media/capture:capture_gpu_channel",
+    "//media/capture:capture_switches",
+    "//media/capture/video/chromeos/public",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base:i18n",
+    "//build/config/linux/libdrm",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/dbus/power",
+    "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
+    "//components/chromeos_camera/common",
+    "//components/device_event_log",
+    "//gpu/command_buffer/client",
+    "//gpu/ipc/client",
+    "//gpu/ipc/common",
+    "//media",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:image_capture_types",
+    "//media/capture/mojom:video_capture",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//media/capture/video/chromeos/mojom:document_scanner",
+    "//media/capture/video/chromeos/mojom:jpeg_accelerator",
+    "//media/capture/video/chromeos/mojom:system_event_monitor",
+    "//media/capture/video/chromeos/mojom:video_capture_device_info_monitor",
+    "//media/mojo/mojom",
+    "//services/video_capture/public/mojom",
+    "//third_party/libsync",
+    "//third_party/libyuv",
+    "//ui/display",
+    "//ui/gfx",
+  ]
+}
+
+source_set("test_support") {
+  visibility = [
+    ":unit_tests",
+    "//media/capture:test_support",
+  ]
+  testonly = true
+
+  sources = [
+    "mock_camera_module.cc",
+    "mock_camera_module.h",
+    "mock_vendor_tag_ops.cc",
+    "mock_vendor_tag_ops.h",
+    "mock_video_capture_client.cc",
+    "mock_video_capture_client.h",
+  ]
+
+  public_deps = [ ":chromeos" ]
+
+  deps = [
+    "//base",
+    "//media",
+    "//media:test_support",
+    "//media/capture:capture_base",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//media/capture/video/chromeos/public",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  visibility = [ "//media/capture:capture_unittests" ]
+  testonly = true
+
+  sources = [
+    "camera_3a_controller_unittest.cc",
+    "camera_device_delegate_unittest.cc",
+    "camera_hal_delegate_unittest.cc",
+    "camera_hal_dispatcher_impl_unittest.cc",
+    "request_manager_unittest.cc",
+    "token_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":chromeos",
+    ":test_support",
+    "//base/test:test_support",
+    "//build/config/linux/libdrm",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/dbus/power",
+    "//components/viz/test:test_support",
+    "//gpu:test_support",
+    "//media:test_support",
+    "//media/capture",
+    "//media/capture:test_support",
+    "//media/capture/video/chromeos/mojom:cros_camera",
+    "//media/capture/video/chromeos/public",
+
+    # TODO(crbug.com/40115082): local_gpu_memory_buffer_manager should use
+    # ui::GbmDevice/GbmWrapper so it works with both minigbm and desktop
+    # libgbm, instead of depending on minigbm-specific plumbing.
+    "//media/gpu/test:local_gpu_memory_buffer_manager",
+    "//mojo/core/embedder",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/libsync",
+    "//third_party/minigbm",
+  ]
+}
+
+group("mojo_policies") {
+  visibility = [ "//media/capture:capture_lib" ]
+  public_deps = [
+    ":camera_hal_dispatcher_mojo_policy",
+    ":document_scanner_mojo_policy",
+    ":jpeg_accelerator_mojo_policy",
+    ":system_event_monitor_mojo_policy",
+    ":video_capture_device_info_monitor_mojo_policy",
+  ]
+}
+
+copy("camera_hal_dispatcher_mojo_policy") {
+  sources = [ "camera_hal_dispatcher_mojo_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("jpeg_accelerator_mojo_policy") {
+  sources = [ "jpeg_accelerator_mojo_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("system_event_monitor_mojo_policy") {
+  sources = [ "system_event_monitor.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("video_capture_device_info_monitor_mojo_policy") {
+  sources = [ "video_capture_device_info_monitor.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}
+
+copy("document_scanner_mojo_policy") {
+  sources = [ "document_scanner_mojo_policy.jsonc" ]
+  outputs = [ "$root_out_dir/mojo_service_manager/{{source_file_part}}" ]
+}

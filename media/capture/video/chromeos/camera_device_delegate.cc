@@ -27,6 +27,7 @@
 #include "media/capture/video/blob_utils.h"
 #include "media/capture/video/chromeos/camera_3a_controller.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
+#include "media/capture/video/chromeos/camera_app_device_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_delegate.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"

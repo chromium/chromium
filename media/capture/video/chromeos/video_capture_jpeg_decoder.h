@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
-#include "media/capture/video/video_frame_receiver.h"
+#include "media/capture/video/video_frame_receiver_types.h"
 
 namespace media {
 

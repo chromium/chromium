@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
+#include "media/capture/video/chromeos/camera_hal_delegate.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
 namespace media {

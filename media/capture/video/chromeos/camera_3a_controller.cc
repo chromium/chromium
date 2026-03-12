@@ -13,6 +13,7 @@
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/camera_trace_utils.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace media {
 
