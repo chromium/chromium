@@ -393,19 +393,9 @@ bool PictureLayerImpl::AppendQuadForTile(
     // tiles in TileManager.
     tile->mark_used();
 
-    if (auto resource_id = tile->GetResourceId()) {
-      gfx::RectF texture_rect = iter.texture_rect();
-      AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                         offset_visible_geometry_rect, needs_blending,
-                         *resource_id, texture_rect, nearest_neighbor_);
-      has_draw_quad = true;
-    } else if (auto color = tile->GetSolidColor()) {
-      AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect, *color);
-      has_draw_quad = true;
-    } else if (tile->IsOOM()) {
-      // Keep `has_draw_quad` false to end up checkerboarding below.
-    }
+    has_draw_quad = AppendQuad(
+        iter, render_pass, shared_quad_state, offset_geometry_rect,
+        offset_visible_geometry_rect, needs_blending, nearest_neighbor_);
   }
 
   if (!has_draw_quad) {

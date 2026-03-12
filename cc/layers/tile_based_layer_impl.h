@@ -118,6 +118,16 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                           const gfx::RectF& texture_rect,
                           bool nearest_neighbor);
 
+  // Decides whether to append a TileDrawQuad or a SolidColorDrawQuad for the
+  // tile pointed to by `iter`. Returns true if a quad was appended.
+  bool AppendQuad(const TilingSetCoverageIterator<Tiling>& iter,
+                  viz::CompositorRenderPass* render_pass,
+                  viz::SharedQuadState* shared_quad_state,
+                  const gfx::Rect& offset_geometry_rect,
+                  const gfx::Rect& offset_visible_geometry_rect,
+                  bool needs_blending,
+                  bool nearest_neighbor);
+
   // Invoked after a quad has been appended to allow subclasses to perform any
   // subclass-specific validation or tracking.
   virtual void DidAppendQuad(viz::DrawQuad* quad) {}
@@ -485,6 +495,39 @@ void TileBasedLayerImpl<Tiling>::AppendTileDrawQuad(
                texture_rect, nearest_neighbor,
                !layer_tree_impl()->settings().enable_edge_anti_aliasing);
   DidAppendQuad(quad);
+}
+
+template <typename Tiling>
+bool TileBasedLayerImpl<Tiling>::AppendQuad(
+    const TilingSetCoverageIterator<Tiling>& iter,
+    viz::CompositorRenderPass* render_pass,
+    viz::SharedQuadState* shared_quad_state,
+    const gfx::Rect& offset_geometry_rect,
+    const gfx::Rect& offset_visible_geometry_rect,
+    bool needs_blending,
+    bool nearest_neighbor) {
+  auto* tile = *iter;
+  if (!tile || !tile->IsReadyToDraw()) {
+    return false;
+  }
+
+  if (auto resource_id = tile->GetResourceId()) {
+    gfx::RectF texture_rect = iter.texture_rect();
+    AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                       offset_visible_geometry_rect, needs_blending,
+                       *resource_id, texture_rect, nearest_neighbor);
+    return true;
+  }
+
+  if (auto color = tile->GetSolidColor()) {
+    AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                         offset_visible_geometry_rect, *color);
+    return true;
+  }
+
+  // If the tile is OOM, or we don't have a resource/color for some other
+  // reason, we should return false to trigger checkerboarding.
+  return false;
 }
 
 template <typename Tiling>
