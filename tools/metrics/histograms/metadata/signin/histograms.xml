@@ -120,6 +120,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".Profile17" summary="Metric recorded for Profile 17"/>
   <variant name=".Profile18" summary="Metric recorded for Profile 18"/>
   <variant name=".Profile19" summary="Metric recorded for Profile 19"/>
+  <variant name=".Profile20Plus"
+      summary="Combined metric recorded for all Profiles with an index above
+               20"/>
 </variants>
 
 <!-- LINT.ThenChange(//components/metrics/profile_metrics_service.cc:histogram_suffix) -->

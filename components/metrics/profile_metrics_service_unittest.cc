@@ -39,7 +39,7 @@ TEST_F(ProfileMetricsServiceTest, LogsHistogramsWithSuffix) {
 }
 
 TEST_F(ProfileMetricsServiceTest,
-       DoesNotLogSuffixedHistogramsIfIndexIsTooHigh) {
+       LogsCombinedSuffixedHistogramsIfIndexIsTooHigh) {
   // 20 is higher than kMaxProfileIndexToLog (19).
   ProfileMetricsContext context(20);
   ProfileMetricsService service(context);
@@ -47,7 +47,20 @@ TEST_F(ProfileMetricsServiceTest,
   service.UmaHistogramEnumeration("Test.Histogram", TestEnum::kValue1);
 
   histogram_tester_.ExpectUniqueSample("Test.Histogram", TestEnum::kValue1, 1);
-  histogram_tester_.ExpectTotalCount("Test.Histogram.Profile20", 0);
+  histogram_tester_.ExpectUniqueSample("Test.Histogram.Profile20Plus",
+                                       TestEnum::kValue1, 1);
+
+  // 21 is also higher than kMaxProfileIndexToLog (19).
+  ProfileMetricsContext context2(21);
+  ProfileMetricsService service2(context2);
+
+  service.UmaHistogramEnumeration("Test.Histogram", TestEnum::kValue1);
+
+  histogram_tester_.ExpectUniqueSample("Test.Histogram", TestEnum::kValue1, 2);
+  // Ensures that the logging is combined for all contexts above
+  // kMaxProfileIndexToLog.
+  histogram_tester_.ExpectUniqueSample("Test.Histogram.Profile20Plus",
+                                       TestEnum::kValue1, 2);
 }
 
 TEST_F(ProfileMetricsServiceTest, DoesNotLogSuffixedHistogramsForEmptyContext) {

@@ -16,7 +16,9 @@ namespace {
 //
 // LINT.IfChange(histogram_suffix)
 constexpr std::string_view kHistogramSuffixFormat = ".Profile%d";
-constexpr size_t kMaxProfileIndexToLog = 19;
+constexpr size_t kMaxProfileIndexForIndividualLog = 19;
+constexpr std::string_view kHistogramSuffixMaxProfileCountCombinedName =
+    ".Profile%dPlus";
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:ProfileIndexSignin,
 // //tools/metrics/histograms/metadata/profile/histograms.xml:ProfileIndexProfile)
 
@@ -24,8 +26,10 @@ std::string GetHistogramSuffix(std::optional<size_t> profile_index) {
   if (!profile_index.has_value()) {
     return "";
   }
-  if (profile_index > kMaxProfileIndexToLog) {
-    return "";
+  // For all out of scope profiles, combine the results into a single histogram.
+  if (profile_index > kMaxProfileIndexForIndividualLog) {
+    return base::StringPrintf(kHistogramSuffixMaxProfileCountCombinedName,
+                              kMaxProfileIndexForIndividualLog + 1);
   }
   return base::StringPrintf(kHistogramSuffixFormat, profile_index.value());
 }
