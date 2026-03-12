@@ -1648,8 +1648,28 @@ void SiteInstanceImpl::WriteIntoTrace(
     proto->set_active_rfh_count(site_instance_group_->active_frame_count());
   }
 
+  proto->set_process_assignment(SiteInstanceProcessAssignmentToProto());
+
   perfetto::TracedDictionary dict = std::move(proto).AddDebugAnnotations();
   dict.Add("site_info", site_info_);
+}
+
+perfetto::protos::pbzero::SiteInstance::SiteInstanceProcessAssignment
+SiteInstanceImpl::SiteInstanceProcessAssignmentToProto() const {
+  using Proto =
+      perfetto::protos::pbzero::SiteInstance::SiteInstanceProcessAssignment;
+  switch (process_assignment_) {
+    case SiteInstanceProcessAssignment::UNKNOWN:
+      return Proto::UNKNOWN;
+    case SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS:
+      return Proto::REUSED_EXISTING_PROCESS;
+    case SiteInstanceProcessAssignment::USED_SPARE_PROCESS:
+      return Proto::USED_SPARE_PROCESS;
+    case SiteInstanceProcessAssignment::CREATED_NEW_PROCESS:
+      return Proto::CREATED_NEW_PROCESS;
+  }
+
+  NOTREACHED();
 }
 
 int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {

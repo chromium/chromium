@@ -183,6 +183,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) override;
   int EstimateOriginAgentClusterOverheadForMetrics() override;
 
+  perfetto::protos::pbzero::SiteInstance::SiteInstanceProcessAssignment
+  SiteInstanceProcessAssignmentToProto() const;
+
   // Returns the current RenderProcessHost being used to render pages for this
   // SiteInstance. If there is no RenderProcessHost (because either none has
   // yet been created or there was one but it was cleanly destroyed (e.g. when

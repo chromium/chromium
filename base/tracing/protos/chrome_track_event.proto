@@ -367,6 +367,22 @@ message SiteInstance {
   // The SiteInstanceGroup this SiteInstance belongs to.
   optional SiteInstanceGroup site_instance_group = 7;
 
+  enum SiteInstanceProcessAssignment {
+    // No renderer process has been assigned to the SiteInstance yet.
+    UNKNOWN = 0;
+
+    // Reused some pre-existing process.
+    REUSED_EXISTING_PROCESS = 1;
+
+    // Used an existing spare process.
+    USED_SPARE_PROCESS = 2;
+
+    // No renderer could be reused, so a new one was created for the
+    // SiteInstance.
+    CREATED_NEW_PROCESS = 3;
+  }
+  optional SiteInstanceProcessAssignment process_assignment = 8;
+
   // Additional untyped debug information associated with this
   // SiteInstance, populated via TracedProto::AddDebugAnnotations API.
   repeated DebugAnnotation debug_annotations = 99;
