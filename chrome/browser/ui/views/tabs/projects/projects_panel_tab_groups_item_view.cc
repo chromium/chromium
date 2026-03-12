@@ -79,6 +79,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   projects_panel::ConfigureInkDropForButton(this);
 
   tab_group_icon_ = AddChildView(std::make_unique<views::ImageView>());
+  tab_group_icon_->SetCanProcessEventsWithinSubtree(false);
   tab_group_icon_->SetProperty(views::kMarginsKey,
                                projects_panel::kTabGroupIconMargins);
 
@@ -98,6 +99,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
 
   if (group.is_shared_tab_group()) {
     shared_icon_ = AddChildView(std::make_unique<views::ImageView>());
+    shared_icon_->SetCanProcessEventsWithinSubtree(false);
     shared_icon_->SetProperty(views::kMarginsKey, kShareIconMargins);
     ui::ImageModel shared_group_image_model = ui::ImageModel::FromVectorIcon(
         kPeopleGroupIcon, kColorProjectsPanelButtonIcon, kTrailingIconSize);

@@ -32,6 +32,7 @@ ProjectsPanelRecentThreadsExpandButton::ProjectsPanelRecentThreadsExpandButton(
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   icon_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_->SetCanProcessEventsWithinSubtree(false);
   icon_->SetProperty(views::kMarginsKey, kExpandIconMargins);
 
   title_ = AddChildView(std::make_unique<views::Label>());
