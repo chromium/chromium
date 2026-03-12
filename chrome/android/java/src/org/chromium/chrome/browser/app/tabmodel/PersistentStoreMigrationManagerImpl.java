@@ -30,7 +30,8 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
     @Override
     public @StoreType int getAuthoritativeStoreType() {
         if (!isTabStorageEnabled()) return StoreType.LEGACY;
-        if (getShadowWrittenStore() == StoreType.LEGACY && !isStorageAuthoritative()) {
+        @StoreType int shadowWrittenStore = getShadowWrittenStore();
+        if (shadowWrittenStore == StoreType.LEGACY && !isStorageAuthoritative()) {
             return StoreType.LEGACY;
         }
         @StoreType
@@ -82,7 +83,17 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
 
     @Override
     public void onAuthoritativeStoreInitialized(@StoreType int type) {
-        getPrefs().writeInt(mCurrentAuthoritativeStoreKey, type);
+        setCurrentAuthoritativeStore(type);
+    }
+
+    @Override
+    public void maybeHandleUnmarkedLegacyStore() {
+        @StoreType
+        int authoritativeStore =
+                getPrefs().readInt(mCurrentAuthoritativeStoreKey, StoreType.INVALID);
+        if (authoritativeStore == StoreType.INVALID) {
+            setCurrentAuthoritativeStore(StoreType.LEGACY);
+        }
     }
 
     @Override
@@ -116,13 +127,15 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
     private boolean maybePerformMigrationSwap(
             @StoreType int currentAuthoritativeStoreType, @StoreType int shadowWrittenStoreType) {
         boolean storageAuthoritative = isStorageAuthoritative();
-        boolean isAlreadyLegacy =
-                !storageAuthoritative || currentAuthoritativeStoreType != StoreType.LEGACY;
-        boolean isAlreadyTabStateStore =
-                storageAuthoritative || currentAuthoritativeStoreType != StoreType.TAB_STATE_STORE;
-        if (isAlreadyLegacy && isAlreadyTabStateStore) {
+        boolean isCorrectForAuthoritative =
+                storageAuthoritative && currentAuthoritativeStoreType == StoreType.TAB_STATE_STORE;
+        boolean isCorrectForNonAuthoritative =
+                !storageAuthoritative && currentAuthoritativeStoreType == StoreType.LEGACY;
+
+        if (isCorrectForAuthoritative || isCorrectForNonAuthoritative) {
             return false;
         }
+
         setCurrentAuthoritativeStore(shadowWrittenStoreType);
         setShadowWrittenStore(currentAuthoritativeStoreType);
         return true;

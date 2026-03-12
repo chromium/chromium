@@ -45,6 +45,9 @@ public class DefaultPersistentStoreMigrationManager implements PersistentStoreMi
     }
 
     @Override
+    public void maybeHandleUnmarkedLegacyStore() {}
+
+    @Override
     public boolean isShadowStoreCaughtUp() {
         return true;
     }

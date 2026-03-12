@@ -65,6 +65,9 @@ public interface PersistentStoreMigrationManager {
      */
     void onAuthoritativeStoreInitialized(@StoreType int type);
 
+    /** Used to handle existing unmarked windows with an authoritative legacy store. */
+    void maybeHandleUnmarkedLegacyStore();
+
     /** Whether the shadow store is caught up. */
     boolean isShadowStoreCaughtUp();
 

@@ -30,6 +30,8 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -37,6 +39,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
+import org.chromium.chrome.browser.app.tabmodel.PersistentStoreMigrationManagerImpl;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -536,7 +539,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public AllocatedIdInfo allocInstanceId(
             int windowId, int taskId, boolean preferNew, boolean isIncognitoIntent) {
         synchronized (sAllocIdLock) {
-            return allocInstanceIdInternal(windowId, taskId, preferNew, isIncognitoIntent);
+            AllocatedIdInfo allocatedIdInfo =
+                    allocInstanceIdInternal(windowId, taskId, preferNew, isIncognitoIntent);
+            maybeHandleUnmarkedLegacyStore(allocatedIdInfo);
+            return allocatedIdInfo;
         }
     }
 
@@ -1493,5 +1499,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 assumeNonNull(currentTitle),
                 newTitle -> renameInstance(mInstanceId, newTitle),
                 source);
+    }
+
+    private void maybeHandleUnmarkedLegacyStore(AllocatedIdInfo allocatedIdInfo) {
+        @InstanceAllocationType int allocationType = allocatedIdInfo.allocationType;
+        if (allocationType != InstanceAllocationType.EXISTING_INSTANCE_MAPPED_TASK
+                && allocationType != InstanceAllocationType.EXISTING_INSTANCE_UNMAPPED_TASK
+                && allocationType != InstanceAllocationType.EXISTING_INSTANCE_NEW_TASK) {
+            return;
+        }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    new PersistentStoreMigrationManagerImpl(
+                                    String.valueOf(allocatedIdInfo.instanceId))
+                            .maybeHandleUnmarkedLegacyStore();
+                });
     }
 }
