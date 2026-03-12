@@ -12,22 +12,24 @@
 @end
 
 @implementation GuidedTourBubbleViewControllerPresentationController {
-  CGRect _presentedBubbleViewFrame;
-  CGRect _anchorViewFrame;
+  // View to anchor the bubble view to and also cut out of the dimming view.
+  UIView* _anchorView;
+  // Corner radius of the anchor view for the dimming view cutout.
   CGFloat _cornerRadius;
+
+  // Layer holding dimming mask.
+  CAShapeLayer* _maskLayer;
 }
 
 - (instancetype)
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController
-           presentedBubbleViewFrame:(CGRect)presentedBubbleViewFrame
-                    anchorViewFrame:(CGRect)anchorViewFrame
+                         anchorView:(UIView*)anchorView
                        cornerRadius:(CGFloat)cornerRadius {
   self = [super initWithPresentedViewController:presentedViewController
                        presentingViewController:presentingViewController];
   if (self) {
-    _presentedBubbleViewFrame = presentedBubbleViewFrame;
-    _anchorViewFrame = anchorViewFrame;
+    _anchorView = anchorView;
     _cornerRadius = cornerRadius;
   }
   return self;
@@ -41,7 +43,7 @@
     return CGRectZero;
   }
 
-  return _presentedBubbleViewFrame;
+  return [self.positioner presentedBubbleViewFrame];
 }
 
 - (void)presentationTransitionWillBegin {
@@ -57,7 +59,7 @@
   _dimmingView.alpha = 0.0;
   self.dimmingView.frame = containerView.bounds;
   [containerView insertSubview:self.dimmingView atIndex:0];
-  [self addSpotlightViewCutOutWithCornerRadius:_cornerRadius];
+  [self addSpotlightViewCutoutLayer];
 
   id<UIViewControllerTransitionCoordinator> coordinator =
       presentedVC.transitionCoordinator;
@@ -106,31 +108,122 @@
 
   if (self.containerView) {
     self.dimmingView.frame = self.containerView.bounds;
+    _maskLayer.frame = self.dimmingView.bounds;
   }
+}
+
+- (void)containerViewDidLayoutSubviews {
+  [super containerViewDidLayoutSubviews];
+
+  [self animateLayoutChange];
+}
+
+// Updates the view states to make sure that they are correct when the animation
+// is completed.
+- (void)completeSpotlightViewAnimationWithPath:(UIBezierPath*)path {
+  _maskLayer.path = path.CGPath;
   self.presentedView.frame = [self frameOfPresentedViewInContainerView];
 }
 
 #pragma mark - Private
 
-// Carves a hole in the background view to spotlight the view anchoring the
-// bubble view.
-- (void)addSpotlightViewCutOutWithCornerRadius:(CGFloat)radius {
-  CAShapeLayer* maskLayer = [CAShapeLayer layer];
+// Creates and adds the layer that holds the path to spotlight the view
+// anchoring the bubble view.
+- (void)addSpotlightViewCutoutLayer {
+  _maskLayer = [CAShapeLayer layer];
   CGRect backgroundBounds = self.dimmingView.bounds;
-  maskLayer.frame = backgroundBounds;
+  _maskLayer.frame = backgroundBounds;
+  _maskLayer.fillRule = kCAFillRuleEvenOdd;
+  self.dimmingView.layer.mask = _maskLayer;
+
+  _maskLayer.path = [self spotlightViewCutoutLayerPath].CGPath;
+}
+
+// Returns a path displaying the background view with a a hole in it to
+// spotlight the view anchoring the bubble view.
+- (UIBezierPath*)spotlightViewCutoutLayerPath {
+  CGRect backgroundBounds = self.dimmingView.bounds;
+
+  // Expand background rect so that the dimming view stretches to all sides even
+  // after rotation. This makes it stretch out of the view's bounds, but that's
+  // ok.
+  CGFloat maxDimension =
+      MAX(backgroundBounds.size.height, backgroundBounds.size.width);
+  backgroundBounds.size.height = maxDimension;
+  backgroundBounds.size.width = maxDimension;
 
   // Create the path for the mask
   // Start with a rectangle covering the whole mask area
   UIBezierPath* maskPath = [UIBezierPath bezierPathWithRect:backgroundBounds];
   // Create a path for the spotlight hole.
+  CGRect convertedAnchorRect = [_anchorView convertRect:_anchorView.bounds
+                                                 toView:self.dimmingView];
   UIBezierPath* spotlightPath =
-      [UIBezierPath bezierPathWithRoundedRect:_anchorViewFrame
-                                 cornerRadius:radius];
+      [UIBezierPath bezierPathWithRoundedRect:convertedAnchorRect
+                                 cornerRadius:_cornerRadius];
   [maskPath appendPath:spotlightPath];
 
-  maskLayer.path = maskPath.CGPath;
-  maskLayer.fillRule = kCAFillRuleEvenOdd;
-  self.dimmingView.layer.mask = maskLayer;
+  return maskPath;
+}
+
+// If the view layout has changed (e.g. due to device rotation), animate the
+// difference.
+- (void)animateLayoutChange {
+  // Force the presenting view controller to layout so the location of the
+  // anchor view is correct.
+  [self.presentingViewController.view layoutIfNeeded];
+
+  UIBezierPath* path = [self spotlightViewCutoutLayerPath];
+
+  if (CGPathEqualToPath(_maskLayer.path, path.CGPath)) {
+    return;
+  }
+
+  // Animate the cutout path and the bubble view to their new positions if
+  // needed.
+  id<UIViewControllerTransitionCoordinator> coordinator =
+      self.presentedViewController.transitionCoordinator;
+  NSTimeInterval animationDuration = coordinator
+                                         ? coordinator.transitionDuration
+                                         : [UIView inheritedAnimationDuration];
+  animationDuration = MAX(animationDuration, 0.2);
+  __weak __typeof(self) weakSelf = self;
+
+  [CATransaction begin];
+
+  [CATransaction setCompletionBlock:^{
+    [weakSelf completeSpotlightViewAnimationWithPath:path];
+  }];
+
+  // Animate the cutout path using CA animations.
+  CABasicAnimation* pathAnimation =
+      [CABasicAnimation animationWithKeyPath:@"path"];
+  pathAnimation.duration = animationDuration;
+  pathAnimation.timingFunction = [CAMediaTimingFunction
+      functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+
+  id fromPath = (id)_maskLayer.presentationLayer.path;
+  if (!fromPath) {
+    fromPath = (id)_maskLayer.path;
+  }
+  pathAnimation.fromValue = fromPath;
+  pathAnimation.toValue = (id)path.CGPath;
+  [_maskLayer addAnimation:pathAnimation forKey:@"pathAnimation"];
+
+  _maskLayer.path = path.CGPath;
+
+  // Animate the bubble view using UIView animation.
+  [UIView animateWithDuration:animationDuration
+                        delay:0
+                      options:UIViewAnimationOptionCurveEaseInOut |
+                              UIViewAnimationOptionBeginFromCurrentState
+                   animations:^{
+                     weakSelf.presentedView.frame =
+                         [weakSelf frameOfPresentedViewInContainerView];
+                   }
+                   completion:nil];
+
+  [CATransaction commit];
 }
 
 @end

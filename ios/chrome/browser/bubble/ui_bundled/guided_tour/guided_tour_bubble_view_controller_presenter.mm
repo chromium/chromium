@@ -32,6 +32,7 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
 }  // namespace
 
 @interface GuidedTourBubbleViewControllerPresenter () <
+    GuidedTourBubbleViewPositioner,
     UIViewControllerTransitioningDelegate>
 @end
 
@@ -41,6 +42,7 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
   ProceduralBlock _completionCallback;
   CGFloat _cornerRadius;
   BubblePageControlPage _page;
+  UIView* _anchorView;
 }
 
 - (instancetype)initWithText:(NSString*)text
@@ -69,11 +71,14 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
 
 - (void)presentInViewController:(UIViewController*)parentViewController
                     anchorPoint:(CGPoint)anchorPoint
-                anchorViewFrame:(CGRect)anchorViewFrame {
+                     anchorView:(UIView*)anchorView {
+  _anchorView = anchorView;
   [self.bubbleViewController displayAnimated:NO];
-  [self configureInParentViewController:parentViewController
-                            anchorPoint:anchorPoint
-                        anchorViewFrame:anchorViewFrame];
+  [self
+      configureInParentViewController:parentViewController
+                          anchorPoint:anchorPoint
+                      anchorViewFrame:[anchorView convertRect:anchorView.bounds
+                                                       toView:nil]];
   _parentViewController = parentViewController;
   _anchorPointInParent = [self.parentView.window convertPoint:anchorPoint
                                                        toView:self.parentView];
@@ -133,11 +138,9 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
       [[GuidedTourBubbleViewControllerPresentationController alloc]
           initWithPresentedViewController:self.bubbleViewController
                  presentingViewController:_parentViewController
-                 presentedBubbleViewFrame:
-                     [self frameForBubbleInRect:self.parentView.bounds
-                                  atAnchorPoint:_anchorPointInParent]
-                          anchorViewFrame:self.anchorViewFrame
+                               anchorView:_anchorView
                              cornerRadius:_cornerRadius];
+  controller.positioner = self;
   return controller;
 }
 
@@ -157,6 +160,17 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
       [[GuidedTourBubbleViewControllerAnimator alloc] init];
   animator.appearing = NO;
   return animator;
+}
+
+#pragma mark - GuidedTourBubbleViewPositioner
+
+- (CGRect)presentedBubbleViewFrame {
+  CGPoint anchorPoint = [self.delegate
+      anchorPointForGuidedTourBubbleViewControllerPresenter:self];
+  _anchorPointInParent = [self.parentView.window convertPoint:anchorPoint
+                                                       toView:self.parentView];
+  return [self frameForBubbleInRect:self.parentView.bounds
+                      atAnchorPoint:_anchorPointInParent];
 }
 
 @end

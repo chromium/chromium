@@ -7,6 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+// Protocol to communicate information about the bubble view position.
+@protocol GuidedTourBubbleViewPositioner
+// The frame for the bubble view, which may update as the views change (e.g. on
+// rotation).
+- (CGRect)presentedBubbleViewFrame;
+@end
+
 // Custom UIPresentationController for a BubbleView with a dimmed background
 // view that has a cutout for the view the BubbleView is anchored to.
 @interface GuidedTourBubbleViewControllerPresentationController
@@ -20,8 +27,7 @@
 - (instancetype)
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController
-           presentedBubbleViewFrame:(CGRect)presentedBubbleViewFrame
-                    anchorViewFrame:(CGRect)anchorViewFrame
+                         anchorView:(UIView*)anchorView
                        cornerRadius:(CGFloat)cornerRadius
     NS_DESIGNATED_INITIALIZER;
 
@@ -29,6 +35,9 @@
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController
     NS_UNAVAILABLE;
+
+// Positioner used by this controller to get positioning information.
+@property(nonatomic, weak) id<GuidedTourBubbleViewPositioner> positioner;
 
 @end
 

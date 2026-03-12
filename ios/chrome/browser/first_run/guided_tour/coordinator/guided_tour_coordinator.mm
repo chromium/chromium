@@ -22,6 +22,10 @@ const CGFloat kNTPAppBarTabGridButtonSpotlightCornerRadius = 14.0f;
 const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 }  // namespace
 
+@interface GuidedTourCoordinator () <
+    GuidedTourBubbleViewControllerPresenterDelegate>
+@end
+
 @implementation GuidedTourCoordinator {
   GuidedTourStep _step;
   __weak id<GuidedTourCoordinatorDelegate> _delegate;
@@ -61,13 +65,14 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
       completionCallback:^{
         [weakSelf nextTapped];
       }];
+  _presenter.delegate = self;
 
   UIView* anchorView = [self anchorView];
   CGPoint anchorPoint = [self anchorPointForAnchorView:anchorView];
 
   [_presenter presentInViewController:self.baseViewController
                           anchorPoint:anchorPoint
-                      anchorViewFrame:[self cutoutView]];
+                           anchorView:[self cutoutView]];
 }
 
 - (void)stop {
@@ -215,8 +220,8 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
       << "Need to define the bubble alignment for each guided tour step";
 }
 
-// Returns the frame that needs to be cut out of the blur background.
-- (CGRect)cutoutView {
+// Returns a UIView that needs to be cut out of the blur background.
+- (UIView*)cutoutView {
   UIView* cutoutView;
   if (_step == GuidedTourStep::kNTP ||
       _step == GuidedTourStep::kTabGridLongPress) {
@@ -227,10 +232,14 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
     cutoutView = [LayoutGuideCenterForBrowser(nil)
         referencedViewUnderName:kTabGridPageControlGuide];
   }
-  CGPoint cutoutViewOrigin =
-      [cutoutView.superview convertPoint:cutoutView.frame.origin toView:nil];
-  return CGRectMake(cutoutViewOrigin.x, cutoutViewOrigin.y,
-                    cutoutView.frame.size.width, cutoutView.frame.size.height);
+  return cutoutView;
+}
+
+#pragma mark - GuidedTourBubbleViewControllerPresenterDelegate
+
+- (CGPoint)anchorPointForGuidedTourBubbleViewControllerPresenter:
+    (GuidedTourBubbleViewControllerPresenter*)presenter {
+  return [self anchorPointForAnchorView:[self anchorView]];
 }
 
 @end
