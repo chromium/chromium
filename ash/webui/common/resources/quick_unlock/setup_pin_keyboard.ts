@@ -112,16 +112,6 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       },
 
       /**
-       * writeUma is a function that handles writing uma stats.
-       */
-      writeUma: {
-        type: Object,
-        value() {
-          return function() {};
-        },
-      },
-
-      /**
        * The current step/subpage we are on.
        * This is has upward data flow only.
        */
@@ -184,7 +174,6 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   private isSetPinCallPending_: boolean;
   authToken: string|undefined;
   enableSubmit: boolean;
-  writeUma: (progress: LockScreenProgress) => void;
   isConfirmStep: boolean;
   useRecoveryModeApi: boolean;
   quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
