@@ -82,6 +82,8 @@ class MockPage : public Page {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
   MOCK_METHOD(void,
               OnActionChipsChanged,
               (std::vector<ActionChipPtr> action_chips),
@@ -660,12 +662,24 @@ TEST_F(ActionChipsHandlerTest, ContextSharingDisabled) {
 }
 
 TEST_F(ActionChipsHandlerTest, ActionChipVisbilityChanged) {
-  // Set visibility to false.
-  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, false);
+  // Set visibility to false, and this causes no call to OnActionChipsChanged.
   EXPECT_CALL(page_, OnActionChipsChanged(_)).Times(0);
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, false);
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
 
   // Ensure `OnActionChipsChanged` is called when visibility changes to true.
-  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, true);
   EXPECT_CALL(page_, OnActionChipsChanged(_)).Times(1);
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, true);
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+}
+
+TEST_F(ActionChipsHandlerTest, SetActionChipsVisibility) {
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
+  handler().SetActionChipsVisibility(false);
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
+  handler().SetActionChipsVisibility(true);
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
 }
 }  // namespace

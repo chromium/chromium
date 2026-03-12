@@ -175,6 +175,10 @@ void ActionChipsHandler::ActivateMetricsFunnel(const std::string& funnel_name) {
   }
 }
 
+void ActionChipsHandler::SetActionChipsVisibility(bool is_visible) {
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpToolChipsVisible, is_visible);
+}
+
 void ActionChipsHandler::SendActionChipsToUi(base::TimeTicks start_time,
                                              std::vector<ActionChipPtr> chips) {
   if (!page_.is_bound()) {

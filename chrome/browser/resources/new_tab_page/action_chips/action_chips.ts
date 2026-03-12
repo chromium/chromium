@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +49,12 @@ export enum ActionChipsRetrievalState {
 
 const kActionChipsRetrievalStateChangedEvent =
     'action-chips-retrieval-state-changed';
+
+export interface ActionChipsElement {
+  $: {
+    actionMenu: CrActionMenuElement,
+  };
+}
 
 /**
  * The element for displaying Action Chips.
@@ -189,6 +197,18 @@ export class ActionChipsElement extends CrLitElement {
     this.actionChips_ =
         this.actionChips_.filter((c) => c.suggestion !== chip.suggestion);
   }
+
+  protected onContextmenu_(e: MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.$.actionMenu.showAt(e.target as HTMLElement);
+  }
+
+  protected onDisableSuggestionClick_() {
+    this.$.actionMenu.close();
+    this.handler.setActionChipsVisibility(false);
+  }
+
 
   protected getFaviconUrl_(url: string): string {
     const faviconUrl = new URL('chrome://favicon2/');
