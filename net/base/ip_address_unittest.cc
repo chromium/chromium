@@ -323,6 +323,27 @@ TEST(IPAddressTest, IsPubliclyRoutableIPv6) {
   }
 }
 
+TEST(IPAddressTest, IsMulticast) {
+  IPAddress ipv4_multicast;
+  ASSERT_TRUE(ipv4_multicast.AssignFromIPLiteral("224.0.0.1"));
+  EXPECT_TRUE(ipv4_multicast.IsMulticast());
+
+  IPAddress ipv4_non_multicast;
+  ASSERT_TRUE(ipv4_non_multicast.AssignFromIPLiteral("223.255.255.255"));
+  EXPECT_FALSE(ipv4_non_multicast.IsMulticast());
+
+  IPAddress ipv6_multicast;
+  ASSERT_TRUE(ipv6_multicast.AssignFromIPLiteral("ff02::1"));
+  EXPECT_TRUE(ipv6_multicast.IsMulticast());
+
+  IPAddress ipv6_non_multicast;
+  ASSERT_TRUE(ipv6_non_multicast.AssignFromIPLiteral("fe80::1"));
+  EXPECT_FALSE(ipv6_non_multicast.IsMulticast());
+
+  IPAddress invalid;
+  EXPECT_FALSE(invalid.IsMulticast());
+}
+
 TEST(IPAddressTest, IsZero) {
   uint8_t address1[4] = {};
   IPAddress zero_ipv4_address(address1);
