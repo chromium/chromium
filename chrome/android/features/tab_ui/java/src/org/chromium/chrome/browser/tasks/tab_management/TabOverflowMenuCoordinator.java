@@ -452,30 +452,22 @@ public abstract class TabOverflowMenuCoordinator<T>
     protected ListItem createMoveToWindowItem(
             T id, boolean isIncognito, @PluralsRes int pluralsRes, @IdRes int menuId) {
         // TODO(crbug.com/437418051): Clean up move_tab_to_another_window strings.
-        List<InstanceInfo> activeInstances =
-                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
-        List<InstanceInfo> choosableInstances = new ArrayList<>();
-        for (InstanceInfo instanceInfo : activeInstances) {
-            if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
-                continue;
+        int instanceType = PersistedInstanceType.ACTIVE;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            if (isIncognito) {
+                instanceType |= PersistedInstanceType.OFF_THE_RECORD;
+            } else {
+                instanceType |= PersistedInstanceType.REGULAR;
             }
-            if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                    && instanceInfo.isIncognitoSelected != isIncognito) {
-                continue;
-            }
-            choosableInstances.add(instanceInfo);
         }
+        List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(instanceType);
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-                || choosableInstances.size() == 0) {
+                || activeInstances.size() <= 1) {
             return new ListItemBuilder()
                     .withTitle(
                             mActivity
                                     .getResources()
-                                    .getQuantityString(
-                                            pluralsRes,
-                                            // The total number of windows is the choosable windows
-                                            // plus this window.
-                                            choosableInstances.size() + 1))
+                                    .getQuantityString(pluralsRes, activeInstances.size()))
                     .withMenuId(menuId)
                     .withIsIncognito(isIncognito)
                     .build();
@@ -487,7 +479,10 @@ public abstract class TabOverflowMenuCoordinator<T>
                         .withIsIncognito(isIncognito)
                         .withClickListener(v -> moveToNewWindow(id))
                         .build());
-        for (InstanceInfo instanceInfo : choosableInstances) {
+        for (InstanceInfo instanceInfo : activeInstances) {
+            if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
+                continue;
+            }
             String windowDisplayName = getItemTitle(mActivity, instanceInfo);
             submenuItems.add(
                     new ListItemBuilder()

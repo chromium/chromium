@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP;
 import static org.chromium.chrome.browser.multiwindow.InstanceInfo.Type.CURRENT;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.OFF_THE_RECORD;
 import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_GROUP_TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
@@ -304,8 +305,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mTabModel.isIncognitoBranded()).thenReturn(true);
         MultiWindowUtils.setInstanceCountForTesting(2);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE | OFF_THE_RECORD))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_INCOGNITO));
 
         mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
         ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
@@ -314,6 +315,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // Assert: verify normal menu items.
+        // Instance 1 should be filtered out because it is the current instance.
         // Only the incognito window should be available as a destination (the non-incognito windows
         // should be filtered out).
         verifyNormalListItems(

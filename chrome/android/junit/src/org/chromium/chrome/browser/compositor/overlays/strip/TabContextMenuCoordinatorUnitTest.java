@@ -21,6 +21,8 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.multiwindow.InstanceInfo.Type.CURRENT;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.OFF_THE_RECORD;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.REGULAR;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 import static org.chromium.ui.listmenu.ListItemType.DIVIDER;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
@@ -709,8 +711,8 @@ public class TabContextMenuCoordinatorUnitTest {
         setupWithIncognito(/* incognito= */ true);
         initializeCoordinator();
         MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE | OFF_THE_RECORD))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_INCOGNITO));
 
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
@@ -722,7 +724,6 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
-        // INSTANCE_INFO_2 is filtered out because it is non-incognito.
         // INSTANCE_INFO_INCOGNITO should be shown.
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
@@ -741,8 +742,8 @@ public class TabContextMenuCoordinatorUnitTest {
         setupWithIncognito(/* incognito= */ false);
         initializeCoordinator();
         MultiWindowUtils.setInstanceCountForTesting(3);
-        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
-                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2, INSTANCE_INFO_INCOGNITO));
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE | REGULAR))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
 
         var modelList = new ModelList();
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
@@ -755,7 +756,6 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // Current window (INSTANCE_INFO_1) is filtered because it is the current window.
         // INSTANCE_INFO_2 should be shown.
-        // INSTANCE_INFO_INCOGNITO is filtered out because it is non-incognito.
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
                 modelList,
                 1,
