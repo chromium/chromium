@@ -9,11 +9,13 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/accessibility_annotator/core/accessibility_annotation_service.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/direct_server_entity_provider.h"
+#include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 #include "content/public/browser/browser_context.h"
 
 // static
@@ -33,7 +35,9 @@ AccessibilityAnnotationServiceFactory::GetInstance() {
 AccessibilityAnnotationServiceFactory::AccessibilityAnnotationServiceFactory()
     : ProfileKeyedServiceFactory(
           "AccessibilityAnnotationService",
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {
+  DependsOn(AccessibilityAnnotatorBackendFactory::GetInstance());
+}
 
 AccessibilityAnnotationServiceFactory::
     ~AccessibilityAnnotationServiceFactory() = default;
@@ -46,7 +50,15 @@ AccessibilityAnnotationServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  accessibility_annotator::AccessibilityAnnotatorBackend* backend =
+      AccessibilityAnnotatorBackendFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!backend) {
+    return nullptr;
+  }
+
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotationService>(
-      std::make_unique<accessibility_annotator::DirectServerEntityProvider>());
+      std::make_unique<accessibility_annotator::DirectServerEntityProvider>(
+          *backend));
 }

@@ -91,4 +91,9 @@ std::string AccessibilityAnnotatorBackend::GetDebugUIFormattedCacheData()
   return "Cache data not yet available for the debug UI.";
 }
 
+AccessibilityAnnotationSyncBridge*
+AccessibilityAnnotatorBackend::accessibility_annotation_sync_bridge() {
+  return accessibility_annotation_sync_bridge_.get();
+}
+
 }  // namespace accessibility_annotator

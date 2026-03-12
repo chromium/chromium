@@ -68,6 +68,12 @@ class AccessibilityAnnotatorBackend
   // Pulls cache data into a formatted string to use in the debug UI.
   std::string GetDebugUIFormattedCacheData() const;
 
+  // Returns `accessibility_annotation_sync_bridge_`.
+  // TODO(crbug.com/489492084): This is currently used by
+  // `DirectServerEntityProvider` to directly observe the sync bridge. Remove
+  // this method once `DirectServerEntityProvider` is deprecated and removed.
+  AccessibilityAnnotationSyncBridge* accessibility_annotation_sync_bridge();
+
  private:
   const base::FilePath db_path_;
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;
