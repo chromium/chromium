@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html >
+<title>Overlay overscroll container</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  html, body {
+    margin: 0;
+  }
+  #container {
+    width: 300px;
+    height: 300px;
+    overflow: auto;
+  }
+  #menu, #refresh {
+    height: 100px;
+    width: 100%;
+    bottom: 100%; /* Overscrolls above the container. */
+  }
+  #menu {
+    background: gold;
+  }
+  #refresh {
+    background: pink;
+  }
+  #content {
+    height: 600px;
+  }
+</style>
+<div id="container" overscrollcontainer>
+  <div id="refresh"></div>
+  <div id="menu"></div>
+  <div id="content"></div>
+</div>
+<button id=button command="toggle-overscroll" commandfor="refresh">Refresh</button>
+<button id=button command="toggle-overscroll" commandfor="menu">Menu</button>
+<script>
+
+function hitIds(x, y) {
+  return Array.prototype.slice.apply(document.elementsFromPoint(x, y)).map(el => el.id).filter(id => !!id);
+}
+function hitIds(x, y) {
+  return Array.prototype.slice.apply(document.elementsFromPoint(x, y)).map(el => el.id).filter(id => !!id);
+}
+
+test(() => {
+  // Bring the menu into view.
+  menu.scrollIntoView();
+
+  // Bring the refresh area into view.
+  refresh.scrollIntoView();
+
+  const containerBounds = container.getBoundingClientRect();
+  assert_equals(refresh.getBoundingClientRect().top, containerBounds.top, '#refresh aligned to top');
+  assert_equals(menu.getBoundingClientRect().top, refresh.getBoundingClientRect().bottom, '#menu is below #refresh');
+  assert_equals(content.getBoundingClientRect().top, menu.getBoundingClientRect().bottom, '#content is below #menu');
+
+  const x = containerBounds.left + 50;
+  assert_array_equals(hitIds(x, containerBounds.top + 50),
+      ['refresh', 'container']);
+  assert_array_equals(hitIds(x, containerBounds.top + 150),
+      ['menu', 'container']);
+  assert_array_equals(hitIds(x, containerBounds.top + 250),
+      ['content', 'container']);
+}, "non-overlay overscrollcontainer multiple overscrolls in same direction");
+</script>
+</html>

@@ -3863,6 +3863,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       // recalc.
       SetNeedsStyleRecalc(kSubtreeStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
+    } else {
+      // Handle types of overscroll changes.
+      SetNeedsStyleRecalc(kLocalStyleChange,
+                          StyleChangeReasonForTracing::FromAttribute(name));
     }
   } else if (IsStyledElement()) {
     if (name == html_names::kStyleAttr) {

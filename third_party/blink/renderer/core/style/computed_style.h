@@ -2534,7 +2534,7 @@ class ComputedStyle final : public ComputedStyleBase {
       return HasPseudoElementStyle(kPseudoIdScrollButton);
     }
     if (pseudo == kPseudoIdOverscrollAreaParent) {
-      return IsInternalOverscrollAreaAuto();
+      return IsInternalOverscrollArea();
     }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
@@ -2649,8 +2649,8 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool HasBaseEffectiveAppearance() const;
 
-  bool IsInternalOverscrollAreaAuto() const {
-    return InternalOverscrollArea() == EInternalOverscrollArea::kAuto;
+  bool IsInternalOverscrollArea() const {
+    return InternalOverscrollArea() != EInternalOverscrollArea::kNone;
   }
   bool IsInternalOverscrollPositionAuto() const {
     return InternalOverscrollPosition() == EInternalOverscrollPosition::kAuto;

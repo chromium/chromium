@@ -1536,8 +1536,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // pseudo check after they can host scrollable overflow.
   bool IsOverscrollContainer() const {
     NOT_DESTROYED();
-    return !IsText() && (StyleRef().IsInternalOverscrollAreaAuto() ||
-                         IsOverscrollAreaParent());
+    return !IsText() &&
+           (StyleRef().IsInternalOverscrollArea() || IsOverscrollAreaParent());
+  }
+
+  EInternalOverscrollArea InternalOverscrollArea() const {
+    NOT_DESTROYED();
+    return IsText() ? EInternalOverscrollArea::kNone
+                    : StyleRef().InternalOverscrollArea();
   }
 
   bool IsScrollContainer() const {
@@ -3556,6 +3562,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       const LayoutObject*,
       MapCoordinatesFlags mode) const;
   PhysicalOffset OffsetFromScrollableContainer(const LayoutObject*,
+                                               MapCoordinatesFlags mode) const;
+  PhysicalOffset OffsetFromOverscrollContainer(const LayoutObject*,
                                                MapCoordinatesFlags mode) const;
 
   virtual void QuadsInAncestorInternal(Vector<gfx::QuadF>&,

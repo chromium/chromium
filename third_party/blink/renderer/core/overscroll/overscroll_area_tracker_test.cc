@@ -9,17 +9,21 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -617,6 +621,110 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPropertyTrees) {
   PseudoElement* bar =
       GetElementById("bar")->GetPseudoElement(kPseudoIdOverscrollAreaParent);
 
+  // Scroll chains from the element, to the overscroll-area-parents, to the
+  // root.
+  HeapVector<Member<const ScrollPaintPropertyNode>> scroll_chain(
+      {container->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->Scroll(),
+       bar->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
+       foo->GetLayoutObject()->FirstFragment().PaintProperties()->Scroll(),
+       GetDocument().View()->GetPage()->GetVisualViewport().GetScrollNode()});
+  for (size_t i = 1; i < scroll_chain.size(); ++i) {
+    const ScrollPaintPropertyNode* child = scroll_chain[i - 1];
+    const ScrollPaintPropertyNode* parent = scroll_chain[i];
+    EXPECT_EQ(child->Parent(), parent);
+  }
+
+  // In non-overlay, translation should be chained through the
+  // overscroll-area-parents.
+  const ObjectPaintProperties* container_props =
+      container->GetLayoutObject()->FirstFragment().PaintProperties();
+  const ObjectPaintProperties* bar_props =
+      bar->GetLayoutObject()->FirstFragment().PaintProperties();
+  const ObjectPaintProperties* foo_props =
+      foo->GetLayoutObject()->FirstFragment().PaintProperties();
+
+  HeapVector<Member<const TransformPaintPropertyNodeOrAlias>>
+      overlay_transform_chain({
+          container_props->ScrollTranslation(),
+          container_props->ContentTranslation(),
+          bar_props->ScrollTranslation(),
+          bar_props->ContentTranslation(),
+          bar_props->PaintOffsetTranslation(),
+          foo_props->ScrollTranslation(),
+          foo_props->PaintOffsetTranslation(),
+          container_props->PaintOffsetTranslation(),
+      });
+  for (size_t i = 1; i < overlay_transform_chain.size(); ++i) {
+    const TransformPaintPropertyNodeOrAlias* child =
+        overlay_transform_chain[i - 1];
+    const TransformPaintPropertyNodeOrAlias* parent =
+        overlay_transform_chain[i];
+    EXPECT_EQ(child->UnaliasedParent(), parent);
+  }
+
+  // Clip follows the scroll tree hierarchy
+  HeapVector<Member<const ClipPaintPropertyNode>> overlay_clip_chain(
+      {container->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->OverflowClip(),
+       bar->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->OverflowClip(),
+       foo->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->OverflowClip()});
+  HeapVector<Member<const TransformPaintPropertyNode>> overlay_clip_transform(
+      {container->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->ContentTranslation(),
+       bar->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->ContentTranslation(),
+       foo->GetLayoutObject()
+           ->FirstFragment()
+           .PaintProperties()
+           ->PaintOffsetTranslation()});
+  for (size_t i = 1; i < overlay_clip_chain.size(); ++i) {
+    const ClipPaintPropertyNode* parent = overlay_clip_chain[i];
+    EXPECT_EQ(&overlay_clip_chain[i]->LocalTransformSpace(),
+              overlay_clip_transform[i]);
+    if (i > 0) {
+      const ClipPaintPropertyNode* child = overlay_clip_chain[i - 1];
+      EXPECT_EQ(child->UnaliasedParent(), parent);
+    }
+  }
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, OverscrollOverlayPropertyTrees) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        overflow: auto;
+      }
+    </style>
+    <div id="container" overscrollcontainer=overlay>
+      <div id="foo"></div>
+      <div id="bar"></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="foo"></button>
+    <button command="toggle-overscroll" commandfor="bar"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* container = GetElementById("container");
+  PseudoElement* foo =
+      GetElementById("foo")->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  PseudoElement* bar =
+      GetElementById("bar")->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+
   // ::-internal-overscroll-area-parent skips the scrollers scroll translation.
   for (auto* pseudo_element : {foo, bar}) {
     EXPECT_EQ(pseudo_element->GetLayoutObject()
@@ -645,6 +753,38 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollPropertyTrees) {
     const ScrollPaintPropertyNode* parent = scroll_chain[i];
     EXPECT_EQ(child->Parent(), parent);
   }
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, OverscrollPropertyTreeInvalidation) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container {
+        overflow: auto;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="foo"></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="foo"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  Element* container = GetElementById("container");
+
+  // A content translation is generated for the first fragment.
+  EXPECT_TRUE(container->GetLayoutObject()
+                  ->FirstFragment()
+                  .PaintProperties()
+                  ->ContentTranslation());
+
+  // Removing the overscroll container attribute removes this content
+  // translation node.
+  container->removeAttribute(html_names::kOverscrollcontainerAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(container->GetLayoutObject()
+                   ->FirstFragment()
+                   .PaintProperties()
+                   ->ContentTranslation());
 }
 
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollPseudoElementStyles) {
@@ -751,6 +891,108 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerWithElement) {
   ASSERT_EQ(child_data.rect, gfx::RectF(0, 0, 200, 200));
 }
 
+TEST_F(OverscrollAreaTrackerPageTest, OverscrollAreaChangingOrigin) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #container, #menu, #menu2 {
+        width: 200px;
+        height: 200px;
+        background: white;
+      }
+      #menu, #menu2 {
+        right: 200px; /* Positioned to the left */
+        background: gray;
+      }
+      .right {
+        right: auto;
+        left: 200px;
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div class="right" id="menu"></div>
+      <div id="menu2"></div>
+      <div id="content"></div>
+    </div>
+    <button id=button command="toggle-overscroll" commandfor="menu"></button>
+    <button id=button command="toggle-overscroll" commandfor="menu2"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetElementById("container");
+  Element* menu = GetElementById("menu");
+  Element* menu2 = GetElementById("menu2");
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(menu);
+  ASSERT_TRUE(menu2);
+  // Initially we require a 200px translation to offset the left-aligned menu
+  // on the content.
+  ASSERT_EQ(container->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->ContentTranslation()
+                ->Get2dTranslation()
+                .x(),
+            200);
+  ASSERT_EQ(menu2->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->ContentTranslation()
+                ->Get2dTranslation()
+                .x(),
+            0);
+
+  menu->classList().Remove(AtomicString("right"));
+  UpdateAllLifecyclePhasesForTest();
+  // Need 200px offset for both menus.
+  ASSERT_EQ(container->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->ContentTranslation()
+                ->Get2dTranslation()
+                .x(),
+            200);
+  ASSERT_EQ(menu2->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->ContentTranslation()
+                ->Get2dTranslation()
+                .x(),
+            200);
+
+  menu2->classList().Add(AtomicString("right"));
+  UpdateAllLifecyclePhasesForTest();
+  // When the menu is right aligned we should reset the translation to 0.
+  ASSERT_EQ(container->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->ContentTranslation()
+                ->Get2dTranslation()
+                .x(),
+            0);
+
+  // Remove the menus one at a time.
+  menu2->remove();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(container->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->ContentTranslation()
+                ->Get2dTranslation()
+                .x(),
+            200);
+
+  menu->remove();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_EQ(container->GetLayoutObject()
+                ->FirstFragment()
+                .PaintProperties()
+                ->ContentTranslation(),
+            nullptr);
+}
+
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerStyleOnText) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="container" overscrollcontainer>
@@ -778,11 +1020,14 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerNegativeScroll) {
         height: 200px;
       }
       #largeoverscrollarea {
-        width: 300%;
-        height: 300%;
-        /* Overscrolls by 100% / 200px on all sides. */
-        left: -100%;
-        top: -100%;
+        width: 200%;
+        height: 200%;
+        /* Overscrolls by 50% / 100px on all sides. */
+        left: -50%;
+        top: -50%;
+      }
+      #content {
+        height: 100%;
       }
     </style>
     <div id="container" overscrollcontainer>
@@ -792,7 +1037,6 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerNegativeScroll) {
     <button id=button command="toggle-overscroll"
         commandfor="largeoverscrollarea"></button>
   )HTML");
-
   UpdateAllLifecyclePhasesForTest();
 
   Element* container = GetElementById("container");
@@ -809,10 +1053,34 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerNegativeScroll) {
 
   // We should be able to overscroll in any direction.
   ASSERT_TRUE(overscrollable_area);
-  ASSERT_EQ(overscrollable_area->MinimumScrollOffset().x(), -200);
-  ASSERT_EQ(overscrollable_area->MinimumScrollOffset().y(), -200);
-  ASSERT_EQ(overscrollable_area->MaximumScrollOffset().x(), 200);
-  ASSERT_EQ(overscrollable_area->MaximumScrollOffset().y(), 200);
+  ASSERT_EQ(overscrollable_area->MinimumScrollOffset().x(), -100);
+  ASSERT_EQ(overscrollable_area->MinimumScrollOffset().y(), -100);
+  ASSERT_EQ(overscrollable_area->MaximumScrollOffset().x(), 100);
+  ASSERT_EQ(overscrollable_area->MaximumScrollOffset().y(), 100);
+
+  // Scrolling to this area pushes the main content.
+  overscroll_area_parent->scrollToForTesting(-100, -100);
+  UpdateAllLifecyclePhasesForTest();
+  DOMRect* content_rect = content->GetBoundingClientRect();
+  DOMRect* container_rect = container->GetBoundingClientRect();
+  ASSERT_TRUE(content_rect);
+  ASSERT_EQ(content_rect->x(), container_rect->x() + 100);
+  ASSERT_EQ(content_rect->y(), container_rect->y() + 100);
+
+  // With the content scrolled to (100, 100), a click at (50, 50)
+  // should only hit the outer area.
+  //    -----------------------
+  //   | #largeoverscrollarea  |
+  //   |   X <- (50, 50)       |
+  //   |          -------------|
+  //   |         |  #content   |
+  //   |         |             |
+  //    -----------------------
+  HeapVector<Member<Element>> elements_from_point =
+      GetDocument().ElementsFromPoint(container_rect->x() + 50,
+                                      container_rect->y() + 50);
+  ASSERT_EQ(elements_from_point[0], GetElementById("largeoverscrollarea"));
+  ASSERT_EQ(elements_from_point[1], container);
 }
 
 TEST_P(OverscrollAreaTrackerPageTest,

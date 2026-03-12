@@ -174,6 +174,7 @@ void UpdateDebugNames(const LayoutObject& object,
   SetDebugName(properties.Perspective(), "Perspective", object);
   SetDebugName(properties.ReplacedContentTransform(),
                "ReplacedContentTransform", object);
+  SetDebugName(properties.ContentTranslation(), "ContentTranslation", object);
   SetDebugName(properties.ScrollTranslation(), "ScrollTranslation", object);
   SetDebugName(properties.TransformIsolationNode(), "TransformIsolationNode",
                object);
