@@ -64,6 +64,7 @@ suite('NewTabPageActionChipsTest', () => {
     actionChips: ActionChip[];
     windowTimestampStart: number;
     windowTimestampEnd: number;
+    prefersReducedMotion: boolean;
   }
 
   async function initializeChips(
@@ -72,6 +73,7 @@ suite('NewTabPageActionChipsTest', () => {
       actionChips: defaultActionChips,
       windowTimestampStart: Date.now().valueOf(),
       windowTimestampEnd: Date.now().valueOf() + 1,
+      prefersReducedMotion: false,
     };
     const options = {...defaultOptions, ...providedOptions};
     handler.setResultMapperFor('startActionChipsRetrieval', () => {
@@ -86,6 +88,10 @@ suite('NewTabPageActionChipsTest', () => {
       addTabUploadDelayOnActionChipClick: true,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    if (options.prefersReducedMotion) {
+      document.documentElement.style.setProperty(
+          '--cr-animations-disabled', '1');
+    }
     chips = document.createElement('ntp-action-chips');
 
     // Timestamp recorded after the action chips have been updated.
@@ -554,10 +560,10 @@ suite('NewTabPageActionChipsTest', () => {
                 tab: null,
               },
             ],
+            prefersReducedMotion: true,
           });
 
           // Act.
-          chips.reducedMotionPreferred = true;
           await microtasksFinished();
 
           // Assert.

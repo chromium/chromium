@@ -272,3 +272,19 @@ cr-button#entrypoint:focus {
     box-sizing: border-box;
   }
 }
+
+@container style(--cr-animations-disabled: 1) {
+  :host([glif-animation-state]) .aim-gradient-outer-blur,
+  :host([glif-animation-state]) .aim-gradient-solid,
+  :host([glif-animation-state]) .aim-background {
+    display: none;
+  }
+  :host([glif-animation-state]) #entrypoint {
+    animation: none;
+  }
+  :host([glif-animation-state]) #description {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

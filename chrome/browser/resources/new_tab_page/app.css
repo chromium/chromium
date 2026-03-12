@@ -203,10 +203,6 @@ cr-most-visited {
   animation: 300ms ease-in-out fade-in-animation;
 }
 
-:host([reduced-motion-preferred_]) #modules {
-  animation: none;
-}
-
 @keyframes fade-in-animation {
   0% {
     opacity: 0;
@@ -345,10 +341,6 @@ ntp-lens-upload-dialog {
   z-index: 1;
 }
 
-:host([reduced-motion-preferred_]) #scrim {
-  transition: none;
-}
-
 #webstoreToast {
   padding: 16px;
 }
@@ -385,4 +377,13 @@ ntp-lens-upload-dialog {
 
 #undoToast {
   flex-grow: 1;
+}
+
+@container style(--cr-animations-disabled: 1) {
+  #modules:not([hidden]) {
+    animation: none;
+  }
+  #scrim {
+    transition: none;
+  }
 }
