@@ -355,15 +355,6 @@ bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
                   gpu::DISABLE_SOFTWARE_TO_ACCELERATED_CANVAS_UPGRADE);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-bool SharedGpuContext::MaySupportWebGLImageChromium() {
-  if (g_webgl_image_chromium_enabled_for_testing) {
-    return g_webgl_image_chromium_enabled_for_testing.value();
-  }
-  return ::features::IsAndroidSurfaceControlEnabled();
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 bool SharedGpuContext::UseMappableSharedImagesForCanvas2D() {
   if (g_use_mappable_shared_images_for_canvas_2d_for_testing) {
     return g_use_mappable_shared_images_for_canvas_2d_for_testing.value();
@@ -443,13 +434,15 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
 }
 
 bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
-  if (!MaySupportWebGLImageChromium()) {
-    return false;
-  }
-
   if (g_webgl_image_chromium_enabled_for_testing) {
     return g_webgl_image_chromium_enabled_for_testing.value();
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (!::features::IsAndroidSurfaceControlEnabled()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_APPLE)
   if (IsDelegatedCompositingEnabled()) {
@@ -468,10 +461,6 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
 }
 
 bool SharedGpuContext::UseOverlaysForWebGL() {
-  if (!MaySupportWebGLImageChromium()) {
-    return false;
-  }
-
   if (g_webgl_image_chromium_enabled_for_testing) {
     return g_webgl_image_chromium_enabled_for_testing.value();
   }
