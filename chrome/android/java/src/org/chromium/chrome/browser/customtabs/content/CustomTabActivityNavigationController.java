@@ -416,10 +416,6 @@ public class CustomTabActivityNavigationController
                                 R.string.custom_tab_cant_perform_action_toast,
                                 Toast.LENGTH_LONG)
                         .show();
-                // TODO(crbug.com/384992232): Clean up the histogram.
-                boolean isPdf = tab.isNativePage() && assumeNonNull(tab.getNativePage()).isPdf();
-                RecordHistogram.recordBooleanHistogram(
-                        "Android.CustomTab.CannotOpenUrlInBrowser.IsPdf", isPdf);
                 openedInBrowser = false;
             }
         }
