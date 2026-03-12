@@ -820,7 +820,7 @@ void ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
                        base::flat_set<FieldGlobalId> blocked_fields =
                            actor::GetBlockedFieldsForSplit(
                                *form_structure, trigger_field_id,
-                               fill_data->split_part);
+                               fill_data->split_part, action_persistence);
                        autofill_manager.FillOrPreviewFields(
                            action_persistence, form_structure->ToFormData(),
                            trigger_field_id, &autofill_profile,

@@ -1013,6 +1013,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Actor.ContactInfoSplitting.{SplitPart}FieldCount"
+    units="fields" expires_after="2026-09-09">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of {SplitPart} fields in a split form section. Emitted
+    when an Actor form fill of the {SplitPart} fields is triggered after the
+    user has selected which suggestion to fill.
+  </summary>
+  <token key="SplitPart">
+    <variant name="AddressPart" summary="address"/>
+    <variant name="ContactInfoPart" summary="contact info"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Actor.FillSuggestions.{FillingComposition}.Latency"
     units="ms" expires_after="2026-11-30">
   <owner>battre@chromium.org</owner>
