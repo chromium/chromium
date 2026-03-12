@@ -115,6 +115,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Geolocation.GMSCoreLocationProvider.TimeToFirstPosition.Approximate"
+    units="ms" expires_after="2026-09-10">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the time duration for getting the first valid Geoposition when using
+    GMS Core location provider with approximate accuracy requested.
+  </summary>
+</histogram>
+
+<histogram
+    name="Geolocation.GMSCoreLocationProvider.TimeToFirstPosition.Precise"
+    units="ms" expires_after="2026-09-10">
+  <owner>alvinji@chromium.org</owner>
+  <owner>device-dev@chromium.org</owner>
+  <summary>
+    Records the time duration for getting the first valid Geoposition when using
+    GMS Core location provider with precise accuracy requested.
+  </summary>
+</histogram>
+
 <histogram name="Geolocation.IOS.ChangedAuthorizationState"
     enum="GeolocationIOSAuthorizationStatus" expires_after="2026-07-27">
   <owner>michaeldo@chromium.org</owner>
