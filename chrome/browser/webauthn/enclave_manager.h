@@ -232,8 +232,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   std::unique_ptr<StoreKeysLock> GetStoreKeysLock();
   // Adds the current device to the security domain. This method is supposed to
   // be called after calling `StoreKeys` (with a lock outstanding from
-  // `GetStoreKeysLock`) and thus `has_pending_keys` returns true. Also, this
-  // method is being called from `StoreKeysFromOutOfContextRetrieval`.
+  // `GetStoreKeysLock`) and thus `has_pending_keys` returns true.
   //
   // If `pin_metadata` has a value then it is taken to be the current GPM PIN.
   // If you want to add a new PIN to the account, see
@@ -527,13 +526,6 @@ class EnclaveManager : public EnclaveManagerInterface {
   void StoreKeysFromOutOfContextRetrieval(
       const GaiaId& gaia_id,
       std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
-  // This is called when all checks related to opportunistic key retrieval are
-  // complete. `opportunistic_retrieval_checks` must contain exactly one entry
-  // per type in `OpportunisticRetrievalCheck`. Will store opportunistically
-  // retrieved keys if either GPM PIN or system UV are available.
-  void OpportunisticStoreKeysChecksComplete(
-      std::unique_ptr<StoreKeysArgs> pending_keys,
-      std::vector<OpportunisticRetrievalCheck> opportunistic_retrieval_checks);
   void OpportunisticStoreKeysAddComplete(bool success);
   void NotifyObserversAboutOutOfContextRecoveryOutcome(
       OutOfContextRecoveryOutcome outcome);

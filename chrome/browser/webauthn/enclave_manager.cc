@@ -138,6 +138,7 @@ struct EnclaveManager::PendingAction {
   bool want_registration = false;
   bool renew_pin = false;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
+  std::unique_ptr<StoreKeysArgs> opportunistic_store_keys_args;
   bool setup_account = false;
   std::string pin;          // the PIN to add to set up an account with.
   std::string set_pin;      // the PIN to set on an existing account.
@@ -1236,11 +1237,18 @@ class EnclaveManager::StateMachine {
     kWaitingForEnclaveTokenForUnregister,
     kUnregistering,
     kSyncingWithSecurityDomain,
+    kStoringOpportunisticallyRetrievedKey,
   };
 
   enum class FetchedFile {
     kCertFile,
     kSigFile,
+  };
+
+  struct OpportunisticRetrievalCheckResult {
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        account_state;
+    SystemUv system_uv;
   };
 
   using DeferredUVKeyCreation =
@@ -1279,7 +1287,8 @@ class EnclaveManager::StateMachine {
       PINHashed,
       Response,
       trusted_vault::RecoveryKeyStoreStatus,
-      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>;
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult,
+      OpportunisticRetrievalCheckResult>;
 
   void Process(Event event) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1378,6 +1387,10 @@ class EnclaveManager::StateMachine {
       case State::kSyncingWithSecurityDomain:
         DoSyncingWithSecurityDomain(std::move(event));
         break;
+
+      case State::kStoringOpportunisticallyRetrievedKey:
+        DoStoringOpportunisticallyRetrievedKey(std::move(event));
+        break;
     }
 
     FIDO_LOG(EVENT) << ToString(initial_state) << " -" << event_str << "-> "
@@ -1457,6 +1470,8 @@ class EnclaveManager::StateMachine {
         return "Unregistering";
       case State::kSyncingWithSecurityDomain:
         return "kSyncingWithSecurityDomain";
+      case State::kStoringOpportunisticallyRetrievedKey:
+        return "kStoringOpportunisticallyRetrievedKey";
     }
   }
 
@@ -1544,6 +1559,24 @@ class EnclaveManager::StateMachine {
                    ToString(result.state), " ", "has_gpm_pin: ",
                    result.gpm_pin_metadata.has_value() ? "yes" : "no", ")"});
             },
+            [](const OpportunisticRetrievalCheckResult& result) {
+              const bool has_pin =
+                  result.account_state.gpm_pin_metadata &&
+                  result.account_state.gpm_pin_metadata->usable_pin_metadata;
+              bool has_system_uv;
+              switch (result.system_uv) {
+                case SystemUv::kSupported:
+                  has_system_uv = true;
+                  break;
+                case SystemUv::kNotSupported:
+                  has_system_uv = false;
+                  break;
+              }
+              return base::StrCat(
+                  {"InformationAboutGpmPinAndSystemUv(",
+                   "has_gpm_pin: ", has_pin ? "yes" : "no",
+                   "has_system_uv: ", has_system_uv ? "yes" : "no", ")"});
+            },
         },
         event);
   }
@@ -1559,6 +1592,12 @@ class EnclaveManager::StateMachine {
 
   void DoNextAction() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (action_->opportunistic_store_keys_args) {
+      state_ = State::kStoringOpportunisticallyRetrievedKey;
+      VerifySystemUvAndGpmPinBeforeStoringOpportunisticallyRetrievedKey();
+      return;
+    }
 
     if ((action_->want_registration || action_->store_keys_args ||
          !action_->pin.empty()) &&
@@ -2014,6 +2053,8 @@ class EnclaveManager::StateMachine {
       default:
         manager_->ClearRegistration();
         state_ = State::kStop;
+        // If the state machine performs storing of opportunistically retrieved
+        // key - the key will be discarded.
         break;
     }
   }
@@ -2693,6 +2734,107 @@ class EnclaveManager::StateMachine {
               machine->Process(PINHashed(std::move(hashed)));
             },
             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void VerifySystemUvAndGpmPinBeforeStoringOpportunisticallyRetrievedKey() {
+    // The keys were provided opportunistically so that a MagicArch flow can be
+    // avoided later. Download the GPM PIN metadata and check for system UV
+    // before storing these keys.
+    auto callback = base::BarrierCallback<OpportunisticRetrievalCheck>(
+        2,
+        base::BindOnce(
+            [](base::WeakPtr<StateMachine> machine,
+               std::vector<OpportunisticRetrievalCheck>
+                   opportunistic_retrieval_checks) {
+              if (!machine) {
+                return;
+              }
+              trusted_vault::
+                  DownloadAuthenticationFactorsRegistrationStateResult
+                      account_state;
+              SystemUv system_uv;
+              {
+                CHECK_EQ(opportunistic_retrieval_checks.size(), 2u);
+                auto& first = opportunistic_retrieval_checks.at(0);
+                auto& second = opportunistic_retrieval_checks.at(1);
+                const bool first_is_system_uv =
+                    std::holds_alternative<SystemUv>(first);
+                system_uv =
+                    std::get<SystemUv>(first_is_system_uv ? first : second);
+                account_state = std::get<
+                    trusted_vault::
+                        DownloadAuthenticationFactorsRegistrationStateResult>(
+                    std::move(first_is_system_uv ? second : first));
+              }
+              machine->Process(OpportunisticRetrievalCheckResult(
+                  std::move(account_state), std::move(system_uv)));
+            },
+            weak_ptr_factory_.GetWeakPtr()));
+    AreUserVerifyingKeysSupported(base::BindOnce(
+        [](base::RepeatingCallback<void(OpportunisticRetrievalCheck)> cb,
+           bool result) {
+          std::move(cb).Run(result ? SystemUv::kSupported
+                                   : SystemUv::kNotSupported);
+        },
+        callback));
+    download_account_state_request_ =
+        manager_->trusted_vault_conn_
+            ->DownloadAuthenticationFactorsRegistrationState(
+                *primary_account_info_,
+                base::BindOnce(
+                    [](base::RepeatingCallback<void(
+                           OpportunisticRetrievalCheck)> cb,
+                       trusted_vault::
+                           DownloadAuthenticationFactorsRegistrationStateResult
+                               result) {
+                      std::move(cb).Run(std::move(result));
+                    },
+                    callback),
+                base::DoNothing());
+  }
+
+  void DoStoringOpportunisticallyRetrievedKey(Event event) {
+    CHECK(std::holds_alternative<OpportunisticRetrievalCheckResult>(event))
+        << ToString(event);
+    const auto& pin_and_uv_info =
+        std::get_if<OpportunisticRetrievalCheckResult>(&event);
+    const trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult&
+        account_state = pin_and_uv_info->account_state;
+    const SystemUv& system_uv = pin_and_uv_info->system_uv;
+    const bool has_pin = account_state.gpm_pin_metadata &&
+                         account_state.gpm_pin_metadata->usable_pin_metadata;
+    FIDO_LOG(EVENT) << "Opportunistic keys checks complete. "
+                    << "Has UV: " << static_cast<int>(system_uv)
+                    << ", has PIN: " << has_pin << ".";
+    if (system_uv == SystemUv::kNotSupported && !has_pin) {
+      // We shouldn't store keys if there is no system UV and no GPM PIN.
+      state_ = State::kStop;
+      return;
+    }
+
+    std::unique_ptr<EnclaveLocalState::WrappedPIN> wrapped_pin;
+    if (account_state.gpm_pin_metadata.has_value() &&
+        account_state.gpm_pin_metadata->usable_pin_metadata) {
+      wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
+      if (!wrapped_pin->ParseFromString(
+              account_state.gpm_pin_metadata->usable_pin_metadata
+                  ->wrapped_pin) ||
+          CheckPINInvariants(*wrapped_pin).has_value()) {
+        state_ = State::kStop;
+        return;
+      }
+    }
+    // As next steps we are adding the current device to account and registering
+    // the GPM PIN.
+    action_->store_keys_args =
+        std::move(action_->opportunistic_store_keys_args);
+    action_->wrapped_pin = std::move(wrapped_pin);
+    if (account_state.gpm_pin_metadata) {
+      action_->pin_public_key =
+          std::move(account_state.gpm_pin_metadata->public_key);
+    }
+    manager_->store_keys_count_++;
+    state_ = State::kNextAction;
   }
 
 #if BUILDFLAG(IS_MAC)
@@ -3806,9 +3948,6 @@ void EnclaveManager::StoreKeys(
                 kStoreKeysFromOpportunisticFlowCachedKeysBecauseAccountDoesNotMatch);
         return;
       }
-      webauthn::metrics::RecordGPMRecoveryEvent(
-          webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
-              kStoreKeysFromOpportunisticFlowStarted);
       // TODO(crbug.com/450851888): Refactor the logic related to storing the
       // keys from the out of context retrieval.
       StoreKeysFromOutOfContextRetrieval(gaia_id, std::move(keys));
@@ -3825,6 +3964,10 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!store_keys_lock_depth_);
 
+  webauthn::metrics::RecordGPMRecoveryEvent(
+      webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
+          kStoreKeysFromOpportunisticFlowStarted);
+
   auto pending_keys = std::make_unique<StoreKeysArgs>();
   pending_keys->gaia_id = gaia_id;
   pending_keys->keys = std::move(keys);
@@ -3840,33 +3983,22 @@ void EnclaveManager::StoreKeysFromOutOfContextRetrieval(
 
   FIDO_LOG(EVENT) << "Opportunistic keys provided";
 
-  // These keys were provided opportunistically so that a MagicArch flow can be
-  // avoided later. Download the GPM PIN metadata and check for system UV before
-  // storing the keys.
-  auto callback = base::BarrierCallback<OpportunisticRetrievalCheck>(
-      2,
-      base::BindOnce(&EnclaveManager::OpportunisticStoreKeysChecksComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(pending_keys)));
-  AreUserVerifyingKeysSupported(base::BindOnce(
-      [](base::RepeatingCallback<void(OpportunisticRetrievalCheck)> cb,
-         bool result) {
-        std::move(cb).Run(result ? SystemUv::kSupported
-                                 : SystemUv::kNotSupported);
-      },
-      callback));
-  CoreAccountInfo account_info =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  // TODO(crbug.com/485450318): calling this should not cancel ongoing requests.
-  download_account_state_request_ =
-      trusted_vault_conn_->DownloadAuthenticationFactorsRegistrationState(
-          account_info,
-          base::BindOnce(
-              [](base::RepeatingCallback<void(OpportunisticRetrievalCheck)> cb,
-                 trusted_vault::
-                     DownloadAuthenticationFactorsRegistrationStateResult
-                         result) { std::move(cb).Run(std::move(result)); },
-              callback),
-          base::DoNothing());
+  // We store opportunistically retrieved keys via
+  // `EnclaveManager::StateMachine` because the state machine always operates
+  // within the context of a specific Google account and will be destroyed by
+  // the EnclaveManager if the currently signed-in user changes. This is
+  // important because this helps to avoid a possible race condition between
+  // storing the keys and changing account (and such race condition could
+  // hypothetically lead to storing keys in a wrong account).
+  auto action = std::make_unique<PendingAction>();
+  action->callback =
+      base::BindOnce(&EnclaveManager::OpportunisticStoreKeysAddComplete,
+                     weak_ptr_factory_.GetWeakPtr());
+  action->opportunistic_store_keys_args = std::move(pending_keys);
+  pending_actions_.emplace_back(std::move(action));
+  // TODO(crbug.com/488975473): Publish metrics for different possible failures
+  // of storing opportunistically retrieved keys.
+  Act();
 }
 
 std::unique_ptr<enclave::ClaimedPIN> EnclaveManager::MakeClaimedPINSlowly(
@@ -4133,21 +4265,6 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   CoreAccountInfo primary_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (!primary_account_info.IsEmpty()) {
-    if (opportunistic_pending_keys_ &&
-        opportunistic_pending_keys_->gaia_id == primary_account_info.gaia) {
-      std::unique_ptr<StoreKeysArgs> store_keys_arg =
-          std::move(opportunistic_pending_keys_);
-      // Storing pending opportunistically retrieved keys. These keys were in a
-      // pending state because at the moment in time when they were retrieved
-      // the primary account was either empty or had a different Gaia Id. Now
-      // the primary account is available so we can store them.
-      StoreKeys(store_keys_arg->gaia_id, std::move(store_keys_arg->keys),
-                /*user_action_trigger=*/std::nullopt);
-      webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
-          webauthn::metrics::
-              WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
-                  kStoreKeysFromOpportunisticFlowCachedKeysStoringAfterSignIn);
-    }
     if (primary_account_info_ &&
         primary_account_info_->account_id != primary_account_info.account_id) {
       // If the signed-in user has changed, the state machine must be halted
@@ -4205,10 +4322,54 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
   }
 
   if (need_to_stop && !is_post_load) {
+    // The code below, which stops state machine and cancels all actions, might
+    // have a race condition with the logic of storing opportunistically
+    // retrieved key (which leads to discarding the key). This happens in a
+    // following scenario:
+    //
+    // 1) The Chrome profile is not signed-in, but a passkey secret has been
+    // opportunistically retrieved and cached (e.g., because a user signed-in to
+    // GMail).
+    //
+    // 2) Afterwards the user signs-in to Chrome profile. In this case Enclave
+    // Manager is being notified by Identity Manager and executes
+    // `HandleIdentityChange` (which leads to triggering `StoreKeys` for storing
+    // the cached secret).
+    //
+    // 3) Shortly after sign-in the user is being offered to turn-on Sync. If
+    // the user turns-on Sync - Idnetity Manager notifies Enclave Manager again
+    // (and `HandleIdentityChange` is being executed again). This time the calls
+    // of `CancelAllActions()` and `Stopped()` will result in the interruption
+    // of the flow started by `StoreKeys` (and the keys will be discarded).
+    //
+    // The race condition happens if the step (3) happens within a short time
+    // frame after the step (2) - which is true in practice.
+    //
+    // TODO(crbug.com/486805528): Fix the described race condition.
     CancelAllActions();
     Stopped();
   }
 
+  // Now, as the the logic of handling identity change has finished, we can try
+  // to store the cached opportunistically retrieved key (if the new primary
+  // account matches).
+  if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval) &&
+      primary_account_info_ && !primary_account_info_->IsEmpty() &&
+      opportunistic_pending_keys_ &&
+      opportunistic_pending_keys_->gaia_id == primary_account_info_->gaia) {
+    std::unique_ptr<StoreKeysArgs> store_keys_arg =
+        std::move(opportunistic_pending_keys_);
+    // Storing pending opportunistically retrieved keys. These keys were in a
+    // pending state because at the moment in time when they were retrieved
+    // the primary account was either empty or had a different Gaia Id. Now
+    // the primary account is available so we can store them.
+    StoreKeysFromOutOfContextRetrieval(store_keys_arg->gaia_id,
+                                       std::move(store_keys_arg->keys));
+    webauthn::metrics::RecordGPMCachedOpportunisticallyRetrievedKeyEvent(
+        webauthn::metrics::
+            WebAuthenticationGPMCachedOpportunisticallyRetrievedKeyEvent::
+                kStoreKeysFromOpportunisticFlowCachedKeysStoringAfterSignIn);
+  }
   ConsiderPinRenewal();
 }
 
@@ -4452,49 +4613,6 @@ void EnclaveManager::OnOsCryptReady(os_crypt_async::Encryptor encryptor) {
   encryptor_.emplace(std::move(encryptor));
   loading_ = false;
   Act();
-}
-
-void EnclaveManager::OpportunisticStoreKeysChecksComplete(
-    std::unique_ptr<StoreKeysArgs> pending_keys,
-    std::vector<OpportunisticRetrievalCheck> opportunistic_retrieval_checks) {
-  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
-      account_state;
-  SystemUv system_uv;
-  {
-    CHECK_EQ(opportunistic_retrieval_checks.size(), 2u);
-    auto& first = opportunistic_retrieval_checks.at(0);
-    auto& second = opportunistic_retrieval_checks.at(1);
-    if (std::holds_alternative<SystemUv>(first)) {
-      system_uv = std::get<SystemUv>(first);
-      account_state = std::get<
-          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
-          std::move(second));
-    } else {
-      account_state = std::get<
-          trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>(
-          std::move(first));
-      system_uv = std::get<SystemUv>(second);
-    }
-  }
-  bool has_pin = account_state.gpm_pin_metadata &&
-                 account_state.gpm_pin_metadata->usable_pin_metadata;
-  FIDO_LOG(EVENT) << "Opportunistic keys checks complete. "
-                  << "Has UV: " << static_cast<int>(system_uv)
-                  << ", has PIN: " << has_pin << ".";
-  if (system_uv == SystemUv::kNotSupported && !has_pin) {
-    // Without local UV we can store keys only if the GPM pin is available and
-    // usable.
-    NotifyObserversAboutOutOfContextRecoveryOutcome(
-        OutOfContextRecoveryOutcome::
-            kStoreKeysFromOpportunisticFlowIgnoredNoUV);
-    return;
-  }
-  pending_keys_ = std::move(pending_keys);
-  store_keys_count_++;
-  AddDeviceToAccount(
-      std::move(account_state.gpm_pin_metadata),
-      base::BindOnce(&EnclaveManager::OpportunisticStoreKeysAddComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnclaveManager::OpportunisticStoreKeysAddComplete(bool success) {

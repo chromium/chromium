@@ -53,6 +53,9 @@ class EnclaveManagerInterface : public KeyedService {
     kStoreKeysFromOpportunisticFlowIgnoredRedundant,
     // The key has been ignored because neither system UV nor GPM PIN is
     // available.
+    // TODO(crbug.com/488975473): Remove this bucket (because we will introduce
+    // a separate metric for reporting failures of out-of-context recovery
+    // flow).
     kStoreKeysFromOpportunisticFlowIgnoredNoUV,
   };
 

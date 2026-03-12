@@ -2271,9 +2271,16 @@ TEST_F(OpportunisticKeyRetrievalEnclaveManagerTest,
       1);
 
   // Signing-in with the "Account 1" account again.
+  // The call to `identity_test_env_.MakePrimaryAccountAvailable(...)` triggers
+  // `EnclaveManager::HandleIdentityChange`, which should start storing the
+  // opportunistically retrieved key.
   identity_test_env_.MakePrimaryAccountAvailable(account_1.email,
                                                  signin::ConsentLevel::kSignin);
-  identity_test_env_.SetCookieAccounts({});
+  // Another call to `identity_test_env_.SetCookieAccounts(...)` or to
+  // `identity_test_env_.MakePrimaryAccountAvailable(...)` will notify
+  // `EnclaveManager::HandleIdentityChange` again, which will interfere with the
+  // logic of storing the opportunistically retrieved key (race condition).
+  // TODO(crbug.com/486805528): Add the aforementioned calls to this test.
   EXPECT_THAT(GaiaAccountsInState(),
               testing::UnorderedElementsAre(account_1.gaia.ToString()));
 
@@ -2880,7 +2887,7 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
                          kPasskeyUnlockProfileMenu);
   EXPECT_EQ(enclave_keys_waiter.Wait(),
             EnclaveManager::OutOfContextRecoveryOutcome::
-                kStoreKeysFromOpportunisticFlowIgnoredNoUV);
+                kStoreKeysFromOpportunisticFlowFailed);
 
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
@@ -2890,7 +2897,7 @@ TEST_F(OpportunisticKeyRetrievalEnclaveUVTest,
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.RecoveryEvent",
       webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
-          kStoreKeysFromOpportunisticFlowIgnoredNoUV,
+          kStoreKeysFromOpportunisticFlowFailed,
       1);
   EXPECT_EQ(manager_.store_keys_count(), 0u);
 
