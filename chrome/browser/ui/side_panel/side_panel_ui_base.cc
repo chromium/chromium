@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -135,7 +135,9 @@ std::optional<SidePanelUIBase::UniqueKey> SidePanelUIBase::GetUniqueKeyForKey(
   // For tab-scoped side panels.
   if (GetActiveContextualRegistry() &&
       GetActiveContextualRegistry()->GetEntryForKey(entry_key)) {
-    return UniqueKey{browser_->GetActiveTabInterface()->GetHandle(), entry_key};
+    return UniqueKey{
+        TabListInterface::From(browser_)->GetActiveTab()->GetHandle(),
+        entry_key};
   }
 
   // For window-scoped side panels.
@@ -165,7 +167,8 @@ SidePanelRegistry* SidePanelUIBase::GetActiveContextualRegistry() const {
     return nullptr;
   }
 
-  return SidePanelRegistry::From(browser_->GetActiveTabInterface());
+  return SidePanelRegistry::From(
+      TabListInterface::From(browser_)->GetActiveTab());
 }
 
 SidePanelEntry* SidePanelUIBase::GetActiveContextualEntryForKey(
@@ -200,7 +203,7 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged(SidePanelEntry::PanelType type) {
   if (active_contextual_registry &&
       active_contextual_registry->GetActiveEntryFor(type)) {
     return UniqueKey{
-        browser_->GetActiveTabInterface()->GetHandle(),
+        TabListInterface::From(browser_)->GetActiveTab()->GetHandle(),
         (*active_contextual_registry->GetActiveEntryFor(type))->key()};
   }
 

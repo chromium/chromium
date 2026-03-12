@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"

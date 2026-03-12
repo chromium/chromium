@@ -22,6 +22,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "url/gurl.h"
 
 class SidePanelEntryScope;
 class SidePanelEntryObserver;

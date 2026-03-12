@@ -36,15 +36,17 @@ source_set("side_panel") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
-    "//chrome/browser/ui/tabs:tab_model",
     "//components/pref_registry",
+    "//url",
   ]
 
   if (enable_extensions) {
     deps += [ "//extensions/common:common_constants" ]
   }
 
-  if (is_android) {
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:tab_model" ]
+  } else {
     sources += [
       "android/side_panel_native_view_android.cc",
       "android/side_panel_native_view_android.h",
@@ -68,19 +70,25 @@ source_set("side_panel_views_dependent") {
     "side_panel_ui_base.cc",
     "side_panel_ui_base.h",
   ]
-
   deps = [
     ":side_panel",
     "//base",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/views/side_panel",
     "//ui/base",
     "//ui/base/unowned_user_data",
-    "//ui/views",
   ]
 
-  allow_circular_includes_from =
-      [ "//chrome/browser/ui/views/side_panel:side_panel" ]
+  # No dependency on ui/views allowed on Android.
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/views/side_panel",
+      "//ui/views",
+    ]
+
+    allow_circular_includes_from =
+        [ "//chrome/browser/ui/views/side_panel:side_panel" ]
+  }
 }
