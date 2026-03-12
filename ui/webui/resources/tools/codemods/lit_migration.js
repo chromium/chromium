@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const path = require('node:path');
+import path from 'node:path';
 
 const replacements = new Map([
   // Classes/Mixins
@@ -57,7 +57,7 @@ function getNewTemplateImport(basename) {
 import {getHtml} from './${basename}.html.js';`;
 }
 
-module.exports = function transformer(file, api) {
+export default function transformer(file, api) {
   // First perform easy regex based transformations that don't require a  parser
   // and a full AST representation.
 
@@ -128,4 +128,4 @@ module.exports = function transformer(file, api) {
 
   const outputOptions = {quote: 'single'};
   return root.toSource(outputOptions);
-};
+}
