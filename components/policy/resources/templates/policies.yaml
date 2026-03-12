@@ -55,10 +55,10 @@ policies:
   54: DefaultGeolocationSetting
   55: Disable3DAPIs
   56: PolicyRefreshRate
-  57: ChromeFrameRendererSettings
-  58: RenderInChromeFrameList
-  59: RenderInHostList
-  60: ChromeFrameContentTypes
+  57: ''
+  58: ''
+  59: ''
+  60: ''
   61: ChromeOsLockOnIdleSuspend
   62: InstantEnabled
   63: UserDataDir
@@ -85,7 +85,7 @@ policies:
   84: AllowFileSelectionDialogs
   85: DisabledSchemes
   86: AlwaysAuthorizePlugins
-  87: GCFUserDataDir
+  87: ''
   88: DiskCacheDir
   89: AllowCrossOriginAuthPrompt
   90: DevicePolicyRefreshRate
@@ -139,7 +139,7 @@ policies:
   138: BackgroundModeEnabled
   139: DriveDisabled
   140: DriveDisabledOverCellular
-  141: AdditionalLaunchParameters
+  141: ''
   142: DeviceTargetVersionPrefix
   143: ReportDeviceLocation
   144: PinnedLauncherApps
@@ -219,7 +219,7 @@ policies:
   218: DeviceLoginScreenDefaultScreenMagnifierType
   219: SupervisedUsersEnabled
   220: PresentationScreenDimDelayScale
-  221: SuppressChromeFrameTurndownPrompt
+  221: ''
   222: IdleActionBattery
   223: SupervisedUserCreationEnabled
   224: ReportDeviceNetworkInterfaces
@@ -236,7 +236,7 @@ policies:
   235: RequireOnlineRevocationChecksForLocalAnchors
   236: SystemUse24HourClock
   237: DefaultSearchProviderNewTabURL
-  238: SkipMetadataCheck
+  238: ''
   239: AttestationForContentProtectionEnabled
   240: FullscreenAllowed
   241: DataCompressionProxyEnabled

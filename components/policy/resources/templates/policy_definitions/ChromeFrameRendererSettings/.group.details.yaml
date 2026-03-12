@@ -1,5 +1,0 @@
-caption: Default HTML renderer for <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome
-  Frame</ex></ph>
-desc: |-
-  Allows you to configure the default HTML renderer when <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome Frame</ex></ph> is installed.
-        The default setting is to allow the host browser do the rendering, but you can optionally override this and have <ph name="PRODUCT_FRAME_NAME">$3<ex>Google Chrome Frame</ex></ph> render HTML pages by default.

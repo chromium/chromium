@@ -1042,10 +1042,6 @@ chromium-metrics-reviews@google.com.
   <int value="54" label="DefaultGeolocationSetting"/>
   <int value="55" label="Disable3DAPIs"/>
   <int value="56" label="PolicyRefreshRate"/>
-  <int value="57" label="ChromeFrameRendererSettings"/>
-  <int value="58" label="RenderInChromeFrameList"/>
-  <int value="59" label="RenderInHostList"/>
-  <int value="60" label="ChromeFrameContentTypes"/>
   <int value="61" label="ChromeOsLockOnIdleSuspend"/>
   <int value="62" label="InstantEnabled"/>
   <int value="63" label="UserDataDir"/>
@@ -1072,7 +1068,6 @@ chromium-metrics-reviews@google.com.
   <int value="84" label="AllowFileSelectionDialogs"/>
   <int value="85" label="DisabledSchemes"/>
   <int value="86" label="AlwaysAuthorizePlugins"/>
-  <int value="87" label="GCFUserDataDir"/>
   <int value="88" label="DiskCacheDir"/>
   <int value="89" label="AllowCrossOriginAuthPrompt"/>
   <int value="90" label="DevicePolicyRefreshRate"/>
@@ -1124,7 +1119,6 @@ chromium-metrics-reviews@google.com.
   <int value="138" label="BackgroundModeEnabled"/>
   <int value="139" label="DriveDisabled"/>
   <int value="140" label="DriveDisabledOverCellular"/>
-  <int value="141" label="AdditionalLaunchParameters"/>
   <int value="142" label="DeviceTargetVersionPrefix"/>
   <int value="143" label="ReportDeviceLocation"/>
   <int value="144" label="PinnedLauncherApps"/>
@@ -1201,7 +1195,6 @@ chromium-metrics-reviews@google.com.
   <int value="218" label="DeviceLoginScreenDefaultScreenMagnifierType"/>
   <int value="219" label="SupervisedUsersEnabled"/>
   <int value="220" label="PresentationScreenDimDelayScale"/>
-  <int value="221" label="SuppressChromeFrameTurndownPrompt"/>
   <int value="222" label="IdleActionBattery"/>
   <int value="223" label="SupervisedUserCreationEnabled"/>
   <int value="224" label="ReportDeviceNetworkInterfaces"/>
@@ -1218,7 +1211,6 @@ chromium-metrics-reviews@google.com.
   <int value="235" label="RequireOnlineRevocationChecksForLocalAnchors"/>
   <int value="236" label="SystemUse24HourClock"/>
   <int value="237" label="DefaultSearchProviderNewTabURL"/>
-  <int value="238" label="SkipMetadataCheck"/>
   <int value="239" label="AttestationForContentProtectionEnabled"/>
   <int value="240" label="FullscreenAllowed"/>
   <int value="241" label="DataCompressionProxyEnabled"/>
