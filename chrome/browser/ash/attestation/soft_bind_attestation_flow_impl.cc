@@ -354,8 +354,7 @@ void SoftBindAttestationFlowImpl::OnCertificateSigned(
 
   // If certificate is close to expiry, send a new request to ensure
   // uninterrupted continuity.
-  if (should_renew && renewals_in_progress_.count(certificate_chain) == 0) {
-    renewals_in_progress_.insert(certificate_chain);
+  if (should_renew && renewals_in_progress_.insert(certificate_chain).second) {
     AttestationFlow::CertificateCallback renew_callback = base::BindOnce(
         &SoftBindAttestationFlowImpl::RenewCertificateCallback,
         weak_ptr_factory_.GetWeakPtr(), std::move(certificate_chain));
