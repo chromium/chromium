@@ -808,6 +808,8 @@ def CreateLegacySchedule() -> set[_PerfPlatform]:
   ])
   # For linux-perf, which runs benchmarks that are skipped on linux-r350-perf.
   _LINUX_GPU_BENCHMARK_CONFIGS = PerfSuite([
+      _TelemetryConfig('blink_perf.webgl'),
+      _TelemetryConfig('blink_perf.webgpu'),
       _TelemetryConfig('rendering.desktop'),
       _TelemetryConfig('rendering.desktop.notracing'),
       _TelemetryConfig('system_health.common_desktop'),

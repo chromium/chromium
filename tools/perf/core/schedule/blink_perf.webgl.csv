@@ -8,6 +8,7 @@ android-pixel4_webview-perf-pgo,1,1
 android-pixel6-perf,1,1
 android-pixel6-pro-perf,1,1
 android-pixel6-pro-perf-pgo,1,1
+linux-perf,1,1
 linux-perf-pgo,1,1
 linux-r350-perf,1,1
 mac-intel-perf,1,1
