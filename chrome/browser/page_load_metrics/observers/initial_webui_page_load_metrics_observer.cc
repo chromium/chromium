@@ -16,6 +16,8 @@
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -92,6 +94,19 @@ InitialWebUIPageLoadMetricsObserver::OnPrerenderStart(
     const GURL& currently_committed_url) {
   // The target renderer will never be prerendered.
   return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+InitialWebUIPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
+  if (auto* rfh = navigation_handle->GetRenderFrameHost()) {
+    base::TimeTicks init_time = rfh->GetProcess()->GetLastInitTime();
+    if (auto* manager = GetMetricsManager()) {
+      // Record the renderer process creation timing.
+      manager->OnReloadButtonRendererProcessCreated(init_time);
+    }
+  }
+  return CONTINUE_OBSERVING;
 }
 
 WaapUIMetricsService* InitialWebUIPageLoadMetricsObserver::service() const {

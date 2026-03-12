@@ -661,21 +661,54 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InitialWebUI.Startup{Scenario}.ReloadButton.RendererProcessCreated{StartupTemperature}"
+    units="ms" expires_after="2026-07-05">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records the duration from the start of {Scenario} browser application
+    startup to the point where the dedicated renderer process for the Reload
+    button WebUI is initialized {StartupTemperature}.
+
+    This metric specifically measures the renderer process creation cost (Cost
+    A), which is an overhead incurred by the Initial WebUI architecture that
+    does not exist in the native C++ Views implementation.
+  </summary>
+  <token key="Scenario">
+    <variant name="" summary="standard"/>
+    <variant name=".FirstRun" summary="first run"/>
+    <variant name=".SessionRestore"
+        summary="session restored (without showing the Profile Picker)"/>
+  </token>
+  <token key="StartupTemperature">
+    <variant name="" summary=""/>
+    <variant name=".Temperature.ColdStartup"
+        summary=", where startup was cold (mostly hard faults). Only
+                 available on Windows."/>
+    <variant name=".Temperature.Other"
+        summary=", where startup temperature was undetermined"/>
+    <variant name=".Temperature.WarmStartup"
+        summary=", where startup was warm (almost no hard faults). Only
+                 available on Windows."/>
+  </token>
+</histogram>
+
+<histogram
     name="InitialWebUI.Startup{Scenario}.ReloadButton.{PaintType}{StartupTemperature}"
     units="ms" expires_after="2026-09-06">
   <owner>mych@chromium.org</owner>
   <owner>chrome-webium-product-eng@google.com</owner>
   <summary>
     Records the time spent initializing a newly constructed ReloadButton in the
-    {Scenario} browser application startup with pre/post InitialWebUI (WaaP)
-    setup. The timer starts immediately after the browser application
+    {Scenario} browser application startup with pre/post Initial WebUI setup.
+    The timer starts immediately after the browser application
     startup{StartupTemperature}, and ends immediately after a {PaintType} of the
     view is requested.
 
     This metric is mutually exclusive by scenarios.
 
     For FirstPaint, the paint is requested by either the browser process
-    (pre-WaaP) or by the WebUI renderer process (post-WaaP).
+    (pre-Initial WebUI) or by the WebUI renderer process (post-Initial WebUI).
 
     Only recorded on desktop platforms.
   </summary>
