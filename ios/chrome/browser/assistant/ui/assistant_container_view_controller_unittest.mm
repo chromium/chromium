@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -54,17 +55,10 @@ class AssistantContainerViewControllerTest : public PlatformTest {
     [window_ makeKeyAndVisible];  // Ensure it behaves like a real window
     [window_ addSubview:view_controller_.view];
 
-    // Constraint to bottom of window to ensure MaxY is valid for maxHeight
+    // Constraint to window bounds to ensure MaxY is valid for maxHeight
     // calculation.
     view_controller_.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
-      [view_controller_.view.leadingAnchor
-          constraintEqualToAnchor:window_.leadingAnchor],
-      [view_controller_.view.trailingAnchor
-          constraintEqualToAnchor:window_.trailingAnchor],
-      [view_controller_.view.bottomAnchor
-          constraintEqualToAnchor:window_.bottomAnchor],
-    ]];
+    AddSameConstraints(view_controller_.view, window_);
 
     // Trigger loadView and viewDidLoad.
     [window_ layoutIfNeeded];
@@ -80,15 +74,16 @@ TEST_F(AssistantContainerViewControllerTest, SnapsToNearestDetent) {
                                 AssistantContainerDetent::kLarge}];
 
   // Simulate current height closer to small detent.
-  view_controller_.heightConstraint.constant = 120.0;
+  view_controller_.heightConstraint.constant =
+      kAssistantContainerMinimizedDetentHeight + 10.0;
   [view_controller_ updateHeightConstraint];
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
 
   // Simulate current height closer to large detent.
-  view_controller_.heightConstraint.constant = 400.0;
+  view_controller_.heightConstraint.constant =
+      [view_controller_ absoluteMaxHeight] - 10.0;
   [view_controller_ updateHeightConstraint];
-  EXPECT_LT([view_controller_ absoluteMaxHeight], 600.0);
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             [view_controller_ absoluteMaxHeight]);
 }
@@ -98,7 +93,8 @@ TEST_F(AssistantContainerViewControllerTest, SnapsToSingleDetent) {
   [view_controller_ setDetents:{AssistantContainerDetent::kMinimized}];
 
   // Simulate current height being off target.
-  view_controller_.heightConstraint.constant = 250.0;
+  view_controller_.heightConstraint.constant =
+      [view_controller_ absoluteMaxHeight] / 2.0;
   [view_controller_ updateHeightConstraint];
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
@@ -109,19 +105,21 @@ TEST_F(AssistantContainerViewControllerTest, SnapsToSingleDetent) {
 TEST_F(AssistantContainerViewControllerTest, UpdatesMinimizedDetentHeight) {
   [view_controller_ setDetents:{AssistantContainerDetent::kMinimized}];
 
-  // Verify the default minimal height remains 60.
-  view_controller_.heightConstraint.constant = 10.0;
+  // Verify the default minimal height remains valid.
+  view_controller_.heightConstraint.constant =
+      kAssistantContainerMinimizedDetentHeight - 10.0;
   [view_controller_ updateHeightConstraint];
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
 
   // Update the minimal height assignment.
-  view_controller_.minimizedDetentHeight = 110.0;
+  CGFloat new_min_height = kAssistantContainerMinimizedDetentHeight + 50.0;
+  view_controller_.minimizedDetentHeight = new_min_height;
 
-  // The active constraint must now correctly lock to 110.0 instead of 60.0.
-  view_controller_.heightConstraint.constant = 10.0;
+  // The active constraint must now correctly lock to the new min height.
+  view_controller_.heightConstraint.constant = new_min_height - 10.0;
   [view_controller_ updateHeightConstraint];
-  EXPECT_EQ(view_controller_.heightConstraint.constant, 110.0);
+  EXPECT_EQ(view_controller_.heightConstraint.constant, new_min_height);
 }
 
 // Tests that specific limits are respected.
@@ -143,15 +141,16 @@ TEST_F(AssistantContainerViewControllerTest, SortsDetentsCorrectly) {
                                 AssistantContainerDetent::kMedium}];
 
   // Implicitly verify sorting structure by clamping to extremes and seeing if
-  // it correctly attaches to exactly 60 or 300, avoiding out-of-order crashes.
-  view_controller_.heightConstraint.constant = 50.0;
+  // it correctly attaches to valid boundaries, avoiding out-of-order crashes.
+  view_controller_.heightConstraint.constant =
+      kAssistantContainerMinimizedDetentHeight - 10.0;
   [view_controller_ updateHeightConstraint];
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
 
-  view_controller_.heightConstraint.constant = 600.0;
+  view_controller_.heightConstraint.constant =
+      [view_controller_ absoluteMaxHeight] + 10.0;
   [view_controller_ updateHeightConstraint];
-  EXPECT_LT([view_controller_ absoluteMaxHeight], 600.0);
   EXPECT_EQ(view_controller_.heightConstraint.constant,
             [view_controller_ absoluteMaxHeight]);
 }
@@ -164,7 +163,8 @@ TEST_F(AssistantContainerViewControllerTest, OneDetentPreventsResizing) {
   [view_controller_ setDetents:{AssistantContainerDetent::kMinimized}];
 
   // Simulate a drag extending the height.
-  view_controller_.heightConstraint.constant = 250.0;
+  view_controller_.heightConstraint.constant =
+      [view_controller_ absoluteMaxHeight] / 2.0;
 
   // Update constraints (simulating gesture end).
   [view_controller_ updateHeightConstraint];
@@ -242,7 +242,6 @@ TEST_F(AssistantContainerViewControllerTest, AnimateToDetentValid) {
                               curve:UIViewAnimationCurveEaseInOut];
 
   // Height constraint should now be exactly the large detent value.
-  EXPECT_LT([view_controller_ absoluteMaxHeight], 600.0);
   EXPECT_EQ([view_controller_ absoluteMaxHeight],
             view_controller_.heightConstraint.constant);
 

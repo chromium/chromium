@@ -30,6 +30,32 @@ constexpr CGFloat kMomentumProjectionSeconds = 0.2;
 // The height of the top area that responds to the pan gesture.
 constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
+// The maximum width of the container on iPad devices.
+constexpr CGFloat kMaxWidthRegularSizeClass = 450.0;
+// The multiplier for the width of the container relative to the parent view.
+constexpr CGFloat kWidthMultiplierRegularSizeClass = 0.5;
+
+// The padding added to the sides of the container in landscape compact mode.
+constexpr CGFloat kLandscapeSidePadding = 20.0;
+
+// The absolute minimum padding between the top of the container and the top of
+// the screen if no safe area insets exist (e.g. iPad full screen, iPhone
+// landscape).
+constexpr CGFloat kMinTopPadding = 12.0;
+
+// Returns YES if the layout should be adapted for iPad.
+BOOL IsiPadLayout(UITraitCollection* trait_collection) {
+  return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
+         trait_collection.horizontalSizeClass ==
+             UIUserInterfaceSizeClassRegular;
+}
+
+// Returns YES if the layout is currently iPhone landscape.
+BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
+  return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
+         trait_collection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+}
+
 }  // namespace
 
 @interface AssistantContainerViewController () <UIGestureRecognizerDelegate>
@@ -41,6 +67,12 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   NSLayoutConstraint* _leadingConstraint;
   NSLayoutConstraint* _trailingConstraint;
   NSLayoutConstraint* _bottomConstraint;
+
+  // Layout constraints for iPad.
+  NSArray<NSLayoutConstraint*>* _ipadConstraints;
+
+  // Constraints pinning the container to the parent view.
+  NSArray<NSLayoutConstraint*>* _parentConstraints;
 
   // Background dimming view for transitions to large detent.
   UIView* _dimmingView;
@@ -98,6 +130,11 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
   [self setUpGestures];
 
+  [self
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                   withAction:@selector(updateLayoutForCurrentTraitCollection)];
+
   // Apply pending configuration.
   if (_childViewController) {
     [self addChildViewController:_childViewController];
@@ -114,6 +151,24 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   _heightConstraint = [_assistantContainerView.heightAnchor
       constraintEqualToConstant:initialHeight];
   _heightConstraint.active = YES;
+
+  // Pin the container inside the wrapper, these constraints mutate during
+  // morphing.
+  _leadingConstraint = [_assistantContainerView.leadingAnchor
+      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor];
+  _trailingConstraint = [_assistantContainerView.trailingAnchor
+      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor];
+
+  // Set up iPad constraints, inactive by default.
+  _ipadConstraints = @[
+    [_assistantContainerView.centerXAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor],
+    [_assistantContainerView.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor
+                     multiplier:kWidthMultiplierRegularSizeClass],
+    [_assistantContainerView.widthAnchor
+        constraintLessThanOrEqualToConstant:kMaxWidthRegularSizeClass]
+  ];
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -166,10 +221,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
     return;
   }
 
-  NSInteger maxHeight = [self effectiveMaxHeight];
-  NSInteger minHeight = [self effectiveMinHeight];
-  NSInteger targetHeight =
-      std::clamp(_detentHeights[detentIdentifier], minHeight, maxHeight);
+  NSInteger targetHeight = _detentHeights[detentIdentifier];
 
   _heightConstraint.constant = targetHeight;
   CGFloat targetPercentage = [self expandPercentageForHeight:targetHeight];
@@ -284,9 +336,23 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   ContainerMorphingConstraints constraints = CalculateMorphingConstraints(
       height, minimizedHeight, mediumHeight, largeHeight);
 
+  if (IsiPadLayout(self.traitCollection)) {
+    // iPad floating sheet always has 4 rounded corners and a bottom margin.
+    constraints.corner_radius = kMorphingBaseCornerRadius;
+    constraints.bottom_margin = kMorphingBaseMargin;
+    constraints.masked_corners =
+        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
+        kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
+  }
+
+  CGFloat extraSidePadding = 0.0;
+  if (IsiPhoneLandscapeLayout(self.traitCollection)) {
+    extraSidePadding = kLandscapeSidePadding;
+  }
+
   _heightConstraint.constant = constraints.actual_height;
-  _leadingConstraint.constant = constraints.side_margin;
-  _trailingConstraint.constant = -constraints.side_margin;
+  _leadingConstraint.constant = constraints.side_margin + extraSidePadding;
+  _trailingConstraint.constant = -(constraints.side_margin + extraSidePadding);
   _bottomConstraint.constant = -constraints.bottom_margin;
   [_assistantContainerView updateCornerRadius:constraints.corner_radius
                                 maskedCorners:constraints.masked_corners];
@@ -547,17 +613,12 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 // Calculates the maximum allowable height for the container, respecting the
 // safe area.
 - (NSInteger)absoluteMaxHeight {
-  UIView* superview = self.view.superview;
-  if (!superview) {
-    return 0;
-  }
+  CGFloat maxAvailableHeight = self.view.frame.size.height;
+  CGFloat safeAreaTop = self.view.safeAreaInsets.top;
 
-  // We use the view's frame max Y because the container is anchored to a view
-  // (e.g. toolbar) that is above the screen bottom.
-  CGFloat bottomY = CGRectGetMaxY(self.view.frame);
-  CGFloat safeAreaTop = superview.safeAreaInsets.top;
+  CGFloat topInset = MAX(safeAreaTop, kMinTopPadding);
 
-  return round(bottomY - safeAreaTop);
+  return round(maxAvailableHeight - topInset);
 }
 
 // Lays out the view anchored to the guide/view within the parent view.
@@ -566,9 +627,9 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
     return;
   }
 
-  _leadingConstraint.active = NO;
-  _trailingConstraint.active = NO;
-  _bottomConstraint.active = NO;
+  if (_parentConstraints) {
+    [NSLayoutConstraint deactivateConstraints:_parentConstraints];
+  }
 
   NSLayoutYAxisAnchor* bottomAnchor = nil;
   if (self.anchorView) {
@@ -581,35 +642,44 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   }
 
   // Pin the wrapper to the parent view.
-  [NSLayoutConstraint activateConstraints:@[
+  _parentConstraints = @[
     [self.view.topAnchor constraintEqualToAnchor:parentView.topAnchor],
     [self.view.leadingAnchor constraintEqualToAnchor:parentView.leadingAnchor],
     [self.view.trailingAnchor
         constraintEqualToAnchor:parentView.trailingAnchor],
     [self.view.bottomAnchor constraintEqualToAnchor:bottomAnchor],
-  ]];
+  ];
+  [NSLayoutConstraint activateConstraints:_parentConstraints];
 
-  // Pin the container inside the wrapper (these constraints mutate during
-  // morphing).
-  _leadingConstraint = [_assistantContainerView.leadingAnchor
-      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor];
-  _trailingConstraint = [_assistantContainerView.trailingAnchor
-      constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor];
+  // Anchor the container directly to the dynamic bottom anchor.
+  if (!_bottomConstraint) {
+    _bottomConstraint = [_assistantContainerView.bottomAnchor
+        constraintEqualToAnchor:bottomAnchor];
+    _bottomConstraint.active = YES;
+  }
 
-  // Anchor to bottom of the wrapper.
-  _bottomConstraint = [_assistantContainerView.bottomAnchor
-      constraintEqualToAnchor:self.view.bottomAnchor];
+  // Trigger initial adaptive layout once the view is successfully in the
+  // hierarchy.
+  [self updateLayoutForCurrentTraitCollection];
+}
 
-  _leadingConstraint.active = YES;
-  _trailingConstraint.active = YES;
-  _bottomConstraint.active = YES;
+// Updates layout constants and constraints based on the current trait
+// collection.
+- (void)updateLayoutForCurrentTraitCollection {
+  if (IsiPadLayout(self.traitCollection)) {
+    [NSLayoutConstraint
+        deactivateConstraints:@[ _leadingConstraint, _trailingConstraint ]];
+    [NSLayoutConstraint activateConstraints:_ipadConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_ipadConstraints];
+    [NSLayoutConstraint
+        activateConstraints:@[ _leadingConstraint, _trailingConstraint ]];
+  }
 
   [self updateDetentHeights];
-
-  // Update its value with the initial height based on detents.
-  _heightConstraint.constant =
-      MAX(_detentHeights[self.detents.front()], self.minimizedDetentHeight);
+  [self updateHeightConstraint];
   [self updateContainerStylingForHeight:_heightConstraint.constant];
+  [self.view layoutIfNeeded];
 }
 
 // Animates layout changes with standard spring parameters.
@@ -618,6 +688,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   CGFloat targetPercentage = [self expandPercentageForHeight:targetHeight];
 
   __weak __typeof(self) weakSelf = self;
+
   [UIView animateWithDuration:kSpringDuration
                         delay:0
        usingSpringWithDamping:kSpringDamping
@@ -637,13 +708,14 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   _detentHeights[AssistantContainerDetent::kMedium] = kInvalidDetentHeight;
   _detentHeights[AssistantContainerDetent::kLarge] = kInvalidDetentHeight;
 
+  NSInteger absoluteMax = [self absoluteMaxHeight];
   for (AssistantContainerDetent detent : self.detents) {
     switch (detent) {
       case AssistantContainerDetent::kLarge:
-        _detentHeights[detent] = [self absoluteMaxHeight];
+        _detentHeights[detent] = absoluteMax;
         break;
       case AssistantContainerDetent::kMedium:
-        _detentHeights[detent] = [self absoluteMaxHeight] / 2;
+        _detentHeights[detent] = absoluteMax / 2;
         break;
       case AssistantContainerDetent::kMinimized:
         _detentHeights[detent] = self.minimizedDetentHeight;
