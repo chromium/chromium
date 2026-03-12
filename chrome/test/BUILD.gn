@@ -1393,7 +1393,7 @@ source_set("platform_browser_tests") {
     "../browser/metrics/startup_metrics_browsertest.cc",
     "../browser/metrics/tab_stats/tab_stats_tracker_browsertest.cc",
     "../browser/metrics/variations/field_trials_provider_browsertest.cc",
-    "../browser/metrics/variations/limited_entropy_randomization_browsertest.cc",
+    "../browser/metrics/variations/layer_constrained_study_randomization_browsertest.cc",
     "../browser/metrics/variations/variations_http_headers_browsertest.cc",
     "../browser/net/cert_verifier_service_browsertest.cc",
     "../browser/net/cert_verify_proc_browsertest.cc",
