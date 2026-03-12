@@ -30,6 +30,8 @@
 namespace indigo {
 
 namespace {
+constexpr gfx::Size kMinSize{480, 360};
+constexpr gfx::Size kMaxSize{480, 600};
 
 class OnboardingWebView : public views::WebView {
  public:
@@ -74,14 +76,17 @@ std::unique_ptr<IndigoOnboardingDialog> IndigoOnboardingDialog::Show(
 IndigoOnboardingDialog::IndigoOnboardingDialog(tabs::TabInterface& tab,
                                                const GURL& onboarding_url,
                                                base::OnceClosure close_callback)
-    : close_callback_(std::move(close_callback)) {
+    : tab_(&tab), close_callback_(std::move(close_callback)) {
   Profile* profile =
       Profile::FromBrowserContext(tab.GetContents()->GetBrowserContext());
   auto web_view = std::make_unique<OnboardingWebView>(profile);
   web_view->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(onboarding_url));
-  web_view->SetPreferredSize(gfx::Size(800, 600));
+  web_view->SetPreferredSize(kMinSize);
+  web_view->EnableSizingFromWebContents(kMinSize, kMaxSize);
   web_view->SetProperty(views::kElementIdentifierKey, kWebViewId);
+
+  view_observation_.Observe(web_view.get());
 
   delegate_ = std::make_unique<views::DialogDelegate>();
   delegate_->SetContentsView(std::move(web_view));
@@ -108,8 +113,16 @@ void IndigoOnboardingDialog::Close() {
   }
 }
 
+void IndigoOnboardingDialog::OnViewPreferredSizeChanged(
+    views::View* observed_view) {
+  tab_->GetTabFeatures()->tab_dialog_manager()->UpdateModalDialogBounds();
+}
+
 void IndigoOnboardingDialog::OnWidgetClosed(
     views::Widget::ClosedReason reason) {
+  // Stop observing the view before it is destroyed by the widget.
+  view_observation_.Reset();
+
   // As recommended in the comment on `views::Widget::MakeCloseSynchronous`,
   // destroy the widget here.
   widget_.reset();

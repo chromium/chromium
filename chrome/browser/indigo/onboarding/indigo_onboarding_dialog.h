@@ -8,7 +8,10 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
 class GURL;
@@ -19,12 +22,13 @@ class TabInterface;
 
 namespace views {
 class DialogDelegate;
-}
+class View;
+}  // namespace views
 
 namespace indigo {
 
 // Owns and manages an onboarding dialog which is mainly powered by a WebView.
-class IndigoOnboardingDialog {
+class IndigoOnboardingDialog : public views::ViewObserver {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kWebViewId);
 
@@ -40,7 +44,7 @@ class IndigoOnboardingDialog {
   IndigoOnboardingDialog(const IndigoOnboardingDialog&) = delete;
   IndigoOnboardingDialog& operator=(const IndigoOnboardingDialog&) = delete;
 
-  ~IndigoOnboardingDialog();
+  ~IndigoOnboardingDialog() override;
 
   // Closes the dialog immediately. This will call the `close_callback` passed
   // to `Show`, likely resulting in the destruction of this object.
@@ -53,12 +57,23 @@ class IndigoOnboardingDialog {
 
   void OnWidgetClosed(views::Widget::ClosedReason reason);
 
+  // views::ViewObserver:
+  void OnViewPreferredSizeChanged(views::View* observed_view) override;
+
+  // It is safe to hold a raw pointer to `tab_` because the dialog is tab-modal
+  // and will be closed (and this object destroyed by its owner) if the tab is
+  // destroyed.
+  const raw_ptr<tabs::TabInterface> tab_;
+
   base::OnceClosure close_callback_;
 
   // `widget_` must be destroyed before `delegate_` because the widget holds a
   // raw pointer to the delegate.
   std::unique_ptr<views::DialogDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
+
+  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
+      this};
 };
 
 }  // namespace indigo
