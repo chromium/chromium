@@ -90,7 +90,7 @@ LocalCardMigrationBrowserUiTest.*
 Mv2DeprecationReEnableDialogBrowserTest.*
 NewTabPageTest.*
 NtpPromoVisualUiTest.*
-NtpRealboxUiTest.*
+NtpRealboxUiScreenshotTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 PageActionPixelIconsHiddenTest.*
