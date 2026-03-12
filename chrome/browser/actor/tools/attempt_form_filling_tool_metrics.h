@@ -40,7 +40,7 @@ void RecordOnInvokeMetrics();
 
 // Records metrics when the tool receives autofill service `GetSuggestions`
 // response.
-void RecordOnSuggestionsRetrievedMetrics(bool has_results);
+void RecordOnSuggestionsRetrievedMetrics(int suggestions_count);
 
 // Records metrics when an autofill suggestion form is presented in the dialog.
 // Parameters:

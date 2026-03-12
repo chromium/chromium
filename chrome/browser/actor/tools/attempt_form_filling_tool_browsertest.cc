@@ -468,6 +468,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
   histogram_tester.ExpectBucketCount(
       "Autofill.Actor.AttemptFormFillingToolEvent",
       form_fill_metrics::AttemptFormFillingToolEvent::kSuggestionsRetrieved, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.AutofillSuggestionsPerDialog", 2, 1);
 
   std::move(captured_callback).Run(MakeAutofillSuggestionsErrorResponse());
   ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);
@@ -506,6 +508,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, NoSuggestions) {
   histogram_tester.ExpectBucketCount(
       "Autofill.Actor.AttemptFormFillingToolEvent",
       form_fill_metrics::AttemptFormFillingToolEvent::kSuggestionsRetrieved, 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Actor.AutofillSuggestionsPerDialog", 0);
 }
 
 // Test that if the dialog is not shown an error is returned from the tool.
@@ -668,6 +672,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, MultipleSuggestions) {
   histogram_tester.ExpectBucketCount(
       "Autofill.Actor.AttemptFormFillingToolEvent",
       form_fill_metrics::AttemptFormFillingToolEvent::kSuggestionsRetrieved, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.AutofillSuggestionsPerDialog", 1, 1);
 }
 
 // Test that if the trigger field is no longer available, an error is returned.
@@ -926,6 +932,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, ServiceSplitsRequests) {
       "Autofill.Actor.AttemptFormFillingToolEvent",
       form_fill_metrics::AttemptFormFillingToolEvent::kAttentionDialogAccepted,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.AutofillSuggestionsPerDialog", 2, 1);
 
   std::move(captured_callback).Run(MakeAutofillSuggestionsErrorResponse());
   ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);

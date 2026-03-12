@@ -276,8 +276,9 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
     ToolCallback invoke_callback,
     base::expected<std::vector<autofill::ActorFormFillingRequest>,
                    autofill::ActorFormFillingError> suggestions_result) {
-  form_fill_metrics::RecordOnSuggestionsRetrievedMetrics(
-      suggestions_result.has_value());
+  const int suggestions_count =
+      suggestions_result.has_value() ? suggestions_result.value().size() : 0;
+  form_fill_metrics::RecordOnSuggestionsRetrievedMetrics(suggestions_count);
 
   if (!suggestions_result.has_value()) {
     std::move(invoke_callback)

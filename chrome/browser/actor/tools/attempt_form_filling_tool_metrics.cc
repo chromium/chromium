@@ -13,13 +13,15 @@ void RecordOnInvokeMetrics() {
                                 AttemptFormFillingToolEvent::kInvoked);
 }
 
-void RecordOnSuggestionsRetrievedMetrics(bool has_results) {
+void RecordOnSuggestionsRetrievedMetrics(int suggestions_count) {
   base::UmaHistogramEnumeration("Autofill.Actor.AttemptFormFillingToolEvent",
                                 AttemptFormFillingToolEvent::kServiceResponded);
-  if (has_results) {
+  if (suggestions_count > 0) {
     base::UmaHistogramEnumeration(
         "Autofill.Actor.AttemptFormFillingToolEvent",
         AttemptFormFillingToolEvent::kSuggestionsRetrieved);
+    base::UmaHistogramCounts100("Autofill.Actor.AutofillSuggestionsPerDialog",
+                                suggestions_count);
   }
 }
 
