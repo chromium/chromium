@@ -172,7 +172,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS, FeatureState.ENABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxImprovementForLFF =
-            newFlag(OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sRemoveSearchReadyOmnibox =
             newFlag(OmniboxFeatureList.REMOVE_SEARCH_READY_OMNIBOX, FeatureState.DISABLED);
