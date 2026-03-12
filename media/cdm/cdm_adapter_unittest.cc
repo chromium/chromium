@@ -83,6 +83,22 @@ MATCHER_P(HasDecoderCheck1ErrorCount, expected_value, "") {
   return arg.decoder_check1_error_count == expected_value;
 }
 
+MATCHER_P(HasKeySystemDataTime1, expected_value, "") {
+  return arg.key_system_data_time1 == expected_value;
+}
+
+MATCHER_P(HasKeySystemDataTime2, expected_value, "") {
+  return arg.key_system_data_time2 == expected_value;
+}
+
+MATCHER_P(HasKeySystemDataTime3, expected_value, "") {
+  return arg.key_system_data_time3 == expected_value;
+}
+
+MATCHER_P(HasKeySystemDataBool1, expected_value, "") {
+  return arg.key_system_data_bool1 == expected_value;
+}
+
 // TODO(jrummell): These tests are a subset of those in aes_decryptor_unittest.
 // Refactor aes_decryptor_unittest.cc to handle AesDecryptor directly and
 // via CdmAdapter once CdmAdapter supports decrypting functionality. There
@@ -702,14 +718,25 @@ TEST_P(CdmAdapterTestWithMockCdm, RecordUMA) {
     cdm_host_proxy_->ReportMetrics(cdm::kDecoderCheck1ErrorCount, 3);
   }
 
+  // Key system data metrics
+  {
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataTime1, 1000);
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataTime2, 2000);
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataTime3, 3000);
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataBool1, 1);
+  }
+
   // On destruction UKM should be logged containing the sum of all the reported
   // kDecoderBypassBlockCount values (and no license SDK version as one is not
   // set).
-  EXPECT_CALL(*cdm_helper_, RecordUkm(AllOf(HasBypassBlocksTotalCount(111),
-                                            HasDecoderCheck1SuccessCount(1),
-                                            HasDecoderCheck1WarningCount(2),
-                                            HasDecoderCheck1ErrorCount(3),
-                                            HasNoLicenseSdkVersion())));
+  EXPECT_CALL(
+      *cdm_helper_,
+      RecordUkm(
+          AllOf(HasBypassBlocksTotalCount(111), HasDecoderCheck1SuccessCount(1),
+                HasDecoderCheck1WarningCount(2), HasDecoderCheck1ErrorCount(3),
+                HasKeySystemDataTime1(1000), HasKeySystemDataTime2(2000),
+                HasKeySystemDataTime3(3000), HasKeySystemDataBool1(true),
+                HasNoLicenseSdkVersion())));
 }
 
 // When CDM reports an unexpected value (e.g. new value added in the future),

@@ -14326,6 +14326,61 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="KeySystemDataBool1">
+    <summary>
+      Whether or not the Key System is reporting true for bool 1. This is a
+      general metric that is mapped to specific Key System data.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="KeySystemDataTime1">
+    <summary>
+      The time in seconds since the unix epoch for the date of the creation of
+      time 1. This is a general metric that is mapped to specific Key System
+      data.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="KeySystemDataTime2">
+    <summary>
+      The time in seconds since the unix epoch for the date of the creation of
+      time 2. This is a general metric that is mapped to specific Key System
+      data.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="KeySystemDataTime3">
+    <summary>
+      The time in seconds since the unix epoch for the date of the creation of
+      time 3. This is a general metric that is mapped to specific Key System
+      data.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="LicenseSdkVersion">
     <summary>
       The SDK version of the license server of the URL that communicates with

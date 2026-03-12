@@ -1286,6 +1286,10 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaReportMetricsTest, RecordUkmTest) {
             Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName,
             Media_EME_CdmMetrics::kDecoderCheck1WarningCountName,
             Media_EME_CdmMetrics::kDecoderCheck1ErrorCountName,
+            Media_EME_CdmMetrics::kKeySystemDataTime1Name,
+            Media_EME_CdmMetrics::kKeySystemDataTime2Name,
+            Media_EME_CdmMetrics::kKeySystemDataTime3Name,
+            Media_EME_CdmMetrics::kKeySystemDataBool1Name,
             Media_EME_CdmMetrics::kLicenseSdkVersionName,
             Media_EME_CdmMetrics::kNumberOfOnMessageEventsName,
             Media_EME_CdmMetrics::kNumberOfUpdateCallsName,
@@ -1305,7 +1309,11 @@ IN_PROC_BROWSER_TEST_P(ECKEncryptedMediaReportMetricsTest, RecordUkmTest) {
             Pair(Media_EME_CdmMetrics::kLicenseSdkVersionName, 12345),
             Pair(Media_EME_CdmMetrics::kNumberOfOnMessageEventsName, 1),
             Pair(Media_EME_CdmMetrics::kNumberOfUpdateCallsName, 1),
-            Pair(Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName, 1)));
+            Pair(Media_EME_CdmMetrics::kDecoderCheck1SuccessCountName, 1),
+            Pair(Media_EME_CdmMetrics::kKeySystemDataTime1Name, 111),
+            Pair(Media_EME_CdmMetrics::kKeySystemDataTime2Name, 222),
+            Pair(Media_EME_CdmMetrics::kKeySystemDataTime3Name, 333),
+            Pair(Media_EME_CdmMetrics::kKeySystemDataBool1Name, 1)));
   } else {
     // Wait for a standard media metric to ensure the reporting pipeline has
     // flushed.

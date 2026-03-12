@@ -178,6 +178,26 @@ void MojoCdmHelper::RecordUkm(const CdmMetricsData& cdm_metrics_data) {
         cdm_metrics_data.decoder_check1_error_count.value());
   }
 
+  if (cdm_metrics_data.key_system_data_time1.has_value()) {
+    ukm_builder.SetKeySystemDataTime1(
+        cdm_metrics_data.key_system_data_time1.value());
+  }
+
+  if (cdm_metrics_data.key_system_data_time2.has_value()) {
+    ukm_builder.SetKeySystemDataTime2(
+        cdm_metrics_data.key_system_data_time2.value());
+  }
+
+  if (cdm_metrics_data.key_system_data_time3.has_value()) {
+    ukm_builder.SetKeySystemDataTime3(
+        cdm_metrics_data.key_system_data_time3.value());
+  }
+
+  if (cdm_metrics_data.key_system_data_bool1.has_value()) {
+    ukm_builder.SetKeySystemDataBool1(
+        cdm_metrics_data.key_system_data_bool1.value());
+  }
+
   ukm_builder.SetNumberOfVideoFrames(cdm_metrics_data.video_frames_processed);
 
   ukm_builder.Record(ukm_recorder_.get());

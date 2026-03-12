@@ -422,10 +422,13 @@ void ClearKeyCdm::CreateSessionAndGenerateRequest(
   } else if (key_system_ == kExternalClearKeyStorageIdTestKeySystem) {
     StartStorageIdTest();
   } else if (key_system_ == kExternalClearKeyKeySystem) {
-    // Normally, we would report cdm::kDecoderCheck1SuccessCount after
-    // decoding, but for clear key tests, we only want to verify plumbing of
-    // metrics.
+    // Normally, we would report these metrics after decoding or key system
+    // initialization, but for clear key tests, we only want to verify plumbing.
     cdm_host_proxy_->ReportMetrics(cdm::kDecoderCheck1SuccessCount, 1);
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataTime1, 111);
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataTime2, 222);
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataTime3, 333);
+    cdm_host_proxy_->ReportMetrics(cdm::kKeySystemDataBool1, 1);
   }
 }
 

@@ -45,6 +45,11 @@ struct MEDIA_EXPORT CdmMetricsData {
   std::optional<uint64_t> decoder_check1_warning_count;
   std::optional<uint64_t> decoder_check1_error_count;
 
+  std::optional<uint64_t> key_system_data_time1;
+  std::optional<uint64_t> key_system_data_time2;
+  std::optional<uint64_t> key_system_data_time3;
+  std::optional<bool> key_system_data_bool1;
+
   uint64_t video_frames_processed = 0;
 
   url::Origin cdm_origin;
@@ -52,7 +57,14 @@ struct MEDIA_EXPORT CdmMetricsData {
   bool IsCdmValueSet() {
     return (license_sdk_version.has_value() ||
             certificate_serial_number.has_value() ||
-            decoder_bypass_block_count.has_value());
+            decoder_bypass_block_count.has_value() ||
+            decoder_check1_success_count.has_value() ||
+            decoder_check1_warning_count.has_value() ||
+            decoder_check1_error_count.has_value() ||
+            key_system_data_time1.has_value() ||
+            key_system_data_time2.has_value() ||
+            key_system_data_time3.has_value() ||
+            key_system_data_bool1.has_value());
   }
 };
 
