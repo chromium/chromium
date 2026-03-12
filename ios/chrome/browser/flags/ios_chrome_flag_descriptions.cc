@@ -1627,9 +1627,9 @@ const char kTabGroupInOverflowMenuDescription[] =
     "When enabled, a Tab Group button will appear in the overflow menu.";
 
 const char kTabGroupInTabIconContextMenuName[] =
-    "Enable the Tab Group button in the tab icon context menu";
+    "Enable the Tab Group button in the tab grid icon context menu";
 const char kTabGroupInTabIconContextMenuDescription[] =
-    "When enabled, a Tab Group button will appear in the tab icon context "
+    "When enabled, a Tab Group button will appear in the tab grid icon context "
     "menu.";
 
 const char kTabGroupIndicatorName[] = "Tab Group Indicator";

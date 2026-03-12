@@ -540,7 +540,6 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   UIAction* newIncognitoSearch =
       [self.actionFactory actionToStartNewIncognitoSearch];
   UIAction* cameraSearch;
-  UIMenuElement* tabGroupMenu;
 
   NSMutableArray* staticActions = [[NSMutableArray alloc] init];
 
@@ -556,7 +555,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   }
 
   [staticActions addObjectsFromArray:@[
-    cameraSearch, voiceSearch, newIncognitoSearch, newSearch
+    newSearch, newIncognitoSearch, voiceSearch, cameraSearch
   ]];
 
   if (experimental_flags::EnableAIPrototypingMenu()) {
@@ -569,6 +568,32 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     [staticActions addObject:openAIMode];
   }
 
+  UIMenuElement* clipboardAction = [self menuElementForPasteboard];
+  if (clipboardAction) {
+    UIMenu* staticMenu = [UIMenu menuWithTitle:@""
+                                         image:nil
+                                    identifier:nil
+                                       options:UIMenuOptionsDisplayInline
+                                      children:staticActions];
+
+    return [UIMenu menuWithTitle:@"" children:@[ staticMenu, clipboardAction ]];
+  }
+  return [UIMenu menuWithTitle:@"" children:staticActions];
+}
+
+/// Returns the menu for the TabGrid button.
+- (UIMenu*)menuForTabGridButton {
+  NSMutableArray* staticActions = [[NSMutableArray alloc] init];
+  UIAction* openNewTab = [self.actionFactory actionToOpenNewTab];
+
+  UIAction* openNewIncognitoTab =
+      [self.actionFactory actionToOpenNewIncognitoTab];
+
+  UIAction* closeTab = [self.actionFactory actionToCloseCurrentTab];
+
+  [staticActions addObjectsFromArray:@[ openNewIncognitoTab, openNewTab ]];
+
+  UIMenuElement* tabGroupMenu;
   if (base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu)) {
     std::set<const TabGroup*> groups = self.webStateList->GetGroups();
     const TabGroup* currentGroup = self.webStateList->GetGroupOfWebStateAt(
@@ -598,31 +623,8 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     }
     [staticActions addObject:tabGroupMenu];
   }
-
-  UIMenuElement* clipboardAction = [self menuElementForPasteboard];
-  if (clipboardAction) {
-    UIMenu* staticMenu = [UIMenu menuWithTitle:@""
-                                         image:nil
-                                    identifier:nil
-                                       options:UIMenuOptionsDisplayInline
-                                      children:staticActions];
-
-    return [UIMenu menuWithTitle:@"" children:@[ clipboardAction, staticMenu ]];
-  }
+  [staticActions addObject:closeTab];
   return [UIMenu menuWithTitle:@"" children:staticActions];
-}
-
-/// Returns the menu for the TabGrid button.
-- (UIMenu*)menuForTabGridButton {
-  UIAction* openNewTab = [self.actionFactory actionToOpenNewTab];
-
-  UIAction* openNewIncognitoTab =
-      [self.actionFactory actionToOpenNewIncognitoTab];
-
-  UIAction* closeTab = [self.actionFactory actionToCloseCurrentTab];
-
-  return [UIMenu menuWithTitle:@""
-                      children:@[ closeTab, openNewTab, openNewIncognitoTab ]];
 }
 
 /// Returns the UIMenuElement for the content of the pasteboard. Can return nil.
