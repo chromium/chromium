@@ -23,7 +23,7 @@ suite('DestinationSearchTest', function() {
     setupTestListenerElement();
   });
 
-  setup(function() {
+  setup(async () => {
     // Create data classes
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
@@ -39,10 +39,9 @@ suite('DestinationSearchTest', function() {
     dialog.destinationStore = destinationStore;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(dialog);
-    return nativeLayer.whenCalled('getPrinterCapabilities').then(function() {
-      dialog.show();
-      nativeLayer.reset();
-    });
+    await nativeLayer.whenCalled('getPrinterCapabilities');
+    dialog.show();
+    nativeLayer.reset();
   });
 
   function simulateDestinationSelect(destId: string) {

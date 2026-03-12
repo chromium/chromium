@@ -26,7 +26,7 @@ suite('PolicyTest', function() {
    * @return A Promise that resolves once initial settings are done
    *     loading.
    */
-  function loadInitialSettings(initialSettings: NativeInitialSettings):
+  async function loadInitialSettings(initialSettings: NativeInitialSettings):
       Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const nativeLayer = new NativeLayerStub();
@@ -42,14 +42,11 @@ suite('PolicyTest', function() {
     document.body.appendChild(page);
 
     // Wait for initialization to complete.
-    return Promise
-        .all([
-          nativeLayer.whenCalled('getInitialSettings'),
-          nativeLayer.whenCalled('getPrinterCapabilities'),
-        ])
-        .then(function() {
-          return microtasksFinished();
-        });
+    await Promise.all([
+      nativeLayer.whenCalled('getInitialSettings'),
+      nativeLayer.whenCalled('getPrinterCapabilities'),
+    ]);
+    return microtasksFinished();
   }
 
   /**

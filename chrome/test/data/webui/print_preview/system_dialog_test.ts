@@ -27,7 +27,7 @@ suite('SystemDialogTest', function() {
   let printTicketKey: string = 'openPDFInPreview';
   // </if>
 
-  setup(function() {
+  setup(async () => {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -42,41 +42,34 @@ suite('SystemDialogTest', function() {
     const page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     sidebar = page.shadowRoot.querySelector('print-preview-sidebar')!;
-    return Promise
-        .all([
-          whenReady(),
-          nativeLayer.whenCalled('getInitialSettings'),
-          nativeLayer.whenCalled('getPrinterCapabilities'),
-        ])
-        .then(function() {
-          linkContainer =
-              sidebar.shadowRoot.querySelector('print-preview-link-container')!;
-          return nativeLayer.whenCalled('getPreview');
-        })
-        .then(function() {
-          assertEquals(
-              'FooDevice',
-              sidebar.shadowRoot
-                  .querySelector(
-                      'print-preview-destination-settings')!.destination!.id);
-          // <if expr="is_win">
-          link = linkContainer.$.systemDialogLink;
-          // </if>
-          // <if expr="is_macosx">
-          link = linkContainer.$.openPdfInPreviewLink;
-          // </if>
-        });
+    await Promise.all([
+      whenReady(),
+      nativeLayer.whenCalled('getInitialSettings'),
+      nativeLayer.whenCalled('getPrinterCapabilities'),
+    ]);
+    linkContainer =
+        sidebar.shadowRoot.querySelector('print-preview-link-container')!;
+    await nativeLayer.whenCalled('getPreview');
+    assertEquals(
+        'FooDevice',
+        sidebar.shadowRoot.querySelector('print-preview-destination-settings')!
+            .destination!.id);
+    // <if expr="is_win">
+    link = linkContainer.$.systemDialogLink;
+    // </if>
+    // <if expr="is_macosx">
+    link = linkContainer.$.openPdfInPreviewLink;
+    // </if>
   });
 
-  test('LinkTriggersLocalPrint', function() {
+  test('LinkTriggersLocalPrint', async () => {
     assertFalse(linkContainer.disabled);
     assertFalse(link.hidden);
     link.click();
     // Should result in a print call and dialog should close.
-    return nativeLayer.whenCalled('doPrint').then((printTicket: string) => {
-      assertTrue(JSON.parse(printTicket)[printTicketKey]);
-      return nativeLayer.whenCalled('dialogClose');
-    });
+    const printTicket = await nativeLayer.whenCalled('doPrint');
+    assertTrue(JSON.parse(printTicket)[printTicketKey]);
+    return nativeLayer.whenCalled('dialogClose');
   });
 
   test('InvalidSettingsDisableLink', async function() {

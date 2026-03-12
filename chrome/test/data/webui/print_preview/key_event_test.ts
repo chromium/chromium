@@ -19,7 +19,7 @@ suite('KeyEventTest', function() {
 
   let nativeLayer: NativeLayerStub;
 
-  setup(function() {
+  setup(async () => {
     const initialSettings = getDefaultInitialSettings();
     nativeLayer = new NativeLayerStub();
     nativeLayer.setInitialSettings(initialSettings);
@@ -38,14 +38,11 @@ suite('KeyEventTest', function() {
     document.body.appendChild(page);
 
     // Wait for initialization to complete.
-    return Promise
-        .all([
-          nativeLayer.whenCalled('getInitialSettings'),
-          nativeLayer.whenCalled('getPrinterCapabilities'),
-        ])
-        .then(function() {
-          return microtasksFinished();
-        });
+    await Promise.all([
+      nativeLayer.whenCalled('getInitialSettings'),
+      nativeLayer.whenCalled('getPrinterCapabilities'),
+    ]);
+    return microtasksFinished();
   });
 
   // Tests that the enter key triggers a call to print.
@@ -77,15 +74,15 @@ suite('KeyEventTest', function() {
 
   // Tests that the enter key does not trigger a call to print if the event
   // comes from a dropdown.
-  test('EnterOnDropdownDoesNotPrint', function() {
+  test('EnterOnDropdownDoesNotPrint', async () => {
     const whenKeyEventFired = eventToPromise('keydown', page);
     keyEventOn(
         page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-layout-settings')!.shadowRoot
             .querySelector<HTMLSelectElement>('.md-select')!,
         'keydown', 0, [], 'Enter');
-    return whenKeyEventFired.then(
-        () => assertEquals(0, nativeLayer.getCallCount('doPrint')));
+    await whenKeyEventFired;
+    assertEquals(0, nativeLayer.getCallCount('doPrint'));
   });
 
   // Tests that the enter key does not trigger a call to print if the event
@@ -108,7 +105,7 @@ suite('KeyEventTest', function() {
 
   // Tests that the enter key does not trigger a call to print if the event
   // comes from a checkbox.
-  test('EnterOnCheckboxDoesNotPrint', function() {
+  test('EnterOnCheckboxDoesNotPrint', async () => {
     const moreSettingsElement =
         page.shadowRoot.querySelector('print-preview-sidebar')!.shadowRoot
             .querySelector('print-preview-more-settings')!;
@@ -119,8 +116,8 @@ suite('KeyEventTest', function() {
             .querySelector('print-preview-other-options-settings')!.shadowRoot
             .querySelector('cr-checkbox')!,
         'keydown', 0, [], 'Enter');
-    return whenKeyEventFired.then(
-        () => assertEquals(0, nativeLayer.getCallCount('doPrint')));
+    await whenKeyEventFired;
+    assertEquals(0, nativeLayer.getCallCount('doPrint'));
   });
 
   // Tests that escape closes the dialog only on Mac.
