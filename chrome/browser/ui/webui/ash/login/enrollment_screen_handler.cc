@@ -322,15 +322,20 @@ void EnrollmentScreenHandler::ShowEnrollmentStatus(
             ShowError(IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR, /*retry=*/true);
           }
           break;
-        case policy::DM_STATUS_SERVICE_MISSING_LICENSES:
-          if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
-            ShowError(IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS,
-                      /*retry=*/true);
-          } else {
-            ShowError(IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR,
-                      /*retry=*/true);
+        case policy::DM_STATUS_SERVICE_MISSING_LICENSES: {
+          int message_id = IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR;
+          if (policy::EnrollmentRequisitionManager::IsSquidDevice()) {
+            message_id = IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM;
+          } else if (policy::EnrollmentRequisitionManager::
+                         IsCuttlefishDevice()) {
+            message_id =
+                IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM_MEET;
+          } else if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
+            message_id = IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS;
           }
+          ShowError(message_id, /*retry=*/true);
           break;
+        }
         case policy::DM_STATUS_SERVICE_DEPROVISIONED:
           ShowError(IDS_ENTERPRISE_ENROLLMENT_DEPROVISIONED_ERROR,
                     /*retry=*/true);

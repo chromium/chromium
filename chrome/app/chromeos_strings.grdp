@@ -3089,6 +3089,12 @@
   <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses.">
     You do not have enough available licenses to enroll this Google Meet hardware device. Please contact sales to purchase more. If you believe you're seeing this message in error, please contact support.
   </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses for a Google Beam device.">
+    You do not have enough available licenses to enroll this Google Beam device. Please contact your reseller to purchase more. If you believe you're seeing this message in error, please contact your reseller.
+  </message>
+  <message name="IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_BEAM_MEET" desc="Error message to show when the domain the device is trying to enroll into has expired or exhausted licenses for a Google Beam Meet device.">
+    You do not have enough available licenses to enroll this Google Meet hardware device. Please contact your reseller to purchase more. If you believe you're seeing this message in error, please contact your reseller.
+  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_DEPROVISIONED_ERROR" desc="Error message to show when enrollment fails because the administrator has deprovisioned the device on the server side.">
     This device has been placed into a deprovisioned state by the administrator. To enable it for enrollment, please have your administrator place the device into a pending state.
   </message>
