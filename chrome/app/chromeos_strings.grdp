@@ -6682,45 +6682,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
 
   <!-- Floating Workspace -->
-  <message name="IDS_FLOATING_WORKSPACE_NO_NETWORK_TITLE" desc="Title of Floating Workspace notification when there is no network connection.">
-    Can't resume session
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_NO_NETWORK_MESSAGE" desc="Message for Floating Workspace notification when is no network connection.">
-    ChromeOS can't resume your previous session due to a network problem. Connect to a stable network and retry.
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_NO_NETWORK_BUTTON" desc="Button to show network settings for Floating Workspace notification when is no network connection.">
-    Network settings
-  </message>
- <message name="IDS_FLOATING_WORKSPACE_SAFE_MODE_TITLE" desc="Title of Floating Workspace notification when ChromeOS is in safe mode.">
-    Can’t resume previous session
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_SAFE_MODE_MESSAGE" desc="Message for Floating Workspace notification when ChromeOS is in safe mode.">
-    Open a new Chrome browser session instead.
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_TITLE" desc="Title of Floating Workspace notification asking user to restore or not when a new remote desk arrives after an earlier restoration error occurs.">
-    Resume previous session?
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_MESSAGE" desc="Message of Floating Workspace notification asking user to restore or not when a new remote desk arrives after an earlier restoration error occurs.">
-    You can resume your previous session while your current session remains active.
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_RESTORE_FROM_ERROR_RESTORATION_BUTTON" desc="Button for restoration option of Floating Workspace notification asking user to restore or not when a new remote desk arrives after an earlier restoration error occurs.">
-    Resume
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_ERROR_TITLE" desc="Title for Floating Workspace notification when there is an sync service error or timeout.">
-    Can't resume previous session
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_ERROR_MESSAGE" desc="Message for Floating Workspace notification when there is an sync service error or timeout.">
-    Something went wrong. Open the windows manually instead.
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_DISPLAY_SOURCE" desc="This is the string shown as the display source of the notification to notify user about floating workspace status.">
-    ChromeOS
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_PROGRESS_BAR_TITLE" desc="Title of the floating workspace notification progress bar status.">
-    Resuming Session
-  </message>
-  <message name="IDS_FLOATING_WORKSPACE_PROGRESS_BAR_MESSAGE" desc="Message for floating workspace notification progress bar status.">
-    Opening windows from your previous device
-  </message>
   <message name="IDS_FLOATING_WORKSPACE_STARTUP_DIALOG_TITLE" desc="Title for floating workspace startup dialog.">
     Restoring windows from your previous session...
   </message>
