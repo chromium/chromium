@@ -799,10 +799,6 @@ int64_t NavigationEntryImpl::GetMainFrameDocumentSequenceNumber() const {
   return frame_tree_->frame_entry->document_sequence_number();
 }
 
-bool NavigationEntryImpl::IsPossiblySkippableAdEntryForTesting() const {
-  return is_possibly_skippable_ad_entry();
-}
-
 void NavigationEntryImpl::SetCanLoadLocalResources(bool allow) {
   can_load_local_resources_ = allow;
 }

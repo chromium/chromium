@@ -466,6 +466,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebRTCLocalNetworkAccessPublicToLoopback,
           WebFeature::kWebRTCLocalNetworkAccessLocalToLoopback,
           WebFeature::kWebSocketStreamConstructor,
+          WebFeature::kHistoryGoBackWouldSkipAd,
+          WebFeature::kHistoryGoForwardWouldSkipAd,
+          WebFeature::kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion,
+          WebFeature::kHistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion,
           // NOTE: before adding new use counters here, verify in UMA that
           // their emissions are very rare, e.g. <1% of page loads.
       }));

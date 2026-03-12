@@ -178,7 +178,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   std::string GetExtraHeaders() const override;
   void AddExtraHeaders(const std::string& extra_headers) override;
   int64_t GetMainFrameDocumentSequenceNumber() const override;
-  bool IsPossiblySkippableAdEntryForTesting() const override;
 
   // Creates a copy of this NavigationEntryImpl that can be modified
   // independently from the original, but that shares FrameNavigationEntries.

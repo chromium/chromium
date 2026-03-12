@@ -6459,6 +6459,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5820" label="SynthesizedMiddleClickArea"/>
   <int value="5821" label="SynthesizedMiddleClickSVGAnchor"/>
   <int value="5822" label="WebAuthenticationCspDisallowsRpId"/>
+  <int value="5823" label="HistoryGoBackWouldSkipAd"/>
+  <int value="5824" label="HistoryGoForwardWouldSkipAd"/>
+  <int value="5825"
+      label="HistoryGoBackWouldNotSkipAdDueToSameOriginExclusion"/>
+  <int value="5826"
+      label="HistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

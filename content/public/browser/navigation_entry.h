@@ -258,12 +258,6 @@ class NavigationEntry : public base::SupportsUserData {
   // This persists across same-document navigations and stays the same after
   // a history navigation to an already visited document.
   virtual int64_t GetMainFrameDocumentSequenceNumber() const = 0;
-
-  // Returns true if this entry might be skipped on back/forward navigation in
-  // the UI even if there has been a user activation, due to ad related actions.
-  // TODO(crbug.com/375523824): Remove this once the underlying behaviors can
-  // be tested directly.
-  virtual bool IsPossiblySkippableAdEntryForTesting() const = 0;
 };
 
 }  // namespace content

@@ -1207,20 +1207,17 @@ int NavigationControllerImpl::GetIndexForOffset(int offset) {
   return GetCurrentEntryIndex() + offset;
 }
 
-std::optional<int> NavigationControllerImpl::GetIndexForGoBack() {
-  return GetIndexForGoBackWithSkipping(GetCurrentEntryIndex());
+std::optional<int> NavigationControllerImpl::GetIndexForGoBack(
+    bool performing_navigation) {
+  return GetIndexForGoBackWithSkipping(GetCurrentEntryIndex(),
+                                       performing_navigation);
 }
 
 std::optional<int> NavigationControllerImpl::GetIndexForGoBackWithSkipping(
-    int from_index) {
-  // Start searching one step behind the provided index for the first entry that
-  // shouldn't be skipped by the history manipulation intervention.
-  for (int index = from_index - 1; index >= 0; index--) {
-    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      return index;
-    }
-  }
-  return std::nullopt;
+    int from_index,
+    bool performing_navigation) {
+  return GetIndexWithSkipping(from_index, Direction::kBack,
+                              performing_navigation);
 }
 
 bool NavigationControllerImpl::CanGoBack() {
@@ -1247,20 +1244,184 @@ bool NavigationControllerImpl::ShouldEnableBackButton() {
   return false;
 }
 
-std::optional<int> NavigationControllerImpl::GetIndexForGoForward() {
-  return GetIndexForGoForwardWithSkipping(GetCurrentEntryIndex());
+std::optional<int> NavigationControllerImpl::GetIndexForGoForward(
+    bool performing_navigation) {
+  return GetIndexForGoForwardWithSkipping(GetCurrentEntryIndex(),
+                                          performing_navigation);
 }
 
 std::optional<int> NavigationControllerImpl::GetIndexForGoForwardWithSkipping(
-    int from_index) {
-  // Start searching one step ahead the provided index for the first entry that
-  // shouldn't be skipped by the history manipulation intervention.
-  for (int index = from_index + 1; index < GetEntryCount(); index++) {
+    int from_index,
+    bool performing_navigation) {
+  return GetIndexWithSkipping(from_index, Direction::kForward,
+                              performing_navigation);
+}
+
+std::optional<int> NavigationControllerImpl::GetIndexWithSkipping(
+    int from_index,
+    Direction direction,
+    bool performing_navigation) {
+  std::optional<int> result_index;
+  int step = (direction == Direction::kForward) ? 1 : -1;
+
+  // Helper lambda to check bounds based on direction.
+  auto is_in_bounds = [&](int idx) {
+    return (direction == Direction::kForward) ? (idx < GetEntryCount())
+                                              : (idx >= 0);
+  };
+
+  // 1. Original History Manipulation Intervention Logic:
+  // Start searching one step away from the provided index for the first entry
+  // that shouldn't be skipped by the original history manipulation
+  // intervention.
+  for (int index = from_index + step; is_in_bounds(index); index += step) {
     if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui()) {
-      return index;
+      result_index = index;
+      break;
     }
   }
-  return std::nullopt;
+
+  // If `result_index` is nullopt, it means all of the entries are skippable due
+  // to the original history manipulation intervention. We return early here as
+  // we cannot apply further skipping logic if no valid target exists.
+  if (!result_index.has_value()) {
+    return std::nullopt;
+  }
+
+  // 2. Back-To-Ad Intervention Logic:
+  // Start the search from `result_index` (where the original intervention
+  // left off) and skip further entries that match *either* intervention:
+  // `should_skip_on_back_forward_ui` (original) or
+  // `is_possibly_skippable_ad_entry` (ad skipping).
+  //
+  // We perform this calculation regardless of the feature state to record
+  // metrics.
+  std::optional<int> result_index_with_ad_skipping;
+
+  for (int index = result_index.value(); is_in_bounds(index); index += step) {
+    // Find the first entry that satisfies neither skipping condition.
+    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui() &&
+        !GetEntryAtIndex(index)->is_possibly_skippable_ad_entry()) {
+      result_index_with_ad_skipping = index;
+      break;
+    }
+  }
+
+  // Helper to conditionally record metrics for the back-to-ad intervention.
+  // The `is_cross_origin_skip` parameter indicates if the ad-skipping logic
+  // attempts to land on a cross-origin page relative to the start point. (Refer
+  // to `get_origin_for_intervention` below for details on the
+  // 'same-origin exception').
+  auto maybe_record_back_to_ad_metrics = [&](bool is_cross_origin_skip) {
+    // Only record metrics if we are doing a single-step navigation
+    // (GoBack/GoForward), or during the first iteration of a multi-step
+    // navigation (GoToOffsetWithSkipping).
+    //
+    // Also, we attribute the UKM to the page where the navigation started,
+    // instead of the intermediate ad entry, i.e., while the start page and ad
+    // entry are often the same during a "back" navigation, they usually differ
+    // during "forward" navigations or when ad entries are mixed with original
+    // skippable entries. This is to ease metrics reporting (i.e., it is more
+    // convenient to record a UKM for the active page), and this reporting scope
+    // is sufficient to collect data for future analysis.
+    //
+    // TODO(crbug.com/489138113): Investigate expanding the metrics API to allow
+    // consistent metrics logging for non-active, intermediate entries during
+    // multi-step navigations.
+    if (performing_navigation && from_index == GetCurrentEntryIndex()) {
+      RenderFrameHostImpl* main_frame_rfh_for_ukm =
+          frame_tree_->root()->current_frame_host();
+      auto* browser_client = GetContentClient()->browser();
+
+      blink::mojom::WebFeature feature_skipped =
+          (direction == Direction::kBack)
+              ? blink::mojom::WebFeature::kHistoryGoBackWouldSkipAd
+              : blink::mojom::WebFeature::kHistoryGoForwardWouldSkipAd;
+
+      blink::mojom::WebFeature feature_excluded =
+          (direction == Direction::kBack)
+              ? blink::mojom::WebFeature::
+                    kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion
+              : blink::mojom::WebFeature::
+                    kHistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion;
+
+      browser_client->LogWebFeatureForCurrentPage(
+          main_frame_rfh_for_ukm,
+          is_cross_origin_skip ? feature_skipped : feature_excluded);
+    }
+  };
+
+  // Handle the case where the ad-skipping logic exhausts all history entries.
+  if (!result_index_with_ad_skipping.has_value()) {
+    // Treat "skipping all entries" as a cross-origin skip for metrics purposes.
+    maybe_record_back_to_ad_metrics(/*is_cross_origin_skip=*/true);
+
+    if (base::FeatureList::IsEnabled(features::kBackToAdIntervention)) {
+      return std::nullopt;
+    }
+
+    return result_index;
+  }
+
+  // If the ad skipping logic found a different target than the original
+  // logic (including no target scenario), we evaluate whether to apply the
+  // intervention.
+  if (result_index_with_ad_skipping != result_index) {
+    // We use name `start_entry` (based on `from_index`) rather than
+    // `current_entry`, because this function can be called iteratively during
+    // multi-step navigations (`GoToOffsetWithSkipping`), where the `from_index`
+    // is not necessarily the page the user is currently on. By performing the
+    // cross-origin check iteratively at each step, we ensure that multi-step
+    // navigations are treated consistently as a series of single back/forward
+    // steps.
+    NavigationEntryImpl* start_entry = GetEntryAtIndex(from_index);
+    NavigationEntryImpl* target_entry =
+        GetEntryAtIndex(result_index_with_ad_skipping.value());
+
+    // Helper to securely get the origin, falling back to Origin::Create() if
+    // needed.
+    //
+    // We will only execute the skip if it takes the user to a cross-origin page
+    // relative to the page where the navigation started.
+    //
+    // Rationale for this 'same-origin exception': We limit the scope of the
+    // intervention to a known abuse (i.e., showing an ad on back-button press
+    // when the user tries to leave the origin). Regarding potential back-to-ad
+    // abuse when the user navigates within the same origin, we remain lenient
+    // for now. If same-origin back-button abuse arises in the future, we can
+    // revisit or remove this exception.
+    auto get_origin_for_intervention = [](NavigationEntryImpl* entry) {
+      FrameNavigationEntry* frame_entry = entry->root_node()->frame_entry.get();
+      if (frame_entry && frame_entry->committed_origin().has_value()) {
+        return frame_entry->committed_origin().value();
+      }
+
+      // Fallback to Origin::Create().
+      // Note: This is generally an unsafe pattern because Origin::Create() is
+      // lossy (e.g., two cross-origin about:blank documents would get treated
+      // as same-origin). It is acceptable not to be perfect here for the
+      // back-to-ad intervention because the worst-case scenario is a bypassed
+      // intervention, which is a safe failure mode.
+      return url::Origin::Create(entry->GetURL());
+    };
+
+    url::Origin start_origin = get_origin_for_intervention(start_entry);
+    url::Origin target_origin = get_origin_for_intervention(target_entry);
+
+    bool is_cross_origin_skip = !start_origin.IsSameOriginWith(target_origin);
+
+    maybe_record_back_to_ad_metrics(is_cross_origin_skip);
+
+    // Only execute the skip if it takes the user to a cross-origin page
+    // relative to the page where the navigation started, AND the feature is
+    // enabled.
+    if (is_cross_origin_skip &&
+        base::FeatureList::IsEnabled(features::kBackToAdIntervention)) {
+      return result_index_with_ad_skipping;
+    }
+  }
+
+  return result_index;
 }
 
 bool NavigationControllerImpl::CanGoForward() {
@@ -1294,13 +1455,15 @@ bool NavigationControllerImpl::CanGoToOffset(int offset) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
-  return GetIndexForOffsetWithSkipping(offset).has_value();
+  return GetIndexForOffsetWithSkipping(offset, /*performing_navigation=*/false)
+      .has_value();
 }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 std::optional<int> NavigationControllerImpl::GetIndexForOffsetWithSkipping(
-    int offset) {
+    int offset,
+    bool performing_navigation) {
   int current_scan_index = GetCurrentEntryIndex();
 
   if (offset == 0) {
@@ -1324,9 +1487,11 @@ std::optional<int> NavigationControllerImpl::GetIndexForOffsetWithSkipping(
     std::optional<int> next_index;
 
     if (offset < 0) {
-      next_index = GetIndexForGoBackWithSkipping(current_scan_index);
+      next_index = GetIndexForGoBackWithSkipping(current_scan_index,
+                                                 performing_navigation);
     } else {
-      next_index = GetIndexForGoForwardWithSkipping(current_scan_index);
+      next_index = GetIndexForGoForwardWithSkipping(current_scan_index,
+                                                    performing_navigation);
     }
 
     if (!next_index.has_value()) {
@@ -1346,7 +1511,8 @@ NavigationControllerImpl::GoBack() {
     return NavigationController::WeakNavigationHandleVector();
   }
 
-  const std::optional<int> target_index = GetIndexForGoBack();
+  const std::optional<int> target_index =
+      GetIndexForGoBack(/*performing_navigation=*/true);
   CHECK(target_index.has_value());
   return GoToIndex(*target_index);
 }
@@ -1360,7 +1526,8 @@ NavigationControllerImpl::GoForward() {
   // Note that at least one entry (the last one) will be non-skippable since
   // entries are marked skippable only when they add another entry because of
   // redirect or pushState.
-  const std::optional<int> target_index = GetIndexForGoForward();
+  const std::optional<int> target_index =
+      GetIndexForGoForward(/*performing_navigation=*/true);
   CHECK(target_index.has_value());
   return GoToIndex(*target_index);
 }
@@ -1453,7 +1620,8 @@ NavigationControllerImpl::GoToIndexAndReturnAllRequests(int index) {
 
 #if BUILDFLAG(IS_ANDROID)
 void NavigationControllerImpl::GoToOffsetWithSkipping(int offset) {
-  std::optional<int> target_index = GetIndexForOffsetWithSkipping(offset);
+  std::optional<int> target_index =
+      GetIndexForOffsetWithSkipping(offset, /*performing_navigation=*/true);
 
   // Note: This is actually reached in unit tests.
   if (!target_index.has_value()) {

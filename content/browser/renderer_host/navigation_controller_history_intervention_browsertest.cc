@@ -1403,22 +1403,40 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_FALSE(controller.GetEntryAtIndex(6)->should_skip_on_back_forward_ui());
 
   // Test backward helper.
-  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(6));
-  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(5));
-  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(4));
-  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(3));
-  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(2));
-  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(1));
-  EXPECT_FALSE(controller.GetIndexForGoBackWithSkipping(0).has_value());
+  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(
+                   6, /*performing_navigation=*/false));
+  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(
+                   5, /*performing_navigation=*/false));
+  EXPECT_EQ(3, controller.GetIndexForGoBackWithSkipping(
+                   4, /*performing_navigation=*/false));
+  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(
+                   3, /*performing_navigation=*/false));
+  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(
+                   2, /*performing_navigation=*/false));
+  EXPECT_EQ(0, controller.GetIndexForGoBackWithSkipping(
+                   1, /*performing_navigation=*/false));
+  EXPECT_FALSE(
+      controller
+          .GetIndexForGoBackWithSkipping(0, /*performing_navigation=*/false)
+          .has_value());
 
   // Test forward helper.
-  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(0));
-  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(1));
-  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(2));
-  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(3));
-  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(4));
-  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(5));
-  EXPECT_FALSE(controller.GetIndexForGoForwardWithSkipping(6).has_value());
+  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(
+                   0, /*performing_navigation=*/false));
+  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(
+                   1, /*performing_navigation=*/false));
+  EXPECT_EQ(3, controller.GetIndexForGoForwardWithSkipping(
+                   2, /*performing_navigation=*/false));
+  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(
+                   3, /*performing_navigation=*/false));
+  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(
+                   4, /*performing_navigation=*/false));
+  EXPECT_EQ(6, controller.GetIndexForGoForwardWithSkipping(
+                   5, /*performing_navigation=*/false));
+  EXPECT_FALSE(
+      controller
+          .GetIndexForGoForwardWithSkipping(6, /*performing_navigation=*/false)
+          .has_value());
 }
 
 // Tests that the navigation entry that is marked as skippable on back/forward

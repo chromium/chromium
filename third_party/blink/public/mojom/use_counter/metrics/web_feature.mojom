@@ -5137,6 +5137,10 @@ enum WebFeature {
   kSynthesizedMiddleClickArea = 5820,
   kSynthesizedMiddleClickSVGAnchor = 5821,
   kWebAuthenticationCspDisallowsRpId = 5822,
+  kHistoryGoBackWouldSkipAd = 5823,
+  kHistoryGoForwardWouldSkipAd = 5824,
+  kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion = 5825,
+  kHistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion = 5826,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

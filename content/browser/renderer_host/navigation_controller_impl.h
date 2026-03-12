@@ -299,10 +299,19 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Returns the index that would be used by `GoBack`. This respects skippable
   // entries. Returns nullopt if no unskippable back entry exists.
-  std::optional<int> GetIndexForGoBack();
+  //
+  // `performing_navigation` indicates if this calculation is part of an active
+  // navigation attempt, rather than a capability check. Most callers should
+  // leave it as false.
+  std::optional<int> GetIndexForGoBack(bool performing_navigation = false);
+
   // Returns the index that would be used by `GoForward`. This respects
   // skippable entries. Returns nullopt if no forward entry exists.
-  std::optional<int> GetIndexForGoForward();
+  //
+  // `performing_navigation` indicates if this calculation is part of an active
+  // navigation attempt, rather than a capability check. Most callers should
+  // leave it as false.
+  std::optional<int> GetIndexForGoForward(bool performing_navigation = false);
 
   // Return the entry with the given unique id, or null if not found.
   NavigationEntryImpl* GetEntryWithUniqueID(int nav_entry_id) const;
@@ -930,13 +939,35 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Scans backwards starting from `from_index` - 1 to find the first entry that
   // should not be skipped on the back/forward UI. Returns nullopt if no such
   // entry exists.
-  std::optional<int> GetIndexForGoBackWithSkipping(int from_index);
+  //
+  // `performing_navigation` indicates if this calculation is part of an active
+  // navigation attempt, rather than a capability check.
+  std::optional<int> GetIndexForGoBackWithSkipping(int from_index,
+                                                   bool performing_navigation);
 
   // Helper for `GetIndexForGoForward()` and `CanGoToOffsetWithSkipping()`.
   // Scans forwards starting from `from_index` + 1 to find the first entry that
   // should not be skipped on the back/forward UI. Returns nullopt if no such
   // entry exists.
-  std::optional<int> GetIndexForGoForwardWithSkipping(int from_index);
+  //
+  // `performing_navigation` indicates if this calculation is part of an active
+  // navigation attempt, rather than a capability check.
+  std::optional<int> GetIndexForGoForwardWithSkipping(
+      int from_index,
+      bool performing_navigation);
+
+  // Helper for `GetIndexForGoBackWithSkipping()` and
+  // `GetIndexForGoForwardWithSkipping()`. It encapsulates the logic for
+  // standard history intervention and the back-forward-to-ad intervention.
+  //
+  // `performing_navigation` indicates if this calculation is part of an active
+  // navigation attempt (e.g. GoBack), rather than a capability check (e.g.,
+  // CanGoBack). Ad intervention metrics (UKM) are only recorded when
+  // `performing_navigation` is true. Passing false prevents spurious metrics
+  // (e.g., when the UI layer polls for button enablement).
+  std::optional<int> GetIndexWithSkipping(int from_index,
+                                          Direction direction,
+                                          bool performing_navigation);
 
 #if BUILDFLAG(IS_ANDROID)
   // Helper used by CanGoToOffsetWithSkipping()` and GoToOffsetWithSkipping().
@@ -947,7 +978,11 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   //
   // Returns std::nullopt if the offset cannot be traversed (e.g., if there are
   // not enough non-skippable entries).
-  std::optional<int> GetIndexForOffsetWithSkipping(int offset);
+  //
+  // `performing_navigation` indicates if this calculation is part of an active
+  // navigation attempt, rather than a capability check.
+  std::optional<int> GetIndexForOffsetWithSkipping(int offset,
+                                                   bool performing_navigation);
 #endif
 
   // History Manipulation intervention:

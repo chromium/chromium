@@ -197,6 +197,12 @@ BASE_FEATURE(kBackForwardTransitionsNativePageSharedImage,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// If enabled, skips over ad-related entries that were silently inserted into
+// session history when navigating via back/forward buttons. This extends the
+// existing history manipulation intervention logic.
+// See https://crbug.com/375523824.
+BASE_FEATURE(kBackToAdIntervention, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, makes battery saver request heavy align wake ups.
 BASE_FEATURE(kBatterySaverModeAlignWakeUps, base::FEATURE_DISABLED_BY_DEFAULT);
 
