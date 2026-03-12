@@ -34,6 +34,7 @@ namespace {
 
 constexpr std::string_view kGwsVisibleStudyName = "GwsVisibleStudy";
 constexpr std::string_view kNonGwsVisibleStudyName = "NonGwsVisibleStudy";
+constexpr std::string_view kZeroWeightGroupStudyName = "ZeroWeightGroupStudy";
 
 // Returns a seed with the following:
 // * A 100-slot limited layer with a single layer member containing all slots.
@@ -104,10 +105,88 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
   return seed;
 }
 
-class LimitedEntropyRandomizationBrowserTest : public PlatformBrowserTest {
+// Returns a seed with the following:
+// * A 100-slot LOW layer with a single layer member containing all slots.
+// * A GWS-visible A/B study constrained to the LOW layer.
+// * An A/B study constrained to the LOW layer whose equally weighted A/B groups
+//   do not have experiment IDs and whose zero-weighted noop group has an
+//   experiment ID.
+//
+// Each study has 50% of clients in Group1 and 50% of clients in Group2. Because
+// the studies have permanent consistency, have the same group ordering for
+// their weighted groups, specify the same randomization seed, and have at least
+// one group with an experiment ID, they are randomized in the same way.
+// Therefore, the Group1 clients in one study are also the Group1 clients in the
+// other study. Ditto for Group2.
+VariationsSeed CreateTestSeedWithLowEntropyLayer() {
+  VariationsSeed seed;
+
+  auto* layer = seed.add_layers();
+  layer->set_id(123);
+  layer->set_num_slots(100);
+  layer->set_entropy_mode(Layer::LOW);
+
+  auto* layer_member = layer->add_members();
+  layer_member->set_id(1);
+  auto* slot_range = layer_member->add_slots();
+  slot_range->set_start(0);
+  slot_range->set_end(99);
+
+  Study base_study;
+  base_study.set_randomization_seed(500);
+  base_study.set_consistency(Study::PERMANENT);
+  base_study.set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  auto* filter = base_study.mutable_filter();
+  filter->add_channel(Study::CANARY);
+  filter->add_channel(Study::BETA);
+  filter->add_channel(Study::DEV);
+  filter->add_channel(Study::STABLE);
+  filter->add_channel(Study::UNKNOWN);
+  filter->add_platform(Study::PLATFORM_WINDOWS);
+  filter->add_platform(Study::PLATFORM_MAC);
+  filter->add_platform(Study::PLATFORM_LINUX);
+  filter->add_platform(Study::PLATFORM_CHROMEOS);
+  filter->add_platform(Study::PLATFORM_ANDROID);
+  auto* group = base_study.add_experiment();
+  group->set_name("Group1");
+  group->set_probability_weight(1);
+  group = base_study.add_experiment();
+  group->set_name("Group2");
+  group->set_probability_weight(1);
+  auto* layer_member_reference = base_study.mutable_layer();
+  layer_member_reference->set_layer_id(123);
+  layer_member_reference->add_layer_member_ids(1);
+
+  Study ab_study = base_study;
+  ab_study.set_name(kGwsVisibleStudyName);
+  ab_study.mutable_experiment(0)->set_google_web_experiment_id(44);
+  ab_study.mutable_experiment(1)->set_google_web_experiment_id(55);
+
+  Study ab_study_with_zero_weight_group = base_study;
+  ab_study_with_zero_weight_group.set_name(kZeroWeightGroupStudyName);
+  group = ab_study_with_zero_weight_group.add_experiment();
+  group->set_name("Noop");
+  group->set_probability_weight(0);
+  group->set_google_web_experiment_id(66);
+
+  *seed.add_study() = ab_study;
+  *seed.add_study() = ab_study_with_zero_weight_group;
+
+  return seed;
+}
+
+struct RandomizationTestParams {
+  VariationsSeed seed;
+  std::string_view study_name1;
+  std::string_view study_name2;
+};
+
+class LayerConstrainedStudyGroupRandomizationBrowserTest
+    : public PlatformBrowserTest,
+      public ::testing::WithParamInterface<RandomizationTestParams> {
  public:
-  LimitedEntropyRandomizationBrowserTest() = default;
-  ~LimitedEntropyRandomizationBrowserTest() override = default;
+  LayerConstrainedStudyGroupRandomizationBrowserTest() = default;
+  ~LayerConstrainedStudyGroupRandomizationBrowserTest() override = default;
 
  protected:
   // BrowserTestBase:
@@ -125,8 +204,7 @@ class LimitedEntropyRandomizationBrowserTest : public PlatformBrowserTest {
     const base::FilePath local_state_path =
         user_data_dir.Append(chrome::kLocalStateFilename);
 
-    std::string serialized_seed =
-        CreateTestSeedWithLimitedEntropyLayer().SerializeAsString();
+    std::string serialized_seed = GetParam().seed.SerializeAsString();
     std::string compressed_seed;
     compression::GzipCompress(serialized_seed, &compressed_seed);
 
@@ -144,35 +222,45 @@ class LimitedEntropyRandomizationBrowserTest : public PlatformBrowserTest {
   PrefService* local_state() { return g_browser_process->local_state(); }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LayerConstrainedStudyGroupRandomizationBrowserTest,
+    ::testing::Values(
+        RandomizationTestParams{.seed = CreateTestSeedWithLimitedEntropyLayer(),
+                                .study_name1 = kGwsVisibleStudyName,
+                                .study_name2 = kNonGwsVisibleStudyName},
+        RandomizationTestParams{.seed = CreateTestSeedWithLowEntropyLayer(),
+                                .study_name1 = kGwsVisibleStudyName,
+                                .study_name2 = kZeroWeightGroupStudyName}));
+
 // Verifies the following:
-// * The client generates a limited entropy randomization source value.
-// * FieldTrials are created from the limited-layer-constrained studies in the
-//   seed produced by `CreateTestSeedWithLimitedEntropyLayer()`.
-// * Randomization is the same for limited-layer-constrained studies that are
-//   identical except for (A) unused study names (unused because the studies
-//   set randomization seed) and (B) the presence or absence of Google
-//   experiment IDs in their respective groups.
-IN_PROC_BROWSER_TEST_F(LimitedEntropyRandomizationBrowserTest,
-                       UseLimitedEntropyRandomization) {
+// * The client generates a low entropy source value and a limited entropy
+//   randomization source value.
+// * FieldTrials are created from the layer-constrained studies in the seed.
+// * Randomization is the same for the two layer-constrained studies.
+IN_PROC_BROWSER_TEST_P(LayerConstrainedStudyGroupRandomizationBrowserTest,
+                       Randomize) {
+  EXPECT_FALSE(local_state()
+                   ->FindPreference(metrics::prefs::kMetricsLowEntropySource)
+                   ->IsDefaultValue());
   EXPECT_FALSE(
       local_state()
           ->FindPreference(
               metrics::prefs::kMetricsLimitedEntropyRandomizationSource)
           ->IsDefaultValue());
-  EXPECT_TRUE(base::FieldTrialList::TrialExists(kGwsVisibleStudyName));
-  EXPECT_TRUE(base::FieldTrialList::TrialExists(kNonGwsVisibleStudyName));
+  EXPECT_TRUE(base::FieldTrialList::TrialExists(GetParam().study_name1));
+  EXPECT_TRUE(base::FieldTrialList::TrialExists(GetParam().study_name2));
 
-  // As a reminder, `CreateTestSeedWithLimitedEntropyLayer()` returns a seed
-  // with two two-arm studies whose groups have the same names, order, and
-  // weight. The expectation is that all clients in the first group of one study
-  // are the same clients in the first group of the other study. Ditto for the
-  // second group.
+  // As a reminder, the seeds have two studies whose two weighted groups have
+  // the same names, order, and weight. The expectation is that all clients in
+  // the first group of one study are the same clients in the first group of the
+  // other study. Ditto for the second group.
   //
   // Verify that the studies were randomized in the same way for this client by
   // checking that the client is in either the first group of each study or the
   // second.
-  EXPECT_EQ(base::FieldTrialList::FindFullName(kGwsVisibleStudyName),
-            base::FieldTrialList::FindFullName(kNonGwsVisibleStudyName));
+  EXPECT_EQ(base::FieldTrialList::FindFullName(GetParam().study_name1),
+            base::FieldTrialList::FindFullName(GetParam().study_name2));
 }
 
 }  // namespace
