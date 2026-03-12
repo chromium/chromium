@@ -97,7 +97,6 @@ source_set("tab_helper") {
     ":bwg_service",
     ":bwg_service_factory",
     ":page_context",
-    ":snapshot_utils",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
     "//components/google/core/common",
@@ -122,7 +121,6 @@ source_set("tab_helper") {
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/snapshots/model",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",
     "//ios/web/public",
     "//mojo/public/cpp/bindings",
@@ -193,24 +191,12 @@ source_set("page_context") {
   ]
 }
 
-source_set("snapshot_utils") {
-  sources = [
-    "bwg_snapshot_utils.h",
-    "bwg_snapshot_utils.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/ui/util",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
     "bwg_link_opening_handler_unittest.mm",
     "bwg_service_unittest.mm",
     "bwg_session_handler_unittest.mm",
-    "bwg_snapshot_utils_unittest.mm",
     "bwg_tab_helper_unittest.mm",
     "gemini_browser_agent_unittest.mm",
     "gemini_camera_handler_unittest.mm",
@@ -220,7 +206,6 @@ source_set("unit_tests") {
     ":bwg_service",
     ":bwg_service_factory",
     ":model",
-    ":snapshot_utils",
     ":tab_helper",
     "//base/test:test_support",
     "//components/favicon/core",

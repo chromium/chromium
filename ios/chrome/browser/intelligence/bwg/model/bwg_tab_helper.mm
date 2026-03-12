@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_snapshot_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -50,7 +49,6 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -199,12 +197,6 @@ void BwgTabHelper::SetBwgUiShowing(bool showing) {
   if (is_bwg_ui_showing_) {
     is_bwg_session_active_in_background_ = false;
   }
-
-  // UI was hidden but the session is not active, so update the snapshot to
-  // remove the overlay from it.
-  if (!is_bwg_ui_showing_ && !is_bwg_session_active_in_background_) {
-    cached_snapshot_ = nil;
-  }
 }
 
 void BwgTabHelper::SetIsFirstRun(bool is_first_run) {
@@ -282,7 +274,6 @@ bool BwgTabHelper::GetIsBwgSessionActiveInBackground() {
 void BwgTabHelper::DeactivateBWGSession() {
   is_bwg_session_active_in_background_ = false;
   is_bwg_ui_showing_ = false;
-  cached_snapshot_ = nil;
 }
 
 bool BwgTabHelper::IsLastInteractionUrlDifferent() {
@@ -314,12 +305,6 @@ void BwgTabHelper::DeleteBwgSessionInStorage() {
 }
 
 void BwgTabHelper::PrepareBwgFreBackgrounding() {
-  if (!IsGeminiCopresenceEnabled()) {
-    // TODO(crbug.com/486134176) Clean up snapshot logic to rely on the default
-    // snapshot mechanism once copresence is launched.
-    cached_snapshot_ =
-        bwg_snapshot_utils::GetCroppedFullscreenSnapshot(web_state_->GetView());
-  }
   is_bwg_session_active_in_background_ = true;
 }
 
@@ -383,7 +368,6 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
               [[GeminiStartupState alloc]
                   initWithEntryPoint:gemini::EntryPoint::TabReopen]];
     }
-    cached_snapshot_ = nil;
   }
 
   if (IsGeminiCopresenceEnabled()) {
@@ -396,22 +380,12 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
 
 void BwgTabHelper::WasHidden(web::WebState* web_state) {
   if (is_bwg_ui_showing_) {
-    // Only capture the window snapshot if Copresence is disabled. This ensures
-    // Copresence uses the default snapshot mechanism to avoid UI corruption.
-    if (!IsGeminiCopresenceEnabled()) {
-      // TODO(crbug.com/486134176) Clean up snaoshot logic to rely on the
-      // default snapshot mechanism once copresence is launched.
-      cached_snapshot_ = bwg_snapshot_utils::GetCroppedFullscreenSnapshot(
-          web_state_->GetView());
-    }
     is_bwg_session_active_in_background_ = true;
 
     if (!IsGeminiCopresenceEnabled()) {
       [bwg_commands_handler_ dismissGeminiFlowWithCompletion:nil];
     }
   }
-
-  UpdateWebStateSnapshotInStorage();
 
   if (!IsGeminiCopresenceEnabled()) {
     return;
@@ -640,21 +614,6 @@ void BwgTabHelper::CleanupSessionFromPrefs() {
   PrefService* pref_service =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState())->GetPrefs();
   pref_service->ClearPref(prefs::kGeminiConversationId);
-}
-
-void BwgTabHelper::UpdateWebStateSnapshotInStorage() {
-  if (!cached_snapshot_) {
-    return;
-  }
-
-  SnapshotTabHelper* snapshot_tab_helper =
-      SnapshotTabHelper::FromWebState(web_state_);
-
-  if (!snapshot_tab_helper) {
-    return;
-  }
-
-  snapshot_tab_helper->UpdateSnapshotStorageWithImage(cached_snapshot_);
 }
 
 void BwgTabHelper::OnCanApplyContextualCueingDecision(
