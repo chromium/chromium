@@ -39,11 +39,6 @@ enum class NTPMIAEntrypointVariation {
 
 #pragma mark - Feature declarations
 
-// Feature flag to fix the NTP view hierarchy if it is broken before applying
-// constraints.
-// TODO(crbug.com/40799579): Remove this when it is fixed.
-BASE_DECLARE_FEATURE(kEnableNTPViewHierarchyRepair);
-
 // Flag to modify the feed header through the server. Enabling this feature on
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kFeedHeaderSettings);
@@ -93,9 +88,6 @@ extern const char kFeedSettingDiscoverReferrerParameter[];
 extern const char kFeedSwipeInProductHelpArmParam[];
 
 #pragma mark - Helpers
-
-// Whether the NTP view hierarchy repair is enabled.
-bool IsNTPViewHierarchyRepairEnabled();
 
 // Whether the sync promo should be shown on top of the feed.
 bool IsDiscoverFeedTopSyncPromoEnabled();

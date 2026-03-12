@@ -101,12 +101,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "child_account_service_factory_unittest.mm",
+    "family_link_settings_service_factory_unittest.mm",
     "ios_web_content_handler_impl_unittest.mm",
     "list_family_members_service_factory_unittest.mm",
     "parent_access_tab_helper_unittest.mm",
     "supervised_user_metrics_service_factory_unittest.mm",
     "supervised_user_service_factory_unittest.mm",
-    "family_link_settings_service_factory_unittest.mm",
     "supervised_user_url_filter_tab_helper_unittest.mm",
   ]
   deps = [
@@ -157,7 +157,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
     "//ios/chrome/browser/content_suggestions/public:constants",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
-    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_earl_grey_matchers",
     "//ios/chrome/browser/policy/model:policy_util",

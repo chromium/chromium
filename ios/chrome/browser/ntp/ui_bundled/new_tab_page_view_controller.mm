@@ -2012,10 +2012,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 - (UIView*)containerView {
   UIView* containerView;
   if (self.feedVisible) {
-    // TODO(crbug.com/40799579): Remove this when the bug is fixed.
-    if (IsNTPViewHierarchyRepairEnabled()) {
-      [self verifyNTPViewHierarchy];
-    }
+    [self verifyNTPViewHierarchy];
     containerView = self.feedWrapperViewController.feedViewController.view;
   } else {
     containerView = self.view;

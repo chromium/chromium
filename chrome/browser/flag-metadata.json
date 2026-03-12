@@ -7064,11 +7064,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ntp-view-hierarchy-repair",
-    "owners": [ "adamta@chromium.org", "sczs@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "ntp-wallpaper-search-button",
     "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
     "expiry_milestone": 130

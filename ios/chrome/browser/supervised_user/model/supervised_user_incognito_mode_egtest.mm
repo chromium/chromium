@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -57,7 +56,6 @@ id<GREYMatcher> SupervisedIncognitoMessage() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kEnableNTPViewHierarchyRepair);
   if ([self isRunningTest:@selector(testIncognitoTabsDestroyedOnSignin)]) {
     config.features_enabled.push_back(kTabSwitcherOverflowMenu);
   }

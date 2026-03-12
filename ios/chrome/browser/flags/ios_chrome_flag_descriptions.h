@@ -714,9 +714,6 @@ extern const char kNTPBackgroundCustomizationDescription[];
 extern const char kNTPMIAEntrypointName[];
 extern const char kNTPMIAEntrypointDescription[];
 
-extern const char kNTPViewHierarchyRepairName[];
-extern const char kNTPViewHierarchyRepairDescription[];
-
 extern const char kNativeFindInPageName[];
 extern const char kNativeFindInPageDescription[];
 

@@ -16,10 +16,6 @@
 
 #pragma mark - Feature declarations
 
-BASE_FEATURE(kEnableNTPViewHierarchyRepair,
-             "NTPViewHierarchyRepair",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOverrideFeedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedSwipeInProductHelp, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -56,10 +52,6 @@ BASE_FEATURE_PARAM(int,
                    static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE));
 
 #pragma mark - Helpers
-
-bool IsNTPViewHierarchyRepairEnabled() {
-  return base::FeatureList::IsEnabled(kEnableNTPViewHierarchyRepair);
-}
 
 bool IsDiscoverFeedTopSyncPromoEnabled() {
   // Promo should not be shown on FRE, or for users in Great Britain for AADC
