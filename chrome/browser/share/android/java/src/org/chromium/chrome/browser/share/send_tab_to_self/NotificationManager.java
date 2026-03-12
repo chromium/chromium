@@ -72,7 +72,8 @@ public class NotificationManager {
                         .setClass(context, ChromeLauncherActivity.class)
                         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         .putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName())
-                        .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+                        .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true)
+                        .putExtra(IntentHandler.EXTRA_FROM_SEND_TAB_TO_SELF, true);
 
         if (scrollToTextFragment != null
                 && ChromeFeatureList.isEnabled(

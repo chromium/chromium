@@ -5,29 +5,46 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/time/time.h"
+#include "chrome/browser/send_tab_to_self/send_tab_to_self_scroll_observer.h"
 #include "components/send_tab_to_self/metrics_util.h"
+#include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/MetricsRecorder_jni.h"
 
 namespace send_tab_to_self {
 
-// Static free function declared and called directly from Java.
 static void JNI_MetricsRecorder_RecordNotificationShown(JNIEnv* env) {
   RecordNotificationShown();
 }
 
-// Static free function declared and called directly from Java.
+static void JNI_MetricsRecorder_AttachScrollObserver(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& j_web_contents,
+    jboolean has_scroll_position) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  if (web_contents) {
+    SendTabToSelfScrollObserver::CreateForWebContents(web_contents,
+                                                      has_scroll_position);
+  }
+}
+
+static void JNI_MetricsRecorder_RecordHasScrollPositionOnOpened(
+    JNIEnv* env,
+    jboolean has_scroll_position) {
+  RecordHasScrollPositionOnOpened(has_scroll_position);
+}
+
 static void JNI_MetricsRecorder_RecordNotificationOpened(JNIEnv* env) {
   RecordNotificationOpened();
 }
 
-// Static free function declared and called directly from Java.
 static void JNI_MetricsRecorder_RecordNotificationDismissed(JNIEnv* env) {
   RecordNotificationDismissed();
 }
 
-// Static free function declared and called directly from Java.
 static void JNI_MetricsRecorder_RecordNotificationTimedOut(JNIEnv* env) {
   RecordNotificationTimedOut();
 }

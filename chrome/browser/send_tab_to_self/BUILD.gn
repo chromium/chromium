@@ -7,6 +7,7 @@ source_set("send_tab_to_self") {
     "receiving_ui_handler.h",
     "send_tab_to_self_client_service.h",
     "send_tab_to_self_client_service_factory.h",
+    "send_tab_to_self_scroll_observer.h",
     "send_tab_to_self_util.h",
   ]
   public_deps = [
@@ -19,10 +20,7 @@ source_set("send_tab_to_self") {
   ]
 
   if (!is_android) {
-    sources += [
-      "desktop_notification_handler.h",
-      "send_tab_to_self_scroll_observer.h",
-    ]
+    sources += [ "desktop_notification_handler.h" ]
   } else {
     sources += [ "../android/send_tab_to_self/android_notification_handler.h" ]
     public_deps += [ "//components/messages/android" ]
@@ -33,6 +31,7 @@ source_set("impl") {
   sources = [
     "send_tab_to_self_client_service.cc",
     "send_tab_to_self_client_service_factory.cc",
+    "send_tab_to_self_scroll_observer.cc",
     "send_tab_to_self_util.cc",
   ]
   deps = [
@@ -48,10 +47,7 @@ source_set("impl") {
   ]
 
   if (!is_android) {
-    sources += [
-      "desktop_notification_handler.cc",
-      "send_tab_to_self_scroll_observer.cc",
-    ]
+    sources += [ "desktop_notification_handler.cc" ]
     deps += [
       "//chrome/browser/ui",
       "//chrome/browser/ui/send_tab_to_self",

@@ -234,6 +234,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.chrome.browser.share.send_tab_to_self.MetricsRecorder;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
@@ -2890,7 +2891,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             // Hides the overview page to ensure proper layout change signals are sent.
             hideOverview(/* animate= */ false);
         }
+        maybeAttachSendTabToSelfScrollObserver(resultTab, intent, loadUrlParams);
+
         return resultTab;
+    }
+
+    private void maybeAttachSendTabToSelfScrollObserver(
+            @Nullable Tab resultTab, Intent intent, LoadUrlParams loadUrlParams) {
+        if (resultTab != null
+                && IntentUtils.safeGetBooleanExtra(
+                        intent, IntentHandler.EXTRA_FROM_SEND_TAB_TO_SELF, false)
+                && IntentUtils.isTrustedIntentFromSelf(intent)) {
+            MetricsRecorder.attachScrollObserverToTab(
+                    resultTab, loadUrlParams.getInternalScrollToTextFragment());
+        }
     }
 
     private boolean isProbablyFromChrome(Intent intent, String externalAppId) {

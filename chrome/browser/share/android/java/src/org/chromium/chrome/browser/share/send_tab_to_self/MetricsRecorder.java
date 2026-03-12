@@ -4,22 +4,73 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
+import android.text.TextUtils;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.WebContents;
 
-/** Class that captures all the metrics needed for Send Tab To Self on Android. */
+/**
+ * Class that captures all the metrics needed for Send Tab To Self on Android.
+ *
+ * <p>TODO(crbug.com/482925620): Rename this to SendTabToSelfMetricsRecorder.
+ */
 @JNINamespace("send_tab_to_self")
 @NullMarked
-class MetricsRecorder {
+public class MetricsRecorder {
     public static void recordCrossDeviceTabJourney() {
         RecordUserAction.record("MobileCrossDeviceTabJourney");
     }
 
     public static void recordNotificationShown() {
         MetricsRecorderJni.get().recordNotificationShown();
+    }
+
+    /**
+     * Attaches a scroll observer to the given tab to track scroll volume.
+     *
+     * @param tab The tab to attach the observer to.
+     * @param scrollToTextFragment The scroll-to-text fragment, if any.
+     */
+    public static void attachScrollObserverToTab(Tab tab, @Nullable String scrollToTextFragment) {
+        boolean hasScrollPosition = !TextUtils.isEmpty(scrollToTextFragment);
+        recordHasScrollPositionOnOpened(hasScrollPosition);
+        if (tab.getWebContents() != null) {
+            attachScrollObserver(tab.getWebContents(), hasScrollPosition);
+            return;
+        }
+
+        // If the web contents are not available yet, attach an observer to wait for the web
+        // contents to be available.
+        tab.addObserver(
+                new EmptyTabObserver() {
+                    @Override
+                    public void onContentChanged(Tab t) {
+                        if (t.getWebContents() != null) {
+                            attachScrollObserver(t.getWebContents(), hasScrollPosition);
+                            t.removeObserver(this);
+                        }
+                    }
+
+                    @Override
+                    public void onDestroyed(Tab t) {
+                        t.removeObserver(this);
+                    }
+                });
+    }
+
+    private static void attachScrollObserver(WebContents webContents, boolean hasScrollPosition) {
+        MetricsRecorderJni.get().attachScrollObserver(webContents, hasScrollPosition);
+    }
+
+    public static void recordHasScrollPositionOnOpened(boolean hasScrollPosition) {
+        MetricsRecorderJni.get().recordHasScrollPositionOnOpened(hasScrollPosition);
     }
 
     public static void recordNotificationOpened() {
@@ -51,6 +102,10 @@ class MetricsRecorder {
     @NativeMethods
     interface Natives {
         void recordNotificationShown();
+
+        void attachScrollObserver(WebContents webContents, boolean hasScrollPosition);
+
+        void recordHasScrollPositionOnOpened(boolean hasScrollPosition);
 
         void recordNotificationOpened();
 

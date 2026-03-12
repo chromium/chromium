@@ -418,9 +418,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the total vertical scroll volume (sum of absolute deltas) by the
     user after a Send Tab To Self tab is opened. The volume is recorded when the
-    tab is closed or navigated away. {RestorationState} Recorded for desktop.
-    The programmatic scrolling itself (from scroll restoration) is not included
-    in the count.
+    tab is closed or navigated away. {RestorationState} Recorded for Desktop and
+    Android. The programmatic scrolling itself (from scroll restoration) is not
+    included in the count.
   </summary>
   <token key="RestorationState">
     <variant name=".WithoutRestoration"

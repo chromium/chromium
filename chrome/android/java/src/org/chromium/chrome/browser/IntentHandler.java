@@ -124,6 +124,10 @@ public class IntentHandler {
     public static final String EXTRA_PAGE_TRANSITION_BOOKMARK_ID =
             "com.google.chrome.transition_bookmark_id";
 
+    /** An extra to indicate that the intent was created by Send Tab To Self. */
+    public static final String EXTRA_FROM_SEND_TAB_TO_SELF =
+            "com.google.chrome.from_send_tab_to_self";
+
     /** An extra to specify a text fragment selector to scroll to without highlight. */
     public static final String EXTRA_SCROLL_TO_TEXT_FRAGMENT =
             "com.google.chrome.scroll_to_text_fragment";
