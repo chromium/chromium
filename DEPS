@@ -1105,7 +1105,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/testing/meet-effects-videos',
-        'version': 'FSo3cmbzDsTKY2z_P-d3yBMgtaXIKzHpW4q6w4z4HpYC',
+        'version': 'I5ME8r-BP_A2lRn-c5E-9POZkrJwGS8BNnRdREhYbs8C',
       }
     ],
     'dep_type': 'cipd',
@@ -1116,10 +1116,10 @@ deps = {
     'condition': 'non_git_source',
     'objects': [
       {
-        'object_name': 'meet-gpu-tests/878701785.tar.gz',
-        'sha256sum': 'e26d6dd05ec1e0a90565b2f9092bae011113ebd19ab3f9ca3ef9508b50e21279',
-        'size_bytes': 275010064,
-        'generation': 1772699205415252,
+        'object_name': 'meet-gpu-tests/881777073.tar.gz',
+        'sha256sum': '0923298b6cb4b9b7782c8f135e6e84379c98f1bea09c021b5cd5a5ab1cb6bcd7',
+        'size_bytes': 275001872,
+        'generation': 1773235587422904,
       },
     ],
   },
