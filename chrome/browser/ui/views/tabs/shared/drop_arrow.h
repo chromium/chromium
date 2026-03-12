@@ -45,9 +45,12 @@ class DropArrow : public views::WidgetObserver {
   DropArrow& operator=(const DropArrow&) = delete;
   ~DropArrow() override;
 
-  // Returns the size of the arrow image. Height represents the length of the
-  // arrow in the direction it points and width is the opposite dimension.
-  static gfx::Size GetSize();
+  // Represents the size of the arrow image, excluding the drop shadow.
+  static constexpr int kSize = 20;
+
+  // Potentially adjusts `display_bounds` based on platform-specific
+  // requirements.
+  static void MaybeAdjustDisplayBounds(gfx::Rect& display_bounds);
 
   void SetIndex(const BrowserRootView::DropIndex& index);
   BrowserRootView::DropIndex index() const { return index_; }

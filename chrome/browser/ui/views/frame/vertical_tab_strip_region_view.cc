@@ -919,22 +919,19 @@ gfx::Rect VerticalTabStripRegionView::GetLinkDropBounds(
 
   // If the rect doesn't fit on the monitor, push the arrow to the other side.
   display::Screen* screen = display::Screen::Get();
-  display::Display display =
-      screen->GetDisplayNearestView(GetWidget()->GetNativeView());
+  gfx::Rect display_bounds =
+      screen->GetDisplayNearestView(GetWidget()->GetNativeView()).bounds();
 
-  if (!display.bounds().Contains(drop_bounds)) {
-    // Only left/right arrows should be outside the display bounds.
-    CHECK_NE(*direction, DropArrow::Direction::kDown);
+  DropArrow::MaybeAdjustDisplayBounds(display_bounds);
 
-    const gfx::Size drop_arrow_size = DropArrow::GetSize();
-    if (base::i18n::IsRTL()) {
+  if (!display_bounds.Contains(drop_bounds)) {
+    if (base::i18n::IsRTL() && *direction == DropArrow::Direction::kLeft) {
       *direction = DropArrow::Direction::kRight;
-      drop_bounds.Offset(
-          -GetBoundsInScreen().width() - drop_arrow_size.height(), 0);
-    } else {
+      drop_bounds.Offset(-GetBoundsInScreen().width() - DropArrow::kSize, 0);
+    } else if (base::i18n::IsRTL() &&
+               *direction == DropArrow::Direction::kRight) {
       *direction = DropArrow::Direction::kLeft;
-      drop_bounds.Offset(GetBoundsInScreen().width() + drop_arrow_size.height(),
-                         0);
+      drop_bounds.Offset(GetBoundsInScreen().width() + DropArrow::kSize, 0);
     }
   }
 
@@ -1016,18 +1013,15 @@ gfx::Point VerticalTabStripRegionView::GetLinkDropArrowPosition(
 gfx::Rect VerticalTabStripRegionView::GetLinkDropBoundsFromPosition(
     gfx::Point position,
     DropArrow::Direction direction) {
-  gfx::Size drop_arrow_size = DropArrow::GetSize();
   if (direction == DropArrow::Direction::kRight) {
-    drop_arrow_size.Transpose();
-    position.Offset(-drop_arrow_size.width(), -drop_arrow_size.height() / 2);
+    position.Offset(-DropArrow::kSize, -DropArrow::kSize / 2);
   } else if (direction == DropArrow::Direction::kLeft) {
-    drop_arrow_size.Transpose();
-    position.Offset(drop_arrow_size.width(), -drop_arrow_size.height() / 2);
+    position.Offset(DropArrow::kSize, -DropArrow::kSize / 2);
   } else {
-    position.Offset(-drop_arrow_size.width() / 2, -drop_arrow_size.height());
+    position.Offset(-DropArrow::kSize / 2, -DropArrow::kSize);
   }
 
-  return gfx::Rect(position, drop_arrow_size);
+  return gfx::Rect(position, gfx::Size(DropArrow::kSize, DropArrow::kSize));
 }
 
 BEGIN_METADATA(VerticalTabStripRegionView)

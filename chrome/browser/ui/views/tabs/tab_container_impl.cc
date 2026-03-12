@@ -41,6 +41,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/mouse_watcher_view_host.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/view_utils.h"
@@ -1642,18 +1643,19 @@ gfx::Rect TabContainerImpl::GetDropBounds(
   center_x = GetMirroredXInView(center_x);
 
   // Determine the screen bounds.
-  const gfx::Size drop_arrow_size = DropArrow::GetSize();
-  gfx::Point drop_loc(center_x - drop_arrow_size.width() / 2,
-                      -drop_arrow_size.height());
+  gfx::Point drop_loc(center_x - DropArrow::kSize / 2, -DropArrow::kSize);
   ConvertPointToScreen(this, &drop_loc);
-  gfx::Rect drop_bounds(drop_loc.x(), drop_loc.y(), drop_arrow_size.width(),
-                        drop_arrow_size.height());
+  gfx::Rect drop_bounds(drop_loc.x(), drop_loc.y(), DropArrow::kSize,
+                        DropArrow::kSize);
 
   // If the rect doesn't fit on the monitor, push the arrow to the bottom.
   display::Screen* screen = display::Screen::Get();
-  display::Display display =
-      screen->GetDisplayNearestView(GetWidget()->GetNativeView());
-  const bool is_beneath = !display.bounds().Contains(drop_bounds);
+  gfx::Rect display_bounds =
+      screen->GetDisplayNearestView(GetWidget()->GetNativeView()).bounds();
+
+  DropArrow::MaybeAdjustDisplayBounds(display_bounds);
+
+  const bool is_beneath = drop_bounds.y() < display_bounds.y();
   *direction =
       is_beneath ? DropArrow::Direction::kUp : DropArrow::Direction::kDown;
   if (is_beneath) {

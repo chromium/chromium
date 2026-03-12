@@ -7,25 +7,36 @@
 #include <utility>
 
 #include "base/notreached.h"
-#include "chrome/grit/theme_resources.h"
+#include "build/build_config.h"
+#include "chrome/app/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/shadow_value.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
 
-int GetDropArrowImageResourceId(DropArrow::Direction direction) {
+gfx::ShadowValues GetShadowValues() {
+  constexpr int kShadowBlur = 3;
+  return {gfx::ShadowValue(gfx::Vector2d(0, 0), kShadowBlur,
+                           SkColorSetA(SK_ColorBLACK, 0xFF))};
+}
+
+const gfx::VectorIcon& GetDropArrowIcon(DropArrow::Direction direction) {
   switch (direction) {
     case DropArrow::Direction::kUp:
-      return IDR_TAB_DROP_UP;
+      return kArrowUpwardIcon;
     case DropArrow::Direction::kDown:
-      return IDR_TAB_DROP_DOWN;
+      return kArrowDownwardIcon;
     case DropArrow::Direction::kLeft:
-      return IDR_TAB_DROP_LEFT;
+      return kArrowBackIcon;
     case DropArrow::Direction::kRight:
-      return IDR_TAB_DROP_RIGHT;
+      return kArrowForwardIcon;
     default:
       NOTREACHED();
   }
@@ -44,7 +55,7 @@ DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = false;
-  params.bounds = gfx::Rect(GetSize());
+  params.bounds = gfx::Rect(kSize, kSize);
   params.context = context;
   arrow_widget_->Init(std::move(params));
   arrow_view_ =
@@ -57,27 +68,36 @@ DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
 }
 
 DropArrow::~DropArrow() {
-  // Close eventually deletes the window, which deletes arrow_view too.
+  // Close eventually deletes the window, which deletes arrow_view_ too.
   if (arrow_widget_) {
     arrow_widget_->Close();
   }
 }
 
 // static
-gfx::Size DropArrow::GetSize() {
-  static const gfx::Size size = []() {
-    // Direction doesn't matter, both images are the same size.
-    const gfx::ImageSkia* drop_image =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            GetDropArrowImageResourceId(Direction::kDown));
-    return gfx::Size(drop_image->width(), drop_image->height());
-  }();
-  return size;
+void DropArrow::MaybeAdjustDisplayBounds(gfx::Rect& display_bounds) {
+#if BUILDFLAG(IS_LINUX)
+  // On Linux, `GetBoundsInScreen` returns coordinates relative to the browser
+  // window (plus shadow elevation outsets) rather than the screen. To handle
+  // this, we adjust the display bounds by the difference between the drop arrow
+  // size and the window elevation. Note that this only works on the first
+  // display.
+  const int elevation = views::LayoutProvider::Get()->GetShadowElevationMetric(
+      views::Emphasis::kHigh);
+  display_bounds.Outset(DropArrow::kSize - elevation);
+#endif
 }
 
 void DropArrow::SetIndex(const BrowserRootView::DropIndex& index) {
   index_ = index;
   UpdateBounds();
+}
+
+void DropArrow::OnWidgetDestroying(views::Widget* widget) {
+  DCHECK(scoped_observation_.IsObservingSource(arrow_widget_.get()));
+  scoped_observation_.Reset();
+  arrow_view_ = nullptr;
+  arrow_widget_ = nullptr;
 }
 
 void DropArrow::UpdateBounds() {
@@ -86,17 +106,13 @@ void DropArrow::UpdateBounds() {
 
   if (!direction_.has_value() || direction_ != direction) {
     direction_ = direction;
-    arrow_view_->SetImage(ui::ImageModel::FromResourceId(
-        GetDropArrowImageResourceId(*direction_)));
+    gfx::ImageSkia icon = gfx::CreateVectorIcon(GetDropArrowIcon(*direction_),
+                                                kSize, SK_ColorWHITE);
+    arrow_view_->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateImageWithDropShadow(
+            icon, GetShadowValues())));
     arrow_view_->SchedulePaint();
   }
 
   arrow_widget_->SetBounds(drop_bounds);
-}
-
-void DropArrow::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(scoped_observation_.IsObservingSource(arrow_widget_.get()));
-  scoped_observation_.Reset();
-  arrow_view_ = nullptr;
-  arrow_widget_ = nullptr;
 }
