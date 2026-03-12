@@ -999,6 +999,8 @@ void Tab::SetData(tabs::TabData data) {
     TooltipTextChanged();
   }
 
+  SetHoverCardDataFrom(data_);
+
   DeprecatedLayoutImmediately();
   SchedulePaint();
 }
