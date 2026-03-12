@@ -426,29 +426,17 @@ extern const char kGeminiDynamicSettingsDescription[];
 extern const char kGeminiFloatyAllPagesName[];
 extern const char kGeminiFloatyAllPagesDescription[];
 
-extern const char kGeminiFullChatHistoryName[];
-extern const char kGeminiFullChatHistoryDescription[];
-
 extern const char kGeminiImageRemixToolName[];
 extern const char kGeminiImageRemixToolDescription[];
 
-extern const char kGeminiLatencyImprovementName[];
-extern const char kGeminiLatencyImprovementDescription[];
-
 extern const char kGeminiLiveName[];
 extern const char kGeminiLiveDescription[];
-
-extern const char kGeminiLoadingStateRedesignName[];
-extern const char kGeminiLoadingStateRedesignDescription[];
 
 extern const char kGeminiMapsRichUIName[];
 extern const char kGeminiMapsRichUIDescription[];
 
 extern const char kGeminiNavigationPromoName[];
 extern const char kGeminiNavigationPromoDescription[];
-
-extern const char kGeminiPersonalizationName[];
-extern const char kGeminiPersonalizationDescription[];
 
 extern const char kGeminiRefactoredFREName[];
 extern const char kGeminiRefactoredFREDescription[];

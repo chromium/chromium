@@ -218,18 +218,6 @@ bool IsZeroStateSuggestionsAIHubEnabled();
 // overlay.
 bool IsZeroStateSuggestionsAskGeminiEnabled();
 
-// Feature flag for showing full chat history in the floaty.
-BASE_DECLARE_FEATURE(kGeminiFullChatHistory);
-bool IsGeminiFullChatHistoryEnabled();
-
-// Feature flag for the redesigned loading state UI.
-BASE_DECLARE_FEATURE(kGeminiLoadingStateRedesign);
-bool IsGeminiLoadingStateRedesignEnabled();
-
-// Feature flag for the floaty latency improvements.
-BASE_DECLARE_FEATURE(kGeminiLatencyImprovement);
-bool IsGeminiLatencyImprovementEnabled();
-
 // Feature flag to use the new refactored version of the page context extractor.
 // Acts as a killswitch where the feature is enabled by default.
 BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);
@@ -278,10 +266,6 @@ bool IsGeminiEligibilityAblationEnabled();
 // Feature flag for Gemini Live.
 BASE_DECLARE_FEATURE(kGeminiLive);
 bool IsGeminiLiveEnabled();
-
-// Feature flag for Gemini Personalization.
-BASE_DECLARE_FEATURE(kGeminiPersonalization);
-bool IsGeminiPersonalizationEnabled();
 
 // Feature flag for Gemini Copresence.
 BASE_DECLARE_FEATURE(kGeminiCopresence);

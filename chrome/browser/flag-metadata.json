@@ -5118,14 +5118,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "gemini-full-chat-history",
-    "owners": [
-      "adamta@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
-    "expiry_milestone": 148
-  },
-  {
     "name": "gemini-image-remix-tool",
     "owners": [
       "nicolasmacbeth@google.com",
@@ -5134,19 +5126,9 @@
     "expiry_milestone": 155
   },
   {
-    "name": "gemini-latency-improvement",
-    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 148
-  },
-  {
     "name": "gemini-live",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 155
-  },
-  {
-    "name": "gemini-loading-state-redesign",
-    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 148
   },
   {
     "name": "gemini-maps-rich-ui",
@@ -5156,12 +5138,7 @@
   {
     "name": "gemini-navigation-promo",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 148
-  },
-  {
-    "name": "gemini-personalization",
-    "owners": [ "joepeplowski@google.com", "bling-alchemy-eng@google.com" ],
-    "expiry_milestone": 149
+    "expiry_milestone": 160
   },
   {
     "name": "gemini-refactored-fre",

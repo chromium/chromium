@@ -690,24 +690,12 @@ const char kGeminiFloatyAllPagesName[] = "Gemini Floaty All Pages";
 const char kGeminiFloatyAllPagesDescription[] =
     "Enables the Gemini floaty on all pages.";
 
-const char kGeminiFullChatHistoryName[] = "GeminiFullChatHistory";
-const char kGeminiFullChatHistoryDescription[] =
-    "Enables the full chat history being shown in the floaty.";
-
 const char kGeminiImageRemixToolName[] = "Gemini Image Remix Tool";
 const char kGeminiImageRemixToolDescription[] =
     "Enables the image remix tool in the Gemini floaty.";
 
-const char kGeminiLatencyImprovementName[] = "GeminiLatencyImprovement";
-const char kGeminiLatencyImprovementDescription[] =
-    "Enables the latency improvements for Gemini.";
-
 const char kGeminiLiveName[] = "GeminiLive";
 const char kGeminiLiveDescription[] = "Enables Gemini Live.";
-
-const char kGeminiLoadingStateRedesignName[] = "GeminiLoadingStateRedesign";
-const char kGeminiLoadingStateRedesignDescription[] =
-    "Enables the redesigned UI for the floaty's loading state.";
 
 const char kGeminiMapsRichUIName[] = "Gemini Maps Rich UI";
 const char kGeminiMapsRichUIDescription[] =
@@ -716,10 +704,6 @@ const char kGeminiMapsRichUIDescription[] =
 const char kGeminiNavigationPromoName[] = "GeminiNavigationPromo";
 const char kGeminiNavigationPromoDescription[] =
     "Enables the automatic promo for Gemini on navigation.";
-
-const char kGeminiPersonalizationName[] = "GeminiPersonalization";
-const char kGeminiPersonalizationDescription[] =
-    "Enables the GeminiPersonalization feature.";
 
 const char kGeminiRefactoredFREName[] = "Gemini Refactored FRE";
 const char kGeminiRefactoredFREDescription[] =
