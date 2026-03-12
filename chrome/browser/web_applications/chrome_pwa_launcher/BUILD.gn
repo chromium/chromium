@@ -23,7 +23,6 @@ executable("chrome_pwa_launcher") {
     "//base",
     "//build:branding_buildflags",
     "//chrome/common:non_code_constants",
-    "//chrome/install_static:install_static_util",
     "//components/version_info",
   ]
 
@@ -43,18 +42,12 @@ source_set("util") {
   public = [
     "chrome_pwa_launcher_util.h",
     "last_browser_file_util.h",
-    "launcher_log_reporter.h",
     "launcher_update.h",
   ]
 
   sources = [
     "chrome_pwa_launcher_util.cc",
     "last_browser_file_util.cc",
-    "launcher_log.cc",
-    "launcher_log.h",
-    "launcher_log_reporter.cc",
-    "launcher_log_util.cc",
-    "launcher_log_util.h",
     "launcher_update.cc",
   ]
 
@@ -62,7 +55,6 @@ source_set("util") {
 
   deps = [
     "//chrome/common:non_code_constants",
-    "//chrome/install_static:install_static_util",
     "//chrome/installer/util:with_no_strings",
     "//components/version_info:generate_version_info",
   ]
@@ -73,7 +65,6 @@ source_set("unit_tests") {
 
   sources = [
     "last_browser_file_util_unittest.cc",
-    "launcher_log_unittest.cc",
     "launcher_update_unittest.cc",
   ]
 

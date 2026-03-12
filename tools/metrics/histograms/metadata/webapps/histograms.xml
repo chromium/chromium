@@ -1884,8 +1884,8 @@ chromium-metrics-reviews@google.com.
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
-    The result of a Progressive Web App (PWA) launcher's attempt to launch
-    Chrome. Windows-only.
+    Obsolete as of 03-2026. The result of a Progressive Web App (PWA) launcher's
+    attempt to launch Chrome. Windows-only.
   </summary>
 </histogram>
 

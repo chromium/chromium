@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <windows.h>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -11,10 +13,7 @@
 #include "base/process/launch.h"
 #include "base/win/windows_types.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
-#include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_log.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/install_static/install_details.h"
-#include "chrome/install_static/product_install_details.h"
 #include "components/version_info/version_info_values.h"
 
 namespace {
@@ -43,8 +42,7 @@ base::FilePath GetChromePathFromLastBrowserFile() {
 
 // Launches |chrome_path| with the current command-line arguments, and returns
 // the launch result.
-web_app::WebAppLauncherLaunchResult LaunchPwa(
-    const base::FilePath& chrome_path) {
+int LaunchPwa(const base::FilePath& chrome_path) {
   // Launch chrome.exe, passing it all command-line arguments.
   base::CommandLine command_line(chrome_path);
   command_line.AppendArguments(*base::CommandLine::ForCurrentProcess(),
@@ -69,9 +67,7 @@ web_app::WebAppLauncherLaunchResult LaunchPwa(
   base::LaunchOptions launch_options;
   launch_options.current_directory = chrome_path.DirName();
   launch_options.grant_foreground_privilege = true;
-  return base::LaunchProcess(command_line, launch_options).IsValid()
-             ? web_app::WebAppLauncherLaunchResult::kSuccess
-             : web_app::WebAppLauncherLaunchResult::kError;
+  return base::LaunchProcess(command_line, launch_options).IsValid() ? 0 : 2;
 }
 
 }  // namespace
@@ -91,18 +87,6 @@ int WINAPI wWinMain(HINSTANCE instance,
   logging_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   logging::InitLogging(logging_settings);
 
-  // Use |chrome_path| to set InstallDetails for the process, which tells the
-  // LauncherLog which registry key to log the launch result to. No logging can
-  // take place until |chrome_path| is known, so errors before this point are
-  // not recorded.
   const base::FilePath chrome_path = GetChromePathFromLastBrowserFile();
-  install_static::InstallDetails::SetForProcess(
-      install_static::MakeProductDetails(chrome_path.value()));
-
-  web_app::LauncherLog launcher_log;
-  launcher_log.Log(web_app::WebAppLauncherLaunchResult::kStarted);
-
-  auto launch_result = LaunchPwa(chrome_path);
-  launcher_log.Log(launch_result);
-  return static_cast<int>(launch_result);
+  return LaunchPwa(chrome_path);
 }
