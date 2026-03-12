@@ -25,10 +25,10 @@ class SubgriddedItemData {
   SubgriddedItemData() = default;
 
   SubgriddedItemData(const GridItemData& item_data_in_parent,
-                     const GridLayoutData& parent_layout_data,
+                     const GridLayoutData* parent_layout_data,
                      WritingMode parent_writing_mode)
       : item_data_in_parent_(&item_data_in_parent),
-        parent_layout_data_(&parent_layout_data),
+        parent_layout_data_(parent_layout_data),
         parent_writing_mode_(parent_writing_mode) {}
 
   explicit operator bool() const { return item_data_in_parent_ != nullptr; }
@@ -83,10 +83,14 @@ class CORE_EXPORT GridSizingTree {
   struct GridTreeNode {
     DISALLOW_NEW();
 
-    void Trace(Visitor* visitor) const { visitor->Trace(grid_items); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(grid_items);
+      visitor->Trace(layout_data);
+    }
 
     GridItems grid_items;
-    GridLayoutData layout_data;
+    // TODO(crbug.com/460491953): Make this Member<const GridLayoutData>
+    Member<GridLayoutData> layout_data;
     wtf_size_t subtree_size{1};
     WritingMode writing_mode;
   };
@@ -101,12 +105,12 @@ class CORE_EXPORT GridSizingTree {
 
   void SetSizingNodeData(const BlockNode& grid_node,
                          GridItems&& grid_items,
-                         GridLayoutData&& layout_data);
+                         GridLayoutData* layout_data);
 
   GridItems& GetGridItems(wtf_size_t index = 0) { return At(index).grid_items; }
 
   GridLayoutData& LayoutData(wtf_size_t index = 0) {
-    return At(index).layout_data;
+    return *At(index).layout_data;
   }
 
   // Creates a copy of the current grid geometry for the entire tree in a new

@@ -690,9 +690,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     table_section_row_offsets_ = std::move(row_offsets);
   }
 
-  void TransferGridLayoutData(
-      std::unique_ptr<GridLayoutData> grid_layout_data) {
-    grid_layout_data_ = std::move(grid_layout_data);
+  void SetGridLayoutData(const GridLayoutData* grid_layout_data) {
+    grid_layout_data_ = grid_layout_data;
   }
   void TransferFlexLayoutData(
       std::unique_ptr<DevtoolsFlexInfo> flex_layout_data) {
@@ -707,7 +706,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   const GridLayoutData& GetGridLayoutData() const {
     DCHECK(grid_layout_data_);
-    return *grid_layout_data_.get();
+    return *grid_layout_data_;
   }
 
   BreakTokenAlgorithmData* GetBreakTokenData() { return break_token_data_; }
@@ -854,9 +853,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   Vector<LayoutUnit> table_section_row_offsets_;
 
   BreakTokenAlgorithmData* break_token_data_ = nullptr;
-
-  // Grid specific types.
-  std::unique_ptr<GridLayoutData> grid_layout_data_;
+  const GridLayoutData* grid_layout_data_ = nullptr;
 
   std::unique_ptr<DevtoolsFlexInfo> flex_layout_data_;
   std::unique_ptr<FrameSetLayoutData> frame_set_layout_data_;

@@ -103,8 +103,7 @@ LayoutResult::LayoutResult(BoxFragmentBuilderPassKey passkey,
         builder->math_italic_correction_;
   }
   if (builder->grid_layout_data_) {
-    EnsureRareData()->EnsureGridData()->grid_layout_data =
-        std::move(builder->grid_layout_data_);
+    EnsureRareData()->grid_layout_data = builder->grid_layout_data_;
   }
   if (builder->flex_layout_data_) {
     EnsureRareData()->EnsureFlexData()->flex_layout_data =
@@ -416,6 +415,7 @@ void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
   visitor->Trace(non_overflowing_scroll_ranges);
   visitor->Trace(column_spanner_path);
+  visitor->Trace(grid_layout_data);
   visitor->Trace(exclusion_space);
   visitor->Trace(line_clamp_after_layout_object);
   visitor->Trace(accessibility_anchor);

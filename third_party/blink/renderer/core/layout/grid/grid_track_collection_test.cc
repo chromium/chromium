@@ -327,14 +327,16 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionSetIterator) {
   auto range_builder = CreateRangeBuilder(explicit_tracks, implicit_tracks,
                                           /* auto_repetitions */ 0);
 
-  GridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  GridSizingTrackCollection* track_collection =
+      MakeGarbageCollected<GridSizingTrackCollection>(
+          range_builder.FinalizeRanges());
   InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
-                                    &track_collection);
-  const auto& ranges = GetRangesFrom(track_collection);
+                                    track_collection);
+  const auto& ranges = GetRangesFrom(*track_collection);
 
   // Test the set iterator for the entire collection.
   wtf_size_t set_count = 0;
-  for (auto set_iterator = track_collection.GetSetIterator();
+  for (auto set_iterator = track_collection->GetSetIterator();
        !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
     EXPECT_SET(GridTrackSize(Length::Flex(set_count++)), 1u, set_iterator);
   }
@@ -347,7 +349,7 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionSetIterator) {
     EXPECT_RANGE(set_count, set_counts[range_count], ranges[i]);
 
     wtf_size_t current_range_set_count = 0;
-    for (auto set_iterator = IteratorForRange(track_collection, i);
+    for (auto set_iterator = IteratorForRange(*track_collection, i);
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
       EXPECT_SET(GridTrackSize(Length::Flex(set_count++)), 1u, set_iterator);
       ++current_range_set_count;
@@ -387,10 +389,12 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionExplicitTracks) {
   range_builder.EnsureTrackCoverage(17, 3, &range3_start, &range3_end);
   range_builder.EnsureTrackCoverage(22, 5, &range4_start, &range4_end);
 
-  GridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  GridSizingTrackCollection* track_collection =
+      MakeGarbageCollected<GridSizingTrackCollection>(
+          range_builder.FinalizeRanges());
   InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
-                                    &track_collection);
-  const auto& ranges = GetRangesFrom(track_collection);
+                                    track_collection);
+  const auto& ranges = GetRangesFrom(*track_collection);
 
   EXPECT_EQ(1u, range1_start);
   EXPECT_EQ(1u, range1_end);
@@ -403,14 +407,14 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionExplicitTracks) {
 
   EXPECT_EQ(10u, ranges.size());
   EXPECT_RANGE(0u, 2u, ranges[0]);
-  auto set_iterator = IteratorForRange(track_collection, /* range_index */ 0);
+  auto set_iterator = IteratorForRange(*track_collection, /* range_index */ 0);
   EXPECT_SET(GridTrackSize(Length::Fixed(1)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(2u, 4u, ranges[1]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 1);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 1);
   EXPECT_SET(GridTrackSize(Length::Fixed(3)), 2u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(1)), 1u, set_iterator);
@@ -419,7 +423,7 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionExplicitTracks) {
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(6u, 3u, ranges[2]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 2);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 2);
   EXPECT_SET(GridTrackSize(Length::Fixed(1)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
@@ -428,39 +432,39 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionExplicitTracks) {
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_COLLAPSED_RANGE(9u, 3u, ranges[3]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 3);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 3);
   EXPECT_TRUE(set_iterator.IsAtEnd());
 
   EXPECT_RANGE(12u, 4u, ranges[4]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 4);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 4);
   EXPECT_SET(GridTrackSize(Length::Fixed(5)), 2u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(4)), 2u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_COLLAPSED_RANGE(16u, 1u, ranges[5]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 5);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 5);
   EXPECT_TRUE(set_iterator.IsAtEnd());
 
   EXPECT_RANGE(17u, 2u, ranges[6]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 6);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 6);
   EXPECT_SET(GridTrackSize(Length::Fixed(4)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(5)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(19u, 1u, ranges[7]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 7);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 7);
   EXPECT_SET(GridTrackSize(Length::Auto()), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(20u, 2u, ranges[8]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 8);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 8);
   EXPECT_SET(GridTrackSize(Length::Auto()), 2u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(22u, 5u, ranges[9]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 9);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 9);
   EXPECT_SET(GridTrackSize(Length::Auto()), 5u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 }
@@ -492,10 +496,12 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionImplicitTracks) {
   range_builder.EnsureTrackCoverage(2, 13, &range1_start, &range1_end);
   range_builder.EnsureTrackCoverage(23, 2, &range2_start, &range2_end);
 
-  GridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  GridSizingTrackCollection* track_collection =
+      MakeGarbageCollected<GridSizingTrackCollection>(
+          range_builder.FinalizeRanges());
   InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
-                                    &track_collection);
-  const auto& ranges = GetRangesFrom(track_collection);
+                                    track_collection);
+  const auto& ranges = GetRangesFrom(*track_collection);
 
   EXPECT_EQ(1u, range1_start);
   EXPECT_EQ(2u, range1_end);
@@ -504,21 +510,21 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionImplicitTracks) {
 
   EXPECT_EQ(5u, ranges.size());
   EXPECT_RANGE(0u, 2u, ranges[0]);
-  auto set_iterator = IteratorForRange(track_collection, /* range_index */ 0);
+  auto set_iterator = IteratorForRange(*track_collection, /* range_index */ 0);
   EXPECT_SET(GridTrackSize(Length::Fixed(1)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(2u, 2u, ranges[1]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 1);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 1);
   EXPECT_SET(GridTrackSize(Length::Fixed(3)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(4)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(4u, 11u, ranges[2]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 2);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 2);
   EXPECT_SET(GridTrackSize(Length::Fixed(5)), 4u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(6)), 4u, set_iterator);
@@ -527,7 +533,7 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionImplicitTracks) {
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(15u, 8u, ranges[3]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 3);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 3);
   EXPECT_SET(GridTrackSize(Length::Fixed(7)), 3u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(5)), 3u, set_iterator);
@@ -536,7 +542,7 @@ TEST_F(GridTrackCollectionTest, TestGridSizingTrackCollectionImplicitTracks) {
   EXPECT_FALSE(set_iterator.MoveToNextSet());
 
   EXPECT_RANGE(23u, 2u, ranges[4]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 4);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 4);
   EXPECT_SET(GridTrackSize(Length::Fixed(6)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(7)), 1u, set_iterator);
@@ -564,10 +570,12 @@ TEST_F(GridTrackCollectionTest,
   range_builder.EnsureTrackCoverage(1, 2, &range1_start, &range1_end);
   range_builder.EnsureTrackCoverage(7, 4, &range2_start, &range2_end);
 
-  GridSizingTrackCollection track_collection(range_builder.FinalizeRanges());
+  GridSizingTrackCollection* track_collection =
+      MakeGarbageCollected<GridSizingTrackCollection>(
+          range_builder.FinalizeRanges());
   InitializeSetsForSizingCollection(explicit_tracks, implicit_tracks,
-                                    &track_collection);
-  const auto& ranges = GetRangesFrom(track_collection);
+                                    track_collection);
+  const auto& ranges = GetRangesFrom(*track_collection);
 
   EXPECT_EQ(1u, range1_start);
   EXPECT_EQ(1u, range1_end);
@@ -576,7 +584,7 @@ TEST_F(GridTrackCollectionTest,
 
   EXPECT_EQ(5u, ranges.size());
   EXPECT_RANGE(0u, 1u, ranges[0]);
-  auto set_iterator = IteratorForRange(track_collection, /* range_index */ 0);
+  auto set_iterator = IteratorForRange(*track_collection, /* range_index */ 0);
   EXPECT_SET(GridTrackSize(Length::MinContent()), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   EXPECT_FALSE(
@@ -585,7 +593,7 @@ TEST_F(GridTrackCollectionTest,
       TrackSpanProperties::kHasIntrinsicTrack));
 
   EXPECT_RANGE(1u, 2u, ranges[1]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 1);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 1);
   EXPECT_SET(GridTrackSize(Length::Flex(1.0)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::Fixed(2)), 1u, set_iterator);
@@ -596,7 +604,7 @@ TEST_F(GridTrackCollectionTest,
       TrackSpanProperties::kHasIntrinsicTrack));
 
   EXPECT_RANGE(3u, 4u, ranges[2]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 2);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 2);
   EXPECT_SET(GridTrackSize(Length::Fixed(3)), 1u, set_iterator);
   EXPECT_TRUE(set_iterator.MoveToNextSet());
   EXPECT_SET(GridTrackSize(Length::MinContent()), 1u, set_iterator);
@@ -611,7 +619,7 @@ TEST_F(GridTrackCollectionTest,
       TrackSpanProperties::kHasIntrinsicTrack));
 
   EXPECT_RANGE(7u, 1u, ranges[3]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 3);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 3);
   EXPECT_SET(GridTrackSize(Length::Fixed(3)), 1u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   EXPECT_FALSE(
@@ -620,7 +628,7 @@ TEST_F(GridTrackCollectionTest,
       TrackSpanProperties::kHasIntrinsicTrack));
 
   EXPECT_RANGE(8u, 3u, ranges[4]);
-  set_iterator = IteratorForRange(track_collection, /* range_index */ 4);
+  set_iterator = IteratorForRange(*track_collection, /* range_index */ 4);
   EXPECT_SET(GridTrackSize(Length::Auto()), 3u, set_iterator);
   EXPECT_FALSE(set_iterator.MoveToNextSet());
   EXPECT_FALSE(

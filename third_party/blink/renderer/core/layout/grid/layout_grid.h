@@ -70,6 +70,11 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
 
   const GridLayoutData* LayoutData() const;
 
+  void Trace(Visitor* visitor) const override {
+    LayoutBlock::Trace(visitor);
+    visitor->Trace(cached_subgrid_min_max_sizes_);
+  }
+
  private:
   bool IsLayoutGrid() const final {
     NOT_DESTROYED();
@@ -85,7 +90,7 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
                       const StyleChangeContext&) override;
 
   std::optional<GridPlacementData> cached_placement_data_;
-  std::optional<const SubgridMinMaxSizesCache> cached_subgrid_min_max_sizes_;
+  Member<const SubgridMinMaxSizesCache> cached_subgrid_min_max_sizes_;
 };
 
 // wtf/casting.h helper.

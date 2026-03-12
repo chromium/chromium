@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_SUBGRID_MIN_MAX_SIZES_CACHE_H_
 
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class SubgridMinMaxSizesCache {
-  DISALLOW_NEW();
-
+class SubgridMinMaxSizesCache
+    : public GarbageCollected<SubgridMinMaxSizesCache> {
  public:
   SubgridMinMaxSizesCache() = delete;
   SubgridMinMaxSizesCache(const SubgridMinMaxSizesCache&) = delete;
@@ -23,18 +23,22 @@ class SubgridMinMaxSizesCache {
             layout_data.OnlySubgriddedCollection()),
         cached_min_max_sizes_(std::move(min_max_sizes)) {}
 
-  const MinMaxSizes& operator*() const { return cached_min_max_sizes_; }
-
   bool IsValidFor(const GridLayoutData& layout_data) const {
-    return layout_data.OnlySubgriddedCollection() ==
-           opposite_axis_subgridded_tracks_;
+    return *layout_data.OnlySubgriddedCollection() ==
+           *opposite_axis_subgridded_tracks_;
+  }
+
+  const MinMaxSizes& CachedMinMaxSizes() const { return cached_min_max_sizes_; }
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(opposite_axis_subgridded_tracks_);
   }
 
  private:
   // The intrinsic sizes of a subgrid's standalone axis might change when the
   // subgridded tracks in the opposite axis change. We keep a copy of these
   // tracks to check if the cache is reusable with the new layout data.
-  GridLayoutTrackCollection opposite_axis_subgridded_tracks_;
+  Member<const GridLayoutTrackCollection> opposite_axis_subgridded_tracks_;
 
   MinMaxSizes cached_min_max_sizes_;
 };

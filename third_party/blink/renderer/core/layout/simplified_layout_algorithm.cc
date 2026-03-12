@@ -148,8 +148,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
   }
 
   if (physical_fragment.IsGrid() || physical_fragment.IsGridLanes()) {
-    container_builder_.TransferGridLayoutData(
-        std::make_unique<GridLayoutData>(*result.GetGridLayoutData()));
+    container_builder_.SetGridLayoutData(result.GetGridLayoutData());
   } else if (physical_fragment.IsFrameSet()) {
     container_builder_.TransferFrameSetLayoutData(
         std::make_unique<FrameSetLayoutData>(

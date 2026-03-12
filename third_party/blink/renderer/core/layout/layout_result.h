@@ -407,11 +407,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   }
 
   const GridLayoutData* GetGridLayoutData() const {
-    if (!rare_data_) {
-      return nullptr;
-    }
-    const RareData::GridData* data = rare_data_->GetGridData();
-    return data ? data->grid_layout_data.get() : nullptr;
+    return rare_data_ ? rare_data_->grid_layout_data.Get() : nullptr;
   }
 
   const DevtoolsFlexInfo* FlexLayoutData() const {
@@ -680,16 +676,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
       std::unique_ptr<const DevtoolsFlexInfo> flex_layout_data;
     };
 
-    struct GridData {
-      GridData() = default;
-      GridData(const GridData& other) {
-        grid_layout_data =
-            std::make_unique<GridLayoutData>(*other.grid_layout_data);
-      }
-
-      std::unique_ptr<const GridLayoutData> grid_layout_data;
-    };
-
     // `LineSmallData` can save allocations When only fields in it are needed.
     struct LineSmallData {
       std::optional<LayoutUnit> ClearanceAfterLine() const {
@@ -806,12 +792,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     const FlexData* GetFlexData() const {
       return GetData<FlexData>(&flex_data, kFlexData);
     }
-    GridData* EnsureGridData() {
-      return EnsureData<GridData>(&grid_data, kGridData);
-    }
-    const GridData* GetGridData() const {
-      return GetData<GridData>(&grid_data, kGridData);
-    }
     // When both `EnsureLineData()` and `EnsureLineSmallData()` are needed,
     // `EnsureLineData()` must be done first. Upgrading `kLineSmallData` to
     // `kLineData` isn't supported due to the lack of the needs.
@@ -852,6 +832,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     RareData(const RareData& rare_data)
         : early_break(rare_data.early_break),
           column_spanner_path(rare_data.column_spanner_path),
+          grid_layout_data(rare_data.grid_layout_data),
           end_margin_strut(rare_data.end_margin_strut),
           // This will initialize "both" members of the union.
           tallest_unbreakable_block_size(
@@ -874,9 +855,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           break;
         case kFlexData:
           new (&flex_data) FlexData(rare_data.flex_data);
-          break;
-        case kGridData:
-          new (&grid_data) GridData(rare_data.grid_data);
           break;
         case kLineSmallData:
           new (&line_small_data) LineSmallData(rare_data.line_small_data);
@@ -901,9 +879,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
           break;
         case kFlexData:
           flex_data.~FlexData();
-          break;
-        case kGridData:
-          grid_data.~GridData();
           break;
         case kLineSmallData:
           line_small_data.~LineSmallData();
@@ -967,6 +942,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     Member<const EarlyBreak> early_break;
     Member<const ColumnSpannerPath> column_spanner_path;
+    Member<const GridLayoutData> grid_layout_data;
     MarginStrut end_margin_strut;
     union {
       // Only set in the initial column balancing layout pass, when we have no
@@ -1005,7 +981,6 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
 
     union {
       FlexData flex_data;
-      GridData grid_data;
       LineSmallData line_small_data;
       LineDataPtr line_data;
       MathData math_data;

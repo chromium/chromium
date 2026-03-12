@@ -18,12 +18,12 @@ void GridSizingTree::AddToPreorderTraversal(const BlockNode& grid_node) {
 
 void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
                                        GridItems&& grid_items,
-                                       GridLayoutData&& layout_data) {
+                                       GridLayoutData* layout_data) {
   DCHECK(grid_node.IsGrid());
 
   const bool has_standalone_columns =
-      !layout_data.HasSubgriddedAxis(kForColumns);
-  const bool has_standalone_rows = !layout_data.HasSubgriddedAxis(kForRows);
+      !layout_data->HasSubgriddedAxis(kForColumns);
+  const bool has_standalone_rows = !layout_data->HasSubgriddedAxis(kForRows);
 
   const auto grid_node_index = LookupSubgridIndex(grid_node);
   auto child_subgrid_index = grid_node_index + 1;
@@ -60,7 +60,7 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
   }
 
   tree_node.grid_items = std::move(grid_items);
-  tree_node.layout_data = std::move(layout_data);
+  tree_node.layout_data = layout_data;
   tree_node.writing_mode = grid_node.Style().GetWritingMode();
 }
 
@@ -73,7 +73,8 @@ const GridLayoutTree* GridSizingTree::FinalizeTree() const {
   for (const auto& grid_tree_node : tree_data_) {
     layout_tree_data.emplace_back(
         MakeGarbageCollected<GridLayoutTree::GridTreeNode>(
-            grid_tree_node.layout_data, grid_tree_node.subtree_size));
+            MakeGarbageCollected<GridLayoutData>(*grid_tree_node.layout_data),
+            grid_tree_node.subtree_size));
   }
 
   for (wtf_size_t i = tree_size; i; --i) {

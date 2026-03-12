@@ -81,7 +81,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
 
     const bool should_apply_inline_size_containment =
         node.ShouldApplyInlineSizeContainment();
-    GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
+    GridSizingTrackCollection* track_collection = ComputeGridAxisTracks(
         sizing_constraint, /*intrinsic_repeat_track_sizes=*/nullptr,
         should_apply_inline_size_containment, grid_lanes_items,
         needs_intrinsic_track_size);
@@ -96,7 +96,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
     if (needs_intrinsic_track_size) {
       HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
           GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
-                                         track_collection);
+                                         *track_collection);
       track_collection = ComputeGridAxisTracks(
           sizing_constraint, &intrinsic_repeat_track_sizes,
           should_apply_inline_size_containment, grid_lanes_items,
@@ -107,7 +107,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
       // Track sizing is done during the guess placement step, which happens in
       // `BuildGridAxisTracks`, so at this point, getting the width of all of
       // the columns should correctly give us the intrinsic inline size.
-      return track_collection.CalculateSetSpanSize();
+      return track_collection->CalculateSetSpanSize();
     } else {
       if (grid_lanes_items.IsEmpty()) {
         // If there are no grid-lanes items, the intrinsic inline size is only
@@ -116,11 +116,11 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
       }
 
       GridLanesRunningPositions running_positions(
-          track_collection, style,
+          *track_collection, style,
           ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_));
 
-      PlaceGridLanesItems(track_collection, grid_lanes_items, running_positions,
-                          sizing_constraint);
+      PlaceGridLanesItems(*track_collection, grid_lanes_items,
+                          running_positions, sizing_constraint);
       // `stacking_axis_gap` represents the space between each of the items
       // in the row. We need to subtract this as it is always added to
       // `running_positions` whenever an item is placed, but the very last
@@ -131,7 +131,7 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
       return running_positions.GetMaxPositionForSpan(
                  GridSpan::TranslatedDefiniteGridSpan(
                      /*start_line=*/0,
-                     /*end_line=*/track_collection.EndLineOfImplicitGrid())) -
+                     /*end_line=*/track_collection->EndLineOfImplicitGrid())) -
              stacking_axis_gap;
     }
   };
@@ -162,7 +162,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
   // Never apply inline size containment during the layout pass because size
   // containment is independent from layout.
-  GridSizingTrackCollection track_collection = ComputeGridAxisTracks(
+  GridSizingTrackCollection* track_collection = ComputeGridAxisTracks(
       SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
       /*should_apply_inline_size_containment=*/false, grid_lanes_items,
       needs_intrinsic_track_size, &oof_children);
@@ -177,7 +177,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   if (needs_intrinsic_track_size) {
     HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
         GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
-                                       track_collection);
+                                       *track_collection);
     track_collection = ComputeGridAxisTracks(
         SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
         /*should_apply_inline_size_containment=*/false, grid_lanes_items,
@@ -186,10 +186,10 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
   if (!grid_lanes_items.IsEmpty()) {
     GridLanesRunningPositions running_positions(
-        track_collection, Style(),
+        *track_collection, Style(),
         ResolveFlowToleranceForGridLanes(Style(), grid_lanes_available_size_));
 
-    PlaceGridLanesItems(track_collection, grid_lanes_items, running_positions,
+    PlaceGridLanesItems(*track_collection, grid_lanes_items, running_positions,
                         SizingConstraint::kLayout);
   }
 
@@ -201,10 +201,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
   }
 
   // Create track layout data to support grid-lanes overlay in DevTools.
-  std::unique_ptr<GridLayoutData> layout_data(
-      std::make_unique<GridLayoutData>());
-  layout_data->SetTrackCollection(
-      std::make_unique<GridLayoutTrackCollection>(track_collection));
+  GridLayoutData* layout_data = MakeGarbageCollected<GridLayoutData>();
+  layout_data->SetTrackCollection(track_collection);
 
   // Account for border, scrollbar, and padding in the intrinsic block size.
   intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
@@ -224,7 +222,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
     PlaceOutOfFlowItems(*layout_data, block_size, oof_children);
   }
 
-  container_builder_.TransferGridLayoutData(std::move(layout_data));
+  container_builder_.SetGridLayoutData(layout_data);
   container_builder_.HandleOofsAndSpecialDescendants();
   return container_builder_.ToBoxFragment();
 }
@@ -509,10 +507,10 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
 
     // TODO(almaher): This should use the sizing tree eventually to get this
     // data.
-    std::unique_ptr<GridLayoutData> layout_data(
-        std::make_unique<GridLayoutData>());
+    // TODO(kschmi): Do we need to deep copy the track collection?
+    GridLayoutData* layout_data = MakeGarbageCollected<GridLayoutData>();
     layout_data->SetTrackCollection(
-        std::make_unique<GridLayoutTrackCollection>(track_collection));
+        MakeGarbageCollected<GridLayoutTrackCollection>(track_collection));
     const ConstraintSpace space =
         is_for_layout
             ? CreateConstraintSpaceForLayout(
@@ -1138,7 +1136,7 @@ GridLanesLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren() {
       // TODO(almaher): Once support for subgrid is added and we have a sizing
       // tree similar to grid, we may need to implement and call something
       // similar to Grid's BuildGridSizingTreeIgnoringChildren() here.
-      GridSizingTrackCollection track_collection =
+      GridSizingTrackCollection* track_collection =
           ComputeGridAxisTracks(SizingConstraint::kLayout,
                                 /*intrinsic_repeat_track_sizes=*/nullptr,
                                 /*should_apply_inline_size_containment=*/false,
@@ -1154,14 +1152,14 @@ GridLanesLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren() {
       if (needs_intrinsic_track_size) {
         HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
             GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
-                                           track_collection);
+                                           *track_collection);
         track_collection = ComputeGridAxisTracks(
             SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
             /*should_apply_inline_size_containment=*/false, grid_lanes_items,
             needs_intrinsic_track_size);
       }
 
-      override_intrinsic_block_size = track_collection.CalculateSetSpanSize();
+      override_intrinsic_block_size = track_collection->CalculateSetSpanSize();
     } else {
       // If we are in columns, the block size should just be the size of an
       // empty container.
@@ -1252,7 +1250,7 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
   return baseline_fragment.BlockSize();
 }
 
-GridSizingTrackCollection GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
+GridSizingTrackCollection* GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
     const SizingConstraint sizing_constraint,
     const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
     const bool should_apply_inline_size_containment,
@@ -1284,7 +1282,7 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
                              needs_intrinsic_track_size);
 }
 
-GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
+GridSizingTrackCollection* GridLanesLayoutAlgorithm::BuildGridAxisTracks(
     const GridLineResolver& line_resolver,
     const GridItems& grid_lanes_items,
     SizingConstraint sizing_constraint,
@@ -1325,26 +1323,26 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
     return range_builder.FinalizeRanges(needs_intrinsic_track_size);
   };
 
-  GridSizingTrackCollection track_collection(
-      BuildRanges(), grid_axis_direction,
-      /*must_create_baselines=*/has_baseline_aligned_items_,
-      /*should_store_collapsed_track_indexes=*/true);
-  track_collection.BuildSets(style, grid_lanes_available_size_);
+  GridSizingTrackCollection* track_collection =
+      MakeGarbageCollected<GridSizingTrackCollection>(
+          BuildRanges(), grid_axis_direction, has_baseline_aligned_items_,
+          /*should_store_collapsed_track_indexes=*/true);
+  track_collection->BuildSets(style, grid_lanes_available_size_);
 
   // Allocate the major/minor baseline vectors now that we know the set count.
   if (has_baseline_aligned_items_) {
-    track_collection.ResetBaselines();
+    track_collection->ResetBaselines();
   }
 
-  if (track_collection.HasNonDefiniteTrack()) {
-    GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,
+  if (track_collection->HasNonDefiniteTrack()) {
+    GridTrackSizingAlgorithm::CacheGridItemsProperties(*track_collection,
                                                        &virtual_items);
 
     const GridTrackSizingAlgorithm track_sizing_algorithm(
         style, grid_lanes_available_size_, grid_lanes_min_available_size_,
         sizing_constraint);
 
-    track_collection.CacheInitializedSetsGeometry(
+    track_collection->CacheInitializedSetsGeometry(
         (grid_axis_direction == kForColumns)
             ? BorderScrollbarPadding().inline_start
             : BorderScrollbarPadding().block_start);
@@ -1355,17 +1353,17 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::BuildGridAxisTracks(
         [&](GridItemContributionType contribution_type,
             GridItemData* virtual_item) {
           return ContributionSizeForVirtualItem(
-              track_collection, contribution_type, virtual_item);
+              *track_collection, contribution_type, virtual_item);
         },
-        &track_collection, &virtual_items, needs_intrinsic_track_size);
+        track_collection, &virtual_items, needs_intrinsic_track_size);
   }
 
   auto first_set_geometry = GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
-      track_collection, style, grid_lanes_available_size_,
+      *track_collection, style, grid_lanes_available_size_,
       BorderScrollbarPadding());
 
-  track_collection.FinalizeSetsGeometry(first_set_geometry.start_offset,
-                                        first_set_geometry.gutter_size);
+  track_collection->FinalizeSetsGeometry(first_set_geometry.start_offset,
+                                         first_set_geometry.gutter_size);
 
   return track_collection;
 }
@@ -1545,10 +1543,11 @@ void GridLanesLayoutAlgorithm::BuildSizingCollection(
     return range_builder.FinalizeRanges(needs_intrinsic_track_size);
   };
 
-  layout_data.SetTrackCollection(std::make_unique<GridSizingTrackCollection>(
-      BuildRanges(), grid_axis_direction,
-      /*must_create_baselines=*/has_baseline_aligned_items_,
-      /*should_store_collapsed_track_indexes=*/true));
+  layout_data.SetTrackCollection(
+      MakeGarbageCollected<GridSizingTrackCollection>(
+          BuildRanges(), grid_axis_direction,
+          /*must_create_baselines=*/has_baseline_aligned_items_,
+          /*should_store_collapsed_track_indexes=*/true));
 }
 
 ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpace(

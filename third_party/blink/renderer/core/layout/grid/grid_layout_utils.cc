@@ -686,7 +686,7 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   const auto writing_mode = constraint_space.GetWritingMode();
 
   GridItems grid_items;
-  GridLayoutData layout_data;
+  GridLayoutData* layout_data = MakeGarbageCollected<GridLayoutData>();
   bool has_nested_subgrid = false;
 
   if (!must_ignore_children) {
@@ -702,18 +702,17 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
 
   if (has_standalone_columns) {
     algorithm.BuildSizingCollection(kForColumns, line_resolver, grid_items,
-                                    layout_data, sizing_constraint,
+                                    *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
   if (has_standalone_rows) {
     algorithm.BuildSizingCollection(kForRows, line_resolver, grid_items,
-                                    layout_data, sizing_constraint,
+                                    *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
 
   if (!has_nested_subgrid) {
-    sizing_tree->SetSizingNodeData(node, std::move(grid_items),
-                                   std::move(layout_data));
+    sizing_tree->SetSizingNodeData(node, std::move(grid_items), layout_data);
     return;
   }
 
@@ -721,17 +720,17 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
                             algorithm.BorderScrollbarPadding(),
                             algorithm.GetGridAvailableSize(), kForColumns,
-                            &layout_data);
+                            layout_data);
   InitializeTrackCollection(opt_subgrid_data, style, constraint_space,
                             algorithm.BorderScrollbarPadding(),
                             algorithm.GetGridAvailableSize(), kForRows,
-                            &layout_data);
+                            layout_data);
 
   if (has_standalone_columns) {
-    layout_data.SizingCollection(kForColumns).CacheDefiniteSetsGeometry();
+    layout_data->SizingCollection(kForColumns).CacheDefiniteSetsGeometry();
   }
   if (has_standalone_rows) {
-    layout_data.SizingCollection(kForRows).CacheDefiniteSetsGeometry();
+    layout_data->SizingCollection(kForRows).CacheDefiniteSetsGeometry();
   }
 
   // `AppendSubgriddedItems` rely on the cached placement data of a subgrid to
@@ -749,11 +748,11 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     // the set indices of this grid item to determine its available space. This
     // happens because subgridded items are not considered by the range builder
     // since they can't be placed before we recurse into subgrids.
-    grid_item.ComputeSetIndices(layout_data.Columns());
-    grid_item.ComputeSetIndices(layout_data.Rows());
+    grid_item.ComputeSetIndices(layout_data->Columns());
+    grid_item.ComputeSetIndices(layout_data->Rows());
 
     const auto space =
-        algorithm.CreateConstraintSpaceForLayout(grid_item, layout_data);
+        algorithm.CreateConstraintSpaceForLayout(grid_item, *layout_data);
     const auto fragment_geometry =
         CalculateInitialFragmentGeometryForSubgrid(grid_item, space);
 
@@ -788,17 +787,16 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   // repetitions, so we do this process twice to avoid a cyclic dependency.
   if (has_standalone_columns) {
     algorithm.BuildSizingCollection(kForColumns, line_resolver, grid_items,
-                                    layout_data, sizing_constraint,
+                                    *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
   if (has_standalone_rows) {
     algorithm.BuildSizingCollection(kForRows, line_resolver, grid_items,
-                                    layout_data, sizing_constraint,
+                                    *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
 
-  sizing_tree->SetSizingNodeData(node, std::move(grid_items),
-                                 std::move(layout_data));
+  sizing_tree->SetSizingNodeData(node, std::move(grid_items), layout_data);
 }
 
 // TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
@@ -913,7 +911,7 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
   return fragment_geometry;
 }
 
-std::unique_ptr<GridLayoutTrackCollection> CreateSubgridTrackCollection(
+GridLayoutTrackCollection* CreateSubgridTrackCollection(
     const SubgriddedItemData& subgrid_data,
     const ComputedStyle& style,
     const ConstraintSpace& space,
@@ -932,17 +930,16 @@ std::unique_ptr<GridLayoutTrackCollection> CreateSubgridTrackCollection(
                                   ? subgrid_data->column_range_indices
                                   : subgrid_data->row_range_indices;
 
-  return std::make_unique<GridLayoutTrackCollection>(
-      parent_track_collection.CreateSubgridTrackCollection(
-          range_indices.begin, range_indices.end,
-          GridTrackSizingAlgorithm::CalculateGutterSize(
-              style, grid_available_size, track_direction,
-              parent_track_collection.GutterSize()),
-          ComputeMarginsForSelf(space, style), border_scrollbar_padding,
-          track_direction,
-          is_for_columns_in_parent
-              ? subgrid_data->is_opposite_direction_in_root_grid_columns
-              : subgrid_data->is_opposite_direction_in_root_grid_rows));
+  return parent_track_collection.CreateSubgridTrackCollection(
+      range_indices.begin, range_indices.end,
+      GridTrackSizingAlgorithm::CalculateGutterSize(
+          style, grid_available_size, track_direction,
+          parent_track_collection.GutterSize()),
+      ComputeMarginsForSelf(space, style), border_scrollbar_padding,
+      track_direction,
+      is_for_columns_in_parent
+          ? subgrid_data->is_opposite_direction_in_root_grid_columns
+          : subgrid_data->is_opposite_direction_in_root_grid_rows);
 }
 
 void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,

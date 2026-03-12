@@ -148,9 +148,9 @@ class CORE_EXPORT GridRangeBuilder {
   Vector<TrackBoundaryToRangePair, 16> end_lines_;
 };
 
-class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
-  USING_FAST_MALLOC(GridLayoutTrackCollection);
-
+class CORE_EXPORT GridLayoutTrackCollection
+    : public GarbageCollected<GridLayoutTrackCollection>,
+      public GridTrackCollectionBase {
  public:
   struct SetGeometry {
     explicit SetGeometry(LayoutUnit offset, wtf_size_t track_count = 0)
@@ -159,6 +159,9 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
     LayoutUnit offset;
     wtf_size_t track_count;
   };
+
+  explicit GridLayoutTrackCollection(GridTrackSizingDirection track_direction)
+      : track_direction_(track_direction) {}
 
   GridLayoutTrackCollection() = delete;
 
@@ -207,7 +210,7 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
 
   // Creates a track collection containing every |Range| with index in the range
   // [begin, end], including their respective |SetGeometry| and baselines.
-  GridLayoutTrackCollection CreateSubgridTrackCollection(
+  GridLayoutTrackCollection* CreateSubgridTrackCollection(
       wtf_size_t begin_range_index,
       wtf_size_t end_range_index,
       LayoutUnit subgrid_gutter_size,
@@ -231,6 +234,8 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
     return collapsed_track_indexes_;
   }
 
+  virtual void Trace(Visitor* visitor) const {}
+
  protected:
   friend class GridLanesLayoutAlgorithmTest;
 
@@ -238,9 +243,6 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
     Vector<LayoutUnit, 16> major;
     Vector<LayoutUnit, 16> minor;
   };
-
-  explicit GridLayoutTrackCollection(GridTrackSizingDirection track_direction)
-      : track_direction_(track_direction) {}
 
   // Checks whether any set in the range [begin, end) is indefinite.
   bool IsSpanningIndefiniteSet(wtf_size_t begin_set_index,
@@ -374,11 +376,11 @@ struct CORE_EXPORT GridSet {
 
 class CORE_EXPORT GridSizingTrackCollection final
     : public GridLayoutTrackCollection {
-  USING_FAST_MALLOC(GridSizingTrackCollection);
-
  public:
   template <bool is_const>
   class CORE_EXPORT SetIteratorBase {
+    STACK_ALLOCATED();
+
    public:
     using TrackCollectionPtr =
         typename std::conditional<is_const,

@@ -244,14 +244,14 @@ void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
     DCHECK(next_subgrid_subtree);
     callback_func(
         subgrid_algorithm, next_subgrid_subtree,
-        SubgriddedItemData(grid_item, layout_data,
+        SubgriddedItemData(grid_item, &layout_data,
                            algorithm.GetConstraintSpace().GetWritingMode()));
 
     next_subgrid_subtree = next_subgrid_subtree.NextSibling();
   }
 }
 
-std::unique_ptr<GridLayoutTrackCollection> CreateSubgridTrackCollection(
+GridLayoutTrackCollection* CreateSubgridTrackCollection(
     const SubgriddedItemData& subgrid_data,
     const ComputedStyle& style,
     const ConstraintSpace& space,

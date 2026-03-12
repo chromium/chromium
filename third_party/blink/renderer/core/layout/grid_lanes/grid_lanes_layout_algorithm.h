@@ -144,7 +144,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // required once we've computed the intrinsic track size. `opt_oof_children`
   // is an optional vector of out-of-flow direct children of the grid-lanes
   // container that this method will populate.
-  GridSizingTrackCollection ComputeGridAxisTracks(
+  GridSizingTrackCollection* ComputeGridAxisTracks(
       const SizingConstraint sizing_constraint,
       const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
       const bool should_apply_inline_size_containment,
@@ -152,7 +152,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       bool& needs_intrinsic_track_size,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
 
-  GridSizingTrackCollection BuildGridAxisTracks(
+  GridSizingTrackCollection* BuildGridAxisTracks(
       const GridLineResolver& line_resolver,
       const GridItems& grid_lanes_items,
       SizingConstraint sizing_constraint,

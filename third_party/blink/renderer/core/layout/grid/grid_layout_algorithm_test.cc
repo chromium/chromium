@@ -43,12 +43,12 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     algorithm.CompleteTrackSizingAlgorithm(kForRows, SizingConstraint::kLayout,
                                            &grid_sizing_tree);
 
-    layout_data_ = std::move(grid_sizing_tree.LayoutData());
+    layout_data_ = &grid_sizing_tree.LayoutData();
     for (const auto& grid_item : grid_sizing_tree.GetGridItems()) {
       GridItemCachedData item_data;
 
       item_data.available_row_size =
-          grid_item.CalculateAvailableSize(layout_data_.Rows());
+          grid_item.CalculateAvailableSize(layout_data_->Rows());
       item_data.column_span_properties = grid_item.column_span_properties;
       item_data.row_span_properties = grid_item.row_span_properties;
       item_data.resolved_position = grid_item.resolved_position;
@@ -59,8 +59,8 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   const GridSizingTrackCollection& TrackCollection(
       GridTrackSizingDirection track_direction) {
     const auto& track_collection = (track_direction == kForColumns)
-                                       ? layout_data_.Columns()
-                                       : layout_data_.Rows();
+                                       ? layout_data_->Columns()
+                                       : layout_data_->Rows();
     return To<GridSizingTrackCollection>(track_collection);
   }
 
@@ -163,7 +163,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   };
 
   Vector<GridItemCachedData> grid_items_data_;
-  GridLayoutData layout_data_;
+  Persistent<GridLayoutData> layout_data_;
 };
 
 TEST_F(GridLayoutAlgorithmTest, GridLayoutAlgorithmAvailableRowSizes) {
