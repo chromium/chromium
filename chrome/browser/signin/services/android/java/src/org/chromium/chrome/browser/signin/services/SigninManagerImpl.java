@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.services;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -28,8 +28,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
@@ -509,8 +507,8 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      * Signs out of Chrome. This method clears the signed-in username, stops sync and sends out a
      * sign-out notification on the native side.
      *
-     * @param signoutSource describes the event driving the signout (e.g.
-     *         {@link SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS}).
+     * @param signoutSource describes the event driving the signout (e.g. {@link
+     *     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS}).
      * @param signOutCallback Callback to notify about the sign-out progress.
      * @param forceWipeUserData Whether user selected to wipe all device data.
      */
@@ -560,7 +558,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     /**
      * Aborts the current sign in.
      *
-     * Package protected to allow dialog fragments to abort the signin flow.
+     * <p>Package protected to allow dialog fragments to abort the signin flow.
      */
     private void abortSignIn() {
         // Ensure this function can only run once per signin flow.

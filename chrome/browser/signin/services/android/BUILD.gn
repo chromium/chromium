@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninManagerImpl.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
     "java/src/org/chromium/chrome/browser/signin/services/WebSigninBridge.java",
@@ -23,6 +24,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/services/SigninChecker.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninFlowTimestampsLogger.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninManager.java",
+    "java/src/org/chromium/chrome/browser/signin/services/SigninManagerImpl.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtils.java",
     "java/src/org/chromium/chrome/browser/signin/services/SigninPreferencesManager.java",
     "java/src/org/chromium/chrome/browser/signin/services/UnifiedConsentServiceBridge.java",
@@ -39,7 +41,9 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/sync/android:java",
     "//components/browser_ui/util/android:java",
+    "//components/externalauth/android:java",
     "//components/metrics:metrics_java",
+    "//components/prefs/android:java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
@@ -78,6 +82,8 @@ android_library("unit_device_javatests") {
     ":java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/bookmarks/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
@@ -121,5 +127,42 @@ robolectric_library("junit") {
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.signin.services"
+  sources = [ "java/src/org/chromium/chrome/browser/signin/services/SigninManagerImplTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_shared_preferences_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/bookmarks/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//components/embedder_support/android:util_java",
+    "//components/externalauth/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//google_apis/gaia/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 }

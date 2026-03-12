@@ -48,7 +48,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/SigninManagerImpl_jni.h"
+#include "chrome/browser/signin/services/android/jni_headers/SigninManagerImpl_jni.h"
 
 using base::android::JavaRef;
 
