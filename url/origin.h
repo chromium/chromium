@@ -512,7 +512,8 @@ COMPONENT_EXPORT(URL) bool IsSameOriginWith(const GURL& a, const GURL& b);
 
 }  // namespace url
 
-#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(CRONET_BUILD)
+#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)) && \
+    !BUILDFLAG(CRONET_BUILD)
 namespace jni_zero {
 
 // @JniType conversion function.

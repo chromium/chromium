@@ -10,6 +10,7 @@ import android.Manifest;
 import android.os.Build;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -111,6 +112,7 @@ public class PermissionUtil {
      *     returned for different content setting types are disjunct.
      */
     @CalledByNative
+    @JniType("std::vector<std::string>")
     public static String[] getRequiredAndroidPermissionsForContentSetting(int contentSettingType) {
         switch (contentSettingType) {
             case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
@@ -162,6 +164,7 @@ public class PermissionUtil {
      *     returned for different content setting types are disjunct.
      */
     @CalledByNative
+    @JniType("std::vector<std::string>")
     public static String[] getOptionalAndroidPermissionsForContentSetting(int contentSettingType) {
         switch (contentSettingType) {
             case ContentSettingsType.GEOLOCATION, ContentSettingsType.GEOLOCATION_WITH_OPTIONS:
@@ -192,7 +195,7 @@ public class PermissionUtil {
 
     @CalledByNative
     public static boolean canRequestSystemPermission(
-            int contentSettingType, WindowAndroid windowAndroid) {
+            int contentSettingType, @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         String[] permissions = getRequiredAndroidPermissionsForContentSetting(contentSettingType);
         for (String permission : permissions) {
             if (!windowAndroid.canRequestPermission(permission)) {
@@ -203,13 +206,15 @@ public class PermissionUtil {
     }
 
     @CalledByNative
-    public static boolean needsLocationPermissionForBluetooth(WindowAndroid windowAndroid) {
+    public static boolean needsLocationPermissionForBluetooth(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.S
                 && !windowAndroid.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     @CalledByNative
-    public static boolean needsNearbyDevicesPermissionForBluetooth(WindowAndroid windowAndroid) {
+    public static boolean needsNearbyDevicesPermissionForBluetooth(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 && (!windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_SCAN)
                         || !windowAndroid.hasPermission(Manifest.permission.BLUETOOTH_CONNECT));
@@ -225,7 +230,8 @@ public class PermissionUtil {
     }
 
     @CalledByNative
-    public static boolean canRequestSystemPermissionsForBluetooth(WindowAndroid windowAndroid) {
+    public static boolean canRequestSystemPermissionsForBluetooth(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             return windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_SCAN)
                     && windowAndroid.canRequestPermission(Manifest.permission.BLUETOOTH_CONNECT);
@@ -236,7 +242,8 @@ public class PermissionUtil {
 
     @CalledByNative
     public static void requestSystemPermissionsForBluetooth(
-            WindowAndroid windowAndroid, PermissionCallback callback) {
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            PermissionCallback callback) {
         String[] requiredPermissions;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             requiredPermissions =
@@ -254,7 +261,8 @@ public class PermissionUtil {
     }
 
     @CalledByNative
-    public static void requestLocationServices(WindowAndroid windowAndroid) {
+    public static void requestLocationServices(
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         assumeNonNull(windowAndroid.getActivity().get())
                 .startActivity(LocationUtils.getInstance().getSystemLocationSettingsIntent());
     }
@@ -278,8 +286,8 @@ public class PermissionUtil {
      */
     @CalledByNative
     public static void handlePermissionPromptAllow(
-            WindowAndroid window,
-            WebContents webContents,
+            @JniType("ui::WindowAndroid*") WindowAndroid window,
+            @JniType("content::WebContents*") WebContents webContents,
             @ContentSettingsType.EnumType int contentSettingsType) {
         requestAndResolveNotificationsPermissionRequest(
                 window,
@@ -369,11 +377,13 @@ public class PermissionUtil {
     @NativeMethods
     public interface Natives {
         void resolveNotificationsPermissionRequest(
-                WebContents webContents, @ContentSetting int contentSetting);
+                @JniType("content::WebContents*") WebContents webContents,
+                @ContentSetting int contentSetting);
 
-        void dismissNotificationsPermissionRequest(WebContents webContents);
+        void dismissNotificationsPermissionRequest(
+                @JniType("content::WebContents*") WebContents webContents);
 
-        void notifyQuietIconDismissed(WebContents webContents);
+        void notifyQuietIconDismissed(@JniType("content::WebContents*") WebContents webContents);
     }
 
     /**

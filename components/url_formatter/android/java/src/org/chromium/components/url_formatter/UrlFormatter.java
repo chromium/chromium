@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -240,24 +241,38 @@ public final class UrlFormatter {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        GURL fixupUrl(String url);
+        @JniType("GURL")
+        GURL fixupUrl(@JniType("std::string") String url);
 
-        String formatUrlForDisplayOmitScheme(String url);
+        @JniType("std::u16string")
+        String formatUrlForDisplayOmitScheme(@JniType("std::string") String url);
 
-        String formatUrlForDisplayOmitHTTPScheme(String url);
+        @JniType("std::u16string")
+        String formatUrlForDisplayOmitHTTPScheme(@JniType("std::string") String url);
 
-        String formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(String url);
+        @JniType("std::u16string")
+        String formatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
+                @JniType("std::string") String url);
 
-        String formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(GURL url);
+        @JniType("std::u16string")
+        String formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(@JniType("GURL") GURL url);
 
-        String formatUrlForDisplayOmitUsernamePassword(String url);
+        @JniType("std::u16string")
+        String formatUrlForDisplayOmitUsernamePassword(@JniType("std::string") String url);
 
-        String formatUrlForCopy(String url);
+        @JniType("std::u16string")
+        String formatUrlForCopy(@JniType("std::string") String url);
 
-        String formatUrlForSecurityDisplay(GURL url, @SchemeDisplay int schemeDisplay);
+        @JniType("std::u16string")
+        String formatUrlForSecurityDisplay(
+                @JniType("GURL") GURL url, @SchemeDisplay int schemeDisplay);
 
-        String formatOriginForSecurityDisplay(Origin origin, @SchemeDisplay int schemeDisplay);
+        @JniType("std::u16string")
+        String formatOriginForSecurityDisplay(
+                @JniType("url::Origin") Origin origin, @SchemeDisplay int schemeDisplay);
 
-        String formatStringUrlForSecurityDisplay(@Nullable String url, @SchemeDisplay int schemeDisplay);
+        @JniType("std::u16string")
+        String formatStringUrlForSecurityDisplay(
+                @JniType("std::string") @Nullable String url, @SchemeDisplay int schemeDisplay);
     }
 }

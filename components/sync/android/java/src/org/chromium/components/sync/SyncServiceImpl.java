@@ -461,14 +461,14 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
     @CalledByNative
     private static void onGetTypesWithUnsyncedDataResult(
-            Callback<Set<Integer>> callback, int[] types) {
+            Callback<Set<Integer>> callback, @JniType("std::vector<int32_t>") int[] types) {
         callback.onResult(dataTypeArrayToSet(types));
     }
 
     @CalledByNative
     private static void onGetLocalDataDescriptionsResult(
             Callback<HashMap<Integer, LocalDataDescription>> callback,
-            @JniType("std::vector<int>") int[] dataTypes,
+            @JniType("std::vector<int32_t>") int[] dataTypes,
             @JniType("std::vector<syncer::LocalDataDescription>")
                     LocalDataDescription[] localDataDescriptions) {
         HashMap<Integer, LocalDataDescription> localDataDescription =
@@ -481,7 +481,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
     /** Invokes the onResult method of the callback from native code. */
     @CalledByNative
-    private static void onGetAllNodesResult(Callback<JSONArray> callback, String serializedNodes) {
+    private static void onGetAllNodesResult(
+            Callback<JSONArray> callback, @JniType("std::string") String serializedNodes) {
         try {
             callback.onResult(new JSONArray(serializedNodes));
         } catch (JSONException e) {
@@ -548,8 +549,10 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         void setInitialSyncFeatureSetupComplete(
                 long nativeSyncServiceAndroidBridge, int syncFirstSetupCompleteSource);
 
+        @JniType("std::vector<int32_t>")
         int[] getActiveDataTypes(long nativeSyncServiceAndroidBridge);
 
+        @JniType("std::vector<int32_t>")
         int[] getSelectedTypes(long nativeSyncServiceAndroidBridge);
 
         void getTypesWithUnsyncedData(
@@ -557,10 +560,11 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         void getLocalDataDescriptions(
                 long nativeSyncServiceAndroidBridge,
-                int[] types,
+                @JniType("std::vector<int32_t>") int[] types,
                 Callback<HashMap<Integer, LocalDataDescription>> callback);
 
-        void triggerLocalDataMigration(long nativeSyncServiceAndroidBridge, int[] types);
+        void triggerLocalDataMigration(
+                long nativeSyncServiceAndroidBridge, @JniType("std::vector<int32_t>") int[] types);
 
         boolean isTypeManagedByPolicy(long nativeSyncServiceAndroidBridge, int type);
 
@@ -569,7 +573,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         void setSelectedTypes(
                 long nativeSyncServiceAndroidBridge,
                 boolean syncEverything,
-                int[] userSelectableTypeArray);
+                @JniType("std::vector<int32_t>") int[] userSelectableTypeArray);
 
         void setSelectedType(
                 long nativeSyncServiceAndroidBridge,
@@ -596,9 +600,11 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         int getUserActionableError(long nativeSyncServiceAndroidBridge);
 
-        void setEncryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
+        void setEncryptionPassphrase(
+                long nativeSyncServiceAndroidBridge, @JniType("std::string") String passphrase);
 
-        boolean setDecryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
+        boolean setDecryptionPassphrase(
+                long nativeSyncServiceAndroidBridge, @JniType("std::string") String passphrase);
 
         long getExplicitPassphraseTime(long nativeSyncServiceAndroidBridge);
 
@@ -625,6 +631,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         long getLastSyncedTimeForDebugging(long nativeSyncServiceAndroidBridge);
 
         void keepAccountSettingsPrefsOnlyForUsers(
-                long nativeSyncServiceAndroidBridge, String[] gaiaIds);
+                long nativeSyncServiceAndroidBridge,
+                @JniType("std::vector<std::string>") String[] gaiaIds);
     }
 }

@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -44,21 +45,28 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
 
     @CalledByNative
     public static JavascriptAppModalDialog createAlertDialog(
-            String title, String message, boolean shouldShowSuppressCheckBox) {
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String message,
+            boolean shouldShowSuppressCheckBox) {
         return new JavascriptAppModalDialog(
                 title, message, null, shouldShowSuppressCheckBox, R.string.ok, 0);
     }
 
     @CalledByNative
     public static JavascriptAppModalDialog createConfirmDialog(
-            String title, String message, boolean shouldShowSuppressCheckBox) {
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String message,
+            boolean shouldShowSuppressCheckBox) {
         return new JavascriptAppModalDialog(
                 title, message, null, shouldShowSuppressCheckBox, R.string.ok, R.string.cancel);
     }
 
     @CalledByNative
     public static JavascriptAppModalDialog createBeforeUnloadDialog(
-            String title, String message, boolean isReload, boolean shouldShowSuppressCheckBox) {
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String message,
+            boolean isReload,
+            boolean shouldShowSuppressCheckBox) {
         return new JavascriptAppModalDialog(
                 title,
                 message,
@@ -70,10 +78,10 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
 
     @CalledByNative
     public static JavascriptAppModalDialog createPromptDialog(
-            String title,
-            String message,
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String message,
             boolean shouldShowSuppressCheckBox,
-            String defaultPromptText) {
+            @JniType("std::u16string") String defaultPromptText) {
         return new JavascriptAppModalDialog(
                 title,
                 message,
@@ -128,7 +136,9 @@ public class JavascriptAppModalDialog extends JavascriptModalDialog {
     @NativeMethods
     interface Natives {
         void didAcceptAppModalDialog(
-                long nativeAppModalDialogViewAndroid, String prompt, boolean suppress);
+                long nativeAppModalDialogViewAndroid,
+                @JniType("std::u16string") String prompt,
+                boolean suppress);
 
         void didCancelAppModalDialog(long nativeAppModalDialogViewAndroid, boolean suppress);
 

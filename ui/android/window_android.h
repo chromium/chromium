@@ -235,4 +235,19 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
 }  // namespace ui
 
+namespace jni_zero {
+template <>
+inline ui::WindowAndroid* FromJniType<ui::WindowAndroid*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_obj) {
+  return ui::WindowAndroid::FromJavaWindowAndroid(j_obj);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
+                                             ui::WindowAndroid* obj) {
+  return obj->GetJavaObject();
+}
+}  // namespace jni_zero
+
 #endif  // UI_ANDROID_WINDOW_ANDROID_H_

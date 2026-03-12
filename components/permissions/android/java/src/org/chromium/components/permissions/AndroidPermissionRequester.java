@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApkInfo;
 import org.chromium.base.metrics.RecordHistogram;
@@ -85,7 +86,7 @@ public class AndroidPermissionRequester {
      */
     @CalledByNative
     public static boolean hasRequiredAndroidPermissionsForContentSetting(
-            AndroidPermissionDelegate permissionDelegate,
+            @JniType("ui::WindowAndroid*") AndroidPermissionDelegate permissionDelegate,
             @ContentSettingsType.EnumType int contentSettingsType) {
         Set<String> missingPermissions =
                 filterPermissionsKeepMissing(
@@ -163,10 +164,10 @@ public class AndroidPermissionRequester {
                         for (int i = 0; i < grantResults.length; i++) {
                             String histogramName = null;
                             switch (permissions[i]) {
-                                    // Even in the case of Fine location, Coarse
-                                    // location permission is also granted. We don't
-                                    // need to record histogram for both of them
-                                    // separately.
+                                // Even in the case of Fine location, Coarse
+                                // location permission is also granted. We don't
+                                // need to record histogram for both of them
+                                // separately.
                                 case "android.permission.ACCESS_COARSE_LOCATION":
                                     histogramName =
                                             "Permissions.AndroidSystemLevel.Location.Prompt.Shown";

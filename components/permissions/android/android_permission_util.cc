@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -18,6 +19,7 @@
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -45,22 +47,22 @@ void AppendRequiredAndroidPermissionsForContentSetting(
     ContentSettingsType content_settings_type,
     std::vector<std::string>* out) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::AppendJavaStringArrayToStringVector(
-      env,
+  std::vector<std::string> result =
       Java_PermissionUtil_getRequiredAndroidPermissionsForContentSetting(
-          env, static_cast<int>(content_settings_type)),
-      out);
+          env, static_cast<int>(content_settings_type));
+  out->insert(out->end(), std::make_move_iterator(result.begin()),
+              std::make_move_iterator(result.end()));
 }
 
 void AppendOptionalAndroidPermissionsForContentSetting(
     ContentSettingsType content_settings_type,
     std::vector<std::string>* out) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::AppendJavaStringArrayToStringVector(
-      env,
+  std::vector<std::string> result =
       Java_PermissionUtil_getOptionalAndroidPermissionsForContentSetting(
-          env, static_cast<int>(content_settings_type)),
-      out);
+          env, static_cast<int>(content_settings_type));
+  out->insert(out->end(), std::make_move_iterator(result.begin()),
+              std::make_move_iterator(result.end()));
 }
 
 bool HasRequiredAndroidPermissionsForContentSetting(
@@ -68,8 +70,7 @@ bool HasRequiredAndroidPermissionsForContentSetting(
     ContentSettingsType content_settings_type) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_AndroidPermissionRequester_hasRequiredAndroidPermissionsForContentSetting(
-      env, window_android->GetJavaObject(),
-      static_cast<int>(content_settings_type));
+      env, window_android, static_cast<int>(content_settings_type));
 }
 
 PermissionRepromptState ShouldRepromptUserForPermissions(
@@ -139,7 +140,7 @@ bool NeedsLocationPermissionForBluetooth(content::WebContents* web_contents) {
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
   return Java_PermissionUtil_needsLocationPermissionForBluetooth(
-      env, window_android->GetJavaObject());
+      env, window_android);
 }
 
 bool NeedsNearbyDevicesPermissionForBluetooth(
@@ -148,7 +149,7 @@ bool NeedsNearbyDevicesPermissionForBluetooth(
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
   return Java_PermissionUtil_needsNearbyDevicesPermissionForBluetooth(
-      env, window_android->GetJavaObject());
+      env, window_android);
 }
 
 bool NeedsLocationServicesForBluetooth() {
@@ -162,7 +163,7 @@ bool CanRequestSystemPermissionsForBluetooth(
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
   return Java_PermissionUtil_canRequestSystemPermissionsForBluetooth(
-      env, window_android->GetJavaObject());
+      env, window_android);
 }
 
 bool HasSystemPermission(ContentSettingsType type,
@@ -193,7 +194,7 @@ bool CanRequestSystemPermission(ContentSettingsType type,
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
   return Java_PermissionUtil_canRequestSystemPermission(
-      env, static_cast<int>(type), window_android->GetJavaObject());
+      env, static_cast<int>(type), window_android);
 }
 
 void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents) {
@@ -201,16 +202,15 @@ void RequestSystemPermissionsForBluetooth(content::WebContents* web_contents) {
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
   // TODO(crbug.com/40255210): Pass the callback from native layer.
-  return Java_PermissionUtil_requestSystemPermissionsForBluetooth(
-      env, window_android->GetJavaObject(), nullptr);
+  Java_PermissionUtil_requestSystemPermissionsForBluetooth(env, window_android,
+                                                           nullptr);
 }
 
 void RequestLocationServices(content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto* window_android = web_contents->GetNativeView()->GetWindowAndroid();
   DCHECK(window_android);
-  return Java_PermissionUtil_requestLocationServices(
-      env, window_android->GetJavaObject());
+  Java_PermissionUtil_requestLocationServices(env, window_android);
 }
 
 base::AutoReset<bool> EnableSystemLocationSettingForTesting() {
@@ -226,7 +226,7 @@ void ResolvePermissionWithOSPrompt(content::WebContents* web_contents,
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PermissionUtil_handlePermissionPromptAllow(
-      env, window_android->GetJavaObject(), web_contents->GetJavaWebContents(),
+      env, window_android, web_contents,
       static_cast<int>(content_settings_type));
 }
 
@@ -310,18 +310,14 @@ void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
 // valid.
 static void JNI_PermissionUtil_DismissNotificationsPermissionRequest(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jweb_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
+    content::WebContents* web_contents) {
   permissions::internal::DismissNotificationsPermissionRequest(web_contents);
 }
 
 static void JNI_PermissionUtil_ResolveNotificationsPermissionRequest(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     int32_t content_setting) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
   ContentSetting setting = static_cast<ContentSetting>(content_setting);
   permissions::internal::ResolveNotificationsPermissionRequest(web_contents,
                                                                setting);
@@ -333,9 +329,7 @@ static void JNI_PermissionUtil_ResolveNotificationsPermissionRequest(
 // omnibox.
 static void JNI_PermissionUtil_NotifyQuietIconDismissed(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jweb_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
+    content::WebContents* web_contents) {
   if (!web_contents) {
     return;
   }

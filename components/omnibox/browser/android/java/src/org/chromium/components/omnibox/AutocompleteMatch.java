@@ -197,34 +197,34 @@ public class AutocompleteMatch {
     private static AutocompleteMatch build(
             long nativeObject,
             int nativeType,
-            int[] nativeSubtypes,
+            @JniType("std::vector<int32_t>") int[] nativeSubtypes,
             boolean isSearchType,
             int iconType,
             int transition,
-            String contents,
-            int[] contentClassificationOffsets,
-            int[] contentClassificationStyles,
-            String description,
-            int[] descriptionClassificationOffsets,
-            int[] descriptionClassificationStyles,
+            @JniType("std::u16string") String contents,
+            @JniType("std::vector<int32_t>") int[] contentClassificationOffsets,
+            @JniType("std::vector<int32_t>") int[] contentClassificationStyles,
+            @JniType("std::u16string") String description,
+            @JniType("std::vector<int32_t>") int[] descriptionClassificationOffsets,
+            @JniType("std::vector<int32_t>") int[] descriptionClassificationStyles,
             byte[] serializedAnswerTemplate,
             int answerType,
-            String fillIntoEdit,
-            GURL url,
-            GURL imageUrl,
-            String imageDominantColor,
+            @JniType("std::u16string") String fillIntoEdit,
+            @JniType("GURL") GURL url,
+            @JniType("GURL") GURL imageUrl,
+            @JniType("std::string") String imageDominantColor,
             boolean isDeletable,
-            String postContentType,
+            @JniType("std::string") String postContentType,
             byte[] postData,
             int groupId,
             byte[] clipboardImageData,
             boolean hasTabMatch,
             @JniType("std::vector") List<OmniboxAction> actions,
             boolean allowedToBeDefaultMatch,
-            String inlineAutocompletion,
-            String additionalText,
-            String localTabGroupId,
-            String associatedKeyword,
+            @JniType("std::u16string") String inlineAutocompletion,
+            @JniType("std::u16string") String additionalText,
+            @JniType("base::Uuid") String localTabGroupId,
+            @JniType("std::u16string") String associatedKeyword,
             byte[] serializedSuggestTemplate) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
@@ -298,9 +298,9 @@ public class AutocompleteMatch {
      */
     @CalledByNative
     private void updateClipboardContent(
-            String contents,
-            GURL url,
-            @Nullable String postContentType,
+            @JniType("std::u16string") String contents,
+            @JniType("GURL") GURL url,
+            @JniType("std::string") @Nullable String postContentType,
             byte @Nullable [] postData,
             byte @Nullable [] clipboardImageData) {
         mDisplayText = contents;
@@ -317,7 +317,10 @@ public class AutocompleteMatch {
 
     @CalledByNative
     @VisibleForTesting
-    void updateNavigationDetails(GURL url, String[] headerKeys, String[] headerVals) {
+    void updateNavigationDetails(
+            @JniType("GURL") GURL url,
+            @JniType("std::vector<std::string>") String[] headerKeys,
+            @JniType("std::vector<std::string>") String[] headerVals) {
         mUrl = url;
         assert headerKeys.length == headerVals.length;
 
@@ -344,9 +347,9 @@ public class AutocompleteMatch {
 
     @CalledByNative
     private void setDescription(
-            String description,
-            int[] descriptionClassificationOffsets,
-            int[] descriptionClassificationStyles) {
+            @JniType("std::u16string") String description,
+            @JniType("std::vector<int32_t>") int[] descriptionClassificationOffsets,
+            @JniType("std::vector<int32_t>") int[] descriptionClassificationStyles) {
         assert descriptionClassificationOffsets.length == descriptionClassificationStyles.length;
         mDescription = description;
         mDescriptionClassifications.clear();
