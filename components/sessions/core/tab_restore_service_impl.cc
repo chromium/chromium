@@ -379,7 +379,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
   // Create the Window entry.
   std::unique_ptr<sessions::tab_restore::Window> window =
       std::make_unique<sessions::tab_restore::Window>();
-  window->type = type;
+  window->window_type = type;
   window->selected_tab_index = fields.selected_tab_index;
   window->timestamp = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(fields.timestamp));
@@ -823,9 +823,9 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForWindow(
     return;  // No tabs to persist.
   }
   command_storage_manager_->ScheduleCommand(CreateWindowCommand(
-      window.id, window.type, std::min(real_selected_tab, valid_tab_count - 1),
-      valid_tab_count, window.bounds, window.show_state, window.workspace,
-      window.timestamp));
+      window.id, window.window_type,
+      std::min(real_selected_tab, valid_tab_count - 1), valid_tab_count,
+      window.bounds, window.show_state, window.workspace, window.timestamp));
 
   if (!window.app_name.empty()) {
     command_storage_manager_->ScheduleCommand(CreateSetWindowAppNameCommand(
@@ -1426,7 +1426,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::OnGotPreviousSession(
 bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
     SessionWindow* session_window,
     tab_restore::Window* window) {
-  window->type = session_window->type;
+  window->window_type = session_window->type;
 
   // The groups in ` window`. The group visual data must also be explicitly set
   // on grouped tabs.

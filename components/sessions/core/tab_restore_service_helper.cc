@@ -208,7 +208,7 @@ void TabRestoreServiceHelper::BrowserClosing(LiveTabContext* context) {
   closing_contexts_.insert(context);
 
   auto window = std::make_unique<Window>();
-  window->type = context->GetWindowType();
+  window->window_type = context->GetWindowType();
   window->selected_tab_index = context->GetSelectedIndex();
   window->timestamp = TimeNow();
   window->app_name = context->GetAppName();
@@ -681,7 +681,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       // restored.
       if (entry_id_matches_restore_id || !window.app_name.empty()) {
         context = client_->CreateLiveTabContext(
-            context, window.type, window.app_name, window.bounds,
+            context, window.window_type, window.app_name, window.bounds,
             window.show_state, window.workspace, window.user_title,
             window.extra_data);
 

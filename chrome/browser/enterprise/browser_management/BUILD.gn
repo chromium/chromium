@@ -12,8 +12,7 @@ source_set("management_identity") {
 }
 
 source_set("management_identity_impl") {
-  # TODO(crbug.com/486837808): Fix the warnings to enable the next line.
-  # configs += [ "//components/enterprise:extra_warnings" ]
+  configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [ "management_identity.cc" ]
 

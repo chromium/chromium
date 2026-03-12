@@ -492,7 +492,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
     Entry* entry = service_->entries().front().get();
     EXPECT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
     Window* window = static_cast<Window*>(entry);
-    EXPECT_EQ(sessions::SessionWindow::TYPE_APP_POPUP, window->type);
+    EXPECT_EQ(sessions::SessionWindow::TYPE_APP_POPUP, window->window_type);
     EXPECT_EQ(0, window->selected_tab_index);
     EXPECT_EQ("app-name", window->app_name);
     EXPECT_EQ("user-title", window->user_title);
@@ -796,7 +796,7 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSession) {
   ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry2->type);
   sessions::tab_restore::Window* window =
       static_cast<sessions::tab_restore::Window*>(entry2);
-  EXPECT_EQ(sessions::SessionWindow::TYPE_NORMAL, window->type);
+  EXPECT_EQ(sessions::SessionWindow::TYPE_NORMAL, window->window_type);
   ASSERT_EQ(1U, window->tabs.size());
   EXPECT_EQ(0, window->timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
   EXPECT_EQ(0, window->selected_tab_index);
