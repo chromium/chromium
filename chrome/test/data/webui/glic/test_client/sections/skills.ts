@@ -68,6 +68,11 @@ function updateSkillsListUi(skillPreviews: SkillPreview[]) {
     id.innerText = skill.id;
     li.appendChild(id);
 
+    // Divider.
+    const divider = document.createElement('SPAN');
+    divider.innerText = ' : ';
+    li.appendChild(divider);
+
     // Name.
     const name = document.createElement('SPAN');
     name.innerText = skill.name;
