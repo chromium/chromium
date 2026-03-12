@@ -1225,6 +1225,47 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
   return least_priority_buttons;
 }
 
+std::vector<WebOptionElement> GetOptionElements(
+    const WebSelectElement& select_element) {
+  std::vector<WebElement> option_elements = select_element.GetListItems();
+
+  // Constrain the maximum list length to prevent a malicious site from DOS'ing
+  // the browser, without entirely breaking autocomplete for some extreme
+  // legitimate sites: http://crbug.com/49332 and http://crbug.com/363094
+  if (option_elements.size() > kMaxListSize) {
+    return {};
+  }
+  std::erase_if(option_elements, [](const WebElement& element) {
+    return !element.DynamicTo<WebOptionElement>();
+  });
+  return base::ToVector(option_elements, [](const WebElement& option) {
+    return option.DynamicTo<WebOptionElement>();
+  });
+}
+
+WebOptionElement FindOptionToSelect(const WebSelectElement& select,
+                                    const FormFieldData::FillData& data) {
+  std::vector<WebOptionElement> select_options = GetOptionElements(select);
+
+  WebString value_to_select(data.value);
+  WebString text_to_select = WebString::FromUTF16(data.selected_option_text);
+
+  WebOptionElement option_to_select;
+  for (const WebOptionElement& option : select_options) {
+    if (option.Value().Substring(0, kMaxStringLength) != value_to_select) {
+      continue;
+    }
+    if (option.GetText().Substring(0, kMaxStringLength) == text_to_select) {
+      option_to_select = option;
+      break;
+    }
+    if (!option_to_select) {
+      option_to_select = option;
+    }
+  }
+  return option_to_select;
+}
+
 bool ShouldSkipFillField(const FormFieldData::FillData& field,
                          const WebFormControlElement& element) {
   enum class SkipReason {
@@ -1338,8 +1379,19 @@ void FillFormField(const FormFieldData::FillData& data,
         FieldPropertiesFlags::kAutofilledOnUserTrigger);
   }
 
-  form_control.SetAutofillValue(WebString::FromUTF16(data.value),
-                                new_autofill_state);
+  if (WebSelectElement select_element =
+          form_control.DynamicTo<WebSelectElement>()) {
+    if (WebOptionElement new_option =
+            FindOptionToSelect(select_element, data)) {
+      select_element.SetAutofillOption(&new_option, new_autofill_state);
+    } else {
+      select_element.SetAutofillValue(WebString::FromUTF16(data.value),
+                                      new_autofill_state);
+    }
+  } else {
+    form_control.SetAutofillValue(WebString::FromUTF16(data.value),
+                                  new_autofill_state);
+  }
   // Changing the field's value might trigger JavaScript, which is capable
   // of destroying the frame.
   if (!form_control.GetDocument().GetFrame()) {
@@ -1389,7 +1441,17 @@ void PreviewFormField(const FormFieldData::FillData& data,
       break;
   }
 
-  form_control.SetSuggestedValue(WebString::FromUTF16(data.value));
+  if (WebSelectElement select_element =
+          form_control.DynamicTo<WebSelectElement>()) {
+    if (WebOptionElement new_option =
+            FindOptionToSelect(select_element, data)) {
+      select_element.SetSuggestedOption(&new_option);
+    } else {
+      select_element.SetSuggestedValue(WebString::FromUTF16(data.value));
+    }
+  } else {
+    form_control.SetSuggestedValue(WebString::FromUTF16(data.value));
+  }
   WebAutofillState new_autofill_state = data.is_autofilled
                                             ? WebAutofillState::kPreviewed
                                             : WebAutofillState::kNotFilled;
@@ -1795,34 +1857,16 @@ uint64_t GetMaxLength(const WebFormControlElement& element) {
 // returns {{.value = "Foo", .text = "Bar"}, {.value = "Foo", .text = "Foo"}}.
 // For more details, see the documentation of `SelectOption`.
 std::vector<SelectOption> GetSelectOptions(
-    const WebSelectElement& select_element) {
-  std::vector<WebElement> option_elements = select_element.GetListItems();
-
-  // Constrain the maximum list length to prevent a malicious site from DOS'ing
-  // the browser, without entirely breaking autocomplete for some extreme
-  // legitimate sites: http://crbug.com/49332 and http://crbug.com/363094
-  if (option_elements.size() > kMaxListSize) {
-    return {};
-  }
-
-  auto to_string = [](WebString s) {
-    return s.Utf16().substr(0, kMaxStringLength);
-  };
-  std::vector<SelectOption> options;
-  options.reserve(option_elements.size());
-  for (const auto& maybe_option_element : option_elements) {
-    if (auto option_element =
-            maybe_option_element.DynamicTo<WebOptionElement>()) {
-      std::u16string text = to_string(option_element.GetText());
-      if (text.empty()) {
-        text = GetAriaLabel(option_element.GetDocument(), option_element)
-                   .substr(0, kMaxStringLength);
-      }
-      options.push_back({.value = to_string(option_element.Value()),
-                         .text = std::move(text)});
-    }
-  }
-  return options;
+    const std::vector<WebOptionElement>& select_option_elements) {
+  return base::ToVector(
+      select_option_elements, [&](const WebOptionElement& option) {
+        WebString text = option.GetText();
+        return SelectOption{
+            .value = option.Value().Utf16().substr(0, kMaxStringLength),
+            .text = text.IsEmpty() ? GetAriaLabel(option.GetDocument(), option)
+                                         .substr(0, kMaxStringLength)
+                                   : text.Utf16().substr(0, kMaxStringLength)};
+      });
 }
 
 // Returns the SelectOptions for the <datalist> associated with the given
@@ -2024,7 +2068,19 @@ void WebFormControlElementToFormField(
   } else {
     // Set option strings on the field if available.
     DCHECK(IsSelectElement(element));
-    field->set_options(GetSelectOptions(element.To<WebSelectElement>()));
+
+    std::vector<WebOptionElement> select_option_elements =
+        GetOptionElements(element.To<WebSelectElement>());
+    field->set_options(GetSelectOptions(select_option_elements));
+
+    CHECK_EQ(field->options().size(), select_option_elements.size());
+    for (const auto [option, option_element] :
+         base::zip(field->options(), select_option_elements)) {
+      if (option_element.IsSelected()) {
+        field->set_selected_option_text(option.text);
+        break;
+      }
+    }
   }
 
   if (auto* local_frame = element.GetDocument().GetFrame()) {

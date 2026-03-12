@@ -498,10 +498,14 @@ INSTANTIATE_TEST_SUITE_P(
 struct FillAugmentedPhoneCountryCodeTestCase {
   std::vector<SelectOption> phone_country_code_selection_options;
   std::u16string phone_home_whole_number_value;
+
+  // When `AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes` is off.
   std::u16string expected_value;
-  // Expected value if
-  // kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes is enabled.
+  std::optional<std::u16string> expected_text;
+
+  // When `AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes` is on.
   std::u16string expected_value_with_new_cc_filling;
+  std::optional<std::u16string> expected_text_with_new_cc_filling;
 };
 
 // The first parameter indicates whether
@@ -534,10 +538,18 @@ void DoTestFillAugmentedPhoneCountryCodeField(
       enable_filling_phone_country_codes_by_address_country_codes
           ? test_case.expected_value_with_new_cc_filling
           : test_case.expected_value;
-  EXPECT_EQ(expected_value,
-            GetValueForProfile(profile, kAppLocale,
-                               AutofillType(PHONE_HOME_COUNTRY_CODE), field,
-                               /*address_normalizer=*/nullptr));
+  std::optional<std::u16string> expected_text =
+      enable_filling_phone_country_codes_by_address_country_codes
+          ? test_case.expected_text_with_new_cc_filling
+          : test_case.expected_text;
+
+  FillingValueAndType filling_value_and_type = GetFillingValueAndTypeForProfile(
+      profile, kAppLocale, AutofillType(PHONE_HOME_COUNTRY_CODE), field,
+      /*address_normalizer=*/nullptr);
+
+  ASSERT_EQ(filling_value_and_type.filling_type, PHONE_HOME_COUNTRY_CODE);
+  EXPECT_EQ(expected_value, filling_value_and_type.value);
+  EXPECT_EQ(expected_text, filling_value_and_type.select_text);
 }
 
 TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
@@ -556,162 +568,221 @@ INSTANTIATE_TEST_SUITE_P(
             // Filling phone country code selection field when one of the
             // options exactly matches the phone country code.
             FillAugmentedPhoneCountryCodeTestCase{
-                {{u"91", u"91"}, {u"1", u"1"}, {u"20", u"20"}, {u"49", u"49"}},
-                u"+15145554578",
-                u"1",
-                u"1"},
+                .phone_country_code_selection_options = {{u"91", u"91"},
+                                                         {u"1", u"1"},
+                                                         {u"20", u"20"},
+                                                         {u"49", u"49"}},
+                .phone_home_whole_number_value = u"+15145554578",
+                .expected_value = u"1",
+                .expected_text = u"1",
+                .expected_value_with_new_cc_filling = u"1",
+                .expected_text_with_new_cc_filling = u"1",
+            },
             // Filling phone country code selection field when the options
             // are preceded by a plus sign and the field is of
             // `PHONE_HOME_COUNTRY_CODE` type.
-            FillAugmentedPhoneCountryCodeTestCase{{{u"+91", u"+91"},
-                                                   {u"+1", u"+1"},
-                                                   {u"+20", u"+20"},
-                                                   {u"+49", u"+49"}},
-                                                  u"+918890888888",
-                                                  u"+91",
-                                                  u"+91"},
+            FillAugmentedPhoneCountryCodeTestCase{
+                .phone_country_code_selection_options = {{u"+91", u"+91"},
+                                                         {u"+1", u"+1"},
+                                                         {u"+20", u"+20"},
+                                                         {u"+49", u"+49"}},
+                .phone_home_whole_number_value = u"+918890888888",
+                .expected_value = u"+91",
+                .expected_text = u"+91",
+                .expected_value_with_new_cc_filling = u"+91",
+                .expected_text_with_new_cc_filling = u"+91",
+            },
             // Filling phone country code selection field when the options
             // are preceded by a '00' and the field is of
             // `PHONE_HOME_COUNTRY_CODE` type.
-            FillAugmentedPhoneCountryCodeTestCase{{{u"0091", u"0091"},
-                                                   {u"001", u"001"},
-                                                   {u"0020", u"0020"},
-                                                   {u"0049", u"0049"}},
-                                                  u"+918890888888",
-                                                  u"0091",
-                                                  u"0091"},
+            FillAugmentedPhoneCountryCodeTestCase{
+                .phone_country_code_selection_options = {{u"0091", u"0091"},
+                                                         {u"001", u"001"},
+                                                         {u"0020", u"0020"},
+                                                         {u"0049", u"0049"}},
+                .phone_home_whole_number_value = u"+918890888888",
+                .expected_value = u"0091",
+                .expected_text = u"0091",
+                .expected_value_with_new_cc_filling = u"0091",
+                .expected_text_with_new_cc_filling = u"0091",
+            },
             // Filling phone country code selection field when the options are
             // composed of the country code and the country name.
             FillAugmentedPhoneCountryCodeTestCase{
-                {{u"Please select an option", u"Please select an option"},
-                 {u"+91 (India)", u"+91 (India)"},
-                 {u"+1 (United States)", u"+1 (United States)"},
-                 {u"+20 (Egypt)", u"+20 (Egypt)"},
-                 {u"+49 (Germany)", u"+49 (Germany)"}},
-                u"+49151669087345",
-                u"+49 (Germany)",
-                u"+49 (Germany)"},
+                .phone_country_code_selection_options =
+                    {{u"Please select an option", u"Please select an option"},
+                     {u"+91 (India)", u"+91 (India)"},
+                     {u"+1 (United States)", u"+1 (United States)"},
+                     {u"+20 (Egypt)", u"+20 (Egypt)"},
+                     {u"+49 (Germany)", u"+49 (Germany)"}},
+                .phone_home_whole_number_value = u"+49151669087345",
+                .expected_value = u"+49 (Germany)",
+                .expected_text = u"+49 (Germany)",
+                .expected_value_with_new_cc_filling = u"+49 (Germany)",
+                .expected_text_with_new_cc_filling = u"+49 (Germany)",
+            },
             // Filling phone country code selection field when the options are
             // composed of the country code having whitespace and the country
             // name.
             FillAugmentedPhoneCountryCodeTestCase{
-                {{u"Please select an option", u"Please select an option"},
-                 {u"(00 91) India", u"(00 91) India"},
-                 {u"(00 1) United States", u"(00 1) United States"},
-                 {u"(00 20) Egypt", u"(00 20) Egypt"},
-                 {u"(00 49) Germany", u"(00 49) Germany"}},
-                u"+49151669087345",
-                u"(00 49) Germany",
-                u"(00 49) Germany"},
+                .phone_country_code_selection_options =
+                    {{u"Please select an option", u"Please select an option"},
+                     {u"(00 91) India", u"(00 91) India"},
+                     {u"(00 1) United States", u"(00 1) United States"},
+                     {u"(00 20) Egypt", u"(00 20) Egypt"},
+                     {u"(00 49) Germany", u"(00 49) Germany"}},
+                .phone_home_whole_number_value = u"+49151669087345",
+                .expected_value = u"(00 49) Germany",
+                .expected_text = u"(00 49) Germany",
+                .expected_value_with_new_cc_filling = u"(00 49) Germany",
+                .expected_text_with_new_cc_filling = u"(00 49) Germany",
+            },
             // Filling phone country code selection field when the options are
             // composed of the country code that is preceded by '00' and the
             // country name.
             FillAugmentedPhoneCountryCodeTestCase{
-                {{u"Please select an option", u"Please select an option"},
-                 {u"(0091) India", u"(0091) India"},
-                 {u"(001) United States", u"(001) United States"},
-                 {u"(0020) Egypt", u"(0020) Egypt"},
-                 {u"(0049) Germany", u"(0049) Germany"}},
-                u"+49151669087345",
-                u"(0049) Germany",
-                u"(0049) Germany"},
+                .phone_country_code_selection_options =
+                    {{u"Please select an option", u"Please select an option"},
+                     {u"(0091) India", u"(0091) India"},
+                     {u"(001) United States", u"(001) United States"},
+                     {u"(0020) Egypt", u"(0020) Egypt"},
+                     {u"(0049) Germany", u"(0049) Germany"}},
+                .phone_home_whole_number_value = u"+49151669087345",
+                .expected_value = u"(0049) Germany",
+                .expected_text = u"(0049) Germany",
+                .expected_value_with_new_cc_filling = u"(0049) Germany",
+                .expected_text_with_new_cc_filling = u"(0049) Germany",
+            },
             // Checking that the filling is smart about the filling of country
             // codes if the select options are identified by 2-character country
             // codes. In this case we, we try to use the country of the address
             // profile (unless that contradicts the phone country code).
             FillAugmentedPhoneCountryCodeTestCase{
-                {
-                    {u"AF", u"Afghanistan (+93)"},
-                    {u"AX", u"Åland Islands (+358)"},
-                    {u"AG", u"Antigua & Barbuda (+1)"},
-                    {u"CA", u"Canada (+1)"},
-                    {u"US", u"United States (+1)"},
-                },
-                u"+13124568754",
-                u"AG",  // This is undesired default behavior w/o the fix.
-                u"US"},
+                .phone_country_code_selection_options =
+                    {
+                        {u"AF", u"Afghanistan (+93)"},
+                        {u"AX", u"Åland Islands (+358)"},
+                        {u"AG", u"Antigua & Barbuda (+1)"},
+                        {u"CA", u"Canada (+1)"},
+                        {u"US", u"United States (+1)"},
+                    },
+                .phone_home_whole_number_value = u"+13124568754",
+                // This is undesired default behavior w/o the fix.
+                .expected_value = u"AG",
+                .expected_text = u"Antigua & Barbuda (+1)",
+                .expected_value_with_new_cc_filling = u"US",
+                .expected_text_with_new_cc_filling = u"United States (+1)",
+            },
             // If matches for the phone country code exist but a) they are
             // ambiguous and b) the entry selected by the address country code
             // does not contain a matching phone country code, we pick the first
             // match of the phone country code.
             FillAugmentedPhoneCountryCodeTestCase{
-                {
-                    {u"AF", u"Afghanistan (+93)"},
-                    {u"AX", u"Åland Islands (+358)"},
-                    {u"AG", u"Antigua & Barbuda (+1)"},
-                    {u"CA", u"Canada (+1)"},
-                    {u"US", u"United States (+49)"},
-                },
-                u"+13124568754",
-                u"AG",
-                u"AG"},
+                .phone_country_code_selection_options =
+                    {
+                        {u"AF", u"Afghanistan (+93)"},
+                        {u"AX", u"Åland Islands (+358)"},
+                        {u"AG", u"Antigua & Barbuda (+1)"},
+                        {u"CA", u"Canada (+1)"},
+                        {u"US", u"United States (+49)"},
+                    },
+                .phone_home_whole_number_value = u"+13124568754",
+                .expected_value = u"AG",
+                .expected_text = u"Antigua & Barbuda (+1)",
+                .expected_value_with_new_cc_filling = u"AG",
+                .expected_text_with_new_cc_filling = u"Antigua & Barbuda (+1)",
+            },
             // Check that if the option values don't match a country code, we
             // can match based on country name in the option label.
             FillAugmentedPhoneCountryCodeTestCase{
-                {
-                    {u"AF-93", u"Afghanistan (+93)"},
-                    {u"AX-358", u"Åland Islands (+358)"},
-                    {u"AG-1", u"Antigua & Barbuda (+1)"},
-                    {u"CA-1", u"Canada (+1)"},
-                    {u"US-1", u"United States (+1)"},
-                },
-                u"+13124568754",
-                u"AG-1",  // This is undesired default behavior w/o the fix.
-                u"US-1"},
+                .phone_country_code_selection_options =
+                    {
+                        {u"AF-93", u"Afghanistan (+93)"},
+                        {u"AX-358", u"Åland Islands (+358)"},
+                        {u"AG-1", u"Antigua & Barbuda (+1)"},
+                        {u"CA-1", u"Canada (+1)"},
+                        {u"US-1", u"United States (+1)"},
+                    },
+                .phone_home_whole_number_value = u"+13124568754",
+                // This is undesired default behavior w/o the fix.
+                .expected_value = u"AG-1",
+                .expected_text = u"Antigua & Barbuda (+1)",
+                .expected_value_with_new_cc_filling = u"US-1",
+                .expected_text_with_new_cc_filling = u"United States (+1)",
+            },
             // Test that autofill is capable of selecting "USA" even though it
             // matches neither the country code (US) nor the fully spelled out
             // name used in Chrome ("United States").
             FillAugmentedPhoneCountryCodeTestCase{
-                {
-                    // Entries have a pending whitespace to make life extra
-                    // difficult for the test.
-                    {u"uuid1", u"(+93) Afghanistan "},
-                    {u"uuid2", u"(+358) Åland Islands "},
-                    {u"uuid3", u"(+1) Antigua & Barbuda "},
-                    {u"uuid4", u"(+1) Canada "},
-                    {u"uuid5", u"(+1) USA "},
-                },
-                u"+13124568754",
-                u"uuid3",  // This is undesired default behavior w/o the fix.
-                u"uuid5"},
+                .phone_country_code_selection_options =
+                    {
+                        // Entries have a pending whitespace to make life extra
+                        // difficult for the test.
+                        {u"uuid1", u"(+93) Afghanistan"},
+                        {u"uuid2", u"(+358) Åland Islands"},
+                        {u"uuid3", u"(+1) Antigua & Barbuda"},
+                        {u"uuid4", u"(+1) Canada"},
+                        {u"uuid5", u"(+1) USA"},
+                    },
+                .phone_home_whole_number_value = u"+13124568754",
+                // This is undesired default behavior w/o the fix.
+                .expected_value = u"uuid3",
+                .expected_text = u"(+1) Antigua & Barbuda",
+                .expected_value_with_new_cc_filling = u"uuid5",
+                .expected_text_with_new_cc_filling = u"(+1) USA",
+            },
             // If the values are set randomly, make sure Autofill still
             // prioritizes relevant information.
             FillAugmentedPhoneCountryCodeTestCase{
-                {
-                    {u"1", u"Afghanistan (+93)"},
-                    {u"2", u"Åland Islands (+358)"},
-                    {u"3", u"Antigua & Barbuda (+1)"},
-                    {u"4", u"Canada (+1)"},
-                    {u"5", u"United States (+1)"},
-                },
-                u"+13124568754",
-                u"1",
-                u"5"},
+                .phone_country_code_selection_options =
+                    {
+                        {u"1", u"Afghanistan (+93)"},
+                        {u"2", u"Åland Islands (+358)"},
+                        {u"3", u"Antigua & Barbuda (+1)"},
+                        {u"4", u"Canada (+1)"},
+                        {u"5", u"United States (+1)"},
+                    },
+                .phone_home_whole_number_value = u"+13124568754",
+                .expected_value = u"1",
+                .expected_text = u"Afghanistan (+93)",
+                .expected_value_with_new_cc_filling = u"5",
+                .expected_text_with_new_cc_filling = u"United States (+1)",
+            },
             // Test that everything works if no phone country code can be
             // identified and only country names are presented.
             FillAugmentedPhoneCountryCodeTestCase{
-                {
-                    {u"AF", u"Afghanistan"},
-                    {u"AX", u"Åland Islands"},
-                    {u"AG", u"Antigua & Barbuda"},
-                    {u"CA", u"Canada"},
-                    {u"US", u"United States"},
-                },
-                u"+13124568754",
-                u"",  // This is undesired default behavior w/o the fix.
-                u"US"},
-            // Test that when the select options match in value, autofill
-            // chooses the correct option based on the labels.
+                .phone_country_code_selection_options =
+                    {
+                        {u"AF", u"Afghanistan"},
+                        {u"AX", u"Åland Islands"},
+                        {u"AG", u"Antigua & Barbuda"},
+                        {u"CA", u"Canada"},
+                        {u"US", u"United States"},
+                    },
+                .phone_home_whole_number_value = u"+13124568754",
+                // This is undesired default behavior w/o the fix.
+                .expected_value = u"",
+                .expected_text = std::nullopt,
+                .expected_value_with_new_cc_filling = u"US",
+                .expected_text_with_new_cc_filling = u"United States",
+            },
+            // Test that when the select options match in value, Autofill
+            // chooses the correct option based on the labels. In such cases,
+            // Autofill uses the country coming from the address country code to
+            // determine the correct country.
             FillAugmentedPhoneCountryCodeTestCase{
-                {
-                    {u"1", u"Canada (+1)"},
-                    {u"1", u"United States (+1)"},
-                    {u"49", u"Germany (+49)"},
-                },
-                u"+13124568754",
-                // TODO(crbug.com/485546288): Also add expected labels.
-                u"1",
-                u"1"})));
+                .phone_country_code_selection_options =
+                    {
+                        {u"1", u"Canada (+1)"},
+                        {u"1", u"United States (+1)"},
+                        {u"49", u"Germany (+49)"},
+                    },
+                .phone_home_whole_number_value = u"+13124568754",
+                .expected_value = u"1",
+                .expected_text = u"Canada (+1)",
+                .expected_value_with_new_cc_filling = u"1",
+                .expected_text_with_new_cc_filling = u"United States (+1)",
+            })));
 
 // Tests that the abbreviated state names are selected correctly.
 TEST_F(FieldFillingAddressUtilTest, FillSelectAbbreviatedState) {

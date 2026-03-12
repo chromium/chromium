@@ -141,6 +141,15 @@ bool StructTraits<
     out->set_value(std::move(value));
   }
   {
+    std::optional<std::u16string> selected_option_text;
+    if (!data.ReadSelectedOptionText(&selected_option_text)) {
+      return false;
+    }
+    if (selected_option_text) {
+      out->set_selected_option_text(*std::move(selected_option_text));
+    }
+  }
+  {
     std::u16string selected_text;
     if (!data.ReadSelectedText(&selected_text)) {
       return false;
@@ -324,6 +333,9 @@ bool StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
     Read(autofill::mojom::FormFieldData_FillDataDataView data,
          autofill::FormFieldData::FillData* out) {
   if (!data.ReadValue(&out->value)) {
+    return false;
+  }
+  if (!data.ReadSelectedOptionText(&out->selected_option_text)) {
     return false;
   }
   if (!data.ReadRendererId(&out->renderer_id)) {

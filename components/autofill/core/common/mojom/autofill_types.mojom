@@ -338,6 +338,7 @@ struct FormFieldData {
   mojo_base.mojom.String16 id_attribute;
   mojo_base.mojom.String16 name_attribute;
   mojo_base.mojom.String16 value;
+  mojo_base.mojom.String16? selected_option_text;
   mojo_base.mojom.String16 selected_text;
   FormControlType form_control_type;
   string autocomplete_attribute;
@@ -381,6 +382,7 @@ struct FormFieldData {
 // (components/autofill/core/common/form_field_filling_data.h)
 struct FormFieldData_FillData {
   mojo_base.mojom.String16 value;
+  mojo_base.mojom.String16? selected_option_text;
   FieldRendererId renderer_id;
   FormRendererId host_form_id;
   bool is_autofilled;
