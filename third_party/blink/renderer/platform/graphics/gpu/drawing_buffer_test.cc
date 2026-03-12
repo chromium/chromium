@@ -386,7 +386,33 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest {
   GLuint image_id0_;
 };
 
-TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
+TEST_F(DrawingBufferTest, TransferableResourcesAreNotOverlayCandidates) {
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+
+  // Produce a resource. The created resource should not be an overlay
+  // candidate.
+  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
+                                                           &release_callback));
+  EXPECT_FALSE(resource.GetIsOverlayCandidate());
+
+  drawing_buffer_->BeginDestruction();
+}
+
+TEST_F(DrawingBufferImageChromiumTest,
+       TransferableResourcesAreOverlayCandidates) {
+  viz::TransferableResource resource;
+  viz::ReleaseCallback release_callback;
+
+  // Produce a resource. The created resource should be an overlay candidate.
+  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
+                                                           &release_callback));
+  EXPECT_TRUE(resource.GetIsOverlayCandidate());
+
+  drawing_buffer_->BeginDestruction();
+}
+
+TEST_F(DrawingBufferTest, VerifyResizingReallocatesImages) {
   GLES2InterfaceForTests* gl_ = drawing_buffer_->ContextGLForTests();
   gpu::TestSharedImageInterface* sii =
       drawing_buffer_->SharedImageInterfaceForTests();
@@ -409,7 +435,6 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(initial_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.GetIsOverlayCandidate());
   EXPECT_EQ(initial_size, resource.GetSize());
   testing::Mock::VerifyAndClearExpectations(gl_);
   VerifyStateWasRestored();
@@ -446,7 +471,6 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(alternate_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.GetIsOverlayCandidate());
   EXPECT_EQ(alternate_size, resource.GetSize());
   gpu::Mailbox mailbox4 = gl_->last_imported_shared_image();
   EXPECT_EQ(2u, sii->shared_image_count());
@@ -483,7 +507,6 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(initial_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.GetIsOverlayCandidate());
   EXPECT_EQ(initial_size, resource.GetSize());
   testing::Mock::VerifyAndClearExpectations(gl_);
   gpu::Mailbox mailbox6 = gl_->last_imported_shared_image();
@@ -499,7 +522,6 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(initial_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.GetIsOverlayCandidate());
   EXPECT_EQ(initial_size, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
   EXPECT_EQ(2u, sii->shared_image_count());
