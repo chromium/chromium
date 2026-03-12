@@ -132,9 +132,6 @@ class FirstPartySetsManager {
   std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Timer starting when the instance is constructed. Used for metrics.
-  base::ElapsedTimer construction_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FirstPartySetsManager> weak_factory_{this};

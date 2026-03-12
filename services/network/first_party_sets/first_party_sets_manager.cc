@@ -132,10 +132,6 @@ void FirstPartySetsManager::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(sets_.has_value());
 
-  UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadyToServeQueries2",
-      construction_timer_.Elapsed());
-
   if (!pending_queries_) {
     return;
   }

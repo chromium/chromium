@@ -46,9 +46,6 @@ void FirstPartySetsLoader::SetManuallySpecifiedSet(
     return;
   }
   manually_specified_set_ = local_set;
-  UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadCommandLineSet2",
-      construction_timer_.Elapsed());
 
   MaybeFinishLoading();
 }
@@ -108,9 +105,6 @@ void FirstPartySetsLoader::OnReadSetsFile(base::Version version,
                                                    /*emit_metrics=*/true);
 
   component_sets_parse_progress_ = Progress::kFinished;
-  UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration.ReadComponentSets2",
-      construction_timer_.Elapsed());
   MaybeFinishLoading();
 }
 

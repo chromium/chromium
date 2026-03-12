@@ -82,9 +82,6 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   LoadCompleteOnceCallback on_load_complete_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Timer starting when the instance is constructed. Used for latency metrics.
-  base::ElapsedTimer construction_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FirstPartySetsLoader> weak_factory_{this};

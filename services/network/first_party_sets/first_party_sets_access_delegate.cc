@@ -208,11 +208,6 @@ void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   // !wait_for_init_ implies (pending_queries == nullptr).
   CHECK(wait_for_init_ || pending_queries_ == nullptr);
 
-  UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration."
-      "ContextReadyToServeQueries2",
-      construction_timer_.Elapsed());
-
   if (!pending_queries_) {
     return;
   }
