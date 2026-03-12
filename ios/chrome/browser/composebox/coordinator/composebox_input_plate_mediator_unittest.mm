@@ -253,6 +253,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
   void SetAIMEligible(bool AIMEligible) {
     EXPECT_CALL(*aim_eligibility_service_, IsAimEligible())
         .WillRepeatedly(testing::Return(AIMEligible));
+    EXPECT_CALL(*aim_eligibility_service_, IsFuseboxEligible())
+        .WillRepeatedly(testing::Return(AIMEligible));
   }
 
   void SetCreateImageEligible(bool createImagesEligible,

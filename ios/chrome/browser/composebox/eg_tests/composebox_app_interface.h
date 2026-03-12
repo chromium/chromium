@@ -10,8 +10,9 @@
 // App interface to interact with the Composebox.
 @interface ComposeboxAppInterface : NSObject
 
-// Sets the return value of MockIOSChromeAimEligibilityService::IsAimEligible.
-+ (void)setAimEligible:(BOOL)eligible;
+// Sets the return value of
+// MockIOSChromeAimEligibilityService::IsFuseboxEligible.
++ (void)setFuseboxEligible:(BOOL)eligible;
 
 // Sets the return value of
 // MockIOSChromeAimEligibilityService::IsCreateImagesEligible.
