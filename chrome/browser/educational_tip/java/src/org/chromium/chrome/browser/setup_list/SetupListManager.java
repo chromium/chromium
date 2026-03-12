@@ -439,9 +439,8 @@ public class SetupListManager
         int eventType = eventDetails.getEventTypeFor(ConsentLevel.SIGNIN);
         if (eventType == PrimaryAccountChangeEvent.Type.SET) {
             setModuleCompleted(ModuleType.SIGN_IN_PROMO, /* silent= */ false);
-        } else {
-            reconcileState();
         }
+        reconcileState();
         notifyStateChanged();
     }
 
