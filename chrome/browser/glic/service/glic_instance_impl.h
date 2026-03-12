@@ -57,6 +57,7 @@ class GlicTabContentsObserver;
 class GlicZeroStateSuggestionsManager;
 
 BASE_DECLARE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing);
+BASE_DECLARE_FEATURE(kGlicUnbindOnClose);
 
 // A GlicInstance owns a single host keeping any state that must exist for the
 // lifetime of the host. When a host is showing, the GlicInstance creates a
@@ -225,6 +226,7 @@ class GlicInstanceImpl : public GlicInstance,
           callback) override;
   void OnWebClientCleared() override;
   void PrepareForOpen() override;
+  void OnUserInputSubmitted(mojom::WebClientMode mode) override;
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override;
   glic::GlicInstanceMetrics* instance_metrics() override;
   glic::GlicInstanceMetricsBackwardsCompatibility&
@@ -301,12 +303,14 @@ class GlicInstanceImpl : public GlicInstance,
     base::CallbackListSubscription destruction_subscription;
     base::CallbackListSubscription tab_activation_subscription;
     std::unique_ptr<GlicTabContentsObserver> tab_web_contents_observer;
+    bool user_input_submitted_while_bound = false;
   };
 
   void NotifyStateChange();
 
   GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
+  EmbedderEntry* GetEmbedderEntry(EmbedderKey key);
   void DeactivateCurrentEmbedder();
   void OnAllEmbeddersInactive();
   GlicUiEmbedder* CreateActiveEmbedder(const ShowOptions& options);
@@ -319,6 +323,9 @@ class GlicInstanceImpl : public GlicInstance,
   void SetActiveEmbedderAndNotifyStateChange(
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyStateChange();
+  void CloseInternal(EmbedderKey key,
+                     EmbedderEntry& entry,
+                     const CloseOptions& options = {});
   void MaybeShowHostUi(GlicUiEmbedder* embedder,
                        mojom::InvocationSource source,
                        std::optional<std::string> prompt_suggestion,

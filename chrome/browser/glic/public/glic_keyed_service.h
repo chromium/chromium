@@ -298,7 +298,13 @@ class GlicKeyedService : public KeyedService,
   bool IsActive() override;
 #endif
 
-  void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
+  void OnUserInputSubmitted(glic::mojom::WebClientMode mode)
+// Override is only needed for single instance
+#if !BUILDFLAG(IS_ANDROID)
+      override;
+#else
+      ;
+#endif
 
   // Registers a callback to be called any time user input is submitted in the
   // client. This is used to update UI effects on tabs that are being shared

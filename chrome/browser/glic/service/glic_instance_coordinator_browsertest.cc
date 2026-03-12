@@ -234,6 +234,65 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, CloseHidesInstance) {
   }
 }
 
+class GlicInstanceCoordinatorUnbindOnCloseTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorUnbindOnCloseTest() {
+    feature_list_.InitAndEnableFeature(kGlicUnbindOnClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
+                       UnboundWhenNoInputSubmitted) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+
+  coordinator().CreateNewConversationForTabs({tab1, tab2});
+  auto* instance = coordinator().GetInstanceImplForTab(tab2);
+  ASSERT_TRUE(instance);
+  EXPECT_EQ(coordinator().GetInstanceForTab(tab1), instance);
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_TRUE(instance->IsShowing());
+
+  // Do not submit any input, close the side panel for the active tab (tab2).
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab2));
+
+  // Because no input was submitted and the flag is on, it should unbind from
+  // tab2.
+  EXPECT_FALSE(coordinator().GetInstanceForTab(tab2));
+
+  // But because it's still bound to tab1, the instance itself should still
+  // exist.
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_EQ(coordinator().GetInstanceForTab(tab1), instance);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
+                       KeptBoundWhenInputSubmitted) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
+
+  coordinator().CreateNewConversationForTabs({tab1, tab2});
+  auto* instance = coordinator().GetInstanceImplForTab(tab2);
+  ASSERT_TRUE(instance);
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_TRUE(instance->IsShowing());
+
+  // Simulate user input.
+  instance->OnUserInputSubmitted(mojom::WebClientMode::kText);
+
+  // Close the side panel for the active tab (tab2).
+  ASSERT_TRUE(CloseGlicForTabAndWait(tab2));
+
+  // Because input was submitted, it should NOT unbind from tab2, just hide.
+  EXPECT_TRUE(coordinator().GetInstanceForTab(tab2));
+  EXPECT_EQ(coordinator().GetInstances().size(), 1u);
+  EXPECT_FALSE(instance->IsShowing());
+}
+
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        CreateConversationForTabs) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();

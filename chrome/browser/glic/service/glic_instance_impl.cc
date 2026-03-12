@@ -105,6 +105,12 @@ BASE_FEATURE(kGlicSuppressAnimationsOnDetach, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicRemoveDaisyChainingWhenFreShowing,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE(kGlicUnbindOnClose, base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kGlicUnbindOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 namespace {
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   CHECK(tab);
@@ -394,15 +400,30 @@ void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
-  auto* embedder = GetEmbedderForKey(key);
-  if (!embedder) {
+  auto* entry = GetEmbedderEntry(key);
+  if (!entry || !entry->embedder) {
     return;
   }
+
+  if (base::FeatureList::IsEnabled(kGlicUnbindOnClose) &&
+      !entry->user_input_submitted_while_bound) {
+    UnbindEmbedder(key);
+    return;
+  }
+
+  CloseInternal(key, *entry, options);
+}
+
+void GlicInstanceImpl::CloseInternal(EmbedderKey key,
+                                     EmbedderEntry& entry,
+                                     const CloseOptions& options) {
   if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
     service_->metrics()->OnTrustFirstOnboardingDismissed();
   }
   instance_metrics_.OnClose();
-  embedder->Close(options);
+  if (entry.embedder) {
+    entry.embedder->Close(options);
+  }
 }
 
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,
@@ -440,9 +461,17 @@ bool GlicInstanceImpl::ContextAccessIndicatorEnabled() {
 }
 
 GlicUiEmbedder* GlicInstanceImpl::GetEmbedderForKey(EmbedderKey key) {
+  if (auto* entry = GetEmbedderEntry(key)) {
+    return entry->embedder.get();
+  }
+  return nullptr;
+}
+
+GlicInstanceImpl::EmbedderEntry* GlicInstanceImpl::GetEmbedderEntry(
+    EmbedderKey key) {
   auto it = embedders_.find(key);
   if (it != embedders_.end()) {
-    return it->second.embedder.get();
+    return &it->second;
   }
   return nullptr;
 }
@@ -637,6 +666,12 @@ void GlicInstanceImpl::PrepareForOpen() {
   }
 }
 
+void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode) {
+  for (auto& [key, entry] : embedders_) {
+    entry.user_input_submitted_while_bound = true;
+  }
+}
+
 void GlicInstanceImpl::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   interaction_mode_ = new_mode;
   sharing_manager_coordinator_.UpdateState(GetPanelState().kind,
@@ -671,7 +706,10 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
     }
   }
 
-  Close(key);
+  if (auto* entry = GetEmbedderEntry(key)) {
+    CloseInternal(key, *entry, CloseOptions{});
+  }
+
   // Deactivate if this was the active embedder. This ensures predictable state
   // for the other embedders and also cleans up the host delegate reference to
   // avoid a dangling raw_ptr.

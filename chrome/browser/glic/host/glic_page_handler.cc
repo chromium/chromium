@@ -655,8 +655,6 @@ class JournalHandler {
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
 };
 
-
-
 }  // namespace
 
 // WARNING: One instance of this class is created per WebUI navigated to
@@ -1720,6 +1718,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     // TODO(crbug.com/462769104): move this to a non-metrics API.
     sharing_manager().OnConversationTurnSubmitted();
+    host().instance_delegate().OnUserInputSubmitted(mode);
   }
 
   void OnContextUploadStarted() override {
