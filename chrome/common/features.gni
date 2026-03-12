@@ -25,6 +25,10 @@ import("//ui/webui/webui_features.gni")
 
 assert(use_blink, "Chromium without blink shouldn't use anything in //chrome")
 
+# IMPORTANT
+# We are not accepting any new build flags in //chrome. See
+# docs/chrome_browser_design_principles.md.
+#
 # Please keep features in alphabetical order.
 declare_args() {
   # Enables the build to have logging enabled by default.
