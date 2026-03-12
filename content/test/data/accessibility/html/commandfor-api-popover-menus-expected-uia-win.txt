@@ -10,7 +10,7 @@ Document
 ++++++MenuItem Name='First item' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++++MenuBar IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
 ++++++MenuItem Name='First item' ExpandCollapse.ExpandCollapseState='Expanded'
-++++Group IsControlElement=false
+++++Menu IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
 ++++++MenuItem Name='Submenu1 first item'
 ++++++MenuItem Name='Submenu1 second item' ExpandCollapse.ExpandCollapseState='Collapsed'
 ++++MenuBar IsControlElement=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false

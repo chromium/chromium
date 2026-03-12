@@ -4,7 +4,7 @@ rootWebArea
 ++++++button name='Show Menu'
 ++++++++staticText name='Show Menu'
 ++++++++++inlineTextBox name='Show Menu'
-++++++group name='Show Menu' setSize=2 ispopup=auto
+++++++menu name='Show Menu' setSize=2 ispopup=auto
 ++++++++menuItem name='Copy' setSize=2 posInSet=1
 ++++++++++staticText name='Copy'
 ++++++++++++inlineTextBox name='Copy'

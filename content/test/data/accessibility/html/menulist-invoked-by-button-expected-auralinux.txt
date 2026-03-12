@@ -1,5 +1,5 @@
 [document web]
 ++[section]
-++++[push button] name='Open Menu' label-for=[panel] name-from:contents
-++++[panel] name='Open Menu' labelled-by=[push button] name-from:related-element
+++++[push button] name='Open Menu' label-for=[menu] name-from:contents
+++++[menu] name='Open Menu' labelled-by=[push button] name-from:related-element
 ++++++[menu item] name='Item 1' name-from:contents

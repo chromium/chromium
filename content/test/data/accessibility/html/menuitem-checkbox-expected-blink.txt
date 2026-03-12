@@ -4,7 +4,7 @@ rootWebArea
 ++++++button name='Show Menu'
 ++++++++staticText name='Show Menu'
 ++++++++++inlineTextBox name='Show Menu'
-++++++group name='Show Menu' ispopup=auto
+++++++menu name='Show Menu' ispopup=auto
 ++++++++group
 ++++++++++menuItemCheckBox name='Checkbox 1' checkedState=true
 ++++++++++++staticText name='Checkbox 1'

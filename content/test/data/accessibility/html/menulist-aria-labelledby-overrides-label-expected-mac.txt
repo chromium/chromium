@@ -2,5 +2,5 @@ AXWebArea
 ++AXButton AXTitle='Implicit Button Name'
 ++AXGroup
 ++++AXStaticText AXValue='Labelledby Name'
-++AXGroup AXSubrole=AXApplicationGroup AXDescription='Labelledby Name'
+++AXMenu AXTitle='Labelledby Name'
 ++++AXMenuItem AXTitle='Item'

@@ -1,6 +1,6 @@
 [document web]
-++[push button] name='Implicit Button Name' details=[panel] details-from:command-for name-from:contents
-++[section] label-for=[panel]
+++[push button] name='Implicit Button Name' details=[menu] details-from:command-for name-from:contents
+++[section] label-for=[menu]
 ++++[static] name='Labelledby Name' name-from:contents
-++[panel] name='Labelledby Name' labelled-by=[section] details-for=[push button] name-from:related-element
+++[menu] name='Labelledby Name' labelled-by=[section] details-for=[push button] name-from:related-element
 ++++[menu item] name='Item' name-from:contents

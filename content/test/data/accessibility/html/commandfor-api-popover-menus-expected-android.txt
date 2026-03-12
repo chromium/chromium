@@ -10,7 +10,7 @@ android.webkit.WebView focusable focused
 ++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='First item' item_index=0 row_index=0 expanded_state=1
 ++++android.view.View role_description='menu bar' collection item_count=1 row_count=1 column_count=1 selection_mode=1
 ++++++android.view.MenuItem role_description='menu item' clickable collection_item expanded focusable interesting name='First item' item_index=0 row_index=0 expanded_state=3
-++++android.view.View selection_mode=1
+++++android.view.View role_description='menu' collection item_count=2 row_count=2 column_count=1 selection_mode=1
 ++++++android.view.MenuItem role_description='menu item' clickable collection_item focusable interesting name='Submenu1 first item' item_index=0 row_index=0
 ++++++android.view.MenuItem role_description='menu item' clickable collapsed collection_item focusable interesting name='Submenu1 second item' item_index=1 row_index=1 expanded_state=1
 ++++android.view.View role_description='menu bar' collection item_count=1 row_count=1 column_count=1 selection_mode=1

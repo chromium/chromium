@@ -1,5 +1,5 @@
 AXWebArea
 ++AXGroup
 ++++AXButton AXTitle='Open Menu'
-++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Open Menu'
+++++AXMenu AXTitle='Open Menu'
 ++++++AXMenuItem AXTitle='Item 1'

@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[push button] name='Button 1' details=[panel] details-from:command-for name-from:contents
-++++[push button] name='Button 2' label-for=[panel] name-from:contents
-++++[panel] name='Button 2' labelled-by=[push button] details-for=[push button] name-from:related-element
+++++[push button] name='Button 1' details=[menu] details-from:command-for name-from:contents
+++++[push button] name='Button 2' label-for=[menu] name-from:contents
+++++[menu] name='Button 2' labelled-by=[push button] details-for=[push button] name-from:related-element
 ++++++[menu item] name='Item 1' name-from:contents

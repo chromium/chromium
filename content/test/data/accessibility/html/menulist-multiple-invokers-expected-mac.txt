@@ -2,5 +2,5 @@ AXWebArea
 ++AXGroup
 ++++AXButton AXTitle='Button 1'
 ++++AXButton AXTitle='Button 2'
-++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Button 2'
+++++AXMenu AXTitle='Button 2'
 ++++++AXMenuItem AXTitle='Item 1'

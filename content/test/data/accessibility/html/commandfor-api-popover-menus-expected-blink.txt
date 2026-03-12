@@ -12,23 +12,27 @@ rootWebArea
 ++++++++menuItem name='Custom command item'
 ++++++++++staticText name='Custom command item'
 ++++++++++++inlineTextBox name='Custom command item'
+++++++menu ignored invisible
 ++++++button collapsed
 ++++++menuBar horizontal
 ++++++++menuItem collapsed name='First item'
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
+++++++menu ignored invisible
 ++++++menuBar horizontal
 ++++++++menuItem expanded name='First item'
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
-++++++group ispopup=auto
+++++++menu ispopup=auto
 ++++++++menuItem name='Submenu1 first item'
 ++++++++++staticText name='Submenu1 first item'
 ++++++++++++inlineTextBox name='Submenu1 first item'
 ++++++++menuItem collapsed name='Submenu1 second item'
 ++++++++++staticText name='Submenu1 second item'
 ++++++++++++inlineTextBox name='Submenu1 second item'
+++++++menu ignored invisible
 ++++++menuBar horizontal
 ++++++++menuItem collapsed name='First item'
 ++++++++++staticText name='First item'
 ++++++++++++inlineTextBox name='First item'
+++++++menu ignored invisible

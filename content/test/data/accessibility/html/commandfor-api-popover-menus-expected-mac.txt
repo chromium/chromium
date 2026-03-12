@@ -10,7 +10,7 @@ AXWebArea
 ++++++AXMenuItem AXExpanded=0 AXTitle='First item'
 ++++AXMenuBar
 ++++++AXMenuItem AXExpanded=1 AXTitle='First item'
-++++AXGroup AXSubrole=AXApplicationGroup
+++++AXMenu
 ++++++AXMenuItem AXTitle='Submenu1 first item'
 ++++++AXMenuItem AXExpanded=0 AXTitle='Submenu1 second item'
 ++++AXMenuBar

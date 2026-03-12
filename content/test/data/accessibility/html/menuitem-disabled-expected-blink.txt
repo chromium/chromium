@@ -1,13 +1,13 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++button name='Show Menu' detailsIds=group
+++++++button name='Show Menu' detailsIds=menu
 ++++++++staticText name='Show Menu'
 ++++++++++inlineTextBox name='Show Menu'
 ++++++menuItem name='Orphan Disabled' restriction=disabled
 ++++++++staticText name='Orphan Disabled'
 ++++++++++inlineTextBox name='Orphan Disabled'
-++++++group name='Show Menu' ispopup=auto
+++++++menu name='Show Menu' ispopup=auto
 ++++++++menuItem name='Item 1'
 ++++++++++staticText name='Item 1'
 ++++++++++++inlineTextBox name='Item 1'
