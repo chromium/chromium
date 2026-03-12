@@ -648,12 +648,15 @@ double OscillatorHandler::ProcessARate(
     base::span<float> phase_increments) const {
   int frames_processed = 0;
 
+// TODO(crbug.com/489740366): OscillatorNode is producing incorrect
+// results with NEON enabled.
+#if !defined(CPU_ARM_NEON)
   std::tie(frames_processed, virtual_read_index) =
       ProcessARateVector(n, destination, virtual_read_index, phase_increments);
+#endif  // !defined(CPU_ARM_NEON)
 
   virtual_read_index = ProcessARateScalar(frames_processed, n, destination,
                                           virtual_read_index, phase_increments);
-
   return virtual_read_index;
 }
 
