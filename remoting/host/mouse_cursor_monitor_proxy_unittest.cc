@@ -10,10 +10,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread.h"
+#include "base/test/test_future.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,22 +81,25 @@ class MouseCursorMonitorProxyTest
     : public testing::Test,
       public webrtc::MouseCursorMonitor::Callback {
  public:
-  MouseCursorMonitorProxyTest() : capture_thread_("test capture thread") {
-    capture_thread_.Start();
+  MouseCursorMonitorProxyTest() {
+    capture_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner({});
   }
 
   ~MouseCursorMonitorProxyTest() override {
     proxy_.reset();
-    base::RunLoop().RunUntilIdle();
+    base::test::TestFuture<void> future;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                          future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   // webrtc::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
-  base::Thread capture_thread_;
+  base::test::TaskEnvironment task_environment_;
+  base::test::TestFuture<void> future_;
+  scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
   std::unique_ptr<MouseCursorMonitorProxy> proxy_;
 
   MockClientStub client_stub_;
@@ -112,21 +115,21 @@ void MouseCursorMonitorProxyTest::OnMouseCursor(
   EXPECT_EQ(kHotspotY, mouse_cursor->hotspot().y());
   delete mouse_cursor;
 
-  run_loop_.Quit();
+  future_.SetValue();
 }
 
 TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
   // Initialize the proxy.
   proxy_ = std::make_unique<MouseCursorMonitorProxy>(
-      capture_thread_.task_runner(),
+      capture_task_runner_,
       base::ReturnValueOnce<std::unique_ptr<webrtc::MouseCursorMonitor>>(
           std::make_unique<ThreadCheckMouseCursorMonitor>(
-              capture_thread_.task_runner())));
+              capture_task_runner_)));
   proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
   proxy_->Capture();
 
-  // |run_loop_| will be stopped when the first cursor is received.
-  run_loop_.Run();
+  // |future_| will be satisfied when the first cursor is received.
+  ASSERT_TRUE(future_.Wait());
 }
 
 }  // namespace remoting

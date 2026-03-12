@@ -20,6 +20,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -170,6 +171,11 @@ void NamedMojoIpcServerTest::TearDown() {
   if (ipc_server_) {
     ipc_server_->StopServer();
   }
+  // Server cleanup is thread-sensitive. We must flush the ThreadPool (where
+  // the connector lives) and then the main thread (where the delegate proxy
+  // lives) to ensure all cross-thread destruction tasks complete before the
+  // task environment is destroyed.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   task_environment_.RunUntilIdle();
 }
 

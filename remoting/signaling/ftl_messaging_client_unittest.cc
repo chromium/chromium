@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "remoting/base/fake_oauth_token_getter.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/protobuf_http_client.h"
@@ -76,17 +77,6 @@ ftl::InboxMessage CreateInboxMessage(const std::string& message_id,
   EXPECT_TRUE(succeeded);
   message.set_message(serialized_message);
   return message;
-}
-
-base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
-    const base::Location& from_here,
-    HttpStatus::Code expected_status_code,
-    base::RunLoop* run_loop) {
-  return base::BindLambdaForTesting([=](const HttpStatus& status) {
-    ASSERT_EQ(status.error_code(), expected_status_code)
-        << "Incorrect status code. Location: " << from_here.ToString();
-    run_loop->QuitWhenIdle();
-  });
 }
 
 std::string GetChromotingMessageText(const ftl::InboxMessage& message) {
@@ -148,24 +138,20 @@ void FtlMessagingClientTest::TearDown() {
 }
 
 TEST_F(FtlMessagingClientTest, TestSendMessage_Unauthenticated) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<const HttpStatus&> future;
   messaging_client_->SendMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeReceiverId, ""),
-      CreateXmppMessage(kMessage1Text),
-      CheckStatusThenQuitRunLoopCallback(
-          FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
+      CreateXmppMessage(kMessage1Text), future.GetCallback());
   test_responder_.AddErrorToMostRecentRequestUrl(
       HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "Unauthenticated"));
-  run_loop.Run();
+  EXPECT_EQ(future.Get().error_code(), HttpStatus::Code::UNAUTHENTICATED);
 }
 
 TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithoutRegId) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<const HttpStatus&> future;
   messaging_client_->SendMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeReceiverId, ""),
-      CreateXmppMessage(kMessage1Text),
-      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
-                                         &run_loop));
+      CreateXmppMessage(kMessage1Text), future.GetCallback());
 
   ftl::InboxSendRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
@@ -176,17 +162,15 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithoutRegId) {
   EXPECT_EQ(GetChromotingMessageText(request.message()), kMessage1Text);
 
   test_responder_.AddResponseToMostRecentRequestUrl(ftl::InboxSendResponse());
-  run_loop.Run();
+  EXPECT_EQ(future.Get().error_code(), HttpStatus::Code::OK);
 }
 
 TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithRegId) {
-  base::RunLoop run_loop;
-  messaging_client_->SendMessage(
-      SignalingAddress::CreateFtlSignalingAddress(kFakeReceiverId,
-                                                  kFakeSenderRegId),
-      CreateXmppMessage(kMessage1Text),
-      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
-                                         &run_loop));
+  base::test::TestFuture<const HttpStatus&> future;
+  messaging_client_->SendMessage(SignalingAddress::CreateFtlSignalingAddress(
+                                     kFakeReceiverId, kFakeSenderRegId),
+                                 CreateXmppMessage(kMessage1Text),
+                                 future.GetCallback());
 
   ftl::InboxSendRequest request;
   ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
@@ -198,19 +182,17 @@ TEST_F(FtlMessagingClientTest, TestSendMessage_SendOneMessageWithRegId) {
   EXPECT_EQ(GetChromotingMessageText(request.message()), kMessage1Text);
 
   test_responder_.AddResponseToMostRecentRequestUrl(ftl::InboxSendResponse());
-  run_loop.Run();
+  EXPECT_EQ(future.Get().error_code(), HttpStatus::Code::OK);
 }
 
 TEST_F(FtlMessagingClientTest, TestStartReceivingMessages_CallbacksForwarded) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<const HttpStatus&> future;
 
   base::MockCallback<base::OnceClosure> mock_on_ready_closure;
   EXPECT_CALL(mock_on_ready_closure, Run()).WillOnce(Return());
 
-  messaging_client_->StartReceivingMessages(
-      mock_on_ready_closure.Get(),
-      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::UNKNOWN,
-                                         &run_loop));
+  messaging_client_->StartReceivingMessages(mock_on_ready_closure.Get(),
+                                            future.GetCallback());
 
   ftl::ReceiveMessagesResponse start_of_batch;
   start_of_batch.mutable_start_of_batch();
@@ -218,7 +200,7 @@ TEST_F(FtlMessagingClientTest, TestStartReceivingMessages_CallbacksForwarded) {
   test_responder_.AddStreamResponseToMostRecentRequestUrl(
       {&start_of_batch}, HttpStatus(HttpStatus::Code::UNKNOWN, ""));
 
-  run_loop.Run();
+  EXPECT_EQ(future.Get().error_code(), HttpStatus::Code::UNKNOWN);
 }
 
 TEST_F(FtlMessagingClientTest,

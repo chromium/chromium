@@ -11,9 +11,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/proto/coordinates.pb.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
@@ -146,22 +146,21 @@ WebrtcMouseCursorMonitorAdaptorTest::WebrtcMouseCursorMonitorAdaptorTest() {
 }
 
 TEST_F(WebrtcMouseCursorMonitorAdaptorTest, CaptureCursorShape) {
-  base::RunLoop run_loop;
   std::unique_ptr<webrtc::MouseCursor> cursor_to_send =
       std::make_unique<webrtc::MouseCursor>(
           std::make_unique<webrtc::BasicDesktopFrame>(
               webrtc::DesktopSize{64, 32}),
           webrtc::DesktopVector{11, 12});
   mouse_monitor_->set_cursor_to_send(std::move(cursor_to_send));
-  std::unique_ptr<webrtc::MouseCursor> captured_cursor;
+
+  base::test::TestFuture<std::unique_ptr<webrtc::MouseCursor>> future;
   EXPECT_CALL(callback_, OnMouseCursor(_))
       .WillOnce([&](std::unique_ptr<webrtc::MouseCursor> owned_cursor) {
-        captured_cursor = std::move(owned_cursor);
-        run_loop.Quit();
+        future.SetValue(std::move(owned_cursor));
       });
 
   adaptor_->Init(&callback_);
-  run_loop.Run();
+  std::unique_ptr<webrtc::MouseCursor> captured_cursor = future.Take();
 
   ASSERT_TRUE(captured_cursor);
   ASSERT_TRUE(captured_cursor->image()->size().equals({64, 32}));
@@ -173,17 +172,15 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest,
   display_info_monitor_->info.reset();
   mouse_monitor_->set_position_to_send(
       webrtc::DesktopVector{kFakeDisplayWidth - 1, kFakeDisplayHeight - 1});
-  base::RunLoop run_loop;
-  webrtc::DesktopVector captured_position;
+  base::test::TestFuture<webrtc::DesktopVector> future;
   EXPECT_CALL(callback_, OnMouseCursorPosition(_))
       .WillOnce([&](const webrtc::DesktopVector& position) {
-        captured_position = position;
-        run_loop.Quit();
+        future.SetValue(position);
       });
   EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_)).Times(0);
 
   adaptor_->Init(&callback_);
-  run_loop.Run();
+  webrtc::DesktopVector captured_position = future.Take();
 
   ASSERT_TRUE(display_info_monitor_->IsStarted());
   ASSERT_TRUE(captured_position.equals(
@@ -194,17 +191,15 @@ TEST_F(WebrtcMouseCursorMonitorAdaptorTest,
        CaptureCursorPosition_CursorNotInDisplay_OnlyReportsAbsolutePosition) {
   mouse_monitor_->set_position_to_send(
       webrtc::DesktopVector{kFakeDisplayWidth + 1, kFakeDisplayHeight + 1});
-  base::RunLoop run_loop;
-  webrtc::DesktopVector captured_position;
+  base::test::TestFuture<webrtc::DesktopVector> future;
   EXPECT_CALL(callback_, OnMouseCursorPosition(_))
       .WillOnce([&](const webrtc::DesktopVector& position) {
-        captured_position = position;
-        run_loop.Quit();
+        future.SetValue(position);
       });
   EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_)).Times(0);
 
   adaptor_->Init(&callback_);
-  run_loop.Run();
+  webrtc::DesktopVector captured_position = future.Take();
 
   ASSERT_TRUE(display_info_monitor_->IsStarted());
   ASSERT_TRUE(captured_position.equals(
@@ -216,24 +211,21 @@ TEST_F(
     CaptureCursorPosition_CursorInDisplay_ReportsAbsoluteAndFractionalPositions) {
   mouse_monitor_->set_position_to_send(
       webrtc::DesktopVector{kFakeDisplayWidth - 1, kFakeDisplayHeight - 1});
-  base::RunLoop run_loop_1;
-  webrtc::DesktopVector captured_position;
+  base::test::TestFuture<webrtc::DesktopVector> position_future;
   EXPECT_CALL(callback_, OnMouseCursorPosition(_))
       .WillOnce([&](const webrtc::DesktopVector& position) {
-        captured_position = position;
-        run_loop_1.Quit();
+        position_future.SetValue(position);
       });
-  base::RunLoop run_loop_2;
-  protocol::FractionalCoordinate captured_fractional_position;
+  base::test::TestFuture<protocol::FractionalCoordinate> fractional_future;
   EXPECT_CALL(callback_, OnMouseCursorFractionalPosition(_))
       .WillOnce([&](const protocol::FractionalCoordinate& position) {
-        captured_fractional_position = position;
-        run_loop_2.Quit();
+        fractional_future.SetValue(position);
       });
 
   adaptor_->Init(&callback_);
-  run_loop_1.Run();
-  run_loop_2.Run();
+  webrtc::DesktopVector captured_position = position_future.Take();
+  protocol::FractionalCoordinate captured_fractional_position =
+      fractional_future.Take();
 
   ASSERT_TRUE(display_info_monitor_->IsStarted());
   ASSERT_TRUE(captured_position.equals(

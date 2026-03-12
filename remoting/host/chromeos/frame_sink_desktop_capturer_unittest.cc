@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -13,8 +15,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -23,7 +25,6 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "remoting/host/chromeos/ash_proxy.h"
-#include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 #include "remoting/host/chromeos/scoped_fake_ash_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -306,9 +307,14 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
   }
 
   // We really want to flush the mojom pipe, but we can't as the mojom remote is
-  // hidden inside ClientFrameSinkDesktopCapturer, so we simply RunUntilIdle()
-  // instead.
-  void FlushForTesting() { base::RunLoop().RunUntilIdle(); }
+  // hidden inside ClientFrameSinkDesktopCapturer. We can use RunUntil to wait
+  // for any posted tasks to be processed.
+  void FlushForTesting() {
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return environment_.GetMainThreadTaskRunner()
+          ->RunsTasksInCurrentSequence();
+    }));
+  }
 
   FrameParameters frame_params() { return FrameParameters(); }
 
@@ -318,7 +324,8 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment environment_;
+  base::test::SingleThreadTaskEnvironment environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   DesktopCapturerCallback callback_;
   test::ScopedFakeAshProxy ash_proxy_;
   FrameSinkDesktopCapturer capturer_{ash_proxy_};

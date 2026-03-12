@@ -8,9 +8,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -120,7 +122,7 @@ class OAuthTokenGetterProxyTest : public testing::Test {
 
   void InvalidateTokenGetter();
 
-  base::Thread runner_thread_{"runner_thread"};
+  scoped_refptr<base::SingleThreadTaskRunner> runner_task_runner_;
   std::unique_ptr<FakeOAuthTokenGetter> token_getter_;
   std::unique_ptr<OAuthTokenGetterProxy> proxy_;
 
@@ -132,52 +134,59 @@ class OAuthTokenGetterProxyTest : public testing::Test {
   };
 
   void TestCallWithTokenImpl(OAuthTokenGetter::Status status,
-                             const OAuthTokenInfo& token_info);
+                             const OAuthTokenInfo& token_info,
+                             base::OnceClosure on_done);
 
-  void OnTokenReceived(OAuthTokenGetter::Status status,
+  void OnTokenReceived(base::OnceClosure on_done,
+                       OAuthTokenGetter::Status status,
                        const OAuthTokenInfo& token_info);
 
   std::unique_ptr<TokenCallbackResult> expected_callback_result_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 void OAuthTokenGetterProxyTest::SetUp() {
   token_getter_ = std::make_unique<FakeOAuthTokenGetter>();
-  runner_thread_.Start();
-  proxy_ = std::make_unique<OAuthTokenGetterProxy>(
-      token_getter_->GetWeakPtr(), runner_thread_.task_runner());
+  runner_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner({});
+  proxy_ = std::make_unique<OAuthTokenGetterProxy>(token_getter_->GetWeakPtr(),
+                                                   runner_task_runner_);
 }
 
 void OAuthTokenGetterProxyTest::TearDown() {
   InvalidateTokenGetter();
   proxy_.reset();
-  runner_thread_.FlushForTesting();
+  base::test::TestFuture<void> future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   ASSERT_FALSE(expected_callback_result_);
 }
 
 void OAuthTokenGetterProxyTest::TestCallWithTokenOnRunnerThread(
     OAuthTokenGetter::Status status,
     const OAuthTokenInfo& token_info) {
-  runner_thread_.task_runner()->PostTask(
+  base::test::TestFuture<void> future;
+  runner_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&OAuthTokenGetterProxyTest::TestCallWithTokenImpl,
-                     base::Unretained(this),
-                     OAuthTokenGetter::Status::AUTH_ERROR, token_info));
-  runner_thread_.FlushForTesting();
+      base::BindLambdaForTesting(
+          [&, quit_cb = future.GetSequenceBoundCallback()]() mutable {
+            TestCallWithTokenImpl(status, token_info, std::move(quit_cb));
+          }));
+  ASSERT_TRUE(future.Wait());
 }
 
 void OAuthTokenGetterProxyTest::TestCallWithTokenOnMainThread(
     OAuthTokenGetter::Status status,
     const OAuthTokenInfo& token_info) {
-  TestCallWithTokenImpl(status, token_info);
-  runner_thread_.FlushForTesting();
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> future;
+  TestCallWithTokenImpl(status, token_info, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 void OAuthTokenGetterProxyTest::ExpectInvalidateCache() {
   ASSERT_NE(nullptr, token_getter_.get());
-  runner_thread_.task_runner()->PostTask(
+  runner_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeOAuthTokenGetter::ExpectInvalidateCache,
                      token_getter_->GetFakeOAuthTokenGetterWeakPtr()));
@@ -185,28 +194,30 @@ void OAuthTokenGetterProxyTest::ExpectInvalidateCache() {
 
 void OAuthTokenGetterProxyTest::InvalidateTokenGetter() {
   if (token_getter_) {
-    runner_thread_.task_runner()->DeleteSoon(FROM_HERE,
-                                             token_getter_.release());
+    runner_task_runner_->DeleteSoon(FROM_HERE, token_getter_.release());
   }
 }
 
 void OAuthTokenGetterProxyTest::TestCallWithTokenImpl(
     OAuthTokenGetter::Status status,
-    const OAuthTokenInfo& token_info) {
+    const OAuthTokenInfo& token_info,
+    base::OnceClosure on_done) {
   ASSERT_FALSE(expected_callback_result_);
   expected_callback_result_ = std::make_unique<TokenCallbackResult>();
   expected_callback_result_->status = status;
   expected_callback_result_->user_email = token_info.user_email();
   expected_callback_result_->access_token = token_info.access_token();
-  proxy_->CallWithToken(base::BindOnce(
-      &OAuthTokenGetterProxyTest::OnTokenReceived, base::Unretained(this)));
-  runner_thread_.task_runner()->PostTask(
+  proxy_->CallWithToken(
+      base::BindOnce(&OAuthTokenGetterProxyTest::OnTokenReceived,
+                     base::Unretained(this), std::move(on_done)));
+  runner_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FakeOAuthTokenGetter::ResolveCallback,
                                 token_getter_->GetFakeOAuthTokenGetterWeakPtr(),
                                 status, token_info));
 }
 
 void OAuthTokenGetterProxyTest::OnTokenReceived(
+    base::OnceClosure on_done,
     OAuthTokenGetter::Status status,
     const OAuthTokenInfo& token_info) {
   ASSERT_TRUE(expected_callback_result_);
@@ -214,6 +225,7 @@ void OAuthTokenGetterProxyTest::OnTokenReceived(
   EXPECT_EQ(expected_callback_result_->user_email, token_info.user_email());
   EXPECT_EQ(expected_callback_result_->access_token, token_info.access_token());
   expected_callback_result_.reset();
+  std::move(on_done).Run();
 }
 
 TEST_F(OAuthTokenGetterProxyTest, CallWithTokenOnMainThread) {
@@ -233,15 +245,19 @@ TEST_F(OAuthTokenGetterProxyTest, CallWithTokenOnRunnerThread) {
 TEST_F(OAuthTokenGetterProxyTest, InvalidateCacheOnMainThread) {
   ExpectInvalidateCache();
   proxy_->InvalidateCache();
-  runner_thread_.FlushForTesting();
+  base::test::TestFuture<void> future;
+  runner_task_runner_->PostTask(FROM_HERE, future.GetSequenceBoundCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 TEST_F(OAuthTokenGetterProxyTest, InvalidateCacheOnRunnerThread) {
   ExpectInvalidateCache();
-  runner_thread_.task_runner()->PostTask(
+  runner_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&OAuthTokenGetterProxy::InvalidateCache,
                                 base::Unretained(proxy_.get())));
-  runner_thread_.FlushForTesting();
+  base::test::TestFuture<void> future;
+  runner_task_runner_->PostTask(FROM_HERE, future.GetSequenceBoundCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 TEST_F(
@@ -249,18 +265,22 @@ TEST_F(
     CallWithTokenOnMainThreadAfterTokenGetterDestroyed_callsSilentlyDropped) {
   InvalidateTokenGetter();
   proxy_->CallWithToken(GetDoNothingTokenCallback());
-  runner_thread_.FlushForTesting();
+  base::test::TestFuture<void> future;
+  runner_task_runner_->PostTask(FROM_HERE, future.GetSequenceBoundCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 TEST_F(
     OAuthTokenGetterProxyTest,
     CallWithTokenOnRunnerThreadAfterTokenGetterDestroyed_callsSilentlyDropped) {
   InvalidateTokenGetter();
-  runner_thread_.task_runner()->PostTask(
+  runner_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&OAuthTokenGetterProxy::CallWithToken,
                                 base::Unretained(proxy_.get()),
                                 GetDoNothingTokenCallback()));
-  runner_thread_.FlushForTesting();
+  base::test::TestFuture<void> future;
+  runner_task_runner_->PostTask(FROM_HERE, future.GetSequenceBoundCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 TEST_F(
@@ -268,17 +288,21 @@ TEST_F(
     InvalidateCacheOnMainThreadAfterTokenGetterDestroyed_callsSilentlyDropped) {
   InvalidateTokenGetter();
   proxy_->InvalidateCache();
-  runner_thread_.FlushForTesting();
+  base::test::TestFuture<void> future;
+  runner_task_runner_->PostTask(FROM_HERE, future.GetSequenceBoundCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 TEST_F(
     OAuthTokenGetterProxyTest,
     InvalidateCacheOnRunnerThreadAfterTokenGetterDestroyed_callsSilentlyDropped) {
   InvalidateTokenGetter();
-  runner_thread_.task_runner()->PostTask(
+  runner_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&OAuthTokenGetterProxy::InvalidateCache,
                                 base::Unretained(proxy_.get())));
-  runner_thread_.FlushForTesting();
+  base::test::TestFuture<void> future;
+  runner_task_runner_->PostTask(FROM_HERE, future.GetSequenceBoundCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 }  // namespace remoting

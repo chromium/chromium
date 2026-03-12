@@ -75,6 +75,7 @@ NamedMojoMessagePipeServer::NamedMojoMessagePipeServer(
 
 NamedMojoMessagePipeServer::~NamedMojoMessagePipeServer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StopServer();
 }
 
 void NamedMojoMessagePipeServer::StartServer() {
@@ -84,6 +85,10 @@ void NamedMojoMessagePipeServer::StartServer() {
     return;
   }
 
+  // The use of SequenceBound makes the lifetime of the connector and the
+  // delegate proxy thread-sensitive. Destruction of |endpoint_connector_|
+  // will post tasks across sequences, which must be accounted for during
+  // server shutdown.
   endpoint_connector_ = NamedMojoServerEndpointConnector::Create(
       io_sequence_, options_,
       base::SequenceBound<DelegateProxy>(
@@ -100,6 +105,10 @@ void NamedMojoMessagePipeServer::StopServer() {
     return;
   }
   server_started_ = false;
+  // Resetting |endpoint_connector_| will post a task to the IO sequence to
+  // destroy the connector. We must ensure this task (and any tasks it posts
+  // back to this sequence) completes before the server or task environment is
+  // destroyed to avoid memory leaks.
   endpoint_connector_.Reset();
 }
 

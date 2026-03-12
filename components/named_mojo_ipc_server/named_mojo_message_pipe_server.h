@@ -82,8 +82,6 @@ class NamedMojoMessagePipeServer {
  private:
   class DelegateProxy;
 
-  void OnEndpointConnectorStarted(
-      base::SequenceBound<NamedMojoServerEndpointConnector> endpoint_connector);
   void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
                          std::unique_ptr<ConnectionInfo> info);
   void OnServerEndpointCreated();

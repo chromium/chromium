@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/mock_signal_strategy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -114,10 +115,12 @@ TEST_F(IqSenderTest, Timeout) {
   expected_reply.error_type = JingleMessageReply::UNEXPECTED_REQUEST;
   expected_reply.text = "timeout";
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<IqRequest*, const JingleMessageReply&> future;
   EXPECT_CALL(callback_, Run(request_.get(), ReplyEq(expected_reply)))
-      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::QuitWhenIdle));
-  run_loop.Run();
+      .WillOnce([&](IqRequest* request, const JingleMessageReply& reply) {
+        future.SetValue(request, reply);
+      });
+  ASSERT_TRUE(future.Wait());
 }
 
 TEST_F(IqSenderTest, NotNormalizedJid) {

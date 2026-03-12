@@ -9,10 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread.h"
+#include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -40,23 +40,23 @@ class QueuedTaskPosterTest : public testing::Test {
   void AssertExecutionOrder(int order);
   void AssertSequenceNotStarted();
 
-  base::Thread target_thread_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   bool sequence_started_ = false;
 };
 
-QueuedTaskPosterTest::QueuedTaskPosterTest()
-    : target_thread_("Target Thread") {}
+QueuedTaskPosterTest::QueuedTaskPosterTest() = default;
 
 void QueuedTaskPosterTest::SetUp() {
-  target_thread_.StartAndWaitForTesting();
   main_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-  target_task_runner_ = target_thread_.task_runner();
+  target_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner({});
   poster_ = std::make_unique<QueuedTaskPoster>(target_task_runner_);
 }
 
 void QueuedTaskPosterTest::TearDown() {
-  target_thread_.Stop();
+  base::test::TestFuture<void> future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 }
 
 base::OnceClosure QueuedTaskPosterTest::SetSequenceStartedClosure(
@@ -76,11 +76,11 @@ base::OnceClosure QueuedTaskPosterTest::AssertSequenceNotStartedClosure() {
 }
 
 void QueuedTaskPosterTest::RunUntilPosterDone() {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> future;
   poster_->AddTask(base::BindOnce(
       base::IgnoreResult(&base::SingleThreadTaskRunner::PostTask),
-      main_task_runner_, FROM_HERE, run_loop.QuitClosure()));
-  run_loop.Run();
+      main_task_runner_, FROM_HERE, future.GetCallback()));
+  ASSERT_TRUE(future.Wait());
 }
 
 void QueuedTaskPosterTest::SetSequenceStarted(bool started) {

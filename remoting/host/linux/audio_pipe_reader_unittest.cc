@@ -15,9 +15,9 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,10 +34,10 @@ class AudioPipeReaderTest : public testing::Test,
   void SetUp() override {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     pipe_path_ = test_dir_.GetPath().AppendASCII("test_pipe");
-    audio_thread_.reset(new base::Thread("TestAudioThread"));
-    audio_thread_->StartWithOptions(
-        base::Thread::Options(base::MessagePumpType::IO, 0));
-    reader_ = AudioPipeReader::Create(audio_thread_->task_runner(), pipe_path_);
+    audio_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+    reader_ = AudioPipeReader::Create(audio_task_runner_, pipe_path_);
     reader_->AddObserver(this);
   }
 
@@ -47,7 +47,7 @@ class AudioPipeReaderTest : public testing::Test,
     if (stop_at_position_ > 0 &&
         static_cast<int>(read_data_.size()) >= stop_at_position_) {
       stop_at_position_ = -1;
-      run_loop_->Quit();
+      future_.SetValue();
     }
   }
 
@@ -64,9 +64,12 @@ class AudioPipeReaderTest : public testing::Test,
   }
 
   void WaitForInput(int num_bytes) {
-    run_loop_.reset(new base::RunLoop());
+    future_.Clear();
     stop_at_position_ = read_data_.size() + num_bytes;
-    run_loop_->Run();
+    if (static_cast<int>(read_data_.size()) >= stop_at_position_) {
+      return;
+    }
+    ASSERT_TRUE(future_.Wait());
   }
 
   void WriteAndWait(const std::string& data) {
@@ -75,9 +78,10 @@ class AudioPipeReaderTest : public testing::Test,
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<base::Thread> audio_thread_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  base::test::TestFuture<void> future_;
+  scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
   base::ScopedTempDir test_dir_;
   base::FilePath pipe_path_;
   std::unique_ptr<base::File> output_;

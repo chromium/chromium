@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -352,14 +353,9 @@ TEST_F(HeartbeatSenderTest, SetHostOfflineReason) {
 
 TEST_F(HeartbeatSenderTest, UnknownHostId) {
   EXPECT_CALL(*mock_client_, SendFullHeartbeat(_, _, _, _))
-      .WillRepeatedly(
-          [](bool is_initial_heartbeat, std::optional<std::string> signaling_id,
-             std::optional<std::string> offline_reason,
-             HeartbeatServiceClient::HeartbeatResponseCallback callback) {
-            std::move(callback).Run(
-                HttpStatus(HttpStatus::Code::NOT_FOUND, "not found"),
-                std::nullopt, "", false, std::nullopt);
-          });
+      .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<3>(
+          HttpStatus(HttpStatus::Code::NOT_FOUND, "not found"), std::nullopt,
+          "", false, std::nullopt));
 
   EXPECT_CALL(*mock_observer_, OnHeartbeatSent()).WillRepeatedly(Return());
 

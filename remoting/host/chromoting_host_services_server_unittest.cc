@@ -8,13 +8,16 @@
 #include "base/location.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
-#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/thread.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
 #include "mojo/public/c/system/types.h"
@@ -55,18 +58,15 @@ MULTIPROCESS_TEST_MAIN(ClientProcess) {
   // in BindChromotingHostServicesCallback.
   mojo::SimpleWatcher watcher(FROM_HERE,
                               mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC);
-  base::RunLoop run_loop;
-  watcher.Watch(
-      message_pipe.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      MOJO_WATCH_CONDITION_SATISFIED,
-      base::BindLambdaForTesting(
-          [&](MojoResult watch_result, const mojo::HandleSignalsState& state) {
-            ASSERT_EQ(watch_result, MOJO_RESULT_OK);
-            if (state.peer_closed()) {
-              run_loop.Quit();
-            }
-          }));
-  run_loop.Run();
+  base::test::TestFuture<MojoResult, const mojo::HandleSignalsState&> future;
+  watcher.Watch(message_pipe.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                MOJO_WATCH_CONDITION_SATISFIED, future.GetRepeatingCallback());
+  auto [watch_result, state] = future.Take();
+  EXPECT_EQ(watch_result, MOJO_RESULT_OK);
+  EXPECT_TRUE(state.peer_closed());
+  if (watch_result != MOJO_RESULT_OK || !state.peer_closed()) {
+    return 1;
+  }
   return 0;
 }
 
@@ -86,9 +86,6 @@ class ChromotingHostServicesServerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
 
-  // Helper thread to wait for process exit without blocking the main thread.
-  base::Thread wait_for_process_exit_thread_{"wait_for_process_exit"};
-
   base::MockCallback<ChromotingHostServicesServer::Validator> mock_validator_;
   base::MockCallback<
       ChromotingHostServicesServer::BindChromotingHostServicesCallback>
@@ -98,14 +95,15 @@ class ChromotingHostServicesServerTest : public testing::Test {
 };
 
 ChromotingHostServicesServerTest::ChromotingHostServicesServerTest() {
-  wait_for_process_exit_thread_.StartWithOptions(
-      base::Thread::Options(base::MessagePumpType::IO, 0));
-
   server_.StartServer();
 }
 
 ChromotingHostServicesServerTest::~ChromotingHostServicesServerTest() {
   server_.StopServer();
+  // Server cleanup is thread-sensitive. We must flush the ThreadPool (where
+  // the connector lives) and then the main thread (where the delegate proxy
+  // lives) to ensure all cross-thread destruction tasks complete.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   task_environment_.RunUntilIdle();
 }
 
@@ -120,14 +118,15 @@ int ChromotingHostServicesServerTest::WaitForProcessExit(
     base::Process& process) {
   int exit_code;
   bool process_exited = false;
-  base::RunLoop wait_for_process_exit_loop;
-  wait_for_process_exit_thread_.task_runner()->PostTaskAndReply(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
+  base::test::TestFuture<void> future;
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock()}, base::BindLambdaForTesting([&]() {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
         process_exited = base::WaitForMultiprocessTestChildExit(
             process, TestTimeouts::action_timeout(), &exit_code);
       }),
-      wait_for_process_exit_loop.QuitClosure());
-  wait_for_process_exit_loop.Run();
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
   process.Close();
   EXPECT_TRUE(process_exited);
   return exit_code;

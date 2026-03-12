@@ -203,6 +203,8 @@ class ResizingHostObserverTest : public testing::Test {
   std::unique_ptr<ResizingHostObserver> resizing_host_observer_;
   base::SimpleTestTickClock clock_;
   bool auto_advance_clock_ = true;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 // Check that the resolution isn't restored if it wasn't changed by this class.
@@ -347,9 +349,6 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
   NotifyDisplayInfo();
   auto_advance_clock_ = false;
 
-  base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
-
   EXPECT_EQ(MakeResolution(100, 100),
             GetBestResolution(MakeResolution(100, 100)));
   clock_.Advance(base::Milliseconds(900));
@@ -363,13 +362,10 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
   // Due to the kMinimumResizeIntervalMs constant in resizing_host_observer.cc,
   // We need to wait a total of 1000ms for the final resize to be processed.
   // Since it was queued 900 + 99 ms after the first, we need to wait an
-  // additional 1ms. However, since RunLoop is not guaranteed to process tasks
-  // with the same due time in FIFO order, wait an additional 1ms for safety.
-  task_environment.GetMainThreadTaskRunner()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
-  run_loop.Run();
+  // additional 1ms.
+  task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  // If the QuitClosure fired before the final resize, it's a test failure.
+  // If the final resize was not processed, it's a test failure.
   EXPECT_EQ(MakeResolution(300, 300), monitors_[123]);
 }
 

@@ -107,7 +107,12 @@ class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
         &NamedMojoIpcServer::OnIpcDisconnected, base::Unretained(this)));
   }
 
-  ~NamedMojoIpcServer() override = default;
+  ~NamedMojoIpcServer() override {
+    // StopServer() calls the virtual method UntrackAllMessagePipes(), so it
+    // must be called in the derived class destructor to avoid pure virtual
+    // function calls during destruction.
+    StopServer();
+  }
 
   NamedMojoIpcServer(const NamedMojoIpcServer&) = delete;
   NamedMojoIpcServer& operator=(const NamedMojoIpcServer&) = delete;
