@@ -11,15 +11,16 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/MetricsRecorder_jni.h"
+#include "chrome/android/chrome_jni_headers/SendTabToSelfMetricsRecorder_jni.h"
 
 namespace send_tab_to_self {
 
-static void JNI_MetricsRecorder_RecordNotificationShown(JNIEnv* env) {
+static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationShown(
+    JNIEnv* env) {
   RecordNotificationShown();
 }
 
-static void JNI_MetricsRecorder_AttachScrollObserver(
+static void JNI_SendTabToSelfMetricsRecorder_AttachScrollObserver(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_web_contents,
     jboolean has_scroll_position) {
@@ -31,38 +32,42 @@ static void JNI_MetricsRecorder_AttachScrollObserver(
   }
 }
 
-static void JNI_MetricsRecorder_RecordHasScrollPositionOnOpened(
+static void JNI_SendTabToSelfMetricsRecorder_RecordHasScrollPositionOnOpened(
     JNIEnv* env,
     jboolean has_scroll_position) {
   RecordHasScrollPositionOnOpened(has_scroll_position);
 }
 
-static void JNI_MetricsRecorder_RecordNotificationOpened(JNIEnv* env) {
+static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationOpened(
+    JNIEnv* env) {
   RecordNotificationOpened();
 }
 
-static void JNI_MetricsRecorder_RecordNotificationDismissed(JNIEnv* env) {
+static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationDismissed(
+    JNIEnv* env) {
   RecordNotificationDismissed();
 }
 
-static void JNI_MetricsRecorder_RecordNotificationTimedOut(JNIEnv* env) {
+static void JNI_SendTabToSelfMetricsRecorder_RecordNotificationTimedOut(
+    JNIEnv* env) {
   RecordNotificationTimedOut();
 }
 
-static void JNI_MetricsRecorder_RecordScrollPositionGenerationOutcome(
+static void
+JNI_SendTabToSelfMetricsRecorder_RecordScrollPositionGenerationOutcome(
     JNIEnv* env,
     jint outcome) {
   RecordScrollPositionGenerationOutcome(
       static_cast<ScrollPositionGenerationOutcome>(outcome));
 }
 
-static void JNI_MetricsRecorder_RecordScrollPositionGenerationTime(
+static void JNI_SendTabToSelfMetricsRecorder_RecordScrollPositionGenerationTime(
     JNIEnv* env,
     jlong duration_ms) {
   RecordScrollPositionGenerationTime(base::Milliseconds(duration_ms));
 }
 
-static void JNI_MetricsRecorder_RecordScrollPositionSelectorLength(
+static void JNI_SendTabToSelfMetricsRecorder_RecordScrollPositionSelectorLength(
     JNIEnv* env,
     jint length) {
   RecordScrollPositionSelectorLength(static_cast<size_t>(length));
@@ -70,4 +75,4 @@ static void JNI_MetricsRecorder_RecordScrollPositionSelectorLength(
 
 }  // namespace send_tab_to_self
 
-DEFINE_JNI(MetricsRecorder)
+DEFINE_JNI(SendTabToSelfMetricsRecorder)

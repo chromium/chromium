@@ -178,7 +178,7 @@ public class SendTabToSelfCoordinator {
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
         assert displayReason != null;
 
-        MetricsRecorder.recordCrossDeviceTabJourney();
+        SendTabToSelfMetricsRecorder.recordCrossDeviceTabJourney();
         switch (displayReason) {
             case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
                 mController.requestShowContent(

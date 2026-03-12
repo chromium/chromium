@@ -179,7 +179,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
 
         mController.hideContent(this, true);
 
-        MetricsRecorder.recordCrossDeviceTabJourney();
+        SendTabToSelfMetricsRecorder.recordCrossDeviceTabJourney();
         TargetDeviceInfo targetDeviceInfo = mAdapter.getItem(position);
 
         Tab tab = getTabIfScrollPositionCanBePropagated();
@@ -211,7 +211,7 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
     private void captureScrollPositionAndSendEntry(Tab tab, TargetDeviceInfo targetDeviceInfo) {
         WebContents webContents = tab.getWebContents();
         if (webContents == null) {
-            MetricsRecorder.recordScrollPositionGenerationOutcome(
+            SendTabToSelfMetricsRecorder.recordScrollPositionGenerationOutcome(
                     ScrollPositionGenerationOutcome.MAIN_FRAME_UNAVAILABLE);
             sendEntry(targetDeviceInfo);
             return;
@@ -281,13 +281,13 @@ class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickL
                 mPageContext =
                         SendTabToSelfAndroidBridge.addScrollPositionToPageContext(
                                 mPageContext, selector);
-                MetricsRecorder.recordScrollPositionSelectorLength(selector.length());
+                SendTabToSelfMetricsRecorder.recordScrollPositionSelectorLength(selector.length());
             }
         }
 
-        MetricsRecorder.recordScrollPositionGenerationOutcome(outcome);
+        SendTabToSelfMetricsRecorder.recordScrollPositionGenerationOutcome(outcome);
         assert mScrollPositionGenerationStartTime > 0;
-        MetricsRecorder.recordScrollPositionGenerationTime(
+        SendTabToSelfMetricsRecorder.recordScrollPositionGenerationTime(
                 SystemClock.elapsedRealtime() - mScrollPositionGenerationStartTime);
 
         sendEntry(targetDeviceInfo);

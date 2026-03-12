@@ -16,20 +16,16 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Class that captures all the metrics needed for Send Tab To Self on Android.
- *
- * <p>TODO(crbug.com/482925620): Rename this to SendTabToSelfMetricsRecorder.
- */
+/** Class that captures all the metrics needed for Send Tab To Self on Android. */
 @JNINamespace("send_tab_to_self")
 @NullMarked
-public class MetricsRecorder {
+public class SendTabToSelfMetricsRecorder {
     public static void recordCrossDeviceTabJourney() {
         RecordUserAction.record("MobileCrossDeviceTabJourney");
     }
 
     public static void recordNotificationShown() {
-        MetricsRecorderJni.get().recordNotificationShown();
+        SendTabToSelfMetricsRecorderJni.get().recordNotificationShown();
     }
 
     /**
@@ -66,37 +62,37 @@ public class MetricsRecorder {
     }
 
     private static void attachScrollObserver(WebContents webContents, boolean hasScrollPosition) {
-        MetricsRecorderJni.get().attachScrollObserver(webContents, hasScrollPosition);
+        SendTabToSelfMetricsRecorderJni.get().attachScrollObserver(webContents, hasScrollPosition);
     }
 
     public static void recordHasScrollPositionOnOpened(boolean hasScrollPosition) {
-        MetricsRecorderJni.get().recordHasScrollPositionOnOpened(hasScrollPosition);
+        SendTabToSelfMetricsRecorderJni.get().recordHasScrollPositionOnOpened(hasScrollPosition);
     }
 
     public static void recordNotificationOpened() {
         RecordUserAction.record("MobileCrossDeviceTabJourney");
-        MetricsRecorderJni.get().recordNotificationOpened();
+        SendTabToSelfMetricsRecorderJni.get().recordNotificationOpened();
     }
 
     public static void recordNotificationDismissed() {
-        MetricsRecorderJni.get().recordNotificationDismissed();
+        SendTabToSelfMetricsRecorderJni.get().recordNotificationDismissed();
     }
 
     public static void recordNotificationTimedOut() {
-        MetricsRecorderJni.get().recordNotificationTimedOut();
+        SendTabToSelfMetricsRecorderJni.get().recordNotificationTimedOut();
     }
 
     public static void recordScrollPositionGenerationOutcome(
             @ScrollPositionGenerationOutcome int outcome) {
-        MetricsRecorderJni.get().recordScrollPositionGenerationOutcome(outcome);
+        SendTabToSelfMetricsRecorderJni.get().recordScrollPositionGenerationOutcome(outcome);
     }
 
     public static void recordScrollPositionGenerationTime(long durationMs) {
-        MetricsRecorderJni.get().recordScrollPositionGenerationTime(durationMs);
+        SendTabToSelfMetricsRecorderJni.get().recordScrollPositionGenerationTime(durationMs);
     }
 
     public static void recordScrollPositionSelectorLength(int length) {
-        MetricsRecorderJni.get().recordScrollPositionSelectorLength(length);
+        SendTabToSelfMetricsRecorderJni.get().recordScrollPositionSelectorLength(length);
     }
 
     @NativeMethods

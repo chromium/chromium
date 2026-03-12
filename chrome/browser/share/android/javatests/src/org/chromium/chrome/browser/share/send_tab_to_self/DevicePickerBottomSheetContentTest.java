@@ -85,7 +85,7 @@ public class DevicePickerBottomSheetContentTest {
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private TextFragmentReceiver.Proxy mTextFragmentReceiver;
     @Mock private SendTabToSelfAndroidBridge.Natives mNativeMock;
-    @Mock private MetricsRecorder.Natives mMockMetricsRecorder;
+    @Mock private SendTabToSelfMetricsRecorder.Natives mMockSendTabToSelfMetricsRecorder;
     @Mock private IdentityManager mIdentityManager;
     private CoreAccountInfo mCoreAccountInfo;
     private AccountInfo mAccountInfo;
@@ -115,7 +115,7 @@ public class DevicePickerBottomSheetContentTest {
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
-        MetricsRecorderJni.setInstanceForTesting(mMockMetricsRecorder);
+        SendTabToSelfMetricsRecorderJni.setInstanceForTesting(mMockSendTabToSelfMetricsRecorder);
 
         mPageContext = new PageContext(new byte[] {1});
         mPageContextWithScrollPosition = new PageContext(new byte[] {2});
@@ -187,10 +187,12 @@ public class DevicePickerBottomSheetContentTest {
                         eq(mPageContextWithScrollPosition));
         verify(mBottomSheetController).hideContent(content, true);
 
-        verify(mMockMetricsRecorder)
+        verify(mMockSendTabToSelfMetricsRecorder)
                 .recordScrollPositionGenerationOutcome(ScrollPositionGenerationOutcome.SUCCESS);
-        verify(mMockMetricsRecorder).recordScrollPositionGenerationTime(any(Long.class));
-        verify(mMockMetricsRecorder).recordScrollPositionSelectorLength(eq("selector".length()));
+        verify(mMockSendTabToSelfMetricsRecorder)
+                .recordScrollPositionGenerationTime(any(Long.class));
+        verify(mMockSendTabToSelfMetricsRecorder)
+                .recordScrollPositionSelectorLength(eq("selector".length()));
 
         // Verify the observer unregistered itself.
         Assert.assertNull(((ObservableMockWebContents) mWebContents).observer);
@@ -223,7 +225,7 @@ public class DevicePickerBottomSheetContentTest {
                         eq(mPageContext));
         verify(mBottomSheetController).hideContent(content, true);
 
-        verify(mMockMetricsRecorder)
+        verify(mMockSendTabToSelfMetricsRecorder)
                 .recordScrollPositionGenerationOutcome(
                         ScrollPositionGenerationOutcome.EMPTY_SELECTOR);
 
@@ -273,7 +275,7 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
-        verify(mMockMetricsRecorder)
+        verify(mMockSendTabToSelfMetricsRecorder)
                 .recordScrollPositionGenerationOutcome(
                         ScrollPositionGenerationOutcome.MAIN_FRAME_UNAVAILABLE);
     }
@@ -322,7 +324,7 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
-        verify(mMockMetricsRecorder)
+        verify(mMockSendTabToSelfMetricsRecorder)
                 .recordScrollPositionGenerationOutcome(
                         ScrollPositionGenerationOutcome.BROWSER_TIMEOUT);
     }
@@ -351,7 +353,7 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
-        verify(mMockMetricsRecorder)
+        verify(mMockSendTabToSelfMetricsRecorder)
                 .recordScrollPositionGenerationOutcome(
                         ScrollPositionGenerationOutcome.MAIN_FRAME_CHANGED);
     }
@@ -380,7 +382,7 @@ public class DevicePickerBottomSheetContentTest {
                         eq("Title"),
                         eq("guid"),
                         eq(mPageContext));
-        verify(mMockMetricsRecorder)
+        verify(mMockSendTabToSelfMetricsRecorder)
                 .recordScrollPositionGenerationOutcome(
                         ScrollPositionGenerationOutcome.MAIN_FRAME_UNAVAILABLE);
     }

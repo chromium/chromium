@@ -234,8 +234,8 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.chrome.browser.share.send_tab_to_self.MetricsRecorder;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfMetricsRecorder;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
@@ -2902,7 +2902,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 && IntentUtils.safeGetBooleanExtra(
                         intent, IntentHandler.EXTRA_FROM_SEND_TAB_TO_SELF, false)
                 && IntentUtils.isTrustedIntentFromSelf(intent)) {
-            MetricsRecorder.attachScrollObserverToTab(
+            SendTabToSelfMetricsRecorder.attachScrollObserverToTab(
                     resultTab, loadUrlParams.getInternalScrollToTextFragment());
         }
     }

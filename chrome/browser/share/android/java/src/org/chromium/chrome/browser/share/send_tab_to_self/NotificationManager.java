@@ -101,16 +101,16 @@ public class NotificationManager {
                 openUrl(intent.getData(), scrollToTextFragment);
                 hideNotification(guid);
                 SendTabToSelfAndroidBridge.deleteEntry(profile, guid);
-                MetricsRecorder.recordNotificationOpened();
+                SendTabToSelfMetricsRecorder.recordNotificationOpened();
                 break;
             case NOTIFICATION_ACTION_DISMISS:
                 hideNotification(guid);
                 SendTabToSelfAndroidBridge.dismissEntry(profile, guid);
-                MetricsRecorder.recordNotificationDismissed();
+                SendTabToSelfMetricsRecorder.recordNotificationDismissed();
                 break;
             case NOTIFICATION_ACTION_TIMEOUT:
                 SendTabToSelfAndroidBridge.dismissEntry(profile, guid);
-                MetricsRecorder.recordNotificationTimedOut();
+                SendTabToSelfMetricsRecorder.recordNotificationTimedOut();
                 break;
         }
     }
@@ -241,7 +241,7 @@ public class NotificationManager {
                             PendingIntent.FLAG_UPDATE_CURRENT
                                     | IntentUtils.getPendingIntentMutabilityFlag(false)));
         }
-        MetricsRecorder.recordNotificationShown();
+        SendTabToSelfMetricsRecorder.recordNotificationShown();
         return true;
     }
 }
