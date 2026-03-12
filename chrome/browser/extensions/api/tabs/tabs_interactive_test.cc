@@ -44,7 +44,6 @@ namespace extensions {
 namespace keys = tabs_constants;
 namespace utils = api_test_utils;
 
-using ContextType = extensions::browser_test_util::ContextType;
 using ExtensionTabsTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
@@ -86,7 +85,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   api_test_utils::GetList(result, ExtensionTabUtil::kTabsKey);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
+using ExtensionTabsApiTest = ExtensionApiTest;
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabsApiTest, QueryLastFocusedWindowTabs) {
   const size_t kExtraWindows = 2;
   for (size_t i = 0; i < kExtraWindows; ++i) {
     CreateBrowser(GetProfile());
@@ -134,18 +135,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   }
 }
 
-class NonPersistentExtensionTabsTest
-    : public ExtensionApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  NonPersistentExtensionTabsTest() : ExtensionApiTest(GetParam()) {}
-  ~NonPersistentExtensionTabsTest() override = default;
-  NonPersistentExtensionTabsTest(const NonPersistentExtensionTabsTest&) =
-      delete;
-  NonPersistentExtensionTabsTest& operator=(
-      const NonPersistentExtensionTabsTest&) = delete;
-};
-
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
 #else
@@ -155,7 +144,7 @@ class NonPersistentExtensionTabsTest
 // Tests chrome.windows.create and chrome.windows.getCurrent.
 // TODO(crbug.com/40636155): Expand the test to verify that setSelfAsOpener
 // param is ignored from Service Worker extension scripts.
-IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsApiTest, MAYBE_TabCurrentWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/current_window")) << message_;
 }
 
@@ -167,8 +156,7 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
 #endif
 
 // Tests chrome.windows.getLastFocused.
-IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
-                       MAYBE_TabGetLastFocusedWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsApiTest, MAYBE_TabGetLastFocusedWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/last_focused_window")) << message_;
 }
 
@@ -176,18 +164,10 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
 // differently, which complicates the test. A separate  test should
 // be written for it to avoid complicating this one.
 #if !BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, WindowSetFocus) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsApiTest, WindowSetFocus) {
   ASSERT_TRUE(RunExtensionTest("window_update/set_focus")) << message_;
 }
 #endif
-
-INSTANTIATE_TEST_SUITE_P(EventPage,
-                         NonPersistentExtensionTabsTest,
-                         ::testing::Values(ContextType::kEventPage));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         NonPersistentExtensionTabsTest,
-                         ::testing::Values(ContextType::kServiceWorker));
 
 // TODO(llandwerlin): Activating a browser window and waiting for the
 // action to happen requires views::Widget which is not available on
