@@ -372,8 +372,7 @@ TEST_F(ComputedStyleTest,
   ComputedStyleBuilder builder(*style);
   builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
 
-  Vector<WillChangeValue> values({WillChangeValue{
-      .property_id = static_cast<uint16_t>(CSSPropertyID::kOpacity)}});
+  Vector<AtomicString> values({AtomicString("opacity")});
   CSSBitset bitset({CSSPropertyID::kOpacity});
   builder.SetWillChange(MakeGarbageCollected<StyleWillChangeData>(
       std::move(values), std::move(bitset), false, false, false));

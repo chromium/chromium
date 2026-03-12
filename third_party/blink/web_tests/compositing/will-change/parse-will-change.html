@@ -50,7 +50,7 @@ test(() => {
   assert_equals(getComputedStyle(willChangeMultiple, '').getPropertyValue('will-change'), 'opacity, contents, left, -webkit-transform');
 
   var willChangeContents = document.getElementById("willChangeWithArbitraryIdent");
-  assert_equals(getComputedStyle(willChangeWithArbitraryIdent, '').getPropertyValue('will-change'), 'opacity, top');
+  assert_equals(getComputedStyle(willChangeWithArbitraryIdent, '').getPropertyValue('will-change'), 'opacity, i-am-not-a-property, top');
 }, "Test getting will-change set through CSS");
 
 test(() => {
@@ -75,16 +75,16 @@ test(() => {
   assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'contents, scroll-position, opacity, -webkit-transform');
 
   element.style.willChange = "i-am-not-a-property, opacity, top";
-  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'opacity, top');
+  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'i-am-not-a-property, opacity, top');
 
   element.style.willChange = "opacity, i-am-not-a-property, top";
-  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'opacity, top');
+  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'opacity, i-am-not-a-property, top');
 
   element.style.willChange = "opacity, top, i-am-not-a-property";
-  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'opacity, top');
+  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'opacity, top, i-am-not-a-property');
 
   element.style.willChange = "i-am-not-a-property";
-  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'auto');
+  assert_equals(getComputedStyle(element, '').getPropertyValue('will-change'), 'i-am-not-a-property');
 }, "Test getting and setting will-change through JS");
 
 test(() => {

@@ -10,31 +10,17 @@
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-// https://drafts.csswg.org/css-will-change-1/#typedef-animateable-feature
-struct WillChangeValue {
-  DISALLOW_NEW();
-  uint16_t property_id : kCSSPropertyIDBitLength =
-                             static_cast<uint16_t>(CSSPropertyID::kInvalid);
-  uint16_t is_scroll_position : 1 = false;
-  uint16_t is_contents : 1 = false;
-
-  bool operator==(const WillChangeValue& other) const {
-    return property_id == other.property_id &&
-           is_scroll_position == other.is_scroll_position &&
-           is_contents == other.is_contents;
-  }
-};
 
 // Represents the value for CSS "will-change".
 // https://drafts.csswg.org/css-will-change-1/#propdef-will-change
 class CORE_EXPORT StyleWillChangeData
     : public GarbageCollected<StyleWillChangeData> {
  public:
-  StyleWillChangeData(Vector<WillChangeValue>&& values,
+  StyleWillChangeData(Vector<AtomicString>&& values,
                       CSSBitset&& resolved_longhand_ids,
                       bool has_scroll_position_value,
                       bool has_transform_property,
@@ -53,7 +39,7 @@ class CORE_EXPORT StyleWillChangeData
 
   // We can't directly store the values in the bitset. We need to preserve the
   // order for getComputedStyle().
-  const Vector<WillChangeValue> values;
+  const Vector<AtomicString> values;
 
   // The bitset only contains resolved longhand CSSPropertyID(s). No aliases.
   const CSSBitset resolved_longhand_ids;

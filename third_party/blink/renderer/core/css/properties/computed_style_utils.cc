@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/core/css/cssom_utils.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
@@ -2441,15 +2442,14 @@ CSSValue* ComputedStyleUtils::ValueForWillChange(
     const StyleWillChangeData* will_change) {
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   if (will_change) {
-    for (const auto& value : will_change->values) {
-      if (value.is_contents) {
+    for (const AtomicString& value : will_change->values) {
+      const CSSValueID id = CssValueKeywordID(value);
+      if (id == CSSValueID::kContents) {
         list->Append(*CSSIdentifierValue::Create(CSSValueID::kContents));
-      } else if (value.is_scroll_position) {
+      } else if (id == CSSValueID::kScrollPosition) {
         list->Append(*CSSIdentifierValue::Create(CSSValueID::kScrollPosition));
       } else {
-        const CSSPropertyID id = static_cast<CSSPropertyID>(value.property_id);
-        DCHECK_NE(id, CSSPropertyID::kInvalid);
-        list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(id));
+        list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(value));
       }
     }
   }

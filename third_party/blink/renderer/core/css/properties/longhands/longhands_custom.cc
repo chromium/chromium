@@ -12890,45 +12890,42 @@ const CSSValue* WillChange::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
-  if (stream.Peek().Id() == CSSValueID::kAuto) {
-    return css_parsing_utils::ConsumeIdent(stream);
+  if (const CSSValue* ident =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream)) {
+    return ident;
   }
 
-  CSSValueList* values = CSSValueList::CreateCommaSeparated();
   // Every comma-separated list of identifiers is a valid will-change value,
   // unless the list includes an explicitly disallowed identifier.
+  CSSValueList* values = CSSValueList::CreateCommaSeparated();
   while (true) {
     if (stream.Peek().GetType() != kIdentToken) {
       return nullptr;
     }
-    CSSPropertyID unresolved_property = UnresolvedCSSPropertyID(
-        context.GetExecutionContext(), stream.Peek().Value());
-    if (unresolved_property != CSSPropertyID::kInvalid &&
-        unresolved_property != CSSPropertyID::kVariable) {
-#if DCHECK_IS_ON()
-      DCHECK(CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
-                 .IsWebExposed(context.GetExecutionContext()));
-#endif
-      // Now "all" is used by both CSSValue and CSSPropertyValue.
-      // Need to return nullptr when currentValue is CSSPropertyID::kAll.
-      if (unresolved_property == CSSPropertyID::kWillChange ||
-          unresolved_property == CSSPropertyID::kAll) {
-        return nullptr;
-      }
-      values->Append(
-          *MakeGarbageCollected<CSSCustomIdentValue>(unresolved_property));
-      stream.ConsumeIncludingWhitespace();
+
+    if (const CSSValue* ident = css_parsing_utils::ConsumeIdent<
+            CSSValueID::kContents, CSSValueID::kScrollPosition>(stream)) {
+      values->Append(*ident);
+    } else if (css_parsing_utils::IdentMatches<
+                   CSSValueID::kNone, CSSValueID::kAll, CSSValueID::kAuto>(
+                   stream.Peek().Id())) {
+      // https://drafts.csswg.org/css-will-change-1/#typedef-animateable-feature
+      // "The <custom-ident> production used here excludes the keywords
+      //  will-change, none, all, auto, scroll-position, and contents, in
+      //  addition to the keywords normally excluded from <custom-ident>."
+      return nullptr;
+    } else if (const CSSPropertyID unresolved_property =
+                   UnresolvedCSSPropertyID(context.GetExecutionContext(),
+                                           stream.Peek().Value());
+               unresolved_property == CSSPropertyID::kWillChange) {
+      // See branch above.
+      return nullptr;
+    } else if (const CSSValue* custom_ident =
+                   css_parsing_utils::ConsumeCustomIdent(stream, context,
+                                                         local_context)) {
+      values->Append(*custom_ident);
     } else {
-      CSSValueID id = stream.Peek().Id();
-      if (id == CSSValueID::kContents || id == CSSValueID::kScrollPosition) {
-        values->Append(*css_parsing_utils::ConsumeIdent(stream));
-      } else if (!css_parsing_utils::IsCustomIdent<
-                     CSSValueID::kNone, CSSValueID::kAll, CSSValueID::kAuto>(
-                     id)) {
-        return nullptr;
-      } else {
-        stream.ConsumeIncludingWhitespace();
-      }
+      return nullptr;
     }
 
     if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(stream)) {
@@ -12986,7 +12983,7 @@ void WillChange::ApplyValue(StyleResolverState& state,
 
   const auto& value_list = To<CSSValueList>(value);
 
-  Vector<WillChangeValue> values;
+  Vector<AtomicString> values;
   values.ReserveInitialCapacity(value_list.length());
 
   CSSBitset resolved_longhand_ids;
@@ -13006,28 +13003,37 @@ void WillChange::ApplyValue(StyleResolverState& state,
   };
 
   for (const auto& item : value_list) {
-    if (auto* ident_value = DynamicTo<CSSCustomIdentValue>(item.Get())) {
-      const CSSPropertyID id = ident_value->ValueAsPropertyID();
-      values.push_back(
-          WillChangeValue{.property_id = static_cast<uint16_t>(id)});
-
-      const CSSPropertyID resolved_id = ResolveCSSPropertyID(id);
-      StylePropertyShorthand shorthand = shorthandForProperty(resolved_id);
-      if (shorthand.length()) {
-        for (const CSSProperty* const longhand : shorthand.properties()) {
-          process_longhand(longhand->PropertyID());
-        }
-      } else {
-        process_longhand(resolved_id);
+    if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(*item)) {
+      const CSSValueID value_id = ident_value->GetValueID();
+      switch (value_id) {
+        case CSSValueID::kContents:
+          has_contents_value = true;
+          break;
+        case CSSValueID::kScrollPosition:
+          has_scroll_position_value = true;
+          break;
+        default:
+          NOTREACHED();
       }
-    } else if (To<CSSIdentifierValue>(*item).GetValueID() ==
-               CSSValueID::kContents) {
-      values.push_back(WillChangeValue{.is_contents = true});
-      has_contents_value = true;
-    } else if (To<CSSIdentifierValue>(*item).GetValueID() ==
-               CSSValueID::kScrollPosition) {
-      values.push_back(WillChangeValue{.is_scroll_position = true});
-      has_scroll_position_value = true;
+      values.push_back(GetCSSValueNameAs<AtomicString>(value_id));
+    } else if (auto* custom_ident =
+                   DynamicTo<CSSCustomIdentValue>(item.Get())) {
+      const AtomicString value_string = custom_ident->Value();
+      values.push_back(value_string);
+
+      const CSSPropertyID id = UnresolvedCSSPropertyID(
+          state.GetDocument().GetExecutionContext(), value_string);
+      if (id != CSSPropertyID::kInvalid && id != CSSPropertyID::kVariable) {
+        const CSSPropertyID resolved_id = ResolveCSSPropertyID(id);
+        StylePropertyShorthand shorthand = shorthandForProperty(resolved_id);
+        if (shorthand.length()) {
+          for (const CSSProperty* const longhand : shorthand.properties()) {
+            process_longhand(longhand->PropertyID());
+          }
+        } else {
+          process_longhand(resolved_id);
+        }
+      }
     } else {
       NOTREACHED();
     }
