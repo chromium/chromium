@@ -15,6 +15,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -174,9 +175,7 @@ class FakeFrameDeliveryCallback final
 
 class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
  public:
-  explicit MockFrameSinkVideoCapturer(
-      mojo::Remote<viz::mojom::FrameSinkVideoConsumer>& consumer_remote) {
-    this->remote_ = std::move(consumer_remote);
+  MockFrameSinkVideoCapturer() {
     this->frame_pool_ = GetVideoFramePool(kFramePoolCapacity);
 
     ON_CALL(*this, Start)
@@ -185,6 +184,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
                        consumer_remote,
                    viz::mojom::BufferFormatPreference) {
               this->remote_.Bind(std::move(consumer_remote));
+              this->start_called_ = true;
             });
   }
 
@@ -260,6 +260,7 @@ class MockFrameSinkVideoCapturer : public viz::mojom::FrameSinkVideoCapturer {
     done_callbacks_.push_back(std::move(done_callback));
   }
 
+  bool start_called_ = false;
   std::unique_ptr<viz::VideoFramePool> frame_pool_;
 
   mojo::Receiver<viz::mojom::FrameSinkVideoCapturer> receiver_{this};
@@ -287,7 +288,8 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
 
   void StartCapturerForTesting() {
     capturer_.Start(&desktop_capturer_callback());
-    FlushForTesting();
+    EXPECT_TRUE(base::test::RunUntil(
+        [this]() { return video_capturer_.start_called_; }));
   }
 
   CaptureResult CaptureFrame() {
@@ -307,14 +309,9 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
   }
 
   // We really want to flush the mojom pipe, but we can't as the mojom remote is
-  // hidden inside ClientFrameSinkDesktopCapturer. We can use RunUntil to wait
-  // for any posted tasks to be processed.
-  void FlushForTesting() {
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      return environment_.GetMainThreadTaskRunner()
-          ->RunsTasksInCurrentSequence();
-    }));
-  }
+  // hidden inside ClientFrameSinkDesktopCapturer. We can use RunUntilIdle to
+  // wait for any posted tasks to be processed.
+  void FlushForTesting() { environment_.RunUntilIdle(); }
 
   FrameParameters frame_params() { return FrameParameters(); }
 
@@ -330,9 +327,7 @@ class FrameSinkDesktopCapturerTest : public testing::Test {
   test::ScopedFakeAshProxy ash_proxy_;
   FrameSinkDesktopCapturer capturer_{ash_proxy_};
 
-  mojo::Remote<viz::mojom::FrameSinkVideoConsumer> video_consumer_remote_;
-
-  MockFrameSinkVideoCapturer video_capturer_{video_consumer_remote_};
+  MockFrameSinkVideoCapturer video_capturer_;
 };
 
 }  // namespace
