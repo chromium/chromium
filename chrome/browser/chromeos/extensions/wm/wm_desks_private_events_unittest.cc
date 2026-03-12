@@ -8,7 +8,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"

@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

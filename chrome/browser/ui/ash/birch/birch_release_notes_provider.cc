@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/help_app_zero_state_provider.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 

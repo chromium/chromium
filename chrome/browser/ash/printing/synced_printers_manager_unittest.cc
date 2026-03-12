@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/test/data_type_store_test_util.h"

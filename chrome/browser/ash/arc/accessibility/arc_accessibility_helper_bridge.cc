@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "chromeos/ash/experiences/arc/message_center/arc_notification_surface.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"

@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"

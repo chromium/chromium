@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_state.h"

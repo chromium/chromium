@@ -10,7 +10,6 @@
 #include "ash/shell.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
-#include "chrome/common/pref_names.h"
 #include "components/desks_storage/core/admin_template_service.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_template_conversion.h"

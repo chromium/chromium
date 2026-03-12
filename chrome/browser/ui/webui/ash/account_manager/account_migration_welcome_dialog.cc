@@ -10,7 +10,6 @@
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "ui/aura/window.h"

@@ -34,7 +34,6 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"

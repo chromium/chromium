@@ -20,7 +20,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
