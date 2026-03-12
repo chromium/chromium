@@ -5,6 +5,7 @@
 package org.chromium.components.crash;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -106,6 +107,6 @@ public class CrashKeys {
 
     @NativeMethods
     interface Natives {
-        void set(int key, @Nullable String value);
+        void set(int key, @JniType("std::optional<std::string>") @Nullable String value);
     }
 }

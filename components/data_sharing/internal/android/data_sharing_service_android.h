@@ -27,47 +27,38 @@ class DataSharingServiceAndroid : public base::SupportsUserData::Data {
   ~DataSharingServiceAndroid() override;
 
   // DataSharingService Java API methods, implemented by native service:
-  void ReadGroup(JNIEnv* env,
-                 const JavaRef<jstring>& group_id,
+  void ReadGroup(const std::string& group_id,
                  const JavaRef<jobject>& j_callback);
-  void CreateGroup(JNIEnv* env,
-                   const JavaRef<jstring>& group_name,
+  void CreateGroup(const std::string& group_name,
                    const JavaRef<jobject>& j_callback);
-  void InviteMember(JNIEnv* env,
-                    const JavaRef<jstring>& group_id,
-                    const JavaRef<jstring>& invitee_email,
+  void InviteMember(const std::string& group_id,
+                    const std::string& invitee_email,
                     const JavaRef<jobject>& j_callback);
-  void AddMember(JNIEnv* env,
-                 const JavaRef<jstring>& group_id,
-                 const JavaRef<jstring>& access_token,
+  void AddMember(const std::string& group_id,
+                 const std::string& access_token,
                  const JavaRef<jobject>& j_callback);
-  void RemoveMember(JNIEnv* env,
-                    const JavaRef<jstring>& group_id,
-                    const JavaRef<jstring>& member_email,
+  void RemoveMember(const std::string& group_id,
+                    const std::string& member_email,
                     const JavaRef<jobject>& j_callback);
-  bool IsEmptyService(JNIEnv* env);
-  ScopedJavaLocalRef<jobject> GetNetworkLoader(JNIEnv* env);
+  bool IsEmptyService();
+  ScopedJavaLocalRef<jobject> GetNetworkLoader();
   ScopedJavaLocalRef<jobject> GetDataSharingUrl(
       JNIEnv* env,
-      const JavaRef<jstring>& group_id,
-      const JavaRef<jstring>& access_token);
+      const std::string& group_id,
+      const std::string& access_token);
   ScopedJavaLocalRef<jobject> ParseDataSharingUrl(
       JNIEnv* env,
       const JavaRef<jobject>& j_url);
-  void EnsureGroupVisibility(JNIEnv* env,
-                             const JavaRef<jstring>& group_id,
+  void EnsureGroupVisibility(const std::string& group_id,
                              const JavaRef<jobject>& j_callback);
-  void GetSharedEntitiesPreview(JNIEnv* env,
-                                const JavaRef<jstring>& group_id,
-                                const JavaRef<jstring>& access_token,
+  void GetSharedEntitiesPreview(const std::string& group_id,
+                                const std::string& access_token,
                                 const JavaRef<jobject>& j_callback);
-  ScopedJavaLocalRef<jobject> GetUiDelegate(JNIEnv* env);
-  void Log(JNIEnv* env,
-           /*logger_common::mojom::LogSource*/ int32_t source,
-           const JavaRef<jstring>& message);
+  ScopedJavaLocalRef<jobject> GetUiDelegate();
+  void Log(/*logger_common::mojom::LogSource*/ int32_t source,
+           const std::string& message);
 
-  void SetSharedEntitiesPreviewForTesting(JNIEnv* env,
-                                          const JavaRef<jstring>& j_group_id);
+  void SetSharedEntitiesPreviewForTesting(const std::string& group_id);
 
   // Returns the DataSharingServiceImpl java object.
   ScopedJavaLocalRef<jobject> GetJavaObject();

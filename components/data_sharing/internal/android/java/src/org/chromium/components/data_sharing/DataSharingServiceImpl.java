@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -182,30 +183,30 @@ public class DataSharingServiceImpl implements DataSharingService {
     interface Natives {
         void readGroup(
                 long nativeDataSharingServiceAndroid,
-                String groupId,
+                @JniType("std::string") String groupId,
                 Callback<GroupDataOrFailureOutcome> callback);
 
         void createGroup(
                 long nativeDataSharingServiceAndroid,
-                String groupName,
+                @JniType("std::string") String groupName,
                 Callback<GroupDataOrFailureOutcome> callback);
 
         void inviteMember(
                 long nativeDataSharingServiceAndroid,
-                String groupId,
-                String inviteeEmail,
+                @JniType("std::string") String groupId,
+                @JniType("std::string") String inviteeEmail,
                 Callback<Integer> callback);
 
         void addMember(
                 long nativeDataSharingServiceAndroid,
-                String groupId,
-                String accessToken,
+                @JniType("std::string") String groupId,
+                @JniType("std::string") String accessToken,
                 Callback<Integer> callback);
 
         void removeMember(
                 long nativeDataSharingServiceAndroid,
-                String groupId,
-                String memberEmail,
+                @JniType("std::string") String groupId,
+                @JniType("std::string") String memberEmail,
                 Callback<Integer> callback);
 
         boolean isEmptyService(long nativeDataSharingServiceAndroid);
@@ -213,29 +214,35 @@ public class DataSharingServiceImpl implements DataSharingService {
         DataSharingNetworkLoader getNetworkLoader(long nativeDataSharingServiceAndroid);
 
         GURL getDataSharingUrl(
-                long nativeDataSharingServiceAndroid, String groupId, String accessToken);
+                long nativeDataSharingServiceAndroid,
+                @JniType("std::string") String groupId,
+                @JniType("std::string") String accessToken);
 
         DataSharingService.ParseUrlResult parseDataSharingUrl(
                 long nativeDataSharingServiceAndroid, GURL url);
 
         void ensureGroupVisibility(
                 long nativeDataSharingServiceAndroid,
-                String groupId,
+                @JniType("std::string") String groupId,
                 Callback<GroupDataOrFailureOutcome> callback);
 
         void getSharedEntitiesPreview(
                 long nativeDataSharingServiceAndroid,
-                String groupId,
-                String accessToken,
+                @JniType("std::string") String groupId,
+                @JniType("std::string") String accessToken,
                 Callback<SharedDataPreviewOrFailureOutcome> callback);
 
         DataSharingUIDelegate getUiDelegate(long nativeDataSharingServiceAndroid);
 
-        void log(long nativeDataSharingServiceAndroid, int source, String message);
+        void log(
+                long nativeDataSharingServiceAndroid,
+                int source,
+                @JniType("std::string") String message);
 
-        GURL getDataSharingUrlForTesting(String groupId, String accessToken);
+        GURL getDataSharingUrlForTesting(
+                @JniType("std::string") String groupId, @JniType("std::string") String accessToken);
 
         void setSharedEntitiesPreviewForTesting(
-                long nativeDataSharingServiceAndroid, String groupId);
+                long nativeDataSharingServiceAndroid, @JniType("std::string") String groupId);
     }
 }

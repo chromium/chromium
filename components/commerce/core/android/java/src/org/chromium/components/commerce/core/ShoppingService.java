@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -602,11 +603,11 @@ public class ShoppingService {
                 int type,
                 int idType,
                 int managementType,
-                String id,
-                String seenOfferId,
+                @JniType("std::string") String id,
+                @JniType("std::string") String seenOfferId,
                 long seenPrice,
-                String seenCountry,
-                String seenLocale,
+                @JniType("std::string") String seenCountry,
+                @JniType("std::string") String seenLocale,
                 Callback<Boolean> callback);
 
         void unsubscribe(
@@ -614,7 +615,7 @@ public class ShoppingService {
                 int type,
                 int idType,
                 int managementType,
-                String id,
+                @JniType("std::string") String id,
                 Callback<Boolean> callback);
 
         void isSubscribed(
@@ -622,7 +623,7 @@ public class ShoppingService {
                 int type,
                 int idType,
                 int managementType,
-                String id,
+                @JniType("std::string") String id,
                 Callback<Boolean> callback);
 
         boolean isSubscribedFromCache(
@@ -630,7 +631,7 @@ public class ShoppingService {
                 int type,
                 int idType,
                 int managementType,
-                String id);
+                @JniType("std::string") String id);
 
         void getAllPriceTrackedBookmarks(
                 long nativeShoppingServiceAndroid, Callback<List<BookmarkId>> callback);

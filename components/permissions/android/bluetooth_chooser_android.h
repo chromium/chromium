@@ -54,18 +54,17 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
                          int signal_strength_level) override;
 
   // Report the dialog's result.
-  void OnDialogFinished(JNIEnv* env,
-                        content::BluetoothChooserEvent event,
-                        const base::android::JavaRef<jstring>& device_id);
+  void OnDialogFinished(content::BluetoothChooserEvent event,
+                        const std::string& device_id);
 
   // Notify bluetooth stack that the search needs to be re-issued.
   void RestartSearch();
   // Calls RestartSearch(). Unused JNI parameters enable calls from Java.
   void RestartSearch(JNIEnv*);
 
-  void ShowBluetoothOverviewLink(JNIEnv* env);
-  void ShowBluetoothAdapterOffLink(JNIEnv* env);
-  void ShowNeedLocationPermissionLink(JNIEnv* env);
+  void ShowBluetoothOverviewLink();
+  void ShowBluetoothAdapterOffLink();
+  void ShowNeedLocationPermissionLink();
 
   static std::unique_ptr<BluetoothChooserAndroid> CreateForTesting(
       content::RenderFrameHost* frame,

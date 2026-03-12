@@ -5,6 +5,7 @@
 package org.chromium.components.data_sharing;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
@@ -51,7 +52,7 @@ public class ObserverBridge implements DataSharingService.Observer {
 
     @CalledByNative
     @Override
-    public void onGroupRemoved(String groupId) {
+    public void onGroupRemoved(@JniType("std::string") String groupId) {
         for (DataSharingService.Observer javaObserver : mJavaObservers) {
             javaObserver.onGroupRemoved(groupId);
         }

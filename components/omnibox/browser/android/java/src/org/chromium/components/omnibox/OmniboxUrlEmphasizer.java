@@ -13,6 +13,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -360,7 +361,9 @@ public class OmniboxUrlEmphasizer {
 
     @NativeMethods
     public interface Natives {
+        @JniType("std::vector<int32_t>")
         int[] parseForEmphasizeComponents(
-                String text, AutocompleteSchemeClassifier autocompleteSchemeClassifier);
+                @JniType("std::u16string") String text,
+                AutocompleteSchemeClassifier autocompleteSchemeClassifier);
     }
 }

@@ -21,7 +21,6 @@
 #include "components/commerce/core/android/core_jni/DiscountInfo_jni.h"
 #include "components/commerce/core/android/core_jni/ShoppingService_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::ScopedJavaLocalRef;
@@ -284,36 +283,31 @@ void ShoppingServiceAndroid::GetAvailableDiscountInfoForUrl(
                             ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-void ShoppingServiceAndroid::FetchPriceEmailPref(JNIEnv* env) {
+void ShoppingServiceAndroid::FetchPriceEmailPref() {
   CHECK(shopping_service_);
 
   shopping_service_->FetchPriceEmailPref();
 }
 
-void ShoppingServiceAndroid::ScheduleSavedProductUpdate(JNIEnv* env) {
+void ShoppingServiceAndroid::ScheduleSavedProductUpdate() {
   CHECK(shopping_service_);
 
   shopping_service_->ScheduleSavedProductUpdate();
 }
 
-void ShoppingServiceAndroid::Subscribe(JNIEnv* env,
-                                       int32_t j_type,
+void ShoppingServiceAndroid::Subscribe(int32_t j_type,
                                        int32_t j_id_type,
                                        int32_t j_management_type,
-                                       const JavaRef<jstring>& j_id,
-                                       const JavaRef<jstring>& j_seen_offer_id,
-                                       int64_t j_seen_price,
-                                       const JavaRef<jstring>& j_seen_country,
-                                       const JavaRef<jstring>& j_seen_locale,
+                                       const std::string& id,
+                                       const std::string& seen_offer_id,
+                                       int64_t seen_price,
+                                       const std::string& seen_country,
+                                       const std::string& seen_locale,
                                        const JavaRef<jobject>& j_callback) {
-  std::string id = ConvertJavaStringToUTF8(j_id);
-  std::string seen_offer_id = ConvertJavaStringToUTF8(j_seen_offer_id);
-  std::string seen_country = ConvertJavaStringToUTF8(j_seen_country);
-  std::string seen_locale = ConvertJavaStringToUTF8(j_seen_locale);
   CHECK(!id.empty());
 
   auto user_seen_offer = std::make_optional<UserSeenOffer>(
-      seen_offer_id, j_seen_price, seen_country, seen_locale);
+      seen_offer_id, seen_price, seen_country, seen_locale);
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
                            id, ManagementType(j_management_type),
                            kUnknownSubscriptionTimestamp,
@@ -328,13 +322,11 @@ void ShoppingServiceAndroid::Subscribe(JNIEnv* env,
   shopping_service_->Subscribe(std::move(subs), std::move(callback));
 }
 
-void ShoppingServiceAndroid::Unsubscribe(JNIEnv* env,
-                                         int32_t j_type,
+void ShoppingServiceAndroid::Unsubscribe(int32_t j_type,
                                          int32_t j_id_type,
                                          int32_t j_management_type,
-                                         const JavaRef<jstring>& j_id,
+                                         const std::string& id,
                                          const JavaRef<jobject>& j_callback) {
-  std::string id = ConvertJavaStringToUTF8(j_id);
   CHECK(!id.empty());
 
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
@@ -350,13 +342,11 @@ void ShoppingServiceAndroid::Unsubscribe(JNIEnv* env,
   shopping_service_->Unsubscribe(std::move(subs), std::move(callback));
 }
 
-void ShoppingServiceAndroid::IsSubscribed(JNIEnv* env,
-                                          int32_t j_type,
+void ShoppingServiceAndroid::IsSubscribed(int32_t j_type,
                                           int32_t j_id_type,
                                           int32_t j_management_type,
-                                          const JavaRef<jstring>& j_id,
+                                          const std::string& id,
                                           const JavaRef<jobject>& j_callback) {
-  std::string id = ConvertJavaStringToUTF8(j_id);
   CHECK(!id.empty());
 
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
@@ -372,13 +362,10 @@ void ShoppingServiceAndroid::IsSubscribed(JNIEnv* env,
           ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-bool ShoppingServiceAndroid::IsSubscribedFromCache(
-    JNIEnv* env,
-    int32_t j_type,
-    int32_t j_id_type,
-    int32_t j_management_type,
-    const JavaRef<jstring>& j_id) {
-  std::string id = ConvertJavaStringToUTF8(j_id);
+bool ShoppingServiceAndroid::IsSubscribedFromCache(int32_t j_type,
+                                                   int32_t j_id_type,
+                                                   int32_t j_management_type,
+                                                   const std::string& id) {
   CHECK(!id.empty());
 
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
@@ -418,27 +405,27 @@ void ShoppingServiceAndroid::OnUnsubscribe(const CommerceSubscription& sub,
                                      succeeded);
 }
 
-bool ShoppingServiceAndroid::IsShoppingListEligible(JNIEnv* env) {
+bool ShoppingServiceAndroid::IsShoppingListEligible() {
   CHECK(shopping_service_);
 
   return shopping_service_->IsShoppingListEligible();
 }
 
-bool ShoppingServiceAndroid::IsMerchantViewerEnabled(JNIEnv* env) {
+bool ShoppingServiceAndroid::IsMerchantViewerEnabled() {
   CHECK(shopping_service_);
 
   return commerce::IsMerchantViewerEnabled(
       shopping_service_->GetAccountChecker());
 }
 
-bool ShoppingServiceAndroid::IsPriceInsightsEligible(JNIEnv* env) {
+bool ShoppingServiceAndroid::IsPriceInsightsEligible() {
   CHECK(shopping_service_);
 
   return commerce::IsPriceInsightsEligible(
       shopping_service_->GetAccountChecker());
 }
 
-bool ShoppingServiceAndroid::IsDiscountEligibleToShowOnNavigation(JNIEnv* env) {
+bool ShoppingServiceAndroid::IsDiscountEligibleToShowOnNavigation() {
   CHECK(shopping_service_);
 
   return commerce::IsDiscountEligibleToShowOnNavigation(

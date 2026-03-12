@@ -60,51 +60,47 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                                       const JavaRef<jobject>& j_gurl,
                                       const JavaRef<jobject>& j_callback);
 
-  void FetchPriceEmailPref(JNIEnv* env);
+  void FetchPriceEmailPref();
 
-  void ScheduleSavedProductUpdate(JNIEnv* env);
+  void ScheduleSavedProductUpdate();
 
-  void Subscribe(JNIEnv* env,
-                 int32_t j_type,
+  void Subscribe(int32_t j_type,
                  int32_t j_id_type,
                  int32_t j_management_type,
-                 const JavaRef<jstring>& j_id,
-                 const JavaRef<jstring>& j_seen_offer_id,
-                 int64_t j_seen_price,
-                 const JavaRef<jstring>& j_seen_country,
-                 const JavaRef<jstring>& j_seen_locale,
+                 const std::string& id,
+                 const std::string& seen_offer_id,
+                 int64_t seen_price,
+                 const std::string& seen_country,
+                 const std::string& seen_locale,
                  const JavaRef<jobject>& j_callback);
 
-  void Unsubscribe(JNIEnv* env,
-                   int32_t j_type,
+  void Unsubscribe(int32_t j_type,
                    int32_t j_id_type,
                    int32_t j_management_type,
-                   const JavaRef<jstring>& j_id,
+                   const std::string& id,
                    const JavaRef<jobject>& j_callback);
 
-  void IsSubscribed(JNIEnv* env,
-                    int32_t j_type,
+  void IsSubscribed(int32_t j_type,
                     int32_t j_id_type,
                     int32_t j_management_type,
-                    const JavaRef<jstring>& j_id,
+                    const std::string& id,
                     const JavaRef<jobject>& j_callback);
 
-  bool IsSubscribedFromCache(JNIEnv* env,
-                             int32_t j_type,
+  bool IsSubscribedFromCache(int32_t j_type,
                              int32_t j_id_type,
                              int32_t j_management_type,
-                             const JavaRef<jstring>& j_id);
+                             const std::string& j_id);
 
   void GetAllPriceTrackedBookmarks(JNIEnv* env,
                                    const JavaRef<jobject>& j_callback);
 
-  bool IsShoppingListEligible(JNIEnv* env);
+  bool IsShoppingListEligible();
 
-  bool IsMerchantViewerEnabled(JNIEnv* env);
+  bool IsMerchantViewerEnabled();
 
-  bool IsPriceInsightsEligible(JNIEnv* env);
+  bool IsPriceInsightsEligible();
 
-  bool IsDiscountEligibleToShowOnNavigation(JNIEnv* env);
+  bool IsDiscountEligibleToShowOnNavigation();
 
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 

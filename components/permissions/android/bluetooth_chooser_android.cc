@@ -140,17 +140,15 @@ void BluetoothChooserAndroid::AddOrUpdateDevice(
 }
 
 void BluetoothChooserAndroid::OnDialogFinished(
-    JNIEnv* env,
     content::BluetoothChooserEvent event,
-    const JavaRef<jstring>& device_id) {
+    const std::string& device_id) {
   switch (event) {
     case content::BluetoothChooserEvent::DENIED_PERMISSION:
     case content::BluetoothChooserEvent::CANCELLED:
       event_handler_.Run(event, "");
       return;
     case content::BluetoothChooserEvent::SELECTED:
-      event_handler_.Run(
-          event, base::android::ConvertJavaStringToUTF8(env, device_id));
+      event_handler_.Run(event, device_id);
       return;
     default:
       NOTREACHED();
@@ -165,17 +163,17 @@ void BluetoothChooserAndroid::RestartSearch(JNIEnv*) {
   RestartSearch();
 }
 
-void BluetoothChooserAndroid::ShowBluetoothOverviewLink(JNIEnv* env) {
+void BluetoothChooserAndroid::ShowBluetoothOverviewLink() {
   OpenURL(kChooserBluetoothOverviewURL);
   event_handler_.Run(content::BluetoothChooserEvent::SHOW_OVERVIEW_HELP, "");
 }
 
-void BluetoothChooserAndroid::ShowBluetoothAdapterOffLink(JNIEnv* env) {
+void BluetoothChooserAndroid::ShowBluetoothAdapterOffLink() {
   OpenURL(kChooserBluetoothOverviewURL);
   event_handler_.Run(content::BluetoothChooserEvent::SHOW_ADAPTER_OFF_HELP, "");
 }
 
-void BluetoothChooserAndroid::ShowNeedLocationPermissionLink(JNIEnv* env) {
+void BluetoothChooserAndroid::ShowNeedLocationPermissionLink() {
   OpenURL(kChooserBluetoothOverviewURL);
   event_handler_.Run(content::BluetoothChooserEvent::SHOW_NEED_LOCATION_HELP,
                      "");

@@ -5,10 +5,12 @@
 #include "components/crash/android/crash_keys_android.h"
 
 #include <array>
+#include <optional>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/crash/core/common/crash_key.h"
+#include "third_party/jni_zero/default_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/crash/android/jni_headers/CrashKeys_jni.h"
@@ -56,21 +58,19 @@ void FlushAndroidCrashKeys() {
   Java_CrashKeys_flushToNative(env, jinstance);
 }
 
-static void JNI_CrashKeys_Set(JNIEnv* env,
-                              int32_t key,
-                              const base::android::JavaRef<jstring>& value) {
-  if (value.is_null()) {
+static void JNI_CrashKeys_Set(int32_t key,
+                              const std::optional<std::string>& value) {
+  if (!value) {
     if (key == static_cast<int32_t>(CrashKeyIndex::INSTALLED_MODULES)) {
       g_installed_modules_key.Clear();
     } else {
       GetCrashKey(key).Clear();
     }
   } else {
-    std::string val = base::android::ConvertJavaStringToUTF8(env, value);
     if (key == static_cast<int32_t>(CrashKeyIndex::INSTALLED_MODULES)) {
-      g_installed_modules_key.Set(val);
+      g_installed_modules_key.Set(*value);
     } else {
-      GetCrashKey(key).Set(val);
+      GetCrashKey(key).Set(*value);
     }
   }
 }

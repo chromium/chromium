@@ -541,7 +541,7 @@ public class BluetoothChooserDialog
         void onDialogFinished(
                 long nativeBluetoothChooserAndroid,
                 @JniType("content::BluetoothChooserEvent") int eventType,
-                String deviceId);
+                @JniType("std::string") String deviceId);
 
         void restartSearch(long nativeBluetoothChooserAndroid);
 
