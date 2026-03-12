@@ -106,6 +106,14 @@ cr-icon-button {
   --cr-icon-button-fill-color: var(--toolbar-button-icon-color);
 }
 
+#closeButton:not(:hover)[rounded-corner='true'] {
+  background-color: var(--cr-fallback-color-base-container);
+}
+
+#closeButton[rounded-corner='true'] {
+  border-radius: 6px;
+}
+
 cr-icon-button[hidden] {
   display: none;
 }

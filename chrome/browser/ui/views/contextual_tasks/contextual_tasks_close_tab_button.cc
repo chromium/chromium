@@ -16,6 +16,10 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+constexpr int kCloseButtonCornerRadius = 6;
+}
+
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContextualTasksCloseTabButton,
                                       kContextualTasksCloseTabButton);
 
@@ -33,6 +37,7 @@ ContextualTasksCloseTabButton::ContextualTasksCloseTabButton(
   GetViewAccessibility().SetName(button_tooltip);
   SetTooltipText(button_tooltip);
   SetVectorIcon(vector_icons::kCloseIcon);
+  SetDefaultBackgroundColorId(kColorToolbarCloseButtonBackgroundDefault);
 
   ContextualTasksCloseButtonController* const controller =
       ContextualTasksCloseButtonController::From(browser_window_interface_);
@@ -45,6 +50,10 @@ ContextualTasksCloseTabButton::ContextualTasksCloseTabButton(
 }
 
 ContextualTasksCloseTabButton::~ContextualTasksCloseTabButton() = default;
+
+int ContextualTasksCloseTabButton::GetRoundedCornerRadius() const {
+  return kCloseButtonCornerRadius;
+}
 
 void ContextualTasksCloseTabButton::OnButtonPress() {
   ContextualTasksCloseButtonController* const controller =

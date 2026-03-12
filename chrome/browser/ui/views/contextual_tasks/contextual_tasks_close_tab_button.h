@@ -21,6 +21,7 @@ class ContextualTasksCloseTabButton : public ToolbarButton {
   explicit ContextualTasksCloseTabButton(
       BrowserWindowInterface* browser_window_interface);
   ~ContextualTasksCloseTabButton() override;
+  int GetRoundedCornerRadius() const override;
 
  private:
   void OnButtonPress();

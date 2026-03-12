@@ -823,6 +823,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::SetAlpha(kColorToolbarInkDrop, std::ceil(0.06f * 255.0f));
   mixer[kColorAppMenuChipInkDropHover] = {kColorToolbarInkDropHover};
   mixer[kColorAppMenuChipInkDropRipple] = {kColorToolbarInkDropRipple};
+  mixer[kColorToolbarCloseButtonBackgroundDefault] = {
+      ui::kColorSysBaseContainer};
   mixer[kColorToolbarExtensionSeparatorEnabled] = {
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorToolbarExtensionSeparatorDisabled] = {
