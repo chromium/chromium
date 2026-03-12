@@ -56,6 +56,8 @@ native types in C++.
    - **Remove Unused Callers**: For non-static `@NativeMethods`, the `caller`
      parameter is usually unnecessary. Remove it from Java and C++ to reduce
      boilerplate.
+   - **Remove Unused using statements**: Aliases of conversion functions might
+     no longer have any uses. e.g.: "using base::android::ConvertJavaStringToUTF8"
    - **Include Order**: Specialization headers **MUST** be included before the
      generated `_jni.h` file.
    - Include the header file that defines the FromJniType / ToJniType conversion
