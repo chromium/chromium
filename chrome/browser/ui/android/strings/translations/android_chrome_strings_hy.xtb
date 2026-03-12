@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Դիտել էջի վիճակագրությունը</translation>
 <translation id="1108938384783527433">Պատմության համաժամացում</translation>
 <translation id="1111673857033749125">Ձեր մյուս սարքերում պահված էջանիշները կտեսնեք այստեղ:</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, «Նկար նկարի մեջ» ներդիր</translation>
 <translation id="1126696498560056882">Հաշիվների կառավարում այս սարքում</translation>
 <translation id="1135018701024399762">Ինկոգնիտո ռեժիմը թույլ է տալիս գաղտնի պահել ձեր դիտարկումները այս սարքի մյուս օգտագործողներից</translation>
 <translation id="113752097246673894">Էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք Chrome որպես <ph name="EMAIL" /></translation>
@@ -321,6 +322,7 @@
 <translation id="2386938421315164605">Թաքցրեք և ցուցադրեք թեմաները</translation>
 <translation id="2390510615457643724">Նորից ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
 <translation id="2392369802118427583">Ակտիվացնել</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, ինկոգնիտո ներդիր, որում տեսագրում է արվում</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, ընտրված ներդիր, որում ձայն է նվագարկվում</translation>
@@ -381,6 +383,7 @@
 <translation id="2604446170045642109">Կարգավորումներում դուք կարող եք անջատել մուգ թեման կայքերի համար։</translation>
 <translation id="2605017215201958293">Հնչեցնել այս էջի բովանդակությունը ԱԲ-ի օգնությամբ</translation>
 <translation id="2607441479295509868">Դուք դուրս եք եկել հաշվից։ Նորից մտեք հաշիվ, որպեսզի կարողանաք օգտագործել էջանիշները, գաղտնաբառերը և ձեր հաշվի մյուս տվյալները։</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 տարր}one{# տարր}other{# տարր}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> օգտատերը տրամադրում է ձեզ ընդհանուր տարրի օգտագործման թույլտվություն։</translation>
 <translation id="2634393460268044753">Google Ապահով դիտարկմանն ուղարկում է ձեր այցելած կայքերի URL-ները և էջերի բովանդակության ու ներբեռնումների փոքր նմուշներ, ինչպես նաև ընդլայնումների գործողությունների մասին տեղեկություններ և համակարգի տվյալներ՝ համոզվելու, որ դրանք վնասաբեր չեն։</translation>
 <translation id="2643064289437760082">Դուք միշտ կարող եք ջնջել գովազդի արդյունավետության գնահատման տվյալները՝ ջնջելով այցելությունների պատմությունը</translation>
@@ -535,6 +538,7 @@
 <translation id="3268048651973962414">Քաշեք վերև՝ որոնման արդյունքներ տեսնելու համար</translation>
 <translation id="3269093882174072735">Բեռնել պատկերը</translation>
 <translation id="3280562213547448728">Ձայնային որոնում</translation>
+<translation id="3282801380074962248">Ծավալել բաժինը</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 գաղտնաբառ հասանելի է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}one{# գաղտնաբառ հասանելի է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}other{# գաղտնաբառ հասանելի է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}}</translation>
 <translation id="3293181007446299124">Ձեր այցելությունների պատմությունը պահվում է ձեր սարքում և հասանելի է միայն ձեզ, իսկ անձնական տվյալները պաշտպանելու նպատակով հաշվետվություններն ուղարկվում են ոչ անմիջապես</translation>
@@ -667,6 +671,7 @@
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3863527519275151528">Ծանուցման մշակում</translation>
 <translation id="3866863539038222107">Հետազոտել</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, ընտրված ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="3870908470613821006">Բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից</translation>
 <translation id="3873174561423636563">Շարունակելու համար <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերությունն այս կայքին կփոխանցի հետևյալ տվյալները՝ <ph name="FIELDS_STRING" />։ Ծանոթացեք այս կայքի <ph name="BEGIN_LINK1" />օգտագործման պայմաններին<ph name="END_LINK1" />։</translation>
 <translation id="3892148308691398805">Պատճենել տեքստը</translation>
@@ -682,6 +687,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">վերջին 4 շաբաթվա</translation>
 <translation id="393697183122708255">Մատչելի միացված ձայնային որոնում չկա</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, ամրացված ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="395377504920307820">Օգտագործել առանց հաշվի</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}one{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}other{էջերը կբեռնվեն, երբ սարքը միացած լինի ցանցին}}</translation>
@@ -748,6 +754,7 @@
 <translation id="4214315110991671325">Եթե դուք թույլատրում եք քուքիների օգտագործումը, Chrome-ը կարող է դրանք օգտագործել նախաբեռնման համար։</translation>
 <translation id="421517251707893998">Հպեք «Ամրացնել այս դյուրանցումը»</translation>
 <translation id="4216511743389425832">Հնչեցնել այս էջը</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, ընտրված և ամրացված ինկոգնիտո ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="4225725533026049334">Հետևում եք</translation>
 <translation id="4225895483398857530">Գործիքագոտու դյուրանցում</translation>
 <translation id="4232376164796433044">Գաղտնաբառեր և ինքնալրացում</translation>
@@ -762,6 +769,7 @@
 <translation id="4277529130885813215">Օգտագործել այլ սարք</translation>
 <translation id="427987768447457592">Ներդիրների նոր խումբ</translation>
 <translation id="4282440837784183472">Ձեր կազմակերպությունը (<ph name="MANAGED_DOMAIN" />) կառավարում է հաշիվը, որը մուտք եք գործում, և այն, թե ինչպես կարող է Chrome-ն օգտագործվել։ Ձեր ադմինիստրատորը կարող է կարգավորել և սահմանափակել որոշակի գործառույթներ։</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, ինկոգնիտո ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="4285846616383034558">Քուքիները, քեշը և կայքերի այլ տվյալներ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Միացնել էկրանի կողպումը Android-ի կարգավորումներում<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@
 <translation id="4408965460206576430">Այս ֆայլը վնասագիր է պարունակում կամ կասկածելի կայքից է</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ու ևս <ph name="TAB_COUNT" /> ներդիր</translation>
 <translation id="441100617989818073">Չօգտագործված կամ կրկնօրինակ ներդիրներ և խմբեր</translation>
+<translation id="4412123112245770507">Ծալել բաժինը</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ջնջվեց</translation>
 <translation id="4415276339145661267">Կառավարել Google հաշիվը</translation>
 <translation id="4425140285732600465">Դուք հետևում եք այս ապրանքի գնին։ Երբ որևէ կայքում այն իջնի, դուք կստանաք ծանուցում։</translation>
@@ -1049,6 +1058,7 @@
 <translation id="5415871492522952905">Պատմությունը և ներդիրները հասանելի կլինեն ձեր բոլոր սարքերում, այնպես որ դուք կկարողանաք սկսել օգտվել դիտարկիչից մեկ սարքում և շարունակել մյուսում</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />-ին (<ph name="EMAIL" />) անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>
 <translation id="5424588387303617268">Ազատ տարածքը՝ <ph name="GIGABYTES" /> ԳԲ</translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որում նկարը նկարի մեջ է</translation>
 <translation id="5436928407363358055">Հեշտությամբ շարունակելու համար համաժամեցրեք ձեր պատմությունը և ներդիրները</translation>
 <translation id="5438292632479953702">Ներբեռնել նորից</translation>
 <translation id="5439191312780166229">Զգուշացնում է ձեզ վտանգավոր, այդ թվում՝ Google-ին նախկինում անհայտ կայքերի մասին, քանի որ ավելի շատ տվյալներ է վերլուծում կայքերում՝ համեմատած ստանդարտ պաշտպանության հետ։ Դուք կարող եք բաց թողնել Chrome-ի նախազգուշացումները։</translation>
@@ -1063,6 +1073,7 @@
 <translation id="5471273988133666918">Ներդիր <ph name="TAB_TITLE" />-ը հնարավոր չէ շարժել</translation>
 <translation id="548278423535722844">Բացեք Քարտեզներ հավելվածում</translation>
 <translation id="5489222148748465285">Chrome-ը շարունակի՞ որոնումը</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, ընտրված մի քանի ներդիրներից մեկը, որում նկարը նկարի մեջ է</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="549660026907543296">Միանալ որպես <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Վերջին գործողությունների ներքևի էկրան</translation>
@@ -1488,6 +1499,7 @@
 <translation id="7063106218165698546">Անհատականացրեք ներդիրների խումբը և սեղմեք «Պատրաստ է»</translation>
 <translation id="7071521146534760487">Կառավարել հաշիվը</translation>
 <translation id="707155805709242880">Ստորև ընտրեք, թե ինչ տվյալներ համաժամացնել</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որն ամրացված է, և որում նկարը նկարի մեջ է</translation>
 <translation id="7077143737582773186">SD քարտ</translation>
 <translation id="7078916049958741685">Նաև ջնջել Chrome-ի ձեր տվյալներն այս սարքից</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, ընտրված ներդիր, որն ամրացված է, և որի ձայնն անջատված է</translation>
@@ -1874,6 +1886,7 @@
 <translation id="8512053371384421952">Դուք այլևս չեք ստանա ծանուցումներ <ph name="DOMAIN" /> կայքից։</translation>
 <translation id="8516012719330875537">Պատկերների խմբագրիչ</translation>
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, ընտրված մի քանի ներդիրներից մեկը, որն ամրացված է, և որում նկարը նկարի մեջ է</translation>
 <translation id="8540136935098276800">Մուտքագրեք ճիշտ ձևաչափի URL</translation>
 <translation id="854522910157234410">Բացել այս էջը</translation>
 <translation id="8547466829003330976">Ստուգեք PDF ֆայլը ԱԲ-ի միջոցով</translation>
@@ -1949,7 +1962,7 @@
 <translation id="8865415417596392024">Chrome-ի տվյալները ձեր հաշվում</translation>
 <translation id="8872506776304248286">Բացել հավելվածում</translation>
 <translation id="8890668505403261809">Որոնեք ձեր ինկոգնիտո ներդիրներում</translation>
-<translation id="8892234476517513962">Դուք արդեն մուտք եք գործել հաշիվ</translation>
+<translation id="8892234476517513962">Արդեն մուտք եք գործել</translation>
 <translation id="8894890673032951011"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր, որում տեսագրում է արվում</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
 <translation id="8903921497873541725">Խոշորացնել</translation>
@@ -1987,6 +2000,7 @@
 <translation id="9050666287014529139">Անցաբառ</translation>
 <translation id="9055497320631373736">Կայքը նորից ավելացվեց հավանական կայքերի ցանկում</translation>
 <translation id="9057030985451135243">Իմանալ ավելին ներդիրների ընդհանուր խմբերի մասին</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, ընտրված ամրացված ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="9063400323119781058">Բաժանորդագրությունը չեղարկվել է</translation>
 <translation id="9063523880881406963">Անջատել կայքի ամբողջական տարբերակը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
@@ -2045,6 +2059,7 @@
 <translation id="930834144334005936">Ընթացիկ ռեժիմից (<ph name="MODE_NAME" />) անցնել Որոնում</translation>
 <translation id="938850635132480979">Սխալ՝ <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Մուտքագրեք անցաբառը</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="95817756606698420">Չինաստանում որոնում կատարելու համար Chrome-ը կարող է օգտագործել <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> որոնման համակարգը: Սա կարող եք փոխել <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="961856697154696964">Ջնջել այցելությունները</translation>

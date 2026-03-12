@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 vietne (vairāk sinhronizētajās ierīcēs)}zero{# vietņu (vairāk sinhronizētajās ierīcēs)}one{# vietne (vairāk sinhronizētajās ierīcēs)}other{# vietnes (vairāk sinhronizētajās ierīcēs)}}</translation>
 <translation id="2870560284913253234">Vietne</translation>
 <translation id="2876369937070532032">Nosūta Google serveriem dažu apmeklēto lapu vietrāžus URL, ja jūsu drošība ir apdraudēta</translation>
+<translation id="2877733045396505765">Tiks dzēsta atlasītā informācija, kas saglabāta šajā ierīcē un jūsu Google kontā <ph name="USER_EMAIL" />.</translation>
 <translation id="2883151425485251736">Skatiet un rediģējiet no konta paslēptās tēmas</translation>
 <translation id="288655811176831528">Aizvērt cilni</translation>
 <translation id="2888631381369839306">Cenu izsekošanas paziņojumi ir ieslēgti</translation>
@@ -1878,6 +1879,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="775755486779745798">Automātiski aizpildīt derīguma termiņa mēnesi: <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Violets motīvs</translation>
 <translation id="7759809451544302770">Neobligātas</translation>
+<translation id="7763878244904387570">Tiks dzēsta atlasītā informācija, kas saglabāta šajā ierīcē.</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
 <translation id="7772948288262733182">Laipni lūdzam atpakaļ!</translation>

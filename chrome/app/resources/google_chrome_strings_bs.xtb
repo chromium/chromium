@@ -155,6 +155,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="2586406160782125153">Na ovaj način će se podaci o pregledanju izbrisati s ovog uređaja. Da preuzmete svoje podatke kasnije, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Keširanje preuzetog programa za instaliranje nije uspjelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="263447411082773721">Održavajte lozinke, oznake i historiju savršeno sinhroniziranim na svim uređajima. Ažurirajte zadani preglednik na Chrome da lako pristupate funkcijama koje poznajete i volite. Chrome će se zakačiti na traku zadataka radi brzog pristupa.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome redovno provjerava ima li vaš preglednik najsigurnije postavke. Obavijestit ćemo vas ako nešto bude potrebno pregledati.</translation>
 <translation id="2652691236519827073">Otvori link u novoj &amp;kartici Chromea</translation>
@@ -233,6 +234,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3327226547491422998">Kasnije vas Chrom može pitati želite li koristiti sačuvane informacije za automatsko popunjavanje vaših obrazaca</translation>
 <translation id="3352986031709923790">gornji desni ugao područja za pretraživanje: desno <ph name="RIGHT" />%, gore <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Pomoćnik za Chrome</translation>
+<translation id="3373752068427117404">Određene funkcije i ekstenzije Chromea dolaze s prečicama. Možete ih ponovo uključiti.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za 1 sekundu}one{Chrome će se ponovo pokrenuti za # sekundu}few{Chrome će se ponovo pokrenuti za # sekunde}other{Chrome će se ponovo pokrenuti za # sekundi}}</translation>
 <translation id="3380249972812870825">Da otvorite Gemini u Chromeu, pritisnite <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Došlo je do greške operativnog sistema prilikom instalacije. Ponovo preuzmite Google Chrome.</translation>
@@ -699,6 +701,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8064965390968184078">1. Kliknite na <ph name="BUTTON_LABEL" /> u nastavku
 2. Kliknite na <ph name="BUTTON_2" /> u postavkama Windowsa
 3. Kliknite na <ph name="BUTTON_3" /> u obavještenju Windowsa da zakačite Chrome na traku zadataka radi brzog pristupa</translation>
+<translation id="8074398340364918139">Da pretražite određenu funkciju ili ekstenziju Chromea, unesite prečicu te funkcije ili ekstenzije na traci za adresu, a zatim pritisnite odabranu tipku na tastaturi</translation>
 <translation id="8077579734294125741">Drugi profili u Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaš računar ne ispunjava minimalne hardverske zahtjeve.</translation>
 <translation id="8113883687556086139">Potvrdite identitet da koristite i sačuvate podatke Chromea na računu <ph name="ACCOUNT_EMAIL" /></translation>
@@ -707,6 +710,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
 <translation id="813913629614996137">Pokretanje…</translation>
 <translation id="8162006532256575008">Koristi Chrome bez računa</translation>
+<translation id="8172231188687329735">Preuzmite aplikaciju Chrome da sačuvate lozinke u pokretu</translation>
 <translation id="8177472873527554730">Nije moguće pronaći sadržaj na stranici</translation>
 <translation id="8221491193165283816">Obično blokirate obavještenja. Da dozvolite ovoj web lokaciji da vas obavještava, kliknite ovdje.</translation>
 <translation id="8253851811470049684">Otvarajte linkove u Chromeu iz bilo koje aplikacije i držite preglednik dostupnim na traci zadataka</translation>
@@ -734,6 +738,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 
 Nove oznake se ne mogu sačuvati na vaš račun dok ne izbrišete neke. Ako se sada odjavite, nesačuvane oznake će se izbrisati.</translation>
 <translation id="8433638294851456451">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
+<translation id="8458117863387545390">Nabavite Chrome na telefonu</translation>
 <translation id="8496177819998570653">Google upravitelj l&amp;ozinki</translation>
 <translation id="8498858610309223613">Upravo je izvršeno posebno sigurnosno ažuriranje za Google Chrome. Sada ga ponovo pokrenite i vratićemo vaše kartice.</translation>
 <translation id="8516431725144212809">Vaša interesovanja prema Chromeovoj procjeni</translation>

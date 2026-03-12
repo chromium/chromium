@@ -269,6 +269,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="3658847490588580244">Donja tabela zadanog preglednika</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web lokacije u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}}</translation>
 <translation id="3676777756440746804">Blokirali ste da vas web lokacije pitaju da koriste sačuvane informacije o vama</translation>
+<translation id="3677897809642449131">Web lokacije mogu tražiti da koriste senzore kretanja</translation>
 <translation id="3678318839615834650">Donja tabela kartica na stranici Nova kartica je otvorena u punoj visini</translation>
 <translation id="3697164069658504920">Kada je postavka uključena, web lokacije mogu zatražiti da koriste USB uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti USB uređaje.</translation>
 <translation id="3703430731944883733">Upravljajte sažetkom sadržaja</translation>
@@ -748,6 +749,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8707904142362025782">Web lokacije mogu zatražiti pristup kameri</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="8715862698998036666">Prevucite s vrha, a zatim s lijevog ili desnog ruba da izađete iz prikaza preko cijelog ekrana.</translation>
+<translation id="8716050156658570300">Web lokacije mogu tražiti da koriste senzore kretanja i svjetla</translation>
 <translation id="8719283222052720129">Uključite odobrenje za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Kada je postavka uključena, web lokacije mogu zatražiti odobrenje za traženje Bluetooth uređaja. Kada je postavka isključena, web lokacije ne mogu tražiti Bluetooth uređaje.</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>

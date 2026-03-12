@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Esta ação elimina os dados de navegação deste dispositivo. Para recuperar os dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Falha ao colocar o instalador transferido em cache. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Mantenha as suas palavras-passe, marcadores e histórico perfeitamente sincronizados entre dispositivos. Atualize o seu navegador predefinido para o Chrome e aceda facilmente às funcionalidades que conhece e adora. O Chrome vai ser afixado à barra de tarefas para um acesso rápido.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as definições mais seguras. Entraremos em contacto consigo se precisar de revisão.</translation>
 <translation id="2652691236519827073">Abrir link num novo &amp;separador do Chrome</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Mais tarde, o Chrome pode perguntar-lhe se quer usar as informações guardadas para preencher automaticamente formulários</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Ajudante do Chrome</translation>
+<translation id="3373752068427117404">Algumas funcionalidades e extensões do Chrome incluem atalhos. Pode optar por voltar a ativá-las.</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado dentro de 1 segundo}other{O Chrome será reiniciado dentro de # segundos}}</translation>
 <translation id="3380249972812870825">Para abrir o Gemini no Chrome, prima <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operativo durante a instalação. Descarregue de novo o Google Chrome.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
 2. Clique em <ph name="BUTTON_2" /> nas definições do Windows
 3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para afixar o Chrome à barra de tarefas para um acesso rápido</translation>
+<translation id="8074398340364918139">Para pesquisar uma extensão ou uma funcionalidade específica do Chrome, introduza o respetivo atalho na barra de endereço, seguido da tecla do teclado selecionada</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
 <translation id="8086881907087796310">A instalação falhou porque o seu computador não cumpre os requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Valide a sua identidade para usar e guardar dados do Chrome na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Acerca do &amp;Google Chrome</translation>
 <translation id="813913629614996137">A inicializar...</translation>
 <translation id="8162006532256575008">Usar o Chrome sem uma conta</translation>
+<translation id="8172231188687329735">Transfira a app Chrome para guardar palavras-passe em qualquer lugar</translation>
 <translation id="8177472873527554730">Não é possível encontrar conteúdo na página</translation>
 <translation id="8221491193165283816">Normalmente, bloqueia as notificações. Para permitir que este site lhe apresente notificações, clique aqui.</translation>
 <translation id="8253851811470049684">Abra links no Chrome a partir de qualquer app e mantenha o navegador acessível na barra de tarefas</translation>
@@ -726,6 +730,7 @@
 
 Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se terminar sessão agora, os marcadores não guardados são eliminados.</translation>
 <translation id="8433638294851456451">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
+<translation id="8458117863387545390">Instale o Chrome no telemóvel</translation>
 <translation id="8496177819998570653">Gestor de P&amp;alavras-passe da Google</translation>
 <translation id="8498858610309223613">Acabou de ser instalada uma atualização de segurança especial para o Google Chrome. Reinicie agora e iremos restaurar os seus separadores.</translation>
 <translation id="8516431725144212809">Os seus interesses conforme estimados pelo Chrome</translation>

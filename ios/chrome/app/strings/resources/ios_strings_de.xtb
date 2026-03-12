@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 Website (weitere auf synchronisierten Geräten)}other{# Websites (weitere auf synchronisierten Geräten)}}</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">URLs einiger von mir besuchter Seiten an Google senden, wenn meine Sicherheit gefährdet ist</translation>
+<translation id="2877733045396505765">Dadurch werden ausgewählte Informationen gelöscht, die auf diesem Gerät und in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind.</translation>
 <translation id="2883151425485251736">Hier kannst du Themen sehen und bearbeiten, die du in deinem Konto ausgeblendet hast</translation>
 <translation id="288655811176831528">Tab schließen</translation>
 <translation id="2888631381369839306">Benachrichtigungen zum Preis-Tracking aktiviert</translation>
@@ -1878,6 +1879,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="775755486779745798"><ph name="MONTH" /> als Ablaufmonat automatisch ausfüllen</translation>
 <translation id="7758789811447313947">Violettes Design</translation>
 <translation id="7759809451544302770">Optional</translation>
+<translation id="7763878244904387570">Dadurch werden ausgewählte Informationen gelöscht, die auf diesem Gerät gespeichert sind.</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
 <translation id="7772948288262733182">Willkommen zurück</translation>

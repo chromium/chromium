@@ -1306,7 +1306,7 @@
 <translation id="5718049162805123412">Bạn nên đổi mật khẩu ngay</translation>
 <translation id="5721040778297053709">Đặt thẻ tín dụng vào khung này</translation>
 <translation id="572328651809341494">Thẻ gần đây</translation>
-<translation id="5724590854763964497">Theo mặc định, thẻ hiện tại sẽ được chia sẻ khi bạn bắt đầu một cuộc trò chuyện mới. Khi các thẻ được chia sẻ, nội dung và URL của các thẻ đó sẽ được gửi đến Google, nhưng không nhằm mục đích cải thiện các mô hình AI tạo sinh. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
+<translation id="5724590854763964497">Theo mặc định, thẻ hiện tại sẽ được chia sẻ khi bạn bắt đầu một cuộc trò chuyện mới. Khi các thẻ được chia sẻ, nội dung và URL của các thẻ đó sẽ được gửi đến Google, nhưng sẽ không được sử dụng để cải thiện các mô hình AI tạo sinh. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="5724941645893276623">Để duyệt web ở chế độ riêng tư, hãy thêm một thẻ mới</translation>
 <translation id="5728072125198221967">Các dịch vụ của Google được liên kết</translation>
 <translation id="5728700505257787410">Rất tiếc, đã xảy ra sự cố khi đăng nhập tài khoản của bạn.</translation>
@@ -2323,7 +2323,7 @@
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="94870150074703282">Xoá nhóm này?</translation>
 <translation id="952704832371081537">Huỷ</translation>
-<translation id="95332591904104970">Ứng dụng đã kết nối</translation>
+<translation id="95332591904104970">Các ứng dụng có thể kết nối</translation>
 <translation id="954667170699278022">Danh sách đọc</translation>
 <translation id="956066588046842680">Chính sách của tổ chức bạn không cho phép nhập dữ liệu này.</translation>
 <translation id="956218893102219091">Sử dụng thông tin vị trí chính xác của bạn để nhận được kết quả chính xác nhất từ Gemini, thay vì vị trí ước đoán dựa trên địa chỉ IP của bạn. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>

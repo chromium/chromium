@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">ਪੰਨੇ ਦੀਆਂ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਦੇਖੋ</translation>
 <translation id="1108938384783527433">ਇਤਿਹਾਸ ਸਿੰਕ</translation>
 <translation id="1111673857033749125">ਤੁਹਾਡੀਆਂ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ ਇੱਥੇ ਵਿਖਾਈ ਦੇਣਗੇ।</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬ</translation>
 <translation id="1126696498560056882">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1135018701024399762">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵਾਲੇ ਹੋਰ ਲੋਕਾਂ ਤੋਂ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਦਾ ਡਾਟਾ ਨਿੱਜੀ ਰੱਖਦਾ ਹੈ</translation>
 <translation id="113752097246673894">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="EMAIL" /> ਵਜੋਂ Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -321,6 +322,7 @@
 <translation id="2386938421315164605">ਵਿਸ਼ੇ ਲੁਕਾਓ ਅਤੇ ਦਿਖਾਓ</translation>
 <translation id="2390510615457643724">ਕੀ ਤੁਸੀਂ <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> ਨੂੰ ਦੁਬਾਰਾ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2392369802118427583">ਸਕਿਰਿਆ ਬਣਾਓ</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, ਰਿਕਾਰਡਿੰਗ ਵਾਲੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="2410754283952462441">ਕੋਈ ਖਾਤਾ ਚੁਣੋ</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਅਜਿਹੀ ਟੈਬ, ਜੋ ਸੁਣਨਯੋਗ ਹੈ</translation>
@@ -381,6 +383,7 @@
 <translation id="2604446170045642109">ਤੁਸੀਂ ਆਪਣੀਆਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2605017215201958293">AI ਨਾਲ ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ</translation>
 <translation id="2607441479295509868">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ ਬੁੱਕਮਾਰਕਾਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਨੂੰ ਵਰਤਣ ਲਈ ਵਾਪਸ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 ਆਈਟਮ}one{# ਆਈਟਮ}other{# ਆਈਟਮਾਂ}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> ਨੇ ਤੁਹਾਨੂੰ ਸਾਂਝੀ ਕੀਤੀ ਆਈਟਮ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਸੱਦਾ ਦਿੱਤਾ।</translation>
 <translation id="2634393460268044753">ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਦੇ URL ਅਤੇ ਪੰਨੇ ਦੀ ਸਮੱਗਰੀ ਦੇ ਛੋਟੇ ਨਮੂਨੇ, ਡਾਊਨਲੋਡਾਂ, ਐਕਸਟੈਂਸ਼ਨ ਸਰਗਰਮੀ ਅਤੇ ਸਿਸਟਮ ਦੀ ਜਾਣਕਾਰੀ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜੀ ਜਾਂਦੀ ਹੈ, ਤਾਂ ਕਿ ਇਹ ਜਾਂਚ ਕੀਤੀ ਜਾ ਸਕੇ ਉਹ ਹਾਨੀਕਾਰਕ ਹਨ ਜਾਂ ਨਹੀਂ।</translation>
 <translation id="2643064289437760082">ਤੁਸੀਂ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਕੇ ਕਦੇ ਵੀ ਆਪਣੇ ਵਿਗਿਆਪਨ ਮਾਪ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
@@ -535,6 +538,7 @@
 <translation id="3268048651973962414">ਖੋਜ ਨਤੀਜੇ ਦੇਖਣ ਲਈ ਉੱਪਰ ਵੱਲ ਘਸੀਟੋ</translation>
 <translation id="3269093882174072735">ਚਿੱਤਰ ਲੋਡ ਕਰੋ</translation>
 <translation id="3280562213547448728">ਅਵਾਜ਼ੀ ਖੋਜ</translation>
+<translation id="3282801380074962248">ਸੈਕਸ਼ਨ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ਟੈਬ}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ਟੈਬ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 ਪਾਸਵਰਡ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{# ਪਾਸਵਰਡ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{# ਪਾਸਵਰਡਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="3293181007446299124">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਪ੍ਰਾਈਵੇਟ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਰਿਪੋਰਟਾਂ ਨੂੰ ਦੇਰੀ ਨਾਲ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
@@ -667,6 +671,7 @@
 <translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="3863527519275151528">ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ ਸੂਚਨਾ</translation>
 <translation id="3866863539038222107">ਜਾਂਚ ਕਰੋ</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬ</translation>
 <translation id="3870908470613821006">ਹਰ ਕੋਈ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ ਗੁਆ ਦੇਵੇਗਾ ਅਤੇ ਇਸ ਨੂੰ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="3873174561423636563">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ <ph name="FIELDS_STRING" /> ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੇ <ph name="BEGIN_LINK1" />ਸੇਵਾ ਦੇ ਨਿਯਮ<ph name="END_LINK1" /> ਦੇਖੋ।</translation>
 <translation id="3892148308691398805">ਲਿਖਤ ਕਾਪੀ ਕਰੋ</translation>
@@ -682,6 +687,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">ਪਿਛਲੇ 4 ਹਫ਼ਤੇ</translation>
 <translation id="393697183122708255">ਕੋਈ ਸਮਰਥਿਤ ਅਵਾਜ਼ੀ ਖੋਜ ਉਪਲਬਧ ਨਹੀਂ</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬ</translation>
 <translation id="3950820424414687140">ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="395377504920307820">ਕਿਸੇ ਖਾਤੇ ਦੇ ਬਿਨਾਂ ਵਰਤੋ</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{ਤਿਆਰ ਹੋਣ 'ਤੇ Chrome ਤੁਹਾਡੇ ਪੰਨੇ ਨੂੰ ਲੋਡ ਕਰੇਗਾ}one{ਤਿਆਰ ਹੋਣ 'ਤੇ Chrome ਤੁਹਾਡੇ ਪੰਨੇ ਨੂੰ ਲੋਡ ਕਰੇਗਾ}other{ਤਿਆਰ ਹੋਣ 'ਤੇ Chrome ਤੁਹਾਡੇ ਪੰਨਿਆਂ ਨੂੰ ਲੋਡ ਕਰੇਗਾ}}</translation>
@@ -748,6 +754,7 @@
 <translation id="4214315110991671325">ਜੇ ਤੁਸੀਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਦਿੰਦੇ ਹੋ, ਤਾਂ Chrome ਉਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰਨ ਲਈ ਵਰਤ ਸਕਦਾ ਹੈ।</translation>
 <translation id="421517251707893998">'ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਪਿੰਨ ਕਰੋ' 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="4216511743389425832">ਇਸ ਪੰਨੇ ਨੂੰ ਸੁਣੋ</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਪਿੰਨ ਕੀਤੀ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="4225725533026049334">ਅਨੁਸਰਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4225895483398857530">ਟੂਲਬਾਰ ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="4232376164796433044">ਪਾਸਵਰਡ ਅਤੇ ਆਟੋਫਿਲ</translation>
@@ -762,6 +769,7 @@
 <translation id="4277529130885813215">ਕੋਈ ਹੋਰ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="427987768447457592">ਨਵਾਂ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="4282440837784183472">ਤੁਹਾਡੀ ਸੰਸਥਾ, <ph name="MANAGED_DOMAIN" />, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਖਾਤੇ ਅਤੇ Chrome ਦੇ ਵਰਤੇ ਜਾਣ ਦੇ ਤਰੀਕੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦੀ ਹੈ। ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕੁਝ ਖਾਸ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਸੈੱਟਅੱਪ ਜਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਪ੍ਰਤਿਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ।</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="4285498937028063278">ਅਨਪਿਨ ਕਰੋ</translation>
 <translation id="4285846616383034558">ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਲਾਕ ਚਾਲੂ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@
 <translation id="4408965460206576430">ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਮਾਲਵੇਅਰ ਹੈ ਜਾਂ ਇਹ ਕਿਸੇ ਸ਼ੱਕੀ ਸਾਈਟ ਤੋਂ ਆਉਂਦੀ ਹੈ</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> ਅਤੇ <ph name="TAB_COUNT" /> ਹੋਰ ਟੈਬ</translation>
 <translation id="441100617989818073">ਅਣਵਰਤੀਆਂ ਜਾਂ ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਅਤੇ ਗਰੁੱਪ</translation>
+<translation id="4412123112245770507">ਸੈਕਸ਼ਨ ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> ਨੂੰ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="4415276339145661267">ਆਪਣੇ Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4425140285732600465">ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
@@ -1049,6 +1058,7 @@
 <translation id="5415871492522952905">ਤੁਹਾਡੇ ਕੋਲ ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣਾ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਹੋਣਗੀਆਂ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਉਸਨੂੰ ਜਾਰੀ ਰੱਖ ਸਕੋ ਜੋ ਵੀ ਤੁਸੀਂ ਕਰ ਰਹੇ ਸੀ</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) ਤੁਰੰਤ “<ph name="GROUP_NAME" />” ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਬੈਠੇਗਾ</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ਉਪਲਬਧ ਹੈ</translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ</translation>
 <translation id="5436928407363358055">ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਉੱਥੋਂ ਹੀ ਅਸਾਨੀ ਨਾਲ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਆਪਣੇ ਇਤਿਹਾਸ ਅਤੇ ਟੈਬਾਂ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="5438292632479953702">ਦੁਬਾਰਾ ਡਾਉਨਲੋਡ ਕਰੋ</translation>
 <translation id="5439191312780166229">ਇਹ ਸੁਵਿਧਾ ਮਿਆਰੀ ਸੁਰੱਖਿਆ ਨਾਲੋਂ ਜ਼ਿਆਦਾ ਡਾਟੇ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰ ਕੇ ਤੁਹਾਨੂੰ ਅਜਿਹੀਆਂ ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਬਾਰੇ ਚਿਤਾਵਨੀ ਦਿੰਦੀ ਹੈ ਜਿਨ੍ਹਾਂ ਬਾਰੇ Google ਨੂੰ ਪਹਿਲਾਂ ਨਹੀਂ ਪਤਾ ਸੀ। ਤੁਸੀਂ Chrome ਚਿਤਾਵਨੀਆਂ ਨੂੰ ਛੱਡਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -1063,6 +1073,7 @@
 <translation id="5471273988133666918">ਟੈਬ <ph name="TAB_TITLE" /> ਨੂੰ ਹਿਲਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="548278423535722844">'ਨਕਸ਼ੇ ਐਪ' ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5489222148748465285">ਕੀ Chrome ਨੂੰ ਖੋਜਣਾ ਜਾਰੀ ਰੱਖਣ ਦੇਣਾ ਹੈ?</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬਾਂ</translation>
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> ਵਜੋਂ ਸ਼ਾਮਲ ਹੋਵੋ</translation>
 <translation id="5517326820028369152">ਹਾਲੀਆ ਸਰਗਰਮੀ ਸੰਬੰਧੀ ਹੇਠਲੀ ਸ਼ੀਟ</translation>
@@ -1488,6 +1499,7 @@
 <translation id="7063106218165698546">ਟੈਬ ਗਰੁੱਪ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ ਅਤੇ 'ਹੋ ਗਿਆ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="7071521146534760487">ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="707155805709242880">ਚੁਣੋ ਕਿ ਹੇਠਾਂ ਦਿੱਤੇ ਡਾਟੇ ਵਿੱਚੋਂ ਕਿਸ ਦਾ ਸਿੰਕ ਕਰਨਾ ਹੈ</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ</translation>
 <translation id="7077143737582773186">SD ਕਾਰਡ</translation>
 <translation id="7078916049958741685">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਆਪਣਾ Chrome ਡਾਟਾ ਵੀ ਮਿਟਾਓ</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਅਜਿਹੀ ਟੈਬ, ਜਿਸਨੂੰ ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -1874,6 +1886,7 @@
 <translation id="8512053371384421952">ਤੁਹਾਨੂੰ ਹੁਣ <ph name="DOMAIN" /> ਤੋਂ ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਣਗੀਆਂ।</translation>
 <translation id="8516012719330875537">ਚਿੱਤਰ ਸੰਪਾਦਕ</translation>
 <translation id="8533670235862049797">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਹੈ</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, ਇੱਕ ਤੋਂ ਵੱਧ ਚੁਣੀਆਂ ਗਈਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬਾਂ</translation>
 <translation id="8540136935098276800">ਸਹੀ ਢੰਗ ਨਾਲ ਫਾਰਮੈਟ ਕੀਤਾ URL ਦਾਖਲ ਕਰੋ</translation>
 <translation id="854522910157234410">ਇਹ ਸਫ਼ਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="8547466829003330976">AI ਨਾਲ PDF ਦੀ ਸਮੀਖਿਆ ਕਰੋ</translation>
@@ -1987,6 +2000,7 @@
 <translation id="9050666287014529139">ਪਾਸਫਰੇਜ਼</translation>
 <translation id="9055497320631373736">ਸਾਈਟ ਨੂੰ ਵਾਪਸ ਸੰਭਾਵੀ ਸਾਈਟਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9057030985451135243">ਸਾਂਝੇ ਕੀਤੇ ਟੈਬ ਗਰੁੱਪਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, ਚੁਣੀ ਗਈ ਪਿੰਨ ਕੀਤੀ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਟੈਬ</translation>
 <translation id="9063400323119781058">ਅਣਸਬਸਕ੍ਰਾਈਬ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="9063523880881406963">ਬੇਨਤੀ ਡੈਸਕਟਾਪ ਸਾਈਟ ਬੰਦ ਕਰੋ</translation>
 <translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
@@ -2045,6 +2059,7 @@
 <translation id="930834144334005936">ਮੌਜੂਦਾ ਮੋਡ <ph name="MODE_NAME" /> ਨੂੰ ਖੋਜ 'ਤੇ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="938850635132480979">ਗੜਬੜ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, ਪਿੰਨ ਕੀਤੀ ਗਈ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਇਨਕੋਗਨਿਟੋ ਟੈਬ</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
 <translation id="95817756606698420">Chrome ਚੀਨ ਵਿੱਚ ਖੋਜ ਲਈ <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚੋਂ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="961856697154696964">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>

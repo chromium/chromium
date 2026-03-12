@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Tindakan ini akan menghapus data browsing dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Gagal menyimpan cache penginstal yang didownload. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="263447411082773721">Selalu sinkronkan sandi, bookmark, dan histori lintas perangkat. Update browser default ke Chrome agar dapat mengakses fitur yang Anda kenal dan suka dengan mudah. Chrome akan disematkan ke taskbar agar dapat diakses dengan cepat.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome memeriksa secara berkala untuk memastikan browser Anda memiliki setelan yang paling aman. Kami akan memberi tahu Anda jika ada yang perlu ditinjau.</translation>
 <translation id="2652691236519827073">Buka Link di &amp;tab Chrome Baru</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Nanti, Chrome dapat menanyakan apakah Anda ingin menggunakan info tersimpan guna mengisi formulir secara otomatis untuk Anda</translation>
 <translation id="3352986031709923790">pojok kanan atas area penelusuran: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Pembantu Chrome</translation>
+<translation id="3373752068427117404">Beberapa fitur dan ekstensi Chrome dilengkapi pintasan. Anda dapat mengaktifkannya kembali.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan diluncurkan ulang sekarang}=1{Chrome akan diluncurkan ulang dalam 1 detik}other{Chrome akan diluncurkan ulang dalam # detik}}</translation>
 <translation id="3380249972812870825">Untuk membuka Gemini di Chrome, tekan <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Terjadi error pada sistem operasi saat penginstalan berlangsung. Download kembali Google Chrome.</translation>
@@ -689,6 +691,7 @@
 <translation id="80471789339884597">Terima kasih telah menginstal. Anda harus memulai ulang semua browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Klik <ph name="BUTTON_LABEL" /> di bawah Klik <ph name="BUTTON_2" /> di setelan Windows Klik <ph name="BUTTON_3" /> di notifikasi Windows untuk menyematkan Chrome ke taskbar agar dapat diakses dengan cepat</translation>
+<translation id="8074398340364918139">Untuk menelusuri fitur atau ekstensi Chrome tertentu, ketik pintasannya di kolom URL diikuti tombol keyboard pilihan Anda</translation>
 <translation id="8077579734294125741">Profil Chrome lainnya</translation>
 <translation id="8086881907087796310">Penginstalan gagal karena komputer Anda tidak memenuhi persyaratan hardware minimum.</translation>
 <translation id="8113883687556086139">Verifikasi diri Anda untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -697,6 +700,7 @@
 <translation id="8129812357326543296">Tentang &amp;Google Chrome</translation>
 <translation id="813913629614996137">Memulai...</translation>
 <translation id="8162006532256575008">Gunakan Chrome Tanpa Akun</translation>
+<translation id="8172231188687329735">Dapatkan aplikasi Chrome untuk menyimpan sandi kapan saja di mana saja</translation>
 <translation id="8177472873527554730">Tidak dapat menemukan konten di halaman</translation>
 <translation id="8221491193165283816">Anda biasanya memblokir notifikasi. Untuk mengizinkan situs ini memberi Anda notifikasi, klik di sini.</translation>
 <translation id="8253851811470049684">Buka link di Chrome dari aplikasi apa pun dan buat browser tetap dapat diakses di taskbar Anda</translation>
@@ -724,6 +728,7 @@
 
 Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookmark. Jika Anda logout sekarang, bookmark yang belum disimpan akan dihapus.</translation>
 <translation id="8433638294851456451">Untuk mengirimkan nomor dari sini ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
+<translation id="8458117863387545390">Dapatkan Chrome di ponsel</translation>
 <translation id="8496177819998570653">Pengelola S&amp;andi Google</translation>
 <translation id="8498858610309223613">Update keamanan khusus untuk Google Chrome baru saja diterapkan. Mulai ulang Google Chrome sekarang dan kami akan memulihkan tab Anda.</translation>
 <translation id="8516431725144212809">Minat Anda sesuai perkiraan Chrome</translation>

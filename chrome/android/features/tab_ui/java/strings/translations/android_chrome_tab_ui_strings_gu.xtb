@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2371084566192454134">ટૅબ અને ટૅબના ગ્રૂપ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
+<translation id="2476179388576975626">ચિત્ર-માં-ચિત્ર</translation>
 <translation id="2498435670446402865">ટૅબ ગ્રૂપનું નામ બદલો</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" અને "<ph name="TAB_GROUP_NAME_2" />" ટૅબના ગ્રૂપ હવે ઉપલબ્ધ નથી</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>

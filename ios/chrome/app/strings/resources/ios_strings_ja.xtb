@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 件のサイト（同期デバイスではそれ以上のサイト）}other{# 件のサイト（同期デバイスではそれ以上のサイト）}}</translation>
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2876369937070532032">セキュリティ上のリスクがある場合に、アクセスした一部のページの URL が Google に送信されます</translation>
+<translation id="2877733045396505765">このデバイスと Google アカウント（<ph name="USER_EMAIL" />）に保存されている情報から選択した情報を削除します。</translation>
 <translation id="2883151425485251736">アカウントで非表示にしたトピックの表示と編集</translation>
 <translation id="288655811176831528">タブを閉じる</translation>
 <translation id="2888631381369839306">価格トラッキングの通知がオンになりました</translation>
@@ -1878,6 +1879,7 @@
 <translation id="775755486779745798">有効期限（月）「<ph name="MONTH" />」を自動入力する</translation>
 <translation id="7758789811447313947">バイオレットのテーマ</translation>
 <translation id="7759809451544302770">省略可</translation>
+<translation id="7763878244904387570">このデバイスに保存されている情報から選択した情報を削除します。</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7772948288262733182">おかえりなさい</translation>

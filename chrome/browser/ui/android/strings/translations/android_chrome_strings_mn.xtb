@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Хуудасны статистикийг харах</translation>
 <translation id="1108938384783527433">Түүхийг синк хийх</translation>
 <translation id="1111673857033749125">Таны бусад төхөөрөмжид хадгалсан хавчуурга энд харагдах болно</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, Дэлгэц доторх дэлгэц таб</translation>
 <translation id="1126696498560056882">Энэ төхөөрөмж дээрх бүртгэлүүдийг удирдах</translation>
 <translation id="1135018701024399762">Нууцлалын горим таны төхөөрөмжийг ашигладаг бусад хүнээс таны үзэлтийг нууцалдаг</translation>
 <translation id="113752097246673894">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд Chrome-д <ph name="EMAIL" />-р нэвтэрнэ үү</translation>
@@ -321,6 +322,7 @@
 <translation id="2386938421315164605">Сэдвүүдийг нуух болон ил болгох</translation>
 <translation id="2390510615457643724">Та <ph name="FILE_NAME" /><ph name="FILE_SIZE" />-г дахин татахыг хүсэж байна уу?</translation>
 <translation id="2392369802118427583">Идэвхжүүлэх</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, Сонгосон Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, Бичлэг хийж буй нууцлалтай таб</translation>
 <translation id="2410754283952462441">Бүртгэл сонгох</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, Сонгогдож, аудио тоглуулж буй таб</translation>
@@ -381,6 +383,7 @@
 <translation id="2604446170045642109">Та тохиргоондоо сайтуудын бараан загварыг унтраах боломжтой.</translation>
 <translation id="2605017215201958293">ХОУ-аар энэ хуудсыг сонсоорой</translation>
 <translation id="2607441479295509868">Гарсан. Бүртгэлийнхээ хавчуурга, нууц үг, бусад зүйлийг ашиглахын тулд буцаж нэвтэрнэ үү.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 зүйл}other{# зүйл}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> таныг хуваалцсан зүйлд хандахыг урьсан.</translation>
 <translation id="2634393460268044753">Таны зочилдог сайтуудын URL болон хуудасны контентын жижиг түүвэр, татаж авсан файл, өргөтгөлийн үйл ажиллагаа болон системийн мэдээллийг аюултай эсэхийг шалгахын тулд Google-н аюулгүй хөтөч рүү илгээнэ.</translation>
 <translation id="2643064289437760082">Та интернэтээр үзсэн өгөгдлөө устгаснаар зарын хэмжилтийн өгөгдлийг мөн хэзээд устгах боломжтой</translation>
@@ -535,6 +538,7 @@
 <translation id="3268048651973962414">Хайлтын илэрцийг харахын тулд дээш чирнэ үү</translation>
 <translation id="3269093882174072735">Зураг ачаалах</translation>
 <translation id="3280562213547448728">Дуут хайлт</translation>
+<translation id="3282801380074962248">Хэсгийг дэлгэх</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> таб}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> таб}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу.}other{# нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="3293181007446299124">Таны хөтчийн түүхийг төхөөрөмж дээр тань нууцалж, таныг таних мэдээллийг хамгаалах үүднээс тайлангуудыг саатуулан илгээдэг</translation>
@@ -667,6 +671,7 @@
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3863527519275151528">Мэдэгдлийг боловсруулж байна</translation>
 <translation id="3866863539038222107">Шалгах</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, Сонгосон Дэлгэц доторх дэлгэц таб</translation>
 <translation id="3870908470613821006">Хүн бүр “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд тус бүлгийг бүх төхөөрөмжөөс устгана</translation>
 <translation id="3873174561423636563">Үргэлжлүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны <ph name="FIELDS_STRING" />-г энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />Үйлчилгээний нөхцөлийг<ph name="END_LINK1" /> харна уу.</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
@@ -682,6 +687,7 @@
 <translation id="3927692899758076493">Санс сериф</translation>
 <translation id="3931947361983910192">сүүлийн 4 долоо хоног</translation>
 <translation id="393697183122708255">Идэвхжүүлсэн дуут хайлт байхгүй байна</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, Бэхэлсэн Дэлгэц доторх дэлгэц таб</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="395377504920307820">Бүртгэлгүйгээр ашиглах</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome хуудсыг бэлэн болох үед ачаална}other{Chrome хуудаснуудыг бэлэн болох үед ачаална}}</translation>
@@ -748,6 +754,7 @@
 <translation id="4214315110991671325">Та күүкиг зөвшөөрсөн тохиолдолд тэдгээрийг Chrome урьдчилан ачаалахад ашиглаж магадгүй.</translation>
 <translation id="421517251707893998">Энэ товчлолыг бэхлэх дээр товшино уу</translation>
 <translation id="4216511743389425832">Энэ хуудсыг сонсох</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, Сонгосон, бэхэлсэн, Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="4225725533026049334">Дагаж буй</translation>
 <translation id="4225895483398857530">Самбарын товчлол</translation>
 <translation id="4232376164796433044">Нууц үг, автоматаар бөглөх хэсэг</translation>
@@ -762,6 +769,7 @@
 <translation id="4277529130885813215">Өөр төхөөрөмж ашиглах</translation>
 <translation id="427987768447457592">Шинэ табын бүлэг</translation>
 <translation id="4282440837784183472">Танай байгууллага болох <ph name="MANAGED_DOMAIN" /> таны нэвтэрч буй бүртгэл болон Chrome-г хэрхэн ашиглаж болохыг удирдана. Танай администратор тодорхой онцлогуудыг тохируулах эсвэл хязгаарлах боломжтой.</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="4285498937028063278">Сонголтоос гаргах</translation>
 <translation id="4285846616383034558">Күүки, завсрын санах ой болон сайтын бусад өгөгдөл</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android-н тохиргоонд дэлгэцийн түгжээг асаана уу<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@
 <translation id="4408965460206576430">Энэ файл хортой программ агуулж байгаа эсвэл сэжигтэй сайтаас ирсэн байна</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> болон өөр <ph name="TAB_COUNT" /> таб</translation>
 <translation id="441100617989818073">Ашиглаагүй, хуулбар таб, бүлэг</translation>
+<translation id="4412123112245770507">Хэсгийг хураах</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" />-г устгасан</translation>
 <translation id="4415276339145661267">Google Бүртгэлээ удирдах</translation>
 <translation id="4425140285732600465">Үнийг хянаж байна. Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай.</translation>
@@ -1049,6 +1058,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5415871492522952905">Таны түүх, табууд бүх төхөөрөмж дээр тань байх бөгөөд ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдана</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> ГБ боломжтой</translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, Олноор нь сонгосон Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="5436928407363358055">Орхисон газраасаа хялбархан үргэлжлүүлэхийн тулд түүх, табаа синк хийнэ үү</translation>
 <translation id="5438292632479953702">Дахин татах</translation>
 <translation id="5439191312780166229">Стандарт хамгаалалтаас илүүтэйгээр сайтуудын бусад өгөгдлийг задлан шинжилснээр танд аюултай сайтуудын талаар сануулах бөгөөд эдгээрт Google-н өмнө нь мэдээгүй сайт ч багтана. Та Chrome-н сануулгыг алгасахаар сонгох боломжтой.</translation>
@@ -1063,6 +1073,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> табыг зөөх боломжгүй</translation>
 <translation id="548278423535722844">Газрын зургийн апп-д нээх</translation>
 <translation id="5489222148748465285">Chrome-р үргэлжлүүлэн хайх уу?</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, Олноор нь сонгосон Дэлгэц доторх дэлгэц таб</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" />-р нэгдэх</translation>
 <translation id="5517326820028369152">Саяхны үйл ажиллагааны доод хүснэгт</translation>
@@ -1488,6 +1499,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7063106218165698546">Табын бүлгийг өөрчлөөд, дууссан дээр товшино уу</translation>
 <translation id="7071521146534760487">Бүртгэл удирдах</translation>
 <translation id="707155805709242880">Доор юуг синк хийхээ сонгох</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, Олноор нь сонгосон, бэхэлсэн Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="7077143737582773186">SD Карт</translation>
 <translation id="7078916049958741685">Chrome-н өгөгдлөө мөн энэ төхөөрөмжөөс устгах</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, Сонгогдож, бэхлэгдсэн, дууг нь хаасан таб</translation>
@@ -1874,6 +1886,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8512053371384421952">Та цаашид <ph name="DOMAIN" />-с мэдэгдэл хүлээн авахгүй.</translation>
 <translation id="8516012719330875537">Зураг засагч</translation>
 <translation id="8533670235862049797">Аюулгүй үзэх үйлчилгээ асаалттай байна</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, Олноор нь сонгосон, бэхэлсэн Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="8540136935098276800">Зөв форматтай URL оруулна уу</translation>
 <translation id="854522910157234410">Энэ хуудсыг нээх</translation>
 <translation id="8547466829003330976">ХОУ-ыг ашиглан PDF-г хянах</translation>
@@ -1987,6 +2000,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9050666287014529139">Нэвтрэх хэллэг</translation>
 <translation id="9055497320631373736">Сайтыг боломжит сайтуудад буцааж нэмсэн</translation>
 <translation id="9057030985451135243">Хуваалцсан табын бүлгүүдийн талаар мэдэж авах</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, Сонгосон, бэхэлсэн, Дэлгэц доторх дэлгэц таб</translation>
 <translation id="9063400323119781058">Захиалгыг цуцалсан</translation>
 <translation id="9063523880881406963">Сайтыг компьютерийн горимоор харах хүсэлт-г унтраах</translation>
 <translation id="9065203028668620118">Засварлах</translation>
@@ -2045,6 +2059,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="930834144334005936">Одоогийн <ph name="MODE_NAME" /> горимыг Хайлт болгож шинэчлэх</translation>
 <translation id="938850635132480979">Алдаа: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Нэвтрэх үгүүдийг оруулна уу</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, Бэхэлсэн Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="95817756606698420">Chrome Хятадад хайлт хийхдээ <ph name="BEGIN_BOLD" />Sogou-г<ph name="END_BOLD" /> ашиглах боломжтой. Та үүнийг <ph name="BEGIN_LINK" />Тохиргоо<ph name="END_LINK" /> хэсэгт өөрчлөх боломжтой.</translation>
 <translation id="961856697154696964">Интернэтээр үзсэн өгөгдлийг устгах</translation>

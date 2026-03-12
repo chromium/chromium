@@ -372,7 +372,7 @@
 <translation id="2322173485024759474">Zurück um einen Buchstaben</translation>
 <translation id="2326112202058075478">Mehr Emojis anzeigen</translation>
 <translation id="2335091074961603075">Auf deinem Chromebook oder Bluetooth-Gerät wird eine ältere Bluetooth-Version genutzt. Verwende für eine bessere Audioqualität das interne Mikrofon.</translation>
-<translation id="2339073806695260576">Tippe auf die Eingabestift-Schaltfläche in der Ablage, um Notizen oder Screenshots zu erstellen, den Laserpointer oder die Vergrößerungsfunktion zu verwenden.</translation>
+<translation id="2339073806695260576">Tippe auf den Eingabestift-Button in der Ablage, um Notizen oder Screenshots zu erstellen, den Laserpointer oder die Vergrößerungsfunktion zu verwenden.</translation>
 <translation id="2341729377289034582">Vertikale Ausrichtung aktiv</translation>
 <translation id="2345226652884463045">Eingabetaste oder Suchtaste + Leertaste drücken, um den zu bearbeitenden Text auszuwählen.</translation>
 <translation id="2349785431103945039">Hotspot-Details anzeigen. Stelle eine Verbindung zu deinem Mobilfunknetz her, um den Hotspot zu verwenden.</translation>
@@ -941,7 +941,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4193969623755915875">Öffne „Hilfe“ mit „<ph name="NEW_SHORTCUT" />“ in der App „Entdecken“.</translation>
 <translation id="4195579532193195633">Aktuelle Version: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
-<translation id="4195877955194704651">Schaltfläche für automatische Klicks</translation>
+<translation id="4195877955194704651">Button für automatische Klicks</translation>
 <translation id="4197790712631116042">Aus</translation>
 <translation id="4201033867194214117">"<ph name="FEATURE_NAME" />" ist nicht verfügbar.</translation>
 <translation id="4201051445878709314">Vorherigen Monat anzeigen</translation>
@@ -2347,7 +2347,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8825863694328519386">Von links nach rechts wischen, um zurückzugehen</translation>
 <translation id="8832513206237979203">Lesezeichenleiste ein- oder ausblenden</translation>
 <translation id="8834539327799336565">Derzeit verbunden</translation>
-<translation id="8841375032071747811">Schaltfläche "Zurück"</translation>
+<translation id="8841375032071747811">Button „Zurück“</translation>
 <translation id="8843682306134542540">Rotationssperre an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8847100217801213944">Temperatur in Fahrenheit anzeigen</translation>

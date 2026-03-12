@@ -10,6 +10,7 @@
 
 Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren worden niet opgeslagen.</translation>
 <translation id="1083934481477628225">Je ouder heeft 'Rechten voor sites, apps en extensies' uitgezet voor Chromium</translation>
+<translation id="1090946077924227754">Als je naar een specifieke Chromium-functie of -extensie wilt zoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de door jou geselecteerde toets</translation>
 <translation id="1104942323762546749">Chromium wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="112640046208448578">Herken voorwerpen of plaatsen en kopieer of vertaal tekst. Als je Zoeken met afbeelding gebruikt, wordt een screenshot van de pagina naar de server gestuurd. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium is je standaardbrowser</translation>
@@ -27,6 +28,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1262876892872089030">Terwijl dit tabblad inactief was, is er geheugen vrijgemaakt om Chromium snel te houden. Je kunt ervoor kiezen deze site altijd uit te sluiten van inactiviteit.</translation>
 <translation id="1265577313130862557">Chromium heeft deze download geblokkeerd, omdat het bestand gevaarlijk is</translation>
 <translation id="126567311906253476">Als je met <ph name="USER_EMAIL" /> inlogt bij Google-services zoals Gmail of YouTube, kun je met hetzelfde account automatisch inloggen bij Chromium</translation>
+<translation id="1287534462498555020">Download Chromium op je telefoon</translation>
 <translation id="1290883685122687410">Configuratiefout: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Je nieuwe Chromium-profiel instellen</translation>
 <translation id="132092532143527429">Probeer het met Gemini in Chromium</translation>
@@ -381,6 +383,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="5231355151045086930">Uitloggen bij Chromium</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5254739261293693943">Vragen over deze video</translation>
+<translation id="5276305953263010518">Download de Chromium-app om onderweg wachtwoorden op te slaan</translation>
 <translation id="5277894862589591112">Als je de wijzigingen wilt toepassen, start je Chromium opnieuw</translation>
 <translation id="5286907366254680517">Herkend</translation>
 <translation id="5289287148052354622">De Chromium-app downloaden</translation>
@@ -694,6 +697,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8522801943730206384">Chromium kan je wachtwoorden checken als je deze hebt opgeslagen</translation>
 <translation id="8548787790260785208">Krijg een waarschuwing als Chromium een van je wachtwoorden vindt bij een openbaar gegevenslek</translation>
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Sommige Chromium-functies en -extensies hebben snelkoppelingen. Je kunt deze weer aanzetten.</translation>
 <translation id="8556420416730706394">Je kunt Zoeken met afbeelding vastzetten voor snelle toegang. Klik op de knop Vastzetten bovenaan het zijvenster.</translation>
 <translation id="856656450041460113">Zoeken in lijst met talen</translation>
 <translation id="8568283329061645092">Chromium kan je wachtwoorden checken als je inlogt met je Google-account</translation>
@@ -729,6 +733,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8988036198400390003">Chromium-profielen beheren</translation>
 <translation id="9019929317751753759">We hebben de volgende extensie uitgezet die niet wordt vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten is toegevoegd. We doen dit om Chromium veiliger te maken.</translation>
 <translation id="904366664621834601">Chromium heeft deze download geblokkeerd, omdat het archiefbestand andere bestanden bevat die misschien malware verbergen</translation>
+<translation id="9053882453960391422">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten. Krijg makkelijk toegang tot de functies die je kent en gebruikt door je standaardbrowser te updaten naar Chromium. Chromium wordt vastgezet op je taakbalk voor snelle toegang.</translation>
 <translation id="9062666675513499497">Inloggen bij Chromium als je inlogt bij andere Google-services</translation>
 <translation id="9078733879136747090">Chromium is automatisch gesloten</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>

@@ -269,6 +269,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3658847490588580244">Panel inferior do navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio no grupo de sitios de <ph name="RWS_OWNER" /> pode ver a túa actividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios no grupo de sitios de <ph name="RWS_OWNER" /> poden ver a túa actividade no grupo}}</translation>
 <translation id="3676777756440746804">Os sitios non poderán pedirche usar a información que garden sobre ti</translation>
+<translation id="3677897809642449131">Os sitios poden pedir permiso para usar os sensores de movemento</translation>
 <translation id="3678318839615834650">Panel inferior das tarxetas da páxina Nova pestana aberto a altura completa</translation>
 <translation id="3697164069658504920">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos USB. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos USB.</translation>
 <translation id="3703430731944883733">Xestionar o feed</translation>
@@ -748,6 +749,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8707904142362025782">O sitio pode pedirche permiso para acceder á cámara</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8715862698998036666">Para saír da pantalla completa, arrástraa desde a parte superior e pasa o dedo desde o bordo esquerdo ou dereito.</translation>
+<translation id="8716050156658570300">Os sitios poden pedir permiso para usar os sensores de movemento e de luz</translation>
 <translation id="8719283222052720129">Activa o permiso para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Cando esta opción está activada, os sitios poden pedirche permiso para buscar dispositivos Bluetooth. Cando esta opción está desactivada, os sitios non poden buscar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>

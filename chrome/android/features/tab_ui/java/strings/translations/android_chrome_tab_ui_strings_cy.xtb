@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2371084566192454134">Tabiau a grwpiau tabiau</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd ag <ph name="TABS_COUNT_ONE" /> tab.}zero{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}two{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> dab.}few{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}many{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}other{Crebachu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
+<translation id="2476179388576975626">Llun mewn llun</translation>
 <translation id="2498435670446402865">Ailenwi grŵp tabiau</translation>
 <translation id="2536366509642644298">Nid yw'r grwpiau tabiau "<ph name="TAB_GROUP_NAME_1" />" a "<ph name="TAB_GROUP_NAME_2" />" ar gael mwyach</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Crebachu <ph name="TABS_COUNT_ONE" /> tab.}zero{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}two{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> dab.}few{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> thab.}many{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> thab.}other{Crebachu'r grŵp tabiau sydd â <ph name="TABS_COUNT_MANY" /> tab.}}</translation>

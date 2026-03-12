@@ -269,6 +269,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3658847490588580244">Donja tablica zadanog preglednika</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web-lokacije u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}}</translation>
 <translation id="3676777756440746804">Web-lokacije od vas ne smiju tražiti da odobrite korištenje podataka koje su spremile o vama</translation>
+<translation id="3677897809642449131">Web-lokacije mogu tražiti dopuštenje za upotrebu senzora kretanja</translation>
 <translation id="3678318839615834650">Donja tablica kartica na stranici nove kartice otvorena u punoj visini</translation>
 <translation id="3697164069658504920">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu USB uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati USB uređaje.</translation>
 <translation id="3703430731944883733">Upravljajte svojim feedom</translation>
@@ -748,6 +749,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="8707904142362025782">Web-lokacija može zatražiti vašu kameru</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8715862698998036666">Povucite od vrha i prijeđite prstom od lijevog ili desnog ruba da biste zatvorili prikaz na cijelom zaslonu.</translation>
+<translation id="8716050156658570300">Web-lokacije mogu tražiti dopuštenje za upotrebu senzora kretanja i svjetlosnih senzora</translation>
 <translation id="8719283222052720129">Uključite dopuštenje za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za traženje Bluetooth uređaja. Kad je ta postavka isključena, web-lokacije ne mogu tražiti Bluetooth uređaje.</translation>
 <translation id="8725066075913043281">Pokušajte ponovno</translation>

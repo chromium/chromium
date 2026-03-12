@@ -10,6 +10,7 @@
 
 Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.</translation>
 <translation id="1083934481477628225">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chromium</translation>
+<translation id="1090946077924227754">Če želite iskati po določeni funkciji ali razširitvi Chromiuma, v naslovni vrstici vnesite ustrezno bližnjico in nato izbrano tipko na tipkovnici</translation>
 <translation id="1104942323762546749">Chromium želi izvoziti gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="112640046208448578">Določite stvari ali mesta in kopirajte ali prevedite besedilo. Če uporabljate slikovno iskanje, se posnetek zaslona strani pošlje strežniku. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium je privzeti brskalnik</translation>
@@ -27,6 +28,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1262876892872089030">Ko je bil ta zavihek neaktiven, je bil pomnilnik sproščen, da je bil Chromium še naprej hiter. Izberete lahko, da to spletno mesto ni nikoli neaktivno.</translation>
 <translation id="1265577313130862557">Chromium je blokiral ta prenos, ker je datoteka nevarna</translation>
 <translation id="126567311906253476">Pri prijavi v Googlove storitve, kot je Gmail ali YouTube, z računom <ph name="USER_EMAIL" /> se lahko z istim računom samodejno prijavite v Chromium</translation>
+<translation id="1287534462498555020">Prenesite Chromium v telefon</translation>
 <translation id="1290883685122687410">Napaka pri nastavitvi: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Nastavitev novega profila v Chromiumu</translation>
 <translation id="132092532143527429">Preizkusite z Geminijem v Chromiumu</translation>
@@ -382,6 +384,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5231355151045086930">Odjava iz Chromiuma</translation>
 <translation id="5234764350956374838">Opusti</translation>
 <translation id="5254739261293693943">Vprašajte o tem videoposnetku</translation>
+<translation id="5276305953263010518">Prenesite aplikacijo Chromium in shranjujte gesla na poti</translation>
 <translation id="5277894862589591112">Če želite uporabiti spremembe, znova zaženite Chromium</translation>
 <translation id="5286907366254680517">Zaznano</translation>
 <translation id="5289287148052354622">Prenos aplikacije Chromium</translation>
@@ -695,6 +698,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8522801943730206384">Chromium lahko preveri gesla, če jih shranite</translation>
 <translation id="8548787790260785208">Prejmite opozorilo, če Chromium v javni podatkovni kršitvi najde katero od vaših gesel</translation>
 <translation id="8555465886620020932">Napaka storitve: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Nekatere funkcije in razširitve Chromiuma imajo bližnjice. Lahko jih znova vklopite.</translation>
 <translation id="8556420416730706394">Slikovno iskanje lahko pripnete za preprost dostop. Kliknite gumb za pripenjanje na vrhu stranskega podokna.</translation>
 <translation id="856656450041460113">Iskanje po seznamu jezikov</translation>
 <translation id="8568283329061645092">Chromium lahko preveri vaša gesla, ko se prijavite z računom Google</translation>
@@ -730,6 +734,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8988036198400390003">Upravljanje profilov v Chromiumu</translation>
 <translation id="9019929317751753759">Zaradi večje varnosti smo v Chromiumu onemogočili to razširitev, ki ni navedena tukaj in je bila morda dodana brez vaše vednosti: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="904366664621834601">Chromium je blokiral ta prenos, ker arhivska datoteka vsebuje druge datoteke, ki morda skrivajo zlonamerno programsko opremo</translation>
+<translation id="9053882453960391422">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah. Posodobite privzeti brskalnik na Chromium in preprosto dostopajte do funkcij, ki jih poznate in so vam všeč. Chromium bo pripet v opravilno vrstico za hitri dostop.</translation>
 <translation id="9062666675513499497">Prijavite se v Chromium, ko se prijavite v druge Googlove storitve</translation>
 <translation id="9078733879136747090">Chromium se je samodejno zaprl</translation>
 <translation id="9089354809943900324">Chromium je zastarel</translation>

@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Настави</translation>
 <translation id="2371084566192454134">Картице и групе картица</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом.}one{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом.}few{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице.}other{Скупите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
+<translation id="2476179388576975626">Слика у слици</translation>
 <translation id="2498435670446402865">Преименујте групу картица</translation>
 <translation id="2536366509642644298">Групе картица <ph name="TAB_GROUP_NAME_1" /> и <ph name="TAB_GROUP_NAME_2" /> више нису доступне</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Скупите <ph name="TABS_COUNT_ONE" /> картицу.}one{Скупите групу са <ph name="TABS_COUNT_MANY" /> картицом.}few{Скупите групу са <ph name="TABS_COUNT_MANY" /> картице.}other{Скупите групу са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>

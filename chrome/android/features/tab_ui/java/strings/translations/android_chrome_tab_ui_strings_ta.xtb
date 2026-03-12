@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2371084566192454134">பக்கங்களும் பக்கக் குழுக்களும்</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவைச் சுருக்கும்.}}</translation>
+<translation id="2476179388576975626">பிக்ச்சர்-இன்-பிக்ச்சர்</translation>
 <translation id="2498435670446402865">பக்க குழு பெயர் மாற்றம்</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />", "<ph name="TAB_GROUP_NAME_2" />" ஆகிய பக்கக் குழுக்கள் இனி கிடைக்காது</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள பக்கக் குழுவைச் சுருக்கும்.}}</translation>

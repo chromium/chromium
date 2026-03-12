@@ -155,6 +155,7 @@
 <translation id="2586406160782125153">ይሄ የአሰሳ ውሂብዎን ከዚህ መሣሪያዎ ይሰርዘዋል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chrome ይግቡ።</translation>
 <translation id="259935314519650377">የወረደውን ጫኝ መሸጎጥ አልተሳካም። ስህተት፦ <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">ስርዓት</translation>
+<translation id="263447411082773721">የይለፍ ቃላትዎን፣ እልባቶችዎን እና ታሪክዎን በመላው መሣሪያዎችዎ ላይ በትክክል ሠምረው እንዲቆዩ ያድርጉ። ነባሪ አሳሽዎን ወደ Chrome በማዘመን በቀላሉ የሚያውቋቸውን እና የሚወዷቸውን ባህሪያት ይድረሱ። Chrome ለፈጣን መዳረሻ በተግባር አሞሌዎ ላይ ይሰካል።</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome የእርስዎ አሳሽ ደህንነታቸው የተጠበቁ ቅንብሮች እንዳለው ለማረጋገጥ በመደበኛነት ይፈትሻል። ማንኛውም ነገር የእርስዎ ግምገማ ካስፈለገው እናሳውቅዎታለን።</translation>
 <translation id="2652691236519827073">አገናኝ በአዲስ የChrome &amp;ትር ውስጥ ክፈት</translation>
@@ -233,6 +234,7 @@
 <translation id="3327226547491422998">በኋላ ላይ Chrome ለእርስዎ ቅጾችን በራስ-ለመሙላት የተቀመጠ መረጃ መጠቀም እንደሚፈልጉ መጠየቅ ይችላል</translation>
 <translation id="3352986031709923790">የፍለጋው አካባቢ ከላይ በስተቀኝ ጥግ፦ ቀኝ <ph name="RIGHT" />%፣ ከላይ <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome አጋዥ</translation>
+<translation id="3373752068427117404">አንዳንድ የChrome ባህሪያት እና ቅጥያዎች ከአቋራጮች ጋር ይመጣሉ። መልሰው ለማብራት መምረጥ ይችላሉ።</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome አሁን ዳግም ይጀምራል}=1{Chrome በ1 ሰከንድ ውስጥ ዳግም ይጀምራል}one{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}other{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}}</translation>
 <translation id="3380249972812870825">Gemini በChrome ውስጥ ለመክፈት <ph name="GLOBAL_HOTKEY" />ን ይጫኑ</translation>
 <translation id="3396977131400919238">በመጫን ጊዜ የሥርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Google Chromeን እንደገና ያውርዱ።</translation>
@@ -699,6 +701,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8064965390968184078">1. ከታች <ph name="BUTTON_LABEL" /> ላይ ጠቅ ያድርጉ
 2. በWindows ቅንብሮችዎ ውስጥ <ph name="BUTTON_2" /> ላይ ጠቅ ያድርጉ
 3. ለፈጣን መዳረሻ Chromeን በተግባር አሞሌዎ ላይ ለመሰካት በWindows ማሳወቂያ ውስጥ <ph name="BUTTON_3" /> ላይ ጠቅ ያድርጉ</translation>
+<translation id="8074398340364918139">አንድን የተወሰነ የChrome ባህሪ ወይም ቅጥያ ለመፈለግ የእርስዎን የተመረጠ የቁልፍ ሰሌዳ ቁልፍ በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ</translation>
 <translation id="8077579734294125741">ሌሎች የChrome መገለጫዎች</translation>
 <translation id="8086881907087796310">ኮምፒውተርዎ አነስተኛውን የሃርድዌር መስፈርቶች ስላላሟላ መጫኑ አልተሳካም።</translation>
 <translation id="8113883687556086139">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን ለመጠቀም እና ለማስቀመጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
@@ -707,6 +710,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="8129812357326543296">ስለ &amp;Google Chrome</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8162006532256575008">Chromeን ያለ መለያ ይጠቀሙ</translation>
+<translation id="8172231188687329735">በመሄድ ላይ ሳሉ የይለፍ ቃላትን ለማስቀመጥ የChrome መተግበሪያን ያግኙ</translation>
 <translation id="8177472873527554730">በገፅ ውስጥ ያለ ይዘትን ማግኘት አይቻልም</translation>
 <translation id="8221491193165283816">ማሳወቂያዎችን ብዙውን ጊዜ ያግዳሉ። ይህን ጣቢያ ለእርስዎ እንዲያሳውቅዎት ለመፍቀድ፣ እዚህ ላይ ጠቅ ያድርጉ።</translation>
 <translation id="8253851811470049684">ከማንኛውም መተግበሪያ ላይ አገናኞችን በChrome ውስጥ ይክፈቱ እና አሳሹን በተግባር አሞሌዎ ላይ ተደራሽ አድርገው ያቆዩት</translation>
@@ -734,6 +738,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 
 አንዳንድ እስኪሰርዙ ድረስ አዲስ እልባቶች በመለያዎ ውስጥ መቀመጥ አይችሉም። አሁን ዘግተው ከወጡ ያልተቀመጡ እልባቶች ይሰረዛሉ።</translation>
 <translation id="8433638294851456451">አንድ ቁጥር ከዚህ ወደ የእርስዎ Android ስልክ ለመላክ፣ በሁለቱም መሣሪያዎች ላይ በመለያ ወደ Chrome ይግቡ።</translation>
+<translation id="8458117863387545390">Chromeን በስልክዎ ላይ ያግኙ</translation>
 <translation id="8496177819998570653">Google የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="8498858610309223613">ለGoogle Chrome ልዩ የደህንነት ዝማኔ አሁን ተጭኗል። አሁን እንደገና ያስጀምሩ እና የእርስዎን ትሮች እንደነበሩ እንመልሳቸዋለን።</translation>
 <translation id="8516431725144212809">በChrome የተገመቱ የእርስዎ ዝንባሌዎች</translation>

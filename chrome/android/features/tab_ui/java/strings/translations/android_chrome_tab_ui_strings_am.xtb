@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2371084566192454134">ትሮች እና ቡድኖች</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር ያለው የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ሰብስብ።}one{<ph name="TABS_COUNT_MANY" /> ትር ያለው የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ሰብስብ።}other{<ph name="TABS_COUNT_MANY" /> ትሮች ያሉት የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ሰብስብ።}}</translation>
+<translation id="2476179388576975626">ሥዕል-ላይ-ሥዕል</translation>
 <translation id="2498435670446402865">የትር ቡድንን እንደገና ይሰይሙ</translation>
 <translation id="2536366509642644298">«<ph name="TAB_GROUP_NAME_1" />» እና «<ph name="TAB_GROUP_NAME_2" />» የትር ቡድኖች ከእንግዲህ አይገኙም</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}other{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}}</translation>

@@ -1057,6 +1057,7 @@ Esta política es una solución temporal en caso de que las empresas experimente
       Si no se configura esta política, las funciones de brillo automático y los controles de pantalla del usuario no se ven afectados.
 
       Nota: Los valores que se asignen a esta política deben ser porcentajes de 0 a 100.</translation>
+<translation id="1732435945666510577">Inhabilitar el almacenamiento de registros de actividad del DOM de la extensión</translation>
 <translation id="1733092875104864334">No permitir que se recojan registros de texto WebRTC de los servicios de Google</translation>
 <translation id="1733768596873041559">Redirigir al proveedor de identidades SAML de forma predeterminada (se necesita la confirmación del usuario en versiones anteriores a <ph name="PRODUCT_NAME" /> 99)</translation>
 <translation id="1736032188431871940">Bloquea el acceso a una lista de URLs en modo Incógnito.</translation>
@@ -1357,6 +1358,23 @@ Si se inhabilita, <ph name="PRODUCT_NAME" /> cerrará la pestaña después de ca
 <translation id="1954612656043024615">Habilitar la función de portapapeles compartido</translation>
 <translation id="1955063069502242812">Habilitar sonido de batería baja</translation>
 <translation id="1955806069704957172">Controla la configuración de la API Desk Connector.</translation>
+<translation id="1956346847126765379">Si se define la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, se impedirá que se carguen las páginas web con URLs prohibidas. Los administradores pueden especificar una lista con patrones de URL que quieran bloquear. Si no se asigna ningún valor, no se bloqueará ninguna URL en el navegador. Se pueden definir un máximo de 1000 excepciones en <ph name="URL_ALLOWLIST_POLICY_NAME" />. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Nota: Esta política no se aplica a las URLs de JavaScript dentro de la página con datos cargados dinámicamente. Si has bloqueado example.com/abc, la página example.com podría cargarlo igualmente con XMLHTTPRequest. Además, esta política no evita que las páginas web actualicen la URL mostrada en el omnibox con una URL bloqueada usando la API History de JavaScript.
+
+Puedes bloquear las URLs javascript://* a partir de la versión 73 de <ph name="PRODUCT_NAME" />. Sin embargo, esto solo afecta al código JavaScript que se introduce en la barra de direcciones o, por ejemplo, a bookmarklets.
+
+A partir de la versión 92 de <ph name="PRODUCT_NAME" />, también se admite esta política en el modo sin interfaz gráfica.
+
+A partir de la versión 147 de <ph name="PRODUCT_NAME" />, el comodín * por sí solo no se aplica a las URLs internas con chrome://. Para bloquearlas, debes usar explícitamente el patrón chrome://*.
+
+Nota: Bloquear las URLs internas chrome://* y chrome-untrusted://* podría provocar errores inesperados o dichos bloqueos pueden eludirse en algunos casos. En lugar de bloquear determinadas URLs internas, comprueba si hay políticas más específicas disponibles. Por ejemplo:
+
+- En lugar de bloquear chrome://settings/certificates, usa <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+- En lugar de bloquear chrome-untrusted://crosh, usa <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
+
+- En lugar de bloquear devtools://*, usa una de estas políticas: <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> o <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1957093168333856467">Inhabilitar el teclado virtual de accesibilidad</translation>
 <translation id="1958110911685486719">Compatibilidad con formularios XFA de PDF habilitada</translation>
 <translation id="1960059835237529462">Permite que se muestre a los usuarios la promoción de valoraciones del App Store de <ph name="IOS_NAME" /></translation>
@@ -1902,6 +1920,7 @@ El tamaño de la fuente se especifica en puntos.</translation>
 <translation id="2290270645214705008">Si se inhabilita esta política, el servicio de host de acceso remoto no se podrá iniciar ni configurar para que acepte conexiones entrantes.  Esta política no afecta a las situaciones de asistencia remota.
 
           Esta política no tendrá efecto si se habilita, se deja vacía o no se define.</translation>
+<translation id="2291341836547307786">Habilitar el almacenamiento de registros de actividad del DOM de la extensión</translation>
 <translation id="2292482441027364457">Si se define esta política, se establecerá qué identificadores de aplicación mostrará <ph name="PRODUCT_OS_NAME" /> como aplicaciones fijadas en la barra del menú de aplicaciones, y los usuarios no podrán cambiarlas.
 
 Especifica las aplicaciones de Chrome por su ID, como pjkljhegncpnkpknbcohdijeoejaedia; las aplicaciones Android por su nombre de paquete, como com.google.android.gm; las aplicaciones web por la URL usada en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como https://google.com/maps; las aplicaciones web del sistema por su nombre escrito en minúscula y separado por guiones bajos; como <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />,
@@ -2166,6 +2185,51 @@ Si no se define esta política, la opción predeterminada será <ph name="POLICY
 <translation id="2489558694350871332">Permitir que el dispositivo ejecute máquinas virtuales</translation>
 <translation id="2492240920793040106">Habilitar los informes sobre datos del sistema y contenido de páginas para ayudar a mejorar la función Navegación segura</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
+<translation id="2496898792336137342">Configura reglas que seleccionan el proxy que usa el navegador en función de la URL de destino y de condiciones de red concretas.
+
+Esta política tiene prioridad sobre la política <ph name="PROXY_SETTINGS_POLICY_NAME" />, la API de extensión <ph name="PROXY_SETTINGS_EXTENSION_API" /> y la configuración manual del usuario. Si no se encuentra ninguna regla que coincida en esta política, el navegador restaurará la configuración definida en <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+El navegador evalúa las entradas de la lista <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> en secuencia. Una regla solo se aplica si se cumplen todos estos criterios:
+
+  * Coincidencia: se encuentra una coincidencia con al menos un patrón de URL de <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" />.
+
+  * Exclusión: no se encuentran coincidencias con ningún patrón de URL de <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" />.
+
+  * Condiciones: si se definen <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" />, se deben cumplir todas las condiciones de la lista. Si no se definen, se ignora este requisito.
+
+Los patrones de URL de los buscadores de coincidencias se indican en https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+El campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> define una lista de conmutación por error. Se usa la primera entrada a la que se puede acceder, mientras que las entradas no válidas se ignoran. Puedes usar cadenas de estilo PAC o especificadores de tipo URL:
+
+Cadenas de estilo PAC:
+
+  * DIRECT
+
+  * PROXY host:port
+
+  * HTTPS host:port
+
+  * SOCKS4 host:port
+
+  * SOCKS5 host:port
+
+Especificadores de tipo URL:
+
+  * http://host:port
+
+  * https://host:port
+
+  * socks4://host:port
+
+  * socks5://host:port
+
+La condición <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> comprueba si un <ph name="PROXY_OVERRIDE_RULES_HOST" /> se resuelve en una dirección IP.
+
+* Admite nombres de host (por ejemplo, example.com) o cadenas de estilo URI (por ejemplo, https://example.com:123). Si se usa un esquema seguro (https), puede que se active una solicitud de registro HTTPS (consulta el documento RFC 9460).
+
+* Asigna el valor "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />" para que se cumpla la condición si se resuelve correctamente o "<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />" si no se puede resolver.
+
+La aplicación de esta política en dispositivos gestionados se ve influenciada por la política a nivel de equipo <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> en las plataformas en las está disponible. De forma predeterminada, impide que se usen reglas de anulación configuradas por usuarios no afiliados.</translation>
 <translation id="2497751676088107779">Script de usuario</translation>
 <translation id="249798396824949930"> Controla si el navegador puede detectar si el nivel de cada política es obligatorio en <ph name="MAC_OS_NAME" /> o no.
 
@@ -6495,6 +6559,7 @@ En las plataformas de ordenadores, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NA
 <translation id="5309944663104291505">No permitir que las apps web aisladas que se han instalado de manera forzada y las apps de kiosco usen la API Device Attributes</translation>
 <translation id="5311275381462687162">Configuración antigua de comportamiento de cookies de <ph name="ATTRIBUTE_SAMESITE_NAME" /> predeterminada</translation>
 <translation id="5312253627576569499">Porcentaje de ajuste del retraso de atenuación de pantalla cuando se observa la actividad del usuario con la pantalla atenuada o poco después de que esta se haya desactivado</translation>
+<translation id="5313663675323027439">Controlar el registro de actividad del DOM de la extensión</translation>
 <translation id="5316856058059940708">Inhabilitar el cursor grande</translation>
 <translation id="5318185076587284965">Habilita el uso de servidores de retransmisión por parte del host de acceso remoto</translation>
 <translation id="5321624917465764266">Si la política se habilita o no se define, el historial de navegación y el historial de descargas se podrán eliminar en Chrome, y los usuarios no podrán cambiar este ajuste.
@@ -9782,6 +9847,14 @@ Si se le asigna el valor False, se habilitará el comportamiento anterior.</tran
       Si esta política se habilita o no se establece, los dispositivos registrados informarán sobre la lista de interfaces de red junto a sus tipos y direcciones de hardware.
 
       Si se inhabilita esta política, los dispositivos registrados no informarán sobre la interfaz de red.</translation>
+<translation id="7387190801932161230">Controla si el registro de actividad del DOM de las extensiones está habilitado para los usuarios de empresa.
+
+Si se habilita esta política, se activará la telemetría en la actividad del DOM de la extensión. Esto incluye la monitorización de la inyección de código y el acceso a datos sensibles por parte de las extensiones.
+
+Si se habilita esta política, <ph name="PRODUCT_NAME" /> recogerá y transmitirá señales sobre las interacciones de las extensiones con las páginas web al servicio de telemetría de extensiones para realizar auditorías de seguridad.
+Si se inhabilita esta política o no se define, estas señales no se recogerán ni se transmitirán en el caso de los usuarios de empresa.
+
+Los valores reales de los datos sensibles (como las cookies o los valores de entrada) NO se recogen, solo se recoge el hecho de que se haya accedido a ellos.</translation>
 <translation id="7389872682701720082">Si se habilita esta opción, se ejecutarán siempre los complementos que no estén desactualizados.
 
       Si se inhabilita esta opción o no se configura, se le pedirá permiso a los usuarios para ejecutar complementos que requieran autorización. Algunos complementos pueden comprometer la seguridad.</translation>

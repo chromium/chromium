@@ -269,6 +269,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="3658847490588580244">Defolt brauzerin aşağıdakı vərəqi</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}other{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}}</translation>
 <translation id="3676777756440746804">Saytların haqqınızda yadda saxlanılan məlumatdan istifadə üçün icazə istəməsi bloklanıb</translation>
+<translation id="3677897809642449131">Saytlar hərəkət sensorlarından istifadə etmək istəyə bilər</translation>
 <translation id="3678318839615834650">Yeni tab səhifəsi kartları üzrə aşağıdakı vərəq tam hündürlükdə açıldı</translation>
 <translation id="3697164069658504920">Aktiv ediləndə saytlar USB cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar USB cihazlarından istifadə edə bilməz.</translation>
 <translation id="3703430731944883733">Lenti idarə edin</translation>
@@ -748,6 +749,7 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:
 <translation id="8707904142362025782">Saytlar kameraya giriş istəyə bilər</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8715862698998036666">Tam ekrandan çıxmaq üçün yuxarıdan sürüşdürün, habelə sol və ya sağ kənardan çəkin.</translation>
+<translation id="8716050156658570300">Saytlar hərəkət və işıq sensorlarından istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="8719283222052720129"><ph name="APP_NAME" /> üçün icazəni <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> aktiv edin.</translation>
 <translation id="8721719390026067591">Aktiv ediləndə saytlar Bluetooth cihazlarını axtarmaq üçün icazə istəyə bilər. Deaktiv ediləndə saytlar Bluetooth cihazlarını axtara bilməz.</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>

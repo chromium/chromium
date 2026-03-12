@@ -1095,6 +1095,7 @@ policy era la versione 121. È stata rimossa nella versione 122.</translation>
       Se la policy non viene configurata, i controlli o le funzionalità di luminosità automatica dello schermo dell'utente rimangono invariati.
 
       Nota: i valori della policy devono essere specificati in percentuali da 0 a 100.</translation>
+<translation id="1732435945666510577">Disattiva il logging dell'attività DOM delle estensioni</translation>
 <translation id="1733092875104864334">Non consentire la raccolta di log di testo WebRTC dai servizi Google</translation>
 <translation id="1733768596873041559">Reindirizza all'IdP SAML per impostazione predefinita (prima della versione 99 di <ph name="PRODUCT_NAME" /> è necessaria la conferma dell'utente)</translation>
 <translation id="1736032188431871940">Blocca l'accesso a un elenco di URL in modalità Incognito.</translation>
@@ -1938,6 +1939,7 @@ I valori predefiniti sono: Opacità riempimento a 4, Opacità contorno a 6 e Dim
 <translation id="2290270645214705008">Se questa policy viene impostata su Disattivata, non è possibile avviare o configurare il servizio host di accesso remoto per accettare le connessioni in arrivo.  Questa policy non influisce sugli scenari di assistenza remota.
 
           La policy non ha effetto se viene impostata su Attivata, se viene lasciata vuota o se non viene configurata.</translation>
+<translation id="2291341836547307786">Abilita il logging dell'attività DOM delle estensioni</translation>
 <translation id="2292482441027364457">La configurazione della policy consente di correggere quali identificatori di applicazioni vengono mostrati da <ph name="PRODUCT_OS_NAME" /> come app fissate sulla barra Avvio app e gli utenti non possono modificarli.
 
 Specifica le app di Chrome tramite il relativo ID, come pjkljhegncpnkpknbcohdijeoejaedia;
@@ -2210,6 +2212,51 @@ Se la policy non viene configurata, <ph name="POLICY_VALUE_VISIBLE" /> è la sel
 <translation id="2489558694350871332">Consenti al dispositivo di eseguire macchine virtuali</translation>
 <translation id="2492240920793040106">Attiva la segnalazione di informazioni di sistema e contenuti della pagina per migliorare Navigazione sicura</translation>
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
+<translation id="2496898792336137342">Configura le regole che selezionano il proxy utilizzato dal browser in base all'URL di destinazione e a condizioni di rete specifiche.
+
+Questa policy ha la precedenza sulla policy <ph name="PROXY_SETTINGS_POLICY_NAME" />, sull'API <ph name="PROXY_SETTINGS_EXTENSION_API" /> delle estensioni e sulle impostazioni manuali dell'utente. Se nessuna regola in questa policy corrisponde, il browser torna alle impostazioni definite in <ph name="PROXY_SETTINGS_POLICY_NAME" />.
+
+Il browser valuta le voci nell'elenco <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> in sequenza. Una regola viene applicata solo se vengono soddisfatti tutti i seguenti criteri:
+
+  * Corrispondenza: almeno un pattern URL in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS" /> corrisponde.
+
+  * Esclusione: nessun pattern URL in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS" /> corrisponde.
+
+  * Condizioni: se <ph name="PROXY_OVERRIDE_RULES_CONDITIONS" /> è specificato, tutte le condizioni elencate devono essere soddisfatte. Se non viene impostato, questo requisito viene ignorato.
+
+I pattern URL per i matcher sono documentati all'indirizzo https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+Il campo <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST" /> definisce un elenco di failover. Viene utilizzata la prima voce raggiungibile; le voci non valide vengono ignorate. Puoi utilizzare stringhe in stile PAC o identificatori simili a URL:
+
+Stringhe in stile PAC:
+
+  * DIRECT
+
+  * PROXY host:port
+
+  * HTTPS host:port
+
+  * SOCKS4 host:port
+
+  * SOCKS5 host:port
+
+Identificatori simili a URL:
+
+  * http://host:port
+
+  * https://host:port
+
+  * socks4://host:port
+
+  * socks5://host:port
+
+La condizione <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE" /> verifica se un <ph name="PROXY_OVERRIDE_RULES_HOST" /> viene risolto in un indirizzo IP.
+
+* Supporta nomi host (ad es. example.com) o stringhe in stile URI (ad es. https://example.com:123). L'utilizzo di uno schema sicuro (https) può attivare una richiesta di record HTTPS (vedi RFC 9460).
+
+* Imposta su "<ph name="PROXY_OVERRIDE_RULES_RESOLVED" />" per soddisfare la condizione in caso di risoluzione riuscita oppure su "<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND" />" se la risoluzione non riesce.
+
+L'applicazione di questa policy sui dispositivi gestiti è influenzata dalla policy a livello di macchina <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME" /> sulle piattaforme in cui è supportata. Per impostazione predefinita, impedisce l'utilizzo di regole di override configurate da utenti non affiliati.</translation>
 <translation id="2497751676088107779">Script utente</translation>
 <translation id="249798396824949930"> Consente di stabilire se il browser può rilevare l'ambito delle policy obbligatorie su <ph name="MAC_OS_NAME" /> o meno.
 
@@ -6561,6 +6608,7 @@ Sulle piattaforme desktop, il download del modello può essere disattivato anche
 <translation id="5309944663104291505">Non consentire alle app web isolate e alle applicazioni kiosk con installazione forzata di utilizzare l'API Device Attributes</translation>
 <translation id="5311275381462687162">Impostazione del comportamento precedente predefinito <ph name="ATTRIBUTE_SAMESITE_NAME" /> per i cookie</translation>
 <translation id="5312253627576569499">La percentuale di regolazione del ritardo di oscuramento dello schermo quando viene osservata l'attività dell'utente mentre lo schermo è oscurato o subito dopo la disattivazione dello schermo.</translation>
+<translation id="5313663675323027439">Controlla il logging delle attività DOM delle estensioni</translation>
 <translation id="5316856058059940708">Disabilita cursore grande</translation>
 <translation id="5318185076587284965">Attiva l'utilizzo dei server relay per l'host di accesso remoto</translation>
 <translation id="5321624917465764266">Se la policy viene impostata su Attivata o se non viene configurata, la cronologia di navigazione e quella dei download possono essere eliminate in Chrome e gli utenti non possono modificare questa impostazione.
@@ -9898,6 +9946,14 @@ Se questa policy viene impostata su False, viene attivato il comportamento prece
       Se la policy viene impostata su Attivata o se non viene configurata, i dispositivi registrati segnalano l'elenco di interfacce di rete con i relativi tipi e indirizzi hardware.
 
       Se la policy viene impostata su Disattivata, i dispositivi registrati non segnalano l'interfaccia di rete.</translation>
+<translation id="7387190801932161230">Controlla se il logging dell'attività DOM delle estensioni è abilitato per gli utenti aziendali.
+
+Se la policy viene impostata su Attivata, la telemetria per l'attività DOM delle estensioni viene attivata. Ciò include il monitoraggio dell'inserimento di codice e dell'accesso ai dati sensibili da parte delle estensioni.
+
+Se questa policy viene impostata su Attivata, <ph name="PRODUCT_NAME" /> raccoglierà e trasmetterà indicatori relativi alle interazioni delle estensioni con le pagine web al servizio di telemetria delle estensioni per l'audit di sicurezza.
+Se questa policy viene disattivata o se non viene configurata, questi indicatori non vengono raccolti o trasmessi per gli utenti aziendali.
+
+Non vengono raccolti i valori effettivi dei dati sensibili (come cookie o valori di input), ma solo il fatto che sono stati consultati.</translation>
 <translation id="7389872682701720082">Se attivi questa impostazione, i plug-in non obsoleti verranno sempre eseguiti.
 
       Se questa impostazione è disattivata o non è configurata, agli utenti verrà chiesta l'autorizzazione di eseguire i plug-in per i quali è necessaria. Questi sono plug-in che possono compromettere la sicurezza.</translation>

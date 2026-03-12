@@ -269,6 +269,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="3658847490588580244">Sheet bawah browser default</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}other{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}}</translation>
 <translation id="3676777756440746804">Situs diblokir agar tidak meminta izin Anda untuk menggunakan informasi tentang Anda yang disimpan situs</translation>
+<translation id="3677897809642449131">Situs dapat meminta penggunaan sensor gerakan</translation>
 <translation id="3678318839615834650">Panel bawah kartu halaman tab baru terbuka sepenuhnya</translation>
 <translation id="3697164069658504920">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat USB. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat USB.</translation>
 <translation id="3703430731944883733">Mengelola feed Anda</translation>
@@ -748,6 +749,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:
 <translation id="8707904142362025782">Situs dapat meminta akses ke kamera Anda</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8715862698998036666">Tarik dari atas dan geser dari tepi kiri atau kanan untuk keluar dari layar penuh.</translation>
+<translation id="8716050156658570300">Situs dapat meminta penggunaan sensor gerakan dan cahaya</translation>
 <translation id="8719283222052720129">Aktifkan izin untuk <ph name="APP_NAME" /> di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Jika diaktifkan, situs dapat meminta untuk mencari perangkat Bluetooth. Jika dinonaktifkan, situs tidak dapat mencari perangkat Bluetooth.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>

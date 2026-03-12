@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Separadores e grupos de separadores</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
+<translation id="2476179388576975626">Ecrã no ecrã</translation>
 <translation id="2498435670446402865">Mude nome grupo separad.</translation>
 <translation id="2536366509642644298">Os grupos de separadores "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" já não estão disponíveis</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>

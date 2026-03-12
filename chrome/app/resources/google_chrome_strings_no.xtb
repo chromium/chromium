@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Kunne ikke bufre det nedlastede installasjonsprogrammet. Feil: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="263447411082773721">Hold passordene, bokmerkene og loggen din synkronisert på alle enheter. Ved å oppdatere standardnettleseren din til Chrome, får du enkel tilgang til funksjonene du kjenner og liker. Chrome festes på oppgavelinjen for rask tilgang.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome sjekker regelmessig at nettleseren din har de tryggeste innstillingene. Vi gir deg beskjed hvis det er noe du må se nærmere på.</translation>
 <translation id="2652691236519827073">Åpne linken i en ny &amp;fane i Chrome</translation>
@@ -222,13 +223,14 @@
 <translation id="3226612997184048185">Hvis du også lagrer bokmerkene i Google-kontoen din, kan du spore produktpriser i Chrome og bli varslet om avslag</translation>
 <translation id="3242123554343253302">Legg til en Chrome-profil</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
-<translation id="3259748324892322072">Skaff deg Chrome-appen</translation>
+<translation id="3259748324892322072">Få Chrome-appen</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="3292333338048274092">Deretter må du starte Chrome på nytt.</translation>
 <translation id="3324218984287646518">Spør Google Lens om denne videoen</translation>
 <translation id="3327226547491422998">Senere kan Chrome spørre om du vil bruke lagret informasjon til å autofylle skjemaer</translation>
 <translation id="3352986031709923790">øverst til høyre i søkefeltet: høyre <ph name="RIGHT" /> %, øverst <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Chrome-hjelper</translation>
+<translation id="3373752068427117404">Noen Chrome-funksjoner og -utvidelser har snarveier. Du kan velge å slå dem på igjen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startes på nytt nå}=1{Chrome startes på nytt om 1 sekund}other{Chrome startes på nytt om # sekunder}}</translation>
 <translation id="3380249972812870825">Trykk på <ph name="GLOBAL_HOTKEY" /> for å åpne Gemini i Chrome</translation>
 <translation id="3396977131400919238">Det oppsto en feil i operativsystemet under installeringen. Last ned Google Chrome på nytt.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Klikk på <ph name="BUTTON_LABEL" /> nedenfor
 2. Klikk på <ph name="BUTTON_2" /> i Windows-innstillingene
 3. Klikk på <ph name="BUTTON_3" /> i Windows-varselet for å feste Chrome til oppgavelinjen for rask tilgang</translation>
+<translation id="8074398340364918139">For å søke etter en bestemt Chrome-funksjon eller -utvidelse, skriv inn snarveien til den i adressefeltet, etterfulgt av tasten du har valgt på tastaturet</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installasjonen mislyktes fordi datamaskinen ikke oppfyller minimumskravene til maskinvare.</translation>
 <translation id="8113883687556086139">Bekreft at det er deg, for å bruke og lagre Chrome-data i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
 <translation id="8162006532256575008">Bruk Chrome uten noen konto</translation>
+<translation id="8172231188687329735">Last ned Chrome-appen for å lagre passord, uansett hvor du er</translation>
 <translation id="8177472873527554730">Finner ikke innhold på siden</translation>
 <translation id="8221491193165283816">Du blokkerer vanligvis varsler. For å la dette nettstedet varsle deg, klikk her.</translation>
 <translation id="8253851811470049684">Åpne linker i Chrome fra hvilken som helst app, og fest nettleseren på oppgavelinjen for å ha den enkelt tilgjengelig</translation>
@@ -726,6 +730,7 @@
 
 Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logger av nå, slettes bokmerker som ikke er lagret.</translation>
 <translation id="8433638294851456451">For å sende numre herfra til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
+<translation id="8458117863387545390">Skaff deg Chrome på telefonen</translation>
 <translation id="8496177819998570653">Google P&amp;assordlagring</translation>
 <translation id="8498858610309223613">En spesiell sikkerhetsoppdatering for Google Chrome ble nettopp installert. Start på nytt nå, så gjenoppretter vi fanene dine.</translation>
 <translation id="8516431725144212809">Interessene dine som Chrome har anslått</translation>

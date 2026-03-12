@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Səhifə statistikasına baxın</translation>
 <translation id="1108938384783527433">Tarixçə sinxronizasiyası</translation>
 <translation id="1111673857033749125">Digər cihazlarınızda yadda saxlanmış əlfəcinlər burada görünəcək.</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, Şəkildə şəkil tabı</translation>
 <translation id="1126696498560056882">Bu cihazdakı hesabları idarə edin</translation>
 <translation id="1135018701024399762">Anonim rejim baxış tarixçənizi cihazdan istifadə edən digər şəxslərdən gizlədir</translation>
 <translation id="113752097246673894">Əlfəcinləri və digər məlumatları bütün cihazlarınızda əldə etmək üçün Chrome-a <ph name="EMAIL" /> kimi daxil olun</translation>
@@ -321,6 +322,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2386938421315164605">Mövzuları gizlədin və göstərin</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) faylını yenidən endirmək istəyirsiniz?</translation>
 <translation id="2392369802118427583">Aktivləşdirin</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, Seçilmiş şəkildə şəkil anonim tabı</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, Anonim tabda qeydəalma</translation>
 <translation id="2410754283952462441">Hesab seçin</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, Seçilmiş səsli tab</translation>
@@ -381,6 +383,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="2604446170045642109">Ayarlarınızda saytlar üçün tünd temanı deaktiv edə bilərsiniz.</translation>
 <translation id="2605017215201958293">Sİ ilə bu səhifəni dinləyin</translation>
 <translation id="2607441479295509868">Çıxılıb. Hesabda əlfəcin, parol və s. istifadə etmək üçün yenidən daxil olun.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 element}other{# element}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> sizi paylaşılan məhsula girişə dəvət etdi.</translation>
 <translation id="2634393460268044753">Zərərli olub-olmadığını yoxlamaq üçün daxil olduğunuz saytların URL-ni, habelə səhifə kontenti, endirmə, artırma fəaliyyəti və sistem məlumatlarının kiçik hissəsini Google Güvənli Axtarışa göndərir.</translation>
 <translation id="2643064289437760082">Baxış datanızı silməklə reklam ölçmə datasını hər zaman silə bilərsiniz</translation>
@@ -535,6 +538,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3268048651973962414">Axtarış nəticələrini görmək üçün yuxarı sürüşdürün</translation>
 <translation id="3269093882174072735">Şəkli yükləyin</translation>
 <translation id="3280562213547448728">Səsli axtarış</translation>
+<translation id="3282801380074962248">Bölməni genişləndirin</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 parol yalnız bu cihazda yadda saxlanılır. Onu digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}other{# parol yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}}</translation>
 <translation id="3293181007446299124">Baxış tarixçəniz cihazınızda məxfi saxlanılır və şəxsiyyətinizi qorumaq üçün hesabatlar gecikmə ilə göndərilir</translation>
@@ -667,6 +671,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3863527519275151528">Bildiriş emal olunur</translation>
 <translation id="3866863539038222107">Yoxlayın</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, Seçilmiş şəkildə şəkil tabı</translation>
 <translation id="3870908470613821006">Hər kəs "<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>
 <translation id="3873174561423636563">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />xidmət şərtlərinə<ph name="END_LINK1" /> baxın.</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
@@ -682,6 +687,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">son 4 həftə</translation>
 <translation id="393697183122708255">Aktiv səsli axtarış əlçatan deyil</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, Bərkidilmiş şəkildə şəkil tabı</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="395377504920307820">Hesab olmadan istifadə edin</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome səhifəni cihaz onlayn olduqda yükləyəcək}other{Chrome səhifələri cihaz onlayn olduqda yükləyəcək}}</translation>
@@ -748,6 +754,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4214315110991671325">Kukilərə icazə versəniz, Chrome onları əvvəlcədən yükləmək üçün istifadə edə bilər.</translation>
 <translation id="421517251707893998">Bu qısayolu bərkidin seçiminə toxunun</translation>
 <translation id="4216511743389425832">Bu səhifəni dinləyin</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, Seçilmiş, bərkidilmiş şəkildə şəkil anonim tabı</translation>
 <translation id="4225725533026049334">İzlənilir</translation>
 <translation id="4225895483398857530">Alətlər paneli qısayolu</translation>
 <translation id="4232376164796433044">Parollar və avto-doldurma</translation>
@@ -762,6 +769,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4277529130885813215">Digər cihazdan istifadə edin</translation>
 <translation id="427987768447457592">Yeni tab qrupu</translation>
 <translation id="4282440837784183472">Təşkilat (<ph name="MANAGED_DOMAIN" />) daxil olduğunuz hesabı və Chrome-dan istifadə qaydasını idarə edir. Administrator müəyyən funksiyaları ayarlaya və ya məhdudlaşdıra bilər.</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, Şəkildə şəkil anonim tabı</translation>
 <translation id="4285498937028063278">Çıxarın</translation>
 <translation id="4285846616383034558">Kukilər, keş və digər sayt datası</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ayarlarında ekran kilidini aktiv edin<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4408965460206576430">Bu faylda zərərli proqram var və ya şübhəli saytdan gəlir</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> və daha <ph name="TAB_COUNT" /> tab</translation>
 <translation id="441100617989818073">İstifadə edilməyən və ya dublikat tablar və qruplar</translation>
+<translation id="4412123112245770507">Bölməni yığcamlaşdırın</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> silindi</translation>
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
 <translation id="4425140285732600465">Qiymət izlənilir. Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
@@ -1049,6 +1058,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5415871492522952905">Qaldığınız yerdən davam etmək üçün tarixçə və tablar bütün cihazlarda olacaq</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) "<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcək</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB əlçatandır</translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, Çoxseçimli şəkildə şəkil anonim tabı</translation>
 <translation id="5436928407363358055">Qaldığınız yerdən asanlıqla davam etmək üçün tarixçə və tablarınızı sinxronlaşdırın</translation>
 <translation id="5438292632479953702">Yenidən endirin</translation>
 <translation id="5439191312780166229">Standart qoruma ilə müqayisədə saytlardan daha çox data təhlil edərək təhlükəli, hətta Google-un bilmədiyi saytlar haqqında xəbərdar edir. Chrome xəbərdarlıqlarını ötürə bilərsiniz.</translation>
@@ -1063,6 +1073,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> tabını köçürmək olmur</translation>
 <translation id="548278423535722844">Xəritə tətbiqində açın</translation>
 <translation id="5489222148748465285">Chrome axtarmağa davam etsin?</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, Çoxseçimli şəkildə şəkil tabı</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> olaraq qoşulun</translation>
 <translation id="5517326820028369152">Son fəaliyyət üzrə aşağıdakı vərəq</translation>
@@ -1486,6 +1497,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="7063106218165698546">Tab qrupunu fərdiləşdirin və hazırdır seçiminə toxunun</translation>
 <translation id="7071521146534760487">Hesabı idarə edin</translation>
 <translation id="707155805709242880">Nəyi sinxronizasiya edəcəyinizi aşağıda seçin</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, Çoxseçimli, bərkidilmiş şəkildə şəkil anonim tabı</translation>
 <translation id="7077143737582773186">SD Kart</translation>
 <translation id="7078916049958741685">Həmçinin Chrome datanızı bu cihazdan silin</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, Seçilmiş, bərkidilmiş, susdurulmuş tab</translation>
@@ -1872,6 +1884,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="8512053371384421952"><ph name="DOMAIN" /> ünvanından bildiriş almayacaqsınız.</translation>
 <translation id="8516012719330875537">Şəkil Redaktoru</translation>
 <translation id="8533670235862049797">Təhlükəsiz Baxış aktivdir</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, Çoxseçimli, bərkidilmiş şəkildə şəkil tabı</translation>
 <translation id="8540136935098276800">Düzgün formatlanmış URL daxil edin</translation>
 <translation id="854522910157234410">Bu səhifəni açın</translation>
 <translation id="8547466829003330976">PDF-i AI ilə nəzərdən keçirin</translation>
@@ -1985,6 +1998,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="9050666287014529139">Parol ifadəsi</translation>
 <translation id="9055497320631373736">Sayt yenidən potensial saytlara əlavə edilib</translation>
 <translation id="9057030985451135243">Ortaq tab qrupları haqqında məlumat əldə edin</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, Seçilmiş bərkidilmiş şəkildə şəkil tabı</translation>
 <translation id="9063400323119781058">Abunəlikdən çıxdınız</translation>
 <translation id="9063523880881406963">Əsas Versiya Sorğusunu deaktiv edin</translation>
 <translation id="9065203028668620118">Düzəliş edin</translation>
@@ -2043,6 +2057,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="930834144334005936">Cari <ph name="MODE_NAME" /> rejimini Axtarışa sıfırlayın</translation>
 <translation id="938850635132480979">Xəta: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Parol daxil edin</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, Bərkidilmiş şəkildə şəkil anonim tabı</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="95817756606698420">Chrome, Çində axtarış üçün <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> istifadə edə bilər. Bunu <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsindən dəyişə bilərsiniz.</translation>
 <translation id="961856697154696964">Baxış datasını silin</translation>

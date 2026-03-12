@@ -155,6 +155,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2586406160782125153">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Kan het gedownloade installatieprogramma niet opslaan in het cachegeheugen. Fout: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Systeem</translation>
+<translation id="263447411082773721">Houd je wachtwoorden, bookmarks en geschiedenis perfect gesynchroniseerd op al je apparaten. Krijg makkelijk toegang tot de functies die je kent en gebruikt door je standaardbrowser te updaten naar Chrome. Chrome wordt vastgezet op je taakbalk voor snelle toegang.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome checkt regelmatig of je browser de veiligste instellingen heeft. We laten het je weten als je iets moet controleren.</translation>
 <translation id="2652691236519827073">Link openen op een nieuw Chrome-&amp;tabblad</translation>
@@ -233,6 +234,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3327226547491422998">Chrome kan je later vragen of je opgeslagen informatie wilt gebruiken om formulieren automatisch voor je in te vullen</translation>
 <translation id="3352986031709923790">rechterbovenhoek van zoekgebied: rechts <ph name="RIGHT" />%, boven <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Sommige Chrome-functies en -extensies hebben snelkoppelingen. Je kunt deze weer aanzetten.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome wordt nu opnieuw gestart}=1{Chrome wordt over één seconde opnieuw gestart}other{Chrome wordt over # seconden opnieuw gestart}}</translation>
 <translation id="3380249972812870825">Druk op <ph name="GLOBAL_HOTKEY" /> om Gemini in Chrome te openen</translation>
 <translation id="3396977131400919238">Er is tijdens de installatie een probleem opgetreden met het besturingssysteem. Download Google Chrome opnieuw.</translation>
@@ -696,6 +698,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8064965390968184078">1. Klik op <ph name="BUTTON_LABEL" /> hieronder
 2. Klik op <ph name="BUTTON_2" /> in je Windows-instellingen
 3. Klik op <ph name="BUTTON_3" /> in de Windows-melding om Chrome vast te zetten op je taakbalk voor snelle toegang</translation>
+<translation id="8074398340364918139">Als je een specifieke Chrome-functie of -extensie wilt doorzoeken, typ je de bijbehorende snelkoppeling in de adresbalk gevolgd door de door jou geselecteerde toets</translation>
 <translation id="8077579734294125741">Andere Chrome-profielen</translation>
 <translation id="8086881907087796310">De installatie is mislukt omdat je computer niet voldoet aan de minimale hardwarevereisten.</translation>
 <translation id="8113883687556086139">Bevestig dat jij het bent om Chrome-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
@@ -704,6 +707,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="8129812357326543296">Over &amp;Google Chrome</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8162006532256575008">Chrome gebruiken zonder account</translation>
+<translation id="8172231188687329735">Download de Chrome-app om onderweg wachtwoorden op te slaan</translation>
 <translation id="8177472873527554730">Kan content niet vinden op pagina</translation>
 <translation id="8221491193165283816">Meestal blokkeer je meldingen. Klik hier om toe te staan dat deze site meldingen stuurt.</translation>
 <translation id="8253851811470049684">Open links in Chrome vanuit elke app en houd de browser toegankelijk op je taakbalk</translation>
@@ -731,6 +735,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 
 Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwijderd. Als je nu uitlogt, worden niet-opgeslagen bookmarks verwijderd.</translation>
 <translation id="8433638294851456451">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>
+<translation id="8458117863387545390">Download Chrome op je telefoon</translation>
 <translation id="8496177819998570653">Google W&amp;achtwoordmanager</translation>
 <translation id="8498858610309223613">Er is zojuist een speciale beveiligingsupdate voor Google Chrome toegepast. Start nu opnieuw op. Je tabbladen worden hersteld.</translation>
 <translation id="8516431725144212809">Jouw interesses volgens schattingen van Chrome</translation>

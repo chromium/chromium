@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{Un site (mai multe pe dispozitivele sincronizate)}few{# site-uri (mai multe pe dispozitivele sincronizate)}other{# de site-uri (mai multe pe dispozitivele sincronizate)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Trimite la Google adrese URL ale unor pagini pe care le accesezi, când securitatea este în pericol</translation>
+<translation id="2877733045396505765">Astfel, sunt șterse informațiile selectate salvate pe acest dispozitiv și în Contul Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2883151425485251736">Vezi și editează subiectele ascunse din contul tău</translation>
 <translation id="288655811176831528">Închide fila</translation>
 <translation id="2888631381369839306">Notificările de urmărire a prețurilor sunt activate</translation>
@@ -1878,6 +1879,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="775755486779745798">Completează automat luna de expirare <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Temă violet</translation>
 <translation id="7759809451544302770">Opțional</translation>
+<translation id="7763878244904387570">Astfel, sunt șterse informațiile selectate salvate pe acest dispozitiv.</translation>
 <translation id="7765158879357617694">Mută</translation>
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
 <translation id="7772948288262733182">Bun-venit înapoi!</translation>

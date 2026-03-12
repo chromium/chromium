@@ -269,6 +269,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3658847490588580244">Blad onderaan voor standaardbrowser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}other{<ph name="RWS_MEMBERS_COUNT" /> sites in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}}</translation>
 <translation id="3676777756440746804">Sites kunnen je niet vragen om informatie te gebruiken die ze over jou hebben opgeslagen</translation>
+<translation id="3677897809642449131">Sites kunnen vragen of ze bewegingssensoren mogen gebruiken</translation>
 <translation id="3678318839615834650">Blad onderaan voor kaarten op de pagina Nieuw tabblad is op volledige hoogte geopend</translation>
 <translation id="3697164069658504920">Als deze optie aanstaat, kunnen sites vragen of ze USB-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen USB-apparaten gebruiken.</translation>
 <translation id="3703430731944883733">Je feed beheren</translation>
@@ -748,6 +749,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8707904142362025782">Sites kunnen om je camera vragen</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8715862698998036666">Sleep vanaf de bovenkant en swipe vanaf de linker- of rechterrand om het volledige scherm te sluiten.</translation>
+<translation id="8716050156658570300">Sites kunnen vragen of ze bewegings- en lichtsensoren mogen gebruiken</translation>
 <translation id="8719283222052720129">Verleen <ph name="APP_NAME" /> rechten via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Als deze optie aanstaat, kunnen sites vragen of ze naar bluetooth-apparaten mogen zoeken. Staat de optie uit, dan kunnen sites niet zoeken naar bluetooth-apparaten.</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>

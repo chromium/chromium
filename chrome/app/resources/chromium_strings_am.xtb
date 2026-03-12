@@ -10,6 +10,7 @@
 
 አንዳንድ ባህሪያት ላይገኙ ይችላሉ፣ እና በአማራጮች ላይ የተደረጉ ለውጦች አይቀመጡም።</translation>
 <translation id="1083934481477628225">የእርስዎ ወላጅ ለChromium «የጣቢያዎች፣ መተግበሪያዎች እና ቅጥያዎች ፈቃዶች» የሚለውን አጥፍተዋል።</translation>
+<translation id="1090946077924227754">አንድን የተወሰነ የChromium ባህሪ ወይም ቅጥያ ለመፈለግ የእርስዎን የተመረጠ የቁልፍ ሰሌዳ ቁልፍ በማስከተል በአድራሻ አሞሌው ውስጥ አቋራጩን ይተይቡ</translation>
 <translation id="1104942323762546749">Chromium የእርስዎን የይለፍ ቃላት ወደ ውጭ መላክ ይፈልጋል። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="112640046208448578">ነገሮችን ወይም ቦታዎች ይለዩ እና ጽሁፍን ይቅዱ ወይም ይተርጉሙ። የምስል ፍለጋ ሲጠቀሙ የገፁ ቅጽበታዊ ገፅ ዕይታ ወደ አገልጋዩ ይላካል። <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium የእርስዎ ነባሪ አሳሽ ነው</translation>
@@ -27,6 +28,7 @@
 <translation id="1262876892872089030">ይህ ትር ቦዝኖ ሳለ Chromiumን ፈጣን እንደሆነ ለማቆየት ማህደረ ትውስታ ነፃ ተደርጓል። ይህን ጣቢያ ሁልጊዜ ከመቦዘን ማግለል መምረጥ ይችላሉ።</translation>
 <translation id="1265577313130862557">ፋይሉ አደገኛ ስለሆነ Chromium ይህን ውርድ አግዷል</translation>
 <translation id="126567311906253476">በ<ph name="USER_EMAIL" /> እንደ Gmail ወይም YouTube ወዳሉ የGoogle አገልግሎቶች ሲገቡ በተመሳሳይ መለያ ወደ Chromium መግባት ይችላሉ</translation>
+<translation id="1287534462498555020">Chromiumን በስልክዎ ላይ ያግኙ</translation>
 <translation id="1290883685122687410">የውቅረት ስህተት፦ <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">አዲሱን የChromium መገለጫዎ ያቀናብሩት</translation>
 <translation id="132092532143527429">በGemini በChromium ውስጥ ይሞክሩ</translation>
@@ -382,6 +384,7 @@
 <translation id="5231355151045086930">ከChromium ዘግተው ይውጡ</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5254739261293693943">ስለዚህ ቪድዮ ይጠይቁ</translation>
+<translation id="5276305953263010518">በመሄድ ላይ ሳሉ የይለፍ ቃላትን ለማስቀመጥ የChromium መተግበሪያን ያግኙ</translation>
 <translation id="5277894862589591112">የእርስዎን ለውጦች ተፈጻሚ ለማድረግ፣ Chromiumን ዳግም ያስጀምሩ</translation>
 <translation id="5286907366254680517">ተገኝቷል</translation>
 <translation id="5289287148052354622">የChromium መተግበሪያን አግኝ</translation>
@@ -695,6 +698,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8522801943730206384">እርስዎ የይለፍ ቃላትዎን ሲያስቀምጧቸው Chromium መፈተሽ ይችላል</translation>
 <translation id="8548787790260785208">Chromium ከይለፍ ቃሎችዎ ውስጥ አንዱን በይፋዊ የውሂብ ጥሰት ውስጥ ካገኘ ማስጠንቀቂያ ያግኙ</translation>
 <translation id="8555465886620020932">የአገልግሎት ስህተት፡ <ph name="SERVICE_ERROR" />።</translation>
+<translation id="8556055872671007529">አንዳንድ የChromium ባህሪያት እና ቅጥያዎች ከአቋራጮች ጋር ይመጣሉ። መልሰው ለማብራት መምረጥ ይችላሉ።</translation>
 <translation id="8556420416730706394">በቀላሉ ለመድረስ የምስል ፍለጋ ፒን ማድረግ ይችላሉ፤ በጎን ፓነሉ አናት ላይ የሚገኘውን ፒን አድርግ አዝራርን ጠቅ ያድርጉ</translation>
 <translation id="856656450041460113">የቋንቋ ዝርዝር ፈልግ</translation>
 <translation id="8568283329061645092">Chromium በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል</translation>
@@ -730,6 +734,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8988036198400390003">የChromium መገለጫዎችን ያስተዳድሩ</translation>
 <translation id="9019929317751753759">Chromiumን ይበልጥ ደህንነቱ የተጠበቀ እንዲሆን ለማድረግ፣ በ<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ውስጥ ያልተዘረዘረውን የሚከተለውን ቅጥያ አሰናክለነዋል እና እርስዎ ሳያውቁት የታከለ ሊሆን ይችላል።</translation>
 <translation id="904366664621834601">የማህደር ፋይሉ ተንኮል አዘል ዌርን ሊደብቁ የሚችሉ ሌሎች ፋይሎችን ስላካተተ Chromium ይህን ውርድ አግዶታል</translation>
+<translation id="9053882453960391422">የይለፍ ቃላትዎን፣ እልባቶችዎን እና ታሪክዎን በመላው መሣሪያዎችዎ ላይ በትክክል ሠምረው እንዲቆዩ ያድርጉ። ነባሪ አሳሽዎን ወደ Chromium በማዘመን በቀላሉ የሚያውቋቸውን እና የሚወዷቸውን ባህሪያት ይድረሱ። ለፈጣን መዳረሻ Chromium በተግባር አሞሌዎ ላይ ይሰካል።</translation>
 <translation id="9062666675513499497">ወደ ሌሎች የGoogle አገልግሎቶች ሲገቡ ወደ Chromium ይግቡ</translation>
 <translation id="9078733879136747090">Chromium በራስ-ሰር ተዘግቷል</translation>
 <translation id="9089354809943900324">Chromium ጊዜው አልፎበታል</translation>

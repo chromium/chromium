@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">預設瀏覽器頁底面板</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}other{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}}</translation>
 <translation id="3676777756440746804">已禁止網站使用與你相關的既有資料</translation>
+<translation id="3677897809642449131">網站可以要求使用動作感應器</translation>
 <translation id="3678318839615834650">新分頁資訊卡頁底面板宜家顯示喺成個畫面</translation>
 <translation id="3697164069658504920">開咗之後，網站可以要求使用 USB 裝置。閂咗之後，網站唔可以使用 USB 裝置。</translation>
 <translation id="3703430731944883733">管理資訊提供</translation>
@@ -748,6 +749,7 @@
 <translation id="8707904142362025782">網站可以要求使用攝錄機</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8715862698998036666">從頂端拖曳並從左側或右側輕掃，即可離開全螢幕。</translation>
+<translation id="8716050156658570300">網站可以要求使用動作和光線感應器</translation>
 <translation id="8719283222052720129">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用此權限。</translation>
 <translation id="8721719390026067591">開咗之後，網站可以要求搵藍牙裝置。閂咗之後，網站唔可以搵藍牙裝置。</translation>
 <translation id="8725066075913043281">再試一次</translation>

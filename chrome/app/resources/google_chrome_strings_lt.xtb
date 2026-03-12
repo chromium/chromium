@@ -155,6 +155,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2586406160782125153">Atlikus šį veiksmą bus ištrinti naršymo duomenys iš šio įrenginio. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Nepavyko talpykloje išsaugoti atsisiųstos diegimo programos. Klaida: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Užtikrinkite, kad slaptažodžiai, žymės ir istorija būtų tobulai sinchronizuojami įrenginiuose. Lengvai pasiekite žinomas ir mėgstamas funkcijas atnaujinę numatytąją naršyklę į „Chrome“. „Chrome“ bus prisegta prie užduočių juostos, kad galėtumėte greitai ją pasiekti.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">„Chrome“ reguliariai tikrina, ar naršyklės nustatymai yra saugiausi. Pranešime, jei reikės ką nors peržiūrėti.</translation>
 <translation id="2652691236519827073">Atidaryti nuorodą naujame „Chrome“ &amp;skirtuke</translation>
@@ -233,6 +234,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3327226547491422998">Vėliau „Chrome“ gali paklausti, ar norite naudoti išsaugotą informaciją automatiškai užpildydami formas</translation>
 <translation id="3352986031709923790">viršutinis dešinysis paieškos srities kampas: dešinė – <ph name="RIGHT" /> %, viršus – <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">„Chrome“ pagalbos priemonė</translation>
+<translation id="3373752068427117404">Kai kurioms „Chrome“ funkcijoms ir plėtiniams priskirti šaukiniai. Galite pasirinkti vėl juos įjungti.</translation>
 <translation id="3379938682270551431">{0,plural, =0{„Chrome“ bus paleista iš naujo dabar}=1{„Chrome“ bus paleista iš naujo po 1 sekundės}one{„Chrome“ bus paleista iš naujo po # sekundės}few{„Chrome“ bus paleista iš naujo po # sekundžių}many{„Chrome“ bus paleista iš naujo po # sekundės}other{„Chrome“ bus paleista iš naujo po # sekundžių}}</translation>
 <translation id="3380249972812870825">Jei norite atidaryti „Gemini“ naršyklėje „Chrome“, paspauskite <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Diegimo metu įvyko operacinės sistemos klaida. Atsisiųskite „Google Chrome“ dar kartą.</translation>
@@ -699,6 +701,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8064965390968184078">1. Spustelėkite toliau pateiktą mygtuką „<ph name="BUTTON_LABEL" />“.
 2. Spustelėkite „<ph name="BUTTON_2" />“ „Windows“ nustatymuose.
 3. Spustelėkite mygtuką „<ph name="BUTTON_3" />“ „Windows“ pranešime, kad prisegtumėte „Chrome“ prie užduočių juostos ir galėtumėte sparčiai ją pasiekti.</translation>
+<translation id="8074398340364918139">Jei norite ieškoti konkrečios „Chrome“ funkcijos ar plėtinio, įveskite šaukinį adreso juostoje ir paspauskite pasirinktą klaviatūros klavišą</translation>
 <translation id="8077579734294125741">Kiti „Chrome“ profiliai</translation>
 <translation id="8086881907087796310">Įdiegti nepavyko, nes kompiuteris neatitinka minimalių aparatinės įrangos reikalavimų.</translation>
 <translation id="8113883687556086139">Patvirtinkite savo tapatybę, kad galėtumėte naudoti ir išsaugoti „Chrome“ duomenis paskyroje <ph name="ACCOUNT_EMAIL" /></translation>
@@ -707,6 +710,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8129812357326543296">Apie „&amp;Google Chrome“</translation>
 <translation id="813913629614996137">Inicijuojama...</translation>
 <translation id="8162006532256575008">Naudoti „Chrome“ be paskyros</translation>
+<translation id="8172231188687329735">Gaukite „Chrome“ programą, kad galėtumėte išsaugoti slaptažodžius keliaudami</translation>
 <translation id="8177472873527554730">Nepavyko rasti puslapio turinio</translation>
 <translation id="8221491193165283816">Įprastai blokuojate pranešimus. Jei norite leisti šiai svetainei siųsti pranešimus, spustelėkite čia.</translation>
 <translation id="8253851811470049684">Atidarykite nuorodas naršyklėje „Chrome“ iš bet kurios programos ir palikite ją pasiekiamą užduočių juostoje</translation>
@@ -734,6 +738,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 
 Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes. Jei atsijungsite dabar, neišsaugotos žymės bus ištrintos.</translation>
 <translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
+<translation id="8458117863387545390">Įdiekite „Chrome“ telefone</translation>
 <translation id="8496177819998570653">„Google“ slaptažodžių tvarkyklė</translation>
 <translation id="8498858610309223613">Ką tik pritaikytas specialus „Google Chrome“ skirtas saugos naujinys. Dabar paleiskite naršyklę iš naujo ir atkursime visus skirtukus.</translation>
 <translation id="8516431725144212809">„Chrome“ įvertinti jūsų pomėgiai</translation>

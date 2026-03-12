@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2371084566192454134">Картички и групи картички</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Собери ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картичкa.}other{Собери ја групата картички <ph name="TITLE_OF_GROUP" /> со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
+<translation id="2476179388576975626">Слика во слика</translation>
 <translation id="2498435670446402865">Преимен. група картички</translation>
 <translation id="2536366509642644298">Групите картички „<ph name="TAB_GROUP_NAME_1" />“ и „<ph name="TAB_GROUP_NAME_2" />“ веќе не се достапни</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картичка.}other{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>

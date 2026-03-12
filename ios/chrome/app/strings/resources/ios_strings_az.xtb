@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 sayt (sinxronlaşdırılmış cihazlarda daha çoxu)}other{# sayt (sinxronlaşdırılmış cihazlarda daha çoxu)}}</translation>
 <translation id="2870560284913253234">Sayt</translation>
 <translation id="2876369937070532032">Təhlükəsizliyiniz risk altında olduqda Google'a daxil olduğunuz bəzi səhifələrin linklərini göndərin</translation>
+<translation id="2877733045396505765">Beləliklə, bu cihazda və Google Hesabınızda (<ph name="USER_EMAIL" />) yadda saxlanılmış seçilmiş məlumatlar silinir.</translation>
 <translation id="2883151425485251736">Hesabınızdan gizlətdiyiniz mövzulara baxın və redaktə edin</translation>
 <translation id="288655811176831528">Tabı bağlayın</translation>
 <translation id="2888631381369839306">Qiymət izləmə bildirişləri aktiv edilib</translation>
@@ -1878,6 +1879,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="775755486779745798">Son istifadə ayını (<ph name="MONTH" />) avtomatik doldurun</translation>
 <translation id="7758789811447313947">Bənövşəyi tema</translation>
 <translation id="7759809451544302770">İstəyə görə</translation>
+<translation id="7763878244904387570">Beləliklə, bu cihazda yadda saxlanılmış seçilmiş məlumatlar silinir.</translation>
 <translation id="7765158879357617694">Daşıyın</translation>
 <translation id="7772032839648071052">Parolu təsdiq edin</translation>
 <translation id="7772948288262733182">Xoş gəlmisiniz</translation>

@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2371084566192454134">Вкладки й групи вкладок</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_ONE" /> вкладку.}one{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладку.}few{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладки.}many{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладок.}other{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
+<translation id="2476179388576975626">Картинка в картинці</translation>
 <translation id="2498435670446402865">Назва групи вкладок</translation>
 <translation id="2536366509642644298">Групи вкладок "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" більше не доступні</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
@@ -214,7 +215,7 @@
 <translation id="8195186926670288294">{TABS_COUNT,plural, =1{Відкріпити вкладку}one{Відкріпити вкладки}few{Відкріпити вкладки}many{Відкріпити вкладки}other{Відкріпити вкладки}}</translation>
 <translation id="8205266828577616993">Перемістити вкладку вгору</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Оновлено <ph name="NUM_MINS_ONE" /> хвилину тому}one{Оновлено <ph name="NUM_MINS_MANY" /> хвилину тому}few{Оновлено <ph name="NUM_MINS_MANY" /> хвилини тому}many{Оновлено <ph name="NUM_MINS_MANY" /> хвилин тому}other{Оновлено <ph name="NUM_MINS_MANY" /> хвилини тому}}</translation>
-<translation id="8236097722223016103">Додати до закладок</translation>
+<translation id="8236097722223016103">Додати в закладки</translation>
 <translation id="827881768507898324">Сповіщення про автоматичне видалення вкладок відкрито на повну висоту</translation>
 <translation id="8338427544764842461">Тут групи вкладок зберігаються й синхронізуються з усіма пристроями, на яких ви ввійшли в обліковий запис</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Розгорнути спільну групу з <ph name="TABS_COUNT_ONE" /> вкладкою; колір: <ph name="COLOR_NAME" />.}one{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладкою; колір: <ph name="COLOR_NAME" />.}few{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}many{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладками; колір: <ph name="COLOR_NAME" />.}other{Розгорнути спільну групу з <ph name="TABS_COUNT_MANY" /> вкладки; колір: <ph name="COLOR_NAME" />.}}</translation>

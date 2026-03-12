@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 webbplats (fler på synkroniserade enheter)}other{# webbplatser (fler på synkroniserade enheter)}}</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2876369937070532032">Webbadresser till vissa sidor som du besöker skickas till Google när din säkerhet är utsatt för risk.</translation>
+<translation id="2877733045396505765">Detta raderar vald information som har sparats på den här enheten och i Google-kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="2883151425485251736">Se och redigera ämnen som har dolts i kontot</translation>
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2888631381369839306">Aviseringar om prisbevakning har aktiverats</translation>
@@ -1878,6 +1879,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="775755486779745798">Autofyll utgångsmånaden <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Lila tema</translation>
 <translation id="7759809451544302770">Valfritt</translation>
+<translation id="7763878244904387570">Detta raderar vald information som har sparats på den här enheten.</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
 <translation id="7772948288262733182">Välkommen tillbaka</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Responda a este inquérito de 1 minuto e ajude-nos a melhorar a Navegação anónima.</translation>
 <translation id="1065672644894730302">Não é possível ler as suas preferências. Algumas funcionalidades poderão estar indisponíveis e as alterações efetuadas às preferências não serão guardadas.</translation>
 <translation id="1083934481477628225">Um dos teus pais desativou as "Autorizações para sites, apps e extensões" para o Chromium</translation>
+<translation id="1090946077924227754">Para pesquisar uma extensão ou funcionalidade específica do Chromium, introduza o respetivo atalho na barra de endereço, seguido da tecla do teclado selecionada</translation>
 <translation id="1104942323762546749">O Chromium quer exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="112640046208448578">Identifique itens ou locais e copie ou traduza texto. Quando usa a pesquisa de imagens, é enviada uma captura de ecrã da página para o servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">O Chromium é o seu navegador predefinido</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Enquanto este separador estava inativo, foi libertada memória para manter o Chromium rápido. Pode optar por evitar sempre que este site fique inativo.</translation>
 <translation id="1265577313130862557">O Chromium bloqueou esta transferência porque o ficheiro é perigoso</translation>
 <translation id="126567311906253476">Ao iniciar sessão em serviços Google, como o Gmail ou o YouTube, com <ph name="USER_EMAIL" />, pode iniciar sessão automaticamente no Chromium com a mesma conta</translation>
+<translation id="1287534462498555020">Instale o Chromium no telemóvel</translation>
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configure o seu novo perfil do Chromium</translation>
 <translation id="132092532143527429">Experimentar com o Gemini no Chromium</translation>
@@ -380,6 +382,7 @@
 <translation id="5231355151045086930">Terminar sessão no Chromium</translation>
 <translation id="5234764350956374838">Ignorar</translation>
 <translation id="5254739261293693943">Pergunte acerca deste vídeo</translation>
+<translation id="5276305953263010518">Transfira a app Chromium para guardar palavras-passe em qualquer lugar</translation>
 <translation id="5277894862589591112">Para aplicar as alterações, reinicie o Chromium.</translation>
 <translation id="5286907366254680517">Detetado</translation>
 <translation id="5289287148052354622">Transfira a app Chromium</translation>
@@ -693,6 +696,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8522801943730206384">O Chromium consegue verificar as suas palavras-passe quando as guarda</translation>
 <translation id="8548787790260785208">Receba um aviso se o Chromium encontrar uma das suas palavras-passe numa violação de dados pública</translation>
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Algumas funcionalidades e extensões do Chromium incluem atalhos. Pode optar por voltar a ativá-las.</translation>
 <translation id="8556420416730706394">Pode fixar a pesquisa de imagens para acesso fácil. Clique no botão Fixar na parte superior do painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8568283329061645092">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
@@ -728,6 +732,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8988036198400390003">Gerir perfis do Chromium</translation>
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativámos a seguinte extensão, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, e é possível que tenha sido adicionada sem o seu conhecimento.</translation>
 <translation id="904366664621834601">O Chromium bloqueou esta transferência porque o ficheiro de arquivo inclui outros ficheiros que podem ocultar software malicioso</translation>
+<translation id="9053882453960391422">Mantenha as suas palavras-passe, marcadores e histórico perfeitamente sincronizados entre dispositivos. Atualize o navegador predefinido para o Chromium e aceda facilmente às funcionalidades que conhece e adora. O Chromium vai ser afixado à barra de tarefas para um acesso rápido.</translation>
 <translation id="9062666675513499497">Inicie sessão no Chromium quando inicia sessão noutros serviços Google</translation>
 <translation id="9078733879136747090">O Chromium foi fechado automaticamente</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Segíthet nekünk az inkognitó mód továbbfejlesztésében, ha kitölti ezt az egyperces felmérést.</translation>
 <translation id="1065672644894730302">A beállításait nem sikerült olvasni. Egyes funkciókat esetleg nem ér el, és a beállításaiban végrehajtott módosításokat nem menti a rendszer.</translation>
 <translation id="1083934481477628225">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását.</translation>
+<translation id="1090946077924227754">Ha egy adott Chromium-funkcióra vagy -bővítményre szeretne rákeresni, gépelje be a kapcsolódó gyorsparancsot a címsávba, majd nyomja le a kiválasztott billentyűt.</translation>
 <translation id="1104942323762546749">A Chromium exportálni szeretné a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="112640046208448578">Azonosíthat dolgokat és helyeket, valamint szöveget másolhat vagy fordíthat le. A Képkereső használatakor a rendszer elküldi az oldal képernyőképét a szervernek. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">A Chromium az alapértelmezett böngésző</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Amíg ez a lap inaktív volt, a rendszer memóriát szabadított fel, hogy a Chromium gyors maradjon. Dönthet úgy, hogy mindig kizárja ezt a webhelyet az inaktív állapotból.</translation>
 <translation id="1265577313130862557">A Chromium letiltotta ezt a letöltést, mert a fájl veszélyes</translation>
 <translation id="126567311906253476">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chromiumba is.</translation>
+<translation id="1287534462498555020">A Chromium letöltése telefonra</translation>
 <translation id="1290883685122687410">Beállítási hiba: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" />.</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="132092532143527429">Kipróbálás a Gemini a Chromiumban funkcióval</translation>
@@ -380,6 +382,7 @@
 <translation id="5231355151045086930">Kijelentkezés a Chromiumból</translation>
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5254739261293693943">Kérdés feltevése erről a videóról</translation>
+<translation id="5276305953263010518">A Chromium app letöltésével útközben is mentheti jelszavait</translation>
 <translation id="5277894862589591112">A módosítások alkalmazásához indítsa újra a Chromiumot</translation>
 <translation id="5286907366254680517">Észlelve</translation>
 <translation id="5289287148052354622">A Chromium app letöltése</translation>
@@ -691,6 +694,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8522801943730206384">A Chromium képes a jelszavak ellenőrzésére, ha Ön menti őket</translation>
 <translation id="8548787790260785208">Figyelmeztetést kaphat, ha a Chromium azt észleli, hogy az Ön egyik jelszava nyilvános adatvédelmi incidensben volt érintett.</translation>
 <translation id="8555465886620020932">Szolgáltatáshiba: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Egyes Chromium-funkciókhoz és -bővítményekhez gyorsparancsok tartoznak. Újra bekapcsolhatja őket.</translation>
 <translation id="8556420416730706394">Az egyszerű hozzáférés érdekében kitűzheti a Képkereső funkciót. Ehhez kattintson az oldalsó panel tetején található Rögzítés gombra.</translation>
 <translation id="856656450041460113">Keresés a nyelvek listájában</translation>
 <translation id="8568283329061645092">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával</translation>
@@ -726,6 +730,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8988036198400390003">Chromium-profilok kezelése</translation>
 <translation id="9019929317751753759">A Chromium biztonságosabbá tétele érdekében kikapcsoltuk a következő bővítményt, amely nem a(z) <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> szolgáltatásból származik, és előfordulhat, hogy az Ön tudta nélkül lett telepítve.</translation>
 <translation id="904366664621834601">A Chromium letiltotta ezt a letöltést, mert az archívumfájl olyan egyéb fájlokat is tartalmaz, amelyek rosszindulatú programokat is rejthetnek</translation>
+<translation id="9053882453960391422">Jelszavai, könyvjelzői és előzményei tökéletesen szinkronizálódnak az eszközök között. Ha a Chromiumot állítja be alapértelmezett böngészőként, könnyen hozzáférhet a már ismert és szeretett funkciókhoz. A Chromium a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
 <translation id="9062666675513499497">Bejelentkezés a Chromiumba, amikor más Google-szolgáltatásokba is bejelentkezik</translation>
 <translation id="9078733879136747090">A Chromium automatikusan bezárult</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>

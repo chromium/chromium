@@ -153,6 +153,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2586406160782125153">Táto akcia odstráni zo zariadenia údaje prehliadania. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Stiahnutý inštalátor sa nepodarilo uložiť do vyrovnávacej pamäte. Chyba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Systém</translation>
+<translation id="263447411082773721">Majte svoje heslá, záložky a históriu stále dokonale synchronizované v rôznych zariadeniach. Aktualizujte si predvolený prehliadač na Chrome, aby ste mali jednoduchý prístup k funkciám, ktoré poznáte a obľubujete. Chrome bude pripnutý na paneli aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome vykonáva pravidelné kontroly s cieľom uistiť sa, že v prehliadači máte najbezpečnejšie nastavenia. Ak bude treba, aby ste niečo skontrolovali, oznámime vám to.</translation>
 <translation id="2652691236519827073">Otvoriť odkaz na novej &amp;karte Chromu</translation>
@@ -231,6 +232,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3327226547491422998">Neskôr sa vás Chrome môže opýtať, či chcete automaticky dopĺňať formuláre pomocou uložených informácií</translation>
 <translation id="3352986031709923790">pravý horný roh oblasti vyhľadávania: vpravo <ph name="RIGHT" /> %, hore <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Niektoré funkcie a rozšírenia Chromu majú skratky. Môžete ich znova zapnúť.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sa teraz reštartuje}=1{Chrome sa reštartuje o 1 sekundu}few{Chrome sa reštartuje o # sekundy}many{Chrome sa reštartuje o # sekundy}other{Chrome sa reštartuje o # sekúnd}}</translation>
 <translation id="3380249972812870825">Ak chcete otvoriť Gemini v Chrome, stlačte <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Google Chrome znova.</translation>
@@ -696,6 +698,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8064965390968184078">1. Nižšie kliknite na <ph name="BUTTON_LABEL" />.
 2. V nastaveniach systému Windows kliknite na <ph name="BUTTON_2" />.
 3. Kliknutím na <ph name="BUTTON_3" /> v upozornení systému Windows pripnite Chrome na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
+<translation id="8074398340364918139">Ak chcete vyhľadať konkrétnu funkciu alebo rozšírenie Chromu, zadajte jeho skratku do panela s adresou a potom stlačte vybraný kláves klávesnice</translation>
 <translation id="8077579734294125741">Ďalšie profily Chromu</translation>
 <translation id="8086881907087796310">Nepodarilo sa nainštalovať, pretože váš počítač nespĺňa minimálne požiadavky na hardvér.</translation>
 <translation id="8113883687556086139">Ak chcete používať a ukladať údaje Chromu vo svojom účte <ph name="ACCOUNT_EMAIL" />, overte svoju totožnosť</translation>
@@ -704,6 +707,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8129812357326543296">Informácie o prehliadači &amp;Google Chrome</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8162006532256575008">Používať Chrome bez účtu</translation>
+<translation id="8172231188687329735">Získajte aplikáciu Chrome a ukladajte si heslá kdekoľvek</translation>
 <translation id="8177472873527554730">Obsah na stránke sa nepodarilo nájsť</translation>
 <translation id="8221491193165283816">Zvyčajne blokujete upozornenia. Ak chcete tomuto webu povoliť odosielanie upozornení, kliknite tu.</translation>
 <translation id="8253851811470049684">Otvárajte v Chrome odkazy z ľubovoľnej aplikácie a majte prehliadač k dispozícii na paneli aplikácií</translation>
@@ -731,6 +735,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 
 Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neodstránite. Ak sa teraz odhlásite, neuložené záložky budú odstránené.</translation>
 <translation id="8433638294851456451">Ak chcete odtiaľto odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do Chromu.</translation>
+<translation id="8458117863387545390">Stiahnite si Chrome do telefónu</translation>
 <translation id="8496177819998570653">Správca hesiel Google</translation>
 <translation id="8498858610309223613">Práve bola použitá mimoriadna bezpečnostná aktualizácia pre prehliadač Google Chrome. Po reštartovaní obnovíme vaše karty.</translation>
 <translation id="8516431725144212809">Vaše záujmy podľa odhadu Chromu</translation>

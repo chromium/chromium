@@ -269,6 +269,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="3658847490588580244">Bottom sheet ng default browser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="RWS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
 <translation id="3676777756440746804">Naka-block ang mga site sa paghiling sa iyo na gamitin ang impormasyong na-save ng mga ito tungkol sa iyo</translation>
+<translation id="3677897809642449131">Puwedeng hilingin ng mga site na gamitin ang mga sensor ng paggalaw</translation>
 <translation id="3678318839615834650">Binuksan nang buo ang bottom sheet ng mga card ng page na bagong tab</translation>
 <translation id="3697164069658504920">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga USB device. Kapag naka-off, hindi makakagamit ng mga USB device ang mga site.</translation>
 <translation id="3703430731944883733">Pamahalaan ang iyong feed</translation>
@@ -748,6 +749,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="8707904142362025782">Puwedeng hilingin ng site ang iyong camera</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8715862698998036666">Mag-drag mula sa itaas at mag-swipe mula sa kaliwa o kanang gilid para lumabas sa full screen.</translation>
+<translation id="8716050156658570300">Puwedeng hilingin ng mga site na gamitin ang mga sensor ng paggalaw at liwanag</translation>
 <translation id="8719283222052720129">I-on ang pahintulot para sa <ph name="APP_NAME" /> sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Kapag naka-on, puwedeng hilingin ng mga site na maghanap ng mga Bluetooth device. Kapag naka-off, hindi makakapaghanap ng mga Bluetooth device ang mga site.</translation>
 <translation id="8725066075913043281">Subukan ulit</translation>

@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">默认浏览器底部动作条</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="3676777756440746804">禁止网站向您请求使用其保存的与您相关的信息</translation>
+<translation id="3677897809642449131">网站可以请求使用移动传感器</translation>
 <translation id="3678318839615834650">“新标签页”页面卡片底部动作条已按最大高度显示</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
 <translation id="3703430731944883733">管理信息流</translation>
@@ -748,6 +749,7 @@
 <translation id="8707904142362025782">网站可以请求使用摄像头</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715862698998036666">从顶部拖动并从左侧或右侧边缘滑动即可退出全屏模式。</translation>
+<translation id="8716050156658570300">网站可以请求使用移动传感器和光传感器</translation>
 <translation id="8719283222052720129">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这项权限。</translation>
 <translation id="8721719390026067591">开启此设置后，网站可以请求搜寻蓝牙设备。关闭此设置后，网站无法搜寻蓝牙设备。</translation>
 <translation id="8725066075913043281">重试</translation>

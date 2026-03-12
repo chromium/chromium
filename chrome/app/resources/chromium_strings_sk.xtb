@@ -10,6 +10,7 @@
 
 Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách sa neuložia.</translation>
 <translation id="1083934481477628225">Váš nadradený účet vypol Povolenia pre weby, aplikácie a rozšírenia v prehliadači Chromium</translation>
+<translation id="1090946077924227754">Ak chcete vyhľadať konkrétnu funkciu alebo rozšírenie prehliadača Chromium, zadajte jeho skratku do panela s adresou a potom stlačte vybraný kláves klávesnice</translation>
 <translation id="1104942323762546749">Prehliadač Chromium sa pokúša exportovať vaše heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="112640046208448578">Identifikujte veci alebo miesta a skopírujte či preložte text. Pri používaní vyhľadávania podľa obrázkov sa snímka obrazovky stránky sa odošle na server. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium je vaším predvoleným prehliadačom</translation>
@@ -27,6 +28,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1262876892872089030">Keď bola táto karta neaktívna, bola uvoľnená pamäť, aby Chromium zostal rýchly. Môžete nastaviť, aby bol tento web vždy vylúčený z nečinnosti.</translation>
 <translation id="1265577313130862557">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný súbor je nebezpečný</translation>
 <translation id="126567311906253476">Keď sa budete účtom <ph name="USER_EMAIL" /> prihlasovať do služieb Googlu, ako je Gmail alebo YouTube, môžete sa ním automaticky prihlásiť aj do prehliadača Chromium</translation>
+<translation id="1287534462498555020">Stiahnite si Chromium do telefónu</translation>
 <translation id="1290883685122687410">Chyba nastavenia: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
 <translation id="132092532143527429">Vyskúšať s Gemini v prehliadači Chromium</translation>
@@ -381,6 +383,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5231355151045086930">Odhlásenie sa z prehliadača Chromium</translation>
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5254739261293693943">Spýtať sa otázku o tomto videu</translation>
+<translation id="5276305953263010518">Získajte aplikáciu Chromium a ukladajte si heslá kdekoľvek</translation>
 <translation id="5277894862589591112">Ak chcete zmeny použiť, spustite Chromium znova</translation>
 <translation id="5286907366254680517">Rozpoznané</translation>
 <translation id="5289287148052354622">Získať aplikáciu Chromium</translation>
@@ -694,6 +697,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8522801943730206384">Chromium môže skontrolovať heslá, keď ich uložíte</translation>
 <translation id="8548787790260785208">Dostávať upozornenia, keď Chromium zistí, že došlo k odhaleniu niektorého vášho hesla pri verejnom porušení ochrany údajov</translation>
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Niektoré funkcie a rozšírenia prehliadača Chromium majú skratky. Môžete ich znova zapnúť.</translation>
 <translation id="8556420416730706394">Vyhľadávanie podľa obrázkov si môžete pripnúť, aby ste k nemu mali jednoduchý prístup. Hore na bočnom paneli kliknite na Pripnúť.</translation>
 <translation id="856656450041460113">Vyhľadať v zozname jazykov</translation>
 <translation id="8568283329061645092">Keď sa prihlásite pomocou účtu Google, Chromium môže skontrolovať vaše heslá</translation>
@@ -729,6 +733,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8988036198400390003">Spravovať profily prehliadača Chromium</translation>
 <translation id="9019929317751753759">Z dôvodu zvýšenia bezpečnosti prehliadača Chromium sme zakázali nasledujúce rozšírenie, ktoré nie je uvedené v službe <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohlo byť pridané bez vášho vedomia.</translation>
 <translation id="904366664621834601">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný súbor archívu obsahuje ďalšie súbory, v ktorých môže byť skrytý malvér</translation>
+<translation id="9053882453960391422">Majte svoje heslá, záložky a históriu stále dokonale synchronizované v rôznych zariadeniach. Aktualizujte si predvolený prehliadač na Chromium, aby ste mali jednoduchý prístup k funkciám, ktoré poznáte a obľubujete. Chromium bude pripnutý na paneli aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="9062666675513499497">Keď sa prihlásite do ďalších služieb Googlu, prihláste sa do prehliadača Chromium</translation>
 <translation id="9078733879136747090">Prehliadač Chromium bol automaticky zavretý</translation>
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>

@@ -269,6 +269,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="3658847490588580244">Foaia din partea de jos a browserului prestabilit</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="RWS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="RWS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="RWS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="3676777756440746804">Site-urile nu au permisiunea de a-ți solicita să folosească informațiile pe care le-au salvat despre tine</translation>
+<translation id="3677897809642449131">Site-urile pot solicita permisiunea de a folosi senzorii de mișcare</translation>
 <translation id="3678318839615834650">Foaia din partea de jos a cardurilor din pagina Filă nouă deschisă la înălțimea completă</translation>
 <translation id="3697164069658504920">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive USB. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive USB.</translation>
 <translation id="3703430731944883733">Gestionează feedul</translation>
@@ -748,6 +749,7 @@ Protecția avansată gestionează următoarele setări Chrome:
 <translation id="8707904142362025782">Site-ul poate solicita permisiunea de a folosi camera</translation>
 <translation id="8712637175834984815">Am înțeles</translation>
 <translation id="8715862698998036666">Trage din partea de sus și glisează dinspre marginea stângă sau dreaptă pentru a ieși din ecranul complet.</translation>
+<translation id="8716050156658570300">Site-urile pot solicita permisiunea de a folosi senzorii de mișcare și de lumină</translation>
 <translation id="8719283222052720129">Activează permisiunea pentru <ph name="APP_NAME" /> în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Când opțiunea este activată, site-urile pot solicita permisiunea de a căuta dispozitive Bluetooth. Când opțiunea este dezactivată, site-urile nu pot căuta dispozitive Bluetooth.</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>

@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Time će se izbrisati podaci o pregledavanju s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Spremanje preuzetog alata za instalaciju u predmemoriju nije uspjelo. Pogreška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sustav</translation>
+<translation id="263447411082773721">Sinkronizirajte zaporke, oznake i povijest na svim uređajima. Jednostavno pristupite svojim omiljenim značajkama tako da ažurirate zadani preglednik na Chrome. Chrome će se prikvačiti na traku sa zadacima radi brzog pristupa.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
 <translation id="2652691236519827073">Otvori vezu na novoj &amp;kartici Chromea</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Chrome vas poslije može pitati želite li upotrijebiti spremljene podatke za automatsko popunjavanje obrazaca</translation>
 <translation id="3352986031709923790">gornji desni kut područja za pretraživanje: desno <ph name="RIGHT" />%, vrh <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Neke Chromeove značajke i proširenja imaju prečace. Možete ih ponovo uključiti.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za jednu sekundu}one{Chrome će se ponovo pokrenuti za # s}few{Chrome će se ponovo pokrenuti za # s}other{Chrome će se ponovo pokrenuti za # s}}</translation>
 <translation id="3380249972812870825">Da biste otvorili Gemini u Chromeu, pritisnite <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Došlo je do pogreške operacijskog sustava tijekom instalacije. Ponovno preuzmite program Google Chrome.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Kliknite <ph name="BUTTON_LABEL" /> u nastavku
 2. Kliknite <ph name="BUTTON_2" /> u postavkama Windowsa
 3. Kliknite <ph name="BUTTON_3" /> u obavijesti Windowsa da biste prikvačili Chrome na traku sa zadacima radi brzog pristupa</translation>
+<translation id="8074398340364918139">Da biste pretražili određenu Chromeovu značajku ili proširenje, u adresnu traku unesite njezin prečac, a zatim odabranu tipku na tipkovnici</translation>
 <translation id="8077579734294125741">Ostali profili na Chromeu</translation>
 <translation id="8086881907087796310">Instalacija nije uspjela jer vaše računalo ne zadovoljava minimalne zahtjeve za hardver.</translation>
 <translation id="8113883687556086139">Potvrdite svoj identitet kako biste upotrebljavali i spremali podatke iz Chromea na svojem računu, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">O programu Google Chrome</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
 <translation id="8162006532256575008">Koristi Chrome bez računa</translation>
+<translation id="8172231188687329735">Preuzmite aplikaciju Chrome da biste spremali zaporke u pokretu</translation>
 <translation id="8177472873527554730">Sadržaj na stranici nije pronađen</translation>
 <translation id="8221491193165283816">Uglavnom blokirate obavijesti. Da biste dopustili web-lokaciji prikazivanje obavijesti, kliknite ovdje.</translation>
 <translation id="8253851811470049684">Otvorite veze u Chromeu iz bilo koje aplikacije i zadržite pristup pregledniku na programskoj traci</translation>
@@ -726,6 +730,7 @@
 
 Nove oznake ne mogu se spremiti na vaš račun dok neke ne izbrišete. Ako se sada odjavite, nespremljene oznake će se izbrisati.</translation>
 <translation id="8433638294851456451">Da biste poslali broj s ovog uređaja na svoj Android telefon, prijavite se na Chrome na oba uređaja.</translation>
+<translation id="8458117863387545390">Preuzmite Chrome na telefon</translation>
 <translation id="8496177819998570653">Google upravitelj zaporki</translation>
 <translation id="8498858610309223613">Upravo je primijenjeno posebno sigurnosno ažuriranje za Google Chrome. Ponovo pokrenite sustav i vratit ćemo vaše kartice.</translation>
 <translation id="8516431725144212809">Vaši interesi prema Chromeovoj procjeni</translation>

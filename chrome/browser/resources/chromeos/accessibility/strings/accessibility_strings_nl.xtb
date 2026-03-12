@@ -915,7 +915,7 @@
 <translation id="6999752561504308105">Welkom bij de ChromeVox-tutorial. Als je deze tutorial wilt afsluiten, swipe je met 2 vingers van rechts naar links. Als je ChromeVox aan of uit wilt zetten, houd je beide volumeknoppen 5 seconden ingedrukt. Dubbeltik als je klaar bent met 1 vinger op het scherm om naar de volgende les te gaan.</translation>
 <translation id="700202842116345659">Bibliografievermelding</translation>
 <translation id="7005146664810010831">Geen URL gevonden</translation>
-<translation id="7026338066939101231">Lager</translation>
+<translation id="7026338066939101231">Verlaging</translation>
 <translation id="7031651751836475482">lijstitem</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{wit opsommingsteken}} *{{{$$COUNT} witte opsommingstekens}}</translation>
 <translation id="7037042857287298941">Vorige lijst</translation>
@@ -1063,7 +1063,7 @@
 <translation id="7972507042926081808">Chocolade</translation>
 <translation id="7974390230414479278">Menu-item</translation>
 <translation id="8004507136466386272">Woorden</translation>
-<translation id="8004512796067398576">Hoger</translation>
+<translation id="8004512796067398576">Verhoging</translation>
 <translation id="8007540374018858731">k3</translation>
 <translation id="8017588669690167134">Spraak uit</translation>
 <translation id="801990297710781303">Voetnoot</translation>

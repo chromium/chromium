@@ -915,7 +915,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="6999752561504308105">Tere tulemast tutvuma ChromeVoxi õpetustega! Mis tahes ajal õpetustest väljumiseks pühkige kahe sõrmega paremalt vasakule. Mis tahes ajal ChromeVoxi väljalülitamiseks vajutage ja hoidke mõlemat helitugevuse nuppu viis sekundit all. Kui olete valmis, topeltpuudutage ekraani ühe sõrmega, et järgmise õppetunni juurde liikuda.</translation>
 <translation id="700202842116345659">Bibliograafia kirje</translation>
 <translation id="7005146664810010831">URL-i ei leitud</translation>
-<translation id="7026338066939101231">Vähenemine</translation>
+<translation id="7026338066939101231">Vähenda</translation>
 <translation id="7031651751836475482">lnd üksus</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{valge täpp}} *{{{$$COUNT} valget täppi}}</translation>
 <translation id="7037042857287298941">Eelmine loend</translation>
@@ -1064,7 +1064,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="7972507042926081808">Šokolaadpruun</translation>
 <translation id="7974390230414479278">Menüü-üksus</translation>
 <translation id="8004507136466386272">Sõnad</translation>
-<translation id="8004512796067398576">Juurdekasv</translation>
+<translation id="8004512796067398576">Suurenda</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">Kõne väljalülitamine</translation>
 <translation id="801990297710781303">Allmärkus</translation>

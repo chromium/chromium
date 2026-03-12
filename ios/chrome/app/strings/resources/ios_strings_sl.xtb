@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 spletno mesto (več v sinhroniziranih napravah)}one{# spletno mesto (več v sinhroniziranih napravah)}two{# spletni mesti (več v sinhroniziranih napravah)}few{# spletna mesta (več v sinhroniziranih napravah)}other{# spletnih mest (več v sinhroniziranih napravah)}}</translation>
 <translation id="2870560284913253234">Spletno mesto</translation>
 <translation id="2876369937070532032">Googlu pošlje URL-je nekaterih strani, ki jih obiščete, kadar je ogrožena vaša varnost</translation>
+<translation id="2877733045396505765">S tem izbrišete izbrane podatke, shranjene v tej napravi in v računu Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2883151425485251736">Ogled in urejanje tem, ki ste jih skrili v računu</translation>
 <translation id="288655811176831528">Zapri zavihek</translation>
 <translation id="2888631381369839306">Obvestila o spremljanju cen so vklopljena</translation>
@@ -1878,6 +1879,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="775755486779745798">Samodejno izpolni mesec poteka veljavnosti: <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Vijolična tema</translation>
 <translation id="7759809451544302770">Izbirno</translation>
+<translation id="7763878244904387570">S tem izbrišete izbrane podatke, shranjene v tej napravi.</translation>
 <translation id="7765158879357617694">Premakni</translation>
 <translation id="7772032839648071052">Potrdi geslo</translation>
 <translation id="7772948288262733182">Znova pozdravljeni</translation>

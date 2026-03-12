@@ -527,6 +527,7 @@
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (mais nos dispositivos sincronizados)}one{# site (mais nos dispositivos sincronizados)}other{# sites (mais nos dispositivos sincronizados)}}</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Quando há risco de segurança, envia para o Google os URLs de algumas páginas que você visita</translation>
+<translation id="2877733045396505765">Isso exclui as informações selecionadas salvas neste dispositivo e na sua Conta do Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2883151425485251736">Veja e edite temas que você ocultou da sua conta</translation>
 <translation id="288655811176831528">Fechar guia</translation>
 <translation id="2888631381369839306">Notificações de monitoramento de preços ativadas</translation>
@@ -1878,6 +1879,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="775755486779745798">Preencher automaticamente o mês de vencimento <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcional</translation>
+<translation id="7763878244904387570">Isso exclui as informações selecionadas salvas neste dispositivo.</translation>
 <translation id="7765158879357617694">Mover</translation>
 <translation id="7772032839648071052">Confirmar senha</translation>
 <translation id="7772948288262733182">Que bom que você voltou</translation>

@@ -915,7 +915,7 @@
 <translation id="6999752561504308105">Chào mừng bạn đến với tài liệu hướng dẫn về ChromeVox. Để thoát khỏi tài liệu hướng dẫn này bất cứ nào, hãy vuốt từ phải sang trái bằng 2 ngón tay. Để bật hoặc tắt ChromeVox bất cứ lúc nào, hãy nhấn và giữ cả hai nút Âm lượng trong 5 giây. Khi bạn đã sẵn sàng, hãy nhấn đúp vào màn hình bằng một ngón tay để chuyển sang bài học tiếp theo.</translation>
 <translation id="700202842116345659">Mục nhập danh mục</translation>
 <translation id="7005146664810010831">Không tìm thấy URL nào</translation>
-<translation id="7026338066939101231">Giảm dần</translation>
+<translation id="7026338066939101231">Giảm</translation>
 <translation id="7031651751836475482">lstitm</translation>
 <translation id="7032910411301673020">.input {$$COUNT :number} .match $$COUNT 1{{dấu chấm trắng đầu dòng}} *{{{$$COUNT} dấu chấm trắng đầu dòng}}</translation>
 <translation id="7037042857287298941">Danh sách trước</translation>
@@ -1064,7 +1064,7 @@
 <translation id="7972507042926081808">Màu sô cô la</translation>
 <translation id="7974390230414479278">Mục menu</translation>
 <translation id="8004507136466386272">Từ</translation>
-<translation id="8004512796067398576">Tăng dần</translation>
+<translation id="8004512796067398576">Tăng</translation>
 <translation id="8007540374018858731">h3</translation>
 <translation id="8017588669690167134">Tắt giọng nói</translation>
 <translation id="801990297710781303">Chú thích cuối trang</translation>

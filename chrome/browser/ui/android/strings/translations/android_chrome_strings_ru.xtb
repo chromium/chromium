@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Открыть статистику страницы</translation>
 <translation id="1108938384783527433">Синхронизация истории</translation>
 <translation id="1111673857033749125">Здесь появятся закладки, сохраненные на других устройствах.</translation>
+<translation id="1123537484474186311">Вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="1126696498560056882">Управление аккаунтами на этом устройстве</translation>
 <translation id="1135018701024399762">Сведения о ваших действиях в режиме инкогнито недоступны другим людям, которые используют это устройство</translation>
 <translation id="113752097246673894">Чтобы синхронизировать закладки и другие данные на всех своих устройствах, войдите в Chrome как <ph name="EMAIL" />.</translation>
@@ -321,6 +322,7 @@
 <translation id="2386938421315164605">Скрывайте и показывайте темы</translation>
 <translation id="2390510615457643724">Снова скачать файл "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2392369802118427583">Активировать</translation>
+<translation id="2393980685134835044">Выбранная вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="2397175985681716533">Вкладка инкогнито "<ph name="TAB_TITLE" />", на которой ведется запись</translation>
 <translation id="2410754283952462441">Выберите аккаунт</translation>
 <translation id="2411239243988279592">Выбранная вкладка "<ph name="TAB_TITLE" />" с включенным звуком</translation>
@@ -381,6 +383,7 @@
 <translation id="2604446170045642109">Вы можете отключить тёмную тему для сайтов.</translation>
 <translation id="2605017215201958293">Прослушать текст на странице с помощью ИИ</translation>
 <translation id="2607441479295509868">Вы вышли из аккаунта. Чтобы получить доступ к закладкам, паролям и другим данным в аккаунте, снова войдите в него.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 объект}one{# объект}few{# объекта}many{# объектов}other{# объекта}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> предоставляет вам доступ к общему объекту</translation>
 <translation id="2634393460268044753">Чтобы проверять сайты, которые вы посещаете, на безопасность, отправляет их URL вместе с небольшими образцами контента страниц и скачанных файлов, а также сведения о действиях расширений и информацию о системе на сервер Google Безопасного просмотра.</translation>
 <translation id="2643064289437760082">Вы всегда можете стереть сведения для оценки эффективности рекламы, удалив данные о работе в браузере.</translation>
@@ -535,6 +538,7 @@
 <translation id="3268048651973962414">Перетащите вверх, чтобы увидеть результаты поиска.</translation>
 <translation id="3269093882174072735">Загрузить изображение</translation>
 <translation id="3280562213547448728">Голосовой поиск</translation>
+<translation id="3282801380074962248">Развернуть раздел</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладок}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 пароль доступен только на этом устройстве. Добавьте его в аккаунт Google, чтобы использовать на других устройствах.}one{# пароль доступен только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}few{# пароля доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}many{# паролей доступны только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}other{# пароля доступно только на этом устройстве. Добавьте их в аккаунт Google, чтобы использовать на других устройствах.}}</translation>
 <translation id="3293181007446299124">История браузера хранится на устройстве и доступна только вам. Для защиты персональных данных отчеты отправляются с задержкой.</translation>
@@ -667,6 +671,7 @@
 <translation id="3858860766373142691">Название</translation>
 <translation id="3863527519275151528">Обработка уведомления…</translation>
 <translation id="3866863539038222107">Просмотр ресурсов</translation>
+<translation id="3870538285500327859">Выбранная вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="3870908470613821006">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
 <translation id="3873174561423636563">Чтобы вы могли продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваши <ph name="FIELDS_STRING" />. Ознакомьтесь с <ph name="BEGIN_LINK1" />условиями использования<ph name="END_LINK1" /> сайта.</translation>
 <translation id="3892148308691398805">Скопировать текст</translation>
@@ -682,6 +687,7 @@
 <translation id="3927692899758076493">Без засечек</translation>
 <translation id="3931947361983910192">последние 4 недели</translation>
 <translation id="393697183122708255">Голосовой поиск недоступен</translation>
+<translation id="3943322906274039960">Закрепленная вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="3950820424414687140">Войти</translation>
 <translation id="395377504920307820">Продолжить без входа в аккаунт</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Страница будет загружена при подключении к сети}one{Страницы будут загружены при подключении к сети}few{Страницы будут загружены при подключении к сети}many{Страницы будут загружены при подключении к сети}other{Страницы будут загружены при подключении к сети}}</translation>
@@ -748,6 +754,7 @@
 <translation id="4214315110991671325">Если вы разрешили использование файлов cookie, Chrome может применять их для предзагрузки.</translation>
 <translation id="421517251707893998">Нажмите "Закрепить для быстрого доступа".</translation>
 <translation id="4216511743389425832">Озвучить эту страницу</translation>
+<translation id="4217657297368492684">Выбранная и закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="4225725533026049334">Вы подписаны</translation>
 <translation id="4225895483398857530">Кнопка на панели инструментов</translation>
 <translation id="4232376164796433044">Пароли и автозаполнение</translation>
@@ -762,6 +769,7 @@
 <translation id="4277529130885813215">Использовать другое устройство</translation>
 <translation id="427987768447457592">Новая группа вкладок</translation>
 <translation id="4282440837784183472">Аккаунтом, в который вы входите, и использованием Chrome управляет ваша организация (<ph name="MANAGED_DOMAIN" />). Администратор может настраивать определенные функции и ограничивать доступ к ним.</translation>
+<translation id="4283234489712362947">Вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="4285498937028063278">Открепить</translation>
 <translation id="4285846616383034558">Файлы cookie, кеш и другие данные сайтов</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Включить блокировку экрана в настройках Android<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@
 <translation id="4408965460206576430">Файл содержит вредоносное ПО или размещен на подозрительном сайте.</translation>
 <translation id="4409014848144759297">"<ph name="WEBSITE_TITLE" />" и другие вкладки (<ph name="TAB_COUNT" />).</translation>
 <translation id="441100617989818073">Неиспользуемые или одинаковые вкладки и группы</translation>
+<translation id="4412123112245770507">Свернуть раздел</translation>
 <translation id="4414179633735763985">Удалены: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
 <translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
 <translation id="4425140285732600465">Вы отслеживаете цену на этот товар. Если на одном из сайтов она снизится, вы получите уведомление.</translation>
@@ -1049,6 +1058,7 @@
 <translation id="5415871492522952905">История и вкладки будут доступны на всех ваших устройствах. Вы сможете начать пользоваться браузером на одном устройстве и продолжить на другом.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) сразу потеряет доступ к группе вкладок "<ph name="GROUP_NAME" />".</translation>
 <translation id="5424588387303617268">Доступно: <ph name="GIGABYTES" /> ГБ</translation>
+<translation id="543271133149552180">Выбранная вместе с несколькими другими вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="5436928407363358055">Чтобы продолжать просмотр с того места, на котором вы остановились, синхронизируйте историю и вкладки.</translation>
 <translation id="5438292632479953702">Да</translation>
 <translation id="5439191312780166229">Предупреждает об опасных сайтах, даже если раньше они были неизвестны Google. При этом анализируется больше данных по сравнению со стандартной защитой. Вы можете пропускать такие уведомления Chrome.</translation>
@@ -1063,6 +1073,7 @@
 <translation id="5471273988133666918">Нельзя переместить вкладку "<ph name="TAB_TITLE" />".</translation>
 <translation id="548278423535722844">Показать на карте</translation>
 <translation id="5489222148748465285">Разрешить Chrome продолжить поиск?</translation>
+<translation id="5490848366863949315">Выбранная вместе с несколькими другими вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="5494920125229734069">Выбрать все</translation>
 <translation id="549660026907543296">Присоединиться как <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Нижний экран недавних действий</translation>
@@ -1488,6 +1499,7 @@
 <translation id="7063106218165698546">Настройте группу вкладок и нажмите "Готово".</translation>
 <translation id="7071521146534760487">Настройки аккаунта</translation>
 <translation id="707155805709242880">Выберите ниже, что нужно синхронизировать.</translation>
+<translation id="7072949719501323344">Выбранная вместе с несколькими другими и закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="7077143737582773186">SD-карта</translation>
 <translation id="7078916049958741685">Удалить данные Chrome с устройства</translation>
 <translation id="7080145768121641840">Выбранная и закрепленная вкладка "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
@@ -1874,6 +1886,7 @@
 <translation id="8512053371384421952">Вы больше не будете получать уведомления от сайта <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Редактор изображений</translation>
 <translation id="8533670235862049797">Безопасный просмотр включен</translation>
+<translation id="8538291624121505885">Выбранная вместе с несколькими другими и закрепленная вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="8540136935098276800">Введите URL в правильном формате.</translation>
 <translation id="854522910157234410">Открыть эту страницу</translation>
 <translation id="8547466829003330976">Проверить PDF с помощью ИИ</translation>
@@ -1987,6 +2000,7 @@
 <translation id="9050666287014529139">Кодовая фраза</translation>
 <translation id="9055497320631373736">Этот сайт снова может рекомендовать рекламу</translation>
 <translation id="9057030985451135243">Узнайте о группах вкладок с общим доступом</translation>
+<translation id="905722970894408436">Выбранная закрепленная вкладка "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="9063400323119781058">Подписка на уведомления отменена</translation>
 <translation id="9063523880881406963">Выключить полную версию сайта</translation>
 <translation id="9065203028668620118">Изменить</translation>
@@ -2045,6 +2059,7 @@
 <translation id="930834144334005936">Перейти из текущего режима (<ph name="MODE_NAME" />) в Поиск</translation>
 <translation id="938850635132480979">Ошибка <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ввести кодовую фразу</translation>
+<translation id="94161319503679839">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" в режиме "Картинка в картинке"</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="95817756606698420">В Китае Chrome может использовать для поиска <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Это можно изменить в <ph name="BEGIN_LINK" />Настройках<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Данные  о работе в браузере</translation>

@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2371084566192454134">Cilnes un ciļņu grupas</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir cilne “<ph name="TABS_COUNT_ONE" />”.}zero{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu “<ph name="TITLE_OF_GROUP" />”, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>
+<translation id="2476179388576975626">Attēls attēlā</translation>
 <translation id="2498435670446402865">Ciļņu grupas pārdēvēšana</translation>
 <translation id="2536366509642644298">Ciļņu grupas “<ph name="TAB_GROUP_NAME_1" />” un “<ph name="TAB_GROUP_NAME_2" />” vairs nav pieejamas.</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sakļaut <ph name="TABS_COUNT_ONE" /> cilni.}zero{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}one{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilne.}other{Sakļaut ciļņu grupu, kurā ir <ph name="TABS_COUNT_MANY" /> cilnes.}}</translation>

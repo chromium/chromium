@@ -155,6 +155,7 @@
 <translation id="2586406160782125153">Esta acción eliminará os teus datos de navegación deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Produciuse un erro ao almacenar na memoria caché o instalador descargado. Código de erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Mantén os contrasinais, os marcadores e o historial perfectamente sincronizados en todos os dispositivos. Actualiza o teu navegador predeterminado a Chrome para acceder con facilidade ás funcións que xa coñeces e que tanto che gustan. Chrome fixarase na barra de tarefas para que poidas comezar a usalo ben axiña.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome fai comprobacións de forma periódica para ver se tes a configuración máis segura. Informarémoste se atopamos algo que necesites revisar.</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
@@ -233,6 +234,7 @@
 <translation id="3327226547491422998">Máis adiante Chrome pode preguntarche se queres usar a información gardada para autocompletar formularios por ti</translation>
 <translation id="3352986031709923790">esquina superior dereita da área de busca: <ph name="RIGHT" /> % á dereita, <ph name="TOP" /> % arriba</translation>
 <translation id="3360895254066713204">Axudante de Chrome</translation>
+<translation id="3373752068427117404">Algunhas funcións e extensións de Chrome inclúen atallos. Podes decidir se queres volver activalas.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome reiniciarase agora}=1{Chrome reiniciarase en 1 segundo}other{Chrome reiniciarase en # segundos}}</translation>
 <translation id="3380249972812870825">Para abrir Gemini en Chrome, preme <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Google Chrome.</translation>
@@ -699,6 +701,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8064965390968184078">1. Fai clic na opción <ph name="BUTTON_LABEL" /> que aparece máis abaixo
 2. Fai clic en <ph name="BUTTON_2" /> dentro da configuración de Windows
 3. Fai clic en <ph name="BUTTON_3" /> na notificación de Windows para fixar Chrome na barra de tarefas e poder acceder ao navegador rapidamente</translation>
+<translation id="8074398340364918139">Para buscar unha extensión ou función específica de Chrome, escribe o seu atallo na barra de enderezos, seguido da tecla que seleccionases</translation>
 <translation id="8077579734294125741">Outros perfís de Chrome</translation>
 <translation id="8086881907087796310">Produciuse un erro na instalación porque o teu ordenador non cumpre os requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Verifica a túa identidade para usar e gardar os datos de Chrome na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -707,6 +710,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8162006532256575008">Usar Chrome sen ningunha conta</translation>
+<translation id="8172231188687329735">Descarga a aplicación Chrome para gardar contrasinais esteas onde esteas</translation>
 <translation id="8177472873527554730">Non se puido atopar contido na páxina</translation>
 <translation id="8221491193165283816">Adoitas bloquear as notificacións. Para permitir que este sitio che envíe notificacións, fai clic aquí.</translation>
 <translation id="8253851811470049684">Abre ligazóns en Chrome desde calquera aplicación e accede facilmente ao navegador desde a barra de tarefas</translation>
@@ -734,6 +738,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 
 Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora, eliminaranse os marcadores sen gardar.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
+<translation id="8458117863387545390">Desfruta de Chrome no teléfono</translation>
 <translation id="8496177819998570653">Xestor de c&amp;ontrasinais de Google</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
 <translation id="8516431725144212809">Os teus intereses estimados por Chrome</translation>

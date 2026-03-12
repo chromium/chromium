@@ -10,6 +10,7 @@
 
 Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išsaugoti.</translation>
 <translation id="1083934481477628225">Vienas iš tėvų išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chromium“</translation>
+<translation id="1090946077924227754">Jei norite ieškoti konkrečios „Chromium“ funkcijos ar plėtinio, įveskite šaukinį adreso juostoje ir paspauskite pasirinktą klaviatūros klavišą</translation>
 <translation id="1104942323762546749">„Chromium“ nori eksportuoti jūsų slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="112640046208448578">Nustatykite daiktus ar vietas ir kopijuokite arba verskite tekstą. Kai naudojate vaizdų paiešką, puslapio ekrano kopija siunčiama į serverį. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">„Chromium“ yra numatytoji naršyklė</translation>
@@ -27,6 +28,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1262876892872089030">Kol šis skirtukas buvo neaktyvus, atmintis buvo atlaisvinta, kad „Chromium“ veiktų sparčiai. Galite pasirinkti visada išskirti šią svetainę, kad būtų aktyvi.</translation>
 <translation id="1265577313130862557">„Chromium“ užblokavo šį atsisiuntimą, nes failas pavojingas</translation>
 <translation id="126567311906253476">Prisijungdami prie „Google“ paslaugų, pvz., „Gmail“ ar „YouTube“, naudodami <ph name="USER_EMAIL" />, galite automatiškai prisijungti prie „Chromium“ naudodami tą pačią paskyrą</translation>
+<translation id="1287534462498555020">Gaukite „Chromium“ telefone</translation>
 <translation id="1290883685122687410">Sąrankos klaida: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Nustatykite naują „Chromium“ profilį</translation>
 <translation id="132092532143527429">Išbandyti naudojant „Gemini“ naršyklėje „Chromium“</translation>
@@ -382,6 +384,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="5231355151045086930">Atsijungimas nuo „Chromium“</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5254739261293693943">Klausti apie šį vaizdo įrašą</translation>
+<translation id="5276305953263010518">Gaukite „Chromium“ programą, kad galėtumėte išsaugoti slaptažodžius keliaudami</translation>
 <translation id="5277894862589591112">Norėdami pritaikyti pakeitimus, paleiskite „Chromium“ iš naujo</translation>
 <translation id="5286907366254680517">Aptikta</translation>
 <translation id="5289287148052354622">Gauti „Chromium“ programą</translation>
@@ -695,6 +698,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8522801943730206384">„Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote</translation>
 <translation id="8548787790260785208">Gaukite įspėjimą, jei „Chromium“ aptinka vieną iš jūsų slaptažodžių viešajame duomenų saugos pažeidime</translation>
 <translation id="8555465886620020932">Paslaugos klaida: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Kai kurioms „Chromium“ funkcijoms ir plėtiniams priskirti šaukiniai. Galite pasirinkti vėl juos įjungti.</translation>
 <translation id="8556420416730706394">Galite prisegti vaizdų paiešką, kad lengvai ją pasiektumėte; spustelėkite mygtuką „Prisegti“ šoninio skydelio viršuje</translation>
 <translation id="856656450041460113">Ieškoti kalbų sąrašo</translation>
 <translation id="8568283329061645092">„Chromium“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą</translation>
@@ -730,6 +734,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="8988036198400390003">Tvarkyti „Chromium“ profilius</translation>
 <translation id="9019929317751753759">Kad „Chromium“ būtų saugesnė, išjungėme toliau nurodytą plėtinį, kuris nepateiktas <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> sąraše ir tikriausiai buvo pridėtas be jūsų žinios.</translation>
 <translation id="904366664621834601">„Chromium“ užblokavo šį atsisiuntimą, nes archyvo faile yra kitų failų, kurie gali slėpti kenkėjiškas programas</translation>
+<translation id="9053882453960391422">Užtikrinkite, kad slaptažodžiai, žymės ir istorija būtų tobulai sinchronizuojami įrenginiuose. Lengvai pasiekite žinomas ir mėgstamas funkcijas naujovinę numatytąją naršyklę į „Chromium“. „Chromium“ bus prisegta prie užduočių juostos, kad galėtumėte greitai ją pasiekti.</translation>
 <translation id="9062666675513499497">Prisijunkite prie „Chromium“ prisijungdami prie kitų „Google“ paslaugų</translation>
 <translation id="9078733879136747090">„Chromium“ automatiškai uždaryta</translation>
 <translation id="9089354809943900324">„Chromium“ versija yra pasenusi</translation>

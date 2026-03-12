@@ -10,6 +10,7 @@
 
 Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiadau yn cael eu cadw.</translation>
 <translation id="1083934481477628225">Mae dy riant wedi diffodd "Caniatâd ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chromium</translation>
+<translation id="1090946077924227754">I chwilio nodwedd neu estyniad Chromium penodol, teipiwch ei lwybr byr yn y bar cyfeiriad, ac yna'r allwedd bysellfwrdd a ddewiswyd gennych</translation>
 <translation id="1104942323762546749">Mae Chromium am allforio eich cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="112640046208448578">Adnabod pethau neu leoedd a chopïo neu gyfieithu testun. Pan fyddwch yn defnyddio Chwilio Lluniau anfonir sgrinlun o'r dudalen i'r gweinydd. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium yw eich porwr diofyn</translation>
@@ -27,6 +28,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1262876892872089030">Tra bod y tab hwn yn anweithredol, rhyddhawyd cof i gadw Chromium yn gyflym. Gallwch ddewis gwahardd y wefan hon rhag bod yn anactif bob amser.</translation>
 <translation id="1265577313130862557">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil yn beryglus</translation>
 <translation id="126567311906253476">Wrth fewngofnodi i wasanaethau Google megis Gmail neu YouTube gyda <ph name="USER_EMAIL" />, gallwch fewngofnodi yn awtomatig i Chromium gyda'r un cyfrif</translation>
+<translation id="1287534462498555020">Cael Chromium ar eich ffôn</translation>
 <translation id="1290883685122687410">Gwall gosod: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Gosod eich proffil Chromium newydd</translation>
 <translation id="132092532143527429">Rhowch gynnig arni gyda Gemini yn Chromium</translation>
@@ -382,6 +384,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="5231355151045086930">Allgofnodi o Chromium</translation>
 <translation id="5234764350956374838">Diystyru</translation>
 <translation id="5254739261293693943">Gofyn am y fideo hwn</translation>
+<translation id="5276305953263010518">Cael yr ap Chromium i gadw cyfrineiriau wrth fynd</translation>
 <translation id="5277894862589591112">I gymhwyso'ch newidiadau, ail-lansiwch Chromium</translation>
 <translation id="5286907366254680517">Wedi'i ganfod</translation>
 <translation id="5289287148052354622">Cael yr ap Chromium</translation>
@@ -695,6 +698,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8522801943730206384">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn eu cadw</translation>
 <translation id="8548787790260785208">Cael rhybudd os bydd Chromium yn dod o hyd i un o'ch cyfrineiriau mewn tor data cyhoeddus</translation>
 <translation id="8555465886620020932">Gwall gwasanaeth: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Mae llwybrau byr yn rhan o rai nodweddion ac estyniadau Chromium. Gallwch ddewis eu troi yn ôl ymlaen.</translation>
 <translation id="8556420416730706394">Gallwch binio Chwilio Lluniau i gael mynediad hawdd; cliciwch ar y botwm Pinio ar frig y panel ochr</translation>
 <translation id="856656450041460113">Chwilio rhestr iaith</translation>
 <translation id="8568283329061645092">Gall Chromium wirio'ch cyfrineiriau pan fyddwch yn mewngofnodi gyda'ch Cyfrif Google</translation>
@@ -730,6 +734,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8988036198400390003">Rheoli proffiliau Chromium</translation>
 <translation id="9019929317751753759">I wneud Chromium yn fwy diogel, gwnaethom analluogi'r estyniad canlynol nad yw wedi'i restru yn y <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ac a allai fod wedi'i ychwanegu heb i chi wybod.</translation>
 <translation id="904366664621834601">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd bod y ffeil archif yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>
+<translation id="9053882453960391422">Cadwch eich cyfrineiriau, nodau tudalen a hanes wedi'u cysoni'n berffaith ar draws dyfeisiau. Cael mynediad hawdd at y nodweddion rydych yn eu hadnabod ac yn eu caru trwy ddiweddaru eich porwr diofyn i Chromium. Bydd Chromium yn cael ei binio i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="9062666675513499497">Mewngofnodwch i Chromium pan fyddwch yn mewngofnodi i wasanaethau Google eraill</translation>
 <translation id="9078733879136747090">Caewyd Chromium yn awtomatig</translation>
 <translation id="9089354809943900324">Mae Chromium yn hen</translation>

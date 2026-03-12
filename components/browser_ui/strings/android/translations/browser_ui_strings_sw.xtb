@@ -269,6 +269,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="3658847490588580244">Safu ya chini ya kivinjari chaguomsingi</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Tovuti <ph name="RWS_MEMBERS_COUNT" /> iliyo katika kikundi cha tovuti za <ph name="RWS_OWNER" /> zinazoweza kuona shughuli zako kwenye kikundi}other{Tovuti <ph name="RWS_MEMBERS_COUNT" /> zilizo katika kikundi cha tovuti za <ph name="RWS_OWNER" /> zinazoweza kuona shughuli zako kwenye kikundi}}</translation>
 <translation id="3676777756440746804">Tovuti zimezuiwa ili zisiombe ruhusa ya kutumia taarifa ambazo zimehifadhi kukuhusu</translation>
+<translation id="3677897809642449131">Tovuti zinaweza kuomba ruhusa ya kutumia vitambuzi vya mwendo</translation>
 <translation id="3678318839615834650">Safu ya chini ya kadi za ukurasa wa kichupo kipya imefunguliwa katika skrini nzima</translation>
 <translation id="3697164069658504920">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya USB. Kikizimwa, tovuti haziwezi kutumia vifaa vya USB.</translation>
 <translation id="3703430731944883733">Dhibiti mpasho wako</translation>
@@ -748,6 +749,7 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:
 <translation id="8707904142362025782">Tovuti zinaweza kuomba ruhusa ya kamera yako</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8715862698998036666">Buruta kutoka juu kisha utelezeshe kutoka ukingo wa kushoto au kulia ili ufunge hali ya skrini nzima.</translation>
+<translation id="8716050156658570300">Tovuti zinaweza kuomba ruhusa ya kutumia vitambuzi vya mwendo na mwangaza</translation>
 <translation id="8719283222052720129">Washa ruhusa ya <ph name="APP_NAME" /> katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutafuta vifaa vya Bluetooth. Kikizimwa, tovuti haziwezi kutafuta vifaa vya Bluetooth.</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>

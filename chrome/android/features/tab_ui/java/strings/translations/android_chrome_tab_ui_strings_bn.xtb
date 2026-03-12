@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2371084566192454134">ট্যাব ও ট্যাব গ্রুপ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ আড়াল করুন যার মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ আড়াল করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ আড়াল করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
+<translation id="2476179388576975626">ছবির-মধ্যে-ছবি</translation>
 <translation id="2498435670446402865">ট্যাব গ্রুপের নাম বদলান</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ও "<ph name="TAB_GROUP_NAME_2" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>

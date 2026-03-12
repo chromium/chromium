@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Pestañas y grupos de pestañas</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ocultar grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestaña.}other{Ocultar grupo de pestañas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestañas.}}</translation>
+<translation id="2476179388576975626">Imagen en imagen</translation>
 <translation id="2498435670446402865">Cambiar nombre del grupo</translation>
 <translation id="2536366509642644298">Los grupos de pestañas <ph name="TAB_GROUP_NAME_1" /> y <ph name="TAB_GROUP_NAME_2" /> ya no están disponibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ocultar <ph name="TABS_COUNT_ONE" /> pestaña}other{Ocultar grupo de pestañas con <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Responda a esta pesquisa de um minuto e ajude a melhorar a navegação anônima.</translation>
 <translation id="1065672644894730302">Não foi possível ler suas preferências. Alguns recursos podem não estar disponíveis e as alterações nas preferências não serão salvas.</translation>
 <translation id="1083934481477628225">Seu familiar responsável desativou "Permissões para sites, apps e extensões" no Chromium</translation>
+<translation id="1090946077924227754">Para pesquisar recursos ou extensões específicos do Chromium, digite o atalho na barra de endereço, seguido da tecla escolhida</translation>
 <translation id="1104942323762546749">O Chromium quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="112640046208448578">Identifique itens ou lugares e copie ou traduza textos. Quando você usa a pesquisa por imagens, uma captura de tela da página é enviada ao servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">O Chromium é seu navegador padrão</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Enquanto esta guia estava inativa, a memória foi liberada para manter o Chromium rápido. Você pode optar por sempre excluir este site do status de inatividade.</translation>
 <translation id="1265577313130862557">O Chromium bloqueou o download porque o arquivo é perigoso</translation>
 <translation id="126567311906253476">Ao fazer login nos Serviços do Google (como o Gmail ou o YouTube) com <ph name="USER_EMAIL" />, você pode se conectar automaticamente ao Chromium com a mesma conta</translation>
+<translation id="1287534462498555020">Instale o Chromium no seu celular</translation>
 <translation id="1290883685122687410">Erro de configuração: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configure seu novo perfil do Chromium</translation>
 <translation id="132092532143527429">Teste com o Gemini no Chromium</translation>
@@ -378,6 +380,7 @@
 <translation id="5231355151045086930">Sair do Chromium</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5254739261293693943">Faça perguntas sobre este vídeo</translation>
+<translation id="5276305953263010518">Baixe o app Chromium para salvar senhas em qualquer lugar</translation>
 <translation id="5277894862589591112">Para que as alterações sejam aplicadas, reinicie o Chromium</translation>
 <translation id="5286907366254680517">Detectado</translation>
 <translation id="5289287148052354622">Baixar o Chromium</translation>
@@ -687,6 +690,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8522801943730206384">O Chromium poderá verificar suas senhas quando elas forem salvas</translation>
 <translation id="8548787790260785208">Receba um aviso se o Chromium encontrar uma das suas senhas em um vazamento de dados público</translation>
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Alguns recursos e extensões do Chromium incluem atalhos. Você pode reativá-los.</translation>
 <translation id="8556420416730706394">Você pode fixar a pesquisa por imagens para facilitar o acesso. Clique no botão "Fixar" na parte de cima do painel lateral</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8568283329061645092">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google</translation>
@@ -722,6 +726,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8988036198400390003">Gerenciar perfis do Chromium</translation>
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativamos a extensão a seguir, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e pode ter sido adicionada sem seu conhecimento.</translation>
 <translation id="904366664621834601">O Chromium bloqueou o download porque o arquivo inclui outros arquivos que podem estar ocultando malware</translation>
+<translation id="9053882453960391422">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos. Acesse com facilidade seus recursos favoritos definindo o Chromium como o navegador padrão. O Chromium será fixado na barra de tarefas para agilizar o acesso.</translation>
 <translation id="9062666675513499497">Fazer login no Chromium ao se conectar a outros Serviços do Google</translation>
 <translation id="9078733879136747090">O Chromium foi fechado automaticamente</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>

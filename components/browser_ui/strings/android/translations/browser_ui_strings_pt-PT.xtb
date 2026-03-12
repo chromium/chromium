@@ -269,6 +269,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="3658847490588580244">Secção inferior do navegador predefinido</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site no grupo de sites de <ph name="RWS_OWNER" /> que pode ver a sua atividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sites no grupo de sites de <ph name="RWS_OWNER" /> que podem ver a sua atividade no grupo}}</translation>
 <translation id="3676777756440746804">Os sites foram impedidos de lhe pedir para usar as informações que guardaram sobre si</translation>
+<translation id="3677897809642449131">Os sites podem pedir para usar sensores de movimento</translation>
 <translation id="3678318839615834650">Secção inferior dos cartões da página Novo separador aberta à altura total</translation>
 <translation id="3697164069658504920">Quando esta opção está ativada, os sites podem pedir para usar dispositivos USB. Quando esta opção está desativada, os sites não podem usar dispositivos USB.</translation>
 <translation id="3703430731944883733">Faça a gestão do seu feed</translation>
@@ -748,6 +749,7 @@ A Proteção avançada controla estas definições do Chrome:
 <translation id="8707904142362025782">O site pode pedir acesso à sua câmara</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Arraste a partir da parte superior e deslize rapidamente a partir da extremidade esquerda ou direita para sair do ecrã inteiro.</translation>
+<translation id="8716050156658570300">Os sites podem pedir para usar sensores de movimento e de luz</translation>
 <translation id="8719283222052720129">Ative a autorização para a app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Quando esta opção está ativada, os sites podem pedir para procurar dispositivos Bluetooth. Quando esta opção está desativada, os sites não podem procurar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
