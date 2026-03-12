@@ -12,6 +12,7 @@
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
@@ -37,6 +38,9 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+@protocol TestAppBarConsumer <AppBarConsumer, FullscreenUIElement>
+@end
 
 namespace {
 
@@ -103,22 +107,29 @@ class AppBarMediatorTest : public PlatformTest {
     incognito_web_state_list_ =
         std::make_unique<WebStateList>(&incognito_web_state_list_delegate_);
 
+    TestFullscreenController::CreateForBrowser(regular_browser_.get());
+    TestFullscreenController::CreateForBrowser(incognito_browser_.get());
+
     mediator_ = [[AppBarMediator alloc]
-        initWithRegularWebStateList:regular_web_state_list_.get()
-              incognitoWebStateList:incognito_web_state_list_.get()
-                        prefService:regular_profile_->GetTestingPrefService()
-                 templateURLService:search_engines_test_environment_
-                                        .template_url_service()
-                          URLLoader:url_loader_
-                       tabGridState:tab_grid_state_
-                     incognitoState:incognito_state_];
+          initWithRegularWebStateList:regular_web_state_list_.get()
+                incognitoWebStateList:incognito_web_state_list_.get()
+          regularFullscreenController:TestFullscreenController::FromBrowser(
+                                          regular_browser_.get())
+        incognitoFullscreenController:TestFullscreenController::FromBrowser(
+                                          incognito_browser_.get())
+                          prefService:regular_profile_->GetTestingPrefService()
+                   templateURLService:search_engines_test_environment_
+                                          .template_url_service()
+                            URLLoader:url_loader_
+                         tabGridState:tab_grid_state_
+                       incognitoState:incognito_state_];
     mediator_.regularActionFactory =
         [[BrowserActionFactory alloc] initWithBrowser:regular_browser_.get()
                                              scenario:kTestMenuScenario];
     mediator_.incognitoActionFactory =
         [[BrowserActionFactory alloc] initWithBrowser:incognito_browser_.get()
                                              scenario:kTestMenuScenario];
-    consumer_ = OCMProtocolMock(@protocol(AppBarConsumer));
+    consumer_ = OCMProtocolMock(@protocol(TestAppBarConsumer));
     mediator_.consumer = consumer_;
     mediator_.sceneHandler = mock_scene_handler_;
   }
@@ -143,7 +154,7 @@ class AppBarMediatorTest : public PlatformTest {
   id mock_browser_coordinator_handler_;
   id mock_lens_handler_;
   id mock_qr_scanner_handler_;
-  id consumer_;
+  id<AppBarConsumer, FullscreenUIElement> consumer_;
 };
 
 // Tests that the consumer is updated when a web state is added.

@@ -54,6 +54,11 @@ const CGFloat kStackViewHorizontalMargin = 8;
 const CGFloat kButtonHorizontalPadding = 4;
 const CGFloat kButtonVerticalPadding = 12;
 
+// Returns the color to be used as foreground color for the buttons.
+UIColor* ButtonsForegroundColor() {
+  return UIColor.whiteColor;
+}
+
 // Returns the configuration for all the symbols.
 UIImageSymbolConfiguration* AppBarSymbolConfiguration() {
   return [UIImageSymbolConfiguration
@@ -77,6 +82,13 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 #endif
 
 }  // namespace
+
+@interface AppBarViewController ()
+
+// The alpha for the titles of the buttons.
+@property(nonatomic, assign) CGFloat buttonsTitleAlpha;
+
+@end
 
 @implementation AppBarViewController {
   UIButton* _assistantButton;
@@ -117,6 +129,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  self.buttonsTitleAlpha = 1;
 
   // TODO(crbug.com/483998773): Use a real design.
   self.view.backgroundColor = [UIColor.purpleColor colorWithAlphaComponent:0.5];
@@ -217,6 +231,15 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   _tabGridButton.enabled = enabled;
 }
 
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  self.buttonsTitleAlpha = progress;
+  [_assistantButton setNeedsUpdateConfiguration];
+  [_openNewTabButton setNeedsUpdateConfiguration];
+  [_tabGridButton setNeedsUpdateConfiguration];
+}
+
 #pragma mark - Private
 
 // Returns a new "Assistant" button.
@@ -284,7 +307,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
   _tabCountLabel = [[UILabel alloc] init];
   _tabCountLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _tabCountLabel.textColor = UIColor.whiteColor;
+  _tabCountLabel.textColor = ButtonsForegroundColor();
   [self updateTabCount:_tabCount];
   [button addSubview:_tabCountLabel];
   _tabGridButtonNormalStateConstraints = @[
@@ -337,7 +360,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   configuration.imagePadding = kButtonImagePadding;
   configuration.image = image;
 
-  configuration.baseForegroundColor = UIColor.whiteColor;
+  configuration.baseForegroundColor = ButtonsForegroundColor();
 
   configuration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonVerticalPadding, kButtonHorizontalPadding, kButtonVerticalPadding,
@@ -345,6 +368,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
   configuration.title = title;
   configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+
+  __weak __typeof(self) weakSelf = self;
 
   configuration.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
@@ -356,7 +381,9 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
             UIFontTextStyleCaption2,
             weakButton.traitCollection.preferredContentSizeCategory,
             UIContentSizeCategoryExtraExtraExtraLarge);
-
+    mutableAttributes[NSForegroundColorAttributeName] =
+        [ButtonsForegroundColor()
+            colorWithAlphaComponent:weakSelf.buttonsTitleAlpha];
     return mutableAttributes;
   };
 
@@ -414,7 +441,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   }
   UILabel* label = _tabCountLabel;
   UIColor* labelColor =
-      _isTabGridVisible ? UIColor.blackColor : UIColor.whiteColor;
+      _isTabGridVisible ? UIColor.blackColor : ButtonsForegroundColor();
   [UIView transitionWithView:label
                     duration:kTabGridAnimationDuration
                      options:UIViewAnimationOptionTransitionCrossDissolve

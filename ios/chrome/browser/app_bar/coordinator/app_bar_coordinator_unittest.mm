@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -34,6 +35,9 @@ class AppBarCoordinatorTest : public PlatformTest {
     regular_browser_ = std::make_unique<TestBrowser>(regular_profile_.get());
     incognito_browser_ =
         std::make_unique<TestBrowser>(incognito_profile_.get());
+
+    TestFullscreenController::CreateForBrowser(regular_browser_.get());
+    TestFullscreenController::CreateForBrowser(incognito_browser_.get());
 
     coordinator_ = [[AppBarCoordinator alloc]
         initWithRegularBrowser:regular_browser_.get()

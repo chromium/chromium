@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -60,21 +61,29 @@
 
   SceneState* sceneState = _regularBrowser->GetSceneState();
 
+  FullscreenController* regularFullscreenController =
+      FullscreenController::FromBrowser(_regularBrowser);
+  FullscreenController* incognitoFullscreenController =
+      FullscreenController::FromBrowser(_incognitoBrowser);
+
   _mediator = [[AppBarMediator alloc]
-      initWithRegularWebStateList:_regularBrowser->GetWebStateList()
-            incognitoWebStateList:_incognitoBrowser->GetWebStateList()
-                      prefService:_regularBrowser->GetProfile()->GetPrefs()
-               templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
-                                      _regularBrowser->GetProfile())
-                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(
-                                      _regularBrowser)
-                     tabGridState:sceneState.tabGridState
-                   incognitoState:sceneState.incognitoState];
+        initWithRegularWebStateList:_regularBrowser->GetWebStateList()
+              incognitoWebStateList:_incognitoBrowser->GetWebStateList()
+        regularFullscreenController:regularFullscreenController
+      incognitoFullscreenController:incognitoFullscreenController
+                        prefService:_regularBrowser->GetProfile()->GetPrefs()
+                 templateURLService:ios::TemplateURLServiceFactory::
+                                        GetForProfile(
+                                            _regularBrowser->GetProfile())
+                          URLLoader:UrlLoadingBrowserAgent::FromBrowser(
+                                        _regularBrowser)
+                       tabGridState:sceneState.tabGridState
+                     incognitoState:sceneState.incognitoState];
   _mediator.regularActionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:_regularBrowser.get()
+      initWithBrowser:_regularBrowser
              scenario:kMenuScenarioHistogramToolbarMenu];
   _mediator.incognitoActionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:_incognitoBrowser.get()
+      initWithBrowser:_incognitoBrowser
              scenario:kMenuScenarioHistogramToolbarMenu];
   _mediator.sceneHandler = sceneHandler;
   _mediator.tabGridHandler = tabGridHandler;
@@ -113,6 +122,16 @@
   [_mediator setIncognitoWebStateList:incognitoBrowser
                                           ? incognitoBrowser->GetWebStateList()
                                           : nullptr];
+  [_mediator
+      setIncognitoFullscreenController:incognitoBrowser
+                                           ? FullscreenController::FromBrowser(
+                                                 incognitoBrowser)
+                                           : nullptr];
+  _mediator.incognitoActionFactory =
+      incognitoBrowser ? [[BrowserActionFactory alloc]
+                             initWithBrowser:incognitoBrowser
+                                    scenario:kMenuScenarioHistogramToolbarMenu]
+                       : nil;
 }
 
 #pragma mark - GuidedTourCommands

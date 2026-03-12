@@ -10,6 +10,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/search/search.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -49,6 +51,10 @@
   std::unique_ptr<WebStateListObserverBridge> _observerBridge;
   raw_ptr<WebStateList> _regularWebStateList;
   raw_ptr<WebStateList> _incognitoWebStateList;
+  raw_ptr<FullscreenController> _regularFullscreenController;
+  std::unique_ptr<FullscreenUIUpdater> _regularFullscreenUIUpdater;
+  raw_ptr<FullscreenController> _incognitoFullscreenController;
+  std::unique_ptr<FullscreenUIUpdater> _incognitoFullscreenUIUpdater;
   raw_ptr<PrefService> _prefService;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   raw_ptr<TemplateURLService> _templateURLService;
@@ -59,6 +65,10 @@
 
 - (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
                       incognitoWebStateList:(WebStateList*)incognitoWebStateList
+                regularFullscreenController:
+                    (FullscreenController*)regularFullscreenController
+              incognitoFullscreenController:
+                  (FullscreenController*)incognitoFullscreenController
                                 prefService:(PrefService*)prefService
                          templateURLService:
                              (TemplateURLService*)templateURLService
@@ -70,6 +80,9 @@
     _regularWebStateList = regularWebStateList;
     _incognitoWebStateList = incognitoWebStateList;
     _observerBridge = std::make_unique<WebStateListObserverBridge>(self);
+
+    _regularFullscreenController = regularFullscreenController;
+    _incognitoFullscreenController = incognitoFullscreenController;
 
     _URLLoader = URLLoader;
     _prefService = prefService;
@@ -90,11 +103,20 @@
   return self;
 }
 
-- (void)setConsumer:(id<AppBarConsumer>)consumer {
+- (void)setConsumer:(id<AppBarConsumer, FullscreenUIElement>)consumer {
   if (consumer == _consumer) {
     return;
   }
+  _regularFullscreenUIUpdater.reset();
+  _incognitoFullscreenUIUpdater.reset();
   _consumer = consumer;
+  if (!_consumer) {
+    return;
+  }
+  _regularFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      _regularFullscreenController, _consumer);
+  _incognitoFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      _incognitoFullscreenController, _consumer);
   [self updateConsumer];
 }
 
@@ -108,6 +130,16 @@
   }
 }
 
+- (void)setIncognitoFullscreenController:
+    (FullscreenController*)fullscreenController {
+  _incognitoFullscreenUIUpdater.reset();
+  _incognitoFullscreenController = fullscreenController;
+  if (_incognitoFullscreenController && _consumer) {
+    _incognitoFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        _incognitoFullscreenController, _consumer);
+  }
+}
+
 - (void)disconnect {
   self.consumer = nil;
   self.currentTabGroup = nullptr;
@@ -115,6 +147,10 @@
     self.currentWebStateList->RemoveObserver(_observerBridge.get());
     self.currentWebStateList = nullptr;
   }
+  _regularFullscreenUIUpdater.reset();
+  _incognitoFullscreenUIUpdater.reset();
+  _regularFullscreenController = nullptr;
+  _incognitoFullscreenController = nullptr;
   [_tabGridState removeObserver:self];
   [_incognitoState removeObserver:self];
   _observerBridge.reset();

@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
 @protocol AppBarMutator;
 @class LayoutGuideCenter;
@@ -15,7 +16,8 @@
 @protocol TabGridCommands;
 
 // View controller for the app bar.
-@interface AppBarViewController : UIViewController <AppBarConsumer>
+@interface AppBarViewController
+    : UIViewController <AppBarConsumer, FullscreenUIElement>
 
 // Unhides the spotlight anchor view if `shouldShow`.
 - (void)toggleSpotlightView:(BOOL)shouldShow;
