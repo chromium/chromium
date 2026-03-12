@@ -32,6 +32,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/byte_size.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
@@ -70,6 +71,26 @@ namespace {
 
 BASE_FEATURE(kIDBDatabaseExternalMemoryAccounting,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Number of connections in the process. All operations use
+// std::memory_order_relaxed since there is no dependency with other data.
+//
+// TODO(crbug.com/381086791): Remove after the bug is understood.
+std::atomic_int64_t g_num_connections = 0;
+
+void IncrementNumConnections() {
+  int64_t new_connection_count =
+      g_num_connections.fetch_add(1, std::memory_order_relaxed) + 1;
+
+  constexpr int64_t kHighPendingConnectionCount = 10000;
+  if (new_connection_count == kHighPendingConnectionCount) {
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
+void DecrementNumConnections() {
+  g_num_connections.fetch_sub(1, std::memory_order_relaxed);
+}
 
 }  // namespace
 
@@ -119,6 +140,8 @@ IDBDatabase::IDBDatabase(
       database_remote_(context),
       scheduling_priority_(connection_priority),
       callbacks_receiver_(this, context) {
+  IncrementNumConnections();
+
   if (base::FeatureList::IsEnabled(kIDBDatabaseExternalMemoryAccounting)) {
     if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
       // This object indirectly retains memory in the browser process via
@@ -147,6 +170,7 @@ IDBDatabase::IDBDatabase(
 }
 
 IDBDatabase::~IDBDatabase() {
+  DecrementNumConnections();
   ClearExternalMemory();
 }
 
