@@ -13,25 +13,24 @@ namespace ash {
 
 namespace {
 
-crosapi::mojom::VideoConferenceAppType ToVideoConferenceAppType(
-    apps::AppType app_type) {
+VideoConferenceAppType ToNativeVideoConferenceAppType(apps::AppType app_type) {
   switch (app_type) {
     case apps::AppType::kArc:
-      return crosapi::mojom::VideoConferenceAppType::kArcApp;
+      return VideoConferenceAppType::kArcApp;
     case apps::AppType::kChromeApp:
-      return crosapi::mojom::VideoConferenceAppType::kChromeApp;
+      return VideoConferenceAppType::kChromeApp;
     case apps::AppType::kWeb:
-      return crosapi::mojom::VideoConferenceAppType::kWebApp;
+      return VideoConferenceAppType::kWebApp;
     case apps::AppType::kExtension:
-      return crosapi::mojom::VideoConferenceAppType::kChromeExtension;
+      return VideoConferenceAppType::kChromeExtension;
     case apps::AppType::kCrostini:
-      return crosapi::mojom::VideoConferenceAppType::kCrostiniVm;
+      return VideoConferenceAppType::kCrostiniVm;
     case apps::AppType::kPluginVm:
-      return crosapi::mojom::VideoConferenceAppType::kPluginVm;
+      return VideoConferenceAppType::kPluginVm;
     case apps::AppType::kBorealis:
-      return crosapi::mojom::VideoConferenceAppType::kBorealis;
+      return VideoConferenceAppType::kBorealis;
     default:
-      return crosapi::mojom::VideoConferenceAppType::kAppServiceUnknown;
+      return VideoConferenceAppType::kAppServiceUnknown;
   }
 }
 
@@ -60,15 +59,14 @@ VideoConferenceClientBase::GetMediaApps() {
       continue;
     }
 
-    apps.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
-        /*id=*/app_state.token,
-        /*last_activity_time=*/app_state.last_activity_time,
-        /*is_capturing_camera=*/app_state.is_capturing_camera,
-        /*is_capturing_microphone=*/app_state.is_capturing_microphone,
-        /*is_capturing_screen=*/false,
-        /*title=*/base::UTF8ToUTF16(app_name),
-        /*url=*/std::nullopt,
-        /*app_type=*/ToVideoConferenceAppType(GetAppType(app_id))));
+    VideoConferenceMediaAppInfo app;
+    app.id = app_state.token;
+    app.last_activity_time = app_state.last_activity_time;
+    app.is_capturing_camera = app_state.is_capturing_camera;
+    app.is_capturing_microphone = app_state.is_capturing_microphone;
+    app.title = base::UTF8ToUTF16(app_name);
+    app.app_type = ToNativeVideoConferenceAppType(GetAppType(app_id));
+    apps.push_back(std::move(app));
   }
 
   return apps;

@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 
 namespace ash {
@@ -45,8 +44,8 @@ class VideoConferenceClientBase : public VideoConferenceManagerClient {
   bool SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
                                   bool enabled) override;
 
-  // Calculates a new `crosapi::mojom::VideoConferenceMediaUsageStatus` from all
-  // current VC apps and notifies the manager if a field has changed.
+  // Calculates a new `VideoConferenceMediaUsageStatus` from all current VC
+  // apps and notifies the manager if a field has changed.
   void HandleMediaUsageUpdate();
 
   // Returns the name of the app with `app_id`. This name is used for display
@@ -70,7 +69,7 @@ class VideoConferenceClientBase : public VideoConferenceManagerClient {
   // identify clients.
   const base::UnguessableToken client_id_;
 
-  // Current status_ aggregated from all apps in `id_to_app_state_`.
+  // Current `status_` aggregated from all apps in `id_to_app_state_`.
   VideoConferenceMediaUsageStatus status_;
 
   const raw_ref<VideoConferenceManagerAsh> video_conference_manager_ash_;

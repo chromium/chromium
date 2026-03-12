@@ -49,4 +49,18 @@ VideoConferenceMediaUsageStatus::~VideoConferenceMediaUsageStatus() = default;
 bool VideoConferenceMediaUsageStatus::operator==(
     const VideoConferenceMediaUsageStatus& other) const = default;
 
+VideoConferenceMediaAppInfo::VideoConferenceMediaAppInfo() = default;
+VideoConferenceMediaAppInfo::VideoConferenceMediaAppInfo(
+    const VideoConferenceMediaAppInfo&) = default;
+VideoConferenceMediaAppInfo& VideoConferenceMediaAppInfo::operator=(
+    const VideoConferenceMediaAppInfo&) = default;
+VideoConferenceMediaAppInfo::VideoConferenceMediaAppInfo(
+    VideoConferenceMediaAppInfo&&) noexcept = default;
+VideoConferenceMediaAppInfo& VideoConferenceMediaAppInfo::operator=(
+    VideoConferenceMediaAppInfo&&) noexcept = default;
+VideoConferenceMediaAppInfo::~VideoConferenceMediaAppInfo() = default;
+
+bool VideoConferenceMediaAppInfo::operator==(
+    const VideoConferenceMediaAppInfo& other) const = default;
+
 }  // namespace ash

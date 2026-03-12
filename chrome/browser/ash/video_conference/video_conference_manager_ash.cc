@@ -28,6 +28,36 @@ namespace ash {
 
 namespace {
 VideoConferenceManagerAsh* g_instance = nullptr;
+
+#define ASSERT_VC_APP_TYPE_MATCH(name)                  \
+  static_assert(                                        \
+      static_cast<int>(VideoConferenceAppType::name) == \
+      static_cast<int>(crosapi::mojom::VideoConferenceAppType::name))
+ASSERT_VC_APP_TYPE_MATCH(kBrowserUnknown);
+ASSERT_VC_APP_TYPE_MATCH(kChromeTab);
+ASSERT_VC_APP_TYPE_MATCH(kChromeExtension);
+ASSERT_VC_APP_TYPE_MATCH(kChromeApp);
+ASSERT_VC_APP_TYPE_MATCH(kWebApp);
+ASSERT_VC_APP_TYPE_MATCH(kArcApp);
+ASSERT_VC_APP_TYPE_MATCH(kAppServiceUnknown);
+ASSERT_VC_APP_TYPE_MATCH(kCrostiniVm);
+ASSERT_VC_APP_TYPE_MATCH(kPluginVm);
+ASSERT_VC_APP_TYPE_MATCH(kBorealis);
+ASSERT_VC_APP_TYPE_MATCH(kAshClientUnknown);
+ASSERT_VC_APP_TYPE_MATCH(kAshCaptureMode);
+#undef ASSERT_VC_APP_TYPE_MATCH
+
+crosapi::mojom::VideoConferenceMediaAppInfoPtr
+ToMojomVideoConferenceMediaAppInfo(
+    const VideoConferenceMediaAppInfo& app_info) {
+  // TODO(crbug.com/365741912, crbug.com/365902693): Delete this local bridge
+  // once VideoConferenceManagerBase stops using Mojo app-info types.
+  return crosapi::mojom::VideoConferenceMediaAppInfo::New(
+      app_info.id, app_info.last_activity_time, app_info.is_capturing_camera,
+      app_info.is_capturing_microphone, app_info.is_capturing_screen,
+      app_info.title, app_info.url,
+      static_cast<crosapi::mojom::VideoConferenceAppType>(app_info.app_type));
+}
 }  // namespace
 
 // static
@@ -57,22 +87,28 @@ void VideoConferenceManagerAsh::RegisterCppClient(
 
 void VideoConferenceManagerAsh::GetMediaApps(
     base::OnceCallback<void(MediaApps)> ui_callback) {
-  MediaApps apps;
+  VideoConferenceManagerClient::MediaApps apps;
 
   for (auto& [_, client_info] : client_info_map_) {
-    MediaApps apps_from_client = client_info.client->GetMediaApps();
+    auto apps_from_client = client_info.client->GetMediaApps();
     apps.insert(apps.end(), std::make_move_iterator(apps_from_client.begin()),
                 std::make_move_iterator(apps_from_client.end()));
   }
 
   // Sort all apps based on last activity time.
   std::sort(apps.begin(), apps.end(),
-            [](const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app1,
-               const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app2) {
-              return app1->last_activity_time > app2->last_activity_time;
+            [](const VideoConferenceMediaAppInfo& app1,
+               const VideoConferenceMediaAppInfo& app2) {
+              return app1.last_activity_time > app2.last_activity_time;
             });
 
-  std::move(ui_callback).Run(std::move(apps));
+  MediaApps mojo_apps;
+  mojo_apps.reserve(apps.size());
+  for (const auto& app : apps) {
+    mojo_apps.push_back(ToMojomVideoConferenceMediaAppInfo(app));
+  }
+
+  std::move(ui_callback).Run(std::move(mojo_apps));
 }
 
 void VideoConferenceManagerAsh::ReturnToApp(const base::UnguessableToken& id) {

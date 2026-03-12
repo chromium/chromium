@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash {
@@ -55,8 +54,8 @@ class VideoConferenceManagerClientImpl
   VideoConferenceWebApp* CreateVideoConferenceWebApp(
       content::WebContents* web_contents);
 
-  // Calculates a new `crosapi::mojom::VideoConferenceMediaUsageStatus` from all
-  // current VC apps and notifies the manager if a field has changed.
+  // Calculates a new `VideoConferenceMediaUsageStatus` from all current VC
+  // apps and notifies the manager if a field has changed.
   void HandleMediaUsageUpdate();
 
   // Notifies VCManager of media device usage while the device is system

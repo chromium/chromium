@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -104,6 +105,47 @@ struct ASH_EXPORT VideoConferenceMediaUsageStatus {
   bool operator==(const VideoConferenceMediaUsageStatus& other) const;
 };
 
+// Native counterpart to crosapi::mojom::VideoConferenceAppType used by the
+// in-process VideoConferenceManagerClient interface. Keep this in sync with the
+// mojom enum until the tray-facing API stops using Mojo types.
+enum class VideoConferenceAppType {
+  kBrowserUnknown,
+  kChromeTab,
+  kChromeExtension,
+  kChromeApp,
+  kWebApp,
+  kArcApp,
+  kAppServiceUnknown,
+  kCrostiniVm,
+  kPluginVm,
+  kBorealis,
+  kAshClientUnknown,
+  kAshCaptureMode,
+};
+
+// Native counterpart to crosapi::mojom::VideoConferenceMediaAppInfo used by
+// the in-process VideoConferenceManagerClient interface.
+struct ASH_EXPORT VideoConferenceMediaAppInfo {
+  VideoConferenceMediaAppInfo();
+  VideoConferenceMediaAppInfo(const VideoConferenceMediaAppInfo&);
+  VideoConferenceMediaAppInfo& operator=(const VideoConferenceMediaAppInfo&);
+  VideoConferenceMediaAppInfo(VideoConferenceMediaAppInfo&&) noexcept;
+  VideoConferenceMediaAppInfo& operator=(
+      VideoConferenceMediaAppInfo&&) noexcept;
+  ~VideoConferenceMediaAppInfo();
+
+  base::UnguessableToken id;
+  base::Time last_activity_time;
+  bool is_capturing_camera = false;
+  bool is_capturing_microphone = false;
+  bool is_capturing_screen = false;
+  std::u16string title;
+  std::optional<GURL> url;
+  VideoConferenceAppType app_type = VideoConferenceAppType::kBrowserUnknown;
+
+  bool operator==(const VideoConferenceMediaAppInfo& other) const;
+};
+
 // Represents the media devices that can be captured by a video conferencing
 // app.
 enum class VideoConferenceMediaDevice {
@@ -115,7 +157,7 @@ enum class VideoConferenceMediaDevice {
 // VideoConferenceManagerAsh.
 class ASH_EXPORT VideoConferenceManagerClient {
  public:
-  using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+  using MediaApps = std::vector<VideoConferenceMediaAppInfo>;
 
   virtual ~VideoConferenceManagerClient() = default;
 

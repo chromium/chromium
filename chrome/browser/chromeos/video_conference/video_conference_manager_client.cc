@@ -23,7 +23,6 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/process_manager.h"
@@ -53,27 +52,26 @@ bool IsWebApp(content::WebContents* contents) {
 }
 
 // Returns the AppType of the `contents`.
-// We only handled cases that are relevant to video conference apps.
-crosapi::mojom::VideoConferenceAppType GetAppType(
-    content::WebContents* contents) {
+// We only handle cases that are relevant to video conference apps.
+ash::VideoConferenceAppType GetAppType(content::WebContents* contents) {
   auto* ext = extensions::ProcessManager::Get(contents->GetBrowserContext())
                   ->GetExtensionForWebContents(contents);
   if (ext) {
     auto type = ext->GetType();
     if (type == extensions::Manifest::TYPE_EXTENSION) {
-      return crosapi::mojom::VideoConferenceAppType::kChromeExtension;
+      return ash::VideoConferenceAppType::kChromeExtension;
     }
     if (type == extensions::Manifest::TYPE_PLATFORM_APP) {
-      return crosapi::mojom::VideoConferenceAppType::kChromeApp;
+      return ash::VideoConferenceAppType::kChromeApp;
     }
 
-    return crosapi::mojom::VideoConferenceAppType::kBrowserUnknown;
+    return ash::VideoConferenceAppType::kBrowserUnknown;
   }
   if (IsWebApp(contents)) {
-    return crosapi::mojom::VideoConferenceAppType::kWebApp;
+    return ash::VideoConferenceAppType::kWebApp;
   }
 
-  return crosapi::mojom::VideoConferenceAppType::kChromeTab;
+  return ash::VideoConferenceAppType::kChromeTab;
 }
 
 }  // namespace
@@ -256,15 +254,16 @@ VideoConferenceManagerClientImpl::GetMediaApps() {
       continue;
     }
 
-    apps.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
-        /*id=*/app_state.id,
-        /*last_activity_time=*/app_state.last_activity_time,
-        /*is_capturing_camera=*/app_state.is_capturing_camera,
-        /*is_capturing_microphone=*/app_state.is_capturing_microphone,
-        /*is_capturing_screen=*/app_state.is_capturing_screen,
-        /*title=*/web_contents->GetTitle(),
-        /*url=*/web_contents->GetURL(),
-        /*app_type=*/GetAppType(web_contents)));
+    ash::VideoConferenceMediaAppInfo app;
+    app.id = app_state.id;
+    app.last_activity_time = app_state.last_activity_time;
+    app.is_capturing_camera = app_state.is_capturing_camera;
+    app.is_capturing_microphone = app_state.is_capturing_microphone;
+    app.is_capturing_screen = app_state.is_capturing_screen;
+    app.title = web_contents->GetTitle();
+    app.url = web_contents->GetURL();
+    app.app_type = GetAppType(web_contents);
+    apps.push_back(std::move(app));
   }
 
   return apps;

@@ -1502,16 +1502,15 @@ VideoConferenceManagerClient::MediaApps CaptureModeController::GetMediaApps() {
   MediaApps apps;
 
   if (is_recording_in_progress()) {
-    apps.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
-        /*id=*/capture_mode_media_app_id_,
-        /*last_activity_time=*/base::Time::Now(),
-        /*is_capturing_camera=*/IsShowingCameraPreview(),
-        /*is_capturing_microphone=*/IsAudioRecordingInProgress(),
-        /*is_capturing_screen=*/false,
-        /*title=*/
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
-        /*url=*/std::nullopt,
-        /*app_type=*/crosapi::mojom::VideoConferenceAppType::kAshCaptureMode));
+    VideoConferenceMediaAppInfo app;
+    app.id = capture_mode_media_app_id_;
+    app.last_activity_time = base::Time::Now();
+    app.is_capturing_camera = IsShowingCameraPreview();
+    app.is_capturing_microphone = IsAudioRecordingInProgress();
+    app.title =
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE);
+    app.app_type = VideoConferenceAppType::kAshCaptureMode;
+    apps.push_back(std::move(app));
   }
 
   return apps;

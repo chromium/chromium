@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -218,12 +217,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, GetMediaApps) {
   EXPECT_EQ(apps.size(), 3u);
 
   for (auto& app : apps) {
-    auto* vc_app = id_to_vc_app[app->id];
-    EXPECT_EQ(vc_app->state().is_capturing_camera, app->is_capturing_camera);
+    auto* vc_app = id_to_vc_app[app.id];
+    EXPECT_EQ(vc_app->state().is_capturing_camera, app.is_capturing_camera);
     EXPECT_EQ(vc_app->state().is_capturing_microphone,
-              app->is_capturing_microphone);
-    EXPECT_EQ(vc_app->state().is_capturing_screen, app->is_capturing_screen);
-    EXPECT_EQ(vc_app->GetWebContents().GetTitle(), app->title);
+              app.is_capturing_microphone);
+    EXPECT_EQ(vc_app->state().is_capturing_screen, app.is_capturing_screen);
+    EXPECT_EQ(vc_app->GetWebContents().GetTitle(), app.title);
   }
 }
 

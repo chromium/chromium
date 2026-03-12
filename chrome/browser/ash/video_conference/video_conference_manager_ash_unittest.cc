@@ -21,6 +21,26 @@
 
 namespace ash {
 
+namespace {
+
+VideoConferenceMediaAppInfo MakeMediaAppInfo(const base::UnguessableToken& id,
+                                             base::Time last_activity_time,
+                                             bool is_capturing_camera,
+                                             bool is_capturing_microphone,
+                                             bool is_capturing_screen,
+                                             const std::u16string& title) {
+  VideoConferenceMediaAppInfo app;
+  app.id = id;
+  app.last_activity_time = last_activity_time;
+  app.is_capturing_camera = is_capturing_camera;
+  app.is_capturing_microphone = is_capturing_microphone;
+  app.is_capturing_screen = is_capturing_screen;
+  app.title = title;
+  return app;
+}
+
+}  // namespace
+
 class FakeVideoConferenceManagerAsh : public VideoConferenceManagerAsh {
  public:
   VideoConferenceMediaState& state() { return state_; }
@@ -41,15 +61,7 @@ class FakeVcManagerCppClient : public VideoConferenceManagerClient {
   ~FakeVcManagerCppClient() override { vc_manager_->UnregisterClient(id_); }
 
   // VideoConferenceManagerClient overrides
-  MediaApps GetMediaApps() override {
-    MediaApps apps;
-
-    for (auto& app : apps_) {
-      apps.push_back(app->Clone());
-    }
-
-    return apps;
-  }
+  MediaApps GetMediaApps() override { return apps_; }
 
   bool ReturnToApp(const base::UnguessableToken& id) override { NOTREACHED(); }
 
@@ -60,7 +72,7 @@ class FakeVcManagerCppClient : public VideoConferenceManagerClient {
 
   // Public for testing.
   base::UnguessableToken id_;
-  std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps_;
+  MediaApps apps_;
   const raw_ref<FakeVideoConferenceManagerAsh> vc_manager_;
 };
 
@@ -106,12 +118,11 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
 
   std::unique_ptr<FakeVcManagerCppClient> client1 =
       std::make_unique<FakeVcManagerCppClient>(vc_manager());
-  client1->apps_.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
+  client1->apps_.push_back(MakeMediaAppInfo(
       /*id=*/base::UnguessableToken::Create(),
       /*last_activity_time=*/now,
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/true, /*title=*/u"Test App0",
-      /*url=*/std::nullopt));
+      /*is_capturing_screen=*/true, /*title=*/u"Test App0"));
 
   vc_manager().RegisterCppClient(client1.get(), client1->id_);
 
@@ -131,12 +142,11 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
       }));
   run_loop1.Run();
 
-  client1->apps_.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
+  client1->apps_.push_back(MakeMediaAppInfo(
       /*id=*/base::UnguessableToken::Create(),
       /*last_activity_time=*/now + duration * 10,
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/true, /*title=*/u"Test App1",
-      /*url=*/std::nullopt));
+      /*is_capturing_screen=*/true, /*title=*/u"Test App1"));
 
   base::RunLoop run_loop2;
   vc_manager().GetMediaApps(base::BindLambdaForTesting(
@@ -158,12 +168,11 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
   {
     std::unique_ptr<FakeVcManagerCppClient> client2 =
         std::make_unique<FakeVcManagerCppClient>(vc_manager());
-    client2->apps_.push_back(crosapi::mojom::VideoConferenceMediaAppInfo::New(
+    client2->apps_.push_back(MakeMediaAppInfo(
         /*id=*/base::UnguessableToken::Create(),
         /*last_activity_time=*/now + duration * 2,
         /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
-        /*is_capturing_screen=*/false, /*title=*/u"Test App2",
-        /*url=*/std::nullopt));
+        /*is_capturing_screen=*/false, /*title=*/u"Test App2"));
 
     vc_manager().RegisterCppClient(client2.get(), client2->id_);
 
