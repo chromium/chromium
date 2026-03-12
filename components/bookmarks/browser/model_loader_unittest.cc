@@ -42,6 +42,8 @@ constexpr char kBookmarksFileLoadResultMetricName[] =
     "Bookmarks.BookmarksFileLoadResult";
 constexpr char kEncryptedBookmarksFileMatchesResultMetricName[] =
     "Bookmarks.EncryptedBookmarksFileMatchesResult";
+constexpr char kFallbackToClearTextFileOnLoadResultMetricName[] =
+    "Bookmarks.FallbackToClearTextFileOnLoadResult";
 constexpr char kBookmarksStorageFileSizeAtStartupMetricName[] =
     "Bookmarks.Storage.FileSizeAtStartup2";
 constexpr char kBookmarksEncryptedStorageFileSizeAtStartupMetricName[] =
@@ -1411,6 +1413,60 @@ TEST_P(ModelLoaderWithSecondayFileTest,
       /*expected_count=*/1);
 }
 
+TEST_P(ModelLoaderWithSecondayFileTest,
+       VerifySecondaryFiles_NoCallbackIfNoFileExist) {
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  const base::FilePath primary_local_or_syncable_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_1.json");
+  const base::FilePath secondary_local_or_syncable_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_2.json");
+  const base::FilePath primary_account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_3.json");
+  const base::FilePath secondary_account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_4.json");
+
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_local_or_syncable_bookmark_future;
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_account_bookmark_future;
+  scoped_refptr<ModelLoader> loader =
+      CreateModelLoader(primary_local_or_syncable_file_path,
+                        secondary_local_or_syncable_file_path,
+                        primary_account_file_path, secondary_account_file_path,
+                        save_local_or_syncable_bookmark_future.GetCallback(),
+                        save_account_bookmark_future.GetCallback());
+
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  EXPECT_FALSE(save_local_or_syncable_bookmark_future.IsReady());
+  EXPECT_FALSE(save_account_bookmark_future.IsReady());
+
+  // We tried to read the primary files but fail.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    GetPrimaryEncryptionHistogramSuffix()}),
+      metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".Account",
+                    GetPrimaryEncryptionHistogramSuffix()}),
+      metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_bucket_count=*/1);
+
+  // We never try to read the secondary file.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    GetSecondaryEncryptionHistogramSuffix()}),
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".Account",
+                    GetSecondaryEncryptionHistogramSuffix()}),
+      /*expected_count=*/0);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ModelLoaderWithSecondayFileTest,
     ModelLoaderWithSecondayFileTest,
@@ -1462,6 +1518,133 @@ TEST(ModelLoaderTest, VerifyEncryptedSecondaryFiles_DecryptionFailed) {
             StorageFileEncryptionType::kEncrypted);
   EXPECT_EQ(save_account_bookmark_future.Get(),
             StorageFileEncryptionType::kEncrypted);
+}
+
+TEST(ModelLoaderTest,
+     LoadBookmarksEncryptionFileIsPrimary_SaveEncryptedFileWhenMissing) {
+  base::test::ScopedFeatureList features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      features, BookmarkEncryptionStage::kWriteBothReadPreferEncrypted);
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor = base::MakeRefCounted<
+          base::RefCountedData<const os_crypt_async::Encryptor>>(
+          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  const base::FilePath local_or_syncable_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  const base::FilePath account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
+  const base::FilePath encrypted_local_or_syncable_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_1.json");
+  const base::FilePath encrypted_account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_2.json");
+
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_local_or_syncable_bookmark_future;
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_account_bookmark_future;
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      encryptor, local_or_syncable_file_path,
+      encrypted_local_or_syncable_file_path, account_file_path,
+      encrypted_account_file_path, LoadManagedNodeCallback(),
+      save_local_or_syncable_bookmark_future.GetCallback(),
+      save_account_bookmark_future.GetCallback(), details_future.GetCallback());
+
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  // Clear text file is successfully used as primary file fallback.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kFallbackToClearTextFileOnLoadResultMetricName, ".LocalOrSyncable"}),
+      metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kFallbackToClearTextFileOnLoadResultMetricName, ".Account"}),
+      metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_bucket_count=*/1);
+  // Encrypted file isn't read.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".Encrypted"}),
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".Encrypted"}),
+      /*expected_count=*/0);
+  // Verify that the save encrypted file callback is called for both files.
+  EXPECT_EQ(StorageFileEncryptionType::kEncrypted,
+            save_local_or_syncable_bookmark_future.Get());
+  EXPECT_EQ(StorageFileEncryptionType::kEncrypted,
+            save_account_bookmark_future.Get());
+}
+
+TEST(
+    ModelLoaderTest,
+    LoadBookmarksEncryptionFileIsPrimary_SaveEncryptedFileEvenIfFallbackFails) {
+  base::test::ScopedFeatureList features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      features, BookmarkEncryptionStage::kWriteBothReadPreferEncrypted);
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor = base::MakeRefCounted<
+          base::RefCountedData<const os_crypt_async::Encryptor>>(
+          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  const base::FilePath local_or_syncable_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json");
+  const base::FilePath account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json");
+  const base::FilePath encrypted_local_or_syncable_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_1.json");
+  const base::FilePath encrypted_account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/missing_file_2.json");
+
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_local_or_syncable_bookmark_future;
+  base::test::TestFuture<StorageFileEncryptionType>
+      save_account_bookmark_future;
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      encryptor, local_or_syncable_file_path,
+      encrypted_local_or_syncable_file_path, account_file_path,
+      encrypted_account_file_path, LoadManagedNodeCallback(),
+      save_local_or_syncable_bookmark_future.GetCallback(),
+      save_account_bookmark_future.GetCallback(), details_future.GetCallback());
+
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  // Clear text file fails to load.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kFallbackToClearTextFileOnLoadResultMetricName, ".LocalOrSyncable"}),
+      metrics::BookmarksFileLoadResult::kJSONParsingFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {kFallbackToClearTextFileOnLoadResultMetricName, ".Account"}),
+      metrics::BookmarksFileLoadResult::kJSONParsingFailed,
+      /*expected_bucket_count=*/1);
+  // Encrypted file isn't read.
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".Encrypted"}),
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".Encrypted"}),
+      /*expected_count=*/0);
+  // Verify that the save encrypted file callback is called for both files.
+  EXPECT_EQ(StorageFileEncryptionType::kEncrypted,
+            save_local_or_syncable_bookmark_future.Get());
+  EXPECT_EQ(StorageFileEncryptionType::kEncrypted,
+            save_account_bookmark_future.Get());
 }
 
 }  // namespace

@@ -142,6 +142,55 @@ void MaybeScheduleReadBookmarksInSecondaryFileAndVerifyHash(
           storage_file_for_uma, std::move(save_single_file_callback)));
 }
 
+struct StorageFileReadConfig {
+  // The type of file content that should be used as the primary source.
+  StorageFileEncryptionType primary_source_encryption_type;
+  // Whether the encrypted file was supposed to be used but was missing so need
+  // to fall back to the clear text file.
+  bool is_clear_text_fallback;
+};
+
+StorageFileReadConfig DetermineStorageFileReadConfig(
+    const base::FilePath& clear_text_file_path,
+    const base::FilePath& encrypted_file_path) {
+  if (!ShouldUseEncryptedBookmarksAsPrimarySource()) {
+    return {StorageFileEncryptionType::kClearText,
+            /*is_clear_text_fallback=*/false};
+  }
+
+  // Fallback to clear text if the encrypted file is missing and clear text
+  // file exists.
+  if (!base::PathExists(encrypted_file_path) &&
+      base::PathExists(clear_text_file_path)) {
+    return {StorageFileEncryptionType::kClearText,
+            /*is_clear_text_fallback=*/true};
+  }
+
+  return {StorageFileEncryptionType::kEncrypted,
+          /*is_clear_text_fallback=*/false};
+}
+
+void OnFileLoaded(
+    metrics::StorageFileForUma storage_file_for_uma,
+    StorageFileEncryptionType encryption_type,
+    StorageFileReadConfig storage_file_read_config,
+    ModelLoader::SaveSingleFileCallback& save_single_file_callback,
+    metrics::BookmarksFileLoadResult result) {
+  if (storage_file_read_config.is_clear_text_fallback) {
+    metrics::RecordFallbackToClearTextFileOnLoadResult(storage_file_for_uma,
+                                                       result);
+    // We were supposed to use the encrypted file but it is missing.
+    // Recreate it on a different task after model loading is complete.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(save_single_file_callback),
+                                  StorageFileEncryptionType::kEncrypted));
+
+  } else {
+    metrics::RecordBookmarksFileLoadResult(storage_file_for_uma,
+                                           encryption_type, result);
+  }
+}
+
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
     const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
         encryptor,
@@ -168,13 +217,11 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
   if (!account_file_path.empty()) {
     std::string sync_metadata_str;
     int64_t max_node_id = 0;
-    // TODO(crbug.com/479420496): Check if the encrypted file exists and request
-    // for the encrypted file to be generated if missing.
+    const StorageFileReadConfig account_storage_file_read_config =
+        DetermineStorageFileReadConfig(account_file_path,
+                                       encrypted_account_file_path);
     const StorageFileEncryptionType account_encryption_type =
-        ShouldUseEncryptedBookmarksAsPrimarySource()
-            ? StorageFileEncryptionType::kEncrypted
-            : StorageFileEncryptionType::kClearText;
-
+        account_storage_file_read_config.primary_source_encryption_type;
     std::unique_ptr<BookmarkPermanentNode> account_bb_node =
         BookmarkPermanentNode::CreateBookmarkBar(0, /*is_account_node=*/true);
     std::unique_ptr<BookmarkPermanentNode> account_other_folder_node =
@@ -195,9 +242,9 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
         root_dict = json_string.and_then(DeserializeStringToDict);
     BookmarkCodec codec;
     if (!root_dict.has_value()) {
-      metrics::RecordBookmarksFileLoadResult(
-          metrics::StorageFileForUma::kAccount, account_encryption_type,
-          root_dict.error());
+      OnFileLoaded(metrics::StorageFileForUma::kAccount,
+                   account_encryption_type, account_storage_file_read_config,
+                   save_account_single_file_callback, root_dict.error());
     } else if (codec.Decode(*root_dict, /*already_assigned_ids=*/{},
                             account_bb_node.get(),
                             account_other_folder_node.get(),
@@ -225,40 +272,45 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
       // account bookmarks.
       metrics::RecordIdsReassignedOnProfileLoad(
           metrics::StorageFileForUma::kAccount, codec.ids_reassigned());
-      metrics::RecordBookmarksFileLoadResult(
-          metrics::StorageFileForUma::kAccount, account_encryption_type,
-          metrics::BookmarksFileLoadResult::kSuccess);
-      const StorageFileEncryptionType secondary_account_encryption_type =
-          account_encryption_type == StorageFileEncryptionType::kEncrypted
-              ? StorageFileEncryptionType::kClearText
-              : StorageFileEncryptionType::kEncrypted;
-      MaybeScheduleReadBookmarksInSecondaryFileAndVerifyHash(
-          json_string.value(), encryptor, secondary_account_encryption_type,
-          secondary_account_encryption_type ==
-                  StorageFileEncryptionType::kEncrypted
-              ? encrypted_account_file_path
-              : account_file_path,
-          metrics::StorageFileForUma::kAccount,
-          std::move(save_account_single_file_callback));
+      OnFileLoaded(metrics::StorageFileForUma::kAccount,
+                   account_encryption_type, account_storage_file_read_config,
+                   save_account_single_file_callback,
+                   metrics::BookmarksFileLoadResult::kSuccess);
+      if (!account_storage_file_read_config.is_clear_text_fallback) {
+        CHECK(save_account_single_file_callback);
+        const StorageFileEncryptionType secondary_account_encryption_type =
+            account_encryption_type == StorageFileEncryptionType::kEncrypted
+                ? StorageFileEncryptionType::kClearText
+                : StorageFileEncryptionType::kEncrypted;
+        MaybeScheduleReadBookmarksInSecondaryFileAndVerifyHash(
+            json_string.value(), encryptor, secondary_account_encryption_type,
+            secondary_account_encryption_type ==
+                    StorageFileEncryptionType::kEncrypted
+                ? encrypted_account_file_path
+                : account_file_path,
+            metrics::StorageFileForUma::kAccount,
+            std::move(save_account_single_file_callback));
+      }
     } else {
       // In the failure case, it is still possible that sync metadata was
       // decoded, which includes legit scenarios like sync metadata indicating
       // that there were too many bookmarks in sync, server-side.
       details->set_account_sync_metadata_str(std::move(sync_metadata_str));
-      metrics::RecordBookmarksFileLoadResult(
+      OnFileLoaded(
           metrics::StorageFileForUma::kAccount, account_encryption_type,
+          account_storage_file_read_config, save_account_single_file_callback,
           metrics::BookmarksFileLoadResult::kBookmarkCodecDecodingFailed);
     }
   }
 
   // Decode local-or-syncable bookmarks.
   {
-    // TODO(crbug.com/479420496): Check if the encrypted file exists and request
-    // for the encrypted file to be generated if missing.
+    const StorageFileReadConfig local_or_syncable_storage_file_read_config =
+        DetermineStorageFileReadConfig(local_or_syncable_file_path,
+                                       encrypted_local_or_syncable_file_path);
     const StorageFileEncryptionType local_or_syncable_encryption_type =
-        ShouldUseEncryptedBookmarksAsPrimarySource()
-            ? StorageFileEncryptionType::kEncrypted
-            : StorageFileEncryptionType::kClearText;
+        local_or_syncable_storage_file_read_config
+            .primary_source_encryption_type;
     std::string sync_metadata_str;
     int64_t max_node_id = 0;
     const base::expected<std::string, metrics::BookmarksFileLoadResult>
@@ -272,9 +324,11 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
         root_dict = json_string.and_then(DeserializeStringToDict);
     BookmarkCodec codec;
     if (!root_dict.has_value()) {
-      metrics::RecordBookmarksFileLoadResult(
-          metrics::StorageFileForUma::kLocalOrSyncable,
-          local_or_syncable_encryption_type, root_dict.error());
+      OnFileLoaded(metrics::StorageFileForUma::kLocalOrSyncable,
+                   local_or_syncable_encryption_type,
+                   local_or_syncable_storage_file_read_config,
+                   save_local_or_syncable_single_file_callback,
+                   root_dict.error());
     } else if (codec.Decode(*root_dict,
                             std::move(ids_assigned_to_account_nodes),
                             details->bb_node(), details->other_folder_node(),
@@ -294,29 +348,35 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
       // local-or-syncable bookmarks.
       metrics::RecordIdsReassignedOnProfileLoad(
           metrics::StorageFileForUma::kLocalOrSyncable, codec.ids_reassigned());
-      metrics::RecordBookmarksFileLoadResult(
-          metrics::StorageFileForUma::kLocalOrSyncable,
-          local_or_syncable_encryption_type,
-          metrics::BookmarksFileLoadResult::kSuccess);
-      const StorageFileEncryptionType
-          secondary_local_or_syncable_encryption_type =
-              local_or_syncable_encryption_type ==
-                      StorageFileEncryptionType::kEncrypted
-                  ? StorageFileEncryptionType::kClearText
-                  : StorageFileEncryptionType::kEncrypted;
-      MaybeScheduleReadBookmarksInSecondaryFileAndVerifyHash(
-          json_string.value(), encryptor,
-          secondary_local_or_syncable_encryption_type,
-          secondary_local_or_syncable_encryption_type ==
-                  StorageFileEncryptionType::kEncrypted
-              ? encrypted_local_or_syncable_file_path
-              : local_or_syncable_file_path,
-          metrics::StorageFileForUma::kLocalOrSyncable,
-          std::move(save_local_or_syncable_single_file_callback));
+      OnFileLoaded(metrics::StorageFileForUma::kLocalOrSyncable,
+                   local_or_syncable_encryption_type,
+                   local_or_syncable_storage_file_read_config,
+                   save_local_or_syncable_single_file_callback,
+                   metrics::BookmarksFileLoadResult::kSuccess);
+      if (!local_or_syncable_storage_file_read_config.is_clear_text_fallback) {
+        CHECK(save_local_or_syncable_single_file_callback);
+        const StorageFileEncryptionType
+            secondary_local_or_syncable_encryption_type =
+                local_or_syncable_encryption_type ==
+                        StorageFileEncryptionType::kEncrypted
+                    ? StorageFileEncryptionType::kClearText
+                    : StorageFileEncryptionType::kEncrypted;
+        MaybeScheduleReadBookmarksInSecondaryFileAndVerifyHash(
+            json_string.value(), encryptor,
+            secondary_local_or_syncable_encryption_type,
+            secondary_local_or_syncable_encryption_type ==
+                    StorageFileEncryptionType::kEncrypted
+                ? encrypted_local_or_syncable_file_path
+                : local_or_syncable_file_path,
+            metrics::StorageFileForUma::kLocalOrSyncable,
+            std::move(save_local_or_syncable_single_file_callback));
+      }
     } else {
-      metrics::RecordBookmarksFileLoadResult(
+      OnFileLoaded(
           metrics::StorageFileForUma::kLocalOrSyncable,
           local_or_syncable_encryption_type,
+          local_or_syncable_storage_file_read_config,
+          save_local_or_syncable_single_file_callback,
           metrics::BookmarksFileLoadResult::kBookmarkCodecDecodingFailed);
     }
   }

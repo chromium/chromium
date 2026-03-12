@@ -271,4 +271,12 @@ void RecordTimeToReadFile(StorageFileForUma storage_file,
       delta);
 }
 
+void RecordFallbackToClearTextFileOnLoadResult(StorageFileForUma storage_file,
+                                               BookmarksFileLoadResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Bookmarks.FallbackToClearTextFileOnLoadResult",
+                    GetStorageFileSuffixForMetrics(storage_file)}),
+      result);
+}
+
 }  // namespace bookmarks::metrics

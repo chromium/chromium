@@ -174,6 +174,9 @@ void RecordTimeToReadFile(StorageFileForUma storage_file,
                           StorageFileEncryptionType encryption_type,
                           base::TimeDelta delta);
 
+void RecordFallbackToClearTextFileOnLoadResult(StorageFileForUma storage_file,
+                                               BookmarksFileLoadResult result);
+
 }  // namespace metrics
 
 }  // namespace bookmarks

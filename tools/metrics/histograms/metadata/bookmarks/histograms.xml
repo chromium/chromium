@@ -439,6 +439,18 @@ chromium-metrics-reviews@google.com.
   <summary>How users add a new bookmark.</summary>
 </histogram>
 
+<histogram
+    name="Bookmarks.FallbackToClearTextFileOnLoadResult.{BookmarksFileType}"
+    enum="BookmarksFileLoadResult" expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the result of the fallback to the clear text file when loading
+    {BookmarksFileType} bookmarks on profile load. The encrypted file was
+    supposed to be used but was missing.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.IdsReassigned2.OnProfileLoad.{BookmarksFileType}"
     enum="BooleanReassigned" expires_after="2026-05-20">
   <owner>mastiz@chromium.org</owner>
