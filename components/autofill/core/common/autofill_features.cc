@@ -369,6 +369,10 @@ BASE_FEATURE(kAutofillAndroidKeyboardAccessoryDynamicPositioning,
 // allowing to recall and insert the info anywhere using plain language.
 BASE_FEATURE(kAutofillAtMemory, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the Autosuggest nudging logic is used. If enabled, user are
+// encouraged to use the AtMemory feature.
+BASE_FEATURE(kAutofillAutosuggestNudge, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the placeholder is not considered a label fallback on the
 // renderer side anymore. Instead, local heuristic will match regexes against
 // either the label or the placeholder, depending on how high quality the label
@@ -559,7 +563,6 @@ BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipRedesign,
 BASE_FEATURE(kAutofillEnableKeyboardAccessoryChipWidthAdjustment,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
-
 
 // When enabled, Autofill will help users fill in loyalty card details.
 // TODO(crbug.com/395831853): Remove once launched.
