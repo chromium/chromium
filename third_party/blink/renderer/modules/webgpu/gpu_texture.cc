@@ -27,14 +27,14 @@ namespace blink {
 
 namespace {
 
-bool ConvertToDawn(const GPUTextureDescriptor* in,
-                   wgpu::TextureDescriptor* out,
-                   wgpu::TextureBindingViewDimensionDescriptor*
-                       out_texture_binding_view_dimension,
-                   std::string* label,
-                   base::HeapArray<wgpu::TextureFormat>* view_formats,
-                   GPUDevice* device,
-                   ExceptionState& exception_state) {
+bool ConvertToDawn(
+    const GPUTextureDescriptor* in,
+    wgpu::TextureDescriptor* out,
+    wgpu::TextureBindingViewDimension* out_texture_binding_view_dimension,
+    std::string* label,
+    base::HeapArray<wgpu::TextureFormat>* view_formats,
+    GPUDevice* device,
+    ExceptionState& exception_state) {
   DCHECK(in);
   DCHECK(out);
   DCHECK(out_texture_binding_view_dimension);
@@ -185,8 +185,7 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   DCHECK(webgpu_desc);
 
   wgpu::TextureDescriptor dawn_desc;
-  wgpu::TextureBindingViewDimensionDescriptor
-      texture_binding_view_dimension_desc;
+  wgpu::TextureBindingViewDimension texture_binding_view_dimension_desc;
 
   std::string label;
   base::HeapArray<wgpu::TextureFormat> view_formats;
