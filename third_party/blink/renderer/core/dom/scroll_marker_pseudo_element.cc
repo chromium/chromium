@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
 
@@ -61,30 +62,49 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
   bool is_enter_or_space =
       is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RETURN ||
                       To<KeyboardEvent>(event).keyCode() == VKEY_SPACE);
-  bool is_left_or_up_arrow_key =
-      is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_LEFT ||
-                      To<KeyboardEvent>(event).keyCode() == VKEY_UP);
-  bool is_right_or_down_arrow_key =
-      is_key_down && (To<KeyboardEvent>(event).keyCode() == VKEY_RIGHT ||
-                      To<KeyboardEvent>(event).keyCode() == VKEY_DOWN);
+  bool is_left_arrow_key =
+      is_key_down && To<KeyboardEvent>(event).keyCode() == VKEY_LEFT;
+  bool is_right_arrow_key =
+      is_key_down && To<KeyboardEvent>(event).keyCode() == VKEY_RIGHT;
+  bool is_up_arrow_key =
+      is_key_down && To<KeyboardEvent>(event).keyCode() == VKEY_UP;
+  bool is_down_arrow_key =
+      is_key_down && To<KeyboardEvent>(event).keyCode() == VKEY_DOWN;
   bool should_intercept =
       event.RawTarget() == this &&
-      (is_click || is_enter_or_space || is_left_or_up_arrow_key ||
-       is_right_or_down_arrow_key);
+      (is_click || is_enter_or_space || is_left_arrow_key ||
+       is_right_arrow_key || is_up_arrow_key || is_down_arrow_key);
   if (should_intercept) {
-    if (scroll_marker_group_) {
-      if (is_right_or_down_arrow_key) {
-        scroll_marker_group_->ActivateNextScrollMarker();
-      } else if (is_left_or_up_arrow_key) {
-        scroll_marker_group_->ActivatePrevScrollMarker();
-      } else if (is_click || is_enter_or_space) {
-        // parentElement is ::column for column scroll marker and
-        // ultimate originating element for regular scroll marker.
-        //
-        // For a click, we want to minimize the active marker's movement away
-        // from the user's mouse. So, let the snap code pick the closest snap
-        // target that lets the active marker stay in view.
+    if (scroll_marker_group_ && scroll_marker_group_->parentElement()) {
+      // Use WritingDirectionMode of the scroll container to map physical arrow
+      // keys to logical.
+      WritingDirectionMode wdm = scroll_marker_group_->parentElement()
+                                     ->GetComputedStyle()
+                                     ->GetWritingDirection();
+
+      if (is_click || is_enter_or_space) {
         scroll_marker_group_->ActivateScrollMarker(this, !is_click);
+      } else {
+        LogicalDirection ld;
+        if (is_left_arrow_key) {
+          ld = wdm.Left();
+        } else if (is_right_arrow_key) {
+          ld = wdm.Right();
+        } else if (is_up_arrow_key) {
+          ld = wdm.Top();
+        } else {
+          CHECK(is_down_arrow_key);
+          ld = wdm.Bottom();
+        }
+
+        if (ld == LogicalDirection::kInlineEnd ||
+            ld == LogicalDirection::kBlockEnd) {
+          scroll_marker_group_->ActivateNextScrollMarker();
+        } else {
+          CHECK(ld == LogicalDirection::kInlineStart ||
+                ld == LogicalDirection::kBlockStart);
+          scroll_marker_group_->ActivatePrevScrollMarker();
+        }
       }
     }
     event.SetDefaultHandled();
