@@ -1305,14 +1305,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // process_->UpdateClientPriority when this value changes.
   bool is_hidden_ = true;
 
-  // Indicates whether the widget is ever shown to the user so far.  This state
-  // remains `false` until `is_hidden_` becomes `false` for the first time.
-  bool was_ever_shown_ = false;
-
-  // Records the time when `was_ever_shown_` above becomes `true` for the first
-  // time.
-  base::TimeTicks first_shown_time_;
-
   // Records the latest time when |this| widget's visibility state changes from
   // hidden to shown.
   base::TimeTicks latest_shown_time_;
@@ -1320,10 +1312,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Indicates whether the renderer host has received the first metadata signal
   // implying the renderer has pushed content to cc.
   bool first_content_metadata_received_ = false;
-
-  // Records the time when `first_content_metadata_received_` above becomes
-  // `true` for the first time.
-  base::TimeTicks first_content_metadata_time_;
 
   // True if both of the following conditions are met:
   // - This widget is for the main frame of the outermost frame tree.
@@ -1498,8 +1486,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       render_process_blocked_state_changed_subscription_;
 
   std::unique_ptr<input::TimeoutMonitor> new_content_rendering_timeout_;
-
-  bool paint_holding_activated_ = false;
 
   int next_browser_snapshot_id_ = 1;
   using PendingSnapshotMap = std::map<int, GetSnapshotFromBrowserCallback>;

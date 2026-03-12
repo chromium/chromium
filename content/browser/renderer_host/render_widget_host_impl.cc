@@ -392,7 +392,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
       site_instance_group_(site_instance_group->GetWeakPtrToAllowDangling()),
       routing_id_(routing_id),
       is_hidden_(hidden),
-      was_ever_shown_(!hidden),
       last_view_screen_rect_(kInvalidScreenRect),
       last_window_screen_rect_(kInvalidScreenRect),
       new_content_rendering_delay_(blink::kNewContentRenderingDelay),
@@ -468,7 +467,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
 
   if (!hidden) {
     latest_shown_time_ = base::TimeTicks::Now();
-    first_shown_time_ = latest_shown_time_;
     NotifyVizOfPageVisibilityUpdates();
   }
 }
@@ -478,42 +476,6 @@ RenderWidgetHostImpl::~RenderWidgetHostImpl() {
       "Navigation.RenderWidgetHostDestructor");
   CHECK(!self_owned_);
   render_frame_metadata_provider_.RemoveObserver(this);
-
-  if (was_ever_shown_ && is_topmost_frame_widget_with_view_ &&
-      compositor_metric_recorder_) {
-    // Log UMA related to possible suppression of input events until the
-    // renderer has pushed content to viz (https://crbug.com/40057499).
-    base::UmaHistogramBoolean("Renderer.ContentProduction.SignalReceived",
-                              first_content_metadata_received_);
-    if (first_content_metadata_received_) {
-      base::TimeDelta delay_from_unhide;
-      if (first_content_metadata_time_ > first_shown_time_) {
-        delay_from_unhide = first_content_metadata_time_ - first_shown_time_;
-      }
-      base::UmaHistogramTimes("Renderer.ContentProduction.DelayFromUnhide",
-                              delay_from_unhide);
-    } else if (!paint_holding_activated_) {
-      base::TimeTicks now = base::TimeTicks::Now();
-
-      base::TimeDelta commit_to_unhide_delay;
-      base::TimeDelta lifespan_from_commit;
-      base::TimeDelta lifespan_from_unhide = now - first_shown_time_;
-
-      base::TimeTicks commit_nav_time =
-          compositor_metric_recorder_->CommitNavigationTime();
-      if (commit_nav_time != base::TimeTicks()) {
-        commit_to_unhide_delay = first_shown_time_ - commit_nav_time;
-        lifespan_from_commit = now - commit_nav_time;
-      }
-
-      base::UmaHistogramTimes("Renderer.ContentProduction.CommitToUnhideDelay",
-                              commit_to_unhide_delay);
-      base::UmaHistogramTimes("Renderer.ContentProduction.LifespanFromCommit",
-                              lifespan_from_commit);
-      base::UmaHistogramTimes("Renderer.ContentProduction.LifespanFromUnhide",
-                              lifespan_from_unhide);
-    }
-  }
 
   if (!destroyed_) {
     Destroy(false);
@@ -900,10 +862,6 @@ void RenderWidgetHostImpl::WasShown(
   TRACE_EVENT("renderer_host", "RenderWidgetHostImpl::WasShown");
   is_hidden_ = false;
   latest_shown_time_ = base::TimeTicks::Now();
-  if (!was_ever_shown_) {
-    was_ever_shown_ = true;
-    first_shown_time_ = latest_shown_time_;
-  }
 
   // If we navigated in background, clear the displayed graphics of the
   // previous page before going visible.
@@ -1550,8 +1508,6 @@ void RenderWidgetHostImpl::DidNavigate() {
 }
 
 void RenderWidgetHostImpl::InitializePaintHolding(bool active) {
-  paint_holding_activated_ = active;
-
   if (!active) {
     // Input router remains inactive in the post-navigation page while
     // paint-holding shows the user a snapshot of previous page.  If
@@ -3890,7 +3846,6 @@ void RenderWidgetHostImpl::OnRenderFrameMetadataChangedAfterActivation(
     base::TimeTicks activation_time) {
   if (!first_content_metadata_received_) {
     first_content_metadata_received_ = true;
-    first_content_metadata_time_ = base::TimeTicks::Now();
     input_router()->MakeActive();
   }
 
