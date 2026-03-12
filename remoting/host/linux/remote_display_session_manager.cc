@@ -167,9 +167,7 @@ void RemoteDisplaySessionManager::TerminateRemoteDisplaySession(
 
   if (!session.session_info.has_value()) {
     std::move(callback).Run(base::unexpected(
-        Loggable(FROM_HERE, "Remote display session " +
-                                std::string(session.session_info->session_id) +
-                                " has no session info.")));
+        Loggable(FROM_HERE, "Remote display session has no session info.")));
     return;
   }
 
