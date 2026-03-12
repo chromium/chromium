@@ -1746,10 +1746,6 @@ void RenderViewContextMenu::AppendLinkItems() {
             menu_model_
                 .GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW)
                 .value();
-        menu_model_.SetIsNewFeatureAt(
-            command_index,
-            UserEducationService::MaybeShowNewBadge(
-                GetBrowserContext(), features::kSideBySideLinkMenuNewBadge));
         menu_model_.SetElementIdentifierAt(command_index,
                                            kOpenLinkInSplitMenuItem);
       }

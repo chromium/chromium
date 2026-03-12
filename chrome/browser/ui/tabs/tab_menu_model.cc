@@ -177,9 +177,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                                        kTabMenuIconSize));
     SetElementIdentifierAt(GetItemCount() - 1, kArrangeSplitTabsMenuItem);
   }
-  SetIsNewFeatureAt(GetItemCount() - 1,
-                    UserEducationService::MaybeShowNewBadge(
-                        tab_strip->profile(), features::kSideBySide));
 
   if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
           tab_strip, index, tab_menu_model_delegate_)) {

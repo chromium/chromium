@@ -154,10 +154,6 @@ BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 
 BASE_DECLARE_FEATURE(kScrimForBrowserWindowModal);
 
-BASE_DECLARE_FEATURE(kSideBySide);
-
-BASE_DECLARE_FEATURE(kSideBySideLinkMenuNewBadge);
-
 BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);

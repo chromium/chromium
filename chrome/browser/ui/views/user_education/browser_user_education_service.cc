@@ -2155,19 +2155,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Shown in the three dot menu.")));
 
   registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kSideBySide,
-      user_education::Metadata(
-          141, "emshack@chromium.org",
-          "Shown in the tab context menu when the user enters or exits split "
-          "view.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kSideBySideLinkMenuNewBadge,
-      user_education::Metadata(141, "emshack@chromium.org",
-                               "Shown in the link context menu to open the "
-                               "link in a new split tab.")));
-
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
       tabs::kVerticalTabsPreviewBadge,
       user_education::Metadata(146, "stluong@chromium.org",
                                "Show the preview badge in the system context "

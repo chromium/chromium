@@ -316,7 +316,7 @@ class MultiContentsView : public views::View,
   std::optional<int> min_contents_width_for_testing_ = std::nullopt;
 
   // Width ratios that a split view will snap to when resize is within a
-  // snap distance (kSideBySideSnapDistance).
+  // snap distance (kSnapDistance).
   std::vector<double> snap_points_ = {0.5};
 
   // Tracks and handles drag and drop settings change.

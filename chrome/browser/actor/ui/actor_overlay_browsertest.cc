@@ -567,8 +567,7 @@ class ActorOverlaySplitViewTest
       override {
     return {
         {features::kGlicActorUi, {{features::kGlicActorUiOverlayName, "true"}}},
-        {features::kGlicActorUiMagicCursor, {}},
-        {features::kSideBySide, {}}};
+        {features::kGlicActorUiMagicCursor, {}}};
   }
 
   void CreateSplitView() {
