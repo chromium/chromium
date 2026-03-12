@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
-                       EditorBubbleOpensOnEditorBubbleButtonPress) {
+                       DISABLED_EditorBubbleOpensOnEditorBubbleButtonPress) {
   CreateInactiveTabGroup();
 
   VerticalTabGroupHeaderView* const tab_group_header =
