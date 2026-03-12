@@ -21,8 +21,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/task_info_delegate.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
@@ -32,6 +30,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -355,12 +354,11 @@ class ContextualTasksUI
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-class ContextualTasksUIConfig
-    : public DefaultTopChromeWebUIConfig<ContextualTasksUI> {
+class ContextualTasksUIConfig : public content::WebUIConfig {
  public:
   ContextualTasksUIConfig()
-      : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
-                                    chrome::kChromeUIContextualTasksHost) {}
+      : content::WebUIConfig(content::kChromeUIScheme,
+                             chrome::kChromeUIContextualTasksHost) {}
 
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   bool ShouldCrashOnJavascriptErrorInDevelopmentBuild() const override;
