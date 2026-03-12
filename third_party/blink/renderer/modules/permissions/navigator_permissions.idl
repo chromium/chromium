@@ -7,8 +7,7 @@
 
 [
     Exposed=(Window),
-    ImplementedAs=Permissions,
-    RuntimeEnabled=Permissions
+    ImplementedAs=Permissions
 ] partial interface Navigator {
     readonly attribute Permissions permissions;
 };

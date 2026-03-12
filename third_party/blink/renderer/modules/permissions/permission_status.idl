@@ -7,8 +7,7 @@
 
 [
     ActiveScriptWrappable,
-    Exposed=(Window,Worker),
-    RuntimeEnabled=Permissions
+    Exposed=(Window,Worker)
 ] interface PermissionStatus : EventTarget {
     // TODO(crbug.com/1395451): This cannot be PermissionName because
     // it is the wrong format.

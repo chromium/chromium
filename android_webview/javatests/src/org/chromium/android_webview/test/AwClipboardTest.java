@@ -28,8 +28,6 @@ import org.chromium.android_webview.test.TestWebMessageListener.Data;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.Collections;
@@ -37,27 +35,26 @@ import java.util.Collections;
 /** Tests that the JavaScript clipboard interface works as expected in WebView. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@CommandLineFlags.Add({"enable-features=" + ContentFeatures.WEB_PERMISSIONS_API})
 @Batch(Batch.PER_CLASS)
 public class AwClipboardTest extends AwParameterizedTest {
 
     private static final String CLIPBOARD_PAGE_HTML =
             """
-      <!DOCTYPE html>
-      <button id="clip">CLIP!</button>
-      <script>
-        async function writeClipboardText() {
-          try {
-            await navigator.clipboard.writeText("clipped!");
-            resultListener.postMessage("done");
-          } catch (error) {
-            resultListener.postMessage(error.message);
-          }
-        }
-        document.getElementById("clip").addEventListener("click", writeClipboardText);
-        resultListener.postMessage("loaded");
-      </script>
-      """;
+            <!DOCTYPE html>
+            <button id="clip">CLIP!</button>
+            <script>
+              async function writeClipboardText() {
+                try {
+                  await navigator.clipboard.writeText("clipped!");
+                  resultListener.postMessage("done");
+                } catch (error) {
+                  resultListener.postMessage(error.message);
+                }
+              }
+              document.getElementById("clip").addEventListener("click", writeClipboardText);
+              resultListener.postMessage("loaded");
+            </script>
+            """;
 
     @Rule public AwActivityTestRule mActivityTestRule;
     private AwContents mAwContents;

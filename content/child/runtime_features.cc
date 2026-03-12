@@ -292,8 +292,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(device::features::kWebXRIncubations)},
 #endif
           {wf::EnableXSLT, raw_ref(blink::features::kXSLT)},
-          {wf::EnablePermissions, raw_ref(features::kWebPermissionsApi),
-           kSetOnlyIfOverridden},
       };
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(

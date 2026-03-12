@@ -6,8 +6,7 @@
 // https://w3c.github.io/permissions/
 
 [
-    Exposed=(Window,Worker),
-    RuntimeEnabled=Permissions
+    Exposed=(Window,Worker)
 ] interface Permissions {
     [CallWith=ScriptState, RaisesException, Measure] Promise<PermissionStatus> query(object permission);
 

@@ -337,8 +337,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebViewPrefetchHighestPrefetchPriority);
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kWebViewPrefetchHighestPrefetchPriorityBurstLimit;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebXr);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebPermissionsApi);
-
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCheckJavaNodeCacheFreshness);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDeprecateJavaNodeCache);

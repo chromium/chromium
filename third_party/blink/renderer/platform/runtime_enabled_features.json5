@@ -4196,12 +4196,6 @@
       base_feature: "none",
     },
     {
-      name: "Permissions",
-      public: true,
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "PermissionsRequestRevoke",
       status: "experimental",
     },

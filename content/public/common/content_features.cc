@@ -1230,11 +1230,6 @@ constexpr base::FeatureParam<size_t>
 // Controls whether the WebXR Device API is enabled.
 BASE_FEATURE(kWebXr, "WebXR", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the navigator.permissions API.
-// Used for launch in WebView, but exposed in content to map to runtime-enabled
-// feature.
-BASE_FEATURE(kWebPermissionsApi, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, will unconditionally poll the C++ cache to check Java node
 // cache freshness to test correctness of Java node cache.
