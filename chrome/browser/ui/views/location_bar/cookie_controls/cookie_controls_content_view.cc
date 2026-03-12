@@ -133,7 +133,6 @@ void CookieControlsContentView::SetCookiesLabel(const std::u16string& label) {
   cookies_label_->SetTextStyle(views::style::STYLE_BODY_5);
   cookies_label_->SetProperty(views::kElementIdentifierKey, kToggleLabel);
 
-  // TODO(https://b/344856056): Update this accessibility label for the new UI.
   const std::u16string accessible_name = base::JoinString(
       {
           l10n_util::GetStringUTF16(

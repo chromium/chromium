@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -304,7 +305,11 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
                                        CookieControlsState::kAllowed3pc);
   third_party_cookies_toggle_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_THIRD_PARTY_COOKIES_TOGGLE);
-  third_party_cookies_toggle_->GetViewAccessibility().SetName(subtitle);
+  third_party_cookies_toggle_->GetViewAccessibility().SetName(
+      base::JoinString({l10n_util::GetStringUTF16(
+                            IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL),
+                        subtitle},
+                       u"\n"));
   third_party_cookies_toggle_subtitle_->SetText(subtitle);
 }
 

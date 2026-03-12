@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
@@ -516,3 +517,37 @@ TEST_F(PageInfoCookiesContentViewTest, ThirdPartyCookiesAllowedBySetting) {
                 IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT,
                 cookie_info.allowed_sites_count));
 }
+
+struct ThirdPartyCookiesA11yParam {
+  CookieControlsState state;
+  int subtitle_id;
+};
+
+class PageInfoCookiesContentViewA11yNameTest
+    : public PageInfoCookiesContentViewTest,
+      public testing::WithParamInterface<ThirdPartyCookiesA11yParam> {};
+
+TEST_P(PageInfoCookiesContentViewA11yNameTest,
+       ThirdPartyCookiesToggleA11yName) {
+  PageInfoCookiesContentView::CookiesInfo cookie_info =
+      DefaultCookieInfoForTests();
+  cookie_info.controls_state = GetParam().state;
+  content_view()->SetCookieInfo(cookie_info);
+  EXPECT_EQ(
+      third_party_cookies_toggle()->GetViewAccessibility().GetCachedName(),
+      base::JoinString({l10n_util::GetStringUTF16(
+                            IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL),
+                        l10n_util::GetStringUTF16(GetParam().subtitle_id)},
+                       u"\n"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageInfoCookiesContentViewA11yNameTest,
+    testing::Values(
+        ThirdPartyCookiesA11yParam{
+            CookieControlsState::kBlocked3pc,
+            IDS_TRACKING_PROTECTION_BUBBLE_3PC_BLOCKED_SUBTITLE},
+        ThirdPartyCookiesA11yParam{
+            CookieControlsState::kAllowed3pc,
+            IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE}));
