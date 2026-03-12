@@ -11932,21 +11932,6 @@
             ]
         }
     ],
-    "IOSAutofillPaymentsSheetV3": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPaymentsSheetV3Ios"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillReportFormSubmissionErrors": [
         {
             "platforms": [
