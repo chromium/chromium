@@ -203,7 +203,15 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
 }
 
 void VerticalTabGroupView::OnAttentionStateChanged() {
-  OnDataChanged();
+  if (!collection_node_) {
+    return;
+  }
+
+  const TabGroup* group = GetTabGroupFromNode(collection_node_);
+  const bool has_attention =
+      SupportsDataSharing() &&
+      group->GetTabGroupFeatures()->attention_indicator()->GetHasAttention();
+  group_header_->OnAttentionStateChanged(has_attention);
 }
 
 void VerticalTabGroupView::ToggleCollapsedState(
@@ -308,11 +316,7 @@ void VerticalTabGroupView::OnDataChanged() {
 
   const TabGroup* group = GetTabGroupFromNode(collection_node_);
   tab_group_visual_data_ = *group->visual_data();
-  const bool has_attention =
-      SupportsDataSharing() &&
-      group->GetTabGroupFeatures()->attention_indicator()->GetHasAttention();
-  group_header_->OnDataChanged(&tab_group_visual_data_, has_attention,
-                               GetIsShared());
+  group_header_->OnDataChanged(&tab_group_visual_data_, GetIsShared());
 
   // If the tab group is not collapsed update child visibility immediately. This
   // allows tabs to be visible as they are animated in.

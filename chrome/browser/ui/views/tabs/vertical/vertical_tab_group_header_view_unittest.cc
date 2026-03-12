@@ -65,7 +65,7 @@ TEST_F(VerticalTabGroupHeaderViewTest, TooltipText) {
                                                              &visual_data);
 
   // Initialize with data
-  header->OnDataChanged(&visual_data, false, false);
+  header->OnDataChanged(&visual_data, false);
 
   std::u16string expected_tooltip = l10n_util::GetStringFUTF16(
       IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, u"Group Title", u"3 tabs");
@@ -75,7 +75,7 @@ TEST_F(VerticalTabGroupHeaderViewTest, TooltipText) {
   // Test unnamed group
   tab_groups::TabGroupVisualData unnamed_visual_data(
       u"", tab_groups::TabGroupColorId::kRed, false);
-  header->OnDataChanged(&unnamed_visual_data, false, false);
+  header->OnDataChanged(&unnamed_visual_data, false);
 
   expected_tooltip = l10n_util::GetStringFUTF16(
       IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP, u"3 tabs");

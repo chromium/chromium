@@ -108,7 +108,8 @@ VerticalTabGroupHeaderView::VerticalTabGroupHeaderView(
     Delegate& delegate,
     tabs::VerticalTabStripStateController* state_controller,
     const tab_groups::TabGroupVisualData* tab_group_visual_data)
-    : sync_icon_(AddChildView(std::make_unique<views::ImageView>())),
+    : tab_group_visual_data_(*tab_group_visual_data),
+      sync_icon_(AddChildView(std::make_unique<views::ImageView>())),
       group_header_label_(
           AddChildView(std::make_unique<VerticalTabGroupHeaderLabel>())),
       attention_indicator_(AddChildView(std::make_unique<views::ImageView>())),
@@ -363,27 +364,28 @@ void VerticalTabGroupHeaderView::ShowContextMenuForViewImpl(
 
 void VerticalTabGroupHeaderView::OnDataChanged(
     const tab_groups::TabGroupVisualData* tab_group_visual_data,
-    bool needs_attention,
     bool is_shared) {
-  group_header_label_->SetText(tab_group_visual_data->title());
+  tab_group_visual_data_ = *tab_group_visual_data;
+  is_shared_ = is_shared;
+
+  group_header_label_->SetText(tab_group_visual_data_.title());
   if (GetColorProvider()) {
     SkColor background_color = GetColorProvider()->GetColor(
-        GetTabGroupTabStripColorId(tab_group_visual_data->color(),
+        GetTabGroupTabStripColorId(tab_group_visual_data_.color(),
                                    GetWidget()->ShouldPaintAsActive()));
-    SkColor foreground_color =
-        color_utils::GetColorWithMaxContrast(background_color);
+    SkColor foreground_color = GetForegroundColor();
 
     // Update label.
     group_header_label_->SetEnabledColor(foreground_color);
 
     // Update save tab group related items, the sync icon and attention
     // indicator.
-    sync_icon_->SetVisible(is_shared);
-    if (is_shared) {
+    sync_icon_->SetVisible(is_shared_);
+    if (is_shared_) {
       sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
           kPeopleGroupIcon, foreground_color, kIconSize));
     }
-    if (tab_group_visual_data->is_collapsed() && needs_attention) {
+    if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
       attention_indicator_->SetVisible(true);
       attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
           kDefaultTouchFaviconMaskIcon, foreground_color,
@@ -397,7 +399,7 @@ void VerticalTabGroupHeaderView::OnDataChanged(
 
     // Update collapse icon.
     collapse_icon_->SetImage(
-        ui::ImageModel::FromVectorIcon(tab_group_visual_data->is_collapsed()
+        ui::ImageModel::FromVectorIcon(tab_group_visual_data_.is_collapsed()
                                            ? kKeyboardArrowDownChromeRefreshIcon
                                            : kKeyboardArrowUpChromeRefreshIcon,
                                        foreground_color, kIconSize));
@@ -407,9 +409,27 @@ void VerticalTabGroupHeaderView::OnDataChanged(
                                                      kGroupHeaderCornerRadius));
   }
 
-  UpdateIsCollapsed(tab_group_visual_data);
-  UpdateAccessibleName(tab_group_visual_data, needs_attention, is_shared);
+  UpdateIsCollapsed();
+  UpdateAccessibleName();
   UpdateTooltipText();
+}
+
+void VerticalTabGroupHeaderView::OnAttentionStateChanged(bool needs_attention) {
+  if (needs_attention_ == needs_attention) {
+    return;
+  }
+  needs_attention_ = needs_attention;
+
+  if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
+    attention_indicator_->SetVisible(true);
+    attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
+        kDefaultTouchFaviconMaskIcon, GetForegroundColor(),
+        kAttentionIndicatorWidth));
+  } else {
+    attention_indicator_->SetVisible(false);
+  }
+
+  UpdateAccessibleName();
 }
 
 void VerticalTabGroupHeaderView::UpdateTooltipText() {
@@ -425,9 +445,8 @@ void VerticalTabGroupHeaderView::UpdateTooltipText() {
   }
 }
 
-void VerticalTabGroupHeaderView::UpdateIsCollapsed(
-    const tab_groups::TabGroupVisualData* tab_group_visual_data) {
-  const bool is_collapsed = tab_group_visual_data->is_collapsed();
+void VerticalTabGroupHeaderView::UpdateIsCollapsed() {
+  const bool is_collapsed = tab_group_visual_data_.is_collapsed();
   if (is_collapsed) {
     GetViewAccessibility().SetIsCollapsed();
   } else {
@@ -435,11 +454,8 @@ void VerticalTabGroupHeaderView::UpdateIsCollapsed(
   }
 }
 
-void VerticalTabGroupHeaderView::UpdateAccessibleName(
-    const tab_groups::TabGroupVisualData* tab_group_visual_data,
-    bool needs_attention,
-    bool is_shared) {
-  const std::u16string title = tab_group_visual_data->title();
+void VerticalTabGroupHeaderView::UpdateAccessibleName() {
+  const std::u16string title = tab_group_visual_data_.title();
 
   const std::u16string contents = delegate_->GetGroupContentString();
   std::u16string group_status = std::u16string();
@@ -447,16 +463,16 @@ void VerticalTabGroupHeaderView::UpdateAccessibleName(
   // Windows screen readers reads out the collapsed state based on the
   // accessibility node data information.
 #if !BUILDFLAG(IS_WIN)
-  const bool is_collapsed = tab_group_visual_data->is_collapsed();
+  const bool is_collapsed = tab_group_visual_data_.is_collapsed();
   group_status = is_collapsed
                      ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
                      : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 #endif
 
   std::u16string shared_state = u"";
-  if (is_shared) {
+  if (is_shared_) {
     shared_state = l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED);
-    if (tab_group_visual_data->is_collapsed() && needs_attention) {
+    if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
       shared_state += u", " + l10n_util::GetStringUTF16(
                                   DATA_SHARING_GROUP_LABEL_NEW_ACTIVITY);
     }
@@ -474,6 +490,16 @@ void VerticalTabGroupHeaderView::UpdateAccessibleName(
   }
 
   GetViewAccessibility().SetName(final_name);
+}
+
+SkColor VerticalTabGroupHeaderView::GetForegroundColor() const {
+  if (GetColorProvider()) {
+    SkColor background_color = GetColorProvider()->GetColor(
+        GetTabGroupTabStripColorId(tab_group_visual_data_.color(),
+                                   GetWidget()->ShouldPaintAsActive()));
+    return color_utils::GetColorWithMaxContrast(background_color);
+  }
+  return SK_ColorBLACK;
 }
 
 void VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {
