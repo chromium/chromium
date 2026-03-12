@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 
 class Profile;
 
@@ -29,12 +30,21 @@ class GlicWebContentsWarmingPool {
   // Ensures that a WebUIContentsContainer is preloaded. If the existing one is
   // crashed, it will be replaced.
   void EnsurePreload();
-  // Shuts down the warming pool and destroys any warmed WebContents.
-  void Shutdown();
+  // Clears the warming pool and destroys any warmed WebContents.
+  void Clear();
+
+  bool HasWarmedContainerForTesting() const;
+  base::OneShotTimer& GetDelayTimerForTesting() { return delay_timer_; }
 
  private:
+  // Starts a timer to preload a WebContents after a delay.
+  void EnsurePreloadDelayed();
+
   raw_ptr<Profile> profile_;
   std::unique_ptr<WebUIContentsContainer> warmed_container_;
+
+  // Timer for delayed warming.
+  base::OneShotTimer delay_timer_;
 };
 
 }  // namespace glic

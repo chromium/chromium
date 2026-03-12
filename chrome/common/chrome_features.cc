@@ -539,6 +539,12 @@ BASE_FEATURE(kGlicWebContentsWarming,
 #endif
 );
 
+// Controls the delay before the WebContents is warmed. A large delay will
+// effectively turn off warming.
+const base::FeatureParam<base::TimeDelta> kGlicWebContentsWarmingDelay{
+    &kGlicWebContentsWarming, "glic-web-contents-warming-delay",
+    base::Seconds(20)};
+
 // Controls desired min width for the side panel. Not guaranteed to be respected
 // if user manually resizes.
 const base::FeatureParam<int> kGlicSidePanelMinWidth{

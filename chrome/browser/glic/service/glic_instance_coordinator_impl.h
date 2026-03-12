@@ -80,6 +80,8 @@ class GlicInstanceCoordinatorImpl
       contextual_cueing::ContextualCueingService* contextual_cueing_service);
   ~GlicInstanceCoordinatorImpl() override;
 
+  GlicKeyedService* service() { return service_; }
+
   // GlicInstanceImpl::InstanceCoordinatorDelegate implementation
   void OnInstanceVisibilityChanged(GlicInstanceImpl* instance,
                                    bool is_showing) override;

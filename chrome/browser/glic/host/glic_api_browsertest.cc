@@ -680,7 +680,10 @@ class GlicApiTestWithWebContentsWarming : public GlicApiTest {
  public:
   GlicApiTestWithWebContentsWarming() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicWebContentsWarming, {}},
+        {{features::kGlicWebContentsWarming,
+          {
+              {features::kGlicWebContentsWarmingDelay.name, "200ms"},
+          }},
          {features::kGlicWarming,
           {{features::kGlicWarmingDelayMs.name, "0"},
            {features::kGlicWarmingJitterMs.name, "0"}}}},
@@ -691,7 +694,7 @@ class GlicApiTestWithWebContentsWarming : public GlicApiTest {
     GlicApiTest::SetUpOnMainThread();
     // Clear any warming that was done before the guest URL was set to
     // the test client.
-    GetService()->web_contents_warming_pool().Shutdown();
+    GetService()->web_contents_warming_pool().Clear();
   }
 
  private:
@@ -3428,7 +3431,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateAllOnMemoryPressure,
   TrackGlicInstanceWithTabIndex(0);
   ASSERT_TRUE(base::test::RunUntil([&]() { return instance1->IsShowing(); }));
 
-  // There is a warmed instance initially. It should be non-showing and
+  // There is a warmed contents initially. It should be non-showing and
   // non-actuating.
   ASSERT_TRUE(GetInstanceCoordinator().HasWarmedInstanceForTesting());
 

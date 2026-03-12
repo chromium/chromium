@@ -12,13 +12,11 @@
 #include "base/test/test_future.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
-#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/browser/glic/public/glic_close_options.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -172,10 +170,17 @@ class GlicInstanceCoordinatorBrowserTest
     : public GlicBrowserTestMixin<PlatformBrowserTest> {
  public:
   GlicInstanceCoordinatorBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicDaisyChainNewTabs,
-                              features::kGlicWebContentsWarming,
-                              features::kGlicTabRestoration},
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kGlicDaisyChainNewTabs, {}},
+            {features::kGlicWebContentsWarming,
+             {
+                 // Speeds up tests to have quicker warming.
+                 {features::kGlicWebContentsWarmingDelay.name, "2s"},
+             }},
+            {features::kGlicTabRestoration, {}},
+        },
         /*disabled_features=*/{});
   }
   ~GlicInstanceCoordinatorBrowserTest() override = default;
@@ -379,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     // Activate the background tab and verify state becomes kShown.
     tab2->GetContents()->GetDelegate()->ActivateContents(tab2->GetContents());
-    WaitForActiveEmbedderToMatchTab(instance, tab2);
+    ASSERT_TRUE(WaitForActiveEmbedderToMatchTab(instance, tab2));
     // Verify focus stays on the page contents, not the side panel.
     EXPECT_FALSE(instance->HasFocus());
   }
@@ -396,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab3));
     EXPECT_EQ(TabListInterface::From(new_window)->GetActiveTab(), tab3);
-    EXPECT_TRUE(WaitForActiveEmbedderToMatchTab(instance, tab3));
+    ASSERT_TRUE(WaitForActiveEmbedderToMatchTab(instance, tab3));
     // Focus should be on the new window's page contents.
     EXPECT_FALSE(instance->HasFocus());
   }
@@ -411,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab4));
     EXPECT_EQ(GetTabListInterface()->GetActiveTab(), tab4);
-    WaitForActiveEmbedderToMatchTab(instance, tab4);
+    ASSERT_TRUE(WaitForActiveEmbedderToMatchTab(instance, tab4));
     // Focus should be on the new foreground tab's page contents.
     EXPECT_FALSE(instance->HasFocus());
   }
@@ -474,8 +479,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
 
   // Mock FRE opening
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
+  auto* glic_service = GlicKeyedService::Get(GetProfile());
   glic_service->fre_controller().SetIsShowingDialogForTesting(true);
   EXPECT_TRUE(glic_service->IsFreShowing());
 
@@ -624,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
           future.GetRepeatingCallback());
 
   // Verify initial state notification.
-  EXPECT_EQ(future.Take(), instance);
+  ASSERT_EQ(future.Take(), instance);
 
   // Close Tab 3. Chrome should switch to Tab 2 (MRU).
   tab3->Close();
@@ -846,8 +850,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   ASSERT_TRUE(instance);
 
   // Trigger a reload.
-  auto* glic_service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile());
+  auto* glic_service = GlicKeyedService::Get(GetProfile());
   glic_service->Reload(
       instance->host().webui_contents()->GetPrimaryMainFrame());
 
@@ -1229,4 +1232,42 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 #endif
 
+class GlicInstanceCoordinatorNoWarmingTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ public:
+  GlicInstanceCoordinatorNoWarmingTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kGlicWebContentsWarming,
+                               {{"glic-web-contents-warming-delay", "60d"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorNoWarmingTest,
+                       NoWarmingWhenDelayed) {
+  GlicWebContentsWarmingPool& warming_pool =
+      coordinator().service()->web_contents_warming_pool();
+
+  // Initially, there shouldn't be a warmed container.
+  ASSERT_FALSE(warming_pool.HasWarmedContainerForTesting());
+
+  // Activate an instance.
+  auto* instance = OpenGlicForActiveTab();
+  ASSERT_TRUE(instance);
+
+  // Give it a little time just in case of unexpected delayed tasks.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(50));
+  run_loop.Run();
+
+  EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
+  EXPECT_FALSE(warming_pool.GetDelayTimerForTesting().IsRunning());
+
+  // This should never be true. We're going to end up deleting it soon anyway.
+  EXPECT_FALSE(coordinator().HasWarmedInstanceForTesting());
+}
 }  // namespace glic

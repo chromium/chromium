@@ -310,7 +310,7 @@ void GlicKeyedService::Shutdown() {
   } else {
     CloseAndShutdown();
   }
-  web_contents_warming_pool_->Shutdown();
+  web_contents_warming_pool_->Clear();
 
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   if (glic_profile_manager) {

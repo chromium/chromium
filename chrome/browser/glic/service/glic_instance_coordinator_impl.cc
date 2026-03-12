@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
@@ -989,6 +990,8 @@ void GlicInstanceCoordinatorImpl::OnMemoryPressure(
   if (level < kGlicMemoryPressureResponseLevel.Get()) {
     return;
   }
+
+  service_->web_contents_warming_pool().Clear();
 
   if (base::FeatureList::IsEnabled(kGlicHibernateAllOnMemoryPressure)) {
     warmed_instance_.reset();
