@@ -52,3 +52,15 @@
     java.nio.channels.FileLock sExclusiveFileLock;
     java.io.RandomAccessFile sLockFile;
 }
+
+# Keep the chromium implementation names deobfuscated. These classes'
+# names are used by CTS to verify compatibility with the androidx.webkit
+# library.
+-keep,allowshrinking class com.android.webview.chromium.CookieManagerAdapter
+-keep,allowshrinking class com.android.webview.chromium.ContentSettingsAdapter
+-keep,allowshrinking class com.android.webview.chromium.WebMessagePortAdapter
+-keep,allowshrinking class com.android.webview.chromium.WebStorageAdapter
+-keep,allowshrinking class com.android.webview.chromium.ServiceWorkerSettingsAdapter
+-keep,allowshrinking class com.android.webview.chromium.WebResourceRequestAdapter
+-keep,allowshrinking class com.android.webview.chromium.WebResourceErrorAdapter
+-keep,allowshrinking class com.android.webview.chromium.SafeBrowsingResponseAdapter
