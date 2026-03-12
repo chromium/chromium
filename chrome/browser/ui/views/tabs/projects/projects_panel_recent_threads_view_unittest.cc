@@ -46,6 +46,18 @@ const contextual_tasks::Thread& GetThread3() {
   return *thread;
 }
 
+const contextual_tasks::Thread& GetThread4() {
+  static const base::NoDestructor<contextual_tasks::Thread> thread(
+      CreateThread("Thread 4", "id4"));
+  return *thread;
+}
+
+const std::vector<contextual_tasks::Thread>& GetManyThreads() {
+  static const base::NoDestructor<std::vector<contextual_tasks::Thread>>
+      threads({GetThread1(), GetThread2(), GetThread3(), GetThread4()});
+  return *threads;
+}
+
 MATCHER_P(IsForThread, expected_thread, "") {
   const views::Label* label = arg->title_for_testing();
   return base::UTF8ToUTF16(expected_thread.title) == label->GetText();
@@ -128,7 +140,45 @@ TEST_F(ProjectsPanelRecentThreadsViewTest, DisplaysUpToMaxNumberOfThreads) {
   auto recent_threads_view = std::make_unique<ProjectsPanelRecentThreadsView>();
   recent_threads_view->SetThreads(threads);
 
+  recent_threads_view->SetExpanded(true);
+
   // Ensure only the max number of threads are shown.
   EXPECT_EQ(projects_panel::kMaxNumberOfRecentThreads,
             recent_threads_view->item_views_for_testing().size());
+}
+
+TEST_F(ProjectsPanelRecentThreadsViewTest, CollapsesThreadsInitially) {
+  auto recent_threads_view = std::make_unique<ProjectsPanelRecentThreadsView>();
+  recent_threads_view->SetThreads(GetManyThreads());
+
+  // Only 3 thread should be visible.
+  EXPECT_EQ(3u, recent_threads_view->children().size());
+  EXPECT_EQ(3u, recent_threads_view->item_views_for_testing().size());
+}
+
+TEST_F(ProjectsPanelRecentThreadsViewTest, ExpandList) {
+  auto recent_threads_view = std::make_unique<ProjectsPanelRecentThreadsView>();
+  recent_threads_view->SetThreads(GetManyThreads());
+
+  recent_threads_view->SetExpanded(true);
+
+  // All 4 threads should be visible after expanding.
+  EXPECT_EQ(4u, recent_threads_view->children().size());
+  EXPECT_EQ(4u, recent_threads_view->item_views_for_testing().size());
+  EXPECT_TRUE(recent_threads_view->expanded());
+}
+
+TEST_F(ProjectsPanelRecentThreadsViewTest, CollapseList) {
+  auto recent_threads_view = std::make_unique<ProjectsPanelRecentThreadsView>();
+  recent_threads_view->SetThreads(GetManyThreads());
+  recent_threads_view->SetExpanded(true);
+
+  EXPECT_EQ(4u, recent_threads_view->children().size());
+
+  recent_threads_view->SetExpanded(false);
+
+  // Only 3 threads should be visible after collapsing.
+  EXPECT_EQ(3u, recent_threads_view->children().size());
+  EXPECT_EQ(3u, recent_threads_view->item_views_for_testing().size());
+  EXPECT_FALSE(recent_threads_view->expanded());
 }

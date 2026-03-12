@@ -8,6 +8,7 @@ source_set("projects") {
     "projects_panel_controller.h",
     "projects_panel_controls_view.h",
     "projects_panel_no_tab_groups_view.h",
+    "projects_panel_recent_threads_expand_button.h",
     "projects_panel_recent_threads_view.h",
     "projects_panel_tab_groups_drag_scroll_handler.h",
     "projects_panel_tab_groups_item_view.h",
@@ -34,6 +35,7 @@ source_set("impl") {
     "projects_panel_controller.cc",
     "projects_panel_controls_view.cc",
     "projects_panel_no_tab_groups_view.cc",
+    "projects_panel_recent_threads_expand_button.cc",
     "projects_panel_recent_threads_view.cc",
     "projects_panel_tab_groups_drag_scroll_handler.cc",
     "projects_panel_tab_groups_item_view.cc",
@@ -75,6 +77,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "projects_panel_controller_unittest.cc",
+    "projects_panel_recent_threads_expand_button_unittest.cc",
     "projects_panel_recent_threads_view_unittest.cc",
     "projects_panel_tab_groups_drag_scroll_handler_unittest.cc",
     "projects_panel_tab_groups_item_view_unittest.cc",

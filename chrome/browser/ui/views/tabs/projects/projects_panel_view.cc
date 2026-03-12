@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_recent_threads_expand_button.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_recent_threads_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
@@ -51,6 +52,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -83,7 +85,7 @@ constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(8, 8);
 constexpr int kListHeaderHeight = 28;
 constexpr int kCreateNewTabGroupIconSize = 20;
 constexpr gfx::Insets kCreateNewTabGroupIconMargins =
-    gfx::Insets::TLBR(0, 4, 0, 0);
+    gfx::Insets::TLBR(0, 2, 0, 2);
 
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kPanelHideAnimationDuration = base::Milliseconds(200);
@@ -329,7 +331,15 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
         std::make_unique<ProjectsPanelRecentThreadsView>(base::BindRepeating(
             &ProjectsPanelView::OnThreadButtonPressed, base::Unretained(this)));
     threads_view_ = threads_scroll_view->SetContents(std::move(threads_view));
+    if (disable_animations_for_testing_) {
+      threads_view_->disable_animations_for_testing();  // IN-TEST
+    }
     SetScrollViewProperties(*threads_scroll_view);
+
+    threads_expand_button_ = threads_container_->AddChildView(
+        std::make_unique<ProjectsPanelRecentThreadsExpandButton>(
+            base::BindRepeating(&ProjectsPanelView::OnThreadExpandButtonPressed,
+                                base::Unretained(this))));
 
     threads_activity_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
     threads_activity_menu_model_->AddItemWithIcon(
@@ -429,6 +439,12 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
       const bool show_threads = show_threads_for_testing_ || threads.size() > 0;
       threads_container_->SetVisible(show_threads);
       separator_->SetVisible(show_threads);
+
+      if (show_threads) {
+        threads_expand_button_->SetExpanded(threads_view_->expanded());
+        threads_expand_button_->SetVisible(
+            threads.size() > projects_panel::kNumThreadsVisibleWhenCollapsed);
+      }
     }
 
     base::UmaHistogramCounts100(
@@ -716,6 +732,12 @@ void ProjectsPanelView::OnThreadButtonPressed(
   }
   panel_controller_->OpenThread(thread_server_id);
   ClosePanel();
+}
+
+void ProjectsPanelView::OnThreadExpandButtonPressed() {
+  const bool expanded = !threads_view_->expanded();
+  threads_view_->SetExpanded(expanded);
+  threads_expand_button_->SetExpanded(expanded);
 }
 
 void ProjectsPanelView::OnThreadsActivityMenuButtonPressed() {
