@@ -7954,6 +7954,13 @@ bool ChromeContentBrowserClient::AreV8OptimizationsEnabledForSite(
       site_url, site_url, ContentSettingsType::JAVASCRIPT_OPTIMIZER,
       &content_setting_info);
 
+  content_settings::ProviderType default_content_setting_provider;
+  map->GetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                &default_content_setting_provider);
+  auto default_content_setting_source =
+      content_settings::GetSettingSourceFromProviderType(
+          default_content_setting_provider);
+
   // `default_javascript_optimizer_setting` is determined based on the user's
   // selection in chrome://settings, whether the site-familiarity-feature is
   // enabled, and enterprise policy. `default_javascript_optimizer_setting`
@@ -7966,7 +7973,8 @@ bool ChromeContentBrowserClient::AreV8OptimizationsEnabledForSite(
   // Invariant guaranteed by ComputeDefaultJavascriptOptimizerSetting().
   CHECK(default_javascript_optimizer_setting !=
             JavascriptOptimizerSetting::kBlockedForUnfamiliarSites ||
-        content_setting_info.source == content_settings::SettingSource::kUser);
+        default_content_setting_source ==
+            content_settings::SettingSource::kUser);
 
   if (default_javascript_optimizer_setting !=
       JavascriptOptimizerSetting::kBlockedForUnfamiliarSites) {
