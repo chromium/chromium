@@ -98,6 +98,8 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
   std::optional<AssistantContainerDetent> _activeDetent;
 }
 
+@synthesize isAnimating = _isAnimating;
+
 - (instancetype)initWithViewController:(UIViewController*)viewController {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
@@ -264,14 +266,6 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
 
 #pragma mark - Properties
 
-- (void)setIsAnimating:(BOOL)isAnimating {
-  if (_isAnimating == isAnimating) {
-    return;
-  }
-  _isAnimating = isAnimating;
-  [self updatePanGestureEnabledState];
-}
-
 - (void)setDetents:(std::vector<AssistantContainerDetent>)detents {
   CHECK(!detents.empty());
   _detents = std::move(detents);
@@ -287,6 +281,32 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
 - (void)setMinimizedDetentHeight:(NSInteger)minimizedDetentHeight {
   _minimizedDetentHeight = minimizedDetentHeight;
   [self updateDetentHeights];
+}
+
+- (void)setAnchorView:(UIView*)anchorView {
+  if (_anchorView == anchorView) {
+    return;
+  }
+  _anchorView = anchorView;
+  [self updateHeightConstraint];
+}
+
+#pragma mark - AssistantContainerAnimatable
+
+- (void)setIsAnimating:(BOOL)isAnimating {
+  if (_isAnimating == isAnimating) {
+    return;
+  }
+  _isAnimating = isAnimating;
+  [self updatePanGestureEnabledState];
+}
+
+- (UIView*)dimmingView {
+  return _dimmingView;
+}
+
+- (UIView*)assistantContainerView {
+  return _assistantContainerView;
 }
 
 #pragma mark - UIGestureRecognizerDelegate

@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "assistant_container_animatable.h",
     "assistant_container_animator.h",
     "assistant_container_animator.mm",
     "assistant_container_delegate.h",

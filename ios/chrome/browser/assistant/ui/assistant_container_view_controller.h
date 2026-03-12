@@ -9,17 +9,14 @@
 
 #import <vector>
 
+#import "ios/chrome/browser/assistant/ui/assistant_container_animatable.h"
+
 enum class AssistantContainerDetent : NSInteger;
 @protocol AssistantContainerDelegate;
 
 // View Controller for the Assistant Container.
-@interface AssistantContainerViewController : UIViewController
-
-// Whether the container is currently being animated by an external animator.
-@property(nonatomic, assign) BOOL isAnimating;
-
-// The view to anchor to. If nil, falls back to the bottom of the parent view.
-@property(nonatomic, weak) UIView* anchorView;
+@interface AssistantContainerViewController
+    : UIViewController <AssistantContainerAnimatable>
 
 // Whether to anchor to the bottom of the view (YES) or the top (NO).
 // Defaults to NO.
@@ -27,6 +24,9 @@ enum class AssistantContainerDetent : NSInteger;
 
 // The available detents for the container. Can't be empty.
 @property(nonatomic, assign) std::vector<AssistantContainerDetent> detents;
+
+// The view to anchor to. If nil, falls back to the bottom of the parent view.
+@property(nonatomic, weak) UIView* anchorView;
 
 // The height to use for the minimized detent. Defaults to
 // kAssistantContainerMinimizedDetentHeight.
