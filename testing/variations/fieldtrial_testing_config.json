@@ -9217,21 +9217,6 @@
             ]
         }
     ],
-    "EnableOktaSsoOnMacOS": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20251216",
-                    "enable_features": [
-                        "OktaSSO"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnablePDPMetricsUSDesktopIOS": [
         {
             "platforms": [
