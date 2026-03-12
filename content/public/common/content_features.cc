@@ -715,6 +715,10 @@ BASE_FEATURE_PARAM(bool,
                    "reuse_search_host",
                    false);
 
+// If enabled, the feature allows user to see a preview of their handwriting
+// gestures (Select and Delete gestures).
+BASE_FEATURE(kPreviewHandwritingGesture, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
 // within these APIs.

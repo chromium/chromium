@@ -1336,6 +1336,9 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the PaymentRequest will use the URL loader from the renderer instead"
                         + " of the browser process."),
         Flag.baseFeature(
+                ContentFeatures.PREVIEW_HANDWRITING_GESTURE,
+                "When enabled, it allows users to see a preview of their handwriting gestures"),
+        Flag.baseFeature(
                 BlinkFeatures.UNTHROTTLE_ASYNC_TOUCH_MOVES,
                 "When enabled, touch move events to javascript handlers are unthrottled if "
                         + "they are sent as async to Renderer."),

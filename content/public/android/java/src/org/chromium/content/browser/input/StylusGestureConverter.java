@@ -12,6 +12,7 @@ import android.view.inputmethod.DeleteRangeGesture;
 import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InsertGesture;
 import android.view.inputmethod.JoinOrSplitGesture;
+import android.view.inputmethod.PreviewableHandwritingGesture;
 import android.view.inputmethod.RemoveSpaceGesture;
 import android.view.inputmethod.SelectGesture;
 import android.view.inputmethod.SelectRangeGesture;
@@ -104,7 +105,23 @@ public class StylusGestureConverter {
     }
 
     /**
+     * Same as createGestureData but sets is_preview flag to true.
+     *
+     * @param gesture An instance of PreviewableHandwritingGesture which has the user's gesture type
+     * @return A StylusWritingGestureData object with the flag set
+     */
+    public static @Nullable StylusWritingGestureData previewGestureData(
+            PreviewableHandwritingGesture gesture) {
+        StylusWritingGestureData gestureData = createGestureData(gesture);
+        if (gestureData != null) {
+            gestureData.isPreview = true;
+        }
+        return gestureData;
+    }
+
+    /**
      * Creates a StylusWritingGestureData object from a SelectGesture.
+     *
      * @param gesture The SelectGesture to extract data from.
      * @return A StylusWritingGestureData object to pass through Mojo to blink.
      */

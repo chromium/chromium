@@ -61,6 +61,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kFedCm,
     &features::kHidePastePopupOnGSB,
     &features::kNoSelectionMenuCaching,
+    &features::kPreviewHandwritingGesture,
     &features::kReduceGpuPriorityOnBackground,
     &features::kRemoveCachedProcessFromBindingManager,
     &features::kContinueGestureOnLosingFocus,

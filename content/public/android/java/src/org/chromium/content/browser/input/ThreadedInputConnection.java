@@ -10,6 +10,7 @@ import static org.chromium.content.browser.input.StylusGestureConverter.createGe
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -24,6 +25,7 @@ import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.HandwritingGesture;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputContentInfo;
+import android.view.inputmethod.PreviewableHandwritingGesture;
 import android.view.inputmethod.SurroundingText;
 import android.view.inputmethod.TextAttribute;
 import android.webkit.MimeTypeMap;
@@ -877,6 +879,26 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
                     public void run() {
                         mImeAdapter.onRequestCursorUpdates(cursorUpdateMode);
                     }
+                });
+        return true;
+    }
+
+    @Override
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public boolean previewHandwritingGesture(
+            PreviewableHandwritingGesture gesture, @Nullable CancellationSignal signal) {
+        if (!ContentFeatureMap.isEnabled(ContentFeatures.PREVIEW_HANDWRITING_GESTURE)) {
+            return false;
+        }
+        StylusWritingGestureData gestureData = StylusGestureConverter.previewGestureData(gesture);
+        if (gestureData == null) {
+            return false;
+        }
+        // Callback should be run on the UI thread.
+        PostTask.postTask(
+                TaskTraits.UI_USER_BLOCKING,
+                () -> {
+                    mImeAdapter.previewGesture(gestureData);
                 });
         return true;
     }

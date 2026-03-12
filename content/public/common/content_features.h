@@ -224,6 +224,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadingRespectUserAgentOverride);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrerender2ReuseHost);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                           kPrerender2ReuseSearchResultHost);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreviewHandwritingGesture);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFeaturePolicyHeader);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAdsAPIsOverride);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessSelectionDeferringConditions);
