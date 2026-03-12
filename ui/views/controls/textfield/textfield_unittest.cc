@@ -2203,6 +2203,15 @@ TEST_F(TextfieldTest, SelectionOnRightClick) {
           ? u"hello world"
           : expected_right_click_word;
   EXPECT_EQ(expected_right_click_unfocused, textfield_->GetSelectedText());
+
+  // Verify right clicking when all text is selected does not reduce the
+  // selection to a single word. This covers the case where a user does
+  // right-click > "Select All", then right-clicks again to "Copy".
+  textfield_->SelectAll(false);
+  EXPECT_EQ(u"hello world", textfield_->GetSelectedText());
+  MoveMouseTo(gfx::Point(GetCursorPositionX(0), cursor_y));
+  ClickRightMouseButton();
+  EXPECT_EQ(u"hello world", textfield_->GetSelectedText());
 }
 
 TEST_F(TextfieldTest, DragToSelect) {

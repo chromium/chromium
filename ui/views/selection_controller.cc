@@ -85,6 +85,8 @@ bool SelectionController::OnMousePressed(
       SelectAll();
     } else if (PlatformStyle::kSelectWordOnRightClick &&
                !render_text->IsPointInSelection(event.location()) &&
+               !render_text->selection().EqualsIgnoringDirection(
+                   gfx::Range(0, render_text->text().length())) &&
                IsInsideText(event.location())) {
       SelectWord(event.location());
     }
