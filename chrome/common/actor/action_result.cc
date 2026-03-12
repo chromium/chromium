@@ -60,8 +60,9 @@ mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
 
 std::vector<ActionResultWithLatencyInfo> MakeResultVector(
     mojom::ActionResultPtr result) {
-  return std::vector<ActionResultWithLatencyInfo>({ActionResultWithLatencyInfo(
-      base::TimeTicks::Now(), base::TimeTicks::Now(), std::move(result))});
+  const auto now = base::TimeTicks::Now();
+  return std::vector<ActionResultWithLatencyInfo>(
+      {ActionResultWithLatencyInfo(now, now, std::move(result))});
 }
 
 std::vector<ActionResultWithLatencyInfo> MakeResultVector(
