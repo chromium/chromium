@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <iostream>
 
+#include "base/strings/string_number_conversions.h"
 #include "tools/android/devil_util/archive_helper.h"
 
 ArchiveReader::ArchiveReader() = default;
@@ -60,7 +61,11 @@ void ArchiveReader::ReadCurMemberPathLength(char** input_buffer,
         strnlen(cur_member_path_length_buffer_, kPathLengthSize);
     std::string path_length_str(cur_member_path_length_buffer_,
                                 path_length_actual_length);
-    cur_member_path_length_ = stoull(path_length_str);
+    if (!base::StringToUint64(path_length_str, &cur_member_path_length_)) {
+      std::cerr << "Failed to parse path length from: " << path_length_str
+                << std::endl;
+      exit(1);
+    }
   }
 }
 
@@ -87,7 +92,15 @@ void ArchiveReader::ReadCurMemberPath(char** input_buffer,
         std::string(cur_member_path_buffer_, cur_member_path_length_);
     std::filesystem::path path(cur_member_path_);
     // Create the parent directories if necessary.
-    std::filesystem::create_directories(path.parent_path());
+    if (path.has_parent_path()) {
+      std::error_code ec;
+      std::filesystem::create_directories(path.parent_path(), ec);
+      if (ec) {
+        std::cerr << "Failed to create directories for " << cur_member_path_
+                  << ": " << ec.message() << std::endl;
+        exit(1);
+      }
+    }
     // Open the output stream which will also create the file.
     cur_member_ofstream_ =
         std::ofstream(cur_member_path_, std::ios::binary | std::ios::trunc);
@@ -97,7 +110,14 @@ void ArchiveReader::ReadCurMemberPath(char** input_buffer,
       exit(1);
     }
     // Set the file permission to std::filesystem::perms::all which is 0777.
-    std::filesystem::permissions(cur_member_path_, std::filesystem::perms::all);
+    std::error_code ec;
+    std::filesystem::permissions(cur_member_path_, std::filesystem::perms::all,
+                                 ec);
+    if (ec) {
+      std::cerr << "Failed to set permissions for " << cur_member_path_ << ": "
+                << ec.message() << std::endl;
+      exit(1);
+    }
   }
 }
 
@@ -125,7 +145,12 @@ void ArchiveReader::ReadCurMemberContentLength(char** input_buffer,
         strnlen(cur_member_content_length_buffer_, kContentLengthSize);
     std::string content_length_str(cur_member_content_length_buffer_,
                                    content_length_actual_length);
-    cur_member_content_length_ = stoull(content_length_str);
+    if (!base::StringToUint64(content_length_str,
+                              &cur_member_content_length_)) {
+      std::cerr << "Failed to parse content length from: " << content_length_str
+                << std::endl;
+      exit(1);
+    }
   }
 }
 

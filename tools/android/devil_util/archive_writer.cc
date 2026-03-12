@@ -162,7 +162,13 @@ size_t ArchiveWriter::CreateArchiveStreaming(char* output_buffer,
     if (start_next_member_) {
       cur_member_path_ = members_[cur_member_index_].file_path_in_archive;
       const std::string& path = members_[cur_member_index_].file_path_in_host;
-      cur_member_content_length_ = std::filesystem::file_size(path);
+      std::error_code ec;
+      cur_member_content_length_ = std::filesystem::file_size(path, ec);
+      if (ec) {
+        std::cerr << "Failed to get file size for " << path << ": "
+                  << ec.message() << std::endl;
+        exit(1);
+      }
       cur_member_ifstream_ = std::ifstream(path, std::ios::binary);
       if (cur_member_ifstream_.fail()) {
         std::cerr << "Failed to open the file at: " << path << std::endl;
