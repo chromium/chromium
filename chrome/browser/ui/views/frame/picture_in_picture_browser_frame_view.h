@@ -99,8 +99,8 @@ class PictureInPictureBrowserFrameView : public BrowserFrameView,
       security_state::SecurityLevel security_level) const override;
   bool ShowPageInfoDialog() override;
   LocationBarModel* GetLocationBarModel() const override;
-  ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
-                                     on_icon_fetched) const override;
+  ui::ImageModel GetLocationIcon(
+      LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) override;
   std::optional<ui::ColorId> GetLocationIconBackgroundColorOverride()
       const override;
 

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/security_state/core/security_state.h"
@@ -294,8 +295,8 @@ class LocationBarView
   bool ShowPageInfoDialog() override;
   SkColor GetSecurityChipColor(
       security_state::SecurityLevel security_level) const override;
-  ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
-                                     on_icon_fetched) const override;
+  ui::ImageModel GetLocationIcon(
+      LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) override;
   std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&
   GetContentSettingViewsForTest() {
     return content_setting_views_;
@@ -323,6 +324,8 @@ class LocationBarView
                            IMEInlineAutocompletePosition);
   FRIEND_TEST_ALL_PREFIXES(LocationBarViewAddContextButtonBrowserTest,
                            AddContextButtonVisibilityAndClick);
+  FRIEND_TEST_ALL_PREFIXES(LocationBarViewAddContextButtonBrowserTest,
+                           PrefChangesAddContextButtonVisibility);
   using ContentSettingViews =
       std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>;
 
@@ -484,6 +487,18 @@ class LocationBarView
   page_actions::PageActionController* GetPageActionController();
 
   bool OpenContextMenu();
+
+  // Whether the "Add Context" button should be shown in place of the location
+  // bar page info icon button.
+  bool ShouldShowAddContextButton();
+
+  // Whether the Omnibox context menu contains at least one menu item that can
+  // be shown to the user.
+  bool HasAllowedInputs();
+
+  OmniboxPopupUI* GetOmniboxPopupUI();
+
+  content::WebContents* GetWrappedWebContents();
 
 #if BUILDFLAG(IS_MAC)
   // Called when app shims change.

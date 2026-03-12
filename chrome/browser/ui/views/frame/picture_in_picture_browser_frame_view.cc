@@ -1138,7 +1138,7 @@ LocationBarModel* PictureInPictureBrowserFrameView::GetLocationBarModel()
 }
 
 ui::ImageModel PictureInPictureBrowserFrameView::GetLocationIcon(
-    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) const {
+    LocationIconView::Delegate::IconFetchedCallback on_icon_fetched) {
   // If we're animating between colors, use the current color value.
   if (current_foreground_color_.has_value()) {
     return ui::ImageModel::FromVectorIcon(location_bar_model_->GetVectorIcon(),

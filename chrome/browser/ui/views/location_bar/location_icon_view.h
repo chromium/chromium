@@ -63,7 +63,7 @@ class LocationIconView : public IconLabelBubbleView {
 
     // Gets an icon for the location bar icon chip.
     virtual ui::ImageModel GetLocationIcon(
-        IconFetchedCallback on_icon_fetched) const = 0;
+        IconFetchedCallback on_icon_fetched) = 0;
 
     // Gets an optional background color override for the location bar icon
     // chip.
