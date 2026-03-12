@@ -7,8 +7,6 @@
 
 #include "ui/base/class_property.h"
 
-class Browser;
-class SidePanelRegistry;
 class SidePanelContentProxy;
 
 class SidePanelUtil {

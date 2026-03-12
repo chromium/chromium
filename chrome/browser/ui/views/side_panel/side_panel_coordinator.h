@@ -19,6 +19,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_observer.h"
 
+class Browser;
 class BrowserView;
 class BrowserWindowInterface;
 class SidePanel;

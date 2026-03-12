@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
@@ -40,7 +40,8 @@ SidePanelUIBase::PanelData::PanelData()
     : waiter(std::make_unique<SidePanelEntryWaiter>()) {}
 SidePanelUIBase::PanelData::~PanelData() = default;
 
-SidePanelUIBase::SidePanelUIBase(Browser* browser) : browser_(browser) {
+SidePanelUIBase::SidePanelUIBase(BrowserWindowInterface* browser)
+    : browser_(browser) {
   for (auto panel_type : SidePanelEntry::PanelTypes::All()) {
     panel_data_[panel_type] = std::make_unique<PanelData>();
   }
@@ -160,7 +161,7 @@ SidePanelEntry* SidePanelUIBase::GetEntryForUniqueKey(
 }
 
 SidePanelRegistry* SidePanelUIBase::GetActiveContextualRegistry() const {
-  if (browser_->tab_strip_model()->empty()) {
+  if (TabListInterface::From(browser_)->GetTabCount() == 0) {
     return nullptr;
   }
 

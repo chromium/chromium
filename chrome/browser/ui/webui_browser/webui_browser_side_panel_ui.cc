@@ -90,7 +90,7 @@ void WebUIBrowserSidePanelUI::Show(
     std::optional<SidePanelOpenTrigger> open_trigger,
     bool suppress_animations) {
   // Side panel is not supported for non-normal browsers.
-  if (!browser()->is_type_normal()) {
+  if (browser()->GetType() != Browser::Type::TYPE_NORMAL) {
     return;
   }
 
@@ -230,5 +230,5 @@ void WebUIBrowserSidePanelUI::OnSidePanelClosed(
 }
 
 WebUIBrowserWindow* WebUIBrowserSidePanelUI::GetWebUIBrowserWindow() {
-  return static_cast<WebUIBrowserWindow*>(browser()->window());
+  return WebUIBrowserWindow::FromBrowser(browser());
 }
