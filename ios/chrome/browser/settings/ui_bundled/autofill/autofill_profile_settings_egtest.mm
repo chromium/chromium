@@ -132,6 +132,13 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
         autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
 
+  if ([self isRunningTest:@selector(testToggleEnhancedAutofillSwitch)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiCreateEntityDataManager);
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiWithDataSchema);
+  }
+
   return config;
 }
 
@@ -885,6 +892,76 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
                                           kAutofillProfileEditTableViewId)]
       assertWithMatcher:grey_nil()];
 
+  [SigninEarlGrey signOut];
+}
+
+// Tests that the Enhanced Autofill switch can be toggled.
+- (void)testToggleEnhancedAutofillSwitch {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  [self openAutofillProfilesSettings];
+
+  // Tap on the Enhanced Autofill item to open the sub-page.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnhancedAutofillTableViewId)]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> switchMatcher =
+      grey_accessibilityID(kEnhancedAutofillSwitchViewId);
+  [[EarlGrey selectElementWithMatcher:switchMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify initially OFF.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kEnhancedAutofillSwitchViewId,
+                                   /*is_toggled_on=*/NO, /*is_enabled=*/YES)]
+      assertWithMatcher:grey_notNil()];
+
+  // Toggle ON.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnhancedAutofillSwitchViewId)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
+
+  // Go back to the main settings page.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  // Verify that the detail text is "On".
+  id<GREYMatcher> labelMatcher = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_SETTINGS_AUTOFILL_AI_PAGE_TITLE));
+  id<GREYMatcher> valueOnMatcher =
+      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_ON));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kEnhancedAutofillTableViewId),
+                                          labelMatcher, valueOnMatcher, nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap again to enter sub-page.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnhancedAutofillTableViewId)]
+      performAction:grey_tap()];
+
+  // Toggle OFF.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnhancedAutofillSwitchViewId)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Go back.
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
+      performAction:grey_tap()];
+
+  // Verify that the detail text is "Off".
+  id<GREYMatcher> valueOffMatcher =
+      grey_accessibilityValue(l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kEnhancedAutofillTableViewId),
+                                          labelMatcher, valueOffMatcher, nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [self exitSettingsMenu];
   [SigninEarlGrey signOut];
 }
 
