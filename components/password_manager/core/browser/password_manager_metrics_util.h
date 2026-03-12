@@ -717,11 +717,6 @@ void LogSaveUIDismissalReason(
 // Log the |reason| a user dismissed the update password bubble.
 void LogUpdateUIDismissalReason(UIDismissalReason reason);
 
-// Log the |reason| a user dismissed the move password bubble.
-void LogMoveUIDismissalReason(
-    UIDismissalReason reason,
-    features_util::PasswordAccountStorageUserState user_state);
-
 // Log the appropriate display disposition.
 void LogUIDisplayDisposition(UIDisplayDisposition disposition);
 

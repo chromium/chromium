@@ -210,20 +210,6 @@ void LogUpdateUIDismissalReason(UIDismissalReason reason) {
                                 reason, NUM_UI_RESPONSES);
 }
 
-void LogMoveUIDismissalReason(
-    UIDismissalReason reason,
-    password_manager::features_util::PasswordAccountStorageUserState
-        user_state) {
-  base::UmaHistogramEnumeration("PasswordManager.MoveUIDismissalReason", reason,
-                                NUM_UI_RESPONSES);
-
-  std::string suffix =
-      GetPasswordAccountStorageUserStateHistogramSuffix(user_state);
-  base::UmaHistogramEnumeration(
-      "PasswordManager.MoveUIDismissalReason." + suffix, reason,
-      NUM_UI_RESPONSES);
-}
-
 void LogUIDisplayDisposition(UIDisplayDisposition disposition) {
   base::UmaHistogramEnumeration("PasswordBubble.DisplayDisposition",
                                 disposition, NUM_DISPLAY_DISPOSITIONS);
