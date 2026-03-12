@@ -5,13 +5,15 @@
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
+#include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/prefs/pref_service.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
@@ -21,11 +23,49 @@
 
 namespace web_apps {
 
+namespace {
+
+using IwaOrigin = web_app::IwaOrigin;
+using PermissionsPolicyCacheEntry =
+    web_app::IwaPermissionsPolicyCache::CacheEntry;
+using PermissionPolicyEntryPtr =
+    blink::mojom::IsolatedAppPermissionPolicyEntryPtr;
+using PermissionPolicyEntry = blink::mojom::IsolatedAppPermissionPolicyEntry;
+
+}  // namespace
+
 ChromeContentBrowserClientIsolatedWebAppsPart::
     ChromeContentBrowserClientIsolatedWebAppsPart() = default;
 ChromeContentBrowserClientIsolatedWebAppsPart::
     ~ChromeContentBrowserClientIsolatedWebAppsPart() = default;
 
+// static
+std::vector<PermissionPolicyEntryPtr>
+ChromeContentBrowserClientIsolatedWebAppsPart::
+    GetBaselinePermissionsPolicyForIsolatedWebApp(
+        content::BrowserContext* browser_context,
+        const url::Origin& iwa_origin) {
+  if (!content::AreIsolatedWebAppsEnabled(browser_context)) {
+    return {};
+  }
+
+  ASSIGN_OR_RETURN(
+      IwaOrigin origin, IwaOrigin::Create(iwa_origin.GetURL()),
+      [](auto) { return std::vector<PermissionPolicyEntryPtr>(); });
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  const PermissionsPolicyCacheEntry* policy =
+      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile)
+          ->GetPolicy(origin);
+  if (!policy) {
+    return {};
+  }
+
+  return base::ToVector(*policy, [](const auto& entry) {
+    return PermissionPolicyEntry::New(entry.feature, entry.allowed_origins);
+  });
+}
 // static
 bool ChromeContentBrowserClientIsolatedWebAppsPart::AreIsolatedWebAppsEnabled(
     content::BrowserContext* browser_context) {

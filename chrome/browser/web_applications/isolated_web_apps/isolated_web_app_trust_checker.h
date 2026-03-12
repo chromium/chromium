@@ -57,6 +57,11 @@ class IsolatedWebAppTrustChecker {
       Profile& profile,
       const web_package::SignedWebBundleId& web_bundle_id,
       const WebApp& iwa);
+
+  // Returns true if the given `web_bundle_id` has been added via
+  // `AddTrustedWebBundleIdForTesting`.
+  static bool IsTrustedForTesting(
+      const web_package::SignedWebBundleId& web_bundle_id);
 };
 
 // Used in tests to pretend that the given Web Bundle IDs are trusted.

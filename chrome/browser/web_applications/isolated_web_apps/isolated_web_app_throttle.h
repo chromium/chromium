@@ -16,6 +16,7 @@ class Profile;
 
 namespace web_app {
 
+class IwaOrigin;
 class IwaPermissionsPolicyCache;
 
 // Throttle that is used to wait with IWA navigation until the required modules
@@ -29,6 +30,7 @@ class IsolatedWebAppThrottle : public content::NavigationThrottle {
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
@@ -36,11 +38,18 @@ class IsolatedWebAppThrottle : public content::NavigationThrottle {
                            WebAppProviderInitialized);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppThrottleTest,
                            WebAppProviderInitializedAfterNavigation);
+  FRIEND_TEST_ALL_PREFIXES(
+      IsolatedWebAppThrottleTest,
+      LogsEntitlementViolationsWhenProceedingWithCachedManifest);
+  FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppThrottleTest,
+                           LogsEntitlementViolationsAfterCachePopulation);
 
   virtual void OnComponentsReady();
 
-  bool NeedsManifestFetch() const;
+  bool NeedsManifestFetch(const IwaOrigin& iwa_origin) const;
   void OnCachePopulated(bool success);
+
+  void LogEntitlementViolations(const IwaOrigin& iwa_origin);
 
   Profile* profile() const;
   bool is_isolated_web_app_navigation() const;

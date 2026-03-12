@@ -549,7 +549,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_error_page.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/iwa_permissions_policy_cache.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -568,7 +567,6 @@
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/soda/soda_util.h"
-#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -2385,31 +2383,9 @@ ChromeContentBrowserClient::GetBaselinePermissionsPolicyForIsolatedApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
 #if !BUILDFLAG(IS_ANDROID)
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  web_app::IwaPermissionsPolicyCache* cache =
-      web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile);
-  if (!cache) {
-    return {};
-  }
-
-  ASSIGN_OR_RETURN(
-      web_app::IwaOrigin origin,
-      web_app::IwaOrigin::Create(app_origin.GetURL()), [](auto) {
-        return std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>();
-      });
-
-  const web_app::IwaPermissionsPolicyCache::CacheEntry* policy =
-      cache->GetPolicy(origin);
-  if (!policy) {
-    // If we can't calculate a baseline permissions policy for a valid IWA
-    // origin for some reason, use a strict fallback.
-    return {};
-  }
-
-  return base::ToVector(*policy, [](const auto& entry) {
-    return blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-        entry.feature, entry.allowed_origins);
-  });
+  return ChromeContentBrowserClientIsolatedWebAppsPart::
+      GetBaselinePermissionsPolicyForIsolatedWebApp(browser_context,
+                                                    app_origin);
 #else
   return {};
 #endif

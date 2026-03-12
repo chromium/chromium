@@ -24,6 +24,7 @@
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -59,10 +60,11 @@ IsolatedWebAppThrottle::WillStartRequest() {
   if (provider.is_registry_ready() &&
       key_distribution_info_provider.OnBestEffortRuntimeDataReady()
           .is_signaled()) {
-    if (NeedsManifestFetch()) {
-      const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
-      // This is checked already in NeedsManifestFetch.
-      CHECK(iwa_origin.has_value());
+    const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
+    if (!iwa_origin.has_value()) {
+      return PROCEED;
+    }
+    if (NeedsManifestFetch(*iwa_origin)) {
       IwaPermissionsPolicyCacheFactory::GetForProfile(profile())
           ->ObtainManifestAndCache(
               *iwa_origin,
@@ -82,11 +84,26 @@ IsolatedWebAppThrottle::WillStartRequest() {
   return DEFER;
 }
 
+content::NavigationThrottle::ThrottleCheckResult
+IsolatedWebAppThrottle::WillProcessResponse() {
+  const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
+  if (iwa_origin.has_value()) {
+    LogEntitlementViolations(*iwa_origin);
+  }
+  return PROCEED;
+}
+
 void IsolatedWebAppThrottle::OnComponentsReady() {
-  if (NeedsManifestFetch()) {
+  const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
+  if (!iwa_origin.has_value()) {
+    Resume();
+    return;
+  }
+
+  if (NeedsManifestFetch(*iwa_origin)) {
     IwaPermissionsPolicyCacheFactory::GetForProfile(profile())
         ->ObtainManifestAndCache(
-            *IwaOrigin::Create(navigation_handle()->GetURL()),
+            *iwa_origin,
             base::BindOnce(&IsolatedWebAppThrottle::OnCachePopulated,
                            weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -94,17 +111,28 @@ void IsolatedWebAppThrottle::OnComponentsReady() {
   }
 }
 
-bool IsolatedWebAppThrottle::NeedsManifestFetch() const {
-  const auto iwa_origin = IwaOrigin::Create(navigation_handle()->GetURL());
+bool IsolatedWebAppThrottle::NeedsManifestFetch(
+    const IwaOrigin& iwa_origin) const {
   // There are navigations involved in processing the bundle data for
   // installations/updates/metadata reading, and caching the manifest then
   // would not be a good idea. In particular, this is not a good place for
   // catching manifest-related issues during the installation.
-  return iwa_origin.has_value() &&
-         !NonInstalledBundleInspectionContext::FromWebContents(
+  return !NonInstalledBundleInspectionContext::FromWebContents(
              navigation_handle()->GetWebContents()) &&
          !IwaPermissionsPolicyCacheFactory::GetForProfile(profile())->GetPolicy(
-             *iwa_origin);
+             iwa_origin);
+}
+
+void IsolatedWebAppThrottle::LogEntitlementViolations(
+    const IwaOrigin& iwa_origin) {
+  for (const std::string& feature :
+       IwaPermissionsPolicyCacheFactory::GetForProfile(profile())
+           ->GetViolations(iwa_origin)) {
+    navigation_handle()->GetRenderFrameHost()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "IWA entitlement violation: feature '" + feature +
+            "' is not granted to IWA " + iwa_origin.web_bundle_id().id() + ".");
+  }
 }
 
 void IsolatedWebAppThrottle::OnCachePopulated(bool success) {

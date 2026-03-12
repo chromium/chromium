@@ -129,4 +129,89 @@ TEST_F(IsolatedWebAppThrottleTest, WebAppProviderInitializedAfterNavigation) {
   run_loop.Run();
 }
 
+TEST_F(IsolatedWebAppThrottleTest,
+       LogsEntitlementViolationsWhenProceedingWithCachedManifest) {
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
+                                            main_frame());
+  test_handle.set_render_frame_host(main_frame());
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
+
+  auto iwa_origin = IwaOrigin::Create(GURL(kIsolatedAppOrigin)).value();
+
+  // Create an unfiltered policy with two features.
+  IwaPermissionsPolicyCache::CacheEntry unfiltered_policy = {
+      IwaPermissionsPolicyCache::Entry("camera", {}),
+      IwaPermissionsPolicyCache::Entry("microphone", {})};
+
+  // Create a filtered policy that removed "camera".
+  IwaPermissionsPolicyCache::CacheEntry filtered_policy = {
+      IwaPermissionsPolicyCache::Entry("microphone", {})};
+
+  GetCache()->SetPolicyWithViolationsForTesting(iwa_origin, unfiltered_policy,
+                                                filtered_policy);
+
+  // The throttle should proceed since the policy is already cached.
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillStartRequest().action());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillProcessResponse().action());
+
+  // Expect a console message warning about "camera".
+  auto* rfh_tester = content::RenderFrameHostTester::For(main_frame());
+  EXPECT_THAT(
+      rfh_tester->GetConsoleMessages(),
+      testing::Contains(
+          "IWA entitlement violation: feature 'camera' is not granted to IWA " +
+          iwa_origin.web_bundle_id().id() + "."));
+}
+
+TEST_F(IsolatedWebAppThrottleTest,
+       LogsEntitlementViolationsAfterCachePopulation) {
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  content::MockNavigationHandle test_handle(GURL(kIsolatedAppOrigin),
+                                            main_frame());
+  test_handle.set_render_frame_host(main_frame());
+  content::MockNavigationThrottleRegistry test_registry(
+      &test_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  auto throttle = std::make_unique<MockIsolatedWebAppThrottle>(test_registry);
+
+  auto iwa_origin = IwaOrigin::Create(GURL(kIsolatedAppOrigin)).value();
+
+  // Initially not cached, so it defers.
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            throttle->WillStartRequest().action());
+
+  // Simulate cache population where "camera" is stripped.
+  IwaPermissionsPolicyCache::CacheEntry unfiltered_policy = {
+      IwaPermissionsPolicyCache::Entry("camera", {}),
+      IwaPermissionsPolicyCache::Entry("microphone", {})};
+  IwaPermissionsPolicyCache::CacheEntry filtered_policy = {
+      IwaPermissionsPolicyCache::Entry("microphone", {})};
+
+  GetCache()->SetPolicyWithViolationsForTesting(iwa_origin, unfiltered_policy,
+                                                filtered_policy);
+
+  // This will call OnCachePopulated, which should Resume.
+  EXPECT_CALL(*throttle, Resume());
+  throttle->OnCachePopulated(/*success=*/true);
+
+  // The violations are logged during WillProcessResponse.
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillProcessResponse().action());
+
+  auto* rfh_tester = content::RenderFrameHostTester::For(main_frame());
+  EXPECT_THAT(
+      rfh_tester->GetConsoleMessages(),
+      testing::Contains(
+          "IWA entitlement violation: feature 'camera' is not granted to IWA " +
+          iwa_origin.web_bundle_id().id() + "."));
+}
+
 }  // namespace web_app

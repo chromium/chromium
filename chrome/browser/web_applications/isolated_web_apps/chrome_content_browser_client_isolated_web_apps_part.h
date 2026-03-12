@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_CHROME_CONTENT_BROWSER_CLIENT_ISOLATED_WEB_APPS_PART_H_
 
 #include "chrome/browser/chrome_content_browser_client_parts.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "url/origin.h"
 
 class ChromeContentBrowserClient;
 
@@ -26,6 +28,11 @@ class ChromeContentBrowserClientIsolatedWebAppsPart
  private:
   // For access to `AreIsolatedWebAppsEnabled`.
   friend class ::ChromeContentBrowserClient;
+
+  static std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>
+  GetBaselinePermissionsPolicyForIsolatedWebApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& iwa_origin);
 
   static bool AreIsolatedWebAppsEnabled(
       content::BrowserContext* browser_context);

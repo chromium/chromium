@@ -239,6 +239,12 @@ IsolatedWebAppTrustChecker::IsResourceLoadingAllowed(
   return base::ok();
 }
 
+// static
+bool IsolatedWebAppTrustChecker::IsTrustedForTesting(
+    const web_package::SignedWebBundleId& web_bundle_id) {
+  return GetTrustedWebBundleIdsForTesting().contains(web_bundle_id);
+}
+
 void SetTrustedWebBundleIdsForTesting(  // IN-TEST
     base::flat_set<web_package::SignedWebBundleId> trusted_web_bundle_ids) {
   DCHECK(

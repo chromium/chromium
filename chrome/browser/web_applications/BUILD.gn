@@ -1246,6 +1246,7 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/isolated_web_app_browsing_data_browsertest.cc",
     "isolated_web_apps/isolated_web_app_csp_browsertest.cc",
     "isolated_web_apps/isolated_web_app_dev_tools_browsertest.cc",
+    "isolated_web_apps/isolated_web_app_entitlements_browsertest.cc",
     "isolated_web_apps/isolated_web_app_error_page_browsertest.cc",
     "isolated_web_apps/isolated_web_app_file_handling_browsertest.cc",
     "isolated_web_apps/isolated_web_app_install_prepare_apply_update_browsertest.cc",
