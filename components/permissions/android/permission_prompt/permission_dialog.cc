@@ -39,32 +39,19 @@ PermissionPromptDisposition PermissionDialog::GetPromptDisposition() const {
   return PermissionPromptDisposition::MODAL_DIALOG;
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-PermissionDialog::GetPositiveButtonText(JNIEnv* env, bool is_one_time) const {
+std::u16string PermissionDialog::GetPositiveButtonText(bool is_one_time) const {
   return is_one_time
-             ? ConvertUTF16ToJavaString(
-                   env, l10n_util::GetStringUTF16(
-                            IDS_PERMISSION_ALLOW_WHILE_VISITING))
-             : ConvertUTF16ToJavaString(
-                   env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+             ? l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_WHILE_VISITING)
+             : l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW);
 }
-base::android::ScopedJavaLocalRef<jstring>
-PermissionDialog::GetNegativeButtonText(JNIEnv* env, bool is_one_time) const {
-  return is_one_time
-             ? ConvertUTF16ToJavaString(
-                   env, l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW))
-             : ConvertUTF16ToJavaString(
-                   env, l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
+std::u16string PermissionDialog::GetNegativeButtonText(bool is_one_time) const {
+  return is_one_time ? l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW)
+                     : l10n_util::GetStringUTF16(IDS_PERMISSION_DENY);
 }
-base::android::ScopedJavaLocalRef<jstring>
-PermissionDialog::GetPositiveEphemeralButtonText(JNIEnv* env,
-                                                 bool is_one_time) const {
-  return is_one_time
-             ? ConvertUTF16ToJavaString(
-                   env,
-                   l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME))
-             : ConvertUTF16ToJavaString(env, std::u16string_view());
-  ;
+std::u16string PermissionDialog::GetPositiveEphemeralButtonText(
+    bool is_one_time) const {
+  return is_one_time ? l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME)
+                     : std::u16string();
 }
 
 }  // namespace permissions

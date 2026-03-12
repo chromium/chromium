@@ -19,8 +19,6 @@
 #include "components/permissions/android/jni_headers/BluetoothScanningPermissionDialog_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
 namespace permissions {
@@ -54,13 +52,12 @@ BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
 
   // Create (and show) the BluetoothScanningPermission dialog.
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> origin_string = ConvertUTF16ToJavaString(
-      env, url_formatter::FormatUrlForSecurityDisplay(origin.GetURL()));
-  java_dialog_.Reset(std::move(create_java_dialog_callback)
-                         .Run(env, window_android, origin_string,
-                              delegate_->GetSecurityLevel(web_contents_),
-                              delegate_->GetJavaObject(),
-                              reinterpret_cast<intptr_t>(this)));
+  java_dialog_.Reset(
+      std::move(create_java_dialog_callback)
+          .Run(env, window_android,
+               url_formatter::FormatUrlForSecurityDisplay(origin.GetURL()),
+               delegate_->GetSecurityLevel(web_contents_),
+               delegate_->GetJavaObject(), reinterpret_cast<intptr_t>(this)));
 }
 
 BluetoothScanningPromptAndroid::BluetoothScanningPromptAndroid(
@@ -84,13 +81,8 @@ void BluetoothScanningPromptAndroid::AddOrUpdateDevice(
     const std::string& device_id,
     bool should_update_name,
     const std::u16string& device_name) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> java_device_id =
-      ConvertUTF8ToJavaString(env, device_id);
-  ScopedJavaLocalRef<jstring> java_device_name =
-      ConvertUTF16ToJavaString(env, device_name);
   Java_BluetoothScanningPermissionDialog_addOrUpdateDevice(
-      env, java_dialog_, java_device_id, java_device_name);
+      AttachCurrentThread(), java_dialog_, device_id, device_name);
 }
 
 void BluetoothScanningPromptAndroid::OnDialogFinished(

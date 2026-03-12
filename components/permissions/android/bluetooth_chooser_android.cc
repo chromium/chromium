@@ -55,14 +55,12 @@ BluetoothChooserAndroid::BluetoothChooserAndroid(
 
   // Create (and show) the BluetoothChooser dialog.
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> origin_string =
-      base::android::ConvertUTF16ToJavaString(
-          env, url_formatter::FormatOriginForSecurityDisplay(origin));
-  java_dialog_.Reset(std::move(create_java_dialog_callback)
-                         .Run(env, window_android, origin_string,
-                              delegate_->GetSecurityLevel(web_contents_),
-                              delegate_->GetJavaObject(),
-                              reinterpret_cast<intptr_t>(this)));
+  java_dialog_.Reset(
+      std::move(create_java_dialog_callback)
+          .Run(env, window_android,
+               url_formatter::FormatOriginForSecurityDisplay(origin),
+               delegate_->GetSecurityLevel(web_contents_),
+               delegate_->GetJavaObject(), reinterpret_cast<intptr_t>(this)));
 }
 
 BluetoothChooserAndroid::BluetoothChooserAndroid(
@@ -129,14 +127,9 @@ void BluetoothChooserAndroid::AddOrUpdateDevice(
     bool is_gatt_connected,
     bool is_paired,
     int signal_strength_level) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> java_device_id =
-      base::android::ConvertUTF8ToJavaString(env, device_id);
-  ScopedJavaLocalRef<jstring> java_device_name =
-      base::android::ConvertUTF16ToJavaString(env, device_name);
   Java_BluetoothChooserDialog_addOrUpdateDevice(
-      env, java_dialog_, java_device_id, java_device_name, is_gatt_connected,
-      signal_strength_level);
+      AttachCurrentThread(), java_dialog_, device_id, device_name,
+      is_gatt_connected, signal_strength_level);
 }
 
 void BluetoothChooserAndroid::OnDialogFinished(

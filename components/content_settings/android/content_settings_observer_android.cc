@@ -36,11 +36,9 @@ void AndroidObserver::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
   Java_ContentSettingsObserver_onContentSettingChanged(
-      env, jobject_, ConvertUTF8ToJavaString(env, primary_pattern.ToString()),
-      ConvertUTF8ToJavaString(env, secondary_pattern.ToString()),
+      base::android::AttachCurrentThread(), jobject_,
+      primary_pattern.ToString(), secondary_pattern.ToString(),
       static_cast<int>(content_type_set.GetTypeOrDefault()));
 }
 

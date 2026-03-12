@@ -69,14 +69,9 @@ class PermissionPromptAndroid : public PermissionPrompt {
   virtual bool ShouldCurrentRequestUseQuietUI();
   virtual std::optional<PermissionUiSelector::QuietUiReason>
   ReasonForUsingQuietUi() const;
-  virtual base::android::ScopedJavaLocalRef<jstring> GetPositiveButtonText(
-      JNIEnv* env,
-      bool is_one_time) const;
-  virtual base::android::ScopedJavaLocalRef<jstring> GetNegativeButtonText(
-      JNIEnv* env,
-      bool is_one_time) const;
-  virtual base::android::ScopedJavaLocalRef<jstring>
-  GetPositiveEphemeralButtonText(JNIEnv* env, bool is_one_time) const;
+  virtual std::u16string GetPositiveButtonText(bool is_one_time) const;
+  virtual std::u16string GetNegativeButtonText(bool is_one_time) const;
+  virtual std::u16string GetPositiveEphemeralButtonText(bool is_one_time) const;
 
   // We show one permission at a time except for grouped mic+camera, for which
   // we still have a single icon and message text.

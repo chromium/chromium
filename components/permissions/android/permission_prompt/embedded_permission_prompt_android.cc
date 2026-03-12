@@ -225,79 +225,62 @@ EmbeddedPermissionPromptAndroid::GetAnnotatedMessageText() const {
   NOTREACHED();
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-EmbeddedPermissionPromptAndroid::GetPositiveButtonText(JNIEnv* env,
-                                                       bool is_one_time) const {
+std::u16string EmbeddedPermissionPromptAndroid::GetPositiveButtonText(
+    bool is_one_time) const {
   switch (GetEmbeddedPromptVariant()) {
     case Variant::kAsk:
-      return is_one_time
-                 ? ConvertUTF16ToJavaString(
-                       env, l10n_util::GetStringUTF16(
-                                IDS_PERMISSION_ALLOW_WHILE_VISITING))
-                 : ConvertUTF16ToJavaString(
-                       env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+      return is_one_time ? l10n_util::GetStringUTF16(
+                               IDS_PERMISSION_ALLOW_WHILE_VISITING)
+                         : l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW);
 
     case Variant::kPreviouslyGranted:
-      return ConvertUTF16ToJavaString(
-          env,
-          l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_ALLOWING));
+      return l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_ALLOWING);
     case Variant::kOsSystemSettings:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringFUTF16(
-                   IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS,
-                   l10n_util::GetStringUTF16(IDS_ANDROID_NAME_FRAGMENT)));
+      return l10n_util::GetStringFUTF16(
+          IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS,
+          l10n_util::GetStringUTF16(IDS_ANDROID_NAME_FRAGMENT));
     case Variant::kPreviouslyDenied:
-      return ConvertUTF16ToJavaString(
-          env,
-          l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING));
+      return l10n_util::GetStringUTF16(
+          IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING);
     case Variant::kAdministratorDenied:
     case Variant::kAdministratorGranted:
     case Variant::kOsPrompt:
-      return ConvertUTF16ToJavaString(env, std::u16string_view());
+      return std::u16string();
     case Variant::kUninitialized:
       NOTREACHED();
   }
   NOTREACHED();
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-EmbeddedPermissionPromptAndroid::GetNegativeButtonText(JNIEnv* env,
-                                                       bool is_one_time) const {
+std::u16string EmbeddedPermissionPromptAndroid::GetNegativeButtonText(
+    bool is_one_time) const {
   switch (GetEmbeddedPromptVariant()) {
     case Variant::kAsk:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
+      return l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW);
     case Variant::kPreviouslyGranted:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_STOP_ALLOWING));
+      return l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_STOP_ALLOWING);
     case Variant::kOsSystemSettings:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CANCEL_LABEL));
+      return l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CANCEL_LABEL);
     case Variant::kPreviouslyDenied:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
+      return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME);
     case Variant::kAdministratorGranted:
     case Variant::kAdministratorDenied:
-      return ConvertUTF16ToJavaString(
-          env, l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL));
+      return l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL);
     case Variant::kOsPrompt:
-      return ConvertUTF16ToJavaString(env, std::u16string_view());
+      return std::u16string();
     case Variant::kUninitialized:
       NOTREACHED();
   }
   NOTREACHED();
 }
-base::android::ScopedJavaLocalRef<jstring>
-EmbeddedPermissionPromptAndroid::GetPositiveEphemeralButtonText(
-    JNIEnv* env,
+std::u16string EmbeddedPermissionPromptAndroid::GetPositiveEphemeralButtonText(
     bool is_one_time) const {
   if (!is_one_time || GetEmbeddedPromptVariant() !=
                           EmbeddedPermissionPromptFlowModel::Variant::kAsk) {
-    return ConvertUTF16ToJavaString(env, std::u16string_view());
+    return std::u16string();
   }
 
-  return ConvertUTF16ToJavaString(
-      env, l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME);
 }
 
 bool EmbeddedPermissionPromptAndroid::ShouldUseRequestingOriginFavicon() const {

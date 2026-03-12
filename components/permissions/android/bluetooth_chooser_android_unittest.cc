@@ -50,14 +50,8 @@ TEST_F(BluetoothChooserAndroidTest, FrameTree) {
 
   base::MockCallback<BluetoothChooserAndroid::CreateJavaDialogCallback>
       mock_callback;
-  auto origin_predicate =
-      [&](const base::android::JavaRef<jstring>& java_string) {
-        return base::android::ConvertJavaStringToUTF16(
-                   base::android::AttachCurrentThread(), java_string) ==
-               u"https://main-frame.com";
-      };
   EXPECT_CALL(mock_callback, Run(/*env=*/_, /*window_android=*/_,
-                                 testing::Truly(origin_predicate),
+                                 std::u16string(u"https://main-frame.com"),
                                  /*security_level=*/_, /*delegate=*/_,
                                  /*native_bluetooth_chooser_dialog_ptr=*/_));
 

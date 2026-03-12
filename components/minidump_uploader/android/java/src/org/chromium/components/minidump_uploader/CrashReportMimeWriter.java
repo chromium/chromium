@@ -5,6 +5,7 @@
 package org.chromium.components.minidump_uploader;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -83,10 +84,15 @@ public class CrashReportMimeWriter {
 
     @NativeMethods
     interface Natives {
-        void rewriteMinidumpsAsMIMEs(String srcDir, String destDir);
+        void rewriteMinidumpsAsMIMEs(
+                @JniType("std::string") String srcDir, @JniType("std::string") String destDir);
 
-        String[] rewriteMinidumpsAsMIMEsAndGetCrashKeys(String srcDir, String destDir);
+        @JniType("std::vector<std::string>")
+        String[] rewriteMinidumpsAsMIMEsAndGetCrashKeys(
+                @JniType("std::string") String srcDir, @JniType("std::string") String destDir);
 
-        void rewriteAnrsAsMIMEs(String[] anrs, String destDir);
+        void rewriteAnrsAsMIMEs(
+                @JniType("std::vector<std::string>") String[] anrs,
+                @JniType("std::string") String destDir);
     }
 }

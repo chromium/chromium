@@ -30,7 +30,7 @@ class BluetoothChooserAndroid : public content::BluetoothChooser {
       base::OnceCallback<base::android::ScopedJavaLocalRef<
           JBluetoothChooserDialog>(JNIEnv*,
                                    const base::android::JavaRef<jobject>&,
-                                   const base::android::JavaRef<jstring>&,
+                                   const std::u16string&,
                                    JniIntWrapper,
                                    const base::android::JavaRef<jobject>&,
                                    int64_t)>;

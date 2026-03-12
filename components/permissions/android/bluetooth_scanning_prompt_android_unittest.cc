@@ -50,17 +50,11 @@ TEST_F(BluetoothScanningPromptAndroidTest, FrameTree) {
 
   base::MockCallback<BluetoothScanningPromptAndroid::CreateJavaDialogCallback>
       mock_callback;
-  auto origin_predicate =
-      [&](const base::android::JavaRef<jstring>& java_string) {
-        return base::android::ConvertJavaStringToUTF16(
-                   base::android::AttachCurrentThread(), java_string) ==
-               u"https://main-frame.com";
-      };
   EXPECT_CALL(
       mock_callback,
-      Run(/*env=*/_, /*window_android=*/_, testing::Truly(origin_predicate),
-          /*security_level=*/_, /*delegate=*/_,
-          /*native_bluetooth_scanning_prompt_dialog_ptr=*/_));
+      Run(/*env=*/_, /*window_android=*/_,
+          std::u16string(u"https://main-frame.com"), /*security_level=*/_,
+          /*delegate=*/_, /*native_bluetooth_scanning_prompt_dialog_ptr=*/_));
 
   BluetoothScanningPromptAndroid::CreateForTesting(
       subframe,

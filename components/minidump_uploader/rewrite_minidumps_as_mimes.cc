@@ -302,13 +302,8 @@ void WriteAnrAsMime(crashpad::FileReader* anr_reader,
 
 static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
     JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& j_anrs,
-    const base::android::JavaRef<jstring>& j_dest_dir) {
-  std::vector<std::string> anr_strings;
-  base::android::AppendJavaStringArrayToStringVector(env, j_anrs, &anr_strings);
-  std::string dest_dir =
-      base::android::ConvertJavaStringToUTF8(env, j_dest_dir);
-
+    const std::vector<std::string>& anr_strings,
+    const std::string& dest_dir) {
   for (size_t i = 0; i < anr_strings.size(); i += 4) {
     std::string anr_proto_file_path = anr_strings.at(i);
     std::string chrome_version = anr_strings.at(i + 1);
@@ -337,30 +332,22 @@ static void JNI_CrashReportMimeWriter_RewriteAnrsAsMIMEs(
 
 static void JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEs(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_src_dir,
-    const base::android::JavaRef<jstring>& j_dest_dir) {
-  std::string src_dir = base::android::ConvertJavaStringToUTF8(env, j_src_dir);
-  std::string dest_dir =
-      base::android::ConvertJavaStringToUTF8(env, j_dest_dir);
-
+    const std::string& src_dir,
+    const std::string& dest_dir) {
   RewriteMinidumpsAsMIMEs(base::FilePath(src_dir), base::FilePath(dest_dir),
                           nullptr);
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static std::vector<std::string>
 JNI_CrashReportMimeWriter_RewriteMinidumpsAsMIMEsAndGetCrashKeys(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& j_src_dir,
-    const base::android::JavaRef<jstring>& j_dest_dir) {
-  std::string src_dir = base::android::ConvertJavaStringToUTF8(env, j_src_dir);
-  std::string dest_dir =
-      base::android::ConvertJavaStringToUTF8(env, j_dest_dir);
-
+    const std::string& src_dir,
+    const std::string& dest_dir) {
   std::vector<std::string> key_value_arr;
   RewriteMinidumpsAsMIMEs(base::FilePath(src_dir), base::FilePath(dest_dir),
                           &key_value_arr);
 
-  return base::android::ToJavaArrayOfStrings(env, key_value_arr);
+  return key_value_arr;
 }
 
 }  // namespace minidump_uploader

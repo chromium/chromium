@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import androidx.core.text.BidiFormatter;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.library_loader.LibraryLoader;
@@ -358,7 +359,7 @@ public class UrlUtilities {
      * @return null if the key doesn't exist in the query string for the URL. Otherwise, returns the
      * value for the key in the query string.
      */
-    public static String getValueForKeyInQuery(GURL url, String key) {
+    public static @Nullable String getValueForKeyInQuery(GURL url, String key) {
         return UrlUtilitiesJni.get().getValueForKeyInQuery(url, key);
     }
 
@@ -395,28 +396,40 @@ public class UrlUtilities {
     @NativeMethods
     public interface Natives {
         boolean sameDomainOrHost(
-                String primaryUrl, String secondaryUrl, boolean includePrivateRegistries);
+                @JniType("std::string") String primaryUrl,
+                @JniType("std::string") String secondaryUrl,
+                boolean includePrivateRegistries);
 
-        String getDomainAndRegistry(String url, boolean includePrivateRegistries);
+        @JniType("std::string")
+        String getDomainAndRegistry(
+                @JniType("std::string") String url, boolean includePrivateRegistries);
 
-        boolean isGoogleDomainUrl(String url, boolean allowNonStandardPort);
+        boolean isGoogleDomainUrl(@JniType("std::string") String url, boolean allowNonStandardPort);
 
-        boolean isGoogleSubDomainUrl(String url);
+        boolean isGoogleSubDomainUrl(@JniType("std::string") String url);
 
-        boolean isGoogleSearchUrl(@Nullable String url);
+        boolean isGoogleSearchUrl(@Nullable @JniType("std::string") String url);
 
-        boolean isGoogleHomePageUrl(String url);
+        boolean isGoogleHomePageUrl(@JniType("std::string") String url);
 
-        boolean isUrlWithinScope(String url, String scopeUrl);
+        boolean isUrlWithinScope(
+                @JniType("std::string") String url, @JniType("std::string") String scopeUrl);
 
-        boolean urlsMatchIgnoringFragments(@Nullable String url, @Nullable String url2);
+        boolean urlsMatchIgnoringFragments(
+                @Nullable @JniType("std::string") String url,
+                @Nullable @JniType("std::string") String url2);
 
-        boolean urlsFragmentsDiffer(String url, String url2);
+        boolean urlsFragmentsDiffer(
+                @JniType("std::string") String url, @JniType("std::string") String url2);
 
-        String escapeQueryParamValue(String url, boolean usePlus);
+        @JniType("std::string")
+        String escapeQueryParamValue(@JniType("std::string") String url, boolean usePlus);
 
-        String getValueForKeyInQuery(GURL url, String key);
+        @JniType("std::optional<std::string>")
+        @Nullable String getValueForKeyInQuery(
+                @JniType("GURL") GURL url, @JniType("std::string") String key);
 
-        GURL clearPort(GURL url);
+        @JniType("GURL")
+        GURL clearPort(@JniType("GURL") GURL url);
     }
 }

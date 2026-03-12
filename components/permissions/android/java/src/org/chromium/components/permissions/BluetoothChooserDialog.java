@@ -434,7 +434,7 @@ public class BluetoothChooserDialog
     @VisibleForTesting
     public static @Nullable BluetoothChooserDialog create(
             WindowAndroid windowAndroid,
-            String origin,
+            @JniType("std::u16string") String origin,
             int securityLevel,
             BluetoothChooserAndroidDelegate delegate,
             long nativeBluetoothChooserDialogPtr) {
@@ -471,7 +471,10 @@ public class BluetoothChooserDialog
     @VisibleForTesting
     @CalledByNative
     public void addOrUpdateDevice(
-            String deviceId, String deviceName, boolean isGATTConnected, int signalStrengthLevel) {
+            @JniType("std::string") String deviceId,
+            @JniType("std::u16string") String deviceName,
+            boolean isGATTConnected,
+            int signalStrengthLevel) {
         Drawable icon = null;
         String iconDescription = null;
         if (isGATTConnected) {

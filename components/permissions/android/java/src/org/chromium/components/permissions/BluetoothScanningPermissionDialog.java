@@ -225,7 +225,7 @@ public class BluetoothScanningPermissionDialog {
     @CalledByNative
     private static BluetoothScanningPermissionDialog create(
             WindowAndroid windowAndroid,
-            String origin,
+            @JniType("std::u16string") String origin,
             int securityLevel,
             BluetoothScanningPromptAndroidDelegate delegate,
             long nativeBluetoothScanningPermissionDialogPtr) {
@@ -241,7 +241,8 @@ public class BluetoothScanningPermissionDialog {
 
     @VisibleForTesting
     @CalledByNative
-    public void addOrUpdateDevice(String deviceId, String deviceName) {
+    public void addOrUpdateDevice(
+            @JniType("std::string") String deviceId, @JniType("std::u16string") String deviceName) {
         if (TextUtils.isEmpty(deviceName)) {
             deviceName = mContext.getString(R.string.bluetooth_scanning_device_unknown, deviceId);
         }

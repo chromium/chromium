@@ -15,9 +15,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/download/internal/common/jni_headers/DownloadCollectionBridge_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -38,32 +35,18 @@ base::FilePath DownloadCollectionBridge::CreateIntermediateUriForPublish(
     const GURL& referrer_url,
     const base::FilePath& file_name,
     const std::string& mime_type) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jurl =
-      ConvertUTF8ToJavaString(env, original_url.spec());
-  ScopedJavaLocalRef<jstring> jreferrer =
-      ConvertUTF8ToJavaString(env, referrer_url.spec());
-  ScopedJavaLocalRef<jstring> jfile_name =
-      ConvertUTF16ToJavaString(env, file_name.AsUTF16Unsafe());
-  ScopedJavaLocalRef<jstring> jmime_type =
-      ConvertUTF8ToJavaString(env, mime_type);
-  ScopedJavaLocalRef<jstring> jcontent_uri =
+  std::string content_uri =
       Java_DownloadCollectionBridge_createIntermediateUriForPublish(
-          env, jfile_name, jmime_type, jurl, jreferrer);
-  if (jcontent_uri) {
-    std::string content_uri = ConvertJavaStringToUTF8(env, jcontent_uri);
-    return base::FilePath(content_uri);
-  }
-  return base::FilePath();
+          base::android::AttachCurrentThread(), file_name.value(), mime_type,
+          original_url.spec(), referrer_url.spec());
+  return base::FilePath(content_uri);
 }
 
 // static
 bool DownloadCollectionBridge::ShouldPublishDownload(
     const base::FilePath& file_path) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jfile_path =
-      ConvertUTF16ToJavaString(env, file_path.AsUTF16Unsafe());
-  return Java_DownloadCollectionBridge_shouldPublishDownload(env, jfile_path);
+  return Java_DownloadCollectionBridge_shouldPublishDownload(
+      base::android::AttachCurrentThread(), file_path.value());
 }
 
 // static
@@ -73,13 +56,9 @@ DownloadInterruptReason DownloadCollectionBridge::MoveFileToIntermediateUri(
   DCHECK(!source_path.IsContentUri());
   DCHECK(destination_uri.IsContentUri());
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jsource =
-      ConvertUTF8ToJavaString(env, source_path.value());
-  ScopedJavaLocalRef<jstring> jdestination =
-      ConvertUTF8ToJavaString(env, destination_uri.value());
   bool success = Java_DownloadCollectionBridge_copyFileToIntermediateUri(
-      env, jsource, jdestination);
+      base::android::AttachCurrentThread(), source_path.value(),
+      destination_uri.value());
   base::DeleteFile(source_path);
   return success ? DOWNLOAD_INTERRUPT_REASON_NONE
                  : DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
@@ -88,35 +67,23 @@ DownloadInterruptReason DownloadCollectionBridge::MoveFileToIntermediateUri(
 // static
 void DownloadCollectionBridge::DeleteIntermediateUri(
     const base::FilePath& intermediate_uri) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> juri =
-      ConvertUTF8ToJavaString(env, intermediate_uri.value());
-  Java_DownloadCollectionBridge_deleteIntermediateUri(env, juri);
+  Java_DownloadCollectionBridge_deleteIntermediateUri(
+      base::android::AttachCurrentThread(), intermediate_uri.value());
 }
 
 // static
 base::FilePath DownloadCollectionBridge::PublishDownload(
     const base::FilePath& intermediate_uri) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jintermediate_uri =
-      ConvertUTF8ToJavaString(env, intermediate_uri.value());
-  ScopedJavaLocalRef<jstring> jfinal_uri =
-      Java_DownloadCollectionBridge_publishDownload(env, jintermediate_uri);
-  if (jfinal_uri) {
-    std::string final_uri = ConvertJavaStringToUTF8(env, jfinal_uri);
-    return base::FilePath(final_uri);
-  }
-  return base::FilePath();
+  std::string final_uri = Java_DownloadCollectionBridge_publishDownload(
+      base::android::AttachCurrentThread(), intermediate_uri.value());
+  return base::FilePath(final_uri);
 }
 
 // static
 base::File DownloadCollectionBridge::OpenIntermediateUri(
     const base::FilePath& intermediate_uri) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jintermediate_uri =
-      ConvertUTF8ToJavaString(env, intermediate_uri.value());
-  int fd =
-      Java_DownloadCollectionBridge_openIntermediateUri(env, jintermediate_uri);
+  int fd = Java_DownloadCollectionBridge_openIntermediateUri(
+      base::android::AttachCurrentThread(), intermediate_uri.value());
   if (fd < 0)
     return base::File();
   return base::File(fd);
@@ -128,23 +95,17 @@ bool DownloadCollectionBridge::FileNameExists(const base::FilePath& file_name) {
     return g_existing_file_names->find(file_name) !=
            g_existing_file_names->end();
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jfile_name =
-      ConvertUTF8ToJavaString(env, file_name.value());
-  return Java_DownloadCollectionBridge_fileNameExists(env, jfile_name);
+  return Java_DownloadCollectionBridge_fileNameExists(
+      base::android::AttachCurrentThread(), file_name.value());
 }
 
 // static
 bool DownloadCollectionBridge::RenameDownloadUri(
     const base::FilePath& download_uri,
     const base::FilePath& new_display_name) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jdownload_uri =
-      ConvertUTF8ToJavaString(env, download_uri.value());
-  ScopedJavaLocalRef<jstring> jdisplay_name =
-      ConvertUTF8ToJavaString(env, new_display_name.value());
-  return Java_DownloadCollectionBridge_renameDownloadUri(env, jdownload_uri,
-                                                         jdisplay_name);
+  return Java_DownloadCollectionBridge_renameDownloadUri(
+      base::android::AttachCurrentThread(), download_uri.value(),
+      new_display_name.value());
 }
 
 // static
@@ -159,13 +120,10 @@ void DownloadCollectionBridge::GetDisplayNamesForDownloads(
     return;
   }
   for (auto jdisplay_info : jdisplay_infos.ReadElements<jobject>()) {
-    ScopedJavaLocalRef<jstring> juri =
-        Java_DisplayNameInfo_getDownloadUri(env, jdisplay_info);
-    ScopedJavaLocalRef<jstring> jdisplay_name =
+    std::string uri = Java_DisplayNameInfo_getDownloadUri(env, jdisplay_info);
+    std::string display_name =
         Java_DisplayNameInfo_getDisplayName(env, jdisplay_info);
-    if (juri && jdisplay_name) {
-      std::string uri = ConvertJavaStringToUTF8(env, juri);
-      std::string display_name = ConvertJavaStringToUTF8(env, jdisplay_name);
+    if (!uri.empty() && !display_name.empty()) {
       result->emplace(uri, display_name);
     }
   }
@@ -175,16 +133,9 @@ void DownloadCollectionBridge::GetDisplayNamesForDownloads(
 // static
 base::FilePath DownloadCollectionBridge::GetDisplayName(
     const base::FilePath& download_uri) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jdownload_uri =
-      ConvertUTF8ToJavaString(env, download_uri.value());
-  ScopedJavaLocalRef<jstring> jdisplay_name =
-      Java_DownloadCollectionBridge_getDisplayName(env, jdownload_uri);
-  if (jdisplay_name) {
-    std::string display_name = ConvertJavaStringToUTF8(env, jdisplay_name);
-    return base::FilePath(display_name);
-  }
-  return base::FilePath();
+  std::string display_name = Java_DownloadCollectionBridge_getDisplayName(
+      base::android::AttachCurrentThread(), download_uri.value());
+  return base::FilePath(display_name);
 }
 
 static int32_t JNI_DownloadCollectionBridge_GetExpirationDurationInDays(

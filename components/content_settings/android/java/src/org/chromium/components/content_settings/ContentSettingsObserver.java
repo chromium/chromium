@@ -6,6 +6,7 @@ package org.chromium.components.content_settings;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -31,8 +32,8 @@ public abstract class ContentSettingsObserver {
 
     @CalledByNative
     private void onContentSettingChanged(
-            String primaryPattern,
-            String secondaryPattern,
+            @JniType("std::string") String primaryPattern,
+            @JniType("std::string") String secondaryPattern,
             @ContentSettingsType.EnumType int contentSettingsType) {
         onContentSettingChanged(
                 primaryPattern, secondaryPattern, new ContentSettingsTypeSet(contentSettingsType));
