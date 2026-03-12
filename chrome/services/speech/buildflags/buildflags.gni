@@ -5,10 +5,6 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
-# IMPORTANT
-# We are not accepting any new build flags in //chrome. See
-# docs/chrome_browser_design_principles.md.
-
 declare_args() {
   # Whether the browser provides a speech recognition service
   # (//media/mojo/mojom/speech_recognition_service.mojom) to the renderer.

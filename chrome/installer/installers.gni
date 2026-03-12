@@ -6,10 +6,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 
-# IMPORTANT
-# We are not accepting any new build flags in //chrome. See
-# docs/chrome_browser_design_principles.md.
-
 declare_args() {
   enable_linux_installer =
       is_linux && !is_component_build && use_sysroot && !using_sanitizer

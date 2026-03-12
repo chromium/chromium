@@ -4,10 +4,6 @@
 
 import("//build/config/cast.gni")
 
-# IMPORTANT
-# We are not accepting any new build flags in //chrome. See
-# docs/chrome_browser_design_principles.md.
-
 declare_args() {
   enable_enterprise_companion = (is_mac || is_linux || is_win) && !is_castos
 }
