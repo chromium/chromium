@@ -2365,6 +2365,7 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Audio busy"/>
   <int value="7" label="Audio hardware"/>
   <int value="8" label="Network"/>
+  <int value="9" label="Timeout engine stalled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/shared/metrics_browser_proxy.ts:ReadAnythingSpeechError) -->

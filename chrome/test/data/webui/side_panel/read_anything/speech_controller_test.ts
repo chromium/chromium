@@ -551,6 +551,71 @@ suite('SpeechController', () => {
         await metrics.whenCalled('recordSpeechStopSource'));
   });
 
+  test('engine timeout logged when stalled', async () => {
+    const textContent = 'Wait for it, wait for it';
+    setContent(textContent, readAloudModel);
+
+    // Swap global setTimeout to immediately fire the callback for this test
+    const originalSetTimeout = window.setTimeout;
+    let timeoutFired = false;
+    window.setTimeout = ((fn: Function) => {
+                          timeoutFired = true;
+                          fn();
+                          return 1;
+                        }) as any;
+
+    try {
+      onPlayPauseToggle(textContent);
+      await speech.whenCalled('speak');
+
+      // The engine is in LOADING state initially before onstart is fired
+      // <if expr="is_chromeos">
+      assertFalse(timeoutFired);
+      assertEquals(0, metrics.getCallCount('recordSpeechError'));
+      // </if>
+      // <if expr="not is_chromeos">
+      assertTrue(timeoutFired);
+      assertEquals(1, metrics.getCallCount('recordSpeechError'));
+      const errorArg = metrics.getArgs('recordSpeechError')[0];
+
+      // Assuming ReadAnythingSpeechError is defined such that
+      // TIMEOUT_ENGINE_STALLED is 9
+      assertEquals(9, errorArg);
+      // </if>
+    } finally {
+      window.setTimeout = originalSetTimeout;
+    }
+  });
+
+  test('engine timeout cleared on success', async () => {
+    const textContent = 'Successful speech utterance';
+    setContent(textContent, readAloudModel);
+
+    const originalClearTimeout = window.clearTimeout;
+    let clearTimeoutCalls = 0;
+    window.clearTimeout = ((id: number) => {
+                            clearTimeoutCalls++;
+                            originalClearTimeout(id);
+                          }) as any;
+
+    try {
+      onPlayPauseToggle(textContent);
+      const spoken = await speech.whenCalled('speak');
+
+      // Now simulate a successful start which should clear the timeout
+      spoken.onstart(new SpeechSynthesisEvent('type', {utterance: spoken}));
+      // <if expr="is_chromeos">
+      assertEquals(0, clearTimeoutCalls);
+      // </if>
+      // <if expr="not is_chromeos">
+      assertGT(clearTimeoutCalls, 0);
+      // </if>
+    } finally {
+      window.clearTimeout = originalClearTimeout;
+    }
+  });
+
+
   test('speech finished clears state', async () => {
     const text = 'New phone who dis?';
     setContent(text, readAloudModel);

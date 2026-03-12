@@ -116,9 +116,10 @@ export enum ReadAnythingSpeechError {
   AUDIO_BUSY = 6,
   AUDIO_HARDWARE = 7,
   NETWORK = 8,
+  TIMEOUT_ENGINE_STALLED = 9,
 
   // Must be last.
-  COUNT = 9,
+  COUNT = 10,
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingSpeechError)
 

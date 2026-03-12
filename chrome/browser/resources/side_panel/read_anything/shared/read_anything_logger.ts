@@ -68,6 +68,9 @@ export class ReadAnythingLogger {
       case 'network':
         error = ReadAnythingSpeechError.NETWORK;
         break;
+      case 'timeout-engine-stalled':
+        error = ReadAnythingSpeechError.TIMEOUT_ENGINE_STALLED;
+        break;
       default:
         return;
     }
