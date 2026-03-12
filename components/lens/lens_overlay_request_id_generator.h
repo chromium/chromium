@@ -63,6 +63,11 @@ class LensOverlayRequestIdGenerator {
   LensOverlayRequestIdGenerator();
   ~LensOverlayRequestIdGenerator();
 
+  // Decodes a base64 encoded request id and returns the proto as a unique_ptr.
+  // Returns nullptr if the decoding or parsing fails.
+  static std::unique_ptr<lens::LensOverlayRequestId> ParseRequestId(
+      const std::string& encoded_request_id);
+
   // Resets the request id generator, creating a new uuid and resetting the
   // sequence.
   void ResetRequestId();

@@ -38,7 +38,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </div>
           <div class="chip-overlay"></div>
         </div>
-      ` : html`
+      ` : this.file.name ? html`
         <div id="injectedInputChip" class="chip">
           <div id="injectedInputImgThumbnail"
             class="thumbnail injected-input-img-thumbnail">
@@ -66,6 +66,26 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
             </cr-icon-button>`: ''}
           </div>
           <div class="chip-overlay"></div>
+        </div>
+      ` : html`
+        <div id="injectedInputImgChip" class="img-chip">
+          ${this.isUploading_ ? html`
+            <svg role="image" class="spinner" viewBox="0 0 100 100">
+              <circle class="spinner-circle" cx="50" cy="50" r="40" />
+            </svg>
+          ` : html`
+            <img class="img-thumbnail"
+              src="${this.file.objectUrl || this.file.dataUrl}"
+              aria-label="${this.file.name}">
+          `}
+          ${this.file.isDeletable ? html`<cr-icon-button
+              class="img-overlay"
+              id="removeInjectedInputImgButton"
+              iron-icon="cr:clear"
+              title="${this.file.name}"
+              aria-label="${this.deleteFileButtonTitle_}"
+              @click="${this.onRemoveButtonClick_}">
+          </cr-icon-button>`: ''}
         </div>
       ` : this.file.url ? html`
         <div id="tabChip" class="chip">
@@ -101,7 +121,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           <div class="chip-overlay"></div>
         </div>
       ` : (this.file.objectUrl || this.file.dataUrl) ? html`
-        <div id="imgChip">
+        <div id="imgChip" class="img-chip">
           ${this.isUploading_ ? html`
             <svg role="image" class="spinner" viewBox="0 0 100 100">
               <circle class="spinner-circle" cx="50" cy="50" r="40" />

@@ -43,7 +43,7 @@
   width: 100%;
 }
 
-#imgChip {
+.img-chip {
   aspect-ratio: 1 / 1;
   align-items: center;
   border-radius: var(--image-chip-border-radius_);
@@ -64,7 +64,8 @@
   width: 100%;
 }
 
-#removeImgButton {
+#removeImgButton,
+#removeInjectedInputImgButton {
   --cr-icon-button-fill-color:
       var(--color-composebox-file-image-overlay-icon-color, white);
   /* This defines width and height. No need to manually define it. */
@@ -239,8 +240,8 @@
   white-space: nowrap;
 }
 
-#imgChip:hover .img-overlay,
-#imgChip:focus-within .img-overlay,
+.img-chip:hover .img-overlay,
+.img-chip:focus-within .img-overlay,
 .chip:hover .overlay,
 .chip:focus-within .overlay {
   opacity: 1;
@@ -273,7 +274,7 @@
   width: 100%;
 }
 
-#imgChip #spinnerOverlay {
+.img-chip #spinnerOverlay {
   border-radius: var(--image-chip-border-radius_);
 }
 
@@ -303,7 +304,7 @@ cr-spinner {
 
 @media (forced-colors: active) {
   .chip,
-  #imgChip {
+  .img-chip {
     border: 1px solid ButtonText;
   }
   .remove-button {

@@ -4970,6 +4970,95 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesModalityChip) {
 }
 
 TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_WithModalityChipVsrid_SetsRequestIdAndNotVit) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Create a LensOverlayRequestId and encode it as vsrid.
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  // Default media type maps to VISUAL_INPUT_TYPE_UNKNOWN.
+  request_id.set_media_type(
+      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  std::string vsrid = lens::Base64EncodeRequestId(request_id);
+
+  // Act: Start the modality chip upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  lens::ModalityChipProps modality_chip_props;
+  modality_chip_props.mutable_added_input()->mutable_lens_file()->set_vsrid(
+      vsrid);
+  StartModalityChipUploadFlow(file_token, modality_chip_props);
+  file_upload_status_future_.Take();
+
+  // Create ClientToAimRequest.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify LensImageQueryData is created and RequestId is set.
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& lens_image_query_data =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(0);
+  EXPECT_EQ(lens_image_query_data.request_id().sequence_id(), 1);
+
+  // The visual_input_type should be UNKNOWN and not set.
+  EXPECT_EQ(lens_image_query_data.visual_input_type(),
+            lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_UNKNOWN);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_WithModalityChipVsrid_SetsRequestIdAndVit) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Create a LensOverlayRequestId and encode it as vsrid.
+  lens::LensOverlayRequestId request_id;
+  request_id.set_sequence_id(1);
+  // PDF media type maps to VISUAL_INPUT_TYPE_PDF.
+  request_id.set_media_type(lens::LensOverlayRequestId::MEDIA_TYPE_PDF);
+  std::string vsrid = lens::Base64EncodeRequestId(request_id);
+
+  // Act: Start the modality chip upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  lens::ModalityChipProps modality_chip_props;
+  modality_chip_props.mutable_added_input()->mutable_lens_file()->set_vsrid(
+      vsrid);
+  StartModalityChipUploadFlow(file_token, modality_chip_props);
+  file_upload_status_future_.Take();
+
+  // Create ClientToAimRequest.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify LensImageQueryData is created and RequestId is set.
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& lens_image_query_data =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(0);
+  EXPECT_EQ(lens_image_query_data.request_id().sequence_id(), 1);
+
+  // The visual_input_type should be PDF.
+  EXPECT_EQ(lens_image_query_data.visual_input_type(),
+            lens::LensOverlayVisualInputType::VISUAL_INPUT_TYPE_PDF);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
        CreateClientToAimRequest_IncludesModalityChip) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
