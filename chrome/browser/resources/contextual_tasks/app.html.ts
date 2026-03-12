@@ -48,6 +48,10 @@ export function getHtml(this: ContextualTasksAppElement) {
       </h1>
     </div>
 <if expr="not is_android">
+    ${this.showOnboardingTooltip_ ? html`
+      <contextual-tasks-onboarding-tooltip id="onboardingTooltip">
+      </contextual-tasks-onboarding-tooltip>
+    ` : ''}
     <contextual-tasks-composebox id="composebox"
           style="${this.getComposeboxBoundsStyles()}"
           ?hidden="${(this.isZeroState_ === undefined) || (this.enableBasicMode_

@@ -737,6 +737,10 @@ error-page {
   display: none;
 }
 
+#onboardingTooltip {
+  pointer-events: all;
+}
+
 .name-shimmer-dark {
   --bg-gradient: linear-gradient(
     to bottom,

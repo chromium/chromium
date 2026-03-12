@@ -450,7 +450,7 @@ suite('ContextualTasksComposeboxTest', () => {
   test('TooltipVisibilityUpdatesOnResize', () => {
     mockTimer.install();
     const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = composeboxElement.$.onboardingTooltip;
+    const tooltip = contextualTasksApp.$.onboardingTooltip;
 
     // Force show tooltip
     loadTimeData.overrideValues({
@@ -458,8 +458,8 @@ suite('ContextualTasksComposeboxTest', () => {
       isOnboardingTooltipDismissCountBelowCap: true,
       composeboxShowOnboardingTooltipSessionImpressionCap: 10,
     });
-    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
-    composeboxElement.userDismissedTooltipForTesting = false;
+    contextualTasksApp.numberOfTimesTooltipShownForTesting = 0;
+    contextualTasksApp.userDismissedTooltipForTesting = false;
 
     // Simulate active tab chip token presence
     const innerComposebox = composeboxElement.$.composebox;
@@ -467,8 +467,8 @@ suite('ContextualTasksComposeboxTest', () => {
     innerComposebox.getAutomaticActiveTabChipElement = () =>
         document.createElement('div');
 
-    composeboxElement.updateTooltipVisibilityForTesting();
-    assertTrue(tooltip.shouldShow);
+    contextualTasksApp.updateTooltipVisibilityForTesting();
+    assertTrue(tooltip!.shouldShow);
 
     // Resize event
     const resizeEvent = new CustomEvent('composebox-resize', {
@@ -480,7 +480,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // Tooltip should still be shown and position updated (implicitly via resize
     // observer or logic)
-    assertTrue(tooltip.shouldShow);
+    assertTrue(tooltip!.shouldShow);
   });
 
   test('TooltipResizeObserverCoexistsWithResizeObserver', () => {
@@ -490,7 +490,7 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // Initially, only resizeObserver_ should exist.
     assertTrue(!!composeboxElement.resizeObserverForTesting);
-    assertFalse(!!composeboxElement.tooltipResizeObserverForTesting);
+    assertFalse(!!contextualTasksApp.tooltipResizeObserverForTesting);
 
     // Force show tooltip.
     loadTimeData.overrideValues({
@@ -498,19 +498,19 @@ suite('ContextualTasksComposeboxTest', () => {
       isOnboardingTooltipDismissCountBelowCap: true,
       composeboxShowOnboardingTooltipSessionImpressionCap: 10,
     });
-    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
-    composeboxElement.userDismissedTooltipForTesting = false;
+    contextualTasksApp.numberOfTimesTooltipShownForTesting = 0;
+    contextualTasksApp.userDismissedTooltipForTesting = false;
 
     // Simulate active tab chip token presence to trigger tooltip.
     innerComposebox.getHasAutomaticActiveTabChipToken = () => true;
     innerComposebox.getAutomaticActiveTabChipElement = () =>
         document.createElement('div');
 
-    composeboxElement.updateTooltipVisibilityForTesting();
+    contextualTasksApp.updateTooltipVisibilityForTesting();
 
     // Now both observers should exist.
     assertTrue(!!composeboxElement.resizeObserverForTesting);
-    assertTrue(!!composeboxElement.tooltipResizeObserverForTesting);
+    assertTrue(!!contextualTasksApp.tooltipResizeObserverForTesting);
 
     // Verify resizeObserver_ still works.
     Object.defineProperty(innerComposebox, 'offsetHeight', {
@@ -529,7 +529,7 @@ suite('ContextualTasksComposeboxTest', () => {
   test('TooltipImpressionIncrementsAfterDelay', () => {
     mockTimer.install();
     const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = composeboxElement.$.onboardingTooltip;
+    const tooltip = contextualTasksApp.$.onboardingTooltip;
 
     // Force show tooltip with delay.
     loadTimeData.overrideValues({
@@ -538,8 +538,8 @@ suite('ContextualTasksComposeboxTest', () => {
       composeboxShowOnboardingTooltipSessionImpressionCap: 10,
       composeboxShowOnboardingTooltipImpressionDelay: 3000,
     });
-    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
-    composeboxElement.userDismissedTooltipForTesting = false;
+    contextualTasksApp.numberOfTimesTooltipShownForTesting = 0;
+    contextualTasksApp.userDismissedTooltipForTesting = false;
 
     const innerComposebox = composeboxElement.$.composebox;
     innerComposebox.getHasAutomaticActiveTabChipToken = () => true;
@@ -547,19 +547,19 @@ suite('ContextualTasksComposeboxTest', () => {
         document.createElement('div');
 
     // Trigger update.
-    composeboxElement.updateTooltipVisibilityForTesting();
-    assertTrue(tooltip.shouldShow);
+    contextualTasksApp.updateTooltipVisibilityForTesting();
+    assertTrue(tooltip!.shouldShow);
 
     // Should not have incremented yet.
-    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
+    assertEquals(0, contextualTasksApp.numberOfTimesTooltipShownForTesting);
 
     // Tick almost to the end.
     mockTimer.tick(2999);
-    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
+    assertEquals(0, contextualTasksApp.numberOfTimesTooltipShownForTesting);
 
     // Tick past the delay.
     mockTimer.tick(1);
-    assertEquals(1, composeboxElement.numberOfTimesTooltipShownForTesting);
+    assertEquals(1, contextualTasksApp.numberOfTimesTooltipShownForTesting);
   });
 
   test('ToolChipVisibilityBasedOnInputState', async () => {
