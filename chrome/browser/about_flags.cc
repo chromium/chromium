@@ -4239,6 +4239,30 @@ const FeatureEntry::FeatureVariation kAndroidHubSearchTabGroupsVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kAndroidBottomBarShowBottomBarOnGtsParam[] = {
+    {"show_bottom_bar_on_gts", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
+    {{"keep_app_menu_in_toolbar", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidBottomBarKeepAppMenuInToolbarWithGtsParam[] = {
+        {"keep_app_menu_in_toolbar", "true"},
+        {"show_bottom_bar_on_gts", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarKeepBothInToolbarParam[] = {
+    {"keep_app_menu_in_toolbar", "true"},
+    {"keep_home_button_in_toolbar", "true"}};
+const FeatureEntry::FeatureParam
+    kAndroidBottomBarKeepBothInToolbarWithGtsParam[] = {
+        {"keep_app_menu_in_toolbar", "true"},
+        {"keep_home_button_in_toolbar", "true"},
+        {"show_bottom_bar_on_gts", "true"}};
+const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
+    {"- 1A with GTS", kAndroidBottomBarShowBottomBarOnGtsParam, nullptr},
+    {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
+    {"- 1B with GTS", kAndroidBottomBarKeepAppMenuInToolbarWithGtsParam,
+     nullptr},
+    {"- 1C", kAndroidBottomBarKeepBothInToolbarParam, nullptr},
+    {"- 1C with GTS", kAndroidBottomBarKeepBothInToolbarWithGtsParam, nullptr}};
+
 const FeatureEntry::FeatureParam kTabBottomSheetDontShowFusebox[] = {
     {"dont_show_fusebox", "true"}};
 const FeatureEntry::FeatureVariation kTabBottomSheetVariations[] = {
@@ -13103,7 +13127,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"android-bottom-bar", flag_descriptions::kAndroidBottomBarName,
      flag_descriptions::kAndroidBottomBarDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidBottomBar)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidBottomBar,
+                                    kAndroidBottomBarVariations,
+                                    "AndroidBottomBar")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
