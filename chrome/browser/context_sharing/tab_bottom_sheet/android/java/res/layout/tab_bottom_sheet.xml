@@ -39,7 +39,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content" />
 
         <!-- Web UI Container -->
-        <FrameLayout
+        <org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetWebUiContainer
             android:id="@+id/web_ui_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"

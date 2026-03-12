@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +44,18 @@ public class CoBrowseViews {
         mWebUi = webUi;
         mFusebox = fusebox;
         mView = buildView(context);
+    }
+
+    /** Sets the touch handler for the Web UI container. */
+    public void setWebUiTouchHandler(TabBottomSheetWebUiContainer.TouchHandler touchHandler) {
+        TabBottomSheetWebUiContainer webUiContainer =
+                assertNonNull(mView.findViewById(R.id.web_ui_container));
+        webUiContainer.setTouchHandler(touchHandler);
+    }
+
+    /** Returns whether the toolbar is present. */
+    public boolean hasToolbar() {
+        return mToolbar != null;
     }
 
     /** Returns the view for the co-browse content. */
@@ -104,6 +118,10 @@ public class CoBrowseViews {
         if (mWebUi != null) {
             mWebUi.setInsets(top, left, bottom, right);
         }
+    }
+
+    @Nullable WebContents getWebContents() {
+        return mWebUi != null ? mWebUi.getWebContents() : null;
     }
 
     int getThinWebViewHeight() {
