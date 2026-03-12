@@ -1373,6 +1373,36 @@ TEST_F(ComposeboxQueryControllerTest,
             ContextUploadStatus::kUploadExpired);
 }
 
+TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithImplicitUpload_SetsIsImplicitUpload) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  input_data->is_implicit_upload = true;
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Assert: Check that is_implicit_upload is set correctly.
+  EXPECT_TRUE(controller()
+                .GetFileInfoForTesting(file_token)
+                ->GetRequestIdForTesting()
+                ->is_implicit_upload());
+}
+
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequest_SetsContextId) {
   CreateController(
       /*send_lns_surface=*/false,
@@ -3373,8 +3403,10 @@ TEST_F(ComposeboxQueryControllerTest, InteractionQuerySubmittedWithImageCrop) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(search_url, kRequestIdParameterKey,
                                          &vsrid_value));
   EXPECT_FALSE(vsrid_value.empty());
+  auto decoded_request_id = DecodeRequestIdFromVsrid(vsrid_value);
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE,
-            DecodeRequestIdFromVsrid(vsrid_value).media_type());
+            decoded_request_id.media_type());
+  EXPECT_TRUE(decoded_request_id.is_implicit_upload());
 
   // Assert: Gsession id is added to multimodal pdf queries.
   std::string gsession_id_value;

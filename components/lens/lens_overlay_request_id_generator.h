@@ -102,6 +102,11 @@ class LensOverlayRequestIdGenerator {
     has_chrome_tab_data_ = has_chrome_tab_data;
   }
 
+  // Updates the is_implicit_upload field in future request ids.
+  void SetIsImplicitUpload(bool is_implicit_upload) {
+    is_implicit_upload_ = is_implicit_upload;
+  }
+
   // Sets the routing info to be included in the request id and returns the new
   // request id with this routing info.
   std::unique_ptr<lens::LensOverlayRequestId> SetRoutingInfo(
@@ -150,6 +155,10 @@ class LensOverlayRequestIdGenerator {
 
   // Whether the request id has Chrome tab data.
   bool has_chrome_tab_data_;
+
+  // Whether the request id is for an implicit upload.
+  // e.g. a viewport screenshot from the Lens overlay contextual searchbox.
+  bool is_implicit_upload_;
 
   // The mime type string.
   std::optional<std::string> mime_type_;

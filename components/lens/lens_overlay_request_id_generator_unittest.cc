@@ -372,6 +372,24 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
 }
 
 TEST_F(LensOverlayRequestIdGeneratorTest,
+       SetIsImplicitUpload_SetsIsImplicitUploadOnNextRequest) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  request_id_generator.SetIsImplicitUpload(true);
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_TRUE(request_id->is_implicit_upload());
+
+  request_id_generator.SetIsImplicitUpload(false);
+  std::unique_ptr<lens::LensOverlayRequestId> request_id2 =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_FALSE(request_id2->is_implicit_upload());
+}
+
+TEST_F(LensOverlayRequestIdGeneratorTest,
        GetNextRequestIdWithMimeType_SetsMediaTypeAndMimeType) {
   lens::LensOverlayRequestIdGenerator request_id_generator;
   std::unique_ptr<lens::LensOverlayRequestId> request_id =

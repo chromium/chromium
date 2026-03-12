@@ -128,6 +128,10 @@ struct FileInfo {
   // context id.
   bool is_superceded = false;
 
+  // Whether or not this file is an implicit upload.
+  // e.g. a viewport screenshot from the Lens overlay contextual searchbox.
+  bool is_implicit_upload = false;
+
   // The mime type string of the file, if known.
   std::optional<std::string> mime_type_string;
 };
