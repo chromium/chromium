@@ -34,11 +34,11 @@ public class MultiWindowTestUtils {
      * @param taskId ID of the task the activity instance runs in.
      */
     public static void createInstance(int instanceId, String url, int tabCount, int taskId) {
-        MultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
-        MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
-        MultiInstancePersistentStore.writeTabCount(
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
+        ChromeMultiInstancePersistentStore.writeTabCount(
                 instanceId, tabCount, /* incognitoTabCount= */ 0);
-        MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
+        ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         if (taskId != -1) MultiWindowUtils.addAppTaskIdForTesting(taskId);
     }
 

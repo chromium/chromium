@@ -47,9 +47,9 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
@@ -60,8 +60,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -546,7 +544,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         int count = 0;
         for (Integer id : ids) {
             if (isRestorableInstance(id)
-                    && !MultiInstancePersistentStore.readMarkedForDeletion(id)) {
+                    && !ChromeMultiInstancePersistentStore.readMarkedForDeletion(id)) {
                 count++;
             }
         }
@@ -596,8 +594,8 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     static boolean isRestorableInstance(int index) {
-        return MultiInstancePersistentStore.readNormalTabCount(index) != 0
-                || MultiInstancePersistentStore.readTaskId(index) != INVALID_TASK_ID;
+        return ChromeMultiInstancePersistentStore.readNormalTabCount(index) != 0
+                || ChromeMultiInstancePersistentStore.readTaskId(index) != INVALID_TASK_ID;
     }
 
     @Override
@@ -702,7 +700,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public static @SupportedProfileType int readProfileType(int instanceId) {
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            return MultiInstancePersistentStore.readProfileType(instanceId);
+            return ChromeMultiInstancePersistentStore.readProfileType(instanceId);
         } else {
             return SupportedProfileType.MIXED;
         }
@@ -719,9 +717,9 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static void verifyLatestPersistentStateId(
             int instanceId, @Nullable PersistableBundle persistentState) {
         boolean containsPersistentStateId =
-                MultiInstancePersistentStore.containsLatestPersistentStateId(instanceId);
+                ChromeMultiInstancePersistentStore.containsLatestPersistentStateId(instanceId);
         int latestPersistentStateId =
-                MultiInstancePersistentStore.readLatestPersistentStateId(instanceId);
+                ChromeMultiInstancePersistentStore.readLatestPersistentStateId(instanceId);
         if (persistentState == null || instanceId == INVALID_WINDOW_ID) {
             RecordHistogram.recordEnumeratedHistogram(
                     HISTOGRAM_PERSISTENT_STATE_ID_VERIFICATION,
@@ -754,7 +752,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      *     this instance.
      */
     public static void writeLatestPersistentStateId(int instanceId, int latestPersistentStateId) {
-        MultiInstancePersistentStore.writeLatestPersistentStateId(
+        ChromeMultiInstancePersistentStore.writeLatestPersistentStateId(
                 instanceId, latestPersistentStateId);
     }
 
@@ -986,23 +984,21 @@ public class MultiWindowUtils implements ActivityStateListener {
         if (isFirstActivity) {
             if (isInMultiWindowMode) {
                 if (isMultiInstanceApi31Enabled) {
-                    SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-                    long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
+                    long startTime = ChromeMultiInstancePersistentStore.readMultiWindowStartTime();
                     if (startTime == 0) {
                         RecordUserAction.record("Android.MultiWindowMode.Enter2");
                         long current = TimeUtils.currentTimeMillis();
-                        prefs.writeLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME, current);
+                        ChromeMultiInstancePersistentStore.writeMultiWindowStartTime(current);
                     }
                 } else {
                     RecordUserAction.record("Android.MultiWindowMode.Enter2");
                 }
             } else {
                 if (isMultiInstanceApi31Enabled) {
-                    SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-                    long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
+                    long startTime = ChromeMultiInstancePersistentStore.readMultiWindowStartTime();
                     if (startTime > 0) {
                         RecordUserAction.record("Android.MultiWindowMode.Exit2");
-                        prefs.writeLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME, 0);
+                        ChromeMultiInstancePersistentStore.writeMultiWindowStartTime(0);
                     }
                 } else {
                     RecordUserAction.record("Android.MultiWindowMode.Exit2");
@@ -1081,7 +1077,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                 if (windowId < 0) continue;
             }
 
-            long accessedTime = MultiInstancePersistentStore.readLastAccessedTime(id);
+            long accessedTime = ChromeMultiInstancePersistentStore.readLastAccessedTime(id);
             if (accessedTime > maxAccessedTime) {
                 maxAccessedTime = accessedTime;
                 lastAccessedWindowId = id;
@@ -1101,7 +1097,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         Context context = ContextUtils.getApplicationContext();
         Set<Integer> activeTaskIds = getAllAppTaskIds(context);
 
-        Set<Integer> allIds = MultiInstancePersistentStore.readAllInstanceIds();
+        Set<Integer> allIds = ChromeMultiInstancePersistentStore.readAllInstanceIds();
         if (type == PersistedInstanceType.ANY) return allIds;
 
         Set<Integer> filteredIds = new HashSet<>();
@@ -1113,10 +1109,10 @@ public class MultiWindowUtils implements ActivityStateListener {
                 : "To filter both ACTIVE and INACTIVE instance types, use"
                         + " PersistedInstanceType.ANY.";
         for (Integer id : allIds) {
-            int persistedTaskId = MultiInstancePersistentStore.readTaskId(id);
+            int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(id);
 
             // Exclude ids not satisfying requirements.
-            int profileType = MultiInstancePersistentStore.readProfileType(id);
+            int profileType = ChromeMultiInstancePersistentStore.readProfileType(id);
             if (includeOtr && profileType != SupportedProfileType.OFF_THE_RECORD) continue;
             if (includeRegular && profileType != SupportedProfileType.REGULAR) continue;
             if (includeActive && !activeTaskIds.contains(persistedTaskId)) continue;
@@ -1309,7 +1305,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                 }
             }
         }
-        MultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId, totalCount);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId, totalCount);
     }
 
     /**
@@ -1319,7 +1315,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param windowId The id of the window.
      */
     public static int getTabCountForRelaunchFromPersistentStore(int windowId) {
-        return MultiInstancePersistentStore.readTabCountForRelaunch(windowId);
+        return ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId);
     }
 
     /**
@@ -1347,9 +1343,7 @@ public class MultiWindowUtils implements ActivityStateListener {
         }
 
         // Show the message only if the message is not already shown.
-        if (ChromeSharedPreferences.getInstance()
-                .readBoolean(
-                        ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN, false)) {
+        if (ChromeMultiInstancePersistentStore.readRestorationMessageShown()) {
             return false;
         }
 
@@ -1381,8 +1375,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                         .build();
 
         messageDispatcher.enqueueWindowScopedMessage(message, false);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN, true);
+        ChromeMultiInstancePersistentStore.writeRestorationMessageShown(true);
         return true;
     }
 

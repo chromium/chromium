@@ -64,8 +64,6 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistentStateIdVerification;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -672,7 +670,7 @@ public class MultiWindowUtilsUnitTest {
                         MultiInstanceManagerApi31.PersistedInstanceType.ANY));
 
         // Mark the inactive instance for deletion.
-        MultiInstancePersistentStore.writeMarkedForDeletion(INSTANCE_ID_2, true);
+        ChromeMultiInstancePersistentStore.writeMarkedForDeletion(INSTANCE_ID_2, true);
         assertEquals(
                 "getInstanceCountWithFallback should exclude instances marked for deletion.",
                 2,
@@ -920,8 +918,10 @@ public class MultiWindowUtilsUnitTest {
     public void testGetTabCountForRelaunchFromSharedPrefs() {
         int windowId1 = 0;
         int windowId2 = 1;
-        MultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId1, /* tabCount= */ 10);
-        MultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId2, /* tabCount= */ 15);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(
+                windowId1, /* tabCount= */ 10);
+        ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(
+                windowId2, /* tabCount= */ 15);
         assertEquals(
                 10, MultiWindowUtils.getTabCountForRelaunchFromPersistentStore(windowId1), 0.01);
         assertEquals(
@@ -976,10 +976,7 @@ public class MultiWindowUtilsUnitTest {
         assertTrue("Message should be enqueued.", shown);
         assertTrue(
                 "SharedPreferences should be updated.",
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
-                                false));
+                ChromeMultiInstancePersistentStore.readRestorationMessageShown());
         ArgumentCaptor<PropertyModel> message = ArgumentCaptor.forClass(PropertyModel.class);
         verify(messageDispatcher).enqueueWindowScopedMessage(message.capture(), eq(false));
 
@@ -1028,10 +1025,7 @@ public class MultiWindowUtilsUnitTest {
         assertFalse("Message should not be enqueued.", shown);
         assertFalse(
                 "SharedPreferences should not be updated.",
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
-                                false));
+                ChromeMultiInstancePersistentStore.readRestorationMessageShown());
         verify(messageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
     }
 
@@ -1051,10 +1045,7 @@ public class MultiWindowUtilsUnitTest {
         assertTrue("Message should be enqueued.", shown);
         assertTrue(
                 "SharedPreferences should be updated.",
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(
-                                ChromePreferenceKeys.MULTI_INSTANCE_RESTORATION_MESSAGE_SHOWN,
-                                false));
+                ChromeMultiInstancePersistentStore.readRestorationMessageShown());
 
         // Simulate second request to show message.
         shown =
@@ -1154,7 +1145,7 @@ public class MultiWindowUtilsUnitTest {
     public void testVerifyLatestPersistentStateId_NoPersistentStateNorId() {
         int windowId = INSTANCE_ID_0;
         // Ensure no id is stored.
-        MultiInstancePersistentStore.deleteInstanceState(windowId);
+        ChromeMultiInstancePersistentStore.deleteInstanceState(windowId);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1167,7 +1158,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testVerifyLatestPersistentStateId_MissingPersistentState() {
         int windowId = INSTANCE_ID_0;
-        MultiInstancePersistentStore.writeLatestPersistentStateId(windowId, 123);
+        ChromeMultiInstancePersistentStore.writeLatestPersistentStateId(windowId, 123);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1180,7 +1171,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testVerifyLatestPersistentStateId_MissingPersistentStateId() {
         int windowId = INSTANCE_ID_0;
-        MultiInstancePersistentStore.deleteInstanceState(windowId);
+        ChromeMultiInstancePersistentStore.deleteInstanceState(windowId);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1196,7 +1187,8 @@ public class MultiWindowUtilsUnitTest {
         PersistableBundle bundle = new PersistableBundle();
         int persistentStateId = bundle.hashCode();
         bundle.putInt(PERSISTENT_STATE_ID, persistentStateId);
-        MultiInstancePersistentStore.writeLatestPersistentStateId(windowId, persistentStateId);
+        ChromeMultiInstancePersistentStore.writeLatestPersistentStateId(
+                windowId, persistentStateId);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1212,7 +1204,8 @@ public class MultiWindowUtilsUnitTest {
         PersistableBundle bundle = new PersistableBundle();
         int persistentStateId = bundle.hashCode();
         bundle.putInt(PERSISTENT_STATE_ID, persistentStateId + 1);
-        MultiInstancePersistentStore.writeLatestPersistentStateId(windowId, persistentStateId);
+        ChromeMultiInstancePersistentStore.writeLatestPersistentStateId(
+                windowId, persistentStateId);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -1240,7 +1233,8 @@ public class MultiWindowUtilsUnitTest {
         when(mNormalTabModel.iterator()).thenAnswer(inv -> List.of(mTab1, mTab2).iterator());
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
         Assert.assertEquals(
-                /* expected= */ 2, MultiInstancePersistentStore.readTabCountForRelaunch(windowId));
+                /* expected= */ 2,
+                ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId));
 
         // Test the case of adding a non-NTP tab to the tab model.
         when(mNormalTabModel.getCount()).thenReturn(3);
@@ -1250,14 +1244,16 @@ public class MultiWindowUtilsUnitTest {
         when(mTab3.getUrl()).thenReturn(TEST_GURL);
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
         Assert.assertEquals(
-                /* expected= */ 3, MultiInstancePersistentStore.readTabCountForRelaunch(windowId));
+                /* expected= */ 3,
+                ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId));
 
         // Test the case of adding a NTP tab to the tab model.
         when(mTab3.isNativePage()).thenReturn(true);
         when(mTab3.getUrl()).thenReturn(NTP_GURL);
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
         Assert.assertEquals(
-                /* expected= */ 2, MultiInstancePersistentStore.readTabCountForRelaunch(windowId));
+                /* expected= */ 2,
+                ChromeMultiInstancePersistentStore.readTabCountForRelaunch(windowId));
     }
 
     private void writeInstanceInfo(
@@ -1267,11 +1263,11 @@ public class MultiWindowUtilsUnitTest {
             int incognitoTabCount,
             int taskId,
             @SupportedProfileType int profileType) {
-        MultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
-        MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
-        MultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);
-        MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
-        MultiInstancePersistentStore.writeProfileType(instanceId, profileType);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
+        ChromeMultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);
+        ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);
+        ChromeMultiInstancePersistentStore.writeProfileType(instanceId, profileType);
     }
 
     private void writeInstanceInfo(

@@ -38,8 +38,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.util.TimeTextResolver;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -820,14 +818,12 @@ public class InstanceSwitcherCoordinator {
     private static boolean canSkipConfirm(InstanceInfo item) {
         // Unrestorable, invisible instance can be deleted without confirmation.
         if (UiUtils.totalTabCount(item) == 0 && item.type == InstanceInfo.Type.OTHER) return true;
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, false);
+        return MultiInstancePersistentStore.readCloseWindowSkipConfirm();
     }
 
     @VisibleForTesting
     static void setSkipCloseConfirmation() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.MULTI_INSTANCE_CLOSE_WINDOW_SKIP_CONFIRM, true);
+        MultiInstancePersistentStore.writeCloseWindowSkipConfirm(true);
     }
 
     private void showConfirmationMessage(InstanceInfo item) {

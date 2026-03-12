@@ -145,12 +145,13 @@ public class MultiInstanceManagerApi31Test {
                 "Regular tab count should be written to persistent store after tab state"
                         + " initialization.",
                 1,
-                MultiInstancePersistentStore.readNormalTabCount(activity.getWindowIdForTesting()));
+                ChromeMultiInstancePersistentStore.readNormalTabCount(
+                        activity.getWindowIdForTesting()));
         Assert.assertEquals(
                 "Incognito tab count should be written to persistent store after tab state"
                         + " initialization.",
                 0,
-                MultiInstancePersistentStore.readIncognitoTabCount(
+                ChromeMultiInstancePersistentStore.readIncognitoTabCount(
                         activity.getWindowIdForTesting()));
 
         // Restore the original value of |mCreatedTabOnStartup|.

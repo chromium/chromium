@@ -5,13 +5,10 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import org.chromium.base.TimeUtils;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 
 import java.util.HashSet;
@@ -26,17 +23,7 @@ import java.util.regex.Pattern;
  * by the user.
  */
 @NullMarked
-class MultiInstancePersistentStore {
-    private static @MonotonicNonNull SharedPreferencesManager sPrefsManager;
-
-    private MultiInstancePersistentStore() {}
-
-    private static SharedPreferencesManager getManager() {
-        if (sPrefsManager == null) {
-            sPrefsManager = ChromeSharedPreferences.getInstance();
-        }
-        return sPrefsManager;
-    }
+class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
 
     static Set<Integer> readAllInstanceIds() {
         // We arbitrarily choose to use the lastAccessedTime map to extract persisted instance ids
@@ -45,7 +32,7 @@ class MultiInstancePersistentStore {
         // activity is destroyed and during invalid instance data cleanup which is why we will not
         // use the same to extract ids.
         Map<String, Long> lastAccessedTimeMap =
-                ChromeSharedPreferences.getInstance()
+                getManager()
                         .readLongsWithPrefix(
                                 ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
         Pattern pattern = Pattern.compile("(\\d+)$");
