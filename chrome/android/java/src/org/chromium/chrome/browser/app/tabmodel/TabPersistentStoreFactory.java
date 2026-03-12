@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
-import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isStorageAuthoritative;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isTabStorageEnabled;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
@@ -81,7 +81,6 @@ public class TabPersistentStoreFactory {
             return legacyStore;
         } else if (storeType == StoreType.TAB_STATE_STORE) {
             assert isTabStorageEnabled();
-            assert isStorageAuthoritative();
             return new TabStateStore(
                     tabModelSelector,
                     windowTag,
@@ -121,6 +120,9 @@ public class TabPersistentStoreFactory {
      * @param cipherFactory The cipher factory to use for encryption to the store.
      * @param orchestratorTag A tag representing the type of tab model orchestrator this validator
      *     is for.
+     * @param isNonOtrOnly Whether the shadow store should only handle non-OTR data. If true,
+     *     incognito tab state will not be restored and may be destroyed if a TabStateStore is
+     *     returned.
      */
     public static @Nullable TabPersistentStore buildShadowStore(
             @Nullable PersistentStoreMigrationManager migrationManager,
@@ -131,89 +133,12 @@ public class TabPersistentStoreFactory {
             TabPersistencePolicy tabPersistencePolicy,
             TabPersistentStore authoritativeStore,
             String windowTag,
-            @Nullable CipherFactory cipherFactory,
-            String orchestratorTag) {
+            CipherFactory cipherFactory,
+            String orchestratorTag,
+            boolean isNonOtrOnly) {
         TabCreatorManager shadowTabCreatorManager =
                 incognito -> incognito ? incognitoShadowTabCreator : regularShadowTabCreator;
 
-        return buildShadowStoreInternal(
-                migrationManager,
-                shadowTabCreatorManager,
-                selector,
-                recordingTabCreatorManager,
-                tabPersistencePolicy,
-                authoritativeStore,
-                windowTag,
-                cipherFactory,
-                regularShadowTabCreator,
-                incognitoShadowTabCreator,
-                orchestratorTag);
-    }
-
-    /**
-     * Builds a shadow {@link TabPersistentStore} for validation against an authoritative store.
-     * This store will only function with non-OTR data. Returns null if a shadow store is not
-     * enabled via feature flags.
-     *
-     * <p>This method creates a {@link TabStateStore} that operates in "shadow" mode. It captures
-     * the state of a selector without affecting the authoritative application state.
-     *
-     * <p>Shadow stores may only be initialized post-native. This is due to feature flags only being
-     * updated post-native, which may result in stale flag data being used to determine which
-     * implementation to use.
-     *
-     * @param migrationManager Determines which implementation of {@link TabPersistentStore} to
-     *     return. If null, use fallback logic.
-     * @param regularShadowTabCreator The accumulator for regular tabs loaded by the shadow store.
-     * @param selector The selector associated with the store.
-     * @param tabPersistencePolicy The tab persistence to use for the shadow store.
-     * @param authoritativeStore The primary {@link TabPersistentStore} that acts as the source of
-     *     truth.
-     * @param windowTag The unique identifier for the window instance.
-     * @param orchestratorTag A tag representing the type of tab model orchestrator this validator
-     *     is for.
-     */
-    public static @Nullable TabPersistentStore buildNonOtrShadowStore(
-            @Nullable PersistentStoreMigrationManager migrationManager,
-            AccumulatingTabCreator regularShadowTabCreator,
-            TabModelSelector selector,
-            RecordingTabCreatorManager recordingTabCreatorManager,
-            TabPersistencePolicy tabPersistencePolicy,
-            TabPersistentStore authoritativeStore,
-            String windowTag,
-            String orchestratorTag) {
-        TabCreatorManager shadowTabCreatorManager =
-                incognito -> {
-                    assert !incognito;
-                    return regularShadowTabCreator;
-                };
-
-        return buildShadowStoreInternal(
-                migrationManager,
-                shadowTabCreatorManager,
-                selector,
-                recordingTabCreatorManager,
-                tabPersistencePolicy,
-                authoritativeStore,
-                windowTag,
-                /* cipherFactory= */ null,
-                regularShadowTabCreator,
-                /* incognitoShadowTabCreator= */ null,
-                orchestratorTag);
-    }
-
-    private static @Nullable TabPersistentStore buildShadowStoreInternal(
-            @Nullable PersistentStoreMigrationManager migrationManager,
-            TabCreatorManager shadowTabCreatorManager,
-            TabModelSelector selector,
-            RecordingTabCreatorManager recordingTabCreatorManager,
-            TabPersistencePolicy tabPersistencePolicy,
-            TabPersistentStore authoritativeStore,
-            String windowTag,
-            @Nullable CipherFactory cipherFactory,
-            AccumulatingTabCreator regularShadowTabCreator,
-            @Nullable AccumulatingTabCreator incognitoShadowTabCreator,
-            String orchestratorTag) {
         if (incognitoShadowTabCreator != null) {
             incognitoShadowTabCreator.stopRecording();
         }
@@ -223,21 +148,46 @@ public class TabPersistentStoreFactory {
         }
 
         @StoreType int shadowStoreType = migrationManager.getShadowStoreType();
-        if (shadowStoreType != StoreType.TAB_STATE_STORE) return null;
-        assert isTabStorageEnabled();
-
-        TabPersistentStore shadowTabPersistentStore =
-                new TabStateStore(
-                        selector,
-                        windowTag,
-                        shadowTabCreatorManager,
-                        tabPersistencePolicy,
-                        migrationManager,
-                        cipherFactory,
-                        new TabCountTracker(windowTag),
-                        ModelTrackingOrchestrator::new,
-                        ActiveTabCache::new,
-                        /* isAuthoritative= */ false);
+        TabPersistentStore shadowTabPersistentStore;
+        if (shadowStoreType == StoreType.TAB_STATE_STORE) {
+            // Headless and Archived models specifically choose not to restore incognito tabs
+            // during Legacy to TabStateStore migrations by withholding passing a cipher factory to
+            // the shadow store. In this case, the shadow store will delete incognito tab state
+            // during migrations.
+            assert isTabStorageEnabled();
+            shadowTabPersistentStore =
+                    new TabStateStore(
+                            selector,
+                            windowTag,
+                            shadowTabCreatorManager,
+                            tabPersistencePolicy,
+                            migrationManager,
+                            isNonOtrOnly ? null : cipherFactory,
+                            new TabCountTracker(windowTag),
+                            ModelTrackingOrchestrator::new,
+                            ActiveTabCache::new,
+                            /* isAuthoritative= */ false);
+        } else if (shadowStoreType == StoreType.LEGACY) {
+            shadowTabPersistentStore =
+                    new TabPersistentStoreImpl(
+                            orchestratorTag,
+                            tabPersistencePolicy,
+                            selector,
+                            shadowTabCreatorManager,
+                            TabWindowManagerSingleton.getInstance(),
+                            cipherFactory,
+                            /* isAuthoritative= */ false,
+                            /* recordLegacyTabCountMetrics= */ false);
+            buildShadowLegacyStoreCatchupTracker(authoritativeStore, migrationManager);
+        } else {
+            regularShadowTabCreator.stopRecording();
+            RecordingTabCreator recordingTabCreator =
+                    recordingTabCreatorManager.getRecorder(/* incognito= */ false);
+            if (recordingTabCreator != null) {
+                recordingTabCreator.stopRecording();
+            }
+            return null;
+        }
 
         RecordingTabCreator recordingTabCreator =
                 recordingTabCreatorManager.getRecorder(/* incognito= */ false);
@@ -263,6 +213,18 @@ public class TabPersistentStoreFactory {
                     public void onInitialized(int tabCountAtStartup) {
                         authoritativeStore.removeObserver(this);
                         manager.onAuthoritativeStoreInitialized(StoreType.LEGACY);
+                    }
+                });
+    }
+
+    private static void buildShadowLegacyStoreCatchupTracker(
+            TabPersistentStore authoritativeStore, PersistentStoreMigrationManager manager) {
+        authoritativeStore.addObserver(
+                new TabPersistentStoreObserver() {
+                    @Override
+                    public void onStateLoaded() {
+                        authoritativeStore.removeObserver(this);
+                        manager.onShadowStoreCaughtUp();
                     }
                 });
     }

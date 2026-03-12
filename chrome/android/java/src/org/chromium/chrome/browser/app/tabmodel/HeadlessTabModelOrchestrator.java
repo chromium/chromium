@@ -87,13 +87,6 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         AccumulatingTabCreator regularShadowTabCreator = new AccumulatingTabCreator();
         AccumulatingTabCreator incognitoShadowTabCreator = new AccumulatingTabCreator();
 
-        // Headless specifically chooses not to restore incognito tabs by withholding passing a
-        // cipher factory to the store.
-        // 1. Incognito tabs may still be restored on subsequent restarts if a CipherFactory is
-        //    provided for the corresponding window tag when it is next launched.
-        // 2. By not restoring them for headless there may be missing data in headless compared to
-        //    regular operation mode.
-        // 3. Headless will not delete or modify the incognito tabs.
         mShadowTabPersistentStore =
                 buildShadowStore(
                         migrationManager,
@@ -104,8 +97,9 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
                         policy,
                         mTabPersistentStore,
                         windowTag,
-                        /* cipherFactory= */ null,
-                        HEADLESS_TAG);
+                        sCipherInstance,
+                        HEADLESS_TAG,
+                        /* isNonOtrOnly= */ true);
 
         mTabModelSelector.selectModel(false);
         mTabPersistentStore.addObserver(

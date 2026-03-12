@@ -271,7 +271,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                             mTabPersistentStore,
                             windowTag,
                             mCipherFactory,
-                            TABBED_TAG);
+                            TABBED_TAG,
+                            /* isNonOtrOnly= */ false);
             if (mShadowTabPersistentStore != null) {
                 mShadowTabPersistentStore.onNativeLibraryReady();
             }
