@@ -2830,7 +2830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Timeline.IgnoredCorrectly.Duration" units="ms"
-    expires_after="2026-07-26">
+    expires_after="2027-03-25">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -2846,7 +2846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Timeline.IgnoredIncorrectly.Duration" units="ms"
-    expires_after="2026-07-26">
+    expires_after="2027-03-25">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -2863,7 +2863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration"
-    units="ms" expires_after="2026-03-25">
+    units="ms" expires_after="2027-03-25">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -2882,7 +2882,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage"
-    units="%" expires_after="2026-03-25">
+    units="%" expires_after="2027-03-25">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <summary>
@@ -2898,7 +2898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.Timeline.IgnoredIncorrectly.Percentage" units="%"
-    expires_after="2026-07-26">
+    expires_after="2027-03-25">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <summary>
@@ -2953,7 +2953,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.Timeline.Total{ExcludingBeforeUnload}.MainFrameOnly.Duration"
-    units="ms" expires_after="2026-07-26">
+    units="ms" expires_after="2027-03-25">
   <owner>creis@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
