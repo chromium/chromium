@@ -9,6 +9,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view.h"
 #include "chrome/browser/glic/browser_ui/tab_underline_view_controller_impl.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -174,14 +175,16 @@ class TabUnderlineViewUiTest : public test::InteractiveGlicTest {
         mojom::features::kGlicMultiTab.name;
     const std::string underline_feature_name =
         features::kGlicMultitabUnderlines.name;
+    const std::string multi_instance_feature_name =
+        features::kGlicMultiInstance.name;
     // Toggling `UiGpuRasterization` is only possible via command line.
     const std::string enabled_features =
         base::StrCat({multitab_feature_name, ",", underline_feature_name, ",",
-                      "UiGpuRasterization"});
+                      multi_instance_feature_name, ",", "UiGpuRasterization"});
     features_.InitFromCommandLine(enabled_features,
                                   /*disabled_features=*/
                                   "ContextualTasks,GlicForceSimplifiedBorder,"
-                                  "GlicForceNonSkSLBorder,GlicMultiInstance");
+                                  "GlicForceNonSkSLBorder");
   }
   ~TabUnderlineViewUiTest() override = default;
 
@@ -363,14 +366,6 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
   EXPECT_TRUE(underline->IsShowing());
   tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
   tester->AdvanceTimeAndTickAnimation(base::Seconds(0.3));
-
-  // The underline should hide when sharing is turned off.
-  glic_service()->SetContextAccessIndicator(false);
-  ASSERT_FALSE(
-      glic_service()->IsContextAccessIndicatorShown(GetActiveWebContents()));
-  tester->WaitForRampDownStarted();
-  tester->FinishRampDown();
-  EXPECT_FALSE(underline->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
@@ -379,39 +374,16 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
   EXPECT_TRUE(glic_service()->IsWindowShowing());
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
-  EXPECT_FALSE(underline->IsShowing());
-
-  // The underline should show when its tab is pinned.
-  tabs::TabHandle tab_handle = TabHandleAtIndex(0);
-  PinTabs({tab_handle});
-  ASSERT_TRUE(sharing_manager().IsTabPinned(tab_handle));
-  tester->WaitForAnimationStart();
+  // Tab is pinned by default.
   EXPECT_TRUE(underline->IsShowing());
   tester->AdvanceTimeAndTickAnimation(base::TimeDelta());
   tester->AdvanceTimeAndTickAnimation(base::Seconds(0.3));
 
   // The underline should hide when its tab is unpinned.
   sharing_manager().UnpinAllTabs();
-  ASSERT_FALSE(sharing_manager().IsTabPinned(tab_handle));
+  ASSERT_FALSE(sharing_manager().IsTabPinned(TabHandleAtIndex(0)));
   tester->WaitForRampDownStarted();
   tester->FinishRampDown();
-  EXPECT_FALSE(underline->IsShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
-                       SingleTabPinningWhileGlicWindowClosed) {
-  EXPECT_FALSE(glic_service()->IsWindowShowing());
-
-  // While the glic window is closed, changes to pinning have no effect on the
-  // underline UI.
-  auto* underline = GetUnderlineOfActiveTab();
-  tabs::TabHandle tab_handle = TabHandleAtIndex(0);
-  PinTabs({tab_handle});
-  EXPECT_TRUE(sharing_manager().IsTabPinned(tab_handle));
-  EXPECT_FALSE(underline->IsShowing());
-
-  sharing_manager().UnpinAllTabs();
-  ASSERT_FALSE(sharing_manager().IsTabPinned(tab_handle));
   EXPECT_FALSE(underline->IsShowing());
 }
 
@@ -420,9 +392,9 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
 
-  tabs::TabHandle tab_handle = TabHandleAtIndex(0);
-  PinTabs({tab_handle});
-  EXPECT_TRUE(sharing_manager().IsTabPinned(tab_handle));
+  // tabs::TabHandle tab_handle = TabHandleAtIndex(0);
+  // PinTabs({tab_handle});
+  // EXPECT_TRUE(sharing_manager().IsTabPinned(tab_handle));
 
   // The underline of a pinned tab should show when the glic window is opened.
   RunTestSequence(OpenGlic());
@@ -440,36 +412,26 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, FocusedTabChange) {
   auto* underline1 = GetUnderlineOfActiveTab();
-  TesterImpl* tester1 = static_cast<TesterImpl*>(underline1->tester());
 
-  // Add second tab
+  // Add second tab.
   AppendTabAndNavigate(browser(), Title2());
   auto* underline2 = GetUnderlineOfActiveTab();
-  TesterImpl* tester2 = static_cast<TesterImpl*>(underline2->tester());
 
   // The underline of the active tab should show when sharing is turned on.
+  TrackOnlyGlicInstance();
   OpenGlicWindowAndStartSharing();
-  tester2->WaitForAnimationStart();
+  GlicInstance* instance = glic_service()->GetInstanceForActiveTab(browser());
   EXPECT_TRUE(underline2->IsShowing());
-  tester2->AdvanceTimeAndTickAnimation(base::TimeDelta());
-  tester2->AdvanceTimeAndTickAnimation(base::Seconds(0.3));
 
-  // For tabs that are not pinned while sharing is turned on, the underline of a
-  // tab that loses focus should hide and the underline of a tab that gains
-  // focus should show.
   ActivateTabAt(0);
-  tester1->WaitForAnimationStart();
+  instance->BindTabForTesting(TabHandleAtIndex(0).Get());
   EXPECT_TRUE(underline1->IsShowing());
-  tester1->AdvanceTimeAndTickAnimation(base::TimeDelta());
-  tester1->AdvanceTimeAndTickAnimation(base::Seconds(0.3));
-
-  tester2->WaitForRampDownStarted();
-  tester2->FinishRampDown();
-  EXPECT_FALSE(underline2->IsShowing());
+  EXPECT_TRUE(underline2->IsShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        FocusedTabChangeBetweenPinnedTabs) {
+  // Open two tabs, and bind/pin them to the same glic instance.
   auto* underline1 = GetUnderlineOfActiveTab();
   TesterImpl* tester1 = static_cast<TesterImpl*>(underline1->tester());
 
@@ -477,15 +439,19 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
   auto* underline2 = GetUnderlineOfActiveTab();
   TesterImpl* tester2 = static_cast<TesterImpl*>(underline2->tester());
 
-  // Pin both tabs
-  PinTabs({TabHandleAtIndex(0), TabHandleAtIndex(1)});
-  EXPECT_TRUE(sharing_manager().IsTabPinned(TabHandleAtIndex(0)));
-  EXPECT_TRUE(sharing_manager().IsTabPinned(TabHandleAtIndex(1)));
+  TrackOnlyGlicInstance();
+  OpenGlicWindowAndStartSharing();
+  GlicInstance* instance = glic_service()->GetInstanceForActiveTab(browser());
+  instance->BindTabForTesting(TabHandleAtIndex(0).Get());
+  instance->BindTabForTesting(TabHandleAtIndex(1).Get());
 
   // Underlines of all pinned tabs should show when the glic window is opened.
-  RunTestSequence(OpenGlic());
-  tester1->WaitForAnimationStart();
-  tester2->WaitForAnimationStart();
+  if (!underline1->IsShowing()) {
+    tester1->WaitForAnimationStart();
+  }
+  if (!underline2->IsShowing()) {
+    tester2->WaitForAnimationStart();
+  }
   EXPECT_TRUE(underline1->IsShowing());
   EXPECT_TRUE(underline2->IsShowing());
   // Allow animations to reach their steady states.
@@ -526,19 +492,13 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, TabAlertIndicatorHidden) {
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        TabAlertIndicatorHidden_PinnedTab) {
   RunTestSequence(OpenGlic());
-  EXPECT_TRUE(glic_service()->IsWindowShowing());
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
-  EXPECT_FALSE(underline->IsShowing());
-
-  tabs::TabHandle tab_handle = TabHandleAtIndex(0);
-  PinTabs({tab_handle});
-  ASSERT_TRUE(sharing_manager().IsTabPinned(tab_handle));
-  tester->WaitForAnimationStart();
   EXPECT_TRUE(underline->IsShowing());
 
   // The pinned tab should not have a visible tab alert indicator.
   EXPECT_FALSE(GetAlertIndicatorButtonOfActiveTab()->GetVisible());
+  tester->FinishRampDown();
 }
 
 // Ensure basic incognito window doesn't cause a crash. Simply opens an
@@ -550,78 +510,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, IncognitoModeCrash) {
       ui_test_utils::NavigateToURL(incognito_browser, GURL("about:blank")));
 }
 
-namespace {
-class TabUnderlineViewFeatureDisabledBrowserTest
-    : public TabUnderlineViewUiTest {
- public:
-  TabUnderlineViewFeatureDisabledBrowserTest() {
-    features_.InitAndDisableFeature(features::kGlicMultitabUnderlines);
-  }
-  ~TabUnderlineViewFeatureDisabledBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(TabUnderlineViewFeatureDisabledBrowserTest,
-                       TabAlertIndicatorShown) {
-  AlertIndicatorButton* alert_button = GetAlertIndicatorButtonOfActiveTab();
-  EXPECT_FALSE(alert_button->GetVisible());
-
-  base::RunLoop wait_for_alert_loop;
-  auto callback_subscription = alert_button->AddVisibleChangedCallback(
-      wait_for_alert_loop.QuitClosure());
-
-  OpenGlicWindowAndStartSharing();
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetTabAtIndex(0);
-  ASSERT_EQ(tab, sharing_manager().GetFocusedTabData().focus());
-
-  // Wait for the view's visibility change to trigger.
-  wait_for_alert_loop.Run();
-
-  // The shared tab should have a visible tab alert indicator.
-  EXPECT_TRUE(alert_button->GetVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(TabUnderlineViewFeatureDisabledBrowserTest,
-                       TabAlertIndicatorShown_PinnedTab) {
-  AlertIndicatorButton* alert_button = GetAlertIndicatorButtonOfActiveTab();
-  EXPECT_FALSE(alert_button->GetVisible());
-
-  RunTestSequence(OpenGlic());
-  EXPECT_TRUE(glic_service()->IsWindowShowing());
-
-  base::RunLoop wait_for_alert_loop;
-  auto callback_subscription = alert_button->AddVisibleChangedCallback(
-      wait_for_alert_loop.QuitClosure());
-
-  tabs::TabHandle tab_handle = TabHandleAtIndex(0);
-  PinTabs({tab_handle});
-  ASSERT_TRUE(sharing_manager().IsTabPinned(tab_handle));
-
-  // Wait for the view's visibility change to trigger.
-  wait_for_alert_loop.Run();
-
-  // The pinned tab should have a visible tab alert indicator.
-  EXPECT_TRUE(GetAlertIndicatorButtonOfActiveTab()->GetVisible());
-}
-
-class TabUnderlineViewMultiInstanceUiTest : public TabUnderlineViewUiTest {
- public:
-  TabUnderlineViewMultiInstanceUiTest() {
-    // kGlicMultiInstance, kGlicMultiTab, kGlicMultitabUnderlines are required
-    // for IsMultiInstanceEnabled().
-    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
-  }
-  ~TabUnderlineViewMultiInstanceUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(TabUnderlineViewMultiInstanceUiTest,
-                       AttachPinnedTabToNewWindow) {
+IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, AttachPinnedTabToNewWindow) {
   // Set up two windows, each with one tab
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
   // Second browser window; this will be active.
