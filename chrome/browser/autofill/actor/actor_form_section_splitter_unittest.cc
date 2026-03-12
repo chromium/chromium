@@ -223,10 +223,14 @@ TEST_F(ActorFormSectionSplitterTest, RetargetTriggerField_NoSplit) {
 
   // Since the form section is not being split, the original trigger field
   // should be returned.
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(RetargetTriggerFieldForSplittingIfNeeded(
                 form_structure, original_trigger_field,
                 SectionSplitPart::kNoSplit, log_manager()),
             original_trigger_field);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      actor::RetargetTriggerFieldResult::kNotAttemptedNoSplit, 1);
 }
 
 // Tests that RetargetTriggerField returns the correct re-targeted trigger field
@@ -245,14 +249,88 @@ TEST_F(ActorFormSectionSplitterTest, RetargetTriggerField_ContactInfo) {
   // Trigger on the name field in section s2.
   const FormStructure* form_structure =
       manager().FindCachedFormById(form.fields()[1].global_id());
-  const AutofillField* field =
+  const AutofillField* original_trigger_field =
       form_structure->GetFieldById(form.fields()[1].global_id());
 
   // Should retarget to the EMAIL_ADDRESS in section s2 (index 2), ignoring the
   // one in section s1 (index 0).
+  base::HistogramTester histogram_tester;
   const AutofillField* retargeted = RetargetTriggerFieldForSplittingIfNeeded(
-      form_structure, field, SectionSplitPart::kContactInfo, log_manager());
+      form_structure, original_trigger_field, SectionSplitPart::kContactInfo,
+      log_manager());
   EXPECT_EQ(retargeted->global_id(), form.fields()[2].global_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      actor::RetargetTriggerFieldResult::kRetargetedToNewField, 1);
+}
+
+// Tests that RetargetTriggerField returns the same field when it is already
+// a contact info field.
+TEST_F(ActorFormSectionSplitterTest,
+       RetargetTriggerField_ContactInfo_SameField) {
+  FormData form = SeeForm({.fields = {{.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[0].global_id());
+  const AutofillField* original_trigger_field =
+      form_structure->GetFieldById(form.fields()[0].global_id());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(RetargetTriggerFieldForSplittingIfNeeded(
+                form_structure, original_trigger_field,
+                SectionSplitPart::kContactInfo, log_manager()),
+            original_trigger_field);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      actor::RetargetTriggerFieldResult::kRetargetedToSameField, 1);
+}
+
+// Tests that RetargetTriggerField handles failure when contact info field is
+// after the address field (should not happen in practice if
+// ShouldSplitOutContactInfo is checked first).
+TEST_F(ActorFormSectionSplitterTest,
+       RetargetTriggerField_ContactInfo_AddressFirst) {
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = EMAIL_ADDRESS}}});
+
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[0].global_id());
+  const AutofillField* original_trigger_field =
+      form_structure->GetFieldById(form.fields()[0].global_id());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(RetargetTriggerFieldForSplittingIfNeeded(
+                form_structure, original_trigger_field,
+                SectionSplitPart::kContactInfo, log_manager()),
+            original_trigger_field);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      actor::RetargetTriggerFieldResult::kErrorContactInfoAddressFirst, 1);
+}
+
+// Tests that RetargetTriggerField handles failure when no contact info is
+// found (should not happen in practice if ShouldSplitOutContactInfo is checked
+// first).
+TEST_F(ActorFormSectionSplitterTest,
+       RetargetTriggerField_ContactInfo_NotFound) {
+  FormData form = SeeForm(
+      {.fields = {{.server_type = NAME_FULL}, {.server_type = COMPANY_NAME}}});
+
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[0].global_id());
+  const AutofillField* original_trigger_field =
+      form_structure->GetFieldById(form.fields()[0].global_id());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(RetargetTriggerFieldForSplittingIfNeeded(
+                form_structure, original_trigger_field,
+                SectionSplitPart::kContactInfo, log_manager()),
+            original_trigger_field);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      actor::RetargetTriggerFieldResult::kErrorContactInfoNotFound, 1);
 }
 
 // Tests that RetargetTriggerField returns the correct re-targeted trigger field
@@ -270,14 +348,19 @@ TEST_F(ActorFormSectionSplitterTest, RetargetTriggerField_Address) {
 
   const FormStructure* form_structure =
       manager().FindCachedFormById(form.fields()[1].global_id());
-  const AutofillField* field =
+  const AutofillField* original_trigger_field =
       form_structure->GetFieldById(form.fields()[1].global_id());
 
   // Should retarget to the ADDRESS_HOME_LINE1 in section s2 (index 3), ignoring
   // the one in section s1 (index 0).
+  base::HistogramTester histogram_tester;
   const AutofillField* retargeted = RetargetTriggerFieldForSplittingIfNeeded(
-      form_structure, field, SectionSplitPart::kAddress, log_manager());
+      form_structure, original_trigger_field, SectionSplitPart::kAddress,
+      log_manager());
   EXPECT_EQ(retargeted->global_id(), form.fields()[3].global_id());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      actor::RetargetTriggerFieldResult::kRetargetedToNewField, 1);
 }
 
 // Tests that RetargetTriggerField returns the original trigger field for the
@@ -291,15 +374,41 @@ TEST_F(ActorFormSectionSplitterTest,
 
   const FormStructure* form_structure =
       manager().FindCachedFormById(form.fields()[2].global_id());
-  const AutofillField* field =
+  const AutofillField* original_trigger_field =
       form_structure->GetFieldById(form.fields()[2].global_id());
 
   // Since the trigger field is already an address field, it should be returned
   // as-is, even if it's not the first address field in the section.
-  EXPECT_EQ(
-      RetargetTriggerFieldForSplittingIfNeeded(
-          form_structure, field, SectionSplitPart::kAddress, log_manager()),
-      field);
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(RetargetTriggerFieldForSplittingIfNeeded(
+                form_structure, original_trigger_field,
+                SectionSplitPart::kAddress, log_manager()),
+            original_trigger_field);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      RetargetTriggerFieldResult::kRetargetedToSameField, 1);
+}
+
+// Tests that RetargetTriggerField handles failure when no address is found
+// (should not happen in practice if ShouldSplitOutContactInfo is checked
+// first).
+TEST_F(ActorFormSectionSplitterTest, RetargetTriggerField_Address_NotFound) {
+  FormData form = SeeForm(
+      {.fields = {{.server_type = NAME_FULL}, {.server_type = EMAIL_ADDRESS}}});
+
+  const FormStructure* form_structure =
+      manager().FindCachedFormById(form.fields()[0].global_id());
+  const AutofillField* original_trigger_field =
+      form_structure->GetFieldById(form.fields()[0].global_id());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(RetargetTriggerFieldForSplittingIfNeeded(
+                form_structure, original_trigger_field,
+                SectionSplitPart::kAddress, log_manager()),
+            original_trigger_field);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.ContactInfoSplitting.RetargetTriggerField",
+      actor::RetargetTriggerFieldResult::kErrorAddressNotFound, 1);
 }
 
 // Tests that GetBlockedFields returns the expected fields for both the contact
