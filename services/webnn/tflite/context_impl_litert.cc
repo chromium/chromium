@@ -93,7 +93,7 @@ void ContextImplLiteRt::CreateGraphImpl(
     GraphImplLiteRt::CreateAndBuild(
         std::move(receiver), std::move(graph_info),
         std::move(compute_resource_info), std::move(constant_operands),
-        std::move(constant_tensor_operands), this,
+        std::move(constant_tensor_operands), *this,
         /*weights_file=*/base::File(base::File::FILE_ERROR_NOT_FOUND),
         std::move(callback));
   } else {
