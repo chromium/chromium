@@ -7852,6 +7852,11 @@
     "expiry_milestone": 137
   },
   {
+    "name": "popular-sites-us-refresh",
+    "owners": [ "huangs@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "popup-browser-use-new-layout",
     "owners": [ "dfried@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 150
