@@ -475,8 +475,14 @@ class AutocompleteMediator
             mOmniboxFocusResultedInNavigation = false;
         }
 
-        if (!assumeNonNull(mAutocompleteInput)
-                .shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
+        if (mAutocompleteInput == null) return;
+
+        if (mAutocompleteInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping()) {
+            // Ensure we don't show any lingering suggestions if the user jumps between
+            // an active input session and NTP on LFF where the omnibox is prefocused but
+            // suggestions list are not shown.
+            stopAutocomplete(true);
+        } else {
             // Ask directly for zero-suggestions related to current input, unless the user is
             // currently visiting SearchActivity and the input is populated from the launch intent.
             // In all contexts, the input will most likely be empty, triggering the same response
