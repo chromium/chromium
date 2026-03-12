@@ -176,6 +176,7 @@ class MockClientSocketHandleFactory {
             PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
             SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false),
         scoped_refptr<ClientSocketPool::SocketParams>(),
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
         ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
         ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());

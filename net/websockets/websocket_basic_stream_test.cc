@@ -37,6 +37,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/scheme_host_port.h"
@@ -167,10 +168,11 @@ class WebSocketBasicStreamSocketTest : public TestWithTaskEnvironment {
         PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
         SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
     transport_socket->Init(
-        group_id, null_params, std::nullopt /* proxy_annotation_tag */, MEDIUM,
-        SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
-        CompletionOnceCallback(), ClientSocketPool::ProxyAuthCallback(), &pool_,
-        NetLogWithSource());
+        group_id, null_params,
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        std::nullopt /* proxy_annotation_tag */, MEDIUM, SocketTag(),
+        ClientSocketPool::RespectLimits::ENABLED, CompletionOnceCallback(),
+        ClientSocketPool::ProxyAuthCallback(), &pool_, NetLogWithSource());
     return transport_socket;
   }
 

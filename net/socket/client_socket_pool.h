@@ -29,6 +29,7 @@
 #include "net/socket/socket_pool_additional_capacity.h"
 #include "net/socket/socket_tag.h"
 #include "net/ssl/ssl_config.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -268,6 +269,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   virtual int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
@@ -292,6 +294,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   virtual int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
       PreconnectCompletionCallback callback,
@@ -396,6 +399,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   std::unique_ptr<ConnectJob> CreateConnectJob(
       GroupId group_id,
       scoped_refptr<SocketParams> socket_params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority request_priority,
       SocketTag socket_tag,

@@ -19,6 +19,7 @@
 #include "net/http/http_network_session.h"
 #include "net/socket/client_socket_pool.h"
 #include "net/ssl/ssl_config.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -92,6 +93,7 @@ int InitSocketHandleForHttpRequest(
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
     const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback);
@@ -110,6 +112,7 @@ int InitSocketHandleForWebSocketRequest(
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     const NetLogWithSource& net_log,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
     const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback);
@@ -127,6 +130,7 @@ int PreconnectSocketsForHttpRequest(
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const NetLogWithSource& net_log,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     int num_preconnect_streams,
     ClientSocketPool::PreconnectCompletionCallback callback);
 

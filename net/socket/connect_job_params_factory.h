@@ -33,6 +33,7 @@ struct SSLConfig;
 NET_EXPORT_PRIVATE ConnectJobParams ConstructConnectJobParams(
     const ConnectJobFactory::Endpoint& endpoint,
     const ProxyChain& proxy_chain,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,

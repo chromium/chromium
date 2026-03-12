@@ -162,6 +162,7 @@ ConnectJobParams CreateProxyParams(
     const ConnectJobFactory::Endpoint& endpoint,
     const ProxyChain& proxy_chain,
     size_t proxy_chain_index,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const OnHostResolutionCallback& resolution_callback,
     const NetworkAnonymizationKey& endpoint_network_anonymization_key,
@@ -238,9 +239,10 @@ ConnectJobParams CreateProxyParams(
   } else {
     params = CreateProxyParams(
         proxy_server.host_port_pair(), true, endpoint, proxy_chain,
-        proxy_chain_index - 1, proxy_annotation_tag, resolution_callback,
-        endpoint_network_anonymization_key, secure_dns_policy,
-        common_connect_job_params, proxy_dns_network_anonymization_key);
+        proxy_chain_index - 1, traffic_annotation, proxy_annotation_tag,
+        resolution_callback, endpoint_network_anonymization_key,
+        secure_dns_policy, common_connect_job_params,
+        proxy_dns_network_anonymization_key);
   }
 
   // For secure connections, wrap the underlying connection params in SSL
@@ -278,6 +280,7 @@ ConnectJobParams CreateProxyParams(
 ConnectJobParams ConstructConnectJobParams(
     const ConnectJobFactory::Endpoint& endpoint,
     const ProxyChain& proxy_chain,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,
@@ -328,10 +331,10 @@ ConnectJobParams ConstructConnectJobParams(
     // recursively create params "backward" through the chain to the first.
     params = CreateProxyParams(
         ToHostPortPair(endpoint), should_tunnel, endpoint, proxy_chain,
-        /*proxy_chain_index=*/proxy_chain.length() - 1, proxy_annotation_tag,
-        resolution_callback, endpoint_network_anonymization_key,
-        secure_dns_policy, common_connect_job_params,
-        proxy_dns_network_anonymization_key);
+        /*proxy_chain_index=*/proxy_chain.length() - 1, traffic_annotation,
+        proxy_annotation_tag, resolution_callback,
+        endpoint_network_anonymization_key, secure_dns_policy,
+        common_connect_job_params, proxy_dns_network_anonymization_key);
   }
 
   if (UsingSsl(endpoint)) {

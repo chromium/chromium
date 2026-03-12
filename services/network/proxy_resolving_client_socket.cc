@@ -284,7 +284,8 @@ int ProxyResolvingClientSocket::DoInitConnection() {
 
   connect_job_ = connect_job_factory_->CreateConnectJob(
       use_tls_, net::HostPortPair::FromURL(url_), proxy_info_.proxy_chain(),
-      proxy_annotation_tag, /*force_tunnel=*/true, net::PRIVACY_MODE_DISABLED,
+      net::MutableNetworkTrafficAnnotationTag(), proxy_annotation_tag,
+      /*force_tunnel=*/true, net::PRIVACY_MODE_DISABLED,
       net::OnHostResolutionCallback(), net::MAXIMUM_PRIORITY, net::SocketTag(),
       network_anonymization_key_, net::SecureDnsPolicy::kAllow,
       common_connect_job_params_, this);

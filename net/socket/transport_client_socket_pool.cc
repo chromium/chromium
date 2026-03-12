@@ -81,6 +81,7 @@ TransportClientSocketPool::Request::Request(
     RespectLimits respect_limits,
     Flags flags,
     scoped_refptr<SocketParams> socket_params,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const NetLogWithSource& net_log)
     : handle_(handle),
@@ -90,6 +91,7 @@ TransportClientSocketPool::Request::Request(
       respect_limits_(respect_limits),
       flags_(flags),
       socket_params_(std::move(socket_params)),
+      traffic_annotation_(traffic_annotation),
       proxy_annotation_tag_(proxy_annotation_tag),
       net_log_(net_log),
       socket_tag_(socket_tag) {
@@ -248,6 +250,7 @@ void TransportClientSocketPool::RemoveHigherLayeredPool(
 int TransportClientSocketPool::RequestSocket(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority priority,
     const SocketTag& socket_tag,
@@ -263,7 +266,8 @@ int TransportClientSocketPool::RequestSocket(
 
   std::unique_ptr<Request> request = std::make_unique<Request>(
       handle, std::move(callback), proxy_auth_callback, priority, socket_tag,
-      respect_limits, NORMAL, std::move(params), proxy_annotation_tag, net_log);
+      respect_limits, NORMAL, std::move(params), traffic_annotation,
+      proxy_annotation_tag, net_log);
 
   // Cleanup any timed-out idle sockets.
   CleanupIdleSockets(false, nullptr /* net_log_reason_utf8 */);
@@ -302,6 +306,7 @@ int TransportClientSocketPool::RequestSocket(
 int TransportClientSocketPool::RequestSockets(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     size_t num_sockets,
     PreconnectCompletionCallback callback,
@@ -313,7 +318,7 @@ int TransportClientSocketPool::RequestSockets(
   Request request(nullptr /* no handle */, CompletionOnceCallback(),
                   ProxyAuthCallback(), IDLE, SocketTag(),
                   RespectLimits::ENABLED, NO_IDLE_SOCKETS, std::move(params),
-                  proxy_annotation_tag, net_log);
+                  traffic_annotation, proxy_annotation_tag, net_log);
 
   // Cleanup any timed-out idle sockets.
   CleanupIdleSockets(false, nullptr /* net_log_reason_utf8 */);
@@ -465,8 +470,9 @@ int TransportClientSocketPool::RequestSocketInternal(
   // so allocate and connect a new one.
   group = GetOrCreateGroup(group_id);
   std::unique_ptr<ConnectJob> connect_job(CreateConnectJob(
-      group_id, request.socket_params(), request.proxy_annotation_tag(),
-      request.priority(), request.socket_tag(), group));
+      group_id, request.socket_params(), request.traffic_annotation(),
+      request.proxy_annotation_tag(), request.priority(), request.socket_tag(),
+      group));
   connect_job->net_log().AddEvent(
       NetLogEventType::SOCKET_POOL_CONNECT_JOB_CREATED, [&] {
         return NetLogCreateConnectJobParams(false /* backup_job */, &group_id);
@@ -1648,8 +1654,9 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
   Request* request = unbound_requests_.FirstMax().value().get();
   std::unique_ptr<ConnectJob> owned_backup_job =
       client_socket_pool_->CreateConnectJob(
-          group_id, request->socket_params(), request->proxy_annotation_tag(),
-          request->priority(), request->socket_tag(), this);
+          group_id, request->socket_params(), request->traffic_annotation(),
+          request->proxy_annotation_tag(), request->priority(),
+          request->socket_tag(), this);
   owned_backup_job->net_log().AddEvent(
       NetLogEventType::SOCKET_POOL_CONNECT_JOB_CREATED, [&] {
         return NetLogCreateConnectJobParams(true /* backup_job */, &group_id_);

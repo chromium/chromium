@@ -49,6 +49,7 @@
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_info.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -1279,8 +1280,10 @@ class ClientSocketPoolTest {
         new TestSocketRequest(&request_order_, &completion_count_));
     requests_.push_back(base::WrapUnique(request));
     int rv = request->handle()->Init(
-        group_id, socket_params, std::nullopt /* proxy_annotation_tag */,
-        priority, SocketTag(), respect_limits, request->callback(),
+        group_id, socket_params,
+        MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        /*proxy_annotation_tag=*/std::nullopt, priority, SocketTag(),
+        respect_limits, request->callback(),
         ClientSocketPool::ProxyAuthCallback(), socket_pool, NetLogWithSource());
     if (rv != ERR_IO_PENDING)
       request_order_.push_back(request);
@@ -1387,6 +1390,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,

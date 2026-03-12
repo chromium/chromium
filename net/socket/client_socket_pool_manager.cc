@@ -22,6 +22,7 @@
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
 #include "net/ssl/ssl_config.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -94,6 +95,7 @@ int InitSocketPoolHelper(
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     int num_preconnect_streams,
     ClientSocketHandle* socket_handle,
     HttpNetworkSession::SocketPoolType socket_pool_type,
@@ -125,14 +127,15 @@ int InitSocketPoolHelper(
                                    proxy_info.traffic_annotation());
   if (num_preconnect_streams) {
     return pool->RequestSockets(connection_group, std::move(socket_params),
-                                proxy_annotation, num_preconnect_streams,
+                                traffic_annotation, proxy_annotation,
+                                num_preconnect_streams,
                                 std::move(preconnect_callback), net_log);
   }
 
-  return socket_handle->Init(connection_group, std::move(socket_params),
-                             proxy_annotation, request_priority, socket_tag,
-                             respect_limits, std::move(callback),
-                             proxy_auth_callback, pool, net_log);
+  return socket_handle->Init(
+      connection_group, std::move(socket_params), traffic_annotation,
+      proxy_annotation, request_priority, socket_tag, respect_limits,
+      std::move(callback), proxy_auth_callback, pool, net_log);
 }
 
 }  // namespace
@@ -220,6 +223,7 @@ int InitSocketHandleForHttpRequest(
     SecureDnsPolicy secure_dns_policy,
     const SocketTag& socket_tag,
     const NetLogWithSource& net_log,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
     const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback) {
@@ -228,9 +232,9 @@ int InitSocketHandleForHttpRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, socket_tag,
-      net_log, 0, socket_handle, HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::move(callback), proxy_auth_callback,
-      ClientSocketPool::PreconnectCompletionCallback());
+      net_log, traffic_annotation, 0, socket_handle,
+      HttpNetworkSession::NORMAL_SOCKET_POOL, std::move(callback),
+      proxy_auth_callback, ClientSocketPool::PreconnectCompletionCallback());
 }
 
 int InitSocketHandleForWebSocketRequest(
@@ -243,6 +247,7 @@ int InitSocketHandleForWebSocketRequest(
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     const NetLogWithSource& net_log,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     ClientSocketHandle* socket_handle,
     CompletionOnceCallback callback,
     const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback) {
@@ -260,7 +265,7 @@ int InitSocketHandleForWebSocketRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), SecureDnsPolicy::kAllow,
-      SocketTag(), net_log, 0, socket_handle,
+      SocketTag(), net_log, traffic_annotation, 0, socket_handle,
       HttpNetworkSession::WEBSOCKET_SOCKET_POOL, std::move(callback),
       proxy_auth_callback, ClientSocketPool::PreconnectCompletionCallback());
 }
@@ -276,6 +281,7 @@ int PreconnectSocketsForHttpRequest(
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const NetLogWithSource& net_log,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     int num_preconnect_streams,
     ClientSocketPool::PreconnectCompletionCallback callback) {
   // Expect websocket schemes (ws and wss) to be converted to the http(s)
@@ -287,7 +293,7 @@ int PreconnectSocketsForHttpRequest(
       std::move(endpoint), request_load_flags, request_priority, session,
       proxy_info, allowed_bad_certs, privacy_mode,
       std::move(network_anonymization_key), secure_dns_policy, SocketTag(),
-      net_log, num_preconnect_streams, nullptr,
+      net_log, traffic_annotation, num_preconnect_streams, nullptr,
       HttpNetworkSession::NORMAL_SOCKET_POOL, CompletionOnceCallback(),
       ClientSocketPool::ProxyAuthCallback(), std::move(callback));
 }

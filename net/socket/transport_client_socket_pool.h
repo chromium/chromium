@@ -103,6 +103,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
         RespectLimits respect_limits,
         Flags flags,
         scoped_refptr<SocketParams> socket_params,
+        MutableNetworkTrafficAnnotationTag traffic_annotation,
         const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
         const NetLogWithSource& net_log);
 
@@ -121,6 +122,9 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     RespectLimits respect_limits() const { return respect_limits_; }
     Flags flags() const { return flags_; }
     SocketParams* socket_params() const { return socket_params_.get(); }
+    const MutableNetworkTrafficAnnotationTag& traffic_annotation() const {
+      return traffic_annotation_;
+    }
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag()
         const {
       return proxy_annotation_tag_;
@@ -145,6 +149,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
     const RespectLimits respect_limits_;
     const Flags flags_;
     const scoped_refptr<SocketParams> socket_params_;
+    const MutableNetworkTrafficAnnotationTag traffic_annotation_;
     const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag_;
     const NetLogWithSource net_log_;
     const SocketTag socket_tag_;
@@ -197,6 +202,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
@@ -208,6 +214,7 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
       PreconnectCompletionCallback callback,

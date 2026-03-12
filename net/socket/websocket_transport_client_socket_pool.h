@@ -66,6 +66,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
@@ -77,6 +78,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
   int RequestSockets(
       const GroupId& group_id,
       scoped_refptr<SocketParams> params,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
       const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       size_t num_sockets,
       PreconnectCompletionCallback callback,
@@ -154,6 +156,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
     StalledRequest(
         const GroupId& group_id,
         const scoped_refptr<SocketParams>& params,
+        MutableNetworkTrafficAnnotationTag traffic_annotation,
         const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
         RequestPriority priority,
         ClientSocketHandle* handle,
@@ -165,6 +168,7 @@ class NET_EXPORT_PRIVATE WebSocketTransportClientSocketPool
 
     const GroupId group_id;
     const scoped_refptr<SocketParams> params;
+    const MutableNetworkTrafficAnnotationTag traffic_annotation;
     const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag;
     const RequestPriority priority;
     const raw_ptr<ClientSocketHandle> handle;

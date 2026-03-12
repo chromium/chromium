@@ -2125,6 +2125,7 @@ MockTransportClientSocketPool::~MockTransportClientSocketPool() = default;
 int MockTransportClientSocketPool::RequestSocket(
     const ClientSocketPool::GroupId& group_id,
     scoped_refptr<ClientSocketPool::SocketParams> socket_params,
+    MutableNetworkTrafficAnnotationTag traffic_annotation,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority priority,
     const SocketTag& socket_tag,
