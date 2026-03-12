@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
@@ -127,12 +126,7 @@ class WebApp {
     return dark_mode_background_color_;
   }
 
-  DisplayMode display_mode() const {
-    if (display_mode_ == DisplayMode::kUndefined) {
-      CHECK_IS_TEST();
-    }
-    return display_mode_;
-  }
+  DisplayMode display_mode() const { return display_mode_; }
 
   mojom::UserDisplayMode user_display_mode() const {
     return ToMojomUserDisplayMode(
