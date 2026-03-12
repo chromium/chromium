@@ -711,7 +711,7 @@ class NavigatingWebView : public StubWebView {
 
 };  // NavigatingWebView
 
-#if defined(MEMORY_SANITIZER)
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
 base::TimeDelta kImplicitWait = base::Seconds(100);
 #elif defined(NDEBUG)
 base::TimeDelta kImplicitWait = base::Seconds(3);
