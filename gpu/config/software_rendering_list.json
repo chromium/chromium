@@ -947,7 +947,7 @@
         "op": "<",
         "value": "10.4.3"
       },
-      "vendor_id": "8086",
+      "vendor_id": "0x8086",
       "device_id": ["0x2a02"],
       "features": [
         "all"
