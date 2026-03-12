@@ -223,6 +223,10 @@ bool AutofillClient::IsTabInActorMode() const {
   return false;
 }
 
+ActorKeyMetricsRecorder* AutofillClient::GetActorKeyMetricsRecorder() {
+  return nullptr;
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator(std::string histogram) {
   return nullptr;
