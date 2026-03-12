@@ -160,7 +160,7 @@ class ActiveTaskContextProviderImplTest : public testing::Test {
 
 TEST_F(ActiveTaskContextProviderImplTest, RefreshContextNoTaskId) {
   EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrSidePanel())
+              GetSessionHandleForActiveTabOrPanel())
       .WillOnce(Return(std::make_pair(std::nullopt, nullptr)));
   EXPECT_CALL(observer_, OnContextTabsChanged(std::set<tabs::TabHandle>()))
       .Times(1);
@@ -179,7 +179,7 @@ TEST_F(ActiveTaskContextProviderImplTest, RefreshContextWithTabs) {
   task.AddUrlResource(resource);
 
   EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrSidePanel())
+              GetSessionHandleForActiveTabOrPanel())
       .WillOnce(Return(std::make_pair(task_id, &dummy_handle_)));
 
   EXPECT_CALL(*contextual_tasks_service_, GetContextForTask(task_id, _, _, _))
@@ -208,7 +208,7 @@ TEST_F(ActiveTaskContextProviderImplTest, AutoSuggestedTab) {
   ContextualTask task(task_id);
 
   EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrSidePanel())
+              GetSessionHandleForActiveTabOrPanel())
       .WillOnce(Return(std::make_pair(task_id, &dummy_handle_)));
 
   EXPECT_CALL(*contextual_tasks_service_, GetContextForTask(task_id, _, _, _))
@@ -243,7 +243,7 @@ TEST_F(ActiveTaskContextProviderImplTest, RefreshContextStaleCallback) {
       captured_callback;
 
   EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrSidePanel())
+              GetSessionHandleForActiveTabOrPanel())
       .WillRepeatedly(Return(std::make_pair(task_id, &dummy_handle_)));
 
   EXPECT_CALL(*contextual_tasks_service_, GetContextForTask(task_id, _, _, _))
@@ -283,7 +283,7 @@ TEST_F(ActiveTaskContextProviderImplTest, RefreshContextStaleCallback) {
 TEST_F(ActiveTaskContextProviderImplTest, ServiceObserversTriggerRefresh) {
   // Set expectations for RefreshContext which will be called by each observer.
   EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrSidePanel())
+              GetSessionHandleForActiveTabOrPanel())
       .WillRepeatedly(Return(std::make_pair(std::nullopt, nullptr)));
   EXPECT_CALL(observer_, OnContextTabsChanged(_)).Times(5);
 
@@ -303,7 +303,7 @@ TEST_F(ActiveTaskContextProviderImplTest, ActiveTabChanged) {
 
   // When active tab changes, RefreshContext is called.
   EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrSidePanel())
+              GetSessionHandleForActiveTabOrPanel())
       .WillOnce(Return(std::make_pair(std::nullopt, nullptr)));
   EXPECT_CALL(observer_, OnContextTabsChanged(_)).Times(1);
 
@@ -318,7 +318,7 @@ TEST_F(ActiveTaskContextProviderImplTest, PrimaryPageChanged) {
 
   // When active tab changes, RefreshContext is called.
   EXPECT_CALL(*contextual_tasks_panel_controller_,
-              GetSessionHandleForActiveTabOrSidePanel())
+              GetSessionHandleForActiveTabOrPanel())
       .WillRepeatedly(Return(std::make_pair(std::nullopt, nullptr)));
   EXPECT_CALL(observer_, OnContextTabsChanged(_)).Times(1);
 

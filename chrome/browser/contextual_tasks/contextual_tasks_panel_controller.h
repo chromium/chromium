@@ -66,7 +66,7 @@ class ContextualTasksPanelController {
 
   // WebContents & session management.
   // Returns the currently active WebContents, or NULL if there is none.
-  virtual content::WebContents* GetActiveWebContents() = 0;
+  virtual content::WebContents* GetActiveWebContents() const = 0;
   // Returns a list of all cached panel WebContents.
   virtual std::vector<content::WebContents*> GetPanelWebContentsList()
       const = 0;
@@ -87,7 +87,7 @@ class ContextualTasksPanelController {
   // Returns currently showing task's task ID and session handle.
   virtual std::pair<std::optional<base::Uuid>,
                     contextual_search::ContextualSearchSessionHandle*>
-  GetSessionHandleForActiveTabOrSidePanel() = 0;
+  GetSessionHandleForActiveTabOrPanel() = 0;
 
   // Metrics.
   // Returns the number of active tasks tracked by `this`.

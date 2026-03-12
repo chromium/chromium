@@ -107,10 +107,18 @@ bool ContextualTasksPanelHostDesktopImpl::IsPanelOpenForContextualTask() const {
 }
 
 bool ContextualTasksPanelHostDesktopImpl::IsPanelSuppressed() const {
+  if (suppressed_for_testing_) {
+    return true;
+  }
   // If the glic side panel is open, do not override it with the contextual
   // tasks side panel when active tab is changed.
   return side_panel_ui_->IsSidePanelEntryShowing(
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic));
+}
+
+void ContextualTasksPanelHostDesktopImpl::SetPanelSuppressedForTesting(
+    bool suppressed) {
+  suppressed_for_testing_ = suppressed;
 }
 
 content::WebContents* ContextualTasksPanelHostDesktopImpl::GetWebContents() {

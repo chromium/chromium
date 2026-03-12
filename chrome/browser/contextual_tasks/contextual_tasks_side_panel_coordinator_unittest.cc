@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -32,6 +33,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -66,76 +68,6 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
   MOCK_METHOD(GURL,
               GetDefaultAiPageUrlForTask,
               (const base::Uuid& task_id),
-              (override));
-};
-
-class MockSidePanelUI : public SidePanelUI {
- public:
-  MOCK_METHOD(void,
-              Show,
-              (SidePanelEntryId entry_id,
-               std::optional<SidePanelOpenTrigger> open_trigger,
-               bool suppress_animations),
-              (override));
-  MOCK_METHOD(void,
-              Show,
-              (SidePanelEntryKey entry_key,
-               std::optional<SidePanelOpenTrigger> open_trigger,
-               bool suppress_animations),
-              (override));
-  MOCK_METHOD(void,
-              ShowFrom,
-              (SidePanelEntryKey entry_key,
-               gfx::Rect starting_bounds_in_browser_coordinates),
-              (override));
-  MOCK_METHOD(void,
-              Close,
-              (SidePanelEntry::PanelType panel_type,
-               SidePanelEntryHideReason hide_reason,
-               bool suppress_animations),
-              (override));
-  MOCK_METHOD(void,
-              Toggle,
-              (SidePanelEntryKey key, SidePanelOpenTrigger open_trigger),
-              (override));
-  MOCK_METHOD(std::optional<SidePanelEntryId>,
-              GetCurrentEntryId,
-              (SidePanelEntry::PanelType panel_type),
-              (const, override));
-  MOCK_METHOD(int,
-              GetCurrentEntryDefaultContentWidth,
-              (SidePanelEntry::PanelType type),
-              (const, override));
-  MOCK_METHOD(bool,
-              IsSidePanelShowing,
-              (SidePanelEntry::PanelType type),
-              (const, override));
-  MOCK_METHOD(bool,
-              IsSidePanelEntryShowing,
-              (const SidePanelEntryKey& entry_key),
-              (const, override));
-  MOCK_METHOD(bool,
-              IsSidePanelEntryShowing,
-              (const SidePanelEntry::Key& entry_key, bool for_tab),
-              (const, override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterSidePanelShown,
-              (SidePanelEntry::PanelType type, ShownCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              OnActiveTabChanged,
-              (content::WebContents * old_contents,
-               content::WebContents* new_contents,
-               bool tab_removed_for_deletion),
-              (override));
-  MOCK_METHOD(content::WebContents*,
-              GetWebContentsForTest,
-              (SidePanelEntryId id),
-              (override));
-  MOCK_METHOD(void, DisableAnimationsForTesting, (), (override));
-  MOCK_METHOD(void,
-              SetNoDelaysForTesting,
-              (bool no_delays_for_testing),
               (override));
 };
 
@@ -190,15 +122,17 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     ON_CALL(*browser_window_, GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(unowned_user_data_host_));
 
-    // Create SidePanelRegistry.
-    side_panel_registry_ =
-        std::make_unique<SidePanelRegistry>(browser_window_.get());
-
     tab_list_bridge_ = std::make_unique<TabListBridge>(*tab_strip_model_,
                                                        unowned_user_data_host_);
 
+    auto mock_panel_host =
+        std::make_unique<NiceMock<MockContextualTasksPanelHost>>();
+    ON_CALL(*mock_panel_host, IsPanelInitialized())
+        .WillByDefault(testing::Return(true));
+    mock_panel_host_ = mock_panel_host.get();
+
     coordinator_ = std::make_unique<ContextualTasksSidePanelCoordinator>(
-        browser_window_.get(), &mock_side_panel_ui_,
+        browser_window_.get(), std::move(mock_panel_host),
         &mock_active_task_context_provider_, nullptr);
 
     // Create a new tab.
@@ -220,12 +154,13 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   }
 
   void TearDown() override {
+    mock_controller_ = nullptr;
+    mock_panel_host_ = nullptr;
+
     coordinator_.reset();
-    side_panel_registry_.reset();
     tab_list_bridge_.reset();
     tab_strip_model_.reset();
     browser_window_.reset();
-    mock_controller_ = nullptr;
     profile_.reset();
   }
 
@@ -236,6 +171,31 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   void CreateWebContentsForTesting() {
     coordinator_->CreateCachedWebContentsForTesting(
         base::Uuid::GenerateRandomV4(), true);
+  }
+
+  void CreateCachedWebContentsForTesting(base::Uuid task_id, bool is_open) {
+    coordinator_->CreateCachedWebContentsForTesting(task_id, is_open);
+  }
+
+  void CleanUpUnusedWebContents() { coordinator_->CleanUpUnusedWebContents(); }
+
+  bool UpdateWebContentsForActiveTab() {
+    return coordinator_->UpdateWebContentsForActiveTab();
+  }
+
+  void ClearCacheForTesting() {
+    coordinator_->task_id_to_web_contents_cache_.clear();
+  }
+
+  size_t GetNumberOfActiveTasksForTesting(base::Uuid task_id) {
+    return coordinator_->task_id_to_web_contents_cache_.count(task_id);
+  }
+
+  content::WebContents* GetWebContentsForTaskForTesting(base::Uuid task_id) {
+    auto it = coordinator_->task_id_to_web_contents_cache_.find(task_id);
+    return it != coordinator_->task_id_to_web_contents_cache_.end()
+               ? it->second->web_contents.get()
+               : nullptr;
   }
 
   std::unique_ptr<KeyedService> CreateMockContextController(
@@ -255,10 +215,9 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   ui::UnownedUserDataHost unowned_user_data_host_;
-  std::unique_ptr<SidePanelRegistry> side_panel_registry_;
   std::unique_ptr<TabListBridge> tab_list_bridge_;
-  NiceMock<MockSidePanelUI> mock_side_panel_ui_;
   NiceMock<MockActiveTaskContextProvider> mock_active_task_context_provider_;
+  raw_ptr<MockContextualTasksPanelHost> mock_panel_host_ = nullptr;
   raw_ptr<MockContextualTasksService> mock_controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 
@@ -270,19 +229,6 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   // Verify open the side panel with active tab not associated with a task will
   // create a new task.
   EXPECT_CALL(*mock_controller_, CreateTask()).Times(1);
-  coordinator_->Show(false,
-                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
-}
-
-TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelAlreadyOpen) {
-  // Verify mock_side_panel_ui will not call Show() if the side panel is already
-  // open.
-  ON_CALL(mock_side_panel_ui_, IsSidePanelEntryShowing(_))
-      .WillByDefault(Return(true));
-  EXPECT_CALL(
-      mock_side_panel_ui_,
-      Show(SidePanelEntry::Key(SidePanelEntry::Id::kContextualTasks), _, _))
-      .Times(0);
   coordinator_->Show(false,
                      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
@@ -306,15 +252,15 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest, CloseSidePanelWhenNotEligible) {
-  ON_CALL(mock_side_panel_ui_, IsSidePanelEntryShowing(_))
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
       .WillByDefault(Return(true));
 
   CreateWebContentsForTesting();
   EXPECT_EQ(1u, coordinator_->GetNumberOfActiveTasks());
 
   // Verify that the side panel is closed when not eligible and cache is empty.
-  EXPECT_CALL(mock_side_panel_ui_,
-              Close(SidePanelEntry::PanelType::kToolbar, _, _));
+  EXPECT_CALL(*mock_panel_host_,
+              Close(ContextualTasksPanelHost::AnimationStyle::kStandard));
   TriggerOnEligibilityChange(false);
   EXPECT_EQ(0u, coordinator_->GetNumberOfActiveTasks());
 }
@@ -393,6 +339,81 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   coordinator_->Show(
       false,
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest, CleanUpUnusedWebContents) {
+  // Clear any tasks from SetUp.
+  ClearCacheForTesting();
+
+  // Ensure mock_controller handles any task_id or tab_id by default.
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(_))
+      .WillRepeatedly(Return(std::vector<SessionID>{}));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillRepeatedly(Return(std::nullopt));
+
+  // task_id1: Not associated with any tab. Should be cleaned up immediately.
+  base::Uuid task_id1 = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id1, false);
+
+  // task_id2: Associated with the active tab's web contents.
+  base::Uuid task_id2 = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsForTesting(task_id2, true);
+
+  // Ensure the coordinator knows task_id2 is associated with the active tab.
+  tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(ContextualTask(task_id2)));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id2))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  // Ensure the coordinator knows task_id2 is the active one.
+  UpdateWebContentsForActiveTab();
+  ASSERT_EQ(coordinator_->GetActiveWebContents(),
+            GetWebContentsForTaskForTesting(task_id2));
+
+  EXPECT_EQ(2u, coordinator_->GetNumberOfActiveTasks());
+
+  // 1. Clean up task_id1 immediately (no associated tabs).
+  CleanUpUnusedWebContents();
+  EXPECT_EQ(1u, coordinator_->GetNumberOfActiveTasks());
+  EXPECT_EQ(0u, GetNumberOfActiveTasksForTesting(task_id1));
+
+  // 2. task_id2 should STILL be there because it's active.
+  EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(task_id2));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OnActiveTabChangedSuppressesPanelIfIsPanelSuppressedIsTrue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kContextualTasks, {{"ContextualTasksTaskScopedSidePanel", "false"}});
+
+  // Ensure the coordinator knows the panel should be open for the active tab.
+  tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(ContextualTask(task_id)));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  // Set the panel to be open initially.
+  EXPECT_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillRepeatedly(Return(true));
+
+  // Mock IsPanelSuppressed to return true.
+  EXPECT_CALL(*mock_panel_host_, IsPanelSuppressed()).WillOnce(Return(true));
+
+  // Verify that the panel is closed.
+  EXPECT_CALL(*mock_panel_host_,
+              Close(ContextualTasksPanelHost::AnimationStyle::kNoAnimation))
+      .Times(1);
+
+  // Trigger OnActiveTabChanged.
+  coordinator_->OnActiveTabChanged(*tab_list_bridge_, active_tab);
 }
 
 }  // namespace contextual_tasks
