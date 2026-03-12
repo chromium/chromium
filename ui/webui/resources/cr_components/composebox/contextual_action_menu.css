@@ -82,11 +82,13 @@
 }
 
 .dropdown-item:hover {
-  background-color: var(--cr-hover-background-color);
+  background-color: var(--color-context-menu-hover-background,
+      var(--cr-hover-background-color));
 }
 
 .dropdown-item:focus {
-  background-color: var(--cr-hover-background-color);
+  background-color: var(--color-context-menu-hover-background,
+      var(--cr-hover-background-color));
   outline: none;
 }
 
@@ -131,11 +133,14 @@
 }
 
 #multi-tab-add {
-  color: var(--color-composebox-file-chip-text);
+  color: var(--color-composebox-context-menu-text,
+      var(--color-composebox-file-chip-text));
 }
 
 #multi-tab-check {
-  color: var(--color-composebox-tab-selector-button-selected);
+  color: var(--color-composebox-context-menu-checkbox-override,
+      /* Default defined in colors.css: */
+      var(--color-composebox-tab-selector-button-selected));
 }
 
 #model-check {
