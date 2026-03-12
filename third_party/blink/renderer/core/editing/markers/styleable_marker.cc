@@ -60,7 +60,8 @@ bool IsStyleableMarker(const DocumentMarker& marker) {
   DocumentMarker::MarkerType type = marker.GetType();
   return type == DocumentMarker::kComposition ||
          type == DocumentMarker::kActiveSuggestion ||
-         type == DocumentMarker::kSuggestion;
+         type == DocumentMarker::kSuggestion ||
+         type == DocumentMarker::kPreviewStylusGesture;
 }
 
 }  // namespace blink

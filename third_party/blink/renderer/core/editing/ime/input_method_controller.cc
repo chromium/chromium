@@ -320,6 +320,8 @@ SuggestionMarker::SuggestionType ConvertImeTextSpanType(
     case ImeTextSpan::Type::kComposition:
     case ImeTextSpan::Type::kSuggestion:
       return SuggestionMarker::SuggestionType::kNotMisspelling;
+    case ImeTextSpan::Type::kPreviewStylusGesture:
+      NOTREACHED();
   }
 }
 
@@ -546,6 +548,10 @@ void InputMethodController::ClearImeTextSpansByType(ImeTextSpan::Type type,
     case ImeTextSpan::Type::kComposition:
       GetDocument().Markers().RemoveMarkersInRange(
           range, DocumentMarker::MarkerTypes::Composition());
+      break;
+    case ImeTextSpan::Type::kPreviewStylusGesture:
+      GetDocument().Markers().RemoveMarkersInRange(
+          range, DocumentMarker::MarkerTypes::PreviewStylusGesture());
       break;
   }
 }
@@ -824,6 +830,11 @@ void InputMethodController::AddImeTextSpans(
             ephemeral_line_range, ime_text_span.UnderlineColor(),
             ime_text_span.Thickness(), underline_style,
             ime_text_span.TextColor(), ime_text_span.BackgroundColor());
+        break;
+      }
+      case ImeTextSpan::Type::kPreviewStylusGesture: {
+        GetDocument().Markers().AddPreviewStylusGestureMarker(
+            ephemeral_line_range, ime_text_span.BackgroundColor());
         break;
       }
       case ImeTextSpan::Type::kAutocorrect:

@@ -46,6 +46,7 @@ class CORE_EXPORT ImeTextSpan {
     kMisspellingSuggestion,
     kAutocorrect,
     kGrammarSuggestion,
+    kPreviewStylusGesture,
   };
 
   ImeTextSpan(Type,

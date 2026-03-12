@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/core/editing/markers/glic_marker_list_impl.h"
 #include "third_party/blink/renderer/core/editing/markers/grammar_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/grammar_marker_list_impl.h"
+#include "third_party/blink/renderer/core/editing/markers/preview_stylus_gesture_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/preview_stylus_gesture_marker_list_impl.h"
 #include "third_party/blink/renderer/core/editing/markers/sorted_document_marker_list_editor.h"
 #include "third_party/blink/renderer/core/editing/markers/spelling_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/spelling_marker_list_impl.h"
@@ -92,6 +94,8 @@ DocumentMarker::MarkerTypeIndex MarkerTypeToMarkerIndex(
       return DocumentMarker::kCustomHighlightMarkerIndex;
     case DocumentMarker::kGlic:
       return DocumentMarker::kGlicMarkerIndex;
+    case DocumentMarker::kPreviewStylusGesture:
+      return DocumentMarker::kPreviewStylusGestureMarkerIndex;
   }
 
   NOTREACHED();
@@ -117,6 +121,8 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
       return MakeGarbageCollected<CustomHighlightMarkerListImpl>();
     case DocumentMarker::kGlic:
       return MakeGarbageCollected<GlicMarkerListImpl>();
+    case DocumentMarker::kPreviewStylusGesture:
+      return MakeGarbageCollected<PreviewStylusGestureMarkerListImpl>();
   }
 
   NOTREACHED();
@@ -284,6 +290,17 @@ void DocumentMarkerController::AddCompositionMarker(
                       return MakeGarbageCollected<CompositionMarker>(
                           start_offset, end_offset, underline_color, thickness,
                           underline_style, text_color, background_color);
+                    });
+}
+
+void DocumentMarkerController::AddPreviewStylusGestureMarker(
+    const EphemeralRange& range,
+    Color background_color) {
+  DCHECK(!document_->NeedsLayoutTreeUpdate());
+  AddMarkerInternal(range,
+                    [background_color](int start_offset, int end_offset) {
+                      return MakeGarbageCollected<PreviewStylusGestureMarker>(
+                          start_offset, end_offset, background_color);
                     });
 }
 
@@ -948,8 +965,9 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
 
   const DocumentMarkerVector& markers_overridden_by_suggestion_markers =
       MarkersFor(text,
-                 DocumentMarker::MarkerTypes(DocumentMarker::kComposition |
-                                             DocumentMarker::kSpelling)
+                 DocumentMarker::MarkerTypes(
+                     DocumentMarker::kComposition | DocumentMarker::kSpelling |
+                     DocumentMarker::kPreviewStylusGesture)
                      .Subtract(excluded_highlight_pseudos));
 
   Vector<unsigned> suggestion_starts;
@@ -1004,7 +1022,8 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
       DocumentMarker::MarkerTypes::AllBut(
           DocumentMarker::MarkerTypes(
               DocumentMarker::kComposition | DocumentMarker::kSpelling |
-              DocumentMarker::kSuggestion | DocumentMarker::kCustomHighlight))
+              DocumentMarker::kSuggestion | DocumentMarker::kCustomHighlight |
+              DocumentMarker::kPreviewStylusGesture))
           .Subtract(excluded_highlight_pseudos)));
 
   return markers_to_paint;

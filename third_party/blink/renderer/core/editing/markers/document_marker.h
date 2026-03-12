@@ -50,6 +50,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kTextFragmentMarkerIndex,
     kCustomHighlightMarkerIndex,
     kGlicMarkerIndex,
+    kPreviewStylusGestureMarkerIndex,
     kMarkerTypeIndexesCount
   };
 
@@ -63,6 +64,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kTextFragment = 1 << kTextFragmentMarkerIndex,
     kCustomHighlight = 1 << kCustomHighlightMarkerIndex,
     kGlic = 1 << kGlicMarkerIndex,
+    kPreviewStylusGesture = 1 << kPreviewStylusGestureMarkerIndex,
   };
 
   class MarkerTypesIterator {
@@ -130,6 +132,9 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
       return MarkerTypes(kActiveSuggestion);
     }
     static MarkerTypes Composition() { return MarkerTypes(kComposition); }
+    static MarkerTypes PreviewStylusGesture() {
+      return MarkerTypes(kPreviewStylusGesture);
+    }
     static MarkerTypes Grammar() { return MarkerTypes(kGrammar); }
     static MarkerTypes Misspelling() {
       return MarkerTypes(kSpelling | kGrammar);

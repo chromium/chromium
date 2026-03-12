@@ -590,6 +590,7 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
       } break;
 
       case DocumentMarker::kComposition:
+      case DocumentMarker::kPreviewStylusGesture:
       case DocumentMarker::kActiveSuggestion:
       case DocumentMarker::kSuggestion: {
         // Editing markers are transient and reflect uncommitted content, so do

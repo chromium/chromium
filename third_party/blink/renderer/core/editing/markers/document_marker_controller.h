@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_group.h"
+#include "third_party/blink/renderer/core/editing/markers/preview_stylus_gesture_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -73,6 +74,8 @@ class CORE_EXPORT DocumentMarkerController final
                             ui::mojom::ImeTextSpanUnderlineStyle,
                             Color text_color,
                             Color background_color);
+  void AddPreviewStylusGestureMarker(const EphemeralRange&,
+                                     Color background_color);
   void AddActiveSuggestionMarker(const EphemeralRange&,
                                  Color underline_color,
                                  ui::mojom::ImeTextSpanThickness,

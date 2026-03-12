@@ -127,6 +127,8 @@ ui::ImeTextSpan::Type ConvertImeTextSpanTypeToUiType(ImeTextSpan::Type type) {
       return ui::ImeTextSpan::Type::kMisspellingSuggestion;
     case ImeTextSpan::Type::kSuggestion:
       return ui::ImeTextSpan::Type::kSuggestion;
+    case ImeTextSpan::Type::kPreviewStylusGesture:
+      NOTREACHED();  // This should never be used outside of blink.
   }
 }
 

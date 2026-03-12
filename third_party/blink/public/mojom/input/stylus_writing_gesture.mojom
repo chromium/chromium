@@ -60,4 +60,10 @@ struct StylusWritingGestureData {
   // applicable only to gesture action ADD_SPACE_OR_TEXT and it would contain
   // space character if there was no text to insert in the gesture.
   mojo_base.mojom.String16? text_to_insert;
+
+  // This is a boolean which is set to 'true' when a handwriting-gesture is
+  // being previewed (at the start of a stylus gesture and just before it gets
+  // performed). It is used as a check for when the preview needs to be made
+  // visible to the user.
+  bool is_preview;
 };
