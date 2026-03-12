@@ -134,8 +134,6 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   void OnSubmissionDetectedOrTimeout();
 
-  void OnSubmissionOutcomeChecked(SubmissionResult result);
-
   void OnChangePasswordFormFound(
       password_manager::PasswordFormManager* form_manager);
 
