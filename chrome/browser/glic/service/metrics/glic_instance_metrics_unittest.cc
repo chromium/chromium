@@ -241,6 +241,67 @@ TEST_F(GlicInstanceMetricsTest, InitialInvocationSource_OnlyRecordedOnce) {
       mojom::InvocationSource::kTopChromeButton, 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_LoggedOnFirstClose) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
+                    /*is_showing=*/false);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.TopChromeButton.SidePanelFirstOpenDuration",
+      base::Minutes(5), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       SidePanelFirstOpenDuration_NotLoggedOnSecondClose) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options,
+                    /*is_showing=*/false);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TopChromeButton.SidePanelFirstOpenDuration", 1);
+
+  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options,
+                    /*is_showing=*/false);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  task_environment_.FastForwardBy(base::Minutes(2));
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.TopChromeButton.SidePanelFirstOpenDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Instance.OsButton.SidePanelFirstOpenDuration", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       SidePanelFirstOpenDuration_ShownWithoutToggleCall) {
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Instance.Other.SidePanelFirstOpenDuration", base::Minutes(5), 1);
+}
+
 TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);

@@ -351,6 +351,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   base::CallbackListSubscription tab_pinning_status_subscription_;
   raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
 
+  bool first_side_panel_close_recorded_ = false;
+
   // The following variables are used for recording scroll related metrics.
   //
   // The number of scroll attempts (tracked per session and reset when the

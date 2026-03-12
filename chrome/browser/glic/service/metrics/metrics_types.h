@@ -49,7 +49,7 @@ enum class GlicEntrypoint {
 
 GlicEntrypoint GetEntrypointFromInvocationSource(
     mojom::InvocationSource source);
-
+std::string GetEntrypointString(GlicEntrypoint entrypoint);
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_SERVICE_METRICS_METRICS_TYPES_H_

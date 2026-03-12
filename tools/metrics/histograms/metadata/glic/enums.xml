@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Other"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:GlicEntrypoint) -->
+<!-- LINT.ThenChange(//chrome/chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint) -->
 
 <!-- LINT.IfChange(GlicEntryPointStatus) -->
 
