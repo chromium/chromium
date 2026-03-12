@@ -12,7 +12,7 @@ if [[ ! -d .jj ]]; then
 fi
 
 CONFIG="$(jj config path --repo)"
-rm "$CONFIG"
+rm -f "$CONFIG"
 ln -sf "$(realpath tools/jj/config.toml)" "$CONFIG"
 
 # Ensure that jj snapshots your current commit so it doesn't get lost with git
