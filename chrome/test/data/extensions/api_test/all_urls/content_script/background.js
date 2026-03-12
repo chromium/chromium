@@ -5,6 +5,6 @@
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     // Let the extension know where the script ran.
-    var url = sender.tab ? sender.tab.url : 'about:blank';
-    chrome.test.sendMessage('content script: ' + url);
+    const url = sender.tab ? sender.tab.url : 'about:blank';
+    chrome.test.sendMessage(`content script: ${url}`);
   });

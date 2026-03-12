@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 // Let the background page know this content script executed.
-chrome.runtime.sendMessage({greeting: "hello"});
+chrome.runtime.sendMessage({greeting: 'hello'});
