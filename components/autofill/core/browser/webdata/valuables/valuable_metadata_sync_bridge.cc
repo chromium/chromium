@@ -95,7 +95,7 @@ ValuableMetadataSyncBridge::CreateMetadataChangeList() {
   return std::make_unique<syncer::InMemoryMetadataChangeList>();
 }
 
-void ValuableMetadataSyncBridge::UploadInitialLocalData(
+void ValuableMetadataSyncBridge::UploadInitialLocalEntityMetadata(
     syncer::MetadataChangeList* metadata_change_list,
     const syncer::EntityChangeList& entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -103,13 +103,12 @@ void ValuableMetadataSyncBridge::UploadInitialLocalData(
   std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
       stored_metadata = GetEntityTable()->GetSyncedMetadata();
 
-  // First, make a copy of all local storage keys.
   std::set<EntityInstance::EntityId> local_keys_to_upload;
   for (const auto& [storage_key, metadata] : stored_metadata) {
     local_keys_to_upload.insert(storage_key);
   }
 
-  // Strip |local_keys_to_upload| of the keys of data provided by the server.
+  // Strip `local_keys_to_upload` of the keys of data provided by the server.
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     DCHECK_EQ(change->type(), syncer::EntityChange::ACTION_ADD)
         << "Illegal change; can only be called during initial "
@@ -127,6 +126,47 @@ void ValuableMetadataSyncBridge::UploadInitialLocalData(
               GetPossiblyTrimmedValuableMetadataSpecifics(storage_key.value())),
           metadata_change_list);
     }
+  }
+}
+
+void ValuableMetadataSyncBridge::UploadInitialLocalValuableMetadata(
+    syncer::MetadataChangeList* metadata_change_list,
+    const syncer::EntityChangeList& entity_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(syncer::kSyncLoyaltyCardMetadata));
+
+  absl::flat_hash_map<ValuableId, ValuableMetadata> stored_metadata =
+      GetValuablesTable()->GetAllValuableMetadata();
+
+  std::set<ValuableId> local_keys_to_upload;
+  for (const auto& [storage_key, metadata] : stored_metadata) {
+    local_keys_to_upload.insert(storage_key);
+  }
+
+  // Strip `local_keys_to_upload` of the keys of data provided by the server.
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
+    DCHECK_EQ(change->type(), syncer::EntityChange::ACTION_ADD)
+        << "Illegal change; can only be called during initial "
+           "MergeFullSyncData()";
+    local_keys_to_upload.erase(ValuableId(change->storage_key()));
+  }
+  std::set<ValuableId> loyalty_card_ids;
+  for (const LoyaltyCard& card : GetValuablesTable()->GetLoyaltyCards()) {
+    loyalty_card_ids.insert(card.id());
+  }
+
+  // Upload the remaining storage keys.
+  for (const ValuableId& storage_key : local_keys_to_upload) {
+    if (!loyalty_card_ids.contains(storage_key)) {
+      continue;
+    }
+    change_processor()->Put(
+        *storage_key,
+        CreateEntityDataFromValuableMetadata(
+            stored_metadata.at(storage_key),
+            sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+            GetPossiblyTrimmedValuableMetadataSpecifics(storage_key.value())),
+        metadata_change_list);
   }
 }
 
@@ -202,7 +242,10 @@ std::optional<syncer::ModelError> ValuableMetadataSyncBridge::MergeFullSyncData(
   // remote sync data was just downloaded, but first passed to the
   // AUTOFILL_VALUABLE bridge, with the side effect of creating
   // valuable metadata entries immediately before this function is invoked).
-  UploadInitialLocalData(metadata_change_list.get(), entity_data);
+  UploadInitialLocalEntityMetadata(metadata_change_list.get(), entity_data);
+  if (base::FeatureList::IsEnabled(syncer::kSyncLoyaltyCardMetadata)) {
+    UploadInitialLocalValuableMetadata(metadata_change_list.get(), entity_data);
+  }
 
   return MergeRemoteChanges(std::move(metadata_change_list),
                             std::move(entity_data));
@@ -376,8 +419,18 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
             break;
           }
           case sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD: {
-            // TODO(crbug.com/477841597): Implement server-to-client sync for
-            // `ValuableMetadata`
+            if (base::FeatureList::IsEnabled(
+                    syncer::kSyncLoyaltyCardMetadata)) {
+              const ValuableMetadata remote =
+                  CreateValuableMetadataFromSpecifics(specifics);
+              if (!GetValuablesTable()->AddOrUpdateValuableMetadata(remote)) {
+                // TODO(crbug.com/436551488): Update to the correct error type.
+                return syncer::ModelError(
+                    FROM_HERE,
+                    syncer::ModelError::Type::
+                        kAutofillValuableMetadataFailedToLoadMetadata);
+              }
+            }
             break;
           }
         }

@@ -40,6 +40,11 @@ sync_pb::AutofillValuableMetadataSpecifics CreateSpecificsFromValuableMetadata(
     const sync_pb::AutofillValuableMetadataSpecifics::PassType pass_type,
     const sync_pb::AutofillValuableMetadataSpecifics& base_specifics);
 
+// Converts the given valuable metadata `specifics` into an equivalent
+// ValuableMetadata instance.
+ValuableMetadata CreateValuableMetadataFromSpecifics(
+    const sync_pb::AutofillValuableMetadataSpecifics& specifics);
+
 // Clears all supported fields from `specifics`. Supported
 // fields are all fields in the protobuf definition that have already been
 // included in the client version.

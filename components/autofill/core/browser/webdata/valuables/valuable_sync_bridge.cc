@@ -75,6 +75,11 @@ bool IsSyncAutofillValuableMetadataEnabled() {
   return base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata);
 }
 
+bool IsSyncLoyaltyCardValuableMetadataEnabled() {
+  return IsSyncAutofillValuableMetadataEnabled() &&
+         base::FeatureList::IsEnabled(syncer::kSyncLoyaltyCardMetadata);
+}
+
 bool IsSyncWalletPrivatePassesEnabled() {
   return base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
 }
@@ -134,6 +139,23 @@ bool IsPassTypeEnabled(EntityTypeName entity_name) {
     case EntityTypeName::kOrder:
       return false;
   }
+}
+
+// Creates a `LoyaltyCard` from `specifics` and loads its metadata from
+// `valuables_table` if it exists. Server entities do not come with metadata
+// attached. Therefore, we update the loyalty card's metadata with the client's
+// existing metadata. This prevents the client from removing the related
+// metadata when replacing an old loyalty card with a new one during
+// `ValuablesTable::AddOrUpdateLoyaltyCard`.
+LoyaltyCard CreateLoyaltyCardFromSpecificsAndLoadMetadata(
+    const sync_pb::AutofillValuableSpecifics& specifics,
+    const ValuablesTable& valuables_table) {
+  LoyaltyCard loyalty_card = CreateAutofillLoyaltyCardFromSpecifics(specifics);
+  if (std::optional<ValuableMetadata> metadata =
+          valuables_table.GetValuableMetadata(loyalty_card.id())) {
+    loyalty_card.set_metadata(std::move(*metadata));
+  }
+  return loyalty_card;
 }
 
 }  // namespace
@@ -209,8 +231,23 @@ ValuableDatabaseOperationResult ValuableSyncBridge::HandleDeleteRequest(
     const std::string& storage_key) {
   if (std::optional<LoyaltyCard> loyalty_card =
           GetValuablesTable()->GetLoyaltyCardById(ValuableId(storage_key))) {
+    // Requesting the associated metadata before the loyalty card is removed.
+    std::optional<ValuableMetadata> metadata =
+        GetValuablesTable()->GetValuableMetadata(loyalty_card->id());
     if (!GetValuablesTable()->RemoveLoyaltyCard(loyalty_card->id())) {
       return ValuableDatabaseOperationResult::kDatabaseError;
+    }
+
+    // Server entities can not be removed directly by the user in the client.
+    // They are only removed via a ACTION_DELETE directive received through the
+    // valuables bridge. When the bridge removes a loyalty card and its
+    // associated metadata directly from the local table, server metadata
+    // observers (e.g. ValuableMetadataSyncBridge) must be manually notified of
+    // the deletion so it can be committed to the server.
+    if (IsSyncLoyaltyCardValuableMetadataEnabled() && metadata) {
+      web_data_backend_->NotifyOnValuableMetadataChanged(
+          ValuableMetadataChange(ValuableMetadataChange::REMOVE,
+                                 loyalty_card->id(), std::move(*metadata)));
     }
     return ValuableDatabaseOperationResult::kDataChanged;
   }
@@ -281,7 +318,8 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
         switch (specifics.valuable_data_case()) {
           case sync_pb::AutofillValuableSpecifics::kLoyaltyCard: {
             const LoyaltyCard loyalty_card =
-                CreateAutofillLoyaltyCardFromSpecifics(specifics);
+                CreateLoyaltyCardFromSpecificsAndLoadMetadata(
+                    specifics, *GetValuablesTable());
             if (!GetValuablesTable()->AddOrUpdateLoyaltyCard(loyalty_card)) {
               db_operation_result =
                   ValuableDatabaseOperationResult::kDatabaseError;
@@ -558,7 +596,8 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
         switch (autofill_valuable.valuable_data_case()) {
           case sync_pb::AutofillValuableSpecifics::kLoyaltyCard: {
             loyalty_cards.push_back(
-                CreateAutofillLoyaltyCardFromSpecifics(autofill_valuable));
+                CreateLoyaltyCardFromSpecificsAndLoadMetadata(
+                    autofill_valuable, *GetValuablesTable()));
             break;
           }
           case sync_pb::AutofillValuableSpecifics::kFlightReservation:

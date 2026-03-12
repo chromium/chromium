@@ -91,10 +91,17 @@ class ValuableMetadataSyncBridge
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data);
 
-  // Uploads local data that is not part of `entity_data` sent from the server
-  // during initial `MergeFullSyncData()`.
-  void UploadInitialLocalData(syncer::MetadataChangeList* metadata_change_list,
-                              const syncer::EntityChangeList& entity_data);
+  // Uploads local data that is not part of `entity_data` received from the
+  // server during initial `MergeFullSyncData()`.
+  void UploadInitialLocalEntityMetadata(
+      syncer::MetadataChangeList* metadata_change_list,
+      const syncer::EntityChangeList& entity_data);
+
+  // Uploads local valuable metadata that is not part of `entity_data` received
+  // from the server during initial `MergeFullSyncData()`.
+  void UploadInitialLocalValuableMetadata(
+      syncer::MetadataChangeList* metadata_change_list,
+      const syncer::EntityChangeList& entity_data);
 
   // If available, returns cached possibly trimmed
   // `AutofillValuableMetadataSpecifics` for given `storage_key`. By default,

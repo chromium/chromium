@@ -531,7 +531,8 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_SameValuablesData) {
 }
 
 // Tests that local metadata of server entities is preserved during a full sync.
-TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_PreservesLocalMetadata) {
+TEST_F(ValuableSyncBridgeTest,
+       MergeFullSyncData_EntityInstance_PreservesLocalMetadata) {
   // 1. Setup an initial server entity and simulate local usage, which updates
   // the metadata.
   EntityInstance server_vehicle = GetServerVehicleEntityInstance(
@@ -560,6 +561,39 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_PreservesLocalMetadata) {
   ASSERT_THAT(entities_in_db, testing::SizeIs(1));
   // Metadata should be the preserved local metadata.
   EXPECT_EQ(entities_in_db[0].metadata(), local_metadata);
+}
+
+// Tests that local metadata of server loyalty cards is preserved during a full
+// sync.
+TEST_F(ValuableSyncBridgeTest,
+       MergeFullSyncData_LoyaltyCard_PreservesLocalMetadata) {
+  // 1. Setup an initial server entity and simulate local usage, which updates
+  // the metadata.
+  LoyaltyCard server_card = TestLoyaltyCard(kId1);
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  server_card.RecordLoyaltyCardUsed(base::Time::Now());
+  AddLoyaltyCards({server_card});
+
+  const ValuableMetadata local_metadata =
+      *valuables_table_.GetValuableMetadata(server_card.id());
+
+  // 2. Prepare new data from sync. It has the same ID but different
+  // attributes and default metadata.
+  LoyaltyCard synced_card = TestLoyaltyCard(kId1);
+  synced_card.set_merchant_name("server_merchant_name");
+
+  // 3. Trigger the sync.
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+  EXPECT_TRUE(SyncLoyaltyCards({synced_card}));
+
+  // 4. Verify the result.
+  std::vector<LoyaltyCard> cards_in_db = GetAllLoyaltyCardsFromTable();
+  ASSERT_THAT(cards_in_db, testing::SizeIs(1));
+  // Metadata should be the preserved local metadata.
+  EXPECT_EQ(cards_in_db[0].metadata(), local_metadata);
 }
 
 // Tests that `GetAllDataForDebugging()` returns all vehicle registrations.
@@ -777,7 +811,7 @@ class ValuableSyncBridgeIncrementalUpdatesTest : public ValuableSyncBridgeTest {
 // Tests that loyalty card changes passed to `ApplyIncrementalSyncChanges()`
 // are applied.
 TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
-       ApplyIncrementalSyncChangesLoyaltyCards) {
+       ApplyIncrementalSyncChanges_LoyaltyCard) {
   const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
   const LoyaltyCard remote2 = TestLoyaltyCard(kId2);
 
@@ -805,10 +839,100 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
   EXPECT_THAT(GetAllLoyaltyCardsFromTable(), ElementsAre(remote2));
 }
 
+// Tests that local metadata of server loyalty cards is preserved during
+// incremental updates.
+TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
+       ApplyIncrementalSyncChanges_LoyaltyCard_PreservesLocalMetadata) {
+  // 1. Setup an entity and simulate local usage, which updates the metadata.
+  LoyaltyCard local_card = TestLoyaltyCard(kId1);
+  TestAutofillClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+  local_card.RecordLoyaltyCardUsed(base::Time::Now());
+  AddLoyaltyCards({local_card});
+
+  const ValuableMetadata local_metadata =
+      *valuables_table_.GetValuableMetadata(local_card.id());
+
+  // 2. Prepare an incremental update from sync.
+  LoyaltyCard server_card = TestLoyaltyCard(kId1);
+  server_card.set_merchant_name("server_merchant_name");
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      server_card.id().value(), CardToEntityData(server_card)));
+
+  // 3. Apply the change.
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+
+  // 4. Verify the result.
+  std::vector<LoyaltyCard> cards_in_db = GetAllLoyaltyCardsFromTable();
+  ASSERT_THAT(cards_in_db, testing::SizeIs(1));
+  // Metadata should be the preserved local metadata.
+  EXPECT_EQ(cards_in_db[0].metadata(), local_metadata);
+}
+
+// Tests that `NotifyOnValuableMetadataChanged` is called on loyalty card
+// deletion when the `kSyncLoyaltyCardMetadata` and
+// `kSyncAutofillValuableMetadata` features are enabled.
+TEST_F(
+    ValuableSyncBridgeIncrementalUpdatesTest,
+    ApplyIncrementalSyncChanges_LoyaltyCard_NotifiesMetadataObserverOnDelete) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{syncer::kSyncAutofillValuableMetadata,
+                            syncer::kSyncLoyaltyCardMetadata},
+      /*disabled_features=*/{});
+
+  const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
+  AddLoyaltyCards({remote1});
+  const ValuableMetadata metadata = remote1.metadata();
+
+  ValuableMetadataChange change(ValuableMetadataChange::REMOVE, remote1.id(),
+                                metadata);
+  EXPECT_CALL(backend(), NotifyOnValuableMetadataChanged(change));
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      remote1.id().value(), syncer::EntityData()));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+}
+
+// Tests that `NotifyOnValuableMetadataChanged` is not called on entity
+// deletion when the `kSyncLoyaltyCardMetadata` feature is disabled.
+TEST_F(
+    ValuableSyncBridgeIncrementalUpdatesTest,
+    ApplyIncrementalSyncChanges_LoyaltyCard_DoesNotNotifyMetadataObserverOnDeleteWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{syncer::kSyncAutofillValuableMetadata},
+      /*disabled_features=*/{syncer::kSyncLoyaltyCardMetadata});
+
+  const LoyaltyCard remote1 = TestLoyaltyCard(kId1);
+  AddLoyaltyCards({remote1});
+  const ValuableMetadata metadata = remote1.metadata();
+
+  ValuableMetadataChange change(ValuableMetadataChange::REMOVE, remote1.id(),
+                                metadata);
+  EXPECT_CALL(backend(), NotifyOnValuableMetadataChanged).Times(0);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      remote1.id().value(), syncer::EntityData()));
+
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(entity_change_list)));
+}
+
 // Tests that entity instance changes passed to `ApplyIncrementalSyncChanges()`
 // are applied.
 TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
-       ApplyIncrementalSyncChangesEntityInstances) {
+       ApplyIncrementalSyncChanges_EntityInstance) {
   const EntityInstance remote1 = GetServerVehicleEntityInstance(
       {.guid = "00000000-0000-0000-0000-000000000001"});
   const EntityInstance remote2 = GetServerVehicleEntityInstance(
@@ -853,7 +977,7 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
 // Tests that local metadata of server entities is preserved during incremental
 // updates.
 TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
-       ApplyIncrementalSyncChanges_PreservesLocalMetadata) {
+       ApplyIncrementalSyncChanges_EntityInstance_PreservesLocalMetadata) {
   // 1. Setup an entity and simulate local usage, which updates the metadata.
   EntityInstance local_vehicle = GetServerVehicleEntityInstance(
       {.model = u"Model T", .guid = "00000000-0000-4000-8000-300000000000"});
@@ -890,8 +1014,9 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
 
 // Tests that `NotifyOnServerEntityMetadataChanged` is called on entity deletion
 // when the `kSyncAutofillValuableMetadata` feature is enabled.
-TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
-       ApplyIncrementalSyncChanges_NotifiesMetadataObserverOnDelete) {
+TEST_F(
+    ValuableSyncBridgeIncrementalUpdatesTest,
+    ApplyIncrementalSyncChanges_EntityInstance_NotifiesMetadataObserverOnDelete) {
   base::test::ScopedFeatureList feature_list{
       syncer::kSyncAutofillValuableMetadata};
 
@@ -919,7 +1044,7 @@ TEST_F(ValuableSyncBridgeIncrementalUpdatesTest,
 // deletion when the `kSyncAutofillValuableMetadata` feature is disabled.
 TEST_F(
     ValuableSyncBridgeIncrementalUpdatesTest,
-    ApplyIncrementalSyncChanges_DoesNotNotifyMetadataObserverOnDeleteWhenFeatureDisabled) {
+    ApplyIncrementalSyncChanges_EntityInstance_DoesNotNotifyMetadataObserverOnDeleteWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(syncer::kSyncAutofillValuableMetadata);
 

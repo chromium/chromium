@@ -195,7 +195,8 @@ TEST_F(ValuableMetadataSyncBridgeTest,
 
 // Test that MergeFullSyncData() correctly merges remote data when there is no
 // local data.
-TEST_F(ValuableMetadataSyncBridgeTest, MergeFullSyncData_NoLocalData) {
+TEST_F(ValuableMetadataSyncBridgeTest,
+       MergeFullSyncData_EntityMetadata_NoLocalData) {
   syncer::EntityChangeList entity_change_list;
   const EntityInstance::EntityMetadata metadata = test_metadata();
   entity_change_list.push_back(syncer::EntityChange::CreateAdd(
@@ -222,7 +223,7 @@ TEST_F(ValuableMetadataSyncBridgeTest, MergeFullSyncData_NoLocalData) {
 // Test that MergeFullSyncData() correctly merges remote data when local data
 // is a subset of remote data.
 TEST_F(ValuableMetadataSyncBridgeTest,
-       MergeFullSyncData_LocalDataSubsetOfServerData) {
+       MergeFullSyncData_EntityMetadata_LocalDataSubsetOfServerData) {
   const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
       {.guid = "00000000-0000-2000-8000-300000000000"});
   entity_table().AddOrUpdateEntityInstance(vehicle1);
@@ -261,7 +262,7 @@ TEST_F(ValuableMetadataSyncBridgeTest,
 // Test that MergeFullSyncData() correctly merges remote data and uploads
 // local-only data.
 TEST_F(ValuableMetadataSyncBridgeTest,
-       MergeFullSyncData_LocalDataSupersetOfServerData) {
+       MergeFullSyncData_EntityMetadata_LocalDataSupersetOfServerData) {
   const EntityInstance vehicle1 = CreateServerVehicleEntityInstance(
       {.guid = "00000000-0000-2000-8000-300000000000"});
   const EntityInstance vehicle2 = CreateServerVehicleEntityInstance(
@@ -310,6 +311,113 @@ TEST_F(ValuableMetadataSyncBridgeTest,
                    .has_value());
 }
 
+// Test that MergeFullSyncData() correctly merges remote data for loyalty card
+// valuable metadata when there is no local data and the
+// `kSyncLoyaltyCardMetadata` feature is enabled.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       MergeFullSyncData_LoyaltyCard_ValuableMetadata_NoLocalData) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  syncer::EntityChangeList entity_change_list;
+  const LoyaltyCard loyalty_card = TestLoyaltyCard();
+
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *loyalty_card.metadata().valuable_id,
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          loyalty_card.metadata(),
+          sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+
+  EXPECT_FALSE(bridge()
+                   .MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                      std::move(entity_change_list))
+                   .has_value());
+
+  EXPECT_THAT(GetValuableMetadataEntries(),
+              ElementsAre(loyalty_card.metadata()));
+}
+
+// Test that MergeFullSyncData() correctly merges remote data for loyalty card
+// valuable metadata when local data is a subset of remote data and the
+// `kSyncLoyaltyCardMetadata` feature is enabled.
+TEST_F(
+    ValuableMetadataSyncBridgeTest,
+    MergeFullSyncData_LoyaltyCard_ValuableMetadata_LocalDataSubsetOfServerData) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  const LoyaltyCard loyalty_card1 = TestLoyaltyCard("1");
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card1);
+
+  syncer::EntityChangeList entity_change_list;
+  const LoyaltyCard loyalty_card2 = TestLoyaltyCard("2");
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *loyalty_card1.metadata().valuable_id,
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          loyalty_card1.metadata(),
+          sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *loyalty_card2.metadata().valuable_id,
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          loyalty_card2.metadata(),
+          sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+
+  // No data is uploaded to the server.
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+
+  EXPECT_FALSE(bridge()
+                   .MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                      std::move(entity_change_list))
+                   .has_value());
+
+  EXPECT_THAT(
+      GetValuableMetadataEntries(),
+      UnorderedElementsAre(loyalty_card1.metadata(), loyalty_card2.metadata()));
+}
+
+// Test that MergeFullSyncData() correctly merges remote data for loyalty card
+// valuable metadata and uploads local-only data when the
+// `kSyncLoyaltyCardMetadata` feature is enabled.
+TEST_F(
+    ValuableMetadataSyncBridgeTest,
+    MergeFullSyncData_LoyaltyCard_ValuableMetadata_LocalDataSupersetOfServerData) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  const LoyaltyCard loyalty_card1 = TestLoyaltyCard("1");
+  const LoyaltyCard loyalty_card2 = TestLoyaltyCard("2");
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card1);
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card2);
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *loyalty_card1.metadata().valuable_id,
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          loyalty_card1.metadata(),
+          sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+
+  EXPECT_CALL(mock_processor(),
+              Put(*loyalty_card2.metadata().valuable_id, _, _));
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+
+  EXPECT_FALSE(bridge()
+                   .MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                      std::move(entity_change_list))
+                   .has_value());
+
+  EXPECT_THAT(
+      GetValuableMetadataEntries(),
+      UnorderedElementsAre(loyalty_card1.metadata(), loyalty_card2.metadata()));
+}
+
 // Test that supported fields and nested messages are successfully trimmed but
 // that unsupported fields are preserved.
 TEST_F(ValuableMetadataSyncBridgeTest,
@@ -336,8 +444,10 @@ TEST_F(ValuableMetadataSyncBridgeTest,
       EqualsProto(trimmed_entity_specifics));
 }
 
-// Tests that ApplyIncrementalSyncChanges() correctly adds a new metadata item.
-TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Add) {
+// Tests that ApplyIncrementalSyncChanges() correctly adds a new
+// `EntityMetadata` item.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ApplyIncrementalSyncChanges_EntityMetadata_Add) {
   syncer::EntityChangeList entity_change_list;
   const EntityInstance::EntityMetadata metadata = test_metadata();
   sync_pb::AutofillValuableMetadataSpecifics specifics =
@@ -362,8 +472,9 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Add) {
 }
 
 // Tests that ApplyIncrementalSyncChanges() correctly updates an existing
-// metadata item.
-TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Update) {
+// `EntityMetadata` item.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ApplyIncrementalSyncChanges_EntityMetadata_Update) {
   // Add an initial metadata item.
   syncer::EntityChangeList add_changes;
   EntityInstance::EntityMetadata metadata = test_metadata();
@@ -403,6 +514,70 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Update) {
   EXPECT_THAT(GetEntityMetadataEntries(), UnorderedElementsAre(metadata));
 }
 
+// Tests that ApplyIncrementalSyncChanges() correctly adds a new
+// `ValuableMetadata` item for a loyalty card when the
+// `kSyncLoyaltyCardMetadata` feature is enabled.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ApplyIncrementalSyncChanges_LoyaltyCard_ValuableMetadata_Add) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  syncer::EntityChangeList entity_change_list;
+  const ValuableMetadata metadata = TestValuableMetadata();
+  sync_pb::AutofillValuableMetadataSpecifics specifics =
+      CreateSpecificsFromValuableMetadata(
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{});
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *metadata.valuable_id, SpecificsToEntity(specifics)));
+
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+  EXPECT_FALSE(
+      bridge()
+          .ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(entity_change_list))
+          .has_value());
+  EXPECT_THAT(GetValuableMetadataEntries(), UnorderedElementsAre(metadata));
+}
+
+// Tests that ApplyIncrementalSyncChanges() correctly updates an existing
+// `ValuableMetadata` item for a loyalty card when the
+// `kSyncLoyaltyCardMetadata` feature is enabled.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       ApplyIncrementalSyncChanges_LoyaltyCard_ValuableMetadata_Update) {
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+  syncer::EntityChangeList add_changes;
+  ValuableMetadata metadata = TestValuableMetadata();
+  add_changes.push_back(syncer::EntityChange::CreateAdd(
+      *metadata.valuable_id,
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+  bridge().ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(add_changes));
+
+  syncer::EntityChangeList update_changes;
+  metadata.use_count = 10;
+  metadata.use_date = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13315000000000000u));
+  update_changes.push_back(syncer::EntityChange::CreateUpdate(
+      *metadata.valuable_id,
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          metadata, sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOnAutofillChangedBySync(
+                             syncer::AUTOFILL_VALUABLE_METADATA));
+  EXPECT_FALSE(
+      bridge()
+          .ApplyIncrementalSyncChanges(bridge().CreateMetadataChangeList(),
+                                       std::move(update_changes))
+          .has_value());
+
+  EXPECT_THAT(GetValuableMetadataEntries(), UnorderedElementsAre(metadata));
+}
+
 // Tests that ApplyIncrementalSyncChanges() ignores deletions.
 TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
   // Add an initial metadata item.
@@ -411,7 +586,6 @@ TEST_F(ValuableMetadataSyncBridgeTest, ApplyIncrementalSyncChanges_Delete) {
   add_changes.push_back(syncer::EntityChange::CreateAdd(
       *metadata.guid,
       SpecificsToEntity(CreateSpecificsFromEntityMetadata(
-
           metadata,
           sync_pb::AutofillValuableMetadataSpecifics::VEHICLE_REGISTRATION,
           /*base_specifics=*/{}))));
