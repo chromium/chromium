@@ -66,6 +66,7 @@ class WebIdlDiffToolTest(unittest.TestCase):
         ('printer_provider_internal.idl', 'printer_provider_internal.webidl'),
         ('scripts_internal.idl', 'scripts_internal.webidl'),
         ('user_scripts.idl', 'user_scripts.webidl'),
+        ('app_window.idl', 'app_window.webidl'),
     ]
     # LoadAndReturnUnifiedDiff expects file paths relative to the repo root.
     converted_schema_path = 'tools/json_schema_compiler/test/converted_schemas/'
