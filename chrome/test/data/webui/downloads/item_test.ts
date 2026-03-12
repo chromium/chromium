@@ -660,6 +660,22 @@ suite('ItemFocusTest', function() {
   let testIconLoader: TestIconLoader;
   let toastManager: CrToastManagerElement;
 
+  function waitForToast(toastManager: CrToastManagerElement): Promise<void> {
+    return new Promise(resolve => {
+      if (toastManager.isToastOpen) {
+        resolve();
+        return;
+      }
+      const observer = new MutationObserver(() => {
+        observer.disconnect();
+        resolve();
+      });
+      observer.observe(
+          toastManager.$.toast, {attributes: true, attributeFilter: ['open']});
+    });
+  }
+
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -675,6 +691,18 @@ suite('ItemFocusTest', function() {
 
     toastManager = document.createElement('cr-toast-manager');
     document.body.appendChild(toastManager);
+
+    let clipboardText = '';
+    Object.defineProperty(navigator, 'clipboard', {
+      value: {
+        writeText: (text: string) => {
+          clipboardText = text;
+          return Promise.resolve();
+        },
+        readText: () => Promise.resolve(clipboardText),
+      },
+      configurable: true,
+    });
   });
 
   // Must be an interactive test because the clipboard write call will fail
@@ -690,6 +718,8 @@ suite('ItemFocusTest', function() {
             item.shadowRoot.querySelector<HTMLElement>('#copy-download-link');
         assertTrue(!!copyDownloadLinkButton);
         copyDownloadLinkButton.click();
+
+        await waitForToast(toastManager);
         const clipboardText = await navigator.clipboard.readText();
 
         assertTrue(toastManager.isToastOpen);
@@ -707,6 +737,8 @@ suite('ItemFocusTest', function() {
             item.shadowRoot.querySelector<HTMLElement>('#copy-download-link');
         assertTrue(!!copyDownloadLinkButton);
         copyDownloadLinkButton.click();
+
+        await waitForToast(toastManager);
         const clipboardText = await navigator.clipboard.readText();
 
         assertTrue(toastManager.isToastOpen);
