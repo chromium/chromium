@@ -889,10 +889,12 @@ void FormMCPSchema::FillTextData(const ControlVector& controls_for_name,
   }
   if (auto* input = DynamicTo<HTMLInputElement>(
           controls_for_name.front()->ToHTMLElement())) {
-    input->SetValue(string);
+    input->SetValue(string,
+                    TextFieldEventBehavior::kDispatchInputAndChangeEvent);
   } else if (auto* textarea = DynamicTo<HTMLTextAreaElement>(
                  controls_for_name.front()->ToHTMLElement())) {
-    textarea->SetValue(string);
+    textarea->SetValue(string,
+                       TextFieldEventBehavior::kDispatchInputAndChangeEvent);
   }
 }
 
@@ -903,7 +905,8 @@ void FormMCPSchema::FillNumberData(const ControlVector& controls_for_name,
     String number_string;
     bool success = ToString(value, number_string);
     CHECK(success) << "ValidateNumberData should be called first";
-    input->SetValue(number_string);
+    input->SetValue(number_string,
+                    TextFieldEventBehavior::kDispatchInputAndChangeEvent);
   }
 }
 
@@ -912,8 +915,13 @@ void FormMCPSchema::FillCheckboxData(const ControlVector& controls_for_name,
   if (controls_for_name.size() == 1u) {
     bool checked;
     CHECK(ToBoolean(value, checked));
-    To<HTMLInputElement>(controls_for_name.front()->ToHTMLElement())
-        .SetChecked(checked);
+    HTMLInputElement& input =
+        To<HTMLInputElement>(controls_for_name.front()->ToHTMLElement());
+    input.SetChecked(checked,
+                     TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+    // SetChecked only dispatches `input`. Usually, `change` is dispatched by
+    // CheckboxInputType::RunInputActivationBehavior.
+    input.DispatchChangeEvent();
     return;
   }
 
@@ -935,7 +943,11 @@ void FormMCPSchema::FillCheckboxData(const ControlVector& controls_for_name,
   // Check (or uncheck) each value.
   for (ListedElement* control : controls_for_name) {
     HTMLInputElement& input = To<HTMLInputElement>(control->ToHTMLElement());
-    input.SetChecked(checked_values.Contains(input.Value()));
+    input.SetChecked(checked_values.Contains(input.Value()),
+                     TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+    // SetChecked only dispatches `input`. Usually, `change` is dispatched by
+    // CheckboxInputType::RunInputActivationBehavior.
+    input.DispatchChangeEvent();
   }
 }
 
@@ -948,7 +960,11 @@ void FormMCPSchema::FillRadioData(const ControlVector& controls_for_name,
   for (ListedElement* control : controls_for_name) {
     HTMLInputElement& input = To<HTMLInputElement>(control->ToHTMLElement());
     if (input.Value() == string) {
-      input.SetChecked(true, TextFieldEventBehavior::kDispatchChangeEvent);
+      input.SetChecked(true,
+                       TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+      // SetChecked only dispatches `input`. Usually, `change` is dispatched by
+      // RadioInputType::RunInputActivationBehavior.
+      input.DispatchChangeEvent();
     }
   }
 }
