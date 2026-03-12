@@ -1256,6 +1256,11 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_data) {
     tab->set_context_menu_controller(&context_menu_controller_);
     selected_tabs_.IncrementFrom(tabs_data[index].index);
 
+    // Setting data must come after all state from the model has been updated
+    // above for the tab. Accessibility, in particular, reacts to data changed
+    // callbacks.
+    tab->SetData(std::move(renderer_data));
+
     if (observer_) {
       observer_->OnTabAdded(tabs_data[index].index);
     }
@@ -1298,6 +1303,9 @@ void TabStrip::MoveTab(int from_model_index, int to_model_index) {
       << "The tab strip must contain at least one tab to perform a move "
          "operation.";
 
+  Tab* moving_tab = tab_at(from_model_index);
+  moving_tab->SetData(std::move(data));
+
   tab_container_->MoveTab(from_model_index, to_model_index);
 
   selected_tabs_.Move(from_model_index, to_model_index, /*length=*/1);
@@ -1339,9 +1347,25 @@ void TabStrip::OnTabWillBeRemoved(content::WebContents* contents,
   drag_context_->OnTabWillBeRemoved(contents);
 }
 
-void TabStrip::OnTabPinnedStateChanged(int model_index, bool is_pinned) {
-  tab_container_->SetTabPinned(
-      model_index, is_pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+void TabStrip::SetTabData(int model_index, tabs::TabData data) {
+  Tab* tab = tab_at(model_index);
+  const bool pinned = data.pinned;
+  const bool pinned_state_changed = tab->data().pinned != pinned;
+  const bool tab_title_changed = tab->data().title != data.title;
+  tab->SetData(std::move(data));
+
+  if (HoverCardIsShowingForTab(tab)) {
+    UpdateHoverCard(tab, HoverCardUpdateType::kTabDataChanged);
+  }
+
+  if (pinned_state_changed) {
+    tab_container_->SetTabPinned(
+        model_index, pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+  }
+
+  if (tab_title_changed) {
+    MaybeUpdateGroupOnTabChanged(model_index);
+  }
 }
 
 void TabStrip::AddTabToGroup(std::optional<tab_groups::TabGroupId> group,
@@ -1368,6 +1392,10 @@ void TabStrip::OnGroupCreated(const tab_groups::TabGroupId& group) {
 
 void TabStrip::OnGroupEditorOpened(const tab_groups::TabGroupId& group) {
   tab_container_->OnGroupEditorOpened(group);
+}
+
+void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
+  tab_container_->OnGroupContentsChanged(group);
 }
 
 void TabStrip::OnGroupVisualsChanged(
@@ -1970,10 +1998,6 @@ void TabStrip::OnMouseEventInTab(views::View* source,
   }
 }
 
-void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
-  tab_container_->OnGroupContentsChanged(group);
-}
-
 void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
   if (tab_container_) {
     tab_container_->UpdateHoverCard(tab, update_type);
@@ -2193,6 +2217,23 @@ void TabStrip::Init() {
 
 std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
   return tab_container_->GetGroupHeaders();
+}
+
+void TabStrip::MaybeUpdateGroupOnTabChanged(int model_index) {
+  Tab* tab = tab_at(model_index);
+  if (tab->group().has_value()) {
+    if (ListTabsInGroup(tab->group().value()).length() > 0) {
+      // Since tab group naming can be based on the name of the first tab in the
+      // group, update the tab group name if this tab is the first in the group.
+      std::optional<int> tab_model_index = GetModelIndexOf(tab);
+      std::optional<int> group_first_tab =
+          GetFirstTabInGroup(tab->group().value());
+      if (tab_model_index.has_value() && group_first_tab.has_value() &&
+          tab_model_index.value() == group_first_tab.value()) {
+        OnGroupContentsChanged(tab->group().value());
+      }
+    }
+  }
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
