@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/open_from_clipboard",
     "//components/search",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_bar/ui",
@@ -20,6 +21,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/lens/ui_bundled:lens_availability",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/search_engines/model:search_engines_util",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/coordinator/root_coordinator",
@@ -31,9 +33,11 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
+    "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public",
   ]
 }
@@ -47,6 +51,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base",
+    "//components/open_from_clipboard:test_support",
     "//components/policy/core/common:common_constants",
     "//components/search_engines:test_support",
     "//components/sync_preferences:test_support",

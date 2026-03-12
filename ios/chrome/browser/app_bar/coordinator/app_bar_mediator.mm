@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
 
 #import <memory>
+#import <optional>
+#import <set>
 
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search/search.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -27,10 +31,12 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -556,11 +562,38 @@
                 actionToSearchWithLensWithEntryPoint:LensEntrypoint::PlusButton]
           : [actionFactory actionToShowQRScanner];
 
-  // TODO(crbug.com/484000878): Add experimental menu buttons.
-  return [UIMenu menuWithChildren:@[
+  NSMutableArray* staticActions = [NSMutableArray arrayWithArray:@[
     newSearchAction, newIncognitoSearchAction, voiceSearchAction,
     cameraSearchAction
   ]];
+
+  if (experimental_flags::EnableAIPrototypingMenu()) {
+    UIAction* openAIMenu = [actionFactory actionToOpenAIMenu];
+    [staticActions addObject:openAIMenu];
+  }
+
+  if (IsAIMCobrowseDebugEntrypointEnabled()) {
+    UIAction* openAIMode = [actionFactory actionToOpenAIMode];
+    [staticActions addObject:openAIMode];
+  }
+
+  UIMenuElement* clipboardAction = [self createMenuElementForPasteboard];
+  if (clipboardAction) {
+    UIMenu* staticMenu = [UIMenu menuWithTitle:@""
+                                         image:nil
+                                    identifier:nil
+                                       options:UIMenuOptionsDisplayInline
+                                      children:staticActions];
+    return [UIMenu menuWithChildren:@[ staticMenu, clipboardAction ]];
+  }
+
+  // TODO(crbug.com/484000878): Add experimental menu button for add/move tab to
+  // group.
+  return [UIMenu menuWithTitle:@""
+                         image:nil
+                    identifier:nil
+                       options:UIMenuOptionsDisplayInline
+                      children:staticActions];
 }
 
 // Returns the context menu for the Tab Grid button.
@@ -585,6 +618,44 @@
           : [self.regularActionFactory actionToCloseCurrentTab];
 
   return [UIMenu menuWithChildren:@[ closeCurrentTabAction, openNewTabAction ]];
+}
+
+// Returns the UIMenuElement for the content of the pasteboard. Can return
+// `nil`.
+- (UIMenuElement*)createMenuElementForPasteboard {
+  CHECK(self.regularActionFactory);
+  CHECK(self.incognitoActionFactory);
+
+  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
+                                            ? self.incognitoActionFactory
+                                            : self.regularActionFactory;
+
+  std::optional<std::set<ClipboardContentType>> clipboardContentType =
+      ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
+
+  if (clipboardContentType.has_value()) {
+    std::set<ClipboardContentType> clipboardContentTypeValues =
+        clipboardContentType.value();
+
+    if (clipboardContentTypeValues.contains(ClipboardContentType::Image)) {
+      if (base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage)) {
+        if (search_engines::SupportsSearchImageWithLens(_templateURLService) &&
+            ios::provider::IsLensSupported()) {
+          return [actionFactory actionToLensCopiedImage];
+        }
+      } else {
+        if (search_engines::SupportsSearchByImage(_templateURLService)) {
+          return [actionFactory actionToSearchCopiedImage];
+        }
+      }
+    } else if (clipboardContentTypeValues.contains(ClipboardContentType::URL)) {
+      return [actionFactory actionToSearchCopiedURL];
+    } else if (clipboardContentTypeValues.contains(
+                   ClipboardContentType::Text)) {
+      return [actionFactory actionToSearchCopiedText];
+    }
+  }
+  return nil;
 }
 
 @end

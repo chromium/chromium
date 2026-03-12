@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -109,6 +110,8 @@ class AppBarMediatorTest : public PlatformTest {
 
     TestFullscreenController::CreateForBrowser(regular_browser_.get());
     TestFullscreenController::CreateForBrowser(incognito_browser_.get());
+    ClipboardRecentContent::SetInstance(
+        std::make_unique<FakeClipboardRecentContent>());
 
     mediator_ = [[AppBarMediator alloc]
           initWithRegularWebStateList:regular_web_state_list_.get()

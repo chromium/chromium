@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -42,6 +43,9 @@ class AppBarCoordinatorTest : public PlatformTest {
     coordinator_ = [[AppBarCoordinator alloc]
         initWithRegularBrowser:regular_browser_.get()
               incognitoBrowser:incognito_browser_.get()];
+
+    ClipboardRecentContent::SetInstance(
+        std::make_unique<FakeClipboardRecentContent>());
 
     scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
     [regular_browser_->GetCommandDispatcher()
