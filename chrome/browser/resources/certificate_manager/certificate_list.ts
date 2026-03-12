@@ -14,22 +14,22 @@
 
 import '/strings.m.js';
 import './certificate_entry.js';
-import './certificate_manager_style.css.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './certificate_list.html.js';
-import type {ActionResult, CertificateSource, SummaryCertInfo} from './certificate_manager.mojom-webui.js';
+import {getCss} from './certificate_list.css.js';
+import {getHtml} from './certificate_list.html.js';
+import {CertificateSource} from './certificate_manager.mojom-webui.js';
+import type {ActionResult, SummaryCertInfo} from './certificate_manager.mojom-webui.js';
 import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
 
-const CertificateListElementBase = I18nMixin(PolymerElement);
+const CertificateListElementBase = I18nMixinLit(CrLitElement);
 
 export interface CertificateListElement {
   $: {
@@ -48,112 +48,60 @@ export class CertificateListElement extends CertificateListElementBase {
     return 'certificate-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      certSource: Number,
-      headerText: String,
-
-      showImport: {
-        type: Boolean,
-        value: false,
-      },
-
-      showImportAndBind: {
-        type: Boolean,
-        value: false,
-      },
-
-      // True if the list should not be collapsible.
-      // Empty lists will always not be collapsible.
-      noCollapse: {
-        type: Boolean,
-        value: false,
-      },
-
-      // True if the export button should be hidden.
-      // Export button may also be hidden if there are no certs in the list.
-      hideExport: {
-        type: Boolean,
-        value: false,
-      },
-
-      // True if the entire list (including the header) should be hidden if the
-      // list is empty.
-      hideIfEmpty: {
-        type: Boolean,
-        value: false,
-      },
-
-      // True if the header should be hidden. This will make the list
-      // non-collapsible.
-      hideHeader: {
-        type: Boolean,
-        value: false,
-      },
-
-      // True if the cert metadata is editable
-      certMetadataEditable: {
-        type: Boolean,
-        value: false,
-      },
-
-      inSubpage: {
-        type: Boolean,
-        value: false,
-      },
-
-      expanded_: {
-        type: Boolean,
-        value: true,
-      },
-
-      certificates_: {
-        type: Array,
-        value: () => [],
-      },
-
-      hideEverything_: {
-        type: Boolean,
-        computed: 'computeHideEverything_(certificates_)',
-      },
-
-      hasCerts_: {
-        type: Boolean,
-        computed: 'computeHasCerts_(certificates_)',
-      },
+      certSource: {type: Number},
+      headerText: {type: String},
+      showImport: {type: Boolean},
+      showImportAndBind: {type: Boolean},
+      noCollapse: {type: Boolean},
+      hideExport: {type: Boolean},
+      hideIfEmpty: {type: Boolean},
+      hideHeader: {type: Boolean},
+      certMetadataEditable: {type: Boolean},
+      inSubpage: {type: Boolean},
+      expanded_: {type: Boolean},
+      certificates_: {type: Array},
+      hasCerts_: {type: Boolean},
     };
   }
 
-  declare certSource: CertificateSource;
-  declare headerText: string;
-  declare certMetadataEditable: boolean;
-  declare showImport: boolean;
-  declare showImportAndBind: boolean;
-  declare hideExport: boolean;
-  declare hideHeader: boolean;
-  declare inSubpage: boolean;
-  declare noCollapse: boolean;
-  declare hideIfEmpty: boolean;
-  declare private expanded_: boolean;
-  declare private hideEverything_: boolean;
-  declare private certificates_: SummaryCertInfo[];
-  declare private hasCerts_: boolean;
+  accessor certSource: CertificateSource = CertificateSource.MIN_VALUE;
+  accessor headerText: string = '';
+  accessor showImport: boolean = false;
+  accessor showImportAndBind: boolean = false;
+  accessor noCollapse: boolean = false;
+  accessor hideExport: boolean = false;
+  accessor hideIfEmpty: boolean = false;
+  accessor hideHeader: boolean = false;
+  accessor certMetadataEditable: boolean = false;
+  accessor inSubpage: boolean = false;
+  protected accessor expanded_: boolean = true;
+  protected accessor certificates_: SummaryCertInfo[] = [];
+  protected accessor hasCerts_: boolean = false;
 
-  override ready() {
-    super.ready();
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
 
-    this.refreshCertificates();
-
-    if (!this.inSubpage) {
-      this.$.certs.classList.add('card');
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('certificates_')) {
+      this.hasCerts_ = this.certificates_.length > 0;
     }
-    if (this.inSubpage) {
-      this.$.listHeader.classList.add('subpage-padding');
-    }
+  }
+
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
+
+    this.refreshCertificates_();
 
     const proxy = CertificatesBrowserProxy.getInstance();
     proxy.callbackRouter.triggerReload.addListener(
@@ -162,11 +110,11 @@ export class CertificateListElement extends CertificateListElementBase {
 
   private onRefreshRequested_(certSources: CertificateSource[]) {
     if (certSources.includes(this.certSource)) {
-      this.refreshCertificates();
+      this.refreshCertificates_();
     }
   }
 
-  private refreshCertificates() {
+  protected refreshCertificates_() {
     CertificatesBrowserProxy.getInstance()
         .handler.getCertificates(this.certSource)
         .then((results: {certs: SummaryCertInfo[]}) => {
@@ -174,14 +122,14 @@ export class CertificateListElement extends CertificateListElementBase {
         });
   }
 
-  private onExportCertsClick_(e: Event) {
+  protected onExportCertsClick_(e: Event) {
     // Export button click shouldn't collapse the list as well.
     e.stopPropagation();
     CertificatesBrowserProxy.getInstance().handler.exportCertificates(
         this.certSource);
   }
 
-  private onImportCertClick_(e: Event) {
+  protected onImportCertClick_(e: Event) {
     // Import button click shouldn't collapse the list as well.
     e.stopPropagation();
     CertificatesBrowserProxy.getInstance()
@@ -189,7 +137,7 @@ export class CertificateListElement extends CertificateListElementBase {
         .then(this.handleImportResult.bind(this));
   }
 
-  private onImportAndBindCertClick_(e: Event) {
+  protected onImportAndBindCertClick_(e: Event) {
     // Import button click shouldn't collapse the list as well.
     e.stopPropagation();
     CertificatesBrowserProxy.getInstance()
@@ -200,36 +148,42 @@ export class CertificateListElement extends CertificateListElementBase {
   private handleImportResult(value: {result: ActionResult|null}) {
     if (value.result !== null && value.result.success !== undefined) {
       // On successful import, refresh the certificate list.
-      this.refreshCertificates();
+      this.refreshCertificates_();
     }
-    this.dispatchEvent(new CustomEvent(
-        'import-result',
-        {composed: true, bubbles: true, detail: value.result}));
+    this.fire('import-result', value.result);
   }
 
-  private onDeleteResult_(e: CustomEvent<ActionResult|null>) {
+  protected onDeleteResult_(e: CustomEvent<ActionResult|null>) {
     const result = e.detail;
     if (result !== null && result.success !== undefined) {
       // On successful deletion, refresh the certificate list.
-      this.refreshCertificates();
+      this.refreshCertificates_();
       this.$.importCert.focus();
     }
   }
 
-  private computeHasCerts_(): boolean {
-    return this.certificates_.length > 0;
-  }
-
-  private computeHideEverything_(): boolean {
+  protected shouldHideEverything_(): boolean {
     return this.hideIfEmpty && this.certificates_.length === 0;
   }
 
-  private hideCollapseButton_(): boolean {
+  protected hideCollapseButton_(): boolean {
     return this.noCollapse || !this.hasCerts_;
   }
 
-  private hideExportButton_(): boolean {
+  protected hideExportButton_(): boolean {
     return this.hideExport || !this.hasCerts_;
+  }
+
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
+  }
+
+  protected getListHeaderAdditionalClass_(): string {
+    return this.inSubpage ? 'subpage-padding' : '';
+  }
+
+  protected getCertsClass_(): string {
+    return this.inSubpage ? '' : 'card';
   }
 }
 

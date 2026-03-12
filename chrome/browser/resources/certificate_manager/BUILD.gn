@@ -23,7 +23,6 @@ build_webui("build") {
     "favicon.svg",
   ]
   web_component_files = [
-    "certificate_list.ts",
     "certificate_manager.ts",
     "certificate_subpage.ts",
     "crs_section.ts",
@@ -36,6 +35,8 @@ build_webui("build") {
     "certificate_entry.ts",
     "certificate_info_dialog.html.ts",
     "certificate_info_dialog.ts",
+    "certificate_list.html.ts",
+    "certificate_list.ts",
     "certificate_password_dialog.html.ts",
     "certificate_password_dialog.ts",
     "certificates_browser_proxy.ts",
@@ -48,7 +49,9 @@ build_webui("build") {
   icons_html_files = [ "certificate_manager_icons.html" ]
   css_files = [
     "certificate_entry.css",
+    "certificate_list.css",
     "certificate_manager_style.css",
+    "certificate_manager_style_lit.css",
   ]
 
   if (is_chromeos) {
