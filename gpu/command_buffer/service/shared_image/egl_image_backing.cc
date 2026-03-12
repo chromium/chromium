@@ -450,10 +450,10 @@ gl::ScopedEGLImage EGLImageBacking::GenEGLImageSibling(
                                   pixel_data.size(), pixel_data.data());
   } else {
     ScopedUnpackState scoped_unpack_state(!pixel_data.empty());
+    const void* data = pixel_data.empty() ? nullptr : pixel_data.data();
     api->glTexImage2DFn(target, 0, format_info.image_internal_format,
                         plane_size.width(), plane_size.height(), 0,
-                        format_info.adjusted_format, format_info.gl_type,
-                        pixel_data.data());
+                        format_info.adjusted_format, format_info.gl_type, data);
   }
 
   // Use service id of the texture as a source to create the EGLImage.
