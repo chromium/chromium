@@ -495,6 +495,9 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
                                  const ShowOptions& options) {
   invocation_start_time_ = base::TimeTicks::Now();
   last_invocation_source_ = source;
+  if (!initial_entrypoint_.has_value()) {
+    initial_entrypoint_ = GetEntrypointFromInvocationSource(source);
+  }
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
     base::UmaHistogramEnumeration("Glic.Instance.Floaty.OpenSource", source);
   } else {

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "chrome/browser/glic/host/glic.mojom.h"
+
 namespace glic {
 
 enum class DaisyChainSource {
@@ -21,6 +23,32 @@ enum class DaisyChainSource {
 };
 
 std::string GetDaisyChainSourceString(DaisyChainSource source);
+
+// GlicEntrypoint defines entrypoints interesting from growth metrics
+// perspective. It's a subset of InvocationSource, and more.
+// LINT.IfChange(GlicEntrypoint)
+enum class GlicEntrypoint {
+  kOsButton = 0,
+  kOsHotkey = 1,
+  kTopChromeButton = 2,
+  kNudge = 3,
+  kThreeDotsMenu = 4,
+  kWhatsNew = 5,
+  kSharedTab = 6,
+  kSharedImage = 7,
+  kSkills = 8,
+  kAutoOpenedByContextualCue = 9,
+  kPdfSummarizeButton = 10,
+  kNavigationCapture = 11,
+  kAutoOpenedForPdf = 12,
+  kIph = 13,
+  kOther = 14,
+  kMaxValue = kOther,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicEntrypoint)
+
+GlicEntrypoint GetEntrypointFromInvocationSource(
+    mojom::InvocationSource source);
 
 }  // namespace glic
 

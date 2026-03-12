@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -208,6 +209,20 @@ TEST_F(GlicInstanceMetricsTest, ValidSidePanelFlow_DoesNotLogError) {
   metrics_.OnSidePanelClosed(
       &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, OnOpen_DoesNotOverrideInitialEntrypoint) {
+  ShowOptions show_options1{FloatingShowOptions{}};
+  metrics_.OnToggle(mojom::InvocationSource::kTopChromeButton, show_options1,
+                    /*is_showing=*/false);
+  EXPECT_EQ(metrics_.initial_entrypoint_for_testing(),
+            GlicEntrypoint::kTopChromeButton);
+
+  ShowOptions show_options2{FloatingShowOptions{}};
+  metrics_.OnToggle(mojom::InvocationSource::kOsButton, show_options2,
+                    /*is_showing=*/false);
+  EXPECT_EQ(metrics_.initial_entrypoint_for_testing(),
+            GlicEntrypoint::kTopChromeButton);
 }
 
 TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {

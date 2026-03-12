@@ -25,4 +25,41 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
   }
 }
 
+GlicEntrypoint GetEntrypointFromInvocationSource(
+    mojom::InvocationSource source) {
+  switch (source) {
+    // OsButton sources bundles as one.
+    case glic::mojom::InvocationSource::kOsButton:
+    case glic::mojom::InvocationSource::kOsButtonMenu:
+      return GlicEntrypoint::kOsButton;
+    case glic::mojom::InvocationSource::kOsHotkey:
+      return GlicEntrypoint::kOsHotkey;
+    case glic::mojom::InvocationSource::kTopChromeButton:
+      return GlicEntrypoint::kTopChromeButton;
+    case glic::mojom::InvocationSource::kNudge:
+      return GlicEntrypoint::kNudge;
+    case glic::mojom::InvocationSource::kThreeDotsMenu:
+      return GlicEntrypoint::kThreeDotsMenu;
+    case glic::mojom::InvocationSource::kWhatsNew:
+      return GlicEntrypoint::kWhatsNew;
+    case glic::mojom::InvocationSource::kSharedTab:
+      return GlicEntrypoint::kSharedTab;
+    case glic::mojom::InvocationSource::kSharedImage:
+      return GlicEntrypoint::kSharedImage;
+    case glic::mojom::InvocationSource::kSkills:
+      return GlicEntrypoint::kSkills;
+    case glic::mojom::InvocationSource::kAutoOpenedByContextualCue:
+      return GlicEntrypoint::kAutoOpenedByContextualCue;
+    case glic::mojom::InvocationSource::kPdfSummarizeButton:
+      return GlicEntrypoint::kPdfSummarizeButton;
+    case glic::mojom::InvocationSource::kNavigationCapture:
+      return GlicEntrypoint::kNavigationCapture;
+    case glic::mojom::InvocationSource::kAutoOpenedForPdf:
+      return GlicEntrypoint::kAutoOpenedForPdf;
+    default:
+      // All other ones, including mojom::InvocationSource::kUnsupported.
+      return GlicEntrypoint::kOther;
+  }
+}
+
 }  // namespace glic
