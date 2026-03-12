@@ -2700,11 +2700,15 @@ Worker includes MessageEventTarget;
 
 [Exposed=Window]
 interface SharedWorker : EventTarget {
-  constructor((TrustedScriptURL or USVString) scriptURL, optional (DOMString or WorkerOptions) options = {});
+  constructor((TrustedScriptURL or USVString) scriptURL, optional (DOMString or SharedWorkerOptions) options = {});
 
   readonly attribute MessagePort port;
 };
 SharedWorker includes AbstractWorker;
+
+dictionary SharedWorkerOptions : WorkerOptions {
+  boolean extendedLifetime = false;
+};
 
 interface mixin NavigatorConcurrentHardware {
   readonly attribute unsigned long long hardwareConcurrency;

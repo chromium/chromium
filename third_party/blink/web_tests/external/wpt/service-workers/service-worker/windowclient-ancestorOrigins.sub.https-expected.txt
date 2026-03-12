@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] iframe referrerpolicy="", origin A
+  assert_array_equals: windowClient.ancestorOrigins value is undefined, expected array
+[FAIL] iframe referrerpolicy="no-referrer", origin A
+  assert_array_equals: windowClient.ancestorOrigins value is undefined, expected array
+[FAIL] iframe referrerpolicy="same-origin", origin A
+  assert_array_equals: windowClient.ancestorOrigins value is undefined, expected array
+[FAIL] iframe referrerpolicy="same-origin", origin B
+  assert_array_equals: windowClient.ancestorOrigins value is undefined, expected array
+Harness: the test ran to completion.
+

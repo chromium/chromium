@@ -13,8 +13,9 @@ from .. import (
     RESPONSE_STARTED_EVENT,
 )
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_cors_preflight_request(bidi_session, configuration, url, fetch, setup_network_test):
     network_events = await setup_network_test(
         events=[
@@ -83,7 +84,6 @@ async def test_cors_preflight_request(bidi_session, configuration, url, fetch, s
     remove_response_started_listener()
 
 
-@pytest.mark.asyncio
 async def test_iframe_navigation_request(
     bidi_session,
     top_context,
@@ -192,7 +192,6 @@ async def test_iframe_navigation_request(
     )
 
 
-@pytest.mark.asyncio
 async def test_same_navigation_id(
     bidi_session, top_context, wait_for_event, wait_for_future_safe, url, setup_network_test
 ):
@@ -245,7 +244,6 @@ async def test_same_navigation_id(
     )
 
 
-@pytest.mark.asyncio
 async def test_same_request_id(wait_for_event, wait_for_future_safe, url, setup_network_test, fetch):
     network_events = await setup_network_test(
         events=[
@@ -296,7 +294,6 @@ async def test_same_request_id(wait_for_event, wait_for_future_safe, url, setup_
     )
 
 
-@pytest.mark.asyncio
 async def test_subscribe_to_one_context(
     bidi_session, top_context, wait_for_event, wait_for_future_safe, url, fetch, setup_network_test
 ):
@@ -361,7 +358,6 @@ async def test_subscribe_to_one_context(
     assert len(network_events[RESPONSE_COMPLETED_EVENT]) == 1
 
 
-@pytest.mark.asyncio
 async def test_event_order_with_redirect(
     bidi_session, configuration, top_context, subscribe_events, url, fetch
 ):

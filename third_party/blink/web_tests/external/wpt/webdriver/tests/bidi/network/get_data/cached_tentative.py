@@ -13,6 +13,8 @@ from .. import (
     get_next_event_for_url,
 )
 
+pytestmark = pytest.mark.asyncio
+
 
 @pytest_asyncio.fixture
 async def setup_cached_resource_test(bidi_session, configuration, top_context, setup_network_test, add_data_collector):
@@ -60,7 +62,6 @@ async def setup_cached_resource_test(bidi_session, configuration, top_context, s
     return _setup_cached_resource_test
 
 
-@pytest.mark.asyncio
 async def test_cached_image(
     url,
     inline,
@@ -81,7 +82,6 @@ async def test_cached_image(
     assert IMAGE_RESPONSE_DATA.decode("utf-8") == data["value"]
 
 
-@pytest.mark.asyncio
 async def test_cached_javascript(
     url,
     inline,
@@ -100,7 +100,6 @@ async def test_cached_javascript(
     assert isinstance(data["value"], str)
 
 
-@pytest.mark.asyncio
 async def test_cached_stylesheet(
     url,
     inline,

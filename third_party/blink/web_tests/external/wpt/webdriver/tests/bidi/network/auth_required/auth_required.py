@@ -11,8 +11,9 @@ from .. import (
     PAGE_EMPTY_HTML,
 )
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_subscribe_status(
     bidi_session, new_tab, subscribe_events, wait_for_event, wait_for_future_safe, url, fetch
 ):
@@ -63,7 +64,6 @@ async def test_subscribe_status(
     remove_listener()
 
 
-@pytest.mark.asyncio
 async def test_no_authentication(
     bidi_session, new_tab, subscribe_events, url
 ):
@@ -89,7 +89,6 @@ async def test_no_authentication(
     remove_listener()
 
 
-@pytest.mark.asyncio
 async def test_request_timing_info(
     bidi_session,
     new_tab,
@@ -138,7 +137,6 @@ async def test_request_timing_info(
     )
 
 
-@pytest.mark.asyncio
 async def test_with_wrong_credentials(setup_blocked_request, bidi_session, configuration):
     # Setup unique username / password because browsers cache credentials.
     username = "test_with_wrong_credentials"

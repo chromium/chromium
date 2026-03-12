@@ -15,8 +15,9 @@ from .. import (
     PAGE_INVALID_URL,
 )
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_subscribe_status(
     bidi_session,
     subscribe_events,
@@ -63,7 +64,6 @@ async def test_subscribe_status(
     remove_listener()
 
 
-@pytest.mark.asyncio
 async def test_aborted_request(
     new_tab,
     wait_for_event,
@@ -95,7 +95,6 @@ async def test_aborted_request(
     )
 
 
-@pytest.mark.asyncio
 async def test_iframe_load(
     bidi_session,
     configuration,
@@ -128,7 +127,6 @@ async def test_iframe_load(
     )
 
 
-@pytest.mark.asyncio
 async def test_navigation_id(
     bidi_session,
     new_tab,
@@ -175,7 +173,6 @@ async def test_navigation_id(
         ("PUT", True),
     ],
 )
-@pytest.mark.asyncio
 async def test_request_method(
     bidi_session,
     configuration,
@@ -215,7 +212,6 @@ async def test_request_method(
         )
 
 
-@pytest.mark.asyncio
 async def test_request_timing_info(
     bidi_session,
     new_tab,
@@ -253,7 +249,6 @@ async def test_request_timing_info(
     )
 
 
-@pytest.mark.asyncio
 async def test_redirect_fetch(
     bidi_session, new_tab, wait_for_event, url, fetch, setup_network_test
 ):
@@ -296,7 +291,6 @@ async def test_redirect_fetch(
     )
 
 
-@pytest.mark.asyncio
 async def test_redirect_navigation(
     bidi_session, new_tab, wait_for_event, url, setup_network_test
 ):

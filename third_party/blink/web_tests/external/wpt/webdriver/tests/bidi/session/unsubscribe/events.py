@@ -6,11 +6,13 @@ from tests.support.sync import AsyncPoll
 
 from tests.bidi import wait_for_bidi_events
 
+pytestmark = pytest.mark.asyncio
+
+
 # The basic use case of unsubscribing globally from a single event
 # is covered by tests for each event in the dedicated folders.
 
 
-@pytest.mark.asyncio
 async def test_unsubscribe_from_module(bidi_session, configuration, new_tab, inline):
     await bidi_session.session.subscribe(events=["browsingContext"])
     await bidi_session.session.unsubscribe(events=["browsingContext"])
@@ -39,7 +41,6 @@ async def test_unsubscribe_from_module(bidi_session, configuration, new_tab, inl
     remove_listener_load()
 
 
-@pytest.mark.asyncio
 async def test_subscribe_to_module_unsubscribe_from_one_event(
       bidi_session, wait_for_event, wait_for_future_safe, new_tab, inline
 ):

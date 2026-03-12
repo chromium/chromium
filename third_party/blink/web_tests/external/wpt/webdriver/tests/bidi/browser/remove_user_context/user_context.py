@@ -7,8 +7,9 @@ from tests.bidi.browser import get_user_context_ids
 
 USER_PROMPT_OPENED_EVENT = "browsingContext.userPromptOpened"
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_remove_context(bidi_session, create_user_context):
     user_context = await create_user_context()
     assert user_context in await get_user_context_ids(bidi_session)
@@ -19,7 +20,6 @@ async def test_remove_context(bidi_session, create_user_context):
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
-@pytest.mark.asyncio
 async def test_remove_context_closes_contexts(
     bidi_session, configuration, subscribe_events, create_user_context, type_hint
 ):
@@ -71,7 +71,6 @@ async def test_remove_context_closes_contexts(
 
 
 @pytest.mark.parametrize("type_hint", ["tab", "window"])
-@pytest.mark.asyncio
 async def test_remove_context_skips_beforeunload_prompt(
     bidi_session,
     configuration,

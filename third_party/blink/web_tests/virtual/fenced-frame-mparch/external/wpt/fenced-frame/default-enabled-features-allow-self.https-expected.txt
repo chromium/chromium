@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Fenced frames default feature policies should inherit from parent.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Cross-origin fenced frames default feature policies follow inheritance rules.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+Harness: the test ran to completion.
+

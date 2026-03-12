@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Src permissions policy in allow attribute.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Src permissions policy after same-origin navigation.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Src permissions policy after cross-origin navigation.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Src permissions policy in child iframe inheritance works properly.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+Harness: the test ran to completion.
+

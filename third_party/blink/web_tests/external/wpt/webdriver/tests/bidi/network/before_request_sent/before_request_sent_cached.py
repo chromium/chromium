@@ -14,11 +14,13 @@ from .. import (
     STYLESHEET_RED_COLOR,
 )
 
+pytestmark = pytest.mark.asyncio
+
+
 # Note: The cached status cannot be checked in the beforeRequestSent event, but
 # the goal is to verify that the events are still emitted for cached requests.
 
 
-@pytest.mark.asyncio
 async def test_cached_document(
     wait_for_event,
     wait_for_future_safe,
@@ -59,7 +61,6 @@ async def test_cached_document(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_link_stylesheet(
     bidi_session,
     configuration,
@@ -119,7 +120,6 @@ async def test_page_with_cached_link_stylesheet(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_import_stylesheet(
     bidi_session,
     configuration,
@@ -190,7 +190,6 @@ async def test_page_with_cached_import_stylesheet(
 # Similar test to test_page_with_cached_import_stylesheet, but with 3 links
 # loading the same stylesheet, and a style tag with 3 identical imports.
 # The browser should not issue requests for the duplicated stylesheets.
-@pytest.mark.asyncio
 async def test_page_with_cached_duplicated_stylesheets(
     bidi_session,
     configuration,
@@ -295,7 +294,6 @@ async def test_page_with_cached_duplicated_stylesheets(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_script_javascript(
     bidi_session,
     configuration,
@@ -396,7 +394,6 @@ async def test_page_with_cached_script_javascript(
         )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_javascript_module(
     bidi_session,
     configuration,
@@ -503,7 +500,6 @@ async def test_page_with_cached_javascript_module(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_image(
     bidi_session,
     configuration,

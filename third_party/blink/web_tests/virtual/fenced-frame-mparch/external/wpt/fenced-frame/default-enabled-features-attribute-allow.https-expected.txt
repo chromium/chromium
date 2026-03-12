@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Same-origin fenced frame with allow attribute enabling required features
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Cross-origin fenced frame with allow attribute enabling required features
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Delivered policies can further restrict permissions of a fixed permissions fenced frame
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Delivered policies can further restrict permissions of a non-opaque fenced frame
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+Harness: the test ran to completion.
+

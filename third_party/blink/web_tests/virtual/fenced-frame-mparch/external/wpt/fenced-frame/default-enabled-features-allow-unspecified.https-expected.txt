@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Fenced frames should inherit features from parent if nothing specified.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Fenced frames default feature policies should inherit when using `allow` but should be able to further restrict the policies.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+Harness: the test ran to completion.
+

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Same-origin fenced frame loads when feature policies are unset
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Cross-origin fenced frame loads when feature policies are unset
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+Harness: the test ran to completion.
+

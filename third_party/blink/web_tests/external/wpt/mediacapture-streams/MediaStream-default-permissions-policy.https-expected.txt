@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] permissions policy "microphone" can be enabled in cross-origin iframes using "allow" attribute.
+  assert_equals: undefined. expected "#OK" but got "All requested devices must be present with audio true and video true, or fail"
+[FAIL] permissions policy "camera" can be enabled in cross-origin iframes using "allow" attribute.
+  assert_equals: undefined. expected "#OK" but got "All requested devices must be present with audio true and video true, or fail"
+[FAIL] permissions policy "camera;microphone" can be disabled in same-origin iframes using "allow" attribute.
+  assert_equals: undefined. expected "NotAllowedError" but got "All requested devices must be present with audio true and video true, or fail"
+Harness: the test ran to completion.
+

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Changing the allow attribute is a no-op for the current navigation
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+[FAIL] Changing the allow attribute is a no-op for frame-initiated navigations
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'allowsFeature')"
+Harness: the test ran to completion.
+

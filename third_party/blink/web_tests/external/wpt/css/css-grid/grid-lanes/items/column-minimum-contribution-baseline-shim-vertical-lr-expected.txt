@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] .grid-lanes 1
+  assert_equals: \n<div class="grid-lanes" style="grid-template-columns: minmax(auto, 0px);">\n  <div class="item1" data-offset-x="0" data-offset-y="0"></div>\n  <div class="item2" data-offset-x="50" data-offset-y="50"></div>\n  <div class="area" data-expected-width="75" data-expected-height="100"></div>\n</div>\noffsetTop expected 50 but got 25
+[FAIL] .grid-lanes 2
+  assert_equals: \n<div class="grid-lanes" style="grid-template-columns: minmax(auto, 75px);">\n  <div class="item1" data-offset-x="0" data-offset-y="0"></div>\n  <div class="item2" data-offset-x="50" data-offset-y="50"></div>\n  <div class="area" data-expected-width="75" data-expected-height="100"></div>\n</div>\noffsetTop expected 50 but got 25
+[FAIL] .grid-lanes 3
+  assert_equals: \n<div class="grid-lanes" style="grid-template-columns: minmax(auto, 88px);">\n  <div class="item1" data-offset-x="0" data-offset-y="0"></div>\n  <div class="item2" data-offset-x="50" data-offset-y="50"></div>\n  <div class="area" data-expected-width="88" data-expected-height="100"></div>\n</div>\noffsetTop expected 50 but got 25
+[FAIL] .grid-lanes 4
+  assert_equals: \n<div class="grid-lanes" style="grid-template-columns: minmax(auto, 100px);">\n  <div class="item1" data-offset-x="0" data-offset-y="0"></div>\n  <div class="item2" data-offset-x="50" data-offset-y="50"></div>\n  <div class="area" data-expected-width="100" data-expected-height="100"></div>\n</div>\noffsetTop expected 50 but got 25
+[FAIL] .grid-lanes 5
+  assert_equals: \n<div class="grid-lanes" style="grid-template-columns: minmax(auto, 150px);">\n  <div class="item1" data-offset-x="0" data-offset-y="0"></div>\n  <div class="item2" data-offset-x="50" data-offset-y="50"></div>\n  <div class="area" data-expected-width="100" data-expected-height="100"></div>\n</div>\noffsetTop expected 50 but got 25
+[FAIL] .grid-lanes 6
+  assert_equals: \n<div class="grid-lanes" style="grid-template-columns: minmax(auto, auto);">\n  <div class="item1" data-offset-x="0" data-offset-y="0"></div>\n  <div class="item2" data-offset-x="50" data-offset-y="50"></div>\n  <div class="area" data-expected-width="100" data-expected-height="100"></div>\n</div>\noffsetTop expected 50 but got 25
+Harness: the test ran to completion.
+

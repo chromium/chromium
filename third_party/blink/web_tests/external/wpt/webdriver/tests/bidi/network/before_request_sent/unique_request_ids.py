@@ -7,11 +7,12 @@ from tests.bidi.network import (
 )
 from webdriver.bidi import error
 
+pytestmark = pytest.mark.asyncio
+
 
 # This is a smoke test triggering various requests of different kinds: regular
 # http requests, data channels and cached resources, and check that no id is
 # duplicated amongst them.
-@pytest.mark.asyncio
 async def test_unique_request_ids(
     bidi_session,
     configuration,

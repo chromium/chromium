@@ -15,8 +15,9 @@ from .. import (
     STYLESHEET_RED_COLOR,
 )
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.mark.asyncio
+
 async def test_cached(
     wait_for_event,
     wait_for_future_safe,
@@ -78,7 +79,6 @@ async def test_cached(
     )
 
 
-@pytest.mark.asyncio
 async def test_cached_redirect(
     bidi_session,
     configuration,
@@ -166,7 +166,6 @@ async def test_cached_redirect(
         "OPTIONS",
     ],
 )
-@pytest.mark.asyncio
 async def test_cached_revalidate(
     wait_for_event, wait_for_future_safe, url, fetch, setup_network_test, method
 ):
@@ -225,7 +224,6 @@ async def test_cached_revalidate(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_link_stylesheet(
     bidi_session,
     configuration,
@@ -295,7 +293,6 @@ async def test_page_with_cached_link_stylesheet(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_import_stylesheet(
     bidi_session,
     configuration,
@@ -375,7 +372,6 @@ async def test_page_with_cached_import_stylesheet(
 # Similar test to test_page_with_cached_import_stylesheet, but with 3 links
 # loading the same stylesheet, and a style tag with 3 identical imports.
 # The browser should not issue requests for the duplicated stylesheets.
-@pytest.mark.asyncio
 async def test_page_with_cached_duplicated_stylesheets(
     bidi_session,
     configuration,
@@ -492,7 +488,6 @@ async def test_page_with_cached_duplicated_stylesheets(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_script_javascript(
     bidi_session,
     configuration,
@@ -616,7 +611,6 @@ async def test_page_with_cached_script_javascript(
         ("dynamically-imported", """<script type="module">const ns = await import("{url}"); ns.default();</script>"""),
     ]
 )
-@pytest.mark.asyncio
 async def test_page_with_cached_javascript_module(
     bidi_session,
     configuration,
@@ -729,7 +723,6 @@ async def test_page_with_cached_javascript_module(
     )
 
 
-@pytest.mark.asyncio
 async def test_page_with_cached_image(
     bidi_session,
     configuration,
