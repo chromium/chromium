@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Tervetuloa takaisin!</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
 <translation id="201759455285471444">Laajenna välilehtiryhmä.</translation>
-<translation id="202070562065520783">Selitä tämä minulle</translation>
 <translation id="2044394949148788042">Avaa välilehtiruudukko</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliä <ph name="USER_EMAIL" /> ja voi nähdä joitakin tietoja. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">uusi tuote</translation>
@@ -1614,6 +1613,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="672735642903863329">Kirjanmerkkien, salasanojen ja muiden tietojen käyttäminen kaikilla laitteilla</translation>
 <translation id="6729493062119577923">Jaettujen välilehtiryhmien toiminta</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Osoite</translation>
 <translation id="6746338529702829275">Tarkista tilin data</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historiakohta tuotu}other{{count} historiakohtaa tuotu}}</translation>
 <translation id="6755200887046212842">Hallinnoi tilejä</translation>
@@ -1820,7 +1820,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7537586195939242955">Passiasi ei voi asentaa Passbookiin tällä hetkellä.</translation>
 <translation id="754655535278952384">Tarkistettu <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Sulje kaikki</translation>
-<translation id="7554791636758816595">Uusi välilehti</translation>
 <translation id="7557508262441527045">Kirjautunut ulos</translation>
 <translation id="7561196759112975576">Aina</translation>
 <translation id="7561982940498449837">Sulje valikko</translation>
@@ -2250,7 +2249,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kiinnitetty sivusto</translation>
 <translation id="8990960056509724223">Tiedostoa ei voitu tallentaa organisaation käytäntöjen vuoksi</translation>
 <translation id="8998289560386111590">Ei saatavilla laitteellasi</translation>
-<translation id="9000532564152265066">Kaikki välilehdet</translation>
 <translation id="9003677638446136377">Tarkista uudelleen</translation>
 <translation id="9006453925669499173">Valikko → Uusi incognito-välilehti</translation>
 <translation id="9008201768610948239">Ohita</translation>

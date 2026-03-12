@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2371084566192454134">Vichupo na vikundi vya vichupo</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Kunja kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
+<translation id="2476179388576975626">Kupachika picha ndani ya picha nyingine</translation>
 <translation id="2498435670446402865">Badilisha jina la kikundi cha vichupo</translation>
 <translation id="2536366509642644298">Vikundi vya vichupo vya "<ph name="TAB_GROUP_NAME_1" />" na "<ph name="TAB_GROUP_NAME_2" />" havipatikani tena</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Kunja kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>

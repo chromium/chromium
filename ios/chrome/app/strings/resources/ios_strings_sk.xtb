@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Vitajte späť!</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="201759455285471444">Rozbaliť skupinu kariet</translation>
-<translation id="202070562065520783">Vysvetli mi</translation>
 <translation id="2044394949148788042">Otvorte mriežku kariet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, ktorá si môže zobraziť určité informácie. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -1614,6 +1613,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="672735642903863329">Majte k dispozícii svoje záložky, heslá a ďalší obsah vo všetkých zariadeniach.</translation>
 <translation id="6729493062119577923">Aktivita zdieľanej skupiny kariet</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
+<translation id="6736243959894955139">Adresa</translation>
 <translation id="6746338529702829275">Prezrite si údaje účtu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Bola importovaná {count} položka histórie}few{Boli importované {count} položky histórie}many{Imported {count} history items}other{Bolo importovaných {count} položiek histórie}}</translation>
 <translation id="6755200887046212842">Spravovať účty</translation>
@@ -1820,7 +1820,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7537586195939242955">Kupón Pass sa momentálne nedá do aplikácie Passbook nainštalovať.</translation>
 <translation id="754655535278952384">Skontrolované <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Zavrieť všetko</translation>
-<translation id="7554791636758816595">Nová karta</translation>
 <translation id="7557508262441527045">Účet je odhlásený</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7561982940498449837">Zavrieť ponuku</translation>
@@ -2250,7 +2249,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pripnutý web</translation>
 <translation id="8990960056509724223">Súbor sa nepodarilo uložiť pre pravidlá vašej organizácie</translation>
 <translation id="8998289560386111590">V zariadení nie je k dispozícii</translation>
-<translation id="9000532564152265066">Všetky karty</translation>
 <translation id="9003677638446136377">Skontrolovať znova</translation>
 <translation id="9006453925669499173">Ponuka → Nová karta inkognito</translation>
 <translation id="9008201768610948239">Ignorovať</translation>

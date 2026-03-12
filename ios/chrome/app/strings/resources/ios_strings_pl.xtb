@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Witamy ponownie!</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="201759455285471444">Rozwiń grupę kart.</translation>
-<translation id="202070562065520783">Wyjaśnij mi to</translation>
 <translation id="2044394949148788042">Otwieranie siatki kart</translation>
 <translation id="2044681667265133332">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nowy element</translation>
@@ -1614,6 +1613,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="672735642903863329">Korzystaj z zakładek, haseł i innych ustawień na wszystkich urządzeniach.</translation>
 <translation id="6729493062119577923">Aktywność w udostępnianej grupie kart</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Sprawdź dane konta</translation>
 <translation id="6750456911389438250">{count,plural, =1{Zaimportowano {count} element historii}few{Zaimportowano {count} elementy historii}many{Zaimportowano {count} elementów historii}other{Zaimportowano {count} elementu historii}}</translation>
 <translation id="6755200887046212842">Zarządzaj kontami</translation>
@@ -1820,7 +1820,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>
 <translation id="754655535278952384">Sprawdzono <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Zamknij wszystko</translation>
-<translation id="7554791636758816595">Nowa karta</translation>
 <translation id="7557508262441527045">Wylogowano</translation>
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="7561982940498449837">Zamknij menu</translation>
@@ -2250,7 +2249,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, przypięta witryna</translation>
 <translation id="8990960056509724223">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się zapisać pliku</translation>
 <translation id="8998289560386111590">Niedostępne na Twoim urządzeniu</translation>
-<translation id="9000532564152265066">Wszystkie karty</translation>
 <translation id="9003677638446136377">Sprawdź ponownie</translation>
 <translation id="9006453925669499173">Menu → Nowa karta incognito</translation>
 <translation id="9008201768610948239">Ignoruj</translation>

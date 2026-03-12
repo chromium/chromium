@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Кайрадан кош келиңиз!</translation>
 <translation id="2015722694326466240">Сырсөздөрдү көрүү үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="201759455285471444">Өтмөктөр тобун жайып көрсөтүү.</translation>
-<translation id="202070562065520783">Муну түшүндүрүп бер</translation>
 <translation id="2044394949148788042">Өтмөк торчосун ачуу</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> аккаунтун <ph name="HOSTED_DOMAIN" /> башкарат. Ал айрым маалыматтарды көрүшү мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">жаңы нерсе</translation>
@@ -1614,6 +1613,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="672735642903863329">Бардык түзмөктөрүңүздө кыстармаларды, сырсөздөрдү жана башка нерселерди алыңыз.</translation>
 <translation id="6729493062119577923">Бөлүшүлгөн өтмөктөр тобундагы аракеттер</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Дареги</translation>
 <translation id="6746338529702829275">Аккаунтуңуздагы нерселерди карап чыгыңыз</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} таржымал жазуусу өткөрүлүп алынды}other{{count} таржымал жазуусу өткөрүлүп алынды}}</translation>
 <translation id="6755200887046212842">Аккаунттарды башкаруу</translation>
@@ -1820,7 +1820,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7537586195939242955">Кечиресиз, учурда картаңызды Passbook'ка орнотуу мүмкүн эмес</translation>
 <translation id="754655535278952384"><ph name="TIME" /> текшерилди</translation>
 <translation id="7554645225856321710">Баарын жабуу</translation>
-<translation id="7554791636758816595">Жаңы өтмөк</translation>
 <translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
 <translation id="7561196759112975576">Ар дайым</translation>
 <translation id="7561982940498449837">Менюну жабуу</translation>
@@ -2250,7 +2249,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, кадалган сайт</translation>
 <translation id="8990960056509724223">Уюмуңуздун эрежелеринен улам файл сакталган жок</translation>
 <translation id="8998289560386111590">Түзмөгүңүздө жеткиликтүү эмес</translation>
-<translation id="9000532564152265066">Бардык өтмөктөр</translation>
 <translation id="9003677638446136377">Кайра текшерүү</translation>
 <translation id="9006453925669499173">Меню → Жаңы жашыруун өтмөк</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>

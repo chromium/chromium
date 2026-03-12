@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Bon retour parmi nous !</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
-<translation id="202070562065520783">Explique-moi</translation>
 <translation id="2044394949148788042">Ouvrez la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
@@ -1614,6 +1613,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et plus encore sur tous vos appareils.</translation>
 <translation id="6729493062119577923">Activité du groupe d'onglets partagé</translation>
 <translation id="6732087373923685049">la caméra</translation>
+<translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Examinez les données de votre compte</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} élément d'historique importé}one{{count} élément d'historique importé}other{{count} éléments d'historique importés}}</translation>
 <translation id="6755200887046212842">Gérer les comptes</translation>
@@ -1820,7 +1820,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
 <translation id="754655535278952384">Vérifié <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Tout fermer</translation>
-<translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
@@ -2250,7 +2249,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
 <translation id="8990960056509724223">Impossible d'enregistrer le fichier à cause des règles de votre organisation</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
-<translation id="9000532564152265066">Tous les onglets</translation>
 <translation id="9003677638446136377">Revérifier</translation>
 <translation id="9006453925669499173">Menu → Nouvel onglet de navigation privée</translation>
 <translation id="9008201768610948239">Ignorer</translation>

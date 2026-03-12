@@ -444,7 +444,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="5515432237048785579">Discover feed bottom sheet opened at full height</translation>
 <translation id="5516455585884385570">Open notification settings</translation>
 <translation id="5527111080432883924">Ask before allowing sites to read text and images from the clipboard (recommended)</translation>
-<translation id="5553374991681107062">Latest</translation>
 <translation id="5555115555607204100">Do not speed up sites with Chrome's V8 engine but make Chrome slightly more resistant to attacks</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blocked</translation>
@@ -676,7 +675,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="8007176423574883786">Turned off for this device</translation>
 <translation id="802154636333426148">Download failed</translation>
 <translation id="8033047164036749181">Subscribe for notifications from this site</translation>
-<translation id="8042586301629853791">Sort by:</translation>
 <translation id="8051193500142930381">Features that need a camera won't work</translation>
 <translation id="8056330801132235235">Chrome default</translation>
 <translation id="8067883171444229417">Play video</translation>

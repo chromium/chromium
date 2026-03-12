@@ -1726,7 +1726,7 @@
 <translation id="8584654835905316966">必須重新啟動系統，才能完成 <ph name="DEVICE_NAME" /> 韌體安裝作業，並更新至版本 <ph name="VERSION" />。電腦可能會多次重新啟動，這是正常現象。</translation>
 <translation id="8593058461203131755">暫停播放媒體</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
-<translation id="8624524972189162859">你的「<ph name="DOMAIN_NAME" />」管理員已停用你的裝置，並可存取裝置的位置資訊。</translation>
+<translation id="8624524972189162859">「<ph name="DOMAIN_NAME" />」管理員已停用你的裝置，並可存取裝置的位置資訊。</translation>
 <translation id="8626489604350149811">可對 <ph name="APN_NAME" /> 執行的其他動作</translation>
 <translation id="86356131183441916">淺紫色</translation>
 <translation id="8647595191512746911">音訊轉錄</translation>

@@ -444,7 +444,6 @@
 <translation id="5515432237048785579">디스커버 피드 하단 시트가 전체 높이로 열림</translation>
 <translation id="5516455585884385570">알림 설정 열기</translation>
 <translation id="5527111080432883924">사이트에서 클립보드의 텍스트 및 이미지에 액세스하도록 허용하기 전에 확인(권장)</translation>
-<translation id="5553374991681107062">최신</translation>
 <translation id="5555115555607204100">Chrome의 V8 엔진으로 사이트 속도를 높이지 않지만 Chrome이 공격에 약간 더 강해집니다.</translation>
 <translation id="5556459405103347317">새로고침</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> 차단됨</translation>
@@ -676,7 +675,6 @@
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8033047164036749181">이 사이트의 알림 수신</translation>
-<translation id="8042586301629853791">정렬 기준:</translation>
 <translation id="8051193500142930381">카메라가 필요한 기능이 작동하지 않음</translation>
 <translation id="8056330801132235235">Chrome 기본값</translation>
 <translation id="8067883171444229417">동영상 재생</translation>

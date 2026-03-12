@@ -127,7 +127,7 @@
 <translation id="2004942826429452291">Các tệp sẽ được lưu trữ trên đám mây và trên Chromebook này.</translation>
 <translation id="2009067268969781306">Thao tác định dạng ổ sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đó. Bạn không thể hủy thao tác này sau khi đã thực hiện.</translation>
 <translation id="2025955442973426285">Tiếng Tigrinya</translation>
-<translation id="2029385776150020336">Bản mở rộng của Hoa Kỳ</translation>
+<translation id="2029385776150020336">Bàn phím mở rộng (Hoa Kỳ)</translation>
 <translation id="2037845485764049925">Tiếng Nga</translation>
 <translation id="2044023416777079300">Modem chưa được đăng ký</translation>
 <translation id="2046702855113914483">Mỳ tôm</translation>
@@ -207,7 +207,7 @@
 <translation id="2587195714949534472">Đang chuẩn bị đồng bộ hoá <ph name="FILE_NAME" />...</translation>
 <translation id="2602810353103180630">Mạng <ph name="NETWORK_INDEX" /> trong tổng số <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên của bạn đã chặn, Thông tin chi tiết</translation>
 <translation id="2614589611416690597">Video <ph name="VIDEO_TYPE" /></translation>
-<translation id="2619043364735935227">Dvorak Vương quốc Anh</translation>
+<translation id="2619043364735935227">Bàn phím Dvorak tiêu chuẩn Vương quốc Anh</translation>
 <translation id="2620090360073999360">Không thể kết nối với Google Drive tại thời điểm này.</translation>
 <translation id="2621713457727696555">Đã bảo mật</translation>
 <translation id="2638942478653899953">Không thể truy cập Google Drive. Vui lòng <ph name="BEGIN_LINK" />đăng xuất<ph name="END_LINK" /> và đăng nhập lại.</translation>
@@ -215,9 +215,9 @@
 <translation id="2653059201992392941">Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="2663066752008346276">Tiếng Miến Điện/Myanmar bằng bàn phím Myansan</translation>
 <translation id="2664412712123763093">Vị trí tệp</translation>
-<translation id="2672394942808662069">Đa ngôn ngữ tiếng Canada</translation>
+<translation id="2672394942808662069">Bàn phím đa ngôn ngữ tiêu chuẩn Canada</translation>
 <translation id="2707357721402813583">Tiếng Ireland</translation>
-<translation id="2708477391501452176">BÉPO tiếng Pháp</translation>
+<translation id="2708477391501452176">Tiếng Pháp (BÉPO)</translation>
 <translation id="2719020180254996569">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Thông tin chi tiết</translation>
 <translation id="2724954091494693138">Tiếng Thổ Nhĩ Kỳ bằng bàn phím F</translation>
 <translation id="2728450421877450246">Tiếng Pháp</translation>
@@ -234,7 +234,7 @@
 <translation id="2830077785865012357">Tiếng Trung (chú âm)</translation>
 <translation id="2843806747483486897">Thay đổi ứng dụng mặc định...</translation>
 <translation id="2873951654529031587">Thùng rác</translation>
-<translation id="2887314858867008269">Colemak Hoa Kỳ</translation>
+<translation id="2887314858867008269">Bàn phím Colemak tiêu chuẩn Hoa Kỳ</translation>
 <translation id="2887525882758501333">Tài liệu PDF</translation>
 <translation id="2888807692577297075">Không có mục nào khớp với <ph name="SEARCH_STRING" /></translation>
 <translation id="2894654529758326923">Thông tin</translation>
@@ -318,7 +318,7 @@
 <translation id="3553048479571901246">Để mở tệp bằng <ph name="APP_NAME" />, trước tiên, hãy sao chép các tệp đó vào thư mục tệp Windows.</translation>
 <translation id="3556731189587832921">Tiếng Anh (Mỹ) bằng bàn phím quốc tế cho máy tính để bàn</translation>
 <translation id="3557414470514932909">Đang chuyển <ph name="FILE_NAME" /> vào thùng rác</translation>
-<translation id="3560848236447534728">Phiên âm tiếng Armenia</translation>
+<translation id="3560848236447534728">Tiếng Armenia (phiên âm)</translation>
 <translation id="3567221313191587603">Chọn một tệp và bật <ph name="OFFLINE_CHECKBOX_NAME" /> để dùng tệp khi không có mạng.</translation>
 <translation id="3587482841069643663">Tất cả</translation>
 <translation id="3592251141500063301">Không tải được <ph name="FILE_NAME" /> xuống để xem khi không có mạng</translation>
@@ -360,7 +360,7 @@
 <translation id="3901991538546252627">Đang kết nối với <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Đang cài đặt hồ sơ mạng di động, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3934861075411093298">Neo 2 tiếng Đức</translation>
+<translation id="3934861075411093298">Tiếng Đức (Neo 2)</translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="3950820424414687140">Đăng nhập</translation>
 <translation id="3952872973865944257">Tiếng Telugu (phiên âm)</translation>
@@ -506,7 +506,7 @@
 <translation id="5010406651457630570">Máy tính</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">Một tác vụ đang diễn ra lâu hơn thông thường. Bạn có muốn hủy tác vụ này không?</translation>
-<translation id="5036141350290856713">Ngữ âm tiếng Nga</translation>
+<translation id="5036141350290856713">Tiếng Nga (phiên âm)</translation>
 <translation id="5036159836254554629">Quản lý việc chia sẻ với ứng dụng Parallels Desktop</translation>
 <translation id="5038625366300922036">Xem thêm...</translation>
 <translation id="5044852990838351217">Tiếng Armenia</translation>
@@ -530,7 +530,7 @@
    Tháo thiết bị của bạn khi đang được sử dụng có thể gây mất dữ liệu. Vui lòng đợi cho đến khi thao tác kết thúc, sau đó đẩy thiết bị ra bằng ứng dụng Tệp.</translation>
 <translation id="5163869187418756376">Chia sẻ không thành công. Hãy kiểm tra kết nối và thử lại sau.</translation>
 <translation id="5177526793333269655">Chế độ xem hình thu nhỏ</translation>
-<translation id="5178355323709925287">Ngữ âm tiếng Bulgaria</translation>
+<translation id="5178355323709925287">Tiếng Bulgaria (phiên âm)</translation>
 <translation id="5181896909298187506">Không có tệp nào gần đây</translation>
 <translation id="5194713942430106590">Nhấp để sắp xếp cột theo thứ tự tăng dần.</translation>
 <translation id="5211614973734216083">Tiếng Faroe</translation>
@@ -578,7 +578,7 @@
 <translation id="5534520101572674276">Đang tính toán kích thước</translation>
 <translation id="554153475311314364">Tiếng Hy Lạp (chuyển tự)</translation>
 <translation id="5554171655917412781">Có <ph name="SELECTED_FOLDERS_COUNT" /> thư mục được chọn</translation>
-<translation id="5568003358606822240">QWERTY tiếng Séc</translation>
+<translation id="5568003358606822240">Tiếng Séc (QWERTY)</translation>
 <translation id="5580591966435005537">máy ảo</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Độ rộng dấu câu là Đầy đủ</translation>
@@ -633,7 +633,7 @@
 <translation id="5948255720516436063">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kích hoạt sau khi thiết lập thiết bị</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="5957366693331451795">Chromebox</translation>
-<translation id="5959163675722155317">Quốc tế Hoa Kỳ</translation>
+<translation id="5959163675722155317">Bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="5982621672636444458">Tùy chọn sắp xếp</translation>
 <translation id="6011074160056912900">Mạng Ethernet</translation>
 <translation id="6023337265947005432">Tiếng Séc</translation>
@@ -698,7 +698,7 @@
 <translation id="643243556292470964">Các tệp đã xoá hiện được chuyển vào thùng rác</translation>
 <translation id="6438480100790416671">Đang kiểm tra không gian lưu trữ…</translation>
 <translation id="6451527188465304418">Đang kiểm tra tệp theo các chính sách bảo mật của tổ chức bạn...</translation>
-<translation id="6480474281747138552">Dvorak Hoa Kỳ cho lập trình viên</translation>
+<translation id="6480474281747138552">Bàn phím Dvorak dành cho lập trình viên (Hoa Kỳ)</translation>
 <translation id="6483241221370343062">Tiếng Ba Lan</translation>
 <translation id="6485131920355264772">Không thể truy xuất thông tin dung lượng</translation>
 <translation id="6495925982925244349">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Thông tin chi tiết</translation>
@@ -791,7 +791,7 @@
 <translation id="7135561821015524160">Tiếng Kannada (phiên âm)</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">Trường "Khớp tên thay thế của chủ đề" hoặc "Khớp hậu tố tên miền" còn trống nên chưa thể xác thực danh tính máy chủ xác thực</translation>
-<translation id="7163653800467169701">Tiếng Ý</translation>
+<translation id="7163653800467169701">Tiếng Italy</translation>
 <translation id="7165320105431587207">Không định cấu hình mạng được</translation>
 <translation id="7170041865419449892">Ngoài vùng phủ sóng</translation>
 <translation id="7179579940054351344">Hoạt động truy cập vào tệp qua mọi trang web và URL, ngoại trừ <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
@@ -826,7 +826,7 @@
 <translation id="7417453074306512035">Bàn phím tiếng Ethiopic</translation>
 <translation id="7417705661718309329">Bản đồ Google</translation>
 <translation id="7419668828140929293">Đang khôi phục "<ph name="FILENAME" />"</translation>
-<translation id="7435577899926900307">Dvorak Hoa Kỳ</translation>
+<translation id="7435577899926900307">Bàn phím Dvorak tiêu chuẩn Hoa Kỳ</translation>
 <translation id="7458955835361612701">Không có hình ảnh nào gần đây</translation>
 <translation id="7469894403370665791">Tự động kết nối vào mạng này</translation>
 <translation id="7486315294984620427">Để thả tệp vào Parallels Desktop, bạn phải sao chép tệp đó vào thư mục tệp Windows.</translation>
@@ -865,7 +865,7 @@
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7732111077498238432">Mạng được kiểm soát bằng chính sách</translation>
 <translation id="7736003208887389532">Xoá vĩnh viễn các tệp này?</translation>
-<translation id="7737249716250841853">QWERTY tiếng Hungary</translation>
+<translation id="7737249716250841853">Tiếng Hungary (QWERTY)</translation>
 <translation id="7740287852186792672">Kết quả tìm kiếm</translation>
 <translation id="7748626145866214022">Trên thanh hành động có các tùy chọn khác. Nhấn tổ hợp phím Alt + A để đặt tiêu điểm vào thanh hành động.</translation>
 <translation id="7758806833942383902">Tiếng Catalan</translation>
@@ -894,7 +894,7 @@
 <translation id="7868774406711971383">Tiếng Ba Lan</translation>
 <translation id="7874321682039004450">Tiếng Philippines</translation>
 <translation id="78946041517601018">Bộ nhớ dùng chung</translation>
-<translation id="7901567919203965902">Quốc tế Workman Hoa Kỳ</translation>
+<translation id="7901567919203965902">Bàn phím quốc tế Workman tiêu chuẩn Hoa Kỳ</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Thao tác định dạng một phân vùng sẽ xóa toàn bộ dữ liệu lưu trữ trên phân vùng đó. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -956,7 +956,7 @@
 <translation id="8336153091935557858">Hôm qua <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Tệp hoặc thư mục có cùng tên đã tồn tại.</translation>
 <translation id="83651606385705612">Cho phép <ph name="VM_NAME" /> truy cập vào các tệp trong thư mục <ph name="FOLDER_NAME" /></translation>
-<translation id="837225070446042993">Workman Hoa Kỳ</translation>
+<translation id="837225070446042993">Bàn phím Workman tiêu chuẩn Hoa Kỳ</translation>
 <translation id="8372369524088641025">Khóa WEP sai</translation>
 <translation id="8372852072747894550">Tiếng Hy Lạp</translation>
 <translation id="8377269993083688872">Bố cục email</translation>
@@ -1029,7 +1029,7 @@
 <translation id="8873014196523807561">Để khôi phục, hãy kéo các mục này vào một thư mục mới. Các thư mục gốc của một vài mục trong số này đã bị xoá.</translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8876368061475701452">Đã xếp vào hàng đợi</translation>
-<translation id="8902208737522818687">Quốc tế Hoa Kỳ (PC)</translation>
+<translation id="8902208737522818687">Bàn phím quốc tế Hoa Kỳ (dành cho PC)</translation>
 <translation id="8903931173357132290">Người tốt nghiệp</translation>
 <translation id="8912078710089354287">Chó vẫy đuôi</translation>
 <translation id="8949925099261528566">Đã kết nối, không có Internet</translation>

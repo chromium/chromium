@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">歡迎回來！</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="201759455285471444">打開分頁群組。</translation>
-<translation id="202070562065520783">為我說明</translation>
 <translation id="2044394949148788042">開啟分頁網格</translation>
 <translation id="2044681667265133332">帳戶 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，管理員可以查看某些資料。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新項目</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">在任何裝置上存取書籤、密碼及其他設定。</translation>
 <translation id="6729493062119577923">共用分頁群組活動</translation>
 <translation id="6732087373923685049">攝錄機</translation>
+<translation id="6736243959894955139">位址</translation>
 <translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6750456911389438250">{count,plural, =1{已匯入 {count} 個記錄項目}other{已匯入 {count} 個記錄項目}}</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">抱歉，目前無法將您的票證安裝至 Passbook。</translation>
 <translation id="754655535278952384">已在 <ph name="TIME" />檢查</translation>
 <translation id="7554645225856321710">全部關閉</translation>
-<translation id="7554791636758816595">新分頁</translation>
 <translation id="7557508262441527045">已登出</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7561982940498449837">關閉選單</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的網站</translation>
 <translation id="8990960056509724223">根據你機構的政策，你不可儲存檔案</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
-<translation id="9000532564152265066">所有分頁</translation>
 <translation id="9003677638446136377">再次檢查</translation>
 <translation id="9006453925669499173">選單 → 新無痕式分頁</translation>
 <translation id="9008201768610948239">略過</translation>

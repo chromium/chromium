@@ -444,7 +444,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="5515432237048785579">La hoja inferior del feed de Descubre está totalmente abierta</translation>
 <translation id="5516455585884385570">Abrir la configuración de notificaciones</translation>
 <translation id="5527111080432883924">Preguntar antes de permitir que los sitios lean el texto y las imágenes del portapapeles (recomendado)</translation>
-<translation id="5553374991681107062">Recientes</translation>
 <translation id="5555115555607204100">No acelerar los sitios con el motor V8 de Chrome, pero aumentar la resistencia de Chrome a los ataques</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5591840828808741583">Se bloqueó <ph name="SITE_NAME" /></translation>
@@ -676,7 +675,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="8007176423574883786">Desactivado para este dispositivo</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
 <translation id="8033047164036749181">Suscribirse para recibir notificaciones de este sitio</translation>
-<translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">No se habilitarán las funciones que necesitan una cámara.</translation>
 <translation id="8056330801132235235">Chrome predeterminado</translation>
 <translation id="8067883171444229417">Reproducir video</translation>

@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Ezzel az eszközön lévő összes böngészési adat törlődik. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">A letöltött telepítő gyorsítótárazása sikertelen. Hiba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Rendszer</translation>
+<translation id="263447411082773721">Jelszavai, könyvjelzői és előzményei tökéletesen szinkronizálódnak az eszközök között. Ha a Chrome-ot állítja be alapértelmezett böngészőként, könnyen hozzáférhet a már ismert és szeretett funkciókhoz. A Chrome a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">A Chrome rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
 <translation id="2652691236519827073">Link megnyi&amp;tása új Chrome-lapon</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">A Chrome később rákérdezhet, hogy szeretné-e a mentett adatokat űrlapok automatikus kitöltéséhez használni</translation>
 <translation id="3352986031709923790">keresési terület jobb felső sarka: jobb <ph name="RIGHT" />%, fent <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome segéd</translation>
+<translation id="3373752068427117404">Egyes Chrome-funkciókhoz és -bővítményekhez gyorsparancsok tartoznak. Újra bekapcsolhatja őket.</translation>
 <translation id="3379938682270551431">{0,plural, =0{A Chrome most újraindul}=1{A Chrome 1 másodpercen belül újraindul}other{A Chrome # másodpercen belül újraindul}}</translation>
 <translation id="3380249972812870825">A Gemini a Chrome-ban funkció megnyitásához nyomja meg a következőt: <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Az operációs rendszer hibát jelzett a telepítés során.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Kattintson az alábbi <ph name="BUTTON_LABEL" /> gombra.
 2. Kattintson a Windows beállításaiban megtalálható <ph name="BUTTON_2" /> elemre.
 3. Kattintson a Windows értesítésében megtalálható <ph name="BUTTON_3" /> gombra, hogy kitűzhesse a Chrome-ot a tálcára a gyors hozzáférés érdekében.</translation>
+<translation id="8074398340364918139">Ha egy adott Chrome-funkcióra vagy -bővítményre szeretne rákeresni, gépelje be a kapcsolódó gyorsparancsot a címsávba, majd nyomja le a kiválasztott billentyűt.</translation>
 <translation id="8077579734294125741">Egyéb Chrome-profilok</translation>
 <translation id="8086881907087796310">A telepítés sikertelen volt, mert a számítógép nem felel meg a minimális hardverkövetelményeknek.</translation>
 <translation id="8113883687556086139">Igazolja személyazonosságát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">A &amp;Google Chrome névjegye</translation>
 <translation id="813913629614996137">Indítás…</translation>
 <translation id="8162006532256575008">Chrome használata fiók nélkül</translation>
+<translation id="8172231188687329735">A Chrome app letöltésével útközben is mentheti jelszavait</translation>
 <translation id="8177472873527554730">Nem található tartalom az oldalon</translation>
 <translation id="8221491193165283816">Ön általában letiltja az értesítéseket. Ha azt szeretné, hogy ez a webhely küldjön értesítéseket, kattintson ide.</translation>
 <translation id="8253851811470049684">Bármelyik alkalmazásból megnyithatja a linkeket a Chrome-ban, és a böngésző a tálcán is hozzáférhető marad</translation>
@@ -726,6 +730,7 @@
 
 Új könyvjelzőket nem lehet menteni a fiókjába, amíg nem töröl néhányat. Ha most jelentkezik ki, a nem mentett könyvjelzők törlődnek.</translation>
 <translation id="8433638294851456451">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>
+<translation id="8458117863387545390">Töltse le a Chrome-ot a telefonjára</translation>
 <translation id="8496177819998570653">Google J&amp;elszókezelő</translation>
 <translation id="8498858610309223613">A rendszer egy speciális biztonsági frissítést alkalmazott a Google Chrome-on. Indítsa újra a számítógépet, a lapokat majd mi visszaállítjuk.</translation>
 <translation id="8516431725144212809">Az Ön Chrome által megbecsült érdeklődési körei</translation>
@@ -779,7 +784,6 @@
 <translation id="8999208279178790196">{0,plural, =0{Rendelkezésre áll egy Chrome-frissítés}=1{Rendelkezésre áll egy Chrome-frissítés}other{# napja rendelkezésre áll egy Chrome-frissítés}}</translation>
 <translation id="9010418943148193727">Az alapértelmezett keresőmotor a Chrome-on kívülről lett módosítva. A Chrome visszaállította az Ön biztonsága érdekében.</translation>
 <translation id="9014771989710951291">Több szervezet is kezeli a Chrome-ot</translation>
-<translation id="9024318700713112071">A Chrome beállítása alapértelmezettként</translation>
 <translation id="9066987883552592250">A Gemini bezárása a Chrome Canaryban</translation>
 <translation id="9090566250983691233">További információ arról, hogy miért tilt le bizonyos fájlokat a Chrome</translation>
 <translation id="9106236359747881194">Jelöljön ki szöveget a kereséshez</translation>

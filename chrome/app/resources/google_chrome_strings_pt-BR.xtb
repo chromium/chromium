@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Essa ação excluirá seus dados de navegação desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Falha de cache após o download do instalador. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos. Acesse com facilidade seus recursos favoritos definindo o Chrome como o navegador padrão. O Chrome será fixado na barra de tarefas para agilizar o acesso.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as configurações mais seguras. Avisaremos se algo precisar da sua análise.</translation>
 <translation id="2652691236519827073">Abrir link em nova &amp;guia do Chrome</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Mais tarde, o Chrome pode perguntar se você quer usar as informações salvas para preencher formulários automaticamente</translation>
 <translation id="3352986031709923790">canto superior direito da área de pesquisa: <ph name="RIGHT" />% à direita, <ph name="TOP" />% acima</translation>
 <translation id="3360895254066713204">Auxiliar do Google Chrome</translation>
+<translation id="3373752068427117404">Alguns recursos e extensões do Chrome incluem atalhos. Você pode reativá-los.</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado em 1 segundo}one{O Chrome será reiniciado em # segundo}other{O Chrome será reiniciado em # segundos}}</translation>
 <translation id="3380249972812870825">Para abrir o Gemini no Chrome, pressione <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operacional durante a instalação. Baixe o Google Chrome novamente.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Clique em <ph name="BUTTON_LABEL" /> abaixo
 2. Clique em <ph name="BUTTON_2" /> nas configurações do Windows
 3. Clique em <ph name="BUTTON_3" /> na notificação do Windows para fixar o Chrome na barra de tarefas e ter acesso rápido</translation>
+<translation id="8074398340364918139">Para pesquisar recursos ou extensões específicos do Chrome, digite o atalho na barra de endereço, seguido da tecla escolhida</translation>
 <translation id="8077579734294125741">Outros perfis do Chrome</translation>
 <translation id="8086881907087796310">A instalação falhou porque o computador não atende aos requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Confirme sua identidade para usar e salvar os dados do Chrome na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Sobre o Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar o Chrome sem uma conta</translation>
+<translation id="8172231188687329735">Baixe o app Chrome para salvar senhas em qualquer lugar</translation>
 <translation id="8177472873527554730">Não foi possível encontrar o conteúdo na página</translation>
 <translation id="8221491193165283816">Você geralmente bloqueia notificações. Para permitir que esse site envie notificações, clique aqui.</translation>
 <translation id="8253851811470049684">Clicar em links de qualquer app vai abri-los no Chrome, e você poderá acessar o navegador com mais rapidez na barra de tarefas.</translation>
@@ -726,6 +730,7 @@
 
 Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair agora, os favoritos que não foram salvos serão excluídos.</translation>
 <translation id="8433638294851456451">Para enviar um número daqui para seu smartphone Android, faça login no Chrome nos dois dispositivos.</translation>
+<translation id="8458117863387545390">Instale o Chrome no seu smartphone</translation>
 <translation id="8496177819998570653">Gerenciador de senhas do Google</translation>
 <translation id="8498858610309223613">Uma atualização especial de segurança para o Google Chrome acabou de ser aplicada. Reinicie agora, e suas guias serão restauradas.</translation>
 <translation id="8516431725144212809">Seus interesses estimados pelo Chrome</translation>
@@ -779,7 +784,6 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8999208279178790196">{0,plural, =0{Uma atualização do Chrome está disponível}=1{Uma atualização do Chrome está disponível}one{Uma atualização do Chrome está disponível há # dia}other{Uma atualização do Chrome está disponível há # dias}}</translation>
 <translation id="9010418943148193727">Seu mecanismo de pesquisa padrão foi alterado fora do Chrome. Para sua proteção, o Chrome redefiniu essa configuração.</translation>
 <translation id="9014771989710951291">Várias organizações gerenciam o Chrome</translation>
-<translation id="9024318700713112071">Defina o Chrome como o navegador padrão</translation>
 <translation id="9066987883552592250">Fechar o Gemini no Chrome Canary</translation>
 <translation id="9090566250983691233">Saiba por que o Chrome bloqueia alguns arquivos</translation>
 <translation id="9106236359747881194">Selecione texto para pesquisar</translation>

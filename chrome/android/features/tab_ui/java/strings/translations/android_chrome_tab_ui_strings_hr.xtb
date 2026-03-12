@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2371084566192454134">Kartice i grupe kartica</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
+<translation id="2476179388576975626">Slika u slici</translation>
 <translation id="2498435670446402865">Preimenujte grupu kartica</translation>
 <translation id="2536366509642644298">Grupe kartica <ph name="TAB_GROUP_NAME_1" /> i <ph name="TAB_GROUP_NAME_2" /> više nisu dostupne</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sažmi <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>

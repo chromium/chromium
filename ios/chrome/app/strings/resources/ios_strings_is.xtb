@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Velkomin(n) aftur!</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="201759455285471444">Stækka flipahóp.</translation>
-<translation id="202070562065520783">Útskýrðu þetta fyrir mér</translation>
 <translation id="2044394949148788042">Opna flipayfirlit</translation>
 <translation id="2044681667265133332">Reikningnum <ph name="USER_EMAIL" /> er stjórnað af <ph name="HOSTED_DOMAIN" />, sem getur hugsanlega skoðað tilteknar upplýsingar. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nýtt atriði</translation>
@@ -1614,6 +1613,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="672735642903863329">Fáðu bókamerkin, aðgangsorðin og fleira í öllum tækjunum þínum.</translation>
 <translation id="6729493062119577923">Sameiginleg virkni flipahóps</translation>
 <translation id="6732087373923685049">myndavél</translation>
+<translation id="6736243959894955139">Vistfang</translation>
 <translation id="6746338529702829275">Farðu yfir gögn reikningsins</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ferilatriði flutt inn}one{{count} ferilatriði flutt inn}other{{count} ferilatriði flutt inn}}</translation>
 <translation id="6755200887046212842">Stjórna reikningum</translation>
@@ -1820,7 +1820,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7537586195939242955">Því miður var ekki hægt að vista miðann í Passbook á þessari stundu.</translation>
 <translation id="754655535278952384">Athugað <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Loka öllu</translation>
-<translation id="7554791636758816595">Nýr flipi</translation>
 <translation id="7557508262441527045">Útskráð(ur)</translation>
 <translation id="7561196759112975576">Alltaf</translation>
 <translation id="7561982940498449837">Loka valmynd</translation>
@@ -2250,7 +2249,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fest vefsvæði</translation>
 <translation id="8990960056509724223">Ekki tókst að vista skrá vegna reglna fyrirtækisins þíns</translation>
 <translation id="8998289560386111590">Ekki í boði í tækinu þínu</translation>
-<translation id="9000532564152265066">Allir flipar</translation>
 <translation id="9003677638446136377">Prófa aftur</translation>
 <translation id="9006453925669499173">Valmynd → Nýr huliðsflipi</translation>
 <translation id="9008201768610948239">Hunsa</translation>

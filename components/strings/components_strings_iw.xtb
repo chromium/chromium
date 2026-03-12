@@ -81,6 +81,7 @@
 <translation id="1131264053432022307">תמונה שהעתקת</translation>
 <translation id="1132735979845538847">‫<ph name="ORIGIN" /> – כדי לצאת ממסך מלא, צריך לגרור מלמעלה וללחוץ על הכפתור "הקודם".</translation>
 <translation id="1133418583142946603">הוספה של הכרטיסייה הנוכחית</translation>
+<translation id="1137064693271855979">רוצה לשתף את הכרטיסיות הפתוחות הרלוונטיות כדי לקבל תשובות טובות יותר בכל השרשורים?</translation>
 <translation id="1138458427267715730">קבלת התראות כשיש הנחות באתרים באינטרנט</translation>
 <translation id="1142713751288681188">סוג הנייר</translation>
 <translation id="1142965388643537393">מידע למטיילים</translation>
@@ -237,6 +238,7 @@
 <translation id="1363015776076529485">רשימת אמצעי התשלום הזמינים לבחירה כדי להמשיך בתהליך התשלום נפתחה בגובה המלא של המסך.</translation>
 <translation id="1363028406613469049">רצועה</translation>
 <translation id="1364822246244961190">המדיניות הזו חסומה והמערכת תתעלם מהערך שלה.</translation>
+<translation id="1367909869526928761">‏אפשר לבחור איך מצב AI ישתמש בכרטיסיות הפתוחות הרלוונטיות</translation>
 <translation id="1368318639262510626">‏משחק Dino. דינוזאור בתצוגת פיקסלים חומק מקטטוסים ומפטרודקטילים בעודו רץ על רקע נוף שומם. כששומעים את האות באודיו, צריך ללחוץ על כפתור הרווח כדי לדלג מעל מכשולים.</translation>
 <translation id="1374468813861204354">הצעות</translation>
 <translation id="1375198122581997741">מידע על הגרסה</translation>
@@ -593,6 +595,7 @@
 <translation id="1945968466830820669">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chromium, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="1946849748901605102">‏12x15 אינץ'</translation>
 <translation id="1947454675006758438">סיכת הידוק בפינה הימנית העליונה</translation>
+<translation id="1950524225823308149">שיתוף הכרטיסיות הפתוחות בכל שרשור</translation>
 <translation id="1953729392594614704">אחרי החסימה של <ph name="TOPIC" /> ייחסמו גם כל הנושאים הקשורים, אפילו אם הם פעילים</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">הוספת אמצעי תשלום</translation>
@@ -644,6 +647,7 @@
 <translation id="2040894699575719559">המיקום נחסם</translation>
 <translation id="2041788246978549610">שימוש במיקרופונים הזמינים (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">מגש 7</translation>
+<translation id="2043091580538548438">אתרים שנוספו לכאן לא ישמשו כמקור לתשובות, גם אם הכרטיסיות פתוחות.</translation>
 <translation id="2045871135676061132">מעטפה אישית</translation>
 <translation id="2046951263634619614">קמעונאי ספרים</translation>
 <translation id="2048261947532620704">הדף בתהליך תרגום…</translation>
@@ -1122,6 +1126,7 @@
 <translation id="2768397283109119044">‏ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור לא תקין שהונפק לשם הזה. השם הוא כתובת IP שמורה או שם מארח פנימי.</translation>
 <translation id="2770159525358613612">רוצה לנסות שוב להעלות את הקבצים?</translation>
 <translation id="277133753123645258">שיטת משלוח</translation>
+<translation id="2772464848856512911">רוצה לשתף את הכרטיסיות הפתוחות בכל שרשור?</translation>
 <translation id="277499241957683684">חסרה רשומת מכשיר</translation>
 <translation id="2775884851269838147">דף מודפס ראשון</translation>
 <translation id="277828055419948999">‏‫Chromium יכול למלא אוטומטית שדות בעייתיים שהמילוי האוטומטי הרגיל עלול לפספס</translation>
@@ -1255,6 +1260,7 @@
 <translation id="3005723025932146533">הצגת עותק שמור</translation>
 <translation id="300580149047131921">בשימוש לאחרונה</translation>
 <translation id="3006864083554020786">כתובת מגורים</translation>
+<translation id="3007110814003834680">החרגת אתרים</translation>
 <translation id="3009036448238594149">‏<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, צריך להקיש על מקש Tab כדי לעיין בפעולות הזמינות, ואז על Enter כדי לבצע את הפעולה שנבחרה.</translation>
 <translation id="3010991137650052245">כדי שאפשר יהיה להשתמש ב<ph name="PERMISSION" /> באתר הזה, צריך להעניק ל-<ph name="SHORT_PRODUCT_NAME" /> גישה</translation>
 <translation id="3013711734159931232">מוצרים לבית</translation>
@@ -1310,6 +1316,7 @@
 <translation id="3105172416063519923">מזהה נכס:</translation>
 <translation id="3105223248029915046">תוכניות התשלומים כפופות לעמידה בדרישות.
 כדי להסתיר את האפשרויות לתשלום אחר כך, צריך לעבור אל <ph name="BEGIN_LINK" />הגדרות התשלומים<ph name="END_LINK" /></translation>
+<translation id="3105477369449879017">ספקי שירות של המילוי האוטומטי</translation>
 <translation id="3107591622054137333">‏<ph name="BEGIN_LINK" />לבדוק את תצורת ה-DNS המאובטח.<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">המגש האמצעי</translation>
 <translation id="3109061346635850169">טיפוח פנים וגוף</translation>
@@ -1368,6 +1375,7 @@
    <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="3180358318770512945">הורות</translation>
+<translation id="3181543705317761806">‏קבלת תשובות מבוססות-AI עם הקשר מהאינטרנט.</translation>
 <translation id="3182185041786697613">לשמור את קוד האבטחה?</translation>
 <translation id="3185635157430775689">רכיבים למחשב</translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
@@ -1579,6 +1587,7 @@
 <translation id="3532624859962632484">גישה למכשירים אחרים ברשת המקומית</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> רוצה להשתמש במיקרופון שלך</translation>
 <translation id="3533328374079021623">תיבת דואר 5</translation>
+<translation id="3535233022130619049">‏כדי לקבל תשובות מהירות ומותאמות אישית יותר בכל שרשור, אפשר לשתף את הכרטיסיות הפתוחות כברירת מחדל. אפשר לשנות את זה בכל שלב בהגדרות של Chrome.</translation>
 <translation id="3536227077203206203">יש אישור לשימוש חד-פעמי</translation>
 <translation id="3537165859691846083">‏8.5x12.67 אינץ' (Letter Plus)</translation>
 <translation id="353816159217417898">Screen (Paged)</translation>
@@ -1758,6 +1767,7 @@
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="3791118028061680614">משלמים בלי לעבור בין אפליקציות</translation>
 <translation id="3792100426446126328">‏<ph name="NAME" /> ‏(<ph name="WIDTH" />x<ph name="HEIGHT" /> אינץ')</translation>
+<translation id="3792251736135878332">הכרטיסיות הפתוחות הרלוונטיות משמשות להתאמה אישית של התשובות בכל השרשורים</translation>
 <translation id="3792826587784915501">סרטי אינדי וקאלט</translation>
 <translation id="3793574014653384240">כמות הקריסות שאירעו לאחרונה והסיבות שהובילו לקריסות האלה</translation>
 <translation id="3795624560191557077">‏שינית לאחרונה סיסמה שנכללה במידע שדלף בפרצה באבטחת מידע. אם נתקלת בבעיה, מנהל הסיסמאות של Google יכול לעזור לך להיכנס לחשבון.</translation>
@@ -1924,6 +1934,7 @@
 <translation id="406358100705415968">ציוד לבטיחות בעבודה</translation>
 <translation id="4065429683324339709">‏Google Chrome רוצה לאמת את הזהות שלך לפני שינוי ההגדרות</translation>
 <translation id="4065659219963895623">מסעדות</translation>
+<translation id="4065914898561361692">לא לשתף באופן אוטומטי כרטיסיות פתוחות רלוונטיות (ברירת מחדל)</translation>
 <translation id="4067774859633143413">כדי לצאת מהמסך המלא ולראות את מה שהורדת, צריך ללחוץ לחיצה ארוכה על |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">הוספה של כתובת חוקית</translation>
 <translation id="4072486802667267160">התרחשה שגיאה במהלך עיבוד התשלום שלך. יש לנסות שוב.</translation>
@@ -2139,6 +2150,7 @@
 <translation id="4358059973562876591">‏לא ניתן להחיל את התבניות שבחרת עקב שגיאה במדיניות DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">ניהול אמצעי תשלום...</translation>
 <translation id="4359160567981085931">‏הזנת כרגע את הסיסמה שלך באתר מטעה. אפשר לפתור את הבעיה בעזרת Chrome. כדי לשנות את הסיסמה ולהודיע ל-Google שייתכן כי החשבון בסיכון, יש ללחוץ על 'הגנה על החשבון'.</translation>
+<translation id="4359853272024672680">‏חיפוש במצב AI</translation>
 <translation id="4363222835916186793">ההתראות לגבי המוצר הזה הושבתו</translation>
 <translation id="4366943895537458493">Plate</translation>
 <translation id="4369179505195332608">עריכת רישיון הנהיגה</translation>
@@ -2490,6 +2502,7 @@ Del</translation>
 <translation id="4957080528849277028">‏הכפתור להצגת ההיסטוריה ב-Chrome, מפעילים אותו כדי להציג ולנהל את היסטוריית הגלישה בהגדרות Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד}one{ועוד # אתרים}two{ועוד # אתרים}other{ועוד # אתרים}}</translation>
 <translation id="4958444002117714549">הרחבת רשימה</translation>
+<translation id="4960061221656117224">החרגת אתרים</translation>
 <translation id="4960203958361543136">בחירה של מנוע החיפוש</translation>
 <translation id="4961708452830821006">‏כדי להשתמש במיקרופון, צריך לתת ל-Chrome גישה ל<ph name="LINK" />.</translation>
 <translation id="4963413887558778009">עיצוב נוף</translation>
@@ -2499,6 +2512,7 @@ Del</translation>
 <translation id="4968665849807487749">האתר יכול לבקש הרשאה לנהל את החלונות בכל המסכים</translation>
 <translation id="4969341057194253438">מחיקת ההקלטה</translation>
 <translation id="4973922308112707173">שני ניקובים בחלק העליון</translation>
+<translation id="4975266898030581282">בתהליך בדיקה של הכרטיסיות הפתוחות הרלוונטיות</translation>
 <translation id="4976702386844183910">הכניסה האחרונה: <ph name="DATE" /></translation>
 <translation id="4983145717627482381">סיורים וטיולים מודרכים</translation>
 <translation id="498323057460789381">שגיאה באימות סכימה: <ph name="ERROR" /></translation>
@@ -2613,6 +2627,7 @@ Del</translation>
 <translation id="5147633291963801297">הצגת ירידות במחיר בחלונית הצדדית</translation>
 <translation id="5148809049217731050">פנים כלפי מעלה</translation>
 <translation id="5148889558173091794">הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> נחסמה על ידי הארגון שלך עקב הפרת מדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5151771770689442215">‏ההיסטוריה שלי בחיפוש Google</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">חנויות כלבו</translation>
 <translation id="5158275234811857234">שער</translation>
@@ -2685,6 +2700,7 @@ Del</translation>
 <translation id="5271381225185906340">התנאי '<ph name="DATA_CONTROLS_ATTRIBUTE" />' לא נתמך עבור '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
 <translation id="527191520368130807">ליטוש</translation>
 <translation id="5273658854610202413">‏אזהרה: המדיניות הזו לא עברה מיזוג בהתאם למדיניות PolicyDictionaryMultipleSourceMergeList, מאחר שהיא לא חלק מכללי מדיניות המילון שניתן למזג.</translation>
+<translation id="5274074150785993864">‏כדי להתאים אישית את התשובות, Chrome שולח ל-Google את הכרטיסיות הפתוחות, את תוכן הדפים ואת כתובות ה-URL</translation>
 <translation id="5278778426231952189">העלאה עכשיו</translation>
 <translation id="5279286380302340275">ניהול ההורדות</translation>
 <translation id="5282008206326321696">{count,plural, =0{‫# סימניות}=1{סימנייה אחת}one{‫# סימניות}two{‫# סימניות}other{‫# סימניות}}</translation>
@@ -2736,6 +2752,7 @@ Del</translation>
 <translation id="5351548097010183514">חומרי בניין ואספקה</translation>
 <translation id="5354143049423063163">קרנות גידור</translation>
 <translation id="5355557959165512791">נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" /> מאחר שהאישור שלו בוטל. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
+<translation id="5359752295193133096">כדי לקבל תשובות מהירות ואישיות יותר, אפשר לשתף את הכרטיסיות הפתוחות הרלוונטיות כברירת מחדל.</translation>
 <translation id="5360706051680403227">מנורות ותאורה</translation>
 <translation id="536296301121032821">אחסון הגדרות המדיניות נכשל</translation>
 <translation id="5363148545938487338">Salesforce</translation>
@@ -2878,6 +2895,7 @@ Del</translation>
 <translation id="5551890439174915351">‏100x200 מ"מ</translation>
 <translation id="5554520618550346933">‏אם משתמשים בסיסמה והיא פורסמה באינטרנט, מוצגת אזהרה ב-Chrome. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
+<translation id="5556843284826862956">‏יכול להיות שבודקים אנושיים יראו את השרשורים כדי לשפר את Google AI</translation>
 <translation id="5558083606899411167">מזגנים</translation>
 <translation id="5558125320634132440">האתר נחסם מאחר שהוא עשוי להכיל תוכן למבוגרים בלבד</translation>
 <translation id="5559311991468302423">מחיקת הכתובת</translation>
@@ -3115,6 +3133,7 @@ Del</translation>
 <translation id="5968022600320704045">אין תוצאות חיפוש</translation>
 <translation id="5968400720580217226">‏מצב AI</translation>
 <translation id="5969199813874624822">שמירה ומעקב אחר המחירים</translation>
+<translation id="5969933937005244170">אנחנו משתמשים בכרטיסיות הפתוחות הרלוונטיות רק אם שיתפת אותן בשרשור</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | ‏<ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">הגליל השישי</translation>
 <translation id="5975083100439434680">התרחקות</translation>
@@ -3343,6 +3362,7 @@ Del</translation>
 <translation id="6327065120806001832">גישה לרשת המקומית</translation>
 <translation id="6328639280570009161">יש לנסות להשבית את חיזוי הרשת</translation>
 <translation id="6329815962353376655">&lt;כאן מקלידים שאלה&gt;</translation>
+<translation id="6331597954316706229">כדי לקבל תשובות שמותאמות אישית ברמה הגבוהה ביותר, כדאי לתת לכל השרשורים הרשאה להשתמש בכרטיסיות הפתוחות הרלוונטיות.</translation>
 <translation id="633348045801643466">הצגת אפשרויות <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />לתשלום אחר כך<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> בשלב התשלום בקופה</translation>
 <translation id="6335029926534404762">נעלי ספורט</translation>
 <translation id="6336948221660696475">‏אין הרשאה לשימוש ב-VR</translation>
@@ -3371,6 +3391,7 @@ Del</translation>
 <translation id="6366710531182496394">שתי סיכות הידוק בצד שמאל</translation>
 <translation id="6367196786591004737">מחיקת הרשומה</translation>
 <translation id="6370022303958842211">פעולות של גישה למכשירים כמו התחברות (כולל סיבות לכישלון של ניסיונות התחברות), התנתקות, נעילה וביטול נעילה</translation>
+<translation id="6372779601614872746">שיתוף הכרטיסיות הפתוחות הרלוונטיות</translation>
 <translation id="6374469231428023295">ניסיון נוסף</translation>
 <translation id="6374865374745447009">ניהול החלונות</translation>
 <translation id="6376881782310775282">לא ניתן לגשת לשרת הפיתוח של האפליקציה הזו</translation>
@@ -3390,6 +3411,7 @@ Del</translation>
 <translation id="6390533465682072118">שחזור</translation>
 <translation id="639068771471208680">Multi-Part Form</translation>
 <translation id="6391700400718590966">הגיליון 'אין התאמה בין פרטי הכניסה לפרטי הכניסה לתשלום מאובטח' סגור</translation>
+<translation id="6391911601916058725">לשתף תמיד את הכרטיסיות הפתוחות הרלוונטיות?</translation>
 <translation id="6392799395081100092">Paper (Vellum)</translation>
 <translation id="6393156038355142111">הצעת סיסמה חזקה</translation>
 <translation id="6393310910507376797">האפשרות לא נתמכת על ידי המוכר</translation>
@@ -3659,6 +3681,7 @@ Del</translation>
 <translation id="6820143000046097424">יציאות טוריות</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">לשלם בתשלומים נוחים</translation>
+<translation id="6822745163454377107">כדי לקבל תשובות מהירות ואישיות יותר, אפשר לשתף את הכרטיסיות הפתוחות עם השרשור הזה.</translation>
 <translation id="6825578344716086703">‏ניסית להגיע אל <ph name="DOMAIN" />, אבל השרת הציג אישור שנחתם באמצעות אלגוריתם חתימה חלש (כמו SHA-1). המשמעות היא שפרטי האבטחה שהוצגו על-ידי השרת עלולים להיות מזויפים, וייתכן שהשרת הוא לא השרת שציפית לו (ייתכן שנוצר קשר בינך לבין התוקף).</translation>
 <translation id="6826993739343257035">‏להתיר AR?</translation>
 <translation id="6828150717884939426">שיחה</translation>
@@ -3811,6 +3834,7 @@ Del</translation>
 <translation id="7062344833049251424">‏כדי לשלם מהר יותר בפעם הבאה, אפשר לשמור את פרטי הכרטיס ואת הכתובת לחיוב ב-Google Wallet</translation>
 <translation id="706295145388601875">‏ניתן להוסיף ולנהל כתובות בהגדרות Chrome</translation>
 <translation id="7063157783216323487">ירוק 2</translation>
+<translation id="7064111249130685461">כדי לקבל תשובות שמותאמות אישית ברמה הגבוהה ביותר, כדאי לתת לשרשור הזה הרשאה להשתמש בכרטיסיות הפתוחות.</translation>
 <translation id="7064443976734085921">מכוניות קומפקטיות</translation>
 <translation id="7064851114919012435">פרטים ליצירת קשר</translation>
 <translation id="7067633076996245366">מוזיקת נשמה ואר-אנד-בי</translation>
@@ -3901,6 +3925,7 @@ Del</translation>
 <translation id="7195852673246414183">אחרי שמפעילים את ההגדרה הזו, צריך לחזור לכרטיסייה הזו כדי להתחיל לכתוב</translation>
 <translation id="7196370964328811506">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס הזה לביצוע רכישות ב-Chrome כששומרים אותו במכשיר הזה</translation>
 <translation id="7199278868241956094">‏8.5x13.4 אינץ' (Oficio)</translation>
+<translation id="7200963436813710587">התייחסנו לכרטיסיות הפתוחות הבאות:</translation>
 <translation id="7202217080450895452">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לפתוח כרטיסייה פרטית חדשה לגלישה באופן פרטי</translation>
 <translation id="7203375778433816396">‏הגדרת Chrome כדפדפן ברירת המחדל של המערכת</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> לא פועל בהתאם לתקני האבטחה.</translation>
@@ -3985,6 +4010,7 @@ Del</translation>
 <translation id="7353601530677266744">שורת פקודה </translation>
 <translation id="7359588939039777303">מודעות חסומות.</translation>
 <translation id="7360451453306104998">‏כש-Google מוצאת הנחות זמינות, הן יוצגו במהלך התשלום בקופה</translation>
+<translation id="7362039113312920489">בדיקה וניהול</translation>
 <translation id="7362281996276843968">הקבוצה הזו סגורה</translation>
 <translation id="7363096869660964304">עם זאת, עדיין אפשר לראות אותך. המעבר למצב אנונימי לא מסתיר את הגלישה שלך מהמעסיק, מספק האינטרנט או מהאתרים שאליהם נכנסת.</translation>
 <translation id="7365596969960773405">‏<ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי להוסיף ולנהל כתובות בהגדרות Chrome</translation>
@@ -4130,6 +4156,7 @@ Del</translation>
 <translation id="753714465667062283">כדי לשמור את התמונה, צריך להיכנס לחשבון</translation>
 <translation id="7537536606612762813">חובה</translation>
 <translation id="7543525346216957623">יש לבקש רשות מההורים</translation>
+<translation id="7544639168115776013">כדי לקבל תשובות מהירות ואישיות יותר בכל שרשור, אפשר לשתף את הכרטיסיות הפתוחות הרלוונטיות כברירת מחדל.</translation>
 <translation id="7546409722674205727">האפליקציה <ph name="APP_NAME" /> נפתחת</translation>
 <translation id="7548892272833184391">פתרון שגיאות חיבור</translation>
 <translation id="7549584377607005141">דף אינטרנט זה זקוק לנתונים שהזנת קודם לכן כדי שהוא יוצג כראוי. ניתן לשלוח שוב את הנתונים, אך פעולה זו תגרום לחזרה על כל פעולה שדף זה ביצע בעבר.</translation>
@@ -4297,6 +4324,7 @@ Del</translation>
 <translation id="7779418012194492374">ביטול הגישה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7782465647372057580">פרטי החשבון מוצפנים ונשמרים באופן פרטי</translation>
+<translation id="7785431476897438309">‏אפשר לשנות את זה בכל שלב בהגדרות של Chrome.</translation>
 <translation id="7785471469930192436">ניתן לעיין בהוראות של מנוע החיפוש שמשמש אותך לגבי מחיקת היסטוריית החיפושים, אם רלוונטי</translation>
 <translation id="7785790577395078482">הטאבלט הזה</translation>
 <translation id="7786368602962652765">יש שדה חובה ריק. עליך למלא אותו לפני השמירה.</translation>
@@ -4331,6 +4359,7 @@ Del</translation>
 <translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
 <translation id="784623644169604270">אין פעילות מהתקופה האחרונה</translation>
 <translation id="7848926355794727168">פעולות אוטומטיות בדפדפן</translation>
+<translation id="7849695969708971789">הכרטיסיות הפתוחות הרלוונטיות ישמשו להתאמה האישית של התשובות בכל השרשורים</translation>
 <translation id="7853222852810008596">האפשרות "תשלום אחר כך" לא זמינה במטבע הזה</translation>
 <translation id="785476343534277563">ספורט אוניברסיטאי</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4869,6 +4898,7 @@ Del</translation>
 <translation id="8751426954251315517">אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="8753913772043329557">יומני המדיניות</translation>
 <translation id="8754546574216727970">מגפיים</translation>
+<translation id="8755119102172890580">שיתוף כרטיסיות פתוחות רלוונטיות באופן אוטומטי</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">תוכן מוטמע</translation>
 <translation id="8757526089434340176">‏יש הטבה של Google Pay</translation>
@@ -5152,6 +5182,7 @@ Del</translation>
 <translation id="9204089334327209740">אחרי שההעלאה תסתיים, אפשר יהיה לשנות את הקבצים ב-<ph name="CLOUD_PROVIDER" />. הקבצים באחסון המקומי, כולל הקבצים באשפה, יוסרו באופן אוטומטי.</translation>
 <translation id="9205078245616868884">הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="920643408853370361">ביטוח נסיעות</translation>
+<translation id="9206639970165643781">רוצה לשתף כרטיסיות פתוחות רלוונטיות כדי לקבל תשובות טובות יותר בשרשור הזה?</translation>
 <translation id="9207861905230894330">הוספת הפריט נכשלה.</translation>
 <translation id="9209339767782560829">הייתה בעיה בשימוש באישור ההתחברות שלך.</translation>
 <translation id="9210152531668884481">אני בעניין</translation>

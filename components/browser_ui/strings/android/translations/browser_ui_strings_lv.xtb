@@ -269,6 +269,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="3658847490588580244">Noklusējuma pārlūka ekrāna apakšdaļas lapa</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}zero{<ph name="RWS_MEMBERS_COUNT" /> vietņu domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}one{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}other{<ph name="RWS_MEMBERS_COUNT" /> vietnes domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}}</translation>
 <translation id="3676777756440746804">Vietnēm ir liegts pieprasīt atļauju izmantot par jums saglabāto informāciju.</translation>
+<translation id="3677897809642449131">Atļaut vietnēm pieprasīt atļauju izmantot kustību sensorus</translation>
 <translation id="3678318839615834650">Jaunas cilnes lapas kartīšu ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="3697164069658504920">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot USB ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot USB ierīces.</translation>
 <translation id="3703430731944883733">Plūsmas pārvaldība</translation>
@@ -444,7 +445,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="5515432237048785579">Discover plūsmas ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="5516455585884385570">Atvērt paziņojumu iestatījumus</translation>
 <translation id="5527111080432883924">Vaicāt, pirms atļaut vietnēm lasīt tekstu un attēlus no starpliktuves (ieteicams)</translation>
-<translation id="5553374991681107062">jaunākās</translation>
 <translation id="5555115555607204100">Neizmantot Chrome programmu V8 vietņu darbības paātrināšanai, bet nedaudz palielināt Chrome izturību pret uzbrukumiem</translation>
 <translation id="5556459405103347317">Pārlādēt</translation>
 <translation id="5591840828808741583">Bloķēta vietnē <ph name="SITE_NAME" /></translation>
@@ -676,7 +676,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
 <translation id="8033047164036749181">Abonēt paziņojumus no šīs vietnes</translation>
-<translation id="8042586301629853791">Kārtot pēc:</translation>
 <translation id="8051193500142930381">Funkcijas, kurām nepieciešama piekļuve kamerai, nedarbosies</translation>
 <translation id="8056330801132235235">Chrome noklusējums</translation>
 <translation id="8067883171444229417">Atskaņot videoklipu</translation>
@@ -748,6 +747,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus
 <translation id="8707904142362025782">Atļaut vietnēm piekļūt kamerai</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8715862698998036666">Lai izietu no pilnekrāna režīma, velciet no augšas un no ekrāna kreisās vai labās malas.</translation>
+<translation id="8716050156658570300">Atļaut vietnēm pieprasīt atļauju izmantot kustību un gaismas sensorus</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļauju lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="8721719390026067591">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju meklēt Bluetooth ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar meklēt Bluetooth ierīces.</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>

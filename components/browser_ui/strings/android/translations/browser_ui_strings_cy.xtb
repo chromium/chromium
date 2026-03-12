@@ -269,6 +269,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="3658847490588580244">Taflen waelod porwr diofyn</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}zero{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}two{<ph name="RWS_MEMBERS_COUNT" /> wefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}few{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}many{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}other{<ph name="RWS_MEMBERS_COUNT" /> gwefan yng ngrŵp gwefannau <ph name="RWS_OWNER" /> sy'n gallu gweld eich gweithgarwch yn y grŵp}}</translation>
 <translation id="3676777756440746804">Mae gwefannau'n cael eu rhwystro rhag gofyn i chi ddefnyddio gwybodaeth y maent wedi'i chadw amdanoch chi</translation>
+<translation id="3677897809642449131">Gall gwefannau ofyn am ddefnyddio synwyryddion symudiad</translation>
 <translation id="3678318839615834650">Dalen waelod cardiau tudalen tab newydd wedi'i hagor ar uchder llawn</translation>
 <translation id="3697164069658504920">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am ddefnyddio dyfeisiau USB. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau USB.</translation>
 <translation id="3703430731944883733">Rheoli eich ffrwd</translation>
@@ -444,7 +445,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="5515432237048785579">Dalen waelod ffrwd darganfod wedi'i hagor ar uchder llawn</translation>
 <translation id="5516455585884385570">Agor y gosodiadau hysbysu</translation>
 <translation id="5527111080432883924">Gofyn cyn caniatáu i wefannau ddarllen testun a lluniau o'r clipfwrdd (argymhellir)</translation>
-<translation id="5553374991681107062">Diweddaraf</translation>
 <translation id="5555115555607204100">Peidio â chyflymu gwefannau gydag injan V8 Chrome ond gwneud Chrome ychydig yn fwy galluog i wrthsefyll ymosodiadau</translation>
 <translation id="5556459405103347317">Ail-lwytho</translation>
 <translation id="5591840828808741583">Rhwystrwyd <ph name="SITE_NAME" /></translation>
@@ -676,7 +676,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8007176423574883786">Wedi'i ddiffodd ar gyfer y ddyfais hon</translation>
 <translation id="802154636333426148">Wedi methu â lawrlwytho</translation>
 <translation id="8033047164036749181">Tanysgrifiwch ar gyfer hysbysiadau o'r wefan hon</translation>
-<translation id="8042586301629853791">Trefnu yn ôl:</translation>
 <translation id="8051193500142930381">Ni fydd nodweddion sydd angen camera yn gweithio</translation>
 <translation id="8056330801132235235">Diofyn Chrome</translation>
 <translation id="8067883171444229417">Chwarae'r fideo</translation>
@@ -748,6 +747,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:
 <translation id="8707904142362025782">Gall y wefan ofyn am eich camera</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="8715862698998036666">Llusgwch o'r brig a sweipiwch o'r ymyl chwith neu dde i adael y sgrîn lawn.</translation>
+<translation id="8716050156658570300">Gall gwefannau ofyn am ddefnyddio synwyryddion symudiad a golau</translation>
 <translation id="8719283222052720129">Gallwch droi ganiatâd ar gyfer <ph name="APP_NAME" /> ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael chwilio am ddyfeisiau Bluetooth. Pan fydd wedi'i ddiffodd, ni all wefannau chwilio am ddyfeisiau Bluetooth.</translation>
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>

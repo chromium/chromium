@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2371084566192454134">Tab dan grup tab</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
+<translation id="2476179388576975626">Picture-in-picture</translation>
 <translation id="2498435670446402865">Ganti nama grup tab</translation>
 <translation id="2536366509642644298">Grup tab "<ph name="TAB_GROUP_NAME_1" />" dan "<ph name="TAB_GROUP_NAME_2" />" tidak lagi tersedia</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>

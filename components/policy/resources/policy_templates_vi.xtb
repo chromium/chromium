@@ -7142,21 +7142,6 @@ Khi bạn đặt chính sách này cho Kiosk <ph name="PRODUCT_OS_NAME" />, chí
 <translation id="5625771176514429288">Ứng dụng Chrome sẽ được phép chạy trên các nền tảng này.</translation>
 <translation id="5627270992026554674">Không cho phép giáo viên sử dụng danh sách học viên trên Google Lớp học.</translation>
 <translation id="5630352020869108293">Khôi phục phiên trước đó</translation>
-<translation id="5630952076819481843">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định trang web mà Chrome có thể tự động chọn chứng chỉ máy khách. Giá trị là một mảng từ điển JSON phân thành chuỗi, mỗi mảng có dạng <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, trong đó <ph name="URL_PATTERN_PLACEHOLDER" /> là mẫu thông tin cài đặt nội dung. <ph name="FILTER_PLACEHOLDER" /> giới hạn các chứng chỉ máy khách mà trình duyệt sẽ tự động chọn. Bất kể bộ lọc là gì, chỉ các chứng chỉ khớp với yêu cầu chứng chỉ của máy chủ mới được chọn. Trên Android, Chrome chỉ có thể chọn những chứng chỉ máy khách mà trình duyệt này tự cung cấp chứ không thể truy cập vào những chứng chỉ được cài đặt ở cấp hệ điều hành.
-
-      Ví dụ về cách sử dụng phần <ph name="FILTER_PLACEHOLDER" />:
-
-      * Khi bạn đặt <ph name="FILTER_PLACEHOLDER" /> thành <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, chỉ các chứng chỉ máy khách do chứng chỉ có CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> cấp mới được chọn.
-
-      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa cả phần <ph name="ISSUER_STRING_VALUE" /> và <ph name="SUBJECT_STRING_VALUE" />, chỉ các chứng chỉ máy khách thoả mãn cả hai điều kiện mới được chọn.
-
-      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATION" />, chứng chỉ phải có ít nhất một tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
-
-      * Khi <ph name="FILTER_PLACEHOLDER" /> chứa phần <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, chứng chỉ phải có ít nhất một đơn vị tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
-
-      * Khi bạn đặt <ph name="FILTER_PLACEHOLDER" /> thành <ph name="EMPTY_DICTIONARY" />, việc chọn chứng chỉ máy khách sẽ không có các hạn chế bổ sung. Xin lưu ý rằng các bộ lọc mà máy chủ web cung cấp sẽ vẫn áp dụng.
-
-      Nếu bạn không đặt chính sách này thì Chrome sẽ không được tự động chọn đối với bất cứ trang web nào.</translation>
 <translation id="5633871703004128675">Bật tính năng hỗ trợ tiếp cận về làm nổi bật dấu chèn</translation>
 <translation id="5634032995857968056">Bật hộp cát Hộp chứa ứng dụng kết xuất</translation>
 <translation id="5638334542697444045">Không cho phép người dùng sử dụng tính năng Chia sẻ Internet tức thì</translation>

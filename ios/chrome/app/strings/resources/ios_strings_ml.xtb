@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">വീണ്ടും സ്വാഗതം!</translation>
 <translation id="2015722694326466240">പാസ്‍വേഡുകൾ കാണാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="201759455285471444">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിക്കുക.</translation>
-<translation id="202070562065520783">ഇത് എന്നോട് വിശദീകരിക്കുക</translation>
 <translation id="2044394949148788042">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="HOSTED_DOMAIN" /> ആണ്, അതിന് ചില വിവരങ്ങൾ കാണാനായേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">പുതിയ ഇനം</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകൾ, പാസ്‌വേഡുകൾ എന്നിവയും മറ്റും നേടുക.</translation>
 <translation id="6729493062119577923">പങ്കിട്ട ടാബ് ഗ്രൂപ്പ് ആക്റ്റിവിറ്റി</translation>
 <translation id="6732087373923685049">ക്യാമറ</translation>
+<translation id="6736243959894955139">വിലാസം</translation>
 <translation id="6746338529702829275">നിങ്ങളുടെ അക്കൗണ്ട് ഡാറ്റ അവലോകനം ചെയ്യുക</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ചരിത്ര ഇനം ഇമ്പോർട്ട് ചെയ്തു}other{{count} ചരിത്ര ഇനങ്ങൾ ഇമ്പോർട്ട് ചെയ്തു}}</translation>
 <translation id="6755200887046212842">അക്കൗണ്ടുകൾ നിയന്ത്രിക്കുക</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">ക്ഷമിക്കണം, നിങ്ങളുടെ പാസ് ഈ സമയം പാസ്‌ബുക്കിൽ ഇൻസ്റ്റാൾ ചെയ്യാൻ കഴിയില്ല.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> പരിശോധിച്ചു</translation>
 <translation id="7554645225856321710">എല്ലാം അടയ്‌ക്കുക</translation>
-<translation id="7554791636758816595">പുതിയ ടാബ്</translation>
 <translation id="7557508262441527045">സൈൻ ഔട്ട് ചെയ്‌തു</translation>
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
 <translation id="7561982940498449837">മെനു അടയ്ക്കുക</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, പിൻ ചെയ്ത സൈറ്റ്</translation>
 <translation id="8990960056509724223">നിങ്ങളുടെ സ്ഥാപനത്തിന്റെ നയങ്ങൾ കാരണം ഫയൽ സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="8998289560386111590">നിങ്ങളുടെ ഉപകരണത്തിൽ ലഭ്യമല്ല</translation>
-<translation id="9000532564152265066">എല്ലാ ടാബുകളും</translation>
 <translation id="9003677638446136377">വീണ്ടും പരിശോധിക്കുക</translation>
 <translation id="9006453925669499173">മെനു → പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="9008201768610948239">അവഗണിക്കുക</translation>

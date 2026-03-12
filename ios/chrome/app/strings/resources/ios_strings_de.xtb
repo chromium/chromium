@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Willkommen zurück!</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="201759455285471444">Tabgruppe maximieren.</translation>
-<translation id="202070562065520783">Erkläre mir das</translation>
 <translation id="2044394949148788042">Tabraster öffnen</translation>
 <translation id="2044681667265133332">Das Konto <ph name="USER_EMAIL" /> wird von <ph name="HOSTED_DOMAIN" /> verwaltet – bestimmte Informationen sind für diese Domain sichtbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">neues Element</translation>
@@ -1614,6 +1613,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="672735642903863329">Auf allen deinen Geräten auf Lesezeichen, Passwörter und andere Daten zugreifen.</translation>
 <translation id="6729493062119577923">Aktivitäten der geteilten Tabgruppe</translation>
 <translation id="6732087373923685049">Kamera</translation>
+<translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Kontodaten prüfen</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} Verlaufseintrag importiert}other{{count} Verlaufseinträge importiert}}</translation>
 <translation id="6755200887046212842">Konten verwalten</translation>
@@ -1820,7 +1820,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7537586195939242955">Dein Pass kann derzeit nicht in Passbook installiert werden.</translation>
 <translation id="754655535278952384">Zuletzt geprüft: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Alle schließen</translation>
-<translation id="7554791636758816595">Neuer Tab</translation>
 <translation id="7557508262441527045">Abgemeldet</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7561982940498449837">Menü schließen</translation>
@@ -2250,7 +2249,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, angepinnte Website</translation>
 <translation id="8990960056509724223">Die Datei konnte aufgrund der Richtlinien deiner Organisation nicht gespeichert werden</translation>
 <translation id="8998289560386111590">Auf deinem Gerät nicht verfügbar</translation>
-<translation id="9000532564152265066">Alle Tabs</translation>
 <translation id="9003677638446136377">Erneut prüfen</translation>
 <translation id="9006453925669499173">„Menü“ → „Neuer Inkognitotab“</translation>
 <translation id="9008201768610948239">Ignorieren</translation>

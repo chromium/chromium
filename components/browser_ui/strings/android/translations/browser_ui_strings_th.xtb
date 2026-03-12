@@ -444,7 +444,6 @@
 <translation id="5515432237048785579">Bottom Sheet ของฟีดสำรวจเปิดอยู่แบบเต็มความสูง</translation>
 <translation id="5516455585884385570">เปิดการตั้งค่าการแจ้งเตือน</translation>
 <translation id="5527111080432883924">ถามก่อนอนุญาตให้เว็บไซต์อ่านข้อความและดูรูปภาพจากคลิปบอร์ด (แนะนำ)</translation>
-<translation id="5553374991681107062">ล่าสุด</translation>
 <translation id="5555115555607204100">ไม่เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้มากขึ้นเล็กน้อย</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ถูกบล็อก</translation>
@@ -676,7 +675,6 @@
 <translation id="8007176423574883786">ปิดสำหรับอุปกรณ์นี้</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
 <translation id="8033047164036749181">สมัครรับการแจ้งเตือนจากเว็บไซต์นี้</translation>
-<translation id="8042586301629853791">จัดเรียงตาม</translation>
 <translation id="8051193500142930381">ฟีเจอร์ที่ต้องใช้กล้องจะไม่ทำงาน</translation>
 <translation id="8056330801132235235">ค่าเริ่มต้นของ Chrome</translation>
 <translation id="8067883171444229417">เล่นวิดีโอ</translation>

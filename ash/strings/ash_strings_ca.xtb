@@ -53,6 +53,7 @@
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1182225749592316782">Permet l'accés a totes les aplicacions i tots els llocs web amb permisos per accedir a la càmera i al micròfon.</translation>
 <translation id="1182876754474670069">Inici</translation>
+<translation id="1183237619868651138">No es pot instal·lar <ph name="EXTERNAL_CRX_FILE" /> a la memòria cau local.</translation>
 <translation id="1183863904939664422">No m'interessa aquest suggeriment</translation>
 <translation id="1184126796192815024">Aquesta xarxa no admet les aplicacions d'estríming del telèfon. Prova d'utilitzar el punt d'accés Wi-Fi del telèfon. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Introdueix la contrasenya o el PIN per augmentar la seguretat</translation>
@@ -63,6 +64,7 @@
 <translation id="119944043368869598">Esborra-ho tot</translation>
 <translation id="1199716647557067911">Confirmes que vols desactivar Accés amb interruptors?</translation>
 <translation id="1201402288615127009">Següent</translation>
+<translation id="1202596434010270079">L'aplicació Quiosc s'ha actualitzat. Extraieu la memòria USB.</translation>
 <translation id="1210557957257435379">gravació de pantalla</translation>
 <translation id="121097972571826261">Endavant per paraula</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicació de Play Store</translation>
@@ -132,6 +134,7 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, aplicació instal·lada</translation>
 <translation id="1414919006379339073">Tanca la finestra actual</translation>
 <translation id="1415846719612499304">Mostra la llista de xarxes. <ph name="STATE_TEXT" />.</translation>
+<translation id="1418559532423038045">Suprimeix <ph name="VM_NAME" /> del teu dispositiu (<ph name="DEVICE_TYPE" />). Se suprimiran totes les aplicacions i les dades de la màquina virtual.</translation>
 <translation id="1419738280318246476">Desbloqueja el dispositiu per dur a terme l'acció que indica la notificació</translation>
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">Grup suggerit</translation>
@@ -221,6 +224,7 @@
 <translation id="1720230731642245863">El punt d'accés Wi‐Fi està desactivat</translation>
 <translation id="1731815243805539470">Canvia a l'usuari anterior</translation>
 <translation id="1733996486177697563">Canvia entre els temes clar i fosc. Mantén premut l'escriptori i, a continuació, selecciona Estil i fons de pantalla.</translation>
+<translation id="1734230530703461088">No s'han pogut carregar les extensions dins del límit de temps. Contacta amb l'administrador.</translation>
 <translation id="1735992454301033090">Àrea seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="1736898441010944794"><ph name="NAME" /> és visible per als dispositius Bluetooth.</translation>
 <translation id="1737078180382804488">Ignora la configuració de visualització de les notificacions del telèfon</translation>
@@ -317,11 +321,13 @@
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2086334242442703436">Obre el selector d'emojis</translation>
 <translation id="2088116547584365419">jocs</translation>
+<translation id="2089550919269323883">La política de l'empresa ha bloquejat la instal·lació de <ph name="VM_NAME" />. Contacta amb l'administrador del sistema per obtenir assistència. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="2093792000875799555">Novetats de Steam per a Chromebook</translation>
 <translation id="209965399369889474">No hi ha connexió de xarxa</translation>
 <translation id="2107581415810719320">Un altre botó <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">El teu cable USB-C no admet Thunderbolt. És possible que el rendiment del dispositiu es vegi limitat.</translation>
 <translation id="2108303511227308752">La tecla de drecera Alt+Retrocés ha canviat. Per fer servir la tecla de suprimir, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+Retrocés.</translation>
+<translation id="2114145607116268663">No es pot instal·lar; cal reiniciar. Reinicia l'ordinador i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="2115680839221566783">La bateria està al <ph name="PERCENTAGE" /> %. Càrrega en espera.</translation>
 <translation id="2126242104232412123">Escriptori nou</translation>
 <translation id="2132302418721800944">Grava la pantalla completa</translation>
@@ -347,7 +353,9 @@
 <translation id="2224075387478458881">No es permet la gravació de pantalla quan es mostra contingut protegit</translation>
 <translation id="2227179592712503583">Suprimeix el suggeriment</translation>
 <translation id="2248634276911611268">Obre l'enllaç en una pestanya nova i canvia a aquesta pestanya nova</translation>
+<translation id="2251809247798634662">Finestra d'incògnit nova</translation>
 <translation id="2253808149208613283">Instal·la l'aplicació per personalitzar aquest dispositiu</translation>
+<translation id="225614027745146050">Et donem la benvinguda</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2257486738914982088">Hi ha hagut un error en baixar <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fitxers suggerits</translation>
@@ -376,6 +384,7 @@
 <translation id="2341729377289034582">Bloquejada en vertical</translation>
 <translation id="2345226652884463045">Prem Retorn o Cerca+barra espaiadora per seleccionar el text que vols editar.</translation>
 <translation id="2349785431103945039">Mostra els detalls del punt d'accés Wi‐Fi. Connecta't a la xarxa mòbil per utilitzar-lo.</translation>
+<translation id="2350182423316644347">S'està inicialitzant l'aplicació...</translation>
 <translation id="2350794187831162545">La parla en <ph name="LANGUAGE" /> ara es processa localment i funciona sense connexió. Pots canviar l'idioma de dictat a Configuració &gt; Accessibilitat.</translation>
 <translation id="2352467521400612932">Configuració del llapis òptic</translation>
 <translation id="2354174487190027830">S'està activant <ph name="NAME" /></translation>
@@ -482,6 +491,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2658778018866295321">Fes clic i arrossega</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> i <ph name="UNAVAILABLE_APPS_TWO" /> no estan disponibles en aquest dispositiu.</translation>
 <translation id="2670350619068134931">Animacions reduïdes</translation>
+<translation id="2672142220933875349">El fitxer crx és incorrecte i no s'ha pogut descomprimir.</translation>
 <translation id="2673968385134502798">Jocs</translation>
 <translation id="2678852583403169292">Menú Escolta la selecció</translation>
 <translation id="2683887737780133806">El <ph name="DAY_OF_WEEK" /> de la setmana passada</translation>
@@ -500,6 +510,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2718395828230677721">Llum nocturna</translation>
 <translation id="2726420622004325180">El telèfon ha de tenir dades mòbils per proporcionar un punt d'accés</translation>
 <translation id="2727175239389218057">Respon</translation>
+<translation id="2727744317940422214">S'ha produït un error. Envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. No s'ha pogut esborrar; és possible que ho hagis de fer manualment.</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2743301740238894839">Inicia</translation>
 <translation id="2743387203779672305">Copia al porta-retalls</translation>
@@ -523,6 +534,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, seleccionat</translation>
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Aplicacions</translation>
+<translation id="2805760958323556153">El valor de la política ExtensionInstallForcelist no és vàlid. Contacta amb l'administrador.</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2815594810045873507">Prova un carregador amb més watts (W) o utilitza el carregador original.</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
@@ -530,6 +542,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2825619548187458965">Prestatge</translation>
 <translation id="2831035692318564937">Activat fins a l'alba</translation>
 <translation id="2834813915651407382">Obert fa poc</translation>
+<translation id="2838379631617906747">S'està instal·lant</translation>
 <translation id="2838589015763961627">Surt de la pantalla completa per canviar la mida</translation>
 <translation id="2840766858109427815">Ves a la pàgina següent</translation>
 <translation id="2841907151129139818">S'ha canviat a mode de tauleta</translation>
@@ -551,6 +564,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2883271196820422439">Reprèn les tecles del ratolí</translation>
 <translation id="2885950158625301909">Més informació</translation>
 <translation id="2891209721153296020">"Desselecciona"</translation>
+<translation id="2893701697603065178">Entorn de desenvolupament gestionat</translation>
 <translation id="2894949423239620203">És possible que el cable afecti el rendiment</translation>
 <translation id="2902312830803030883">Més accions</translation>
 <translation id="2914580577416829331">Captures de pantalla</translation>
@@ -575,6 +589,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2977598380246111477">Número següent</translation>
 <translation id="2980700224869191055">Emoticona de <ph name="EMOTICON_NAME" /></translation>
+<translation id="2981033191524548279">S'ha produït un error. Envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. És possible que això es corregeixi reiniciant i tornant-ho a provar.</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
 <translation id="2992272421330787632">Amaga tots els suggeriments de contingut multimèdia</translation>
 <translation id="2992327365391326550">El botó del micròfon del dispositiu està desactivat.</translation>
@@ -603,7 +618,9 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Desplega el menú</translation>
 <translation id="3087734570205094154">Part inferior</translation>
+<translation id="3088128611727407543">S'està preparant el perfil de l'aplicació...</translation>
 <translation id="3090214513075567547">Obre el menú contextual</translation>
+<translation id="3090819949319990166">No es pot copiar el fitxer crx extern a <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090989381251959936">Commuta <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">No entregat</translation>
 <translation id="3095995014811312755">versió</translation>
@@ -659,6 +676,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3269597722229482060">Clic amb el botó dret</translation>
 <translation id="3271554781793662131">Cerca per inserir</translation>
 <translation id="3274634049061007184">Consulta les aplicacions del telèfon</translation>
+<translation id="3279230909244266691">Aquest procés pot tardar uns quants minuts. S'està iniciant la màquina virtual.</translation>
 <translation id="3289364673986435196">Menú d'engegada</translation>
 <translation id="3289544412142055976">Actualment, les aplicacions de Linux no s'admeten</translation>
 <translation id="3289674678944039601">S'està carregant per adaptador</translation>
@@ -709,6 +727,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3444385531800624797">S'estan carregant els resultats</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
+<translation id="3449393517661170867">Finestra amb pestanyes nova</translation>
 <translation id="3454555520521576458">Es pot canviar la mida</translation>
 <translation id="3455468639467374593">Plantilla <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">Hi ha 1 dispositiu connectat al punt d'accés Wi-Fi de <ph name="DEVICE_NAME" /></translation>
@@ -742,6 +761,8 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3554928024630051016">Per afegir dispositius USB addicionals, prova de suprimir-ne un i, a continuació, connecta'n un de nou</translation>
 <translation id="3558768885091059911">Vols activar l'accés a la càmera i al micròfon?</translation>
 <translation id="3560174576767922131">Grava un vídeo</translation>
+<translation id="3563432852173030730">L'aplicació Quiosc no s'ha pogut baixar.</translation>
+<translation id="3563558822383875692">S'està configurant el DLC.</translation>
 <translation id="3563775809269155755">Activa el punt d'accés Wi‑Fi</translation>
 <translation id="3566240529365775567">Obert fa un moment</translation>
 <translation id="3571734092741541777">Configura</translation>
@@ -766,6 +787,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3615926715408477684">En activar les dades mòbils s'activarà el Bluetooth</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3616883743181209306">El menú s'ha mogut a l'extrem superior dret de la pantalla.</translation>
+<translation id="3618286417582819036">S'ha produït un error</translation>
 <translation id="3619536907358025872">Configuració de la captura de pantalla</translation>
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3621712662352432595">Configuració d'àudio</translation>
@@ -806,6 +828,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3712143870407382523">Tria una finestra per a aquest costat</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="3713734891607377840">Obre'l en acabar</translation>
+<translation id="3716065403310915079">Instal·lador de <ph name="VM_NAME" /></translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacions més no estan disponibles en aquest dispositiu.</translation>
 <translation id="3727231512028252576">No s'han pogut carregar els elements. Torna-ho a provar quan estiguis en línia.</translation>
 <translation id="3735740477244556633">Ordena per</translation>
@@ -823,6 +846,8 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3781910048497807059">Mou el focus a la subfinestra anterior</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Bloqueja</translation>
+<translation id="3788301286821743879">No s'ha pogut iniciar l'aplicació de quiosc.</translation>
+<translation id="3789841737615482174">Instal·la</translation>
 <translation id="3796215473395753611">Alt+fletxa amunt</translation>
 <translation id="3798670284305777884">Altaveu (intern)</translation>
 <translation id="3799080171973636491">Has premut la tecla de drecera de la lupa de pantalla completa. Vols activar-la?</translation>
@@ -853,6 +878,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3900355044994618856">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">S'està connectant amb <ph name="NAME" /></translation>
 <translation id="3904768293285573640">Finestra redimensionada en mosaic cap a l'esquerra</translation>
+<translation id="3923221004758245114">Vols suprimir <ph name="VM_NAME" /> del teu <ph name="DEVICE_TYPE" />? Se suprimiran totes les aplicacions i les dades de la màquina virtual.</translation>
 <translation id="3923494859158167397">No hi ha cap xarxa mòbil configurada</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. S'estan carregant els esdeveniments.</translation>
 <translation id="3927049937406914450">El temps no està disponible perquè l'accés a la ubicació està desactivat. Pots canviar-ho a la configuració.</translation>
@@ -905,6 +931,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4069532248403319695">Obre la pàgina Baixades</translation>
 <translation id="4072264167173457037">Senyal mitjà</translation>
 <translation id="4072805772816336153">Torna-ho a provar més tard</translation>
+<translation id="4077623680826964850">S'ha esgotat el temps d'espera en iniciar la VM o tornar a connectar-s'hi.</translation>
 <translation id="4086921558679520050">Activa l'interruptor del micròfon físic al dispositiu</translation>
 <translation id="4101772068965291327">Obre la pàgina d'inici</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
@@ -917,6 +944,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4123259114412175274">Per desbloquejar el Chromebook, comprova que el Bluetooth del telèfon estigui activat</translation>
 <translation id="4123868835475902435">Aquests són els conceptes bàsics. Continua a Explora, la nostra aplicació integrada, per obtenir consells i ajuda. Hi trobaràs consells per començar, ofertes especials i les funcions més recents del teu <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">No es poden reproduir aplicacions en continu en mode de tauleta. Torna-ho a provar en mode de portàtil.</translation>
+<translation id="4126375522951286587">Apaga <ph name="VM_NAME" /></translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C - Velocitat actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Activada fins a l'alba</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+fletxa dreta</translation>
@@ -933,6 +961,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4177913004758410636">{0,plural, =1{Actualitza el dispositiu en 1 dia}other{Actualitza el dispositiu en # dies}}</translation>
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4185671786623711291">Mou la finestra activa a l'escriptori de la dreta</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - Cerca de <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4189826113259617332">Desa totes les pàgines obertes de la finestra actual com a adreces d'interès en una carpeta nova</translation>
 <translation id="4190143678693626113">Estalvia temps responent ràpidament als missatges de text del telèfon des del Chromebook</translation>
 <translation id="4190780880566297084">Ignora la configuració de visualització de les aplicacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
@@ -959,6 +988,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4240486403425279990">Mode de visió general</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4247123849143712100">Actualitza i apaga</translation>
+<translation id="4249248555939881673">S'està esperant la connexió de xarxa...</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425364040945105958">No hi ha cap SIM</translation>
 <translation id="4261870227682513959">Mostra la configuració de notificacions. Les notificacions estan desactivades.</translation>
@@ -969,6 +999,8 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
 <translation id="4275283744500212192">Obre les opcions de disseny de la finestra</translation>
 <translation id="4275663329226226506">Multimèdia</translation>
+<translation id="4276856098224910511">No s'ha pogut instal·lar; l'actualització del sistema operatiu està pendent. Aplica les actualitzacions del sistema operatiu pendents, reinicia i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
+<translation id="4278779213160967034">Aquest procés pot tardar uns quants minuts. S'estan baixant fitxers.</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
 <translation id="4280601795273309128">Les actualitzacions de seguretat han finalitzat. Actualitza el dispositiu.</translation>
 <translation id="4283888303416325161">Introdueix la contrasenya per augmentar la seguretat</translation>
@@ -1015,11 +1047,14 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4406883609789734330">Subtítols instantanis</translation>
 <translation id="4412698727486357573">Centre d'ajuda</translation>
 <translation id="4412944820643904175">La funció <ph name="FEATURE_NAME" /> està desactivada.</translation>
+<translation id="4414242853388122273">Hi ha hagut un error en suprimir <ph name="VM_NAME" />. Torna-ho a provar.</translation>
 <translation id="4417647906073317561">Configuració de Sense distraccions. Defineix un temporitzador, una tasca i música per concentrar-te.</translation>
 <translation id="4418600384772451109">Tanca el tauler</translation>
 <translation id="4424159417645388645">Escriptori 5</translation>
 <translation id="4426817706804363424">Bona feina!</translation>
+<translation id="4426857487270413362">No s'han pogut baixar els fitxers de l'instal·lador. Comprova la connexió a Internet i que tinguis prou espai de disc lliure, i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="4430019312045809116">Volum</translation>
+<translation id="4439157218765614426">Prohibit per la política.</translation>
 <translation id="4441283832827406317">Les aplicacions estan ordenades per nom</translation>
 <translation id="4445159312344259901">Inicia sessió per desbloquejar</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificació important}other{# notificacions importants}}</translation>
@@ -1058,6 +1093,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4545950850562423083">Desa la pàgina actual com a adreça d'interès</translation>
 <translation id="4548482551627849548">Mou la finestra activa a l'escriptori de l'esquerra</translation>
 <translation id="4552748006424994716">Per evitar l'eco, pots escoltar el teu micròfon només a través d'auriculars amb cable.</translation>
+<translation id="4554591392113183336">L'extensió externa té la mateixa versió, o una d'anterior, en comparació amb l'existent.</translation>
 <translation id="4556953949326137018">Quan utilitzes accions suggerides, com ara "Afegeix a Calendar" o "Crea un document de Google", el contingut de l'àrea seleccionada s'envia als servidors de Google per suggerir accions, d'acord amb <ph name="LINK_TO_SERVICE_TERMS" />. No hi incloguis informació personal, sensible ni confidencial.</translation>
 <translation id="4560576029703263363">Activat</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1243,6 +1279,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5121628974188116412">Ves a la part inferior de la pàgina</translation>
 <translation id="5122517996953421795">Previsualització de <ph name="DESK_NAME" />. Escriptori inactiu.</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
+<translation id="5139112070765735680"><ph name="QUERY_NAME" />; cerca-ho a <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5144005092084035179">Vols canviar l'entrada d'àudio?</translation>
 <translation id="5147567197700016471">Desbloquejat</translation>
 <translation id="5150070631291639005">Configuració de la privadesa</translation>
@@ -1268,6 +1305,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5229343007215035173">Activa/desactiva la pantalla de privadesa</translation>
 <translation id="5229860525743792999">Suprimeix <ph name="ITEM_LABEL" /> del grup suggerit</translation>
 <translation id="5230516054153933099">Finestra</translation>
+<translation id="5233638681132016545">Pestanya nova</translation>
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
 <translation id="5238719049014159442">Obre/Tanca el menú d'aplicacions</translation>
@@ -1276,6 +1314,7 @@ També pots utilitzar les tecles de drecera. Primer, marca el text i, a continua
 <translation id="5245201184978705914">No es pot generar una transcripció</translation>
 <translation id="5251174953851719648">Actualitza el contingut</translation>
 <translation id="5253783950165989294">Connectat a un dispositiu anomenat <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="52550593576409946">L'aplicació Quiosc no es pot iniciar.</translation>
 <translation id="5256939106029293271">Prova el micròfon</translation>
 <translation id="5258528442992323769">No s'ha desat cap escriptori</translation>
 <translation id="5260676007519551770">Escriptori 4</translation>
@@ -1399,10 +1438,12 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> sol·licita la teva atenció.</translation>
+<translation id="5657667036353380798">L'extensió externa requereix que tingueu instal·lada la versió de Chrome <ph name="MINIMUM_CHROME_VERSION" /> o una de posterior.</translation>
 <translation id="5662075790140998213">Escriptori 10</translation>
 <translation id="5662709761327382534">Grava el micròfon <ph name="CURRENT_STATE" />. Prem Retorn per canviar la gravació del micròfon a <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">Activant</translation>
+<translation id="5671658447180261823">Suprimeix el suggeriment <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Utilitats</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
 <translation id="5675363643668471212">Objecte de prestatge</translation>
@@ -1502,6 +1543,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
 <translation id="5983567367406220847">A causa de la inactivitat, el punt d'accés Wi‐Fi s'ha desactivat.</translation>
 <translation id="598407983968395253">Utilitza la plantilla</translation>
+<translation id="5984334442529819751">Hi ha hagut un error en instal·lar el DLC (sovint cal reiniciar). Per obtenir més informació, comprova Configuració\&gt;\&gt;Sobre Chrome OS.</translation>
 <translation id="5986723678596105470">Uneix-me amb Google Meet</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
 <translation id="5990992855591814753">Mantén el ritme amb llistes de reproducció personalitzades per concentrar-se. Obtén YouTube Music i YouTube sense anuncis amb 3 mesos de YouTube Premium sense cost econòmic. S'hi apliquen condicions.</translation>
@@ -1570,6 +1612,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6166852626429024716">Cerca al dispositiu, en aplicacions, a la configuració i al web...</translation>
 <translation id="6168318496333165060">Obre l'aplicació Diagnòstic</translation>
 <translation id="6168622430237609329">Les teves aplicacions instal·lades</translation>
+<translation id="6177412385419165772">S'està suprimint...</translation>
 <translation id="6180193585172850042">Botó Enrere</translation>
 <translation id="6180651297859206670">Botó Endavant</translation>
 <translation id="6182592640011875895">Obre l'escriptori</translation>
@@ -1609,8 +1652,10 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6304076460080088478">Tanca o minimitza les finestres d'incògnit per cercar el que hi ha en pantalla amb Google Lens</translation>
 <translation id="6309219492973062892">Toca les icones 1-8 del prestatge o fes-hi clic</translation>
 <translation id="6315170314923504164">Veu</translation>
+<translation id="6317369057005134371">S'està esperant la finestra de l'aplicació...</translation>
 <translation id="6319058840130157106">Retrocedeix entre l'extrem inferior dret, el menú d'aplicacions, la barra d'adreces, la barra d'adreces d'interès, el lloc web que està obert i les baixades</translation>
 <translation id="6319503618073410818">Mostra els detalls al navegador</translation>
+<translation id="6324334979701518365">No es pot obrir l'aplicació de Chrome no admesa. Notifica aquest problema a l'administrador.</translation>
 <translation id="6324916366299863871">Edita la drecera</translation>
 <translation id="6325525973963619867">Error</translation>
 <translation id="6330012934079202188">S'estan mostrant les finestres de tots els escriptoris. Prem la tecla de fletxa amunt per mostrar les finestres de l'escriptori actual.</translation>
@@ -1632,6 +1677,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="639644700271529076">Bloq Maj està desactivat</translation>
 <translation id="6406458002328242616">Edita el temporitzador. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">Alt Gr</translation>
+<translation id="6414618057231176439">Selecciona quina versió de <ph name="VM_NAME" /> vols instal·lar.</translation>
 <translation id="6417265370957905582">Assistent de Google</translation>
 <translation id="641817663353603351">Re Pàg</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
@@ -1668,6 +1714,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6507618042428827377">Canvia al següent mètode d'introducció de text que estigui disponible</translation>
 <translation id="6508923215158854599">Assegura't que el Chromebook estigui connectat a la mateixa xarxa Wi-Fi que el dispositiu Chromecast.</translation>
 <translation id="6515727200518652613">S'ha perdut la càmera. S'està provant de tornar a connectar.</translation>
+<translation id="651753338596587143">Hi ha hagut un error en instal·lar les dependències de DLC. Prova de reiniciar i, si el problema continua, envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecciona la finestra que vols capturar</translation>
 <translation id="652139407789908527">Durant l'actualització, la pantalla es quedarà en blanc més temps del que és habitual (fins a un minut). No premis el botó d'engegada fins que no acabi.</translation>
 <translation id="6528179044667508675">No molestis</translation>
@@ -1762,6 +1809,7 @@ Instal·lació nova</translation>
 <translation id="6786750046913594791">Tanca la carpeta</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6792262051831399889">No disponible</translation>
+<translation id="6792351896138862473">No es pot obrir l'aplicació de quiosc no admesa. Notifica aquest problema a l'administrador.</translation>
 <translation id="679368458793552943">Amplia el zoom quan la lupa estigui activada</translation>
 <translation id="6794287755901682422">Aquest element té: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6797745268063125932">Mantén activada</translation>
@@ -1858,6 +1906,7 @@ Instal·lació nova</translation>
 <translation id="7130207228079676353">LES MÉS PROBABLES</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
 <translation id="7143207342074048698">Connectant</translation>
+<translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="7144942256906679589">Estat de la bateria</translation>
 <translation id="7145639536026937076">La bateria s'està carregant i està a un <ph name="PERCENTAGE" /> %. L'estalvi de bateria està activat.</translation>
 <translation id="7147587499155271409">No hi ha cap historial de navegació</translation>
@@ -1899,6 +1948,7 @@ Instal·lació nova</translation>
 <translation id="7331646370422660166">Alt+fletxa avall</translation>
 <translation id="7336943714413713812">Cerca a l'historial de navegació</translation>
 <translation id="7337660433630200387">Més de 10 minuts</translation>
+<translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7340731148882810149">Menú de clics automàtics</translation>
 <translation id="7346909386216857016">D'acord</translation>
 <translation id="7348093485538360975">Teclat en pantalla</translation>
@@ -1933,11 +1983,13 @@ Instal·lació nova</translation>
 <translation id="7440404390546433462">Cerca de Google</translation>
 <translation id="7441711280402516925">S'està reproduint · Canvia a la pestanya</translation>
 <translation id="7453330308669753048">El resultat de l'historial de cerques s'ha suprimit</translation>
+<translation id="7457027286267861992">No hi ha prou espai de disc. Allibera més espai de disc i torna-ho a provar. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="7459485586006128091">A causa d'un error intern, el punt d'accés Wi‐Fi s'ha desactivat. Prova de tornar a connectar-te d'aquí a uns quants minuts.</translation>
 <translation id="7461924472993315131">Fixa</translation>
 <translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
+<translation id="7478485216301680444">No s'ha pogut instal·lar l'aplicació de quiosc.</translation>
 <translation id="7488762544858401571">Editat</translation>
 <translation id="7489261257412536105">Entra a la pantalla completa o surt-ne</translation>
 <translation id="7490157877815329797">Per escoltar música sense anuncis i gaudir de música personalitzada per concentrar-se, prova YouTube Music Premium</translation>
@@ -1965,11 +2017,13 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7534543072325030705">El botó M'agrada indica que aquest grup suggerit t'agrada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Actualitza la finestra esquerra</translation>
+<translation id="7541773865713908457"><ph name="ACTION_NAME" /> amb l'aplicació <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">Les aplicacions de Linux i les finestres d'incògnit no s'admeten actualment. Les altres aplicacions es desaran.</translation>
 <translation id="7544300628205093162">La il·luminació a contrallum del teclat està activada</translation>
 <translation id="7548434653388805669">Ara toca anar a dormir</translation>
 <translation id="7551643184018910560">Fixa al prestatge</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
+<translation id="7559719679815339381">Espereu... L'aplicació Quiosc s'està actualitzant. No extraieu la memòria USB.</translation>
 <translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
 <translation id="7568154670718626683">Estàs provant de suprimir? Utilitza:</translation>
@@ -1994,6 +2048,8 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7621008024906456933">Configuració de Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Fes una pregunta</translation>
+<translation id="7629858978065675960">Resultat desconegut.</translation>
+<translation id="7632948528260659758">No s'han pogut actualitzar les aplicacions següents del quiosc:</translation>
 <translation id="7634648064048557203">La càmera s'ha ajustat a l'extrem inferior dret</translation>
 <translation id="7638572816805275740">Fes una gravació o una captura de pantalla de la finestra</translation>
 <translation id="7642106959537987271">mode d'inversió de colors</translation>
@@ -2015,6 +2071,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7684531502177797067">L'entrada per càmera s'ha establert en <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">L'has obert</translation>
 <translation id="7689817529363080918">Permet l'accés al micròfon a <ph name="APP1_NAME" />, a <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir al micròfon</translation>
+<translation id="7691073721729883399">No s'ha pogut activar el cryptohome de l'aplicació de quiosc.</translation>
 <translation id="7704000866383261579">Refés l'última acció</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">S'està creant el GIF</translation>
@@ -2055,12 +2112,14 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7830453190047749513">Pots personalitzar les accions dels botons, la velocitat del cursor i més per al teu dispositiu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7842569679327885685">Advertiment: funció experimental</translation>
 <translation id="7846634333498149051">Teclat</translation>
+<translation id="7847212883280406910">Premeu Ctrl + Alt + S per canviar a <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848989271541991537">S'ha mogut a la pàgina <ph name="PAGE_NUMBER" />, fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7850320739366109486">No molestis</translation>
 <translation id="7851039877802112575">Mou el focus a les finestres emergents i als quadres de diàleg</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Per utilitzar el dispositiu com a convidat, tanca la sessió i, a la part inferior de la pantalla, selecciona Navega com a convidat.</translation>
 <translation id="7866482334467279021">activat</translation>
+<translation id="7870790288828963061">No s'ha trobat cap aplicació de Quiosc amb una versió més nova. No hi ha res per actualitzar. Extraieu la memòria USB.</translation>
 <translation id="7872786842639831132">Desactivat</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
 <translation id="7884446017008693258">Configuració del punt d'accés Wi‐Fi</translation>
@@ -2119,11 +2178,13 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="799296642788192631">Pots fixar fitxers importants. Per fixar-ne un, passa el cursor per sobre d'un element o bé obre Fitxers i fes clic amb el botó dret en un element.</translation>
 <translation id="7994370417837006925">Inici de sessió múltiple</translation>
 <translation id="7995804128062002838">No s'ha pogut capturar la pantalla</translation>
+<translation id="7997828719430450286">Correcte.</translation>
 <translation id="8000020256436988724">Barra Google</translation>
 <translation id="8000066093800657092">No hi ha cap xarxa</translation>
 <translation id="8001755249288974029">Selecciona text del cursor al principi de la línia</translation>
 <translation id="8004512796067398576">Incrementa</translation>
 <translation id="8005527720597583355">Inicia la sessió de Sense distraccions</translation>
+<translation id="8008356846765065031">S'ha desconnectat Internet. Comproveu la connexió.</translation>
 <translation id="8015361438441228492">No s'ha pogut editar la tasca.</translation>
 <translation id="8027187124910699148">Reprèn el grup suggerit</translation>
 <translation id="802782383769312836">Escriptori anterior: <ph name="DESK_NAME" />. Escriptori <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
@@ -2171,6 +2232,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8155628902202578800">Obre el quadre de diàleg d'informació per a <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">S'està utilitzant <ph name="LOCALE_NAME" /></translation>
 <translation id="8168435359814927499">Contingut</translation>
+<translation id="8169177848833352618">Aquest equip no compleix els requisits per instal·lar Bruschetta. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Ansa superior esquerra seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="81817143961839203">No s'ha pogut inserir la imatge</translation>
 <translation id="8185090165691050712">Activa/Desactiva el menú per canviar la mida del mode de bloqueig</translation>
@@ -2193,6 +2255,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8239034820133090126">Activa l'escriptori a la dreta</translation>
 <translation id="8241650983304689286">Afegeix la pestanya a la nova vista dividida</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, <ph name="BATTERY_STATUS" /> de bateria al telèfon</translation>
+<translation id="8249048954461686687">Carpeta OEM</translation>
 <translation id="825129991941217170">Mostra tot el contingut de Google Drive</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
 <translation id="8262312463845990408">Commuta la reproducció</translation>
@@ -2208,6 +2271,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8314772463905284467">Bloq Maj està activat</translation>
 <translation id="8315514906653279104">S'està activant...</translation>
 <translation id="8331351032546853669">Baixada pendent</translation>
+<translation id="8335587457941836791">Deixa de fixar al prestatge</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="834414266279889566">Mala sortida</translation>
 <translation id="8345019317483336363">S'ha seleccionat <ph name="WINDOW_TITLE" /> finestra</translation>
@@ -2237,10 +2301,13 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8433186206711564395">Configuració de la xarxa</translation>
 <translation id="8433977262951327081">La drecera per mostrar el quadre d'ajuda amb el menú d'opcions d'introducció al prestatge ha canviat. Fes servir <ph name="NEW_SHORTCUT" /> en lloc de la drecera <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Obre l'eina de suggeriments</translation>
+<translation id="8440630305826533614">Aplicacions per a Linux</translation>
 <translation id="8443879455002739353">"Copia"</translation>
 <translation id="8444246603146515890">L'escriptori <ph name="DESK_TITILE" /> està activat</translation>
 <translation id="8446884382197647889">Més informació</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
+<translation id="8458259704995116343">No s'ha pogut iniciar la VM.</translation>
+<translation id="84613761564611563">La interfície d'usuari per configurar la xarxa s'ha sol·licitat. Espera…</translation>
 <translation id="8462305545768648477">Tanca Escolta la selecció</translation>
 <translation id="8466665972451889002">Mostra els elements de <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">venç el dia <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2250,6 +2317,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8480418399907765580">Mostra la barra d’eines</translation>
 <translation id="8487660088084188539">Si actives aquestes funcions, és possible que el text d'entrada, el contingut del document i l'URL de la pàgina web s'enviïn als servidors de Google. Aquesta informació s'utilitza per generar suggeriments d'escriptura i resums, respondre a preguntes i millorar el producte de conformitat amb les <ph name="LINK_TO_SERVICE_TERMS" />. No hi incloguis informació personal, sensible ni confidencial.</translation>
 <translation id="8487699605742506766">Punt d'accés Wi‑Fi</translation>
+<translation id="8490896350101740396">S'han actualitzat les aplicacions de Quiosc següents: <ph name="UPDATED_APPS" />. Reinicieu el dispositiu per completar el procés d'actualització.</translation>
 <translation id="8491237443345908933">Obre l'enllaç en una pestanya nova</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" />. La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" />. Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8507563469658346379">Tothom, <ph name="REMAINING_TIME" /></translation>
@@ -2260,6 +2328,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="851660987304951246">Utilitza Ajuda'm a llegir per resumir contingut o fer preguntes ràpidament</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>
 <translation id="8519329096920173967">Cerca a la pantalla amb Google Lens</translation>
+<translation id="8527869672961320915">Aplicacions de <ph name="VM_NAME" /></translation>
 <translation id="8535393432370007982">Desfés l'ordenació per color</translation>
 <translation id="8536886494750559755">Mostra la configuració de Quick Share. Visible per a tothom durant <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">S'ha copiat el text al porta-retalls</translation>
@@ -2287,6 +2356,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8627191004499078455">Connectat a <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Configuració d'accessibilitat</translation>
 <translation id="8634326941504371857">Els teus fitxers en aquest dispositiu i a Google Drive</translation>
+<translation id="8636284842992792762">S'estan inicialitzant les extensions...</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
 <translation id="8638637208069328956">Activa/desactiva el micròfon</translation>
 <translation id="8639760480004882931">Queda un <ph name="PERCENTAGE" /></translation>
@@ -2320,6 +2390,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les pulsacions</translation>
 <translation id="8735678380411481005">Color de la retroil·luminació del teclat</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: s'està activant...</translation>
+<translation id="8742395827132970586">La instal·lació ha fallat; s'està esborrant</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8751299148074971734">Continua així!</translation>
@@ -2330,6 +2401,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8759408218731716181">No es pot configurar l'inici de sessió múltiple</translation>
 <translation id="8763883995157866248">Posa el dispositiu en mode de repòs</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, aplicació instal·lada, bloquejada</translation>
+<translation id="8782565991310229362">S'ha cancel·lat l'inici de l'aplicació de quiosc.</translation>
 <translation id="8785070478575117577">Connecta't a <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Avança entre l'extrem inferior dret, el menú d'aplicacions, la barra d'adreces, la barra d'adreces d'interès, el lloc web que està obert i les baixades</translation>
@@ -2357,6 +2429,8 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8860366331836346216">Afegeix una eSIM</translation>
 <translation id="8869149849311827122">Confirmes que vols desactivar el control del cursor del ratolí?</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
+<translation id="8871551568777368300">Configuració fixada per l'administrador</translation>
+<translation id="8872155268274985541">S'ha trobat un fitxer de manifest d'actualització extern per a Quiosc no vàlid. No s'ha pogut actualitzar l'aplicació Quiosc. Extraieu la memòria USB.</translation>
 <translation id="8873203135446552888">Confirma que vols desactivar el ratolí tàctil integrat</translation>
 <translation id="8874184842967597500">No connectada</translation>
 <translation id="8875021410787719674">Mou-te entre l'extrem inferior dret, el menú d'aplicacions, la barra d'adreces, la barra d'adreces d'interès, el lloc web que està obert i les baixades</translation>
@@ -2371,6 +2445,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="890616557918890486">Canvia la font</translation>
 <translation id="8909138438987180327">La bateria està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="8916866375277139011">Amaga els elements de <ph name="GROUP_NAME" /></translation>
+<translation id="8921369299636221117">El servei de porteria no està disponible.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistent de Google no parla aquest idioma.</translation>
 <translation id="8926951137623668982">El prestatge està sempre amagat</translation>
@@ -2389,6 +2464,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8956420987536947088">Obre les finestres i les aplicacions anteriors</translation>
 <translation id="8959380109429710384">Has premut la tecla de drecera de la lupa de pantalla completa. Fes servir Ctrl+Alt+fletxes per moure't per la visualització ampliada.</translation>
 <translation id="8964525410783593407">1 h</translation>
+<translation id="8967548289042494261">Suprimeix <ph name="VM_NAME" /></translation>
 <translation id="8970887620466824814">Hi ha hagut un error.</translation>
 <translation id="8973885907461690937">Situa el focus a la icona del menú</translation>
 <translation id="8980862970816311842">Mou la icona d'una aplicació a dins o fora d'una carpeta a la quadrícula d'aplicacions</translation>

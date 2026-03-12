@@ -155,6 +155,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2586406160782125153">Bydd hyn yn dileu eich data pori o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Wedi methu â storio'r gosodwr sydd wedi'i lawrlwytho dros dro. Gwall: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="263447411082773721">Cadwch eich cyfrineiriau, nodau tudalen a hanes wedi'u cysoni'n berffaith ar draws dyfeisiau. Cael mynediad hawdd at y nodweddion rydych yn eu hadnabod ac yn eu caru trwy ddiweddaru eich porwr diofyn i Chrome. Bydd Chrome yn cael ei binio i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Mae Chrome yn gwirio i sicrhau bod gan eich porwr y gosodiadau mwyaf diogel yn rheolaidd. Byddwn yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth.</translation>
 <translation id="2652691236519827073">Agor Dolen mewn Tab Chrome Newydd</translation>
@@ -233,6 +234,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="3327226547491422998">Yn ddiweddarach, gall Chrome ofyn a ydych chi am ddefnyddio gwybodaeth sydd wedi'i chadw i awtolenwi ffurflenni i chi</translation>
 <translation id="3352986031709923790">cornel dde uchaf yr ardal chwilio: <ph name="RIGHT" />% i'r dde, <ph name="TOP" />% ar y brig</translation>
 <translation id="3360895254066713204">Helpwr Chrome</translation>
+<translation id="3373752068427117404">Mae llwybrau byr yn rhan o rai nodweddion ac estyniadau Chrome. Gallwch ddewis eu troi yn ôl ymlaen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Bydd Chrome yn ail-lansio nawr}=1{Bydd Chrome yn ail-lansio mewn 1 eiliad}two{Bydd Chrome yn ail-lansio mewn # eiliad}few{Bydd Chrome yn ail-lansio mewn # eiliad}many{Bydd Chrome yn ail-lansio mewn # eiliad}other{Bydd Chrome yn ail-lansio mewn # eiliad}}</translation>
 <translation id="3380249972812870825">I agor Gemini yn Chrome, pwyswch <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Bu gwall system weithredu wrth osod. Lawrlwythwch Google Chrome eto.</translation>
@@ -699,6 +701,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8064965390968184078">1. Cliciwch <ph name="BUTTON_LABEL" /> isod
 2. Cliciwch <ph name="BUTTON_2" /> yn eich gosodiadau Windows
 3. Cliciwch <ph name="BUTTON_3" /> yn yr hysbysiad Windows i binio Chrome i'ch bar tasgau i gael mynediad cyflym</translation>
+<translation id="8074398340364918139">I chwilio nodwedd neu estyniad Chrome penodol, teipiwch ei lwybr byr yn y bar cyfeiriad, ac yna'r allwedd bysellfwrdd a ddewiswyd gennych</translation>
 <translation id="8077579734294125741">Proffiliau Chrome Eraill</translation>
 <translation id="8086881907087796310">Wedi methu â gosod oherwydd nad yw'ch cyfrifiadur yn bodloni'r gofynion caledwedd sylfaenol.</translation>
 <translation id="8113883687556086139">Cadarnhewch mai chi sydd yno i ddefnyddio a chadw data Chrome yn eich cyfrif,<ph name="ACCOUNT_EMAIL" /></translation>
@@ -707,6 +710,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8129812357326543296">Ynghylch &amp;Google Chrome</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="8162006532256575008">Defnyddio Chrome Heb Gyfrif</translation>
+<translation id="8172231188687329735">Cael yr ap Chrome i gadw cyfrineiriau wrth fynd</translation>
 <translation id="8177472873527554730">Methu â dod o hyd i gynnwys ar y dudalen</translation>
 <translation id="8221491193165283816">Rydych fel arfer yn rhwystro hysbysiadau. I ganiatáu i'r wefan hon eich hysbysu, cliciwch yma.</translation>
 <translation id="8253851811470049684">Agor dolenni yn Chrome o unrhyw ap a chadw'r porwr yn hygyrch ar eich bar tasgau</translation>
@@ -734,6 +738,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 
 Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os byddwch yn allgofnodi nawr, bydd nodau tudalen sydd heb eu cadw yn cael eu dileu.</translation>
 <translation id="8433638294851456451">I anfon rhif oddi yma i'ch ffôn Android, mewngofnodwch i Chrome ar y ddwy ddyfais.</translation>
+<translation id="8458117863387545390">Cael Chrome ar eich ffôn</translation>
 <translation id="8496177819998570653">Rheolwr C&amp;yfrineiriau Google</translation>
 <translation id="8498858610309223613">Cymhwyswyd diweddariad diogelwch arbennig ar gyfer Google Chrome yn unig. Ailgychwynnwch nawr a byddwn yn adfer eich tabiau.</translation>
 <translation id="8516431725144212809">Eich diddordebau fel yr amcangyfrifir gan Chrome</translation>
@@ -787,7 +792,6 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="8999208279178790196">{0,plural, =0{Mae diweddariad Chrome ar gael}=1{Mae diweddariad Chrome ar gael}two{Mae diweddariad Chrome wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}}</translation>
 <translation id="9010418943148193727">Newidiwyd eich peiriant chwilio diofyn o'r tu allan i Chrome. Er mwyn eich amddiffyn, gwnaeth Chrome ei ailosod.</translation>
 <translation id="9014771989710951291">Mae mwy nag un sefydliad yn rheoli Chrome</translation>
-<translation id="9024318700713112071">Gosod Chrome fel porwr diofyn</translation>
 <translation id="9066987883552592250">Cau Gemini yn Chrome Canary</translation>
 <translation id="9090566250983691233">Dysgu pam fod Chrome yn rhwystro rhai ffeiliau</translation>
 <translation id="9106236359747881194">Dewiswch destun i'w chwilio</translation>

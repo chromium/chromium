@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Siyakwamukela futhi!</translation>
 <translation id="2015722694326466240">Ukuze ubone amaphasiwedi, kufanele uqale ngokusetha ikhodi yokudlula kudivayisi yakho.</translation>
 <translation id="201759455285471444">Nweba iqembu lethebhu.</translation>
-<translation id="202070562065520783">Ngichazele lokhu</translation>
 <translation id="2044394949148788042">Vula igridi yethebhu</translation>
 <translation id="2044681667265133332">I-akhawunti ethi <ph name="USER_EMAIL" /> iphethwe yi-<ph name="HOSTED_DOMAIN" />, engase ikwazi ukubona olunye ulwazi. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">into entsha</translation>
@@ -1614,6 +1613,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="672735642903863329">Thola amabhukhimakhi akho, amaphasiwedi, nokuningi kuwo wonke amadivayisi akho.</translation>
 <translation id="6729493062119577923">Umsebenzi weqembu lethebhu owabiwe</translation>
 <translation id="6732087373923685049">ikhamera</translation>
+<translation id="6736243959894955139">Ikheli</translation>
 <translation id="6746338529702829275">Buyekeza idatha ye-akhawunti yakho</translation>
 <translation id="6750456911389438250">{count,plural, =1{Into yomlando engu-{count} engenisiwe}one{Izinto zomlando ezingu-{count} ezingenisiwe}other{Izinto zomlando ezingu-{count} ezingenisiwe}}</translation>
 <translation id="6755200887046212842">Phatha ama-akhawunti</translation>
@@ -1820,7 +1820,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="7537586195939242955">Uxolo, ukudlula kwakho akukwazi ukufakwa ku-Passbook ngalesi sikhathi.</translation>
 <translation id="754655535278952384">Imakwe ngo-<ph name="TIME" /></translation>
 <translation id="7554645225856321710">Vala Konke</translation>
-<translation id="7554791636758816595">Ithebhu entsha</translation>
 <translation id="7557508262441527045">Uphume ngemvume</translation>
 <translation id="7561196759112975576">Njalo</translation>
 <translation id="7561982940498449837">Vala imenyu</translation>
@@ -2250,7 +2249,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="8988107725234939347">I-<ph name="WEBSITE_TITLE" />, isayithi ephiniwe</translation>
 <translation id="8990960056509724223">Ifayela alikwazanga ukulondoloza ngenxa yezinqubomgomo zenhlangano yakho</translation>
 <translation id="8998289560386111590">Ayitholakali kudivayisi yakho</translation>
-<translation id="9000532564152265066">Wonke Amathebhu</translation>
 <translation id="9003677638446136377">Hlola futhi</translation>
 <translation id="9006453925669499173">Imenyu → Ithebhu Entsha ye-Incognito</translation>
 <translation id="9008201768610948239">Ziba</translation>

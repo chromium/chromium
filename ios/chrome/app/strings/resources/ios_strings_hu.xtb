@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Üdvözöljük ismét!</translation>
 <translation id="2015722694326466240">A jelszavak megtekintéséhez előbb be kell állítania az eszközön a biztonsági kódot.</translation>
 <translation id="201759455285471444">Lapcsoport kibontása.</translation>
-<translation id="202070562065520783">Magyarázd ezt el nekem</translation>
 <translation id="2044394949148788042">Nyissa meg a laprácsot</translation>
 <translation id="2044681667265133332">A(z) <ph name="USER_EMAIL" /> fiókot a(z) <ph name="HOSTED_DOMAIN" /> kezeli, amely megtekinthet bizonyos adatokat. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">új elem</translation>
@@ -1614,6 +1613,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="672735642903863329">Bármely eszközéről elérheti könyvjelzőit, jelszavait és egyéb tartalmait.</translation>
 <translation id="6729493062119577923">Megosztott lapcsoport tevékenységei</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Cím</translation>
 <translation id="6746338529702829275">A fiókadatok ellenőrzése</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} előzményelem lett importálva}other{{count} előzményelem lett importálva}}</translation>
 <translation id="6755200887046212842">Fiókok kezelése</translation>
@@ -1820,7 +1820,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7537586195939242955">Sajnos jelenleg nem lehet létrehozni a kupont a Passbookban.</translation>
 <translation id="754655535278952384">Ellenőrizve ekkor: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Az összes bezárása</translation>
-<translation id="7554791636758816595">Új lap</translation>
 <translation id="7557508262441527045">Kijelentkezve</translation>
 <translation id="7561196759112975576">Mindig</translation>
 <translation id="7561982940498449837">Menü bezárása</translation>
@@ -2250,7 +2249,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kitűzött webhely</translation>
 <translation id="8990960056509724223">Nem sikerült menteni a fájlt a szervezeti házirendek miatt</translation>
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
-<translation id="9000532564152265066">Összes lap</translation>
 <translation id="9003677638446136377">Ellenőrzés újra</translation>
 <translation id="9006453925669499173">Menü → Új inkognitó lap</translation>
 <translation id="9008201768610948239">Mellőzés</translation>

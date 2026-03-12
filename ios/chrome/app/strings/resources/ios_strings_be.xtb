@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">З вяртаннем!</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="201759455285471444">Разгарнуць групу ўкладак.</translation>
-<translation id="202070562065520783">Растлумач гэта мне</translation>
 <translation id="2044394949148788042">Адкрыйце сетку ўкладак</translation>
 <translation id="2044681667265133332">Уліковым запісам <ph name="USER_EMAIL" /> кіруе дамен "<ph name="HOSTED_DOMAIN" />", які можа праглядаць пэўную інфармацыю. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новы элемент</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">Выкарыстоўвайце свае закладкі, паролі і іншае на ўсіх сваіх прыладах.</translation>
 <translation id="6729493062119577923">Дзеянні ў абагуленай групе ўкладак</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адрас</translation>
 <translation id="6746338529702829275">Праверце даныя ўліковага запісу</translation>
 <translation id="6750456911389438250">{count,plural, =1{Імпартаваны {count} элемент гісторыі}one{Імпартаваны {count} элемент гісторыі}few{Імпартаваны {count} элементы гісторыі}many{Імпартаваны {count} элементаў гісторыі}other{Імпартаваны {count} элемента гісторыі}}</translation>
 <translation id="6755200887046212842">Кіраваць уліковымі запісамі</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
 <translation id="754655535278952384">Праверана <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Закрыць усе</translation>
-<translation id="7554791636758816595">Новая ўкладка</translation>
 <translation id="7557508262441527045">Выкананы выхад</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="7561982940498449837">Закрыць меню</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, замацаваны сайт</translation>
 <translation id="8990960056509724223">Не ўдалося захаваць файл з-за правіл вашай арганізацыі</translation>
 <translation id="8998289560386111590">Недаступна на вашай прыладзе</translation>
-<translation id="9000532564152265066">Усе ўкладкі</translation>
 <translation id="9003677638446136377">Паўтарыць праверку</translation>
 <translation id="9006453925669499173">Меню → Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="9008201768610948239">Ігнараваць</translation>

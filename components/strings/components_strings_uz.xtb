@@ -81,6 +81,7 @@
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Butun ekran rejimidan chiqish uchun ekranni yuqori chetidan pastga torting va “Orqaga” tugmasini bosing.</translation>
 <translation id="1133418583142946603">Joriy varaqqa kiritish</translation>
+<translation id="1137064693271855979">Barcha yozishmalar uchun yaxshiroq javoblar olish uchun tegishli ochiq varaqlar ulashilsinmi?</translation>
 <translation id="1138458427267715730">Internetdagi istalgan saytda narx tushganda bildirishnoma oling</translation>
 <translation id="1142713751288681188">Qogʻoz turi</translation>
 <translation id="1142965388643537393">Sayohat haqida axborot</translation>
@@ -238,6 +239,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1363015776076529485">Tanlab ishlatiladigan toʻlov usullari roʻyxati toʻliq hajmda ochildi.</translation>
 <translation id="1363028406613469049">Treking</translation>
 <translation id="1364822246244961190">Bu siyosat bloklangan, qiymati hisobga olinmaydi.</translation>
+<translation id="1367909869526928761">AI rejimi ochiq varaqlardan qanday foydalanishi mumkinligini tanlang</translation>
 <translation id="1368318639262510626">Dino oʻyini. Pikselli dinozavr kaktuslar va pterodaktillarga chap berib, choʻl orqali oʻtadi. Ovozli koʻrsatmani eshitganingizda, toʻsiqdan sakrab oʻtish uchun probel tugmasini bosing.</translation>
 <translation id="1374468813861204354">takliflar</translation>
 <translation id="1375198122581997741">Versiya haqida</translation>
@@ -593,6 +595,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1945968466830820669">Tashkilot hisobingiz xavf ostida va o‘g‘irlanishi mumkin. Chromium parolingizni hoziroq o‘zgartirishni tavsiya etadi.</translation>
 <translation id="1946849748901605102">12 x 15 in</translation>
 <translation id="1947454675006758438">Yuqori oʻngdan steplerlash</translation>
+<translation id="1950524225823308149">Har bir yozishma uchun ochiq varaqlarni ulashish</translation>
 <translation id="1953729392594614704"><ph name="TOPIC" /> bloklansa, unga aloqador boshqa mavzular ham bloklanadi (hatto mavzu faol boʻlsa ham)</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">Toʻlov usuli qoʻshish</translation>
@@ -645,6 +648,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2040894699575719559">Joylashuv bloklandi</translation>
 <translation id="2041788246978549610">Mavjud mikrofonlardan foydalanish (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tarnov 7</translation>
+<translation id="2043091580538548438">Bu yerga kiritilgan saytlar, hatto varaqlar ochiq boʻlsa ham, javoblar uchun ishlatilmaydi.</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Kitob sotuvchilar</translation>
 <translation id="2048261947532620704">Sahifa tarjima qilinmoqda</translation>
@@ -1126,6 +1130,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2768397283109119044">Siz <ph name="DOMAIN" /> domenini ochishga urindingiz, ammo server bu domen nomi uchun yaroqsiz sertifikat taqdim qildi. Domen nomi IP manzil yoki ichki host nomi bilan band qilinadi.</translation>
 <translation id="2770159525358613612">Fayllarni qaytadan yuklang</translation>
 <translation id="277133753123645258">Yetkazib berish usuli</translation>
+<translation id="2772464848856512911">Har bir yozishma uchun ochiq varaqlar ulashilsinmi?</translation>
 <translation id="277499241957683684">Qurilma ro‘yhatdan o‘tkazilmagan</translation>
 <translation id="2775884851269838147">Birinchi bosma sahifa</translation>
 <translation id="277828055419948999">Chromium standart avtomatik kiritish oʻtkazib yuborishi mumkin murakkab maydonlarni avtomatik kiritishi mumkin</translation>
@@ -1260,6 +1265,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3005723025932146533">Saqlangan nusxani ko‘rsatish</translation>
 <translation id="300580149047131921">Yaqinda ishlatilgan</translation>
 <translation id="3006864083554020786">uy manzili</translation>
+<translation id="3007110814003834680">Sayt istisnolari</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, mavjud amallarni kezish uchun Tab, tanlangan amalni bajarish uchun Enter tugmasini bosing.</translation>
 <translation id="3010991137650052245">Bu saytda <ph name="PERMISSION" /> ishlatish uchun <ph name="SHORT_PRODUCT_NAME" />ga ruxsat berish kerak</translation>
 <translation id="3013711734159931232">Uy uchun mahsulotlar</translation>
@@ -1316,6 +1322,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3105172416063519923">Obyekt identifikatori:</translation>
 <translation id="3105223248029915046">Toʻlov tariflari muvofiqlik asosida taqdim etiladi.
 Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov sozlamalarini<ph name="END_LINK" /> oching</translation>
+<translation id="3105477369449879017">Avtomatik kiritish xizmati provayderi</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS sozlamalar himoyasini tekshirish<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Oʻrta tarnov</translation>
 <translation id="3109061346635850169">Yuz va tana parvarishi</translation>
@@ -1372,6 +1379,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Qurilmadan foydalanish haqidagi maʼlumotlarga kirish</translation>
 <translation id="3180358318770512945">Tarbiya</translation>
+<translation id="3181543705317761806">Internetdan kontekstli AI javoblarini oling.</translation>
 <translation id="3182185041786697613">Xavfsizlik kodi saqlansinmi?</translation>
 <translation id="3185635157430775689">Kompyuter qismlari</translation>
 <translation id="3190736958609431397">Kuzatilmasin</translation>
@@ -1582,6 +1590,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3532624859962632484">Mahalliy tarmoqdagi boshqa qurilmalarga ruxsat</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> mikrofoningizdan foydalanmoqchi</translation>
 <translation id="3533328374079021623">Pochta qutisi 5</translation>
+<translation id="3535233022130619049">Birlamchi holatda ochiq varaqlarni ulashish orqali har bir yozishmada tezroq va moslangan javoblar oling. Buni istalgan vaqtda Chrome sozlamalaridan oʻzgartirish mumkin.</translation>
 <translation id="3536227077203206203">Shu safar ruxsat berildi</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Ekran shakli (sahifali)</translation>
@@ -1760,6 +1769,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="3791118028061680614">Ilovalarni almashtirmasdan toʻlang</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" />)</translation>
+<translation id="3792251736135878332">Barcha yozishmalarda javoblarni moslash uchun aloqador ochiq varaqlar ishlatiladi</translation>
 <translation id="3792826587784915501">Kult va indi filmlar</translation>
 <translation id="3793574014653384240">Oxirgi ishdan chiqishlar va ularning sabablari</translation>
 <translation id="3795624560191557077">Yaqinda oʻzgartirilgan parolingiz ommaviy oshkor qilinganligi aniqlandi. Muammo yuz bersa, hisobga Google Paroller menejeri orqali kirishingiz mumkin.</translation>
@@ -1926,6 +1936,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="406358100705415968">Himoya kiyimlari va jihozlari</translation>
 <translation id="4065429683324339709">Sozlamalarni oʻzgartirish uchun shaxsingizni tasdiqlang</translation>
 <translation id="4065659219963895623">Restoranlar</translation>
+<translation id="4065914898561361692">Tegishli ochiq varaqlar avtomatik ulashilmasin (birlamchi)</translation>
 <translation id="4067774859633143413">Butun ekrandan chiqish va yuklanmani ochish uchun |<ph name="ACCELERATOR" />| tugmasini bosib turing</translation>
 <translation id="4067947977115446013">To‘g‘ri manzilni kiriting</translation>
 <translation id="4072486802667267160">To‘lovni amalga oshirishda xatolik yuz berdi. Qayta urinib ko‘ring.</translation>
@@ -2141,6 +2152,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4358059973562876591">DnsOverHttpsMode qoidasi bilan xatolik sababli siz tanlagan andozalar tatbiq qilinmasligi mumkin.</translation>
 <translation id="4358461427845829800">To‘lov usullarini boshqarish</translation>
 <translation id="4359160567981085931">Hozirgina shubhali saytda parol kiritdingiz. Chrome yordamga tayyor. Parolni almashtirish va Googlega bu hisob xavf ostida ekanini xabar qilish uchun Hisobni himoyalash ustiga bosing.</translation>
+<translation id="4359853272024672680">AI rejimi qidiruvi</translation>
 <translation id="4363222835916186793">Bu mahsulot uchun ogohlantirishlar oʻchirilgan</translation>
 <translation id="4366943895537458493">Tablichka</translation>
 <translation id="4369179505195332608">Haydovchilik guvohnomasini tahrirlash</translation>
@@ -2489,6 +2501,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4957080528849277028">Chrome tarixini koʻrish tugmasi, Chrome sozlamalari orqali brauzer tarixini koʻrish va boshqarish uchun faollashtiring</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 ta sayt}other{+ # ta sayt}}</translation>
 <translation id="4958444002117714549">Ro‘yxatni yoyish</translation>
+<translation id="4960061221656117224">Saytlarni istisno qilish</translation>
 <translation id="4960203958361543136">Qidiruv vositasini tanlang</translation>
 <translation id="4961708452830821006">Mikrofondan foydalanishi uchun Chrome brauzeringizga <ph name="LINK" />ga kirishi ruxsat bering.</translation>
 <translation id="4963413887558778009">Landshaft dizayni</translation>
@@ -2498,6 +2511,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4968665849807487749">Barcha displeylaringizda oynalarni boshqarishni soʻrashingiz mumkin</translation>
 <translation id="4969341057194253438">Yozuvni oʻchirish</translation>
 <translation id="4973922308112707173">Yuqoridan 2 ta teshik ochish</translation>
+<translation id="4975266898030581282">Tegishli ochiq varaqlar hisobga olinmoqda</translation>
 <translation id="4976702386844183910">Oxirgi tashrif: <ph name="DATE" /></translation>
 <translation id="4983145717627482381">Gid bilan turlar va sherikli taʼtillar</translation>
 <translation id="498323057460789381">Sxemani tekshirish xatosi: <ph name="ERROR" /></translation>
@@ -2612,6 +2626,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5147633291963801297">Yon panelda narx tushishlarini koʻring</translation>
 <translation id="5148809049217731050">Old tomonida</translation>
 <translation id="5148889558173091794"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> korporativ siyosatga zidligi uchun tashkilotingiz tomonidan bloklangan. <ph name="BEGIN_LEARN_MORE_LINK" />Bu ogohlantirish haqida batafsil<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5151771770689442215">Google Qidiruv tarixim</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">Koʻp tarmoqli sotuvchilar va filial doʻkonlar</translation>
 <translation id="5158275234811857234">Muqova</translation>
@@ -2684,6 +2699,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" sharti "<ph name="DATA_CONTROLS_RESTRICTION" />" uchun muvofiq emas</translation>
 <translation id="527191520368130807">Polyak</translation>
 <translation id="5273658854610202413">Diqqat: Bu parametr birlashadigan lugʻat parametrlariga oid emasligi sababli PolicyDictionaryMultipleSourceMergeList parametriga birlashtirilmadi.</translation>
+<translation id="5274074150785993864">Chrome javoblarni moslash uchun ochiq varaqlar, sahifa kontenti va URL manzillarni Googlega yuboradi</translation>
 <translation id="5278778426231952189">Hozir yuklash</translation>
 <translation id="5279286380302340275">Yuklanmalarni boshqarish</translation>
 <translation id="5282008206326321696">{count,plural, =0{# ta bukmark}=1{# ta bukmark}other{# ta bukmark}}</translation>
@@ -2735,6 +2751,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5351548097010183514">Qurilish mollari</translation>
 <translation id="5354143049423063163">Xedj fondlari</translation>
 <translation id="5355557959165512791"><ph name="SITE" /> sayti ochilmadi, bu sayt bekor qilingan sertifikatdan foydalanayotgan bo‘lishi mumkin. Bunday xatolik tarmoq xatoligi va saytga hujumlar bo‘layotganda yuz beradi, lekin keyinroq sayt ishlab ketishi mumkin.</translation>
+<translation id="5359752295193133096">Tezroq va moslangan javoblar uchun birlamchi holatda tegishli ochiq varaqlarni ulashing.</translation>
 <translation id="5360706051680403227">Chiroqlar va yoritish</translation>
 <translation id="536296301121032821">Tartib-qoida parametrlarini saqlab bo‘lmadi</translation>
 <translation id="5363148545938487338">Salesforce</translation>
@@ -2878,6 +2895,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5554520618550346933">Paroldan foydalansangiz, u internetga chiqib ketgan boʻlsa, Chrome sizni ogohlantiradi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
+<translation id="5556843284826862956">Google AI xodimlar tomonidan yaxshilanishi uchun yozishmalar koʻrilishi mumkin</translation>
 <translation id="5558083606899411167">Havoni iqlimlashtirish</translation>
 <translation id="5558125320634132440">Bu sayt tarkibida voyaga yetganlar uchun kontent borligi sababli bloklandi</translation>
 <translation id="5559311991468302423">Manzilni oʻchirish</translation>
@@ -3116,6 +3134,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="5968022600320704045">Hech narsa topilmadi</translation>
 <translation id="5968400720580217226">AI rejimi</translation>
 <translation id="5969199813874624822">Saqlash va narxni kuzatish</translation>
+<translation id="5969933937005244170">Tegishli ochiq varaqlar faqat ularni yozishmada ulashsangiz ishlatiladi</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Oltinchi oʻram</translation>
 <translation id="5975083100439434680">Kichiklashtirish</translation>
@@ -3345,6 +3364,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6327065120806001832">mahalliy tarmoqqa ruxsat</translation>
 <translation id="6328639280570009161">Tarmoqni oldindan aniqlash funksiyasidan foydalanib ko‘ring</translation>
 <translation id="6329815962353376655">&lt;Savolni yozing&gt;</translation>
+<translation id="6331597954316706229">Eng moslashtirilgan javoblar uchun barcha yozishmalarga tegishli ochiq varaqlarga murojaat qilishga ruxsat bering.</translation>
 <translation id="633348045801643466">Hisob-kitob sahifasida <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />keyinroq toʻlash<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> usulini chiqarish</translation>
 <translation id="6335029926534404762">Sport poyabzali</translation>
 <translation id="6336948221660696475">VR ishlatish rad etildi</translation>
@@ -3373,6 +3393,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6366710531182496394">Chapdan ikki marta steplerlash</translation>
 <translation id="6367196786591004737">Qaydni oʻchirish</translation>
 <translation id="6370022303958842211">Tizimga kirish (turli sabablar bilan kirilmagani ham), chiqish, qulflash va qulfdan chiqarish kabi qurilmadagi ruxsat amallari</translation>
+<translation id="6372779601614872746">Tegishli ochiq varaqlarni ulashish</translation>
 <translation id="6374469231428023295">Qaytadan</translation>
 <translation id="6374865374745447009">oyna boshqaruvi</translation>
 <translation id="6376881782310775282">Bu ilovani ishlab chiqish serveriga ulanmadi</translation>
@@ -3392,6 +3413,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6390533465682072118">Tiklash</translation>
 <translation id="639068771471208680">Koʻp sahifali shakl</translation>
 <translation id="6391700400718590966">Xavfsiz toʻlov maʼlumotlari yopilgan jadvaldagi maʼlumotlarga mos kelmadi</translation>
+<translation id="6391911601916058725">Tegishli ochiq varaqlar doim ulashilsinmi?</translation>
 <translation id="6392799395081100092">Qogʻoz (vellum)</translation>
 <translation id="6393156038355142111">Ishonchli parol yaratish</translation>
 <translation id="6393310910507376797">Sotuvchi qabul qilmaydi</translation>
@@ -3663,6 +3685,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6820143000046097424">ketma-ket portlar</translation>
 <translation id="6820686453637990663">CVC kod</translation>
 <translation id="6820949753458790123">Muddatli toʻlov</translation>
+<translation id="6822745163454377107">Ochiq varaqlarni bu suhbatga ulashish orqali tezroq va moslangan javoblar oling.</translation>
 <translation id="6825578344716086703">Siz <ph name="DOMAIN" /> saytiga o‘tmoqchi bo‘ldingiz, lekin server bergan sertifikat ishonchsiz algoritm bilan imzolangan. Bu xavfsizlik ma’lumotlari qalbaki bo‘lishi va server o‘zini boshqa server kabi ko‘rsatayotgan bo‘lishi mumkin (bu sayt firibgarlarniki bo‘lishi ehtimoli bor).</translation>
 <translation id="6826993739343257035">AR ishlatishga ruxsat berilsinmi?</translation>
 <translation id="6828150717884939426">Chaqiruv</translation>
@@ -3815,6 +3838,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="7062344833049251424">Keyingi safar tezroq toʻlash uchun karta va toʻlov manzilini Google Walletga saqlang</translation>
 <translation id="706295145388601875">Chrome sozlamalari orqali manzillarni kiritish va boshqarish</translation>
 <translation id="7063157783216323487">Yashil 2</translation>
+<translation id="7064111249130685461">Eng moslangan javoblar uchun bu mavzuga ochiq varaqlar haqida maʼlumot olishga ruxsat bering.</translation>
 <translation id="7064443976734085921">Ixcham avtomobillar</translation>
 <translation id="7064851114919012435">Aloqa ma’lumoti</translation>
 <translation id="7067633076996245366">Soul va R&amp;B</translation>
@@ -3904,6 +3928,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="7195852673246414183">Sozlamani yoqib, yozishni boshlash uchun shu sahifaga qayting</translation>
 <translation id="7196370964328811506">Bu karta qurilmangizga saqlanganidan keyin uning maʼlumotlarini Chrome xaridlarida avtomatik kiritish mumkin</translation>
 <translation id="7199278868241956094">Oficio</translation>
+<translation id="7200963436813710587">Quyidagi ochiq varaqlarni hisobga oldik:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yangi Inkognito varaq ochish va internetdan maxfiy foydalanish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="7203375778433816396">Chrome brauzerini standart brauzer qilish</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> sayti xavfsizlik standartlariga muvofiq kelmadi.</translation>
@@ -3988,6 +4013,7 @@ Batafsil axborot:
 <translation id="7353601530677266744">Buyruqlar qatori</translation>
 <translation id="7359588939039777303">Reklamalar bloklandi.</translation>
 <translation id="7360451453306104998">Google shaxsiy chegirmalar topganda ular hisob-kitob sahifasida chiqadi</translation>
+<translation id="7362039113312920489">Tekshirish va boshqarish</translation>
 <translation id="7362281996276843968">Bu guruh yopilgan</translation>
 <translation id="7363096869660964304">Inkognito oynasidagi bajargan ishlaringiz va tashrif buyurgan saytlaringiz tizim administratori va internet-provayderingizga ko‘rinadi.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome sozlamalari orqali manzillarni kiritish va boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
@@ -4133,6 +4159,7 @@ Batafsil axborot:
 <translation id="753714465667062283">Suratni saqlash uchun hisobga kiring</translation>
 <translation id="7537536606612762813">Majburiy</translation>
 <translation id="7543525346216957623">Ota-onangizdan so‘rang</translation>
+<translation id="7544639168115776013">Kerakli ochiq varaqlarni standart holatda ulashish orqali har bir suhbatda tezroq va moslangan javoblar oling.</translation>
 <translation id="7546409722674205727">Boshlanishi: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ulanish xatoliklarini hal qilish</translation>
 <translation id="7549584377607005141">Veb-sahifaning to‘g‘ri ko‘rsatilishi uchun avval kiritilgan ma’lumotlar kerak bo‘ladi. Ularni qayta jo‘natish mumkin, lekin bu holatda sahifada bajarilgan barcha amallarni qaytadan bajarish kerak bo‘ladi.</translation>
@@ -4300,6 +4327,7 @@ Batafsil axborot:
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> ruxsatini bekor qilish</translation>
 <translation id="7781829728241885113">Kecha</translation>
 <translation id="7782465647372057580">Hisob axboroti shifrlanadi va maxfiy saqlanadi</translation>
+<translation id="7785431476897438309">Buni istalgan vaqt Chrome sozlamalari orqali oʻzgartirish mumkin</translation>
 <translation id="7785471469930192436">Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsatmalarini oching</translation>
 <translation id="7785790577395078482">shu planshet</translation>
 <translation id="7786368602962652765">Majburiy maydoncha boʻsh. Saqlashdan oldin uni toʻldiring.</translation>
@@ -4334,6 +4362,7 @@ Batafsil axborot:
 <translation id="7846161022626028328">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="784623644169604270">Hech qanday harakat yoʻq</translation>
 <translation id="7848926355794727168">Avtomatik kezish</translation>
+<translation id="7849695969708971789">Barcha yozishmalarda javoblarni moslash uchun tegishli ochiq varaqlar ishlatiladi</translation>
 <translation id="7853222852810008596">Bu valyutada keyinroq toʻlash imkonsiz</translation>
 <translation id="785476343534277563">Kollej sporti</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4873,6 +4902,7 @@ Batafsil axborot:
 <translation id="8751426954251315517">Keyingi safar qayta urining</translation>
 <translation id="8753913772043329557">Qoidalar jurnali</translation>
 <translation id="8754546574216727970">Etiklar</translation>
+<translation id="8755119102172890580">Tegishli ochiq varaqlarni avtomatik ulashish</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">joylashtirilgan kontent</translation>
 <translation id="8757526089434340176">Google Pay taklifi mavjud</translation>
@@ -5157,6 +5187,7 @@ Batafsil axborot:
 <translation id="9204089334327209740">Yuklanganidan keyin fayllarni <ph name="CLOUD_PROVIDER" /> xizmatida oʻzgartirish mumkin. Qurilmadagi, jumladan, Chiqitdondagi fayllar avtomatik tozalanadi.</translation>
 <translation id="9205078245616868884">Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun uni kiriting.</translation>
 <translation id="920643408853370361">Sayohat sugʻurtasi</translation>
+<translation id="9206639970165643781">Bu yozishmada yaxshiroq javoblar uchun tegishli ochiq varaqlar ulashilsinmi?</translation>
 <translation id="9207861905230894330">Maqolani qo‘shib bo‘lmadi.</translation>
 <translation id="9209339767782560829">Kirish sertifikatingiz bilan muammo yuz berdi.</translation>
 <translation id="9210152531668884481">Roziman</translation>

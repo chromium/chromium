@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Vítejte zpět!</translation>
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="201759455285471444">Rozbalit skupinu karet.</translation>
-<translation id="202070562065520783">Vysvětli mi tohle</translation>
 <translation id="2044394949148788042">Otevřít mřížku karet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, která může mít přístup k některým informacím. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -1614,6 +1613,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="672735642903863329">Synchronizujte své záložky hesla a další obsah do všech svých zařízení.</translation>
 <translation id="6729493062119577923">Aktivita ve sdílené skupině karet</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
+<translation id="6736243959894955139">Adresa</translation>
 <translation id="6746338529702829275">Zkontrolovat data svého účtu</translation>
 <translation id="6750456911389438250">{count,plural, =1{Byla importována {count} položka historie}few{Byly importovány {count} položky historie}many{Bylo importováno {count} položky historie}other{Bylo importováno {count} položek historie}}</translation>
 <translation id="6755200887046212842">Správa účtů</translation>
@@ -1820,7 +1820,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7537586195939242955">Pass v této chvíli do aplikace Passbook nelze nainstalovat.</translation>
 <translation id="754655535278952384">Zkontrolováno: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Zavřít vše</translation>
-<translation id="7554791636758816595">Nová karta</translation>
 <translation id="7557508262441527045">Odhlášeno</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7561982940498449837">Zavřít nabídku</translation>
@@ -2250,7 +2249,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, připnutý web</translation>
 <translation id="8990960056509724223">Soubor se kvůli zásadám vaší organizace nepodařilo uložit</translation>
 <translation id="8998289560386111590">Na vašem zařízení není k dispozici</translation>
-<translation id="9000532564152265066">Všechny karty</translation>
 <translation id="9003677638446136377">Zkontrolovat znovu</translation>
 <translation id="9006453925669499173">Nabídka → Nová anonymní karta</translation>
 <translation id="9008201768610948239">Ignorovat</translation>

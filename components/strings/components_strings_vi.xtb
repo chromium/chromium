@@ -81,6 +81,7 @@
 <translation id="1131264053432022307">Hình ảnh bạn đã sao chép</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Để thoát khỏi chế độ toàn màn hình, hãy kéo từ trên xuống rồi nhấn vào nút quay lại</translation>
 <translation id="1133418583142946603">Thêm thẻ hiện tại</translation>
+<translation id="1137064693271855979">Chia sẻ các thẻ đang mở có liên quan để nhận được câu trả lời phù hợp hơn cho tất cả các chuỗi?</translation>
 <translation id="1138458427267715730">Nhận thông báo khi có chương trình giảm giá tại bất cứ trang nào trên web</translation>
 <translation id="1142713751288681188">Loại giấy</translation>
 <translation id="1142965388643537393">Thông tin du lịch</translation>
@@ -237,6 +238,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1363015776076529485">Các phương thức thanh toán mà bạn có thể chọn để tiến hành thanh toán đã mở toàn bộ.</translation>
 <translation id="1363028406613469049">Theo dõi</translation>
 <translation id="1364822246244961190">Chính sách này đã bị chặn nên giá trị của chính sách sẽ bị bỏ qua.</translation>
+<translation id="1367909869526928761">Chọn cách Chế độ AI có thể sử dụng các thẻ đang mở có liên quan</translation>
 <translation id="1368318639262510626">Trò chơi khủng long. Chú khủng long pixel cần phải tránh các bụi xương rồng và thằn lằn có cánh khi vượt qua vùng đất hoang. Khi bạn nghe thấy tín hiệu âm thanh, hãy nhấn phím cách để giúp chú khủng long nhảy qua chướng ngại vật.</translation>
 <translation id="1374468813861204354">đề xuất</translation>
 <translation id="1375198122581997741">Giới thiệu Phiên bản</translation>
@@ -593,6 +595,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1945968466830820669">Bạn có thể mất quyền truy cập vào tài khoản của tổ chức mình hoặc bị đánh cắp danh tính. Chromium khuyên bạn nên thay đổi mật khẩu ngay bây giờ.</translation>
 <translation id="1946849748901605102">12 x 15 inch</translation>
 <translation id="1947454675006758438">Dập ghim trên cùng bên phải</translation>
+<translation id="1950524225823308149">Chia sẻ các thẻ đang mở với mọi chuỗi</translation>
 <translation id="1953729392594614704">Nếu bạn chặn <ph name="TOPIC" /> thì mọi chủ đề có liên quan cũng sẽ bị chặn, ngay cả khi chủ đề đó đang được sử dụng</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">Thêm phương thức thanh toán</translation>
@@ -605,6 +608,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1960664692890490165">Khi bạn mua hàng trên Chrome, hãy cân nhắc sử dụng các phương thức thanh toán không dùng thẻ</translation>
 <translation id="196146181975453736">Hoàn tất quy trình kiểm tra bảo mật một lần để thanh toán nhanh hơn</translation>
 <translation id="1962204205936693436">Dấu trang của <ph name="DOMAIN" /></translation>
+<translation id="1966259577349514951">Thanh toán ngay</translation>
 <translation id="1973335181906896915">Lỗi nối tiếp hóa</translation>
 <translation id="1973785048533660168">Công việc văn phòng và hành chính</translation>
 <translation id="1974060860693918893">Nâng cao</translation>
@@ -644,6 +648,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2040894699575719559">Đã chặn quyền truy cập vị trí</translation>
 <translation id="2041788246978549610">Sử dụng micrô có sẵn (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Khay 7</translation>
+<translation id="2043091580538548438">Các trang web được thêm vào đây sẽ không được tham khảo để đưa ra câu trả lời, ngay cả khi các thẻ đó đang mở.</translation>
 <translation id="2045871135676061132">Phong bì thư từ cá nhân</translation>
 <translation id="2046951263634619614">Nhà bán lẻ sách</translation>
 <translation id="2048261947532620704">Đang dịch trang</translation>
@@ -1077,6 +1082,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2696385693639654606">Chrome Enterprise Core giúp bạn quản lý các chính sách trình duyệt, ứng dụng và tiện ích trên đám mây</translation>
 <translation id="2697248912349197812">Hỏi <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Có trình đơn phụ, sử dụng <ph name="SHORTCUT" /> để chuyển đến các lựa chọn khác.</translation>
+<translation id="2700335762333112350">Thanh toán sau</translation>
 <translation id="2701514975700770343">Hướng xuống</translation>
 <translation id="2702592986366989640">Lựa chọn giá thấp</translation>
 <translation id="2702801445560668637">Danh sách đọc</translation>
@@ -1122,6 +1128,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2768397283109119044">Bạn đã cố truy cập vào <ph name="DOMAIN" /> nhưng chứng chỉ được cấp cho tên đó mà máy chủ đưa ra là không hợp lệ. Tên này là một địa chỉ IP dành riêng hoặc tên máy chủ nội bộ.</translation>
 <translation id="2770159525358613612">Hãy thử tải các tệp lên lần nữa</translation>
 <translation id="277133753123645258">Phương thức giao hàng</translation>
+<translation id="2772464848856512911">Chia sẻ các thẻ đang mở với mọi chuỗi?</translation>
 <translation id="277499241957683684">Thiếu hồ sơ thiết bị</translation>
 <translation id="2775884851269838147">Trang in đầu tiên</translation>
 <translation id="277828055419948999">Chromium có thể tự động điền những trường khó mà tính năng tự động điền tiêu chuẩn có thể bỏ sót</translation>
@@ -1255,6 +1262,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3005723025932146533">Hiển thị bản sao đã lưu</translation>
 <translation id="300580149047131921">Vừa mới sử dụng</translation>
 <translation id="3006864083554020786">địa chỉ nhà riêng</translation>
+<translation id="3007110814003834680">Loại trừ trang web</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab để duyệt xem các thao tác có sẵn, sau đó nhấn phím Enter để thực thi thao tác đã chọn.</translation>
 <translation id="3010991137650052245">Để dùng <ph name="PERMISSION" /> của bạn trên trang web này, hãy cấp cho <ph name="SHORT_PRODUCT_NAME" /> quyền truy cập</translation>
 <translation id="3013711734159931232">Đồ dùng gia đình</translation>
@@ -1310,6 +1318,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3105172416063519923">ID phần tử:</translation>
 <translation id="3105223248029915046">Gói thanh toán sẽ tuỳ theo điều kiện áp dụng.
 Để ẩn các lựa chọn trả sau, hãy chuyển đến phần <ph name="BEGIN_LINK" />cài đặt thông tin thanh toán<ph name="END_LINK" /></translation>
+<translation id="3105477369449879017">Nhà cung cấp dịch vụ tự động điền</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Kiểm tra cấu hình DNS bảo mật<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Khay giữa</translation>
 <translation id="3109061346635850169">Chăm sóc mặt và cơ thể</translation>
@@ -1354,6 +1363,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3156511682997763015">Tua đi 10 giây</translation>
 <translation id="3157931365184549694">Khôi phục</translation>
 <translation id="3158539265159265653">Đĩa</translation>
+<translation id="3159556963589020896">Pro</translation>
 <translation id="3162070126914310576">Hiện không thể đăng ký thiết bị này vì đơn vị tổ chức của bạn đã đạt đến giới hạn đăng ký ban đầu. Hãy liên hệ với quản trị viên để được trợ giúp.</translation>
 <translation id="3162559335345991374">Wi-Fi mà bạn đang sử dụng có thể yêu cầu bạn phải truy cập trang đăng nhập của mạng đó.</translation>
 <translation id="316638481603975524">Có thể yêu cầu cài đặt ứng dụng web</translation>
@@ -1368,6 +1378,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Biết khi bạn đang sử dụng thiết bị này</translation>
 <translation id="3180358318770512945">Nuôi dạy con</translation>
+<translation id="3181543705317761806">Nhận câu trả lời dựa trên AI có ngữ cảnh trên web.</translation>
 <translation id="3182185041786697613">Lưu mã bảo mật?</translation>
 <translation id="3185635157430775689">Linh kiện máy tính</translation>
 <translation id="3190736958609431397">Bỏ theo dõi</translation>
@@ -1579,6 +1590,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3532624859962632484">Truy cập vào các thiết bị khác trên mạng cục bộ của bạn</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> muốn sử dụng micrô của bạn</translation>
 <translation id="3533328374079021623">Hộp thư 5</translation>
+<translation id="3535233022130619049">Nhận câu trả lời nhanh hơn và phù hợp hơn trong mọi chuỗi bằng cách chia sẻ các thẻ đang mở theo mặc định. Bạn có thể thay đổi lựa chọn này bất cứ lúc nào trong phần cài đặt Chrome.</translation>
 <translation id="3536227077203206203">Đã cho phép sử dụng cho lần này</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">In lụa (Phân trang)</translation>
@@ -1758,6 +1770,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3791118028061680614">Thanh toán mà không cần chuyển đổi ứng dụng</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> inch)</translation>
+<translation id="3792251736135878332">Các thẻ đang mở có liên quan được dùng để cá nhân hoá câu trả lời trong tất cả các chuỗi</translation>
 <translation id="3792826587784915501">Phim indie và phim kinh điển</translation>
 <translation id="3793574014653384240">Số lượng lỗi và nguyên nhân gây ra các lỗi gần đây</translation>
 <translation id="3795624560191557077">Bạn mới thay đổi một mật khẩu được tìm thấy trong một sự cố rò rỉ dữ liệu công khai. Trong trường hợp bạn gặp sự cố, Trình quản lý mật khẩu của Google có thể giúp bạn đăng nhập.</translation>
@@ -1924,6 +1937,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="406358100705415968">Đồ dùng bảo hộ an toàn lao động</translation>
 <translation id="4065429683324339709">Google Chrome muốn xác minh danh tính của bạn trước khi bạn thay đổi chế độ cài đặt</translation>
 <translation id="4065659219963895623">Nhà hàng</translation>
+<translation id="4065914898561361692">Không tự động chia sẻ các thẻ đang mở có liên quan (Mặc định)</translation>
 <translation id="4067774859633143413">Để thoát khỏi chế độ toàn màn hình và xem tệp đã tải xuống, hãy nhấn và giữ |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Thêm địa chỉ hợp lệ</translation>
 <translation id="4072486802667267160">Đã xảy ra lỗi khi xử lý đơn đặt hàng của bạn. Vui lòng thử lại.</translation>
@@ -2139,6 +2153,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4358059973562876591">Các mẫu bạn đã chỉ định có thể không được áp dụng do lỗi liên quan đến chính sách DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Quản lý phương thức thanh toán...</translation>
 <translation id="4359160567981085931">Bạn vừa nhập mật khẩu vào một trang web lừa đảo. Chrome có thể trợ giúp bạn. Để đổi mật khẩu và thông báo cho Google biết rằng tài khoản của bạn có thể gặp nguy hiểm, hãy nhấp vào Bảo vệ tài khoản.</translation>
+<translation id="4359853272024672680">Tìm kiếm bằng Chế độ AI</translation>
 <translation id="4363222835916186793">Đã tắt thông báo về sản phẩm này</translation>
 <translation id="4366943895537458493">Bản in</translation>
 <translation id="4369179505195332608">Chỉnh sửa thông tin giấy phép lái xe</translation>
@@ -2486,6 +2501,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4957080528849277028">Nút Xem nhật ký duyệt web trên Chrome, hãy nhấn nút này để xem và quản lý nhật ký duyệt web trong phần cài đặt của Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 trang web}other{+ # trang web}}</translation>
 <translation id="4958444002117714549">Mở rộng danh sách</translation>
+<translation id="4960061221656117224">Loại trừ các trang web</translation>
 <translation id="4960203958361543136">Chọn công cụ tìm kiếm của bạn</translation>
 <translation id="4961708452830821006">Để dùng micrô, hãy cấp quyền truy cập cho Chrome trong <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Thiết kế cảnh quan</translation>
@@ -2495,6 +2511,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4968665849807487749">Có thể yêu cầu quản lý các cửa sổ trên tất cả màn hình của bạn</translation>
 <translation id="4969341057194253438">Xóa bản ghi</translation>
 <translation id="4973922308112707173">Đục 2 lỗ trên cùng</translation>
+<translation id="4975266898030581282">Đang xem xét các thẻ đang mở có liên quan</translation>
 <translation id="4976702386844183910">Lần truy cập gần đây nhất: <ph name="DATE" /></translation>
 <translation id="4983145717627482381">Chuyến tham quan có hướng dẫn viên và kỳ nghỉ theo đoàn</translation>
 <translation id="498323057460789381">Lỗi xác thực giản đồ: <ph name="ERROR" /></translation>
@@ -2609,6 +2626,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5147633291963801297">Xem thông tin giảm giá trong bảng điều khiển bên</translation>
 <translation id="5148809049217731050">Hướng lên</translation>
 <translation id="5148889558173091794">Tổ chức của bạn đã chặn <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> do miền đó vi phạm chính sách. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5151771770689442215">Nhật ký hoạt động của tôi trên Google Tìm kiếm</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">Cửa hàng bách hoá và nhà bán lẻ đại chúng</translation>
 <translation id="5158275234811857234">Trang bìa</translation>
@@ -2681,6 +2699,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" không phải là điều kiện được hỗ trợ cho "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="527191520368130807">Trau chuốt</translation>
 <translation id="5273658854610202413">Cảnh báo: Chính sách này không được hợp nhất như chỉ định trong chính sách PolicyDictionaryMultipleSourceMergeList vì chính sách này không thuộc các chính sách từ điển có thể hợp nhất.</translation>
+<translation id="5274074150785993864">Chrome sẽ gửi các thẻ đang mở, nội dung trang và URL đến Google để cá nhân hoá câu trả lời cho bạn</translation>
 <translation id="5278778426231952189">Tải lên ngay</translation>
 <translation id="5279286380302340275">Quản lý tệp đã tải xuống</translation>
 <translation id="5282008206326321696">{count,plural, =0{# dấu trang}=1{# dấu trang}other{# dấu trang}}</translation>
@@ -2732,6 +2751,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5351548097010183514">Vật liệu và dụng cụ xây dựng</translation>
 <translation id="5354143049423063163">Quỹ phòng hộ</translation>
 <translation id="5355557959165512791">Bạn không thể truy cập vào <ph name="SITE" /> ngay bây giờ vì chứng chỉ của trang này đã bị thu hồi. Lỗi mạng và các cuộc tấn công mạng thường chỉ là tạm thời nên trang này có thể sẽ hoạt động lại sau.</translation>
+<translation id="5359752295193133096">Chia sẻ các thẻ đang mở có liên quan theo mặc định để nhận được câu trả lời nhanh hơn và phù hợp hơn.</translation>
 <translation id="5360706051680403227">Đèn và thiết bị chiếu sáng</translation>
 <translation id="536296301121032821">Không thể lưu trữ cài đặt chính sách</translation>
 <translation id="5363148545938487338">Salesforce</translation>
@@ -2873,6 +2893,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5554520618550346933">Khi bạn dùng một mật khẩu đã bị công khai trên mạng, Chrome sẽ cảnh báo cho bạn. Trong quá trình này, mật khẩu và tên người dùng của bạn được mã hoá nên không ai đọc được, kể cả Google.</translation>
 <translation id="5556459405103347317">Tải lại</translation>
+<translation id="5556843284826862956">Nhân viên đánh giá có thể xem xét các chuỗi để cải thiện AI của Google</translation>
 <translation id="5558083606899411167">Máy điều hoà không khí</translation>
 <translation id="5558125320634132440">Trang web này bị chặn vì có thể chứa nội dung dành cho người trưởng thành</translation>
 <translation id="5559311991468302423">Xoá địa chỉ</translation>
@@ -3110,6 +3131,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5968022600320704045">Không có kết quả tìm kiếm nào</translation>
 <translation id="5968400720580217226">Chế độ AI</translation>
 <translation id="5969199813874624822">Lưu và theo dõi giá</translation>
+<translation id="5969933937005244170">Các thẻ đang mở có liên quan sẽ chỉ được sử dụng nếu bạn chia sẻ chúng trong một chuỗi</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Cuộn thứ sáu</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>
@@ -3338,6 +3360,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6327065120806001832">quyền truy cập mạng cục bộ</translation>
 <translation id="6328639280570009161">Thử tắt dự đoán mạng</translation>
 <translation id="6329815962353376655">&lt;Nhập câu hỏi&gt;</translation>
+<translation id="6331597954316706229">Để nhận được câu trả lời phù hợp nhất, hãy cho phép tất cả các chuỗi tham khảo các thẻ đang mở có liên quan.</translation>
 <translation id="633348045801643466">Hiện các lựa chọn <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />thanh toán sau<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> khi thanh toán</translation>
 <translation id="6335029926534404762">Giày thể thao</translation>
 <translation id="6336948221660696475">Không cho phép sử dụng thực tế ảo</translation>
@@ -3366,6 +3389,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6366710531182496394">Dập 2 ghim bên trái</translation>
 <translation id="6367196786591004737">Xoá mục</translation>
 <translation id="6370022303958842211">Các hành động truy cập thiết bị như đăng nhập (kể cả lý do đăng nhập không thành công), đăng xuất, khoá và mở khoá</translation>
+<translation id="6372779601614872746">Chia sẻ các thẻ đang mở có liên quan</translation>
 <translation id="6374469231428023295">Thử lại</translation>
 <translation id="6374865374745447009">quản lý cửa sổ</translation>
 <translation id="6376881782310775282">Không thể truy cập máy chủ phát triển của ứng dụng này</translation>
@@ -3385,6 +3409,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6390533465682072118">Khôi phục</translation>
 <translation id="639068771471208680">Biểu mẫu nhiều phần</translation>
 <translation id="6391700400718590966">Đã đóng thông tin xác thực thanh toán an toàn không khớp với bảng thông tin xác thực</translation>
+<translation id="6391911601916058725">Luôn chia sẻ các thẻ đang mở có liên quan?</translation>
 <translation id="6392799395081100092">Giấy (Da bê)</translation>
 <translation id="6393156038355142111">Đề xuất mật khẩu mạnh</translation>
 <translation id="6393310910507376797">Không được người bán hỗ trợ</translation>
@@ -3654,6 +3679,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6820143000046097424">cổng nối tiếp</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Thanh toán theo hình thức trả góp phù hợp với khả năng chi trả</translation>
+<translation id="6822745163454377107">Chia sẻ các thẻ đang mở với chuỗi này để nhận được câu trả lời nhanh hơn và phù hợp hơn.</translation>
 <translation id="6825578344716086703">Bạn đã cố gắng truy cập vào <ph name="DOMAIN" /> nhưng máy chủ xuất trình một chứng chỉ được ký bằng một thuật toán chữ ký yếu (chẳng hạn như SHA-1). Điều này có nghĩa là thông tin đăng nhập bảo mật mà máy chủ xuất trình có thể đã bị giả mạo và máy chủ đó có thể không phải là máy chủ mà bạn mong đợi (bạn có thể đang kết nối với kẻ tấn công).</translation>
 <translation id="6826993739343257035">Cho phép môi trường Thực tế tăng cường?</translation>
 <translation id="6828150717884939426">Gọi</translation>
@@ -3806,6 +3832,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7062344833049251424">Để lần tới thanh toán nhanh hơn, hãy lưu thông tin thẻ và địa chỉ thanh toán vào Google Wallet</translation>
 <translation id="706295145388601875">Thêm và quản lý các địa chỉ trong phần Cài đặt của Chrome</translation>
 <translation id="7063157783216323487">Xanh lục 2</translation>
+<translation id="7064111249130685461">Để nhận được câu trả lời phù hợp nhất, hãy cho phép chuỗi này tham khảo các thẻ bạn đang mở.</translation>
 <translation id="7064443976734085921">Ô tô cỡ nhỏ</translation>
 <translation id="7064851114919012435">Thông tin liên hệ</translation>
 <translation id="7067633076996245366">Nhạc soul và nhạc R&amp;B</translation>
@@ -3896,6 +3923,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7195852673246414183">Sau khi bật chế độ cài đặt này, hãy quay lại thẻ này để bắt đầu viết</translation>
 <translation id="7196370964328811506">Tự động điền thông tin thẻ này cho các giao dịch mua trong Chrome khi thẻ được lưu trên thiết bị này</translation>
 <translation id="7199278868241956094">Oficio</translation>
+<translation id="7200963436813710587">Chúng tôi đã xem xét các thẻ đang mở sau đây:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn Tab rồi nhấn Enter để mở một thẻ ẩn danh mới nhằm duyệt web ở chế độ riêng tư</translation>
 <translation id="7203375778433816396">Đặt Chrome làm trình duyệt mặc định của hệ thống</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> không tuân thủ các tiêu chuẩn bảo mật.</translation>
@@ -3980,6 +4008,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7353601530677266744">Dòng Lệnh</translation>
 <translation id="7359588939039777303">Đã chặn quảng cáo.</translation>
 <translation id="7360451453306104998">Khi tìm thấy ưu đãi chiết khấu, Google sẽ cho bạn xem những ưu đãi đó khi bạn thanh toán</translation>
+<translation id="7362039113312920489">Xem xét và quản lý</translation>
 <translation id="7362281996276843968">Nhóm này đã đóng</translation>
 <translation id="7363096869660964304">Tuy nhiên, thông tin của bạn vẫn hiển thị. Việc chuyển sang chế độ Ẩn danh sẽ không ẩn hoạt động duyệt web của bạn khỏi công ty, nhà cung cấp dịch vụ Internet hoặc các trang web mà bạn truy cập.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn Tab rồi nhấn Enter để thêm và quản lý các địa chỉ trong phần Cài đặt của Chrome</translation>
@@ -4125,6 +4154,7 @@ Thông tin chi tiết bổ sung:
 <translation id="753714465667062283">Đăng nhập để lưu ảnh</translation>
 <translation id="7537536606612762813">Bắt buộc</translation>
 <translation id="7543525346216957623">Xin phép cha mẹ</translation>
+<translation id="7544639168115776013">Nhận được câu trả lời nhanh hơn và phù hợp hơn trong mọi chuỗi bằng cách chia sẻ các thẻ đang mở có liên quan theo mặc định.</translation>
 <translation id="7546409722674205727">Đang khởi động <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Khắc phục lỗi kết nối</translation>
 <translation id="7549584377607005141">Trang web này yêu cầu dữ liệu mà bạn đã nhập trước đó để được hiển thị đúng cách. Bạn có thể gửi lại dữ liệu này nhưng làm như vậy bạn sẽ lặp lại mọi hoạt động mà trang này đã thực hiện trước đó.</translation>
@@ -4292,6 +4322,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7779418012194492374">Thu hồi quyền truy cập <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7782465647372057580">Thông tin tài khoản được mã hoá và giữ bí mật</translation>
+<translation id="7785431476897438309">Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào trong phần Cài đặt Chrome</translation>
 <translation id="7785471469930192436">Để xóa nhật ký tìm kiếm, hãy xem hướng dẫn (nếu có) của công cụ tìm kiếm bạn đang dùng</translation>
 <translation id="7785790577395078482">máy tính bảng này</translation>
 <translation id="7786368602962652765">Trường bắt buộc đang trống. Hãy điền vào trường này trước khi lưu.</translation>
@@ -4326,6 +4357,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7846161022626028328">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="784623644169604270">Không có hoạt động nào gần đây</translation>
 <translation id="7848926355794727168">Tự động duyệt web</translation>
+<translation id="7849695969708971789">Các thẻ đang mở có liên quan sẽ được dùng để cá nhân hoá câu trả lời trong tất cả các chuỗi</translation>
 <translation id="7853222852810008596">Không thể trả sau bằng đơn vị tiền tệ này</translation>
 <translation id="785476343534277563">Thể thao đại học</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -4865,6 +4897,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8751426954251315517">Vui lòng thử lại vào lần tiếp theo</translation>
 <translation id="8753913772043329557">Nhật ký chính sách</translation>
 <translation id="8754546574216727970">Giày bốt</translation>
+<translation id="8755119102172890580">Tự động chia sẻ các thẻ đang mở có liên quan</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">nội dung được nhúng</translation>
 <translation id="8757526089434340176">Ưu đãi hiện có của Google Pay</translation>
@@ -5148,6 +5181,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9204089334327209740">Sau khi tải lên xong, bạn có thể sửa đổi các tệp của mình trong <ph name="CLOUD_PROVIDER" />. Bộ nhớ cục bộ, bao gồm mọi tệp trong Thùng rác, đều sẽ tự động bị xoá.</translation>
 <translation id="9205078245616868884">Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng bộ hóa. Nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="920643408853370361">Bảo hiểm du lịch</translation>
+<translation id="9206639970165643781">Chia sẻ các thẻ đang mở có liên quan để nhận được câu trả lời phù hợp hơn trong chuỗi này?</translation>
 <translation id="9207861905230894330">Không thêm được bài viết.</translation>
 <translation id="9209339767782560829">Đã xảy ra sự cố khi sử dụng chứng chỉ đăng nhập của bạn.</translation>
 <translation id="9210152531668884481">Tôi đồng ý</translation>

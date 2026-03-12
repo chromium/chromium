@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">继续</translation>
 <translation id="2371084566192454134">标签页和标签页分组</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{收起包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组。}}</translation>
+<translation id="2476179388576975626">画中画</translation>
 <translation id="2498435670446402865">重命名标签页分组</translation>
 <translation id="2536366509642644298">“<ph name="TAB_GROUP_NAME_1" />”和“<ph name="TAB_GROUP_NAME_2" />”标签页分组已不可用</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收起 <ph name="TABS_COUNT_ONE" /> 个标签页。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的标签页组。}}</translation>

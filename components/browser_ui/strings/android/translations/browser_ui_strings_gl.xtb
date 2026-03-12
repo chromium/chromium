@@ -269,6 +269,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="3658847490588580244">Panel inferior do navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio no grupo de sitios de <ph name="RWS_OWNER" /> pode ver a túa actividade no grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios no grupo de sitios de <ph name="RWS_OWNER" /> poden ver a túa actividade no grupo}}</translation>
 <translation id="3676777756440746804">Os sitios non poderán pedirche usar a información que garden sobre ti</translation>
+<translation id="3677897809642449131">Os sitios poden pedir permiso para usar os sensores de movemento</translation>
 <translation id="3678318839615834650">Panel inferior das tarxetas da páxina Nova pestana aberto a altura completa</translation>
 <translation id="3697164069658504920">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos USB. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos USB.</translation>
 <translation id="3703430731944883733">Xestionar o feed</translation>
@@ -444,7 +445,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="5515432237048785579">Panel inferior do feed de Discover aberto a altura completa</translation>
 <translation id="5516455585884385570">Abrir a configuración de notificacións</translation>
 <translation id="5527111080432883924">Preguntar antes de permitir que os sitios lean texto e imaxes do portapapeis (recomendado)</translation>
-<translation id="5553374991681107062">Máis recentes</translation>
 <translation id="5555115555607204100">Sen o motor V8 de Chrome, os sitios serán máis lentos, pero conseguirás que Chrome sexa un chisco máis resistente aos ataques</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
@@ -676,7 +676,6 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
 <translation id="8033047164036749181">Subscribirse ás notificacións deste sitio</translation>
-<translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">As funcións que requiran unha cámara non estarán dispoñibles</translation>
 <translation id="8056330801132235235">Chrome predeterminado</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
@@ -748,6 +747,7 @@ Protección avanzada controla estas opcións de configuración de Chrome:
 <translation id="8707904142362025782">O sitio pode pedirche permiso para acceder á cámara</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8715862698998036666">Para saír da pantalla completa, arrástraa desde a parte superior e pasa o dedo desde o bordo esquerdo ou dereito.</translation>
+<translation id="8716050156658570300">Os sitios poden pedir permiso para usar os sensores de movemento e de luz</translation>
 <translation id="8719283222052720129">Activa o permiso para <ph name="APP_NAME" /> en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Cando esta opción está activada, os sitios poden pedirche permiso para buscar dispositivos Bluetooth. Cando esta opción está desactivada, os sitios non poden buscar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>

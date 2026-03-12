@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Hjelp oss med å forbedre Inkognito ved å svare på denne undersøkelsen. Det tar ett minutt.</translation>
 <translation id="1065672644894730302">Kan ikke lese innstillingene. Enkelte funksjoner kan være utilgjengelige, og endringer av innstillingene blir ikke lagret.</translation>
 <translation id="1083934481477628225">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium</translation>
+<translation id="1090946077924227754">For å søke etter en bestemt Chromium-funksjon eller -utvidelse, skriv inn snarveien til den i adressefeltet, etterfulgt av tasten du har valgt på tastaturet</translation>
 <translation id="1104942323762546749">Chromium forsøker å eksportere passordene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="112640046208448578">Identifiser ting eller steder, og kopier eller oversett tekst. Når du bruker bildesøk, sendes et skjermbilde av siden til tjeneren. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium er standardnettleseren din</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Mens denne fanen var inaktiv, ble minnet frigjort for å holde Chromium rask. Du kan velge å alltid ekskludere dette nettstedet fra å gjøres inaktivt.</translation>
 <translation id="1265577313130862557">Chromium har blokkert denne nedlastingen fordi filen er farlig</translation>
 <translation id="126567311906253476">Når du logger på Google-tjenester som Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge på Chromium med den samme kontoen</translation>
+<translation id="1287534462498555020">Skaff deg Chromium på telefonen</translation>
 <translation id="1290883685122687410">Konfigureringsfeil: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfigurer den nye Chromium-profilen din</translation>
 <translation id="132092532143527429">Prøv med Gemini i Chromium</translation>
@@ -380,6 +382,7 @@
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
 <translation id="5234764350956374838">Lukk</translation>
 <translation id="5254739261293693943">Spør om denne videoen</translation>
+<translation id="5276305953263010518">Skaff deg Chromium-appen for å lagre passord uansett hvor du er</translation>
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
 <translation id="5286907366254680517">Registrert</translation>
 <translation id="5289287148052354622">Skaff deg Chromium-appen</translation>
@@ -609,7 +612,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7622753900276619808">Nå har du flere funksjoner tilgjengelig i Chromium</translation>
 <translation id="7624307931717240213">Vi bruker informasjon til å forbedre denne tjenesten. Se personvernreglene og vilkårene for bruk.</translation>
 <translation id="7649070708921625228">Hjelp</translation>
-<translation id="7650134251917003571">Skaff deg Chromium-appen</translation>
+<translation id="7650134251917003571">Få Chromium-appen</translation>
 <translation id="7656340475565475526">La Chromium surfe for deg</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7686590090926151193">Chromium er ikke standardnettleseren din</translation>
@@ -693,6 +696,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8522801943730206384">Chromium kan sjekke passordene dine når du lagrer dem</translation>
 <translation id="8548787790260785208">Få en advarsel hvis Chromium finner et av passordene dine i et offentlig databrudd</translation>
 <translation id="8555465886620020932">Tjenestefeil: ‏<ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Noen Chromium-funksjoner og -utvidelser har snarveier. Du kan velge å slå dem på igjen.</translation>
 <translation id="8556420416730706394">Du kan feste bildesøk for enklere tilgang. Klikk på Fest-knappen øverst i sidepanelet.</translation>
 <translation id="856656450041460113">Søk på språklisten</translation>
 <translation id="8568283329061645092">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din</translation>
@@ -728,6 +732,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8988036198400390003">Administrer Chromium-profiler</translation>
 <translation id="9019929317751753759">For å gjøre Chromium tryggere har vi slått av følgende utvidelse som ikke finnes i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt til uten at du vet det.</translation>
 <translation id="904366664621834601">Chromium har blokkert denne nedlastingen fordi arkivfilen inneholder andre filer som kan skjule skadelig programvare</translation>
+<translation id="9053882453960391422">Hold passordene, bokmerkene og loggen din synkronisert på alle enheter. Ved å oppdatere standardnettleseren din til Chromium, får du enkel tilgang til funksjonene du kjenner og liker. Chromium festes til oppgavelinjen for rask tilgang.</translation>
 <translation id="9062666675513499497">Logg på Chromium når du logger på andre Google-tjenester</translation>
 <translation id="9078733879136747090">Chromium ble lukket automatisk</translation>
 <translation id="9089354809943900324">Chromium er utdatert</translation>

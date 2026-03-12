@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Maligayang pagbabalik!</translation>
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="201759455285471444">I-expand ang grupo ng tab.</translation>
-<translation id="202070562065520783">Ipaliwanag ito sa akin</translation>
 <translation id="2044394949148788042">Buksan ang grid ng tab</translation>
 <translation id="2044681667265133332">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">bagong item</translation>
@@ -1614,6 +1613,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="672735642903863329">Makuha ang iyong mga bookmark, password, at higit pa sa lahat ng device mo.</translation>
 <translation id="6729493062119577923">Aktibidad ng naka-share na grupo ng tab</translation>
 <translation id="6732087373923685049">camera</translation>
+<translation id="6736243959894955139">Address</translation>
 <translation id="6746338529702829275">Suriin ang data ng iyong account</translation>
 <translation id="6750456911389438250">{count,plural, =1{Nag-import ng {count} item ng history}one{Nag-import ng {count} item ng history}other{Nag-import ng {count} na item ng history}}</translation>
 <translation id="6755200887046212842">Pamahalaan ang Mga Account</translation>
@@ -1820,7 +1820,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7537586195939242955">Paumahin, hindi ma-install ngayon ang Pass mo sa Passbook.</translation>
 <translation id="754655535278952384">Na-check noong <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Isara Lahat</translation>
-<translation id="7554791636758816595">Bagong Tab</translation>
 <translation id="7557508262441527045">Nag-sign out</translation>
 <translation id="7561196759112975576">Palagi</translation>
 <translation id="7561982940498449837">Isara ang menu</translation>
@@ -2251,7 +2250,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, naka-pin na site</translation>
 <translation id="8990960056509724223">Hindi ma-save ang file dahil sa mga patakaran ng iyong organisasyon</translation>
 <translation id="8998289560386111590">Hindi available sa iyong device</translation>
-<translation id="9000532564152265066">Lahat ng Tab</translation>
 <translation id="9003677638446136377">Suriing muli</translation>
 <translation id="9006453925669499173">Menu → Bagong tab na Incognito</translation>
 <translation id="9008201768610948239">Balewalain</translation>

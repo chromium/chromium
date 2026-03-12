@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Добре дошли отново!</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="201759455285471444">Разгъване на групата раздели.</translation>
-<translation id="202070562065520783">Обясни ми това</translation>
 <translation id="2044394949148788042">Отворете мрежата с раздели.</translation>
 <translation id="2044681667265133332">Профилът <ph name="USER_EMAIL" /> се управлява от организацията <ph name="HOSTED_DOMAIN" />, която може да преглежда определена информация. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нов елемент</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">Получавайте своите отметки, пароли и др. на всичките си устройства.</translation>
 <translation id="6729493062119577923">Активност в споделената група раздели</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адрес</translation>
 <translation id="6746338529702829275">Преглед на данните за профила ви</translation>
 <translation id="6750456911389438250">{count,plural, =1{Импортиран е {count} елемент от историята}other{Импортирани са {count} елемента от историята}}</translation>
 <translation id="6755200887046212842">Управление на профилите</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="754655535278952384">Проверихте <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Затваряне на всички</translation>
-<translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7557508262441527045">Излязохте от профила си</translation>
 <translation id="7561196759112975576">Винаги</translation>
 <translation id="7561982940498449837">Затваряне на менюто</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" /> – фиксиран сайт</translation>
 <translation id="8990960056509724223">Файлът не бе запазен поради правилата на организацията ви</translation>
 <translation id="8998289560386111590">Не е налице на устройството ви</translation>
-<translation id="9000532564152265066">Всички раздели</translation>
 <translation id="9003677638446136377">Повторна проверка</translation>
 <translation id="9006453925669499173">Меню → Нов раздел в режим „инкогнито“</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>

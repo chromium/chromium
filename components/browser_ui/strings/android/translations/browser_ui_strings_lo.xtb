@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">ຊີດລຸ່ມສຸດຂອງໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ທີ່ສາມາດເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມໄດ້}other{<ph name="RWS_MEMBERS_COUNT" /> ເວັບໄຊໃນກຸ່ມເວັບໄຊຂອງ <ph name="RWS_OWNER" /> ທີ່ສາມາດເບິ່ງການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມໄດ້}}</translation>
 <translation id="3676777756440746804">ເວັບໄຊຖືກບລັອກບໍ່ໃຫ້ຂໍອະນຸຍາດທ່ານໃນການໃຊ້ຂໍ້ມູນທີ່ບັນທຶກໄວ້ກ່ຽວກັບທ່ານ</translation>
+<translation id="3677897809642449131">ເວັບໄຊສາມາດຂໍໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວໄດ້</translation>
 <translation id="3678318839615834650">ຊີດລຸ່ມສຸດຂອງບັດໜ້າແຖບໃໝ່ເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
 <translation id="3697164069658504920">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຊ້ອຸປະກອນ USB ໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ອຸປະກອນ USB ໄດ້.</translation>
 <translation id="3703430731944883733">ຈັດການຟີດຂອງທ່ານ</translation>
@@ -444,7 +445,6 @@
 <translation id="5515432237048785579">ຊີດລຸ່ມສຸດຂອງຟີດ Discover ເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
 <translation id="5516455585884385570">ເປີດການຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
 <translation id="5527111080432883924">ຖາມກ່ອນອະນຸຍາດໃຫ້ເວັບໄຊອ່ານຂໍ້ຄວາມ ແລະ ຮູບພາບຈາກຄລິບບອດ (ແນະນຳ)</translation>
-<translation id="5553374991681107062">ຫຼ້າສຸດ</translation>
 <translation id="5555115555607204100">ຢ່າເພີ່ມຄວາມໄວໃຫ້ເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chrome ແຕ່ເຮັດໃຫ້ Chrome ທົນທານຕໍ່ກັບການໂຈມຕີເພີ່ມຂຶ້ນເລັກນ້ອຍ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
 <translation id="5591840828808741583">ບລັອກ <ph name="SITE_NAME" /> ໄວ້ແລ້ວ</translation>
@@ -676,7 +676,6 @@
 <translation id="8007176423574883786">ປິດ​ສຳ​ລັບ​ອຸ​ປະ​ກອນ​ນີ້</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8033047164036749181">ສະໝັກຮັບການແຈ້ງເຕືອນຈາກເວັບໄຊນີ້</translation>
-<translation id="8042586301629853791">ຈັດຮຽງຕາມ:</translation>
 <translation id="8051193500142930381">ຄຸນສົມບັດທີ່ຈໍາເປັນຕ້ອງໃຊ້ກ້ອງຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="8056330801132235235">ຄ່າເລີ່ມຕົ້ນຂອງ Chrome</translation>
 <translation id="8067883171444229417">ຫຼິ້ນວິດີໂອ</translation>
@@ -748,6 +747,7 @@
 <translation id="8707904142362025782">ເວັບໄຊສາມາດຂໍເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງທ່ານໄດ້</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8715862698998036666">ລາກຈາກທາງເທິງ ແລ້ວປັດຈາກຂອບເບື້ອງຊ້າຍ ຫຼື ຂວາເພື່ອອອກຈາກໂໝດເຕັມຈໍ.</translation>
+<translation id="8716050156658570300">ເວັບໄຊສາມາດຂໍໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ແລະ ແສງໄດ້</translation>
 <translation id="8719283222052720129">ເປີດການອະນຸຍາດສຳລັບ <ph name="APP_NAME" /> ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍຊອກຫາອຸປະກອນ Bluetooth ໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດຊອກຫາອຸປະກອນ Bluetooth ໄດ້.</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>

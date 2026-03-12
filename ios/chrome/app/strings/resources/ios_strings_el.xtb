@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Καλώς ορίσατε και πάλι!</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
 <translation id="201759455285471444">Ανάπτυξη ομάδας καρτελών.</translation>
-<translation id="202070562065520783">Εξήγησέ μου το εξής</translation>
 <translation id="2044394949148788042">Άνοιγμα του πλέγματος καρτελών</translation>
 <translation id="2044681667265133332">Η διαχείριση του λογαριασμού <ph name="USER_EMAIL" /> γίνεται από τον τομέα <ph name="HOSTED_DOMAIN" />, ο οποίος μπορεί να βλέπει ορισμένες πληροφορίες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">νέο στοιχείο</translation>
@@ -1615,6 +1614,7 @@
 <translation id="672735642903863329">Μεταφέρετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας.</translation>
 <translation id="6729493062119577923">Δραστηριότητα κοινόχρηστης ομάδας καρτελών</translation>
 <translation id="6732087373923685049">κάμερα</translation>
+<translation id="6736243959894955139">Διεύθυνση</translation>
 <translation id="6746338529702829275">Έλεγχος των δεδομένων του λογαριασμού σας</translation>
 <translation id="6750456911389438250">{count,plural, =1{Έγινε εισαγωγή {count} στοιχείο ιστορικού}other{Έγινε εισαγωγή {count} στοιχείων ιστορικού}}</translation>
 <translation id="6755200887046212842">Διαχείριση λογαριασμών</translation>
@@ -1821,7 +1821,6 @@
 <translation id="7537586195939242955">Δεν είναι δυνατή η εγκατάσταση της κάρτας σας στο Passbook.</translation>
 <translation id="754655535278952384">Έγινε έλεγχος <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Κλείσιμο όλων</translation>
-<translation id="7554791636758816595">Νέα καρτέλα</translation>
 <translation id="7557508262441527045">Έγινε αποσύνδεση</translation>
 <translation id="7561196759112975576">Πάντα</translation>
 <translation id="7561982940498449837">Κλείσιμο μενού</translation>
@@ -2251,7 +2250,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, καρφιτσωμένος ιστότοπος</translation>
 <translation id="8990960056509724223">Δεν ήταν δυνατή η αποθήκευση του αρχείου λόγω των πολιτικών του οργανισμού σας</translation>
 <translation id="8998289560386111590">Δεν διατίθεται στη συσκευή σας</translation>
-<translation id="9000532564152265066">Όλες οι καρτέλες</translation>
 <translation id="9003677638446136377">Έλεγχος ξανά</translation>
 <translation id="9006453925669499173">Μενού → Νέα καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="9008201768610948239">Παράβλεψη</translation>

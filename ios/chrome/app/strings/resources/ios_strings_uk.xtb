@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">З поверненням!</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="201759455285471444">Розгорнути групу вкладок.</translation>
-<translation id="202070562065520783">Поясни це</translation>
 <translation id="2044394949148788042">Відкрийте сітку вкладок</translation>
 <translation id="2044681667265133332">Обліковим записом <ph name="USER_EMAIL" /> керує адміністратор домену <ph name="HOSTED_DOMAIN" />, який може переглядати певну інформацію. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новий об’єкт</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">Отримайте доступ до закладок, паролів і інших даних на всіх пристроях.</translation>
 <translation id="6729493062119577923">Дії в спільній групі вкладок</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адреса</translation>
 <translation id="6746338529702829275">Перегляньте дані свого облікового запису</translation>
 <translation id="6750456911389438250">{count,plural, =1{Імпортовано {count} запис історії}one{Імпортовано {count} запис історії}few{Імпортовано {count} записи історії}many{Імпортовано {count} записів історії}other{Імпортовано {count} запису історії}}</translation>
 <translation id="6755200887046212842">Керувати обліковими записами</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">Не вдалося внести дані в Passbook.</translation>
 <translation id="754655535278952384">Перевірено <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Закрити всі</translation>
-<translation id="7554791636758816595">Нова вкладка</translation>
 <translation id="7557508262441527045">Ви вийшли</translation>
 <translation id="7561196759112975576">Завжди</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, закріплений сайт</translation>
 <translation id="8990960056509724223">Цей файл не можна зберегти через правила вашої організації</translation>
 <translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
-<translation id="9000532564152265066">Усі вкладки</translation>
 <translation id="9003677638446136377">Перевірити ще раз</translation>
 <translation id="9006453925669499173">Меню → Нова анонімна вкладка</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>

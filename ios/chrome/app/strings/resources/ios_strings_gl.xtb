@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Dámosche a benvida de novo!</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
-<translation id="202070562065520783">Explícame isto</translation>
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" />, polo que é posible que poida ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo elemento</translation>
@@ -1614,6 +1613,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="672735642903863329">Accede aos teus marcadores, contrasinais e moito máis en todos os dispositivos.</translation>
 <translation id="6729493062119577923">Actividade do grupo de pestanas compartido</translation>
 <translation id="6732087373923685049">cámara</translation>
+<translation id="6736243959894955139">Enderezo</translation>
 <translation id="6746338529702829275">Revisa os datos da túa conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento do historial importado}other{{count} elementos do historial importados}}</translation>
 <translation id="6755200887046212842">Xestionar contas</translation>
@@ -1820,7 +1820,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Pechar todo</translation>
-<translation id="7554791636758816595">Nova pestana</translation>
 <translation id="7557508262441527045">Pechouse a sesión</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
@@ -2250,7 +2249,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fixado</translation>
 <translation id="8990960056509724223">Non se puido gardar o ficheiro debido ás políticas da túa organización</translation>
 <translation id="8998289560386111590">Non está dispoñible no teu dispositivo</translation>
-<translation id="9000532564152265066">Todas as pestanas</translation>
 <translation id="9003677638446136377">Comprobar de novo</translation>
 <translation id="9006453925669499173">Menú → Nova pestana do modo de incógnito</translation>
 <translation id="9008201768610948239">Ignorar</translation>

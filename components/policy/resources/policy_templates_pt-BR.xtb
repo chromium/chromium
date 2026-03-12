@@ -1407,6 +1407,23 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
 <translation id="1954612656043024615">Ativar o recurso de área de transferência compartilhada</translation>
 <translation id="1955063069502242812">Ativar som de bateria fraca</translation>
 <translation id="1955806069704957172">Controla as configurações da API do conector do espaço de trabalho.</translation>
+<translation id="1956346847126765379">Se a política <ph name="URL_BLOCKLIST_POLICY_NAME" /> for definida, as páginas da web com URLs proibidos não serão carregadas. Os admins podem especificar a lista de padrões de URL a serem bloqueados. Se a política não for definida, nenhum URL será bloqueado no navegador. Até 1.000 exceções podem ser definidas na <ph name="URL_ALLOWLIST_POLICY_NAME" />. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Observação: esta política não se aplica a URLs JavaScript na página com dados carregados dinamicamente. Se você bloqueou exemplo.com/abc, ainda é possível carregar exemplo.com usando XMLHTTPRequest. Além disso, esta política não impede que as páginas da web atualizem o URL mostrado na omnibox para um bloqueado usando a API History do JavaScript.
+
+A partir do <ph name="PRODUCT_NAME" /> versão 73, é possível bloquear URLs "javascript://*". No entanto, isso só afeta JavaScript inserido na barra de endereço ou, por exemplo, os bookmarklets.
+
+A partir do <ph name="PRODUCT_NAME" /> versão 92, esta política também será compatível com o modo headless.
+
+A partir do <ph name="PRODUCT_NAME" /> versão 147, o caractere curinga * sozinho não se aplica a URLs internos chrome://. Para bloquear esses URLs, use explicitamente o padrão chrome://*.
+
+Observação: bloquear URLs internos chrome://* e chrome-untrusted://* pode gerar erros inesperados ou ser ignorado em alguns casos. Em vez de bloquear determinados URLs internos, confira se há políticas mais específicas disponíveis. Por exemplo:
+
+— Em vez de bloquear chrome://settings/certificates, use <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+— Em vez de bloquear chrome-untrusted://crosh, use a política <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
+
+— Em vez de bloquear devtools://*, use uma das políticas <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ou <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1957093168333856467">Desativar o teclado virtual de acessibilidade</translation>
 <translation id="1958110911685486719">Suporte a formulários XFA em PDFs ativado</translation>
 <translation id="1960059835237529462">Permite que os usuários confiram a promoção de avaliação da App Store do <ph name="IOS_NAME" /></translation>
@@ -7284,21 +7301,6 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
 <translation id="5627270992026554674">Impeça que docentes usem a lista de estudantes da turma do Google Sala de Aula.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
-<translation id="5630952076819481843">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites para o Chrome selecionar um certificado do cliente automaticamente. O valor é uma matriz de dicionários JSON convertidos em strings, cada um com o formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, em que <ph name="URL_PATTERN_PLACEHOLDER" /> é um padrão de configuração de conteúdo. <ph name="FILTER_PLACEHOLDER" /> restringe quais certificados do cliente podem ser selecionados automaticamente pelo navegador. Seja qual for o filtro usado, apenas os certificados correspondentes à solicitação do servidor serão selecionados. No Android, o Chrome só pode selecionar certificados do cliente que ele mesmo provisionou. Ele não pode acessar certificados instalados no nível do sistema operacional.
-
-      Exemplos de uso da seção <ph name="FILTER_PLACEHOLDER" />:
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, apenas certificados do cliente emitidos por um certificado com o CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> serão selecionados.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> tiver as seções <ph name="ISSUER_STRING_VALUE" /> e <ph name="SUBJECT_STRING_VALUE" /> ao mesmo tempo, apenas certificados do cliente que satisfaçam ambas as condições serão selecionados.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> tiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com o valor <ph name="FILTER_STRING_ORGANIZATION" />, um certificado vai precisar de pelo menos uma organização correspondente ao valor especificado para ser selecionado.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> tiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com um valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, um certificado vai precisar de pelo menos uma unidade organizacional correspondente ao valor especificado para ser selecionado.
-
-      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="EMPTY_DICTIONARY" />, a seleção de certificados do cliente não será restringida de nenhuma outra forma. Os filtros fornecidos pelo servidor da Web ainda se aplicam.
-
-      Se a política não for definida, não haverá seleção automática para nenhum site.</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
 <translation id="5634032995857968056">Ativar o sandbox do contêiner do app Renderer</translation>
 <translation id="5638334542697444045">Não permitir o uso do tethering instantâneo</translation>

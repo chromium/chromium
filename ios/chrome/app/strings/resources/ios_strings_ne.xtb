@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">तपाईंलाई फेरि स्वागत छ!</translation>
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
 <translation id="201759455285471444">ट्याब समूह एक्स्पान्ड गर्नुहोस्।</translation>
-<translation id="202070562065520783">यसका बारेमा वर्णन गर</translation>
 <translation id="2044394949148788042">ट्याब ग्रिड खोल्नुहोस्</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ले <ph name="USER_EMAIL" /> खाता व्यवस्थापन गर्छ र यसले केही जानकारी हेर्न सक्ने सम्भावना हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नयाँ सामग्री</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">आफूले प्रयोग गर्ने सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्डलगायतका थप कुरा प्राप्त गर्नुहोस्।</translation>
 <translation id="6729493062119577923">साझा ट्याब समूहमा गरिएका गतिविधि</translation>
 <translation id="6732087373923685049">क्यामेरा</translation>
+<translation id="6736243959894955139">ठेगाना</translation>
 <translation id="6746338529702829275">आफ्नो खातामा भएको जानकारीको समीक्षा गर्नुहोस्</translation>
 <translation id="6750456911389438250">{count,plural, =1{हिस्ट्रीमा भएको {count} वस्तु इम्पोर्ट गरियो}other{हिस्ट्रीमा भएका {count} वटा वस्तु इम्पोर्ट गरिए}}</translation>
 <translation id="6755200887046212842">खाताहरू व्यवस्थित गर्नुहोस्</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">माफ गर्नुहोस्, यस समयमा तपाईंको पासलाई पासबुकमा स्थापना गर्न सकिदैन।</translation>
 <translation id="754655535278952384"><ph name="TIME" /> जाँच गरियो</translation>
 <translation id="7554645225856321710">सबै ट्याब बन्द गर्नुहोस्</translation>
-<translation id="7554791636758816595">नयाँ ट्याब</translation>
 <translation id="7557508262441527045">साइन आउट गरिएको छ</translation>
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="7561982940498449837">मेनु बन्द गर्नुहोस्</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन गरिएको साइट</translation>
 <translation id="8990960056509724223">तपाईंको सङ्गठनका नीतिहरूका कारण फाइल सेभ गर्न सकिएन</translation>
 <translation id="8998289560386111590">तपाईंको डिभाइसमा उपलब्ध छैन</translation>
-<translation id="9000532564152265066">सबै ट्याबहरू</translation>
 <translation id="9003677638446136377">फेरि जाँच गर्नुहोस्</translation>
 <translation id="9006453925669499173">मेनु → नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>

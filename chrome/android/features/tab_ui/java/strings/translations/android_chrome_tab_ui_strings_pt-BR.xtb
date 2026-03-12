@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Guias e grupos de guias</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Fechar grupo de guias "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_ONE" /> guia.}one{Fechar <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Fechar <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
+<translation id="2476179388576975626">Picture-in-picture</translation>
 <translation id="2498435670446402865">Renomear grupo de guias</translation>
 <translation id="2536366509642644298">Os grupos de guias "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" não estão mais disponíveis</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>

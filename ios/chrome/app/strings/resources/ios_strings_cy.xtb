@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Croeso'n ôl!</translation>
 <translation id="2015722694326466240">I weld cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="201759455285471444">Ehangu'r grŵp tab.</translation>
-<translation id="202070562065520783">Eglurwch hyn i mi</translation>
 <translation id="2044394949148788042">Agorwch y grid tabiau</translation>
 <translation id="2044681667265133332">Mae'r cyfrif <ph name="USER_EMAIL" /> yn cael ei reoli gan <ph name="HOSTED_DOMAIN" />, a allai weld rhywfaint o wybodaeth. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">eitem newydd</translation>
@@ -1614,6 +1613,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="672735642903863329">Cael eich nodau tudalen, eich cyfrineiriau a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="6729493062119577923">Gweithgarwch grŵp tabiau a rennir</translation>
 <translation id="6732087373923685049">camera</translation>
+<translation id="6736243959894955139">Cyfeiriad</translation>
 <translation id="6746338529702829275">Adolygu data eich cyfrif</translation>
 <translation id="6750456911389438250">{count,plural, =1{Wedi mewnforio {count} eitem hanes}zero{Wedi mewnforio {count} eitemau hanes}two{Wedi mewnforio {count} eitem hanes}few{Wedi mewnforio {count} eitem hanes}many{Wedi mewnforio {count} eitem hanes}other{Wedi mewnforio {count} eitem hanes}}</translation>
 <translation id="6755200887046212842">Rheoli Cyfrifon</translation>
@@ -1820,7 +1820,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7537586195939242955">Mae'n ddrwg gennym, ni ellir gosod y Passbook ar yr adeg hon.</translation>
 <translation id="754655535278952384">Gwiriwyd <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Cau'r Cyfan</translation>
-<translation id="7554791636758816595">Tab Newydd</translation>
 <translation id="7557508262441527045">Rydych wedi'ch allgofnodi</translation>
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="7561982940498449837">Cau'r ddewislen</translation>
@@ -2250,7 +2249,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, gwefan wedi'i phinio</translation>
 <translation id="8990960056509724223">Nid oedd modd cadw'r ffeil oherwydd polisïau eich sefydliad</translation>
 <translation id="8998289560386111590">Dim ar gael ar eich dyfais</translation>
-<translation id="9000532564152265066">Pob Tab</translation>
 <translation id="9003677638446136377">Gwirio eto</translation>
 <translation id="9006453925669499173">Dewislen → Tab Anhysbys newydd</translation>
 <translation id="9008201768610948239">Anwybyddu</translation>

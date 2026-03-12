@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Welcome back!</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
-<translation id="202070562065520783">Explain this to me</translation>
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="2044681667265133332">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which may be able to view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">new item</translation>
@@ -1614,6 +1613,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="672735642903863329">Get your bookmarks, passwords and more on all your devices.</translation>
 <translation id="6729493062119577923">Shared tab group activity</translation>
 <translation id="6732087373923685049">camera</translation>
+<translation id="6736243959894955139">Address</translation>
 <translation id="6746338529702829275">Review your account data</translation>
 <translation id="6750456911389438250">{count,plural, =1{Imported {count} history item}other{Imported {count} history items}}</translation>
 <translation id="6755200887046212842">Manage Accounts</translation>
@@ -1820,7 +1820,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Close all</translation>
-<translation id="7554791636758816595">New tab</translation>
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7561982940498449837">Close menu</translation>
@@ -2250,7 +2249,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pinned site</translation>
 <translation id="8990960056509724223">File couldn't save due to your organisation's policies</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
-<translation id="9000532564152265066">All tabs</translation>
 <translation id="9003677638446136377">Check again</translation>
 <translation id="9006453925669499173">Menu → New Incognito tab</translation>
 <translation id="9008201768610948239">Ignore</translation>

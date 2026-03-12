@@ -444,7 +444,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="5515432237048785579">Keşfet feed'i alt sayfası tam boyutta açıldı</translation>
 <translation id="5516455585884385570">Bildirim ayarlarını aç</translation>
 <translation id="5527111080432883924">Panodaki metin ve resimleri okumak için sitelere izin vermeden önce sor (önerilen)</translation>
-<translation id="5553374991681107062">En son</translation>
 <translation id="5555115555607204100">Chrome'un V8 motoruyla siteleri hızlandırmayın. Ancak bu durumda Chrome, saldırılara karşı biraz daha dirençli hale gelir</translation>
 <translation id="5556459405103347317">Yeniden Yükle</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> engellendi</translation>
@@ -676,7 +675,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="8007176423574883786">Bu cihaz için kapatıldı</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8033047164036749181">Bu siteden bildirim almak için abone olun</translation>
-<translation id="8042586301629853791">Sıralama ölçütü:</translation>
 <translation id="8051193500142930381">Kameranın kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="8056330801132235235">Chrome Varsayılanı</translation>
 <translation id="8067883171444229417">Videoyu oynat</translation>

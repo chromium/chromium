@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2371084566192454134">Укладкі і групы ўкладак</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> укладкай.}one{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкай.}few{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}many{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}other{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
+<translation id="2476179388576975626">Відарыс у відарысе</translation>
 <translation id="2498435670446402865">Назва групы ўкладак</translation>
 <translation id="2536366509642644298">Групы ўкладак "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" больш не даступныя</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>

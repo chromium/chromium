@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Välkommen tillbaka!</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="201759455285471444">Utöka flikgruppen.</translation>
-<translation id="202070562065520783">Förklara detta för mig</translation>
 <translation id="2044394949148788042">Öppna rutnätet med flikar</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> hanteras av <ph name="HOSTED_DOMAIN" />, som kanska kan se viss information. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt objekt</translation>
@@ -1614,6 +1613,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="672735642903863329">Använd samma bokmärken, lösenord med mera på alla enheter.</translation>
 <translation id="6729493062119577923">Aktivitet i den delade flikgruppen</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Adress</translation>
 <translation id="6746338529702829275">Granska din kontodata</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historikobjekt har importerats}other{{count} historikobjekt har importerats}}</translation>
 <translation id="6755200887046212842">Hantera konton</translation>
@@ -1820,7 +1820,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7537586195939242955">Det går tyvärr inte att installera det här objektet i Passbook just nu.</translation>
 <translation id="754655535278952384">Kontrollerades <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Stäng alla</translation>
-<translation id="7554791636758816595">Ny flik</translation>
 <translation id="7557508262441527045">Utloggad</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
@@ -2250,7 +2249,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fäst webbplats</translation>
 <translation id="8990960056509724223">Det gick inte att spara filen på grund av organisationens policyer</translation>
 <translation id="8998289560386111590">Inte tillgängligt på din enhet</translation>
-<translation id="9000532564152265066">Alla flikar</translation>
 <translation id="9003677638446136377">Kontrollera igen</translation>
 <translation id="9006453925669499173">Meny → Ny inkognitoflik</translation>
 <translation id="9008201768610948239">Ignorera</translation>

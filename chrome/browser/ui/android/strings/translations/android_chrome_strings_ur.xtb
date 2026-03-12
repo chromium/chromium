@@ -223,7 +223,6 @@
 <translation id="1943398124995840148">‏‫XR میں کھلے ہوئے آپ کے ٹیبز اب ایک اپ ڈیٹ کردہ شکل میں دکھائی دیں گے</translation>
 <translation id="1944535645109964458">کوئی پاس کی دستیاب نہیں ہے</translation>
 <translation id="1957557050935255529">‏PDF لوڈ ہو رہا ہے…</translation>
-<translation id="1959679933317802873">مواد کے منتظر</translation>
 <translation id="1960290143419248813">‏Chrome اپ ڈیٹس Android کے اس ورژن کیلئے مزید تعاون یافتہ نہیں ہیں</translation>
 <translation id="1962061488333185936">‫<ph name="TAB_TITLE" />، متعدد منتخب کردہ قابل سماعت ٹیب</translation>
 <translation id="1963976881984600709">معیاری تحفظ</translation>
@@ -245,7 +244,6 @@
 <translation id="2047378580182589770">پوشیدگی سے باہر جانے کے لیے ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">‏جب بھی ممکن ہو HTTPS کا استعمال کریں اور ان سائٹس کو لوڈ کرنے سے پہلے وارننگ حاصل کریں جو اس کی حمایت نہیں کرتی ہیں۔ آپ اس ترتیب کو تبدیل نہیں کر سکتے کیونکہ آپ نے اعلی تحفظ فعال کیا ہوا ہے۔</translation>
-<translation id="2052723746739622752">‏‫Gemini کا پن ہٹائیں</translation>
 <translation id="2056878612599315956">سائٹ رک گئی</translation>
 <translation id="2063047797624276601">آپ کی تنظیم نے بہتر کردہ محفوظ براؤزنگ کو آن کیا ہے</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہوگیا}other{# ڈاؤن لوڈز ناکام ہو گئے}}</translation>
@@ -289,7 +287,6 @@
 <translation id="2234031676056123135">اپنے شارٹ کٹس کو حسب ضرورت بنائیں</translation>
 <translation id="2234827758954819389">رازداری کی گائیڈ</translation>
 <translation id="2238038374973843156">گروپ کو دوسری ونڈو میں منتقل کریں</translation>
-<translation id="2239812875700136898">‏اختیارات برائے Discover بٹن سے اپنی کہانیاں کنٹرول کریں</translation>
 <translation id="2247789808226901522">کارڈ کی میعاد ختم ہو گئی ہے</translation>
 <translation id="2249635629516220541">سائٹس کے ذریعے استعمال کردہ معلومات کو حسب ضرورت بنائیں تاکہ آپ کو اشتہارات دکھایا جا سکے</translation>
 <translation id="2251809247798634662">نئی پوشیدگی ونڈو</translation>
@@ -377,7 +374,6 @@
 <translation id="2581165646603367611">‏یہ سائٹس کی کوکیز، کیش اور اس دیگر ڈیٹا کو صاف کر دے گی جسے Chrome اہم نہیں خیال کرتا ہے۔</translation>
 <translation id="2587052924345400782">جدید تر ورژن دستیاب ہے</translation>
 <translation id="2593272815202181319">مونو اسپیس</translation>
-<translation id="260403163289591229">پیروی ہو رہی ہے</translation>
 <translation id="2604446170045642109">آپ اپنی ترتیبات میں سائٹس کے لیے گہری تھیم کو آف کر سکتے ہیں۔</translation>
 <translation id="2605017215201958293">‏‫AI کے ساتھ اس صفحہ کو سنیں</translation>
 <translation id="2607441479295509868">سائن آؤٹ ہو گئے۔ اپنے اکاؤنٹ میں بُک مارکس اور پاس ورڈز وغیرہ کا استعمال کرنے کیلئے دوبارہ سائن ان کریں۔</translation>
@@ -434,7 +430,6 @@
 <translation id="286473047976978798">آپ کی ظاہری ترجیحات لاگو کریں؟</translation>
 <translation id="2869416538780777323">{OTHER_TAB_COUNT,plural, =1{‫<ph name="URL" /> اور 1 دیگر ٹیب}other{‫<ph name="URL" /> اور <ph name="TAB_COUNT_MANY" /> دیگر ٹیبز}}</translation>
 <translation id="2869430948265924908">کار میں اپنے حساس مواد کی حفاظت کے لیے، آپ کو کار پروفائل لاک بنانا ہوگا۔  آپ یہ پن، کوڈ، یا پاس ورڈ کے ساتھ کر سکتے ہیں۔</translation>
-<translation id="2870560284913253234">سائٹ</translation>
 <translation id="2871733351037274014">پیشگی لوڈ والے صفحات</translation>
 <translation id="2876136027428473467"><ph name="CHILD_NAME" /> آپ سے اس ویب سائٹ کی منظوری چاہتی ہے:</translation>
 <translation id="2876556152483133018">سائٹ کی تلاش</translation>
@@ -451,7 +446,6 @@
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> کیلئے تجاویز دکھائی جا رہی ہیں</translation>
 <translation id="2904300462646366554">‏ڈاؤن لوڈ کردہ PDFs آپ کے آلے پر PDF ویورز میں سے ایک ساتھ خودکار طور پر کھلتے ہیں</translation>
 <translation id="2904414404539560095">ان آلات کی فہرست جن کے ساتھ ٹیب کا اشتراک کرنا ہے مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
-<translation id="2908243544703713905">نہ پڑھی ہوئی کہانیاں تیار ہیں</translation>
 <translation id="2909615210195135082">‏Google اطلاعات پلیٹ فارم</translation>
 <translation id="2912247081180973411">ونڈوز بند کریں</translation>
 <translation id="2912345083818861431">کھلے ہوئے پوشیدگی ٹیبز دیکھنے کے لیے اسکرین لاک کا استعمال کریں</translation>
@@ -514,7 +508,6 @@
 <translation id="3161699713309727585">‫<ph name="BUTTON_TEXT" />، نئے ٹیب میں کھلتا ہے</translation>
 <translation id="3166827708714933426">ٹیب اور ونڈو شارٹ کٹس</translation>
 <translation id="3167258285411721858">آپ <ph name="HOST_NAME" /> کے لیے موبائل سائٹ کی درخواست کر سکتے ہیں</translation>
-<translation id="3169472444629675720">دریافت کریں</translation>
 <translation id="3181145110929454111">‫<ph name="TAB_TITLE" />، متعدد منتخب کردہ پن کردہ خاموش کیا گیا پوشیدگی ٹیب</translation>
 <translation id="3187472288455401631">اشتہار کی اثرپذیری کی پیمائش</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
@@ -623,7 +616,6 @@
 <translation id="3687645719033307815">آپ اس صفحہ کا پیش منظر دیکھ رہے ہیں</translation>
 <translation id="368978924030580338">{BOOKMARKS_COUNT,plural, =1{‏‫1 بُک مارک صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫# بُک مارکس صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="3692944402865947621">اسٹوریج کا مقام ناقابل رسائی ہونے کے سبب <ph name="FILE_NAME" /> ڈاؤن لوڈ کرنا ناکام ہو گیا۔</translation>
-<translation id="3697705478071004188">سائٹ کے لحاظ سے ترتیب دیں</translation>
 <translation id="3699022356773522638">فائل ڈاؤن لوڈ کریں؟</translation>
 <translation id="3701515417135397388">ڈیٹا کی خلاف ورزی میں پاس ورڈ کے ساتھ چھیڑ چھاڑ کیے جانے پر آپ کو متنبہ کرتا ہے</translation>
 <translation id="3703166520839776970">اگر یہ جاری رہتا ہے تو <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے مزید معلومات حاصل کرنے کے لیے نیچے "مزید تفصیلات" کا انتخاب کریں۔</translation>
@@ -753,7 +745,6 @@
 <translation id="4232376164796433044">پاس ورڈز اور آٹو فل</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="424864128008805179">‏Chrome سے سائن آؤٹ کریں؟</translation>
-<translation id="4249955472157341256">تازہ ترین کے لحاظ سے ترتیب دیں</translation>
 <translation id="4255841059940367080">‏‫Google کو بھیجے جا رہے آپ کے براؤزنگ ڈیٹا کی بنیاد پر خطرناک سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز کے خلاف ریئل ٹائم میں AI تقویت یافتہ حفاظت ملتی ہے</translation>
 <translation id="4256782883801055595">اوپن سورس لائسنسز</translation>
 <translation id="426652736638196239">‏یہ IBAN صرف اس آلے میں محفوظ ہوگا</translation>
@@ -814,7 +805,6 @@
 <translation id="4460861538906892109">{ITEMS_COUNT,plural, =1{‫1 بُک مارک}other{‫# بُک مارکس}}</translation>
 <translation id="4478161224666880173">آپ اس سائٹ پر اپنا <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اکاؤنٹ استعمال کر سکتے ہیں۔ جاری رکھنے کیلئے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> میں سائن ان کریں۔</translation>
 <translation id="4479972344484327217">‏Chrome کیلئے <ph name="MODULE" /> انسٹال ہو رہا ہے…</translation>
-<translation id="4484496141267039529">کوئی کنکشن نہیں ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="4487967297491345095">‏Chrome کا سبھی ایپ ڈیٹا مستقل طور پر حذف کر دیا جائے گا۔ اس میں سبھی فائلیں، ترتیبات، اکاؤنٹس، ڈیٹا بیسز وغیرہ شامل ہیں۔</translation>
 <translation id="4494315997125191493">تمام ونڈوز دیکھنے کے لیے نظم کریں کو منتخب کریں</translation>
 <translation id="4494806687727322324">آپ کے منتظم نے پاس ورڈ محفوظ کرنے کی سہولت کو آن کر دیا ہے</translation>
@@ -928,7 +918,6 @@
 <translation id="4885273946141277891">‏Chrome وقوعات کی غیر تعاون یافتہ تعداد۔</translation>
 <translation id="4890973535105146893">‏آپ کے Google اکاؤنٹ میں کوئی محفوظ کردہ پاس ورڈ نہیں ہے</translation>
 <translation id="4905823827770127520">صفحے پر کوئی لنک شامل کریں</translation>
-<translation id="4908869848243824489">‏Discover منجانب Google</translation>
 <translation id="4910889077668685004">ادائیگی ایپس</translation>
 <translation id="4911042367886397055">پھر سے خوش آمدید، <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">ریفریش کرنا بند کریں</translation>
@@ -973,7 +962,6 @@
 <translation id="5075939510584558547">مرموز کاری کے بغیر محفوظ کریں</translation>
 <translation id="5078638979202084724">سبھی ٹیبز کو بُک مارک کریں</translation>
 <translation id="5085038751173179818">‏اپنے تمام آلات پر اپنے بُک مارکس وغیرہ حاصل کرنے کے لیے اس سائٹ اور Chrome میں سائن ان کریں</translation>
-<translation id="5088347662971855383">‏‫Gemini کو پن کریں</translation>
 <translation id="5091199029769593641">‏جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="SITE_NAME" /> سے کہانیاں دکھائی دیں گی۔ آپ جن سائٹس کی پیروی کرتے ہیں انہیں آپ کے Google اکاؤنٹ میں محفوظ کیا جاتا ہے۔ آپ Discover کی ترتیبات میں ان کا نظم کر سکتے ہیں۔</translation>
 <translation id="509429900233858213">ایک خرابی پیش آگئی۔</translation>
 <translation id="5096775069898886423">محفوظ کنکشنز کا تعاون کرنے والی سائٹس کیلئے، سائٹ ملاحظہ کرنے سے پہلے وارننگ حاصل کریں</translation>
@@ -1057,7 +1045,6 @@
 <translation id="5444999712122199445">سائٹ پر واپس جائیں</translation>
 <translation id="544776284582297024">ٹیبز کو کھولنے اور ایک ہی وقت میں مختلف صفحات ملاحظہ کرنے کے لئے، ٹیبز بٹن کھولیں پر تھپتھپائیں</translation>
 <translation id="5456381639095306749">صفحہ ڈاؤن لوڈ کریں</translation>
-<translation id="5458366071038729214">آپ جن سائٹس کی پیروی کرتے ہیں وہ آپ کو یہاں ملیں گی</translation>
 <translation id="5465437530117042974">ٹیب کی نیچے کی شیٹ کی تبدیلیاں بند ہو گئیں۔</translation>
 <translation id="5469852975082458401">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے F7 دبائیں۔</translation>
 <translation id="5471273988133666918">ٹیب <ph name="TAB_TITLE" /> کو منتقل نہیں کیا جا سکتا</translation>
@@ -1179,6 +1166,7 @@
 <translation id="5978661847409534366">{ITEMS_COUNT,plural, =1{آپ کی پڑھنے کی فہرست پر 1 صفحہ}other{آپ کی پڑھنے کی فہرست پر # صفحات}}</translation>
 <translation id="5992182727984874868">‏<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، <ph name="SEPARATOR" />، Chrome نے یہ اجازتیں ہٹا دی ہیں کیوں کہ آپ حال ہی میں ان پر نہیں گئے ہیں</translation>
 <translation id="5995726099713306770">صفحے کو دوبارہ لوڈ کریں؟</translation>
+<translation id="5998675059699164418">‏آپ کی تنظیم چاہتی ہے کہ آپ Chrome استعمال کرنے کیلئے سائن ان کریں۔</translation>
 <translation id="6000066717592683814">‏Google کو رکھیں</translation>
 <translation id="6000203700195075278">دوبارہ پیروی کریں</translation>
 <translation id="6011308810877101166">تلاش کی تجاویز کو بہتر بنائیں</translation>
@@ -1193,7 +1181,6 @@
 <translation id="6047066316630165190">گرڈ ٹیب سوئچر کھولیں</translation>
 <translation id="604996488070107836">ایک نامعلوم خرابی کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="605721222689873409">YY</translation>
-<translation id="6059830886158432458">اپنی کہانیوں اور سرگرمی کو یہاں کنٹرول کریں</translation>
 <translation id="606985262342505139">ٹیب کی نیچے کی شیٹ مکمل طور پر کھلی ہے</translation>
 <translation id="6071995715087444295">‏متاثرہ پاس ورڈز چیک کرنے کے لیے اپنے Google اکاؤنٹ میں سائن ان کریں</translation>
 <translation id="6078323886959318429">شارٹ کٹ شامل کریں</translation>
@@ -1330,7 +1317,6 @@
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="652948702951888897">‏Chrome کی سرگزشت</translation>
 <translation id="6532866250404780454">‏Chrome میں آپ کی ملاحظہ کردہ سائٹس نہیں دکھائی دیں گی۔ سائٹ کے سبھی ٹائمرز حذف کر دیے جائیں گے۔</translation>
-<translation id="6539092367496845964">کچھ غلط ہو گیا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{1 گھنٹہ پہلے چیک کیا گیا}other{# گھنٹے پہلے چیک کیا گیا}}</translation>
 <translation id="6545017243486555795">سبھی ڈیٹا صاف کریں</translation>
 <translation id="6546511553472444032">فائل نقصان دہ ہو سکتی ہے</translation>
@@ -1561,7 +1547,6 @@
 <translation id="7335766481146072567">جاری رکھیں دبائیں</translation>
 <translation id="7336259382292148213">اطلاعات کے ساتھ کوئی مسئلہ نہیں ہے</translation>
 <translation id="7339898014177206373">نئی ونڈو</translation>
-<translation id="7340958967809483333">‏Discover کے لیے اختیارات</translation>
 <translation id="7352339641508007922">لمبا اسکرین شاٹ لینے کے لیے گھسیٹیں</translation>
 <translation id="7352651011704765696">کچھ غلط ہو گیا</translation>
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 منتخب کردہ آئٹم کا اشتراک کریں}other{# منتخب کردہ آئٹمز کا اشتراک کریں}}</translation>
@@ -1608,7 +1593,6 @@
 <translation id="7498271377022651285">براہ کرم انتظار کریں…</translation>
 <translation id="7499065150275272675">‫<ph name="TAB_TITLE" />، پن کردہ خاموش کردہ ٹیب</translation>
 <translation id="7501135638693251872">سبھی بُک مارکس</translation>
-<translation id="750228856503700085">اپ ڈیٹس دستیاب نہیں ہیں</translation>
 <translation id="7507207699631365376">اس فراہم کنندہ کی <ph name="BEGIN_LINK" />راز داری کی پالیسی<ph name="END_LINK" /> دیکھیں</translation>
 <translation id="750886945254958667">اس گروپ کو بعد میں ٹیبز شامل کرنے کے لیے رکھیں، یا اگر آپ اس تک مزید رسائی نہیں چاہتے ہیں تو اسے چھوڑ دیں</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
@@ -1651,7 +1635,6 @@
 <translation id="7682724950699840886">مندرجہ ذیل تجاویز آزمائیں: یقینی بنائیں کہ آپ کے آلہ پر کافی جگہ ہے، دوبارہ برآمد کرنے کی کوشش کریں۔</translation>
 <translation id="7686086654630106285">سائٹ کے تجویز کردہ اشتہارات کے بارے میں مزید</translation>
 <translation id="7690596512217303514">‏آپ کا آلہ Chrome کو نہیں کھول سکا۔ مسئلہ حل کرنے کے لیے، اپنے App اسٹور سے تازہ ترین Chrome اپ ڈیٹ ڈاؤن لوڈ کریں۔</translation>
-<translation id="7691043218961417207">پیروی کرنے کے لیے مواد کو دریافت کریں</translation>
 <translation id="7692761875510935111">فوری طور پر براؤزر میں کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
 <translation id="7697383401610880082">گھسیٹنے کا ہینڈل</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> میں ای میل تخلیق کریں</translation>
@@ -1761,7 +1744,6 @@
 <translation id="8103578431304235997">پوشیدگی ٹیب</translation>
 <translation id="810433609302852">تجاویز کی اطلاعات کی خصوصیت کا پرومو اور استعمال کے مراحل کی نیچے کی شیٹ</translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
-<translation id="8107530384992929318">ترتیب دینے کے اختیارات بند کریں</translation>
 <translation id="8110024788458304985">‏Chrome کی خصوصیات اور کارکردگی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="8110087112193408731">‏ڈیجیٹل فلاح و بہبود میں آپ کی Chrome سرگرمی دکھائیں؟</translation>
 <translation id="8118117428362942925">اگر آپ کو مدد کی ضرورت ہو تو اپنے والدین (<ph name="PARENT_NAME" />) سے پوچھیں</translation>
@@ -1867,7 +1849,6 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8491317241605644838">کوئی غیر فعال ونڈو نہیں ہے</translation>
 <translation id="8493948351860045254">جگہ خالی کریں</translation>
-<translation id="8497242791509864205">ترتیب دینے کے اختیارات کھولیں</translation>
 <translation id="8497480609928300907">رازداری کی گائیڈ کی وضاحت</translation>
 <translation id="8505766168025405649">ڈاؤن لوڈ کی صورتحال کے لیے اطلاع دیکھیں</translation>
 <translation id="8506357771923193001">آپ کو اپنے ڈاؤن لوڈز یہاں ملیں گے</translation>
@@ -1980,6 +1961,7 @@
 <translation id="9019199799064251516">کار پروفائل لاک کے بغیر جاری رکھیں؟</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
 <translation id="9022871169049522985">سائٹس اور مشتہرین اپنے اشتہارات کی کارکردگی کی پیمائش کر سکتے ہیں</translation>
+<translation id="9024318700713112071">‏Chrome کو بطور ڈیفالٹ سیٹ کریں</translation>
 <translation id="9027728231343310283"><ph name="SITE" /> کالعدم کریں</translation>
 <translation id="9035378196785279980">‏اس میں منتقل کریں\u2026</translation>
 <translation id="9042893549633094279">رازداری اور سیکیورٹی</translation>

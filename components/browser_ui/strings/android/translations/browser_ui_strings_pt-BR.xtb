@@ -269,6 +269,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="3658847490588580244">Página inferior de navegador padrão</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}one{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}other{Há <ph name="RWS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="RWS_OWNER" />}}</translation>
 <translation id="3676777756440746804">Os sites não podem pedir para usar as informações que salvaram sobre você</translation>
+<translation id="3677897809642449131">Os sites podem pedir para usar sensores de movimento</translation>
 <translation id="3678318839615834650">A página inferior de cards da página "Nova guia" está aberta no tamanho máximo</translation>
 <translation id="3697164069658504920">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos USB. Quando está desativada, os sites não podem usar dispositivos USB.</translation>
 <translation id="3703430731944883733">Gerencie seu feed</translation>
@@ -444,7 +445,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="5515432237048785579">A página inferior do feed do Discover está aberta no tamanho máximo</translation>
 <translation id="5516455585884385570">Abrir configurações de notificação</translation>
 <translation id="5527111080432883924">Perguntar antes de permitir que sites leiam textos e imagens da área de transferência (recomendado)</translation>
-<translation id="5553374991681107062">Mais recentes</translation>
 <translation id="5555115555607204100">Não tornar os sites mais rápidos com o mecanismo V8 do Chrome, mas deixar o navegador um pouco mais resistente a ataques</translation>
 <translation id="5556459405103347317">Recarregar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
@@ -676,7 +676,6 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="8007176423574883786">Desativado neste dispositivo</translation>
 <translation id="802154636333426148">Falha no download</translation>
 <translation id="8033047164036749181">Inscreva-se para receber notificações deste site</translation>
-<translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">Recursos que precisam de câmera não funcionarão</translation>
 <translation id="8056330801132235235">Padrão do Chrome</translation>
 <translation id="8067883171444229417">Assistir vídeo</translation>
@@ -748,6 +747,7 @@ A Proteção Avançada controla estas configurações do Chrome:
 <translation id="8707904142362025782">Os sites podem pedir acesso à câmera</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8715862698998036666">Arraste da parte de cima da tela e deslize da borda esquerda ou direita para sair da tela cheia.</translation>
+<translation id="8716050156658570300">Os sites podem pedir para usar sensores de movimento e luz</translation>
 <translation id="8719283222052720129">Ative a permissão para o app <ph name="APP_NAME" /> nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Quando essa configuração está ativada, os sites podem pedir para procurar dispositivos Bluetooth. Quando está desativada, os sites não podem procurar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>

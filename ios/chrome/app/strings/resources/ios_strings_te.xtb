@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">తిరిగి స్వాగతం!</translation>
 <translation id="2015722694326466240">పాస్‌వర్డ్‌లను చూడటానికి, మీరు ముందుగా తప్పక మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="201759455285471444">ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
-<translation id="202070562065520783">దీన్ని నాకు వివరించు</translation>
 <translation id="2044394949148788042">ట్యాబ్ గ్రిడ్‌ను తెరవండి</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, ఇది కొంత సమాచారాన్ని చూడగలదు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">కొత్త ఐటెమ్</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, అలాగే మరిన్నింటిని మీ పరికరాలన్నింటిలో పొందండి.</translation>
 <translation id="6729493062119577923">షేర్ చేసిన ట్యాబ్ గ్రూప్ యాక్టివిటీ</translation>
 <translation id="6732087373923685049">కెమెరా</translation>
+<translation id="6736243959894955139">అడ్రస్‌</translation>
 <translation id="6746338529702829275">మీ ఖాతా డేటాను రివ్యూ చేయండి</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} హిస్టరీ ఐటెమ్ దిగుమతి అయ్యింది}other{{count} హిస్టరీ ఐటెమ్‌లు దిగుమతి అయ్యాయి}}</translation>
 <translation id="6755200887046212842">ఖాతాలను మేనేజ్ చేయండి</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">క్షమించండి, ఈ సమయంలో పాస్‌బుక్‌కు మీ పాస్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు.</translation>
 <translation id="754655535278952384">చెక్ - ఇన్ <ph name="TIME" /></translation>
 <translation id="7554645225856321710">అన్నింటినీ మూసివేయండి</translation>
-<translation id="7554791636758816595">కొత్త ట్యాబ్</translation>
 <translation id="7557508262441527045">సైన్ అవుట్ చేశారు</translation>
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
 <translation id="7561982940498449837">మెనూను మూసివేయండి</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, పిన్ చేసిన సైట్</translation>
 <translation id="8990960056509724223">మీ సంస్థ పాలసీల కారణంగా ఫైల్‌ను సేవ్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="8998289560386111590">ఈ మోడ్ మీ పరికరంలో అందుబాటులో లేదు</translation>
-<translation id="9000532564152265066">అన్ని ట్యాబ్‌లు</translation>
 <translation id="9003677638446136377">మళ్లీ చెక్ చేయండి</translation>
 <translation id="9006453925669499173">మెనూ → కొత్త అజ్ఞాత ట్యాబ్</translation>
 <translation id="9008201768610948239">విస్మరించు</translation>

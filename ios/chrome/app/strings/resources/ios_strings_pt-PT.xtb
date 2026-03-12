@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Olá novamente!</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de separadores.</translation>
-<translation id="202070562065520783">Explica-me isto</translation>
 <translation id="2044394949148788042">Abra a grelha de separadores</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerida por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo item</translation>
@@ -1614,6 +1613,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="672735642903863329">Obtenha marcadores, palavras-passe e muito mais em todos os seus dispositivos.</translation>
 <translation id="6729493062119577923">Atividade do grupo de separadores partilhados</translation>
 <translation id="6732087373923685049">câmara</translation>
+<translation id="6736243959894955139">Endereço</translation>
 <translation id="6746338529702829275">Reveja os dados da sua conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item do histórico importado}other{{count} itens do histórico importados}}</translation>
 <translation id="6755200887046212842">Gerir contas</translation>
@@ -1820,7 +1820,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7537586195939242955">De momento não é possível instalar a sua Palavra-passe no Passbook.</translation>
 <translation id="754655535278952384">Última verificação: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Fechar tudo</translation>
-<translation id="7554791636758816595">Novo separador</translation>
 <translation id="7557508262441527045">Sessão terminada</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
@@ -2250,7 +2249,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixado</translation>
 <translation id="8990960056509724223">Não foi possível guardar o ficheiro devido às políticas da sua organização</translation>
 <translation id="8998289560386111590">Não disponível no seu dispositivo</translation>
-<translation id="9000532564152265066">Todos os separadores</translation>
 <translation id="9003677638446136377">Rever novamente</translation>
 <translation id="9006453925669499173">Menu → Novo separador de navegação anónima</translation>
 <translation id="9008201768610948239">Ignorar</translation>

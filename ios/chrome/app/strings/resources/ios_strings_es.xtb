@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">¡Hola de nuevo!</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes configurar una contraseña en tu dispositivo.</translation>
 <translation id="201759455285471444">Desplegar grupo de pestañas.</translation>
-<translation id="202070562065520783">Explícame esto</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332">La cuenta <ph name="USER_EMAIL" /> la gestiona <ph name="HOSTED_DOMAIN" />, que podría ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -1614,6 +1613,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="672735642903863329">Accede a tus marcadores, contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6729493062119577923">Actividad del grupo de pestañas compartidas</translation>
 <translation id="6732087373923685049">cámara</translation>
+<translation id="6736243959894955139">Dirección</translation>
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento del historial importado}other{{count} elementos del historial importados}}</translation>
 <translation id="6755200887046212842">Gestionar cuentas</translation>
@@ -1820,7 +1820,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7537586195939242955">No se puede instalar tu tarjeta en Passbook en este momento.</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Cerrar todo</translation>
-<translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7557508262441527045">Se ha cerrado la sesión</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7561982940498449837">Cerrar menú</translation>
@@ -2250,7 +2249,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fijado</translation>
 <translation id="8990960056509724223">No se ha podido guardar el archivo debido a las políticas de tu organización</translation>
 <translation id="8998289560386111590">No disponible en tu dispositivo</translation>
-<translation id="9000532564152265066">Todas las pestañas</translation>
 <translation id="9003677638446136377">Comprobar de nuevo</translation>
 <translation id="9006453925669499173">Menú → Nueva pestaña de Incógnito</translation>
 <translation id="9008201768610948239">Ignorar</translation>

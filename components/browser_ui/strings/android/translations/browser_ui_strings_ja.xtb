@@ -444,7 +444,6 @@
 <translation id="5515432237048785579">Discover フィードのボトムシートが画面全体に表示されています</translation>
 <translation id="5516455585884385570">通知設定を開く</translation>
 <translation id="5527111080432883924">サイトがクリップボードのテキストや画像を読み取る前に確認する（推奨）</translation>
-<translation id="5553374991681107062">最新</translation>
 <translation id="5555115555607204100">Chrome の V8 エンジンでサイトを高速化しない（攻撃に対する Chrome の耐性は若干強化されます）</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> をブロックしました</translation>
@@ -676,7 +675,6 @@
 <translation id="8007176423574883786">このデバイスに対して無効</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
 <translation id="8033047164036749181">このサイトの通知を許可</translation>
-<translation id="8042586301629853791">並べ替え:</translation>
 <translation id="8051193500142930381">カメラを必要とする機能は動作しなくなります</translation>
 <translation id="8056330801132235235">Chrome のデフォルト</translation>
 <translation id="8067883171444229417">動画を再生します</translation>

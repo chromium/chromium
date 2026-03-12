@@ -444,7 +444,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="5515432237048785579">Feltet i bunden med Discover-feedet er åbnet i fuld højde</translation>
 <translation id="5516455585884385570">Åbn indstillinger for notifikationer</translation>
 <translation id="5527111080432883924">Spørg, før websites får adgang til at læse tekst og billeder fra udklipsholderen (anbefales)</translation>
-<translation id="5553374991681107062">Seneste</translation>
 <translation id="5555115555607204100">Gør ikke websites hurtigere med Chromes V8-maskine, men gør Chrome en smule mere modstandsdygtig over for angreb</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> er blokeret</translation>
@@ -676,7 +675,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8007176423574883786">Deaktiveret på denne enhed</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
 <translation id="8033047164036749181">Abonner på notifikationer fra dette website</translation>
-<translation id="8042586301629853791">Sortér efter:</translation>
 <translation id="8051193500142930381">Funktioner, der skal bruge et kamera, fungerer ikke</translation>
 <translation id="8056330801132235235">Standard i Chrome</translation>
 <translation id="8067883171444229417">Afspil video</translation>

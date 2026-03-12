@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Добро нам дошли поново.</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
-<translation id="202070562065520783">Објасни ми ово</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -1614,6 +1613,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="672735642903863329">Приступајте обележивачима, лозинкама и другом садржају на свим уређајима.</translation>
 <translation id="6729493062119577923">Активности дељене групе картица</translation>
 <translation id="6732087373923685049">камера</translation>
+<translation id="6736243959894955139">Адреса</translation>
 <translation id="6746338529702829275">Прегледајте податке о налогу</translation>
 <translation id="6750456911389438250">{count,plural, =1{Увезена је {count} ставка историје}one{Увезена је {count} ставка историје}few{Увезене су {count} ставке историје}other{Увезено је {count} ставки историје}}</translation>
 <translation id="6755200887046212842">Управљајте налозима</translation>
@@ -1820,7 +1820,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7537586195939242955">Жао нам је, приступна реч сада не може да се инсталира у Passbook.</translation>
 <translation id="754655535278952384">Проверено је <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Затвори све</translation>
-<translation id="7554791636758816595">Нова картица</translation>
 <translation id="7557508262441527045">Одјављени сте</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7561982940498449837">Затвори мени</translation>
@@ -2250,7 +2249,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, закачен сајт</translation>
 <translation id="8990960056509724223">Чување фајла није могуће због смерница организације</translation>
 <translation id="8998289560386111590">Није доступно на вашем уређају</translation>
-<translation id="9000532564152265066">Све картице</translation>
 <translation id="9003677638446136377">Проверите поново</translation>
 <translation id="9006453925669499173">Мени → Нова картица без архивирања</translation>
 <translation id="9008201768610948239">Игнориши</translation>

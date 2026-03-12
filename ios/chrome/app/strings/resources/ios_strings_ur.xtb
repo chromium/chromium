@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">پھر سے خوش آمدید!</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہیے۔</translation>
 <translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
-<translation id="202070562065520783">یہ مجھے سمجھائیں</translation>
 <translation id="2044394949148788042">ٹیب گرڈ کھولیں</translation>
 <translation id="2044681667265133332">اکاؤنٹ <ph name="USER_EMAIL" /> کا نظم <ph name="HOSTED_DOMAIN" /> کے ذریعے کیا جاتا ہے جو کچھ معلومات دیکھنے کے قابل ہو سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">نیا آئٹم</translation>
@@ -1614,6 +1613,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="672735642903863329">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کریں۔</translation>
 <translation id="6729493062119577923">اشتراک کردہ ٹیب گروپ کی سرگرمی</translation>
 <translation id="6732087373923685049">کیمرا</translation>
+<translation id="6736243959894955139">پتہ</translation>
 <translation id="6746338529702829275">اپنے اکاؤنٹ کے ڈیٹا کا جائزہ لیں</translation>
 <translation id="6750456911389438250">{count,plural, =1{‫{count} سرگزشت آئٹم کو درآمد کیا گیا}other{‫{count} سرگزشت آئٹمز کو درآمد کیا گیا}}</translation>
 <translation id="6755200887046212842">اکاؤنٹس کا نظم کریں</translation>
@@ -1820,7 +1820,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7537586195939242955">‏معذرت، آپ کا Pass اس وقت Passbook میں انسٹال نہیں کیا جا سکتا ہے۔</translation>
 <translation id="754655535278952384"><ph name="TIME" /> چیک کیا گیا</translation>
 <translation id="7554645225856321710">تمام بند کریں</translation>
-<translation id="7554791636758816595">نیا ٹیب</translation>
 <translation id="7557508262441527045">سائن آؤٹ ہو گئے</translation>
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="7561982940498449837">مینیو بند کریں</translation>
@@ -2250,7 +2249,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، پن کردہ سائٹ</translation>
 <translation id="8990960056509724223">آپ کی تنظیم کی پالیسیوں کی وجہ سے فائل محفوظ نہیں ہو سکی</translation>
 <translation id="8998289560386111590">آپ کے آلے پر دستیاب نہیں ہے</translation>
-<translation id="9000532564152265066">سبھی ٹیبز</translation>
 <translation id="9003677638446136377">دوبارہ چیک کریں</translation>
 <translation id="9006453925669499173">مینو ← نیا پوشیدگی ٹیب</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>

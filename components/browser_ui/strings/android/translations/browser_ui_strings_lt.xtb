@@ -269,6 +269,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="3658847490588580244">Numatytosios naršyklės apatinis lapas</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}one{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}few{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}many{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}other{<ph name="RWS_MEMBERS_COUNT" /> svetainių, priklausančių <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}}</translation>
 <translation id="3676777756440746804">Svetainės blokuojamos, kad neprašytų naudoti savo išsaugotos informacijos apie jus</translation>
+<translation id="3677897809642449131">Svetainėse gali būti prašoma naudoti judesio jutiklius</translation>
 <translation id="3678318839615834650">Naujų skirtukų puslapio kortelių apatinis lapas atidarytas per visą aukštį</translation>
 <translation id="3697164069658504920">Įjungus svetainėse gali būti prašoma naudoti USB įrenginius. Išjungus svetainėse negalima naudoti USB įrenginių.</translation>
 <translation id="3703430731944883733">Sklaidos kanalo tvarkymas</translation>
@@ -444,7 +445,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="5515432237048785579">„Discover“ sklaidos kanalo apatinis lapas atidarytas per visą aukštį</translation>
 <translation id="5516455585884385570">Atidaryti pranešimų nustatymus</translation>
 <translation id="5527111080432883924">Klausti, prieš leidžiant svetainėms skaityti tekstą ir vaizdus iš iškarpinės (rekomenduojama)</translation>
-<translation id="5553374991681107062">Naujausi</translation>
 <translation id="5555115555607204100">Nespartinti svetainių naudojant „Chrome“ V8 variklį, bet padaryti „Chrome“ šiek tiek atsparesnę atakoms</translation>
 <translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="5591840828808741583">Užblokuota: <ph name="SITE_NAME" /></translation>
@@ -676,7 +676,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8007176423574883786">Išjungta šiame įrenginyje</translation>
 <translation id="802154636333426148">Įvyko atsisiuntimo klaida</translation>
 <translation id="8033047164036749181">Prenumeruoti šios svetainės pranešimus</translation>
-<translation id="8042586301629853791">Rūšiuoti pagal:</translation>
 <translation id="8051193500142930381">Funkcijos, kurioms reikalingas fotoaparatas, neveiks</translation>
 <translation id="8056330801132235235">Numatytoji „Chrome“ parinktis</translation>
 <translation id="8067883171444229417">Leisti vaizdo įrašą</translation>
@@ -748,6 +747,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.
 <translation id="8707904142362025782">Svetainė gali prašyti leidimo naudoti vaizdo kamerą</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8715862698998036666">Vilkite nuo viršaus ir perbraukite nuo kairiojo arba dešiniojo krašto, kad išeitumėte iš viso ekrano režimo.</translation>
+<translation id="8716050156658570300">Svetainėse gali būti prašoma naudoti judesio ir šviesos jutiklius</translation>
 <translation id="8719283222052720129">Įjunkite „<ph name="APP_NAME" />“ leidimą <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Įjungus svetainėse gali būti prašoma ieškoti „Bluetooth“ įrenginių. Išjungus svetainėse negalima ieškoti „Bluetooth“ įrenginių.</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>

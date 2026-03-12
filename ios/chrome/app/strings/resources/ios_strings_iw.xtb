@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">טוב לראות אותך שוב!</translation>
 <translation id="2015722694326466240">רוצה להציג את הסיסמאות? תחילה עליך להגדיר קוד גישה במכשיר.</translation>
 <translation id="201759455285471444">הרחבה של קבוצת הכרטיסיות.</translation>
-<translation id="202070562065520783">אשמח לקבל הסבר</translation>
 <translation id="2044394949148788042">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="2044681667265133332">החשבון <ph name="USER_EMAIL" /> מנוהל על ידי <ph name="HOSTED_DOMAIN" />, שיכול להיות שיש לו גישה לחלק מהמידע. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">פריט חדש</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="6729493062119577923">פעילות בקבוצת הכרטיסיות המשותפת</translation>
 <translation id="6732087373923685049">מצלמה</translation>
+<translation id="6736243959894955139">כתובת</translation>
 <translation id="6746338529702829275">בדיקה של נתוני החשבון</translation>
 <translation id="6750456911389438250">{count,plural, =1{יובא פריט אחד ({count}) בהיסטוריה}one{יובאו {count} פריטים בהיסטוריה}two{יובאו {count} פריטים בהיסטוריה}other{יובאו {count} פריטים בהיסטוריה}}</translation>
 <translation id="6755200887046212842">נהל חשבונות</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">‏מצטערים, לא ניתן להתקין את ה-Pass שלך ב-Passbook בשלב הזה.</translation>
 <translation id="754655535278952384">הבדיקה האחרונה: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">סגירת הכול</translation>
-<translation id="7554791636758816595">כרטיסייה חדשה</translation>
 <translation id="7557508262441527045">החשבון לא מחובר</translation>
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="7561982940498449837">סגירת התפריט</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />, אתר מוצמד</translation>
 <translation id="8990960056509724223">אי אפשר לשמור את הקובץ בגלל המדיניות של הארגון שלך</translation>
 <translation id="8998289560386111590">לא זמין במכשיר שלך</translation>
-<translation id="9000532564152265066">כל הכרטיסיות</translation>
 <translation id="9003677638446136377">בדיקה נוספת</translation>
 <translation id="9006453925669499173">תפריט ← כרטיסייה פרטית חדשה</translation>
 <translation id="9008201768610948239">סגירה</translation>

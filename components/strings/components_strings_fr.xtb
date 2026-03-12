@@ -81,6 +81,7 @@
 <translation id="1131264053432022307">Image copiée</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Pour quitter le plein écran, faites glisser depuis le haut, puis appuyez sur le bouton Retour</translation>
 <translation id="1133418583142946603">Ajouter l'onglet actuel</translation>
+<translation id="1137064693271855979">Partager les onglets ouverts pertinents pour obtenir de meilleures réponses dans tous les fils de discussion ?</translation>
 <translation id="1138458427267715730">Recevez des alertes en cas de baisse de prix sur n'importe quel site Web</translation>
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1142965388643537393">Informations de voyage</translation>
@@ -237,6 +238,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1363015776076529485">Liste des modes de paiement disponibles pour effectuer le paiement, ouverte à pleine hauteur.</translation>
 <translation id="1363028406613469049">Suivre</translation>
 <translation id="1364822246244961190">Cette règle est bloquée. Sa valeur sera ignorée.</translation>
+<translation id="1367909869526928761">Choisissez dans quelle mesure le Mode IA peut utiliser les onglets ouverts pertinents</translation>
 <translation id="1368318639262510626">Jeu du dino. Un dinosaure pixelisé traverse un paysage désolé en esquivant les cactus et les ptérodactyles. Lorsque vous entendez un signal audio, appuyez sur Espace pour le faire sauter par-dessus les obstacles.</translation>
 <translation id="1374468813861204354">suggestions</translation>
 <translation id="1375198122581997741">À propos de la version</translation>
@@ -593,6 +595,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1945968466830820669">Vous risquez de perdre l'accès au compte de votre organisation ou d'être victime d'usurpation d'identité. L'équipe Chromium vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="1946849748901605102">12 x 15 pouces</translation>
 <translation id="1947454675006758438">Agrafe en haut à droite</translation>
+<translation id="1950524225823308149">Partager les onglets ouverts pour chaque fil de discussion</translation>
 <translation id="1953729392594614704">Si vous bloquez <ph name="TOPIC" />, tous les thèmes associés seront aussi bloqués, même s'ils sont actifs</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">Ajouter un mode de paiement</translation>
@@ -644,6 +647,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2040894699575719559">Position bloquée</translation>
 <translation id="2041788246978549610">Utiliser les micros disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bac 7</translation>
+<translation id="2043091580538548438">Les sites ajoutés ici ne seront pas référencés pour les réponses, même si les onglets sont ouverts.</translation>
 <translation id="2045871135676061132">Enveloppe personnelle</translation>
 <translation id="2046951263634619614">Librairies</translation>
 <translation id="2048261947532620704">Traduction de la page</translation>
@@ -1122,6 +1126,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2768397283109119044">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le certificat présenté par le serveur est incorrect pour ce nom. Le nom correspond à une adresse IP réservée ou un nom d'hôte interne.</translation>
 <translation id="2770159525358613612">Réessayez d'importer vos fichiers</translation>
 <translation id="277133753123645258">Mode d'expédition</translation>
+<translation id="2772464848856512911">Partager les onglets ouverts pour chaque fil de discussion ?</translation>
 <translation id="277499241957683684">Enregistrement de l'appareil manquant.</translation>
 <translation id="2775884851269838147">Première page imprimée</translation>
 <translation id="277828055419948999">Chromium peut compléter automatiquement les champs difficiles que la saisie automatique standard pourrait manquer</translation>
@@ -1255,6 +1260,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3005723025932146533">Afficher la copie enregistrée</translation>
 <translation id="300580149047131921">Récemment utilisés</translation>
 <translation id="3006864083554020786">adresse du domicile</translation>
+<translation id="3007110814003834680">Exclusions de sites</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation pour parcourir les actions disponibles, puis sur Entrée pour exécuter l'action sélectionnée.</translation>
 <translation id="3010991137650052245">Pour lui permettre d'utiliser votre <ph name="PERMISSION" /> sur ce site, autorisez <ph name="SHORT_PRODUCT_NAME" /> à y accéder</translation>
 <translation id="3013711734159931232">Produits ménagers</translation>
@@ -1310,6 +1316,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3105172416063519923">ID d'élément : </translation>
 <translation id="3105223248029915046">Les forfaits sont soumis à des critères d'éligibilité.
 Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LINK" />paramètres de paiement<ph name="END_LINK" />.</translation>
+<translation id="3105477369449879017">Fournisseur de services de saisie automatique</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />Vérifiez la configuration du DNS sécurisé<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Bac intermédiaire</translation>
 <translation id="3109061346635850169">Soins du visage et du corps</translation>
@@ -1368,6 +1375,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Savoir si vous utilisez activement cet appareil</translation>
 <translation id="3180358318770512945">Éducation des enfants</translation>
+<translation id="3181543705317761806">Obtenez des réponses optimisées par l'IA avec du contexte issu du Web.</translation>
 <translation id="3182185041786697613">Enregistrer le code de sécurité ?</translation>
 <translation id="3185635157430775689">Composants informatiques</translation>
 <translation id="3190736958609431397">Ne plus suivre</translation>
@@ -1579,6 +1587,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3532624859962632484">Accéder à d'autres appareils sur votre réseau local</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> souhaite utiliser votre micro</translation>
 <translation id="3533328374079021623">Boîte aux lettres 5</translation>
+<translation id="3535233022130619049">Obtenez des réponses plus rapides et personnalisées dans chaque fil de discussion en partageant par défaut vos onglets ouverts. Vous pouvez modifier cela à tout moment dans les paramètres de Chrome.</translation>
 <translation id="3536227077203206203">Accès autorisé cette fois-ci</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="353816159217417898">Sérigraphie (paginée)</translation>
@@ -1758,6 +1767,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3791118028061680614">Payez sans changer d'appli</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces)</translation>
+<translation id="3792251736135878332">Les onglets ouverts pertinents sont utilisés pour personnaliser les réponses dans tous les fils de discussion</translation>
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
 <translation id="3795624560191557077">Vous avez récemment modifié un mot de passe qui a été exposé lors d'une violation de données publiques. En cas de problème, le Gestionnaire de mots de passe de Google peut vous aider à vous connecter.</translation>
@@ -1924,6 +1934,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="406358100705415968">Équipement de protection au travail</translation>
 <translation id="4065429683324339709">Google Chrome souhaite valider votre identité avant que vous ne modifiiez les paramètres</translation>
 <translation id="4065659219963895623">Restaurants</translation>
+<translation id="4065914898561361692">Ne pas partager automatiquement les onglets ouverts pertinents (par défaut)</translation>
 <translation id="4067774859633143413">Pour quitter le mode plein écran et voir le téléchargement, appuyez de manière prolongée sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Ajouter une adresse valide</translation>
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
@@ -2139,6 +2150,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4358059973562876591">Les modèles que vous avez spécifiés risquent de ne pas être appliqués en raison d'une erreur liée à la règle DnsOverHttpsMode.</translation>
 <translation id="4358461427845829800">Gérer les modes de paiement…</translation>
 <translation id="4359160567981085931">Vous venez de saisir votre mot de passe sur un site trompeur. Chrome peut vous aider. Pour modifier votre mot de passe et informer Google que votre compte a peut-être été piraté, cliquez sur "Protéger le compte".</translation>
+<translation id="4359853272024672680">Recherche en Mode IA</translation>
 <translation id="4363222835916186793">Les alertes pour ce produit ont été désactivées</translation>
 <translation id="4366943895537458493">Plaque</translation>
 <translation id="4369179505195332608">Modifier le permis de conduire</translation>
@@ -2486,6 +2498,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4957080528849277028">Bouton "Afficher votre historique Chrome" à activer pour afficher et gérer votre historique de navigation dans les paramètres Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # sites}}</translation>
 <translation id="4958444002117714549">Développer la liste</translation>
+<translation id="4960061221656117224">Exclure des sites</translation>
 <translation id="4960203958361543136">Sélectionnez votre moteur de recherche</translation>
 <translation id="4961708452830821006">Pour utiliser votre micro, autorisez Chrome à y accéder dans les <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Aménagement paysager</translation>
@@ -2495,6 +2508,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4968665849807487749">Peut demander à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="4969341057194253438">Supprimer l'enregistrement</translation>
 <translation id="4973922308112707173">Double perforation en haut</translation>
+<translation id="4975266898030581282">Compte tenu des onglets ouverts pertinents</translation>
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
 <translation id="4983145717627482381">Visites guidées et voyages accompagnés</translation>
 <translation id="498323057460789381">Erreur de validation du schéma : <ph name="ERROR" /></translation>
@@ -2609,6 +2623,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5147633291963801297">Consultez les baisses de prix dans le panneau latéral</translation>
 <translation id="5148809049217731050">Vers le haut</translation>
 <translation id="5148889558173091794">Votre organisation a bloqué <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, car il enfreint une règle. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="5151771770689442215">Historique de mes recherches Google</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5157504274688344097">Grands magasins et hypermarchés</translation>
 <translation id="5158275234811857234">Couverture</translation>
@@ -2681,6 +2696,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5271381225185906340">La condition "<ph name="DATA_CONTROLS_ATTRIBUTE" />" n'est pas acceptée pour "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="527191520368130807">Peaufiner</translation>
 <translation id="5273658854610202413">Avertissement : Cette règle n'a pas été fusionnée comme indiqué dans la règle PolicyDictionaryMultipleSourceMergeList, car elle ne fait pas partie des règles de dictionnaire fusionnables.</translation>
+<translation id="5274074150785993864">Chrome envoie à Google vos onglets ouverts, le contenu des pages et les URL pour personnaliser vos réponses</translation>
 <translation id="5278778426231952189">Importer maintenant</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
 <translation id="5282008206326321696">{count,plural, =0{# favori}=1{# favori}one{# favori}other{# favoris}}</translation>
@@ -2732,6 +2748,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5351548097010183514">Fournitures et matériaux de construction</translation>
 <translation id="5354143049423063163">Fonds spéculatifs</translation>
 <translation id="5355557959165512791">Le site <ph name="SITE" /> est actuellement inaccessible, car son certificat a été révoqué. Les erreurs réseau et les attaques sont généralement temporaires. Vous devriez donc pouvoir accéder à cette page plus tard.</translation>
+<translation id="5359752295193133096">Partagez par défaut les onglets ouverts pertinents pour obtenir des réponses plus rapides et personnalisées.</translation>
 <translation id="5360706051680403227">Lampes et luminaires</translation>
 <translation id="536296301121032821">Échec du stockage des paramètres de la règle.</translation>
 <translation id="5363148545938487338">Salesforce</translation>
@@ -2873,6 +2890,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5554520618550346933">Lorsque vous utilisez un mot de passe, Chrome vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5556459405103347317">Actualiser</translation>
+<translation id="5556843284826862956">Les fils de discussion pourront être consultés par des réviseurs humains afin d'améliorer l'IA de Google</translation>
 <translation id="5558083606899411167">Climatiseurs</translation>
 <translation id="5558125320634132440">Ce site a été bloqué, car il est possible qu'il comporte du contenu réservé à un public averti</translation>
 <translation id="5559311991468302423">Supprimer l'adresse</translation>
@@ -3110,6 +3128,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5968022600320704045">Aucun résultat de recherche</translation>
 <translation id="5968400720580217226">Mode IA</translation>
 <translation id="5969199813874624822">Enregistrer et suivre le prix</translation>
+<translation id="5969933937005244170">Les onglets ouverts pertinents ne seront utilisés que si vous les partagez dans un fil de discussion</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">6e rouleau</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
@@ -3338,6 +3357,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6327065120806001832">accès au réseau local</translation>
 <translation id="6328639280570009161">Essayez de désactiver la prédiction réseau</translation>
 <translation id="6329815962353376655">&lt;Taper une question&gt;</translation>
+<translation id="6331597954316706229">Pour obtenir les réponses les plus personnalisées, autorisez tous les fils de discussion à référencer vos onglets ouverts pertinents.</translation>
 <translation id="633348045801643466">Afficher les options de <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />paiement différé<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> lors du règlement</translation>
 <translation id="6335029926534404762">Chaussures de sport</translation>
 <translation id="6336948221660696475">RV non autorisée</translation>
@@ -3366,6 +3386,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6366710531182496394">Double agrafe à gauche</translation>
 <translation id="6367196786591004737">Supprimer l'entrée</translation>
 <translation id="6370022303958842211">Actions d'accès à l'appareil comme les connexions (y compris les motifs d'échec de connexion), les déconnexions, les verrouillages et les déverrouillages</translation>
+<translation id="6372779601614872746">Partager les onglets ouverts pertinents</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6374865374745447009">gestion des fenêtres</translation>
 <translation id="6376881782310775282">Impossible d'accéder au serveur de développement pour cette application</translation>
@@ -3385,6 +3406,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6390533465682072118">Récupération</translation>
 <translation id="639068771471208680">Formulaire en plusieurs parties</translation>
 <translation id="6391700400718590966">La bottom sheet indiquant qu'aucun identifiant ne correspond pour le paiement sécurisé est fermée</translation>
+<translation id="6391911601916058725">Toujours partager les onglets ouverts pertinents ?</translation>
 <translation id="6392799395081100092">Papier (vélin)</translation>
 <translation id="6393156038355142111">Suggérer un mot de passe sécurisé</translation>
 <translation id="6393310910507376797">Non accepté par le marchand</translation>
@@ -3654,6 +3676,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6820143000046097424">ports série</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Payez facilement par versements</translation>
+<translation id="6822745163454377107">Obtenez des réponses plus rapides et personnalisées en partageant vos onglets ouverts avec ce fil de discussion.</translation>
 <translation id="6825578344716086703">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat signé à l'aide d'un algorithme de signature faible (par exemple, SHA-1). Il est possible que le certificat fourni par le serveur ait été falsifié. Il se peut donc que le serveur ne soit pas celui auquel vous souhaitez accéder, et qu'il s'agisse d'une tentative de piratage.</translation>
 <translation id="6826993739343257035">Autoriser la RA ?</translation>
 <translation id="6828150717884939426">Appeler</translation>
@@ -3806,6 +3829,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="7062344833049251424">Pour payer plus rapidement la prochaine fois, enregistrez votre carte et votre adresse de facturation dans Google Wallet</translation>
 <translation id="706295145388601875">Gérez les adresses et ajoutez-en dans les paramètres Chrome</translation>
 <translation id="7063157783216323487">Vert 2</translation>
+<translation id="7064111249130685461">Pour obtenir les réponses les plus personnalisées, autorisez ce fil de discussion à référencer vos onglets ouverts.</translation>
 <translation id="7064443976734085921">Voitures compactes</translation>
 <translation id="7064851114919012435">Coordonnées</translation>
 <translation id="7067633076996245366">Soul et R&amp;B</translation>
@@ -3896,6 +3920,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="7195852673246414183">Après avoir activé ce paramètre, revenez à cet onglet pour commencer à écrire</translation>
 <translation id="7196370964328811506">Les informations de cette carte seront saisies automatiquement pour les achats effectués dans Chrome une fois qu'elle sera enregistrée sur cet appareil</translation>
 <translation id="7199278868241956094">Oficio</translation>
+<translation id="7200963436813710587">Nous avons pris en compte les onglets ouverts suivants :</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis sur Entrée pour ouvrir un nouvel onglet de navigation privée</translation>
 <translation id="7203375778433816396">Définir Chrome comme navigateur par défaut du système</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> ne respecte pas les normes de sécurité.</translation>
@@ -3981,6 +4006,7 @@ Informations supplémentaires :
 <translation id="7353601530677266744">Ligne de commande</translation>
 <translation id="7359588939039777303">Annonces bloquées.</translation>
 <translation id="7360451453306104998">Les remises disponibles trouvées par Google s'affichent lors du règlement</translation>
+<translation id="7362039113312920489">Examiner et gérer</translation>
 <translation id="7362281996276843968">Ce groupe est fermé</translation>
 <translation id="7363096869660964304">Cela ne vous rend pas invisible pour autant. Si vous passez en navigation privée, votre employeur, votre fournisseur d'accès à Internet ou les sites Web que vous consultez pourront toujours avoir accès à votre navigation.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyez sur Tabulation, puis sur Entrée pour gérer les adresses et en ajouter dans les paramètres Chrome</translation>
@@ -4126,6 +4152,7 @@ Informations supplémentaires :
 <translation id="753714465667062283">Connectez-vous pour enregistrer votre photo</translation>
 <translation id="7537536606612762813">Obligatoire</translation>
 <translation id="7543525346216957623">Demande à l'un de tes parents</translation>
+<translation id="7544639168115776013">Obtenez des réponses plus rapides et personnalisées dans chaque fil de discussion en partageant par défaut vos onglets ouverts pertinents.</translation>
 <translation id="7546409722674205727">Lancement de <ph name="APP_NAME" />…</translation>
 <translation id="7548892272833184391">Corriger les erreurs de connexion</translation>
 <translation id="7549584377607005141">Pour s'afficher correctement, cette page Web a besoin des données que vous avez saisies précédemment. Vous pouvez envoyer de nouveau ces données. Cependant, en procédant ainsi, vous répéterez toute action déjà effectuée sur cette page.</translation>
@@ -4293,6 +4320,7 @@ Informations supplémentaires :
 <translation id="7779418012194492374">Révoquer l'accès de <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7782465647372057580">Les informations du compte sont chiffrées et restent privées</translation>
+<translation id="7785431476897438309">Vous pouvez modifier cela à tout moment dans les paramètres de Chrome</translation>
 <translation id="7785471469930192436">Lisez les instructions du moteur de recherche pour supprimer l'historique de vos recherches, si besoin</translation>
 <translation id="7785790577395078482">cette tablette</translation>
 <translation id="7786368602962652765">Renseignez le champ obligatoire avant d'enregistrer.</translation>
@@ -4327,6 +4355,7 @@ Informations supplémentaires :
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="784623644169604270">Aucune activité récente</translation>
 <translation id="7848926355794727168">Navigation automatique</translation>
+<translation id="7849695969708971789">Les onglets ouverts pertinents seront utilisés pour personnaliser les réponses dans tous les fils de discussion</translation>
 <translation id="7853222852810008596">Payer plus tard n'est pas disponible dans cette devise</translation>
 <translation id="785476343534277563">Sports universitaires</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> : <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4865,6 +4894,7 @@ Informations supplémentaires :
 <translation id="8751426954251315517">Veuillez réessayer plus tard</translation>
 <translation id="8753913772043329557">Journaux des règles</translation>
 <translation id="8754546574216727970">Bottes</translation>
+<translation id="8755119102172890580">Partager automatiquement les onglets ouverts pertinents</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">contenu intégré</translation>
 <translation id="8757526089434340176">Offre Google Pay disponible</translation>
@@ -5147,6 +5177,7 @@ Informations supplémentaires :
 <translation id="9204089334327209740">Une fois l'importation terminée, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. L'espace de stockage local, y compris les fichiers dans la corbeille, sera automatiquement supprimé.</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase secrète de synchronisation. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>
+<translation id="9206639970165643781">Partager les onglets ouverts pertinents pour obtenir de meilleures réponses dans ce fil de discussion ?</translation>
 <translation id="9207861905230894330">Échec de l'ajout de l'article.</translation>
 <translation id="9209339767782560829">Un problème est survenu avec votre certificat de connexion.</translation>
 <translation id="9210152531668884481">J'accepte</translation>

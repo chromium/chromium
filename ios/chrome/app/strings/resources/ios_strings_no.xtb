@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Velkommen tilbake!</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="201759455285471444">Vis fanegruppen.</translation>
-<translation id="202070562065520783">Forklar dette for meg</translation>
 <translation id="2044394949148788042">Åpne fanerutenettet</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres av <ph name="HOSTED_DOMAIN" />, som kan se visse typer informasjon. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt element</translation>
@@ -1614,6 +1613,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="672735642903863329">Få bokmerker, passord med mer på alle enhetene dine.</translation>
 <translation id="6729493062119577923">Aktivitet i delt fanegruppe</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
 <translation id="6750456911389438250">{count,plural, =1{Importerte {count} loggelement}other{Importerte {count} loggelementer}}</translation>
 <translation id="6755200887046212842">Administrer kontoer</translation>
@@ -1820,7 +1820,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7537586195939242955">Tillatelsen din kan for øyeblikket ikke installeres i Passbook.</translation>
 <translation id="754655535278952384">Sjekket <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Lukk alle</translation>
-<translation id="7554791636758816595">Ny fane</translation>
 <translation id="7557508262441527045">Logget av</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7561982940498449837">Lukk menyen</translation>
@@ -2250,7 +2249,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, festet nettsted</translation>
 <translation id="8990960056509724223">Filen kunne ikke lagres på grunn av retningslinjene for organisasjonen din</translation>
 <translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
-<translation id="9000532564152265066">Alle faner</translation>
 <translation id="9003677638446136377">Sjekk på nytt</translation>
 <translation id="9006453925669499173">Meny → Ny inkognitofane</translation>
 <translation id="9008201768610948239">Ignorer</translation>

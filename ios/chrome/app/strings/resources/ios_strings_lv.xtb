@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Sveicam atpakaļ!</translation>
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="201759455285471444">Izvērst ciļņu grupu.</translation>
-<translation id="202070562065520783">Paskaidro man</translation>
 <translation id="2044394949148788042">Atveriet ciļņu režģi.</translation>
 <translation id="2044681667265133332">Kontu <ph name="USER_EMAIL" /> pārvalda domēnam <ph name="HOSTED_DOMAIN" /> atbilstošā organizācija, kas, iespējams, var skatīt noteiktu informāciju. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">jauns vienums</translation>
@@ -1614,6 +1613,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="672735642903863329">Iegūstiet grāmatzīmes, paroles un citus datus visās savās ierīcēs.</translation>
 <translation id="6729493062119577923">Kopīgotās ciļņu grupas darbības</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Adrese</translation>
 <translation id="6746338529702829275">Pārskatīt konta datus</translation>
 <translation id="6750456911389438250">{count,plural, =1{Importēts {count} vēstures vienums}zero{Importēti {count} vēstures vienumi}one{Importēts {count} vēstures vienums}other{Importēti {count} vēstures vienumi}}</translation>
 <translation id="6755200887046212842">Pārvaldīt kontus</translation>
@@ -1820,7 +1820,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7537586195939242955">Diemžēl pašlaik jūsu atļauju nevar instalēt lietotnē Passbook.</translation>
 <translation id="754655535278952384">Pārbaudes laiks: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Aizvērt visas</translation>
-<translation id="7554791636758816595">Jauna cilne</translation>
 <translation id="7557508262441527045">Izrakstījies</translation>
 <translation id="7561196759112975576">Vienmēr</translation>
 <translation id="7561982940498449837">Aizvērt izvēlni</translation>
@@ -2250,7 +2249,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, piesprausta vietne</translation>
 <translation id="8990960056509724223">Failu nevarēja saglabāt jūsu organizācijas politiku dēļ.</translation>
 <translation id="8998289560386111590">Nav pieejams jūsu ierīcē</translation>
-<translation id="9000532564152265066">Visas cilnes</translation>
 <translation id="9003677638446136377">Pārbaudīt vēlreiz</translation>
 <translation id="9006453925669499173">Izvēlne → Jauna inkognito cilne</translation>
 <translation id="9008201768610948239">Ignorēt</translation>

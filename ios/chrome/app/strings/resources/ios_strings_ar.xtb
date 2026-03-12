@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">مرحبًا من جديد</translation>
 <translation id="2015722694326466240">للاطّلاع على كلمات المرور، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="201759455285471444">توسيع مجموعة علامات التبويب</translation>
-<translation id="202070562065520783">أريد شرحًا لهذا</translation>
 <translation id="2044394949148788042">فتح شبكة علامات التبويب</translation>
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">عنصر جديد</translation>
@@ -1612,6 +1611,7 @@
 <translation id="672735642903863329">سترافقك إشاراتك المرجعية وكلمات مرورك وغيرها على جميع أجهزتك</translation>
 <translation id="6729493062119577923">سجلّ نشاط مجموعة علامات التبويب المشترَكة</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
+<translation id="6736243959894955139">العنوان</translation>
 <translation id="6746338529702829275">مراجعة بيانات حسابك</translation>
 <translation id="6750456911389438250">{count,plural, =1{تم استيراد عنصر واحد ({count}) من السجلّ}zero{تم استيراد {count} عنصر من السجلّ}two{تم استيراد عنصرَين ({count}) من السجلّ}few{تم استيراد {count} عناصر من السجلّ}many{تم استيراد {count} عنصرًا من السجلّ}other{تم استيراد {count} عنصر من السجلّ}}</translation>
 <translation id="6755200887046212842">إدارة الحسابات</translation>
@@ -1818,7 +1818,6 @@
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور <ph name="TIME" /></translation>
 <translation id="7554645225856321710">إغلاق الكل</translation>
-<translation id="7554791636758816595">علامة تبويب جديدة</translation>
 <translation id="7557508262441527045">تمّ تسجيل الخروج</translation>
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
@@ -2249,7 +2248,6 @@
 <translation id="8988107725234939347">‫"<ph name="WEBSITE_TITLE" />"، موقع إلكتروني مثبَّت</translation>
 <translation id="8990960056509724223">يتعذَّر حفظ الملف بسبب سياسات مؤسستك</translation>
 <translation id="8998289560386111590">غير متاح على جهازك</translation>
-<translation id="9000532564152265066">جميع علامات التبويب</translation>
 <translation id="9003677638446136377">التحقق مرة أخرى</translation>
 <translation id="9006453925669499173">"القائمة" ← "علامة تبويب جديدة في وضع التصفّح المتخفي"</translation>
 <translation id="9008201768610948239">تجاهل</translation>

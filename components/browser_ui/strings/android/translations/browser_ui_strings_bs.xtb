@@ -269,6 +269,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="3658847490588580244">Donja tabela zadanog preglednika</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web lokacije u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}}</translation>
 <translation id="3676777756440746804">Blokirali ste da vas web lokacije pitaju da koriste sačuvane informacije o vama</translation>
+<translation id="3677897809642449131">Web lokacije mogu tražiti da koriste senzore kretanja</translation>
 <translation id="3678318839615834650">Donja tabela kartica na stranici Nova kartica je otvorena u punoj visini</translation>
 <translation id="3697164069658504920">Kada je postavka uključena, web lokacije mogu zatražiti da koriste USB uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti USB uređaje.</translation>
 <translation id="3703430731944883733">Upravljajte sažetkom sadržaja</translation>
@@ -444,7 +445,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="5515432237048785579">Donja tabela sažetka sadržaja Discover je otvorena u punoj visini</translation>
 <translation id="5516455585884385570">Otvori postavke obavještenja</translation>
 <translation id="5527111080432883924">Web lokacije moraju tražiti dozvolu za čitanje teksta i pregled slika u međumemoriji (preporučeno)</translation>
-<translation id="5553374991681107062">Najnovije</translation>
 <translation id="5555115555607204100">Nemoj ubrzavati web lokacije pomoću Chromeovog pretraživača V8, ali učini Chrome malo otpornijim na napade</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5591840828808741583">Web lokacija <ph name="SITE_NAME" /> je blokirana</translation>
@@ -676,7 +676,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8007176423574883786">Isključeno za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
 <translation id="8033047164036749181">Pretplata na obavještenja s ove web lokacije</translation>
-<translation id="8042586301629853791">Poredaj po:</translation>
 <translation id="8051193500142930381">Funkcije za koje je potrebna kamera neće funkcionirati</translation>
 <translation id="8056330801132235235">Zadano za Chrome</translation>
 <translation id="8067883171444229417">Reproduciraj videozapis</translation>
@@ -748,6 +747,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:
 <translation id="8707904142362025782">Web lokacije mogu zatražiti pristup kameri</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="8715862698998036666">Prevucite s vrha, a zatim s lijevog ili desnog ruba da izađete iz prikaza preko cijelog ekrana.</translation>
+<translation id="8716050156658570300">Web lokacije mogu tražiti da koriste senzore kretanja i svjetla</translation>
 <translation id="8719283222052720129">Uključite odobrenje za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Kada je postavka uključena, web lokacije mogu zatražiti odobrenje za traženje Bluetooth uređaja. Kada je postavka isključena, web lokacije ne mogu tražiti Bluetooth uređaje.</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Эргээд тавтай морилно уу!</translation>
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="201759455285471444">Табын бүлгийг дэлгэнэ үү.</translation>
-<translation id="202070562065520783">Үүнийг надад тайлбарлана уу</translation>
 <translation id="2044394949148788042">Табын хүснэгтийг нээх</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> бүртгэлд <ph name="HOSTED_DOMAIN" />-с тохиргоо хийсэн бөгөөд зарим мэдээллийг үзэх боломжтой байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">шинэ зүйл</translation>
@@ -1614,6 +1613,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="672735642903863329">Хавчуурга, нууц үг болон бусад зүйлийг бүгдийг төхөөрөмжүүддээ аваарай.</translation>
 <translation id="6729493062119577923">Хуваалцсан табын бүлгийн үйл ажиллагаа</translation>
 <translation id="6732087373923685049">камер</translation>
+<translation id="6736243959894955139">Хаяг</translation>
 <translation id="6746338529702829275">Бүртгэлийн өгөгдлөө шалгах</translation>
 <translation id="6750456911389438250">{count,plural, =1{Түүхийн {count} зүйл импортолсон}other{Түүхийн {count} зүйл импортолсон}}</translation>
 <translation id="6755200887046212842">Акаунтуудыг удирдах</translation>
@@ -1820,7 +1820,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7537586195939242955">Уучлаарай, таны Pass-ыг одоогоор Passbook руу суулгаж болохгүй байна.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> шалгасан</translation>
 <translation id="7554645225856321710">Бүгдийг хаах</translation>
-<translation id="7554791636758816595">Шинэ таб</translation>
 <translation id="7557508262441527045">Гарсан</translation>
 <translation id="7561196759112975576">Үргэлж</translation>
 <translation id="7561982940498449837">Цэсийг хаах</translation>
@@ -2250,7 +2249,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" /> сайтыг бэхэлсэн</translation>
 <translation id="8990960056509724223">Танай байгууллагын бодлогын улмаас файлыг хадгалж чадсангүй</translation>
 <translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
-<translation id="9000532564152265066">Бүх таб</translation>
 <translation id="9003677638446136377">Дахин шалгах</translation>
 <translation id="9006453925669499173">Цэс → Шинэ нууцлалтай таб</translation>
 <translation id="9008201768610948239">Алгас</translation>

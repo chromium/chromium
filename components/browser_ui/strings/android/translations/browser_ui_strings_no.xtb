@@ -269,6 +269,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="3658847490588580244">Felt nederst for standardnettleser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> nettsted i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> nettsteder i gruppen til <ph name="RWS_OWNER" /> som kan se aktiviteten din i gruppen}}</translation>
 <translation id="3676777756440746804">Nettsteder blokkeres fra å be deg om å bruke informasjon de har lagret om deg</translation>
+<translation id="3677897809642449131">Nettsteder kan be om å få bruke bevegelsessensorer</translation>
 <translation id="3678318839615834650">Feltet nederst for kort på Ny fane-siden er åpnet i full høyde</translation>
 <translation id="3697164069658504920">Når dette er på, kan nettsteder be om å få bruke USB-enheter. Når dette er av, kan ikke nettsteder bruke USB-enheter.</translation>
 <translation id="3703430731944883733">Administrer feeden din</translation>
@@ -444,7 +445,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5515432237048785579">Feltet nederst for Discover-feeden er åpnet i full høyde</translation>
 <translation id="5516455585884385570">Åpne innstillingene for varsler</translation>
 <translation id="5527111080432883924">Spør før nettsteder får tilgang til tekst og bilder fra utklipptavlen (anbefalt)</translation>
-<translation id="5553374991681107062">Nyeste</translation>
 <translation id="5555115555607204100">Ikke gjør nettsteder raskere med V8-motoren i Chrome, men gjør Chrome litt mer motstandsdyktig mot angrep</translation>
 <translation id="5556459405103347317">Last inn på nytt</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> er blokkert</translation>
@@ -676,7 +676,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
 <translation id="8033047164036749181">Abonner på varsler fra dette nettstedet</translation>
-<translation id="8042586301629853791">Sorter etter:</translation>
 <translation id="8051193500142930381">Funksjoner som krever kamera, kommer ikke til å virke</translation>
 <translation id="8056330801132235235">Standard Chrome</translation>
 <translation id="8067883171444229417">Spill av videoen</translation>
@@ -748,6 +747,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8707904142362025782">Nettstedet kan be om å få bruke kameraet</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8715862698998036666">Dra fra toppen og sveip fra venstre eller høyre kant for å avslutte fullskjerm.</translation>
+<translation id="8716050156658570300">Nettsteder kan be om å få bruke bevegelses- og lyssensorer</translation>
 <translation id="8719283222052720129">Slå på tillatelsen for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Når dette er på, kan nettsteder be om å få se etter Bluetooth-enheter. Når dette er av, kan ikke nettsteder se etter Bluetooth-enheter.</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>

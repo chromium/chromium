@@ -155,6 +155,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2586406160782125153">Se eliminarán tus datos de navegación de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">No se ha podido guardar en caché el instalador descargado. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Mantén tus contraseñas, marcadores e historial perfectamente sincronizados en todos tus dispositivos. Accede fácilmente a las funciones que ya conoces y te encantan actualizando tu navegador predeterminado a Chrome. Chrome se fijará en la barra de tareas para que puedas acceder rápidamente.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome comprueba periódicamente si tu navegador tiene la configuración más segura. Te avisaremos si tienes que revisar algo.</translation>
 <translation id="2652691236519827073">Abrir enlace en una pes&amp;taña nueva de Chrome</translation>
@@ -233,6 +234,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3327226547491422998">Más adelante, Chrome puede preguntarte si quieres usar la información guardada para autocompletar formularios por ti</translation>
 <translation id="3352986031709923790">esquina superior derecha del área de búsqueda: un <ph name="RIGHT" /> % a la derecha y un <ph name="TOP" /> % arriba</translation>
 <translation id="3360895254066713204">Ayudante de Chrome</translation>
+<translation id="3373752068427117404">Algunas funciones y extensiones de Chrome incluyen atajos. Puedes volver a activarlos.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se reiniciará ahora}=1{Chrome se reiniciará dentro de 1 segundo}other{Chrome se reiniciará dentro de # segundos}}</translation>
 <translation id="3380249972812870825">Para abrir Gemini en Chrome, pulsa <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Se ha producido un error de sistema operativo durante el proceso de instalación. Vuelve a descargar Google Chrome.</translation>
@@ -699,6 +701,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8064965390968184078">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación
 2. Haz clic en <ph name="BUTTON_2" /> en la configuración de Windows
 3. Haz clic en <ph name="BUTTON_3" /> en la notificación de Windows para fijar Chrome a la barra de tareas y que puedas acceder rápidamente</translation>
+<translation id="8074398340364918139">Para buscar una función o extensión de Chrome específica, escribe su atajo en la barra de direcciones y, después, pulsa la tecla de teclado que hayas seleccionado</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">No se ha podido realizar la instalación porque tu ordenador no cumple los requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Verifica que eres tú para usar y guardar los datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -707,6 +710,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8129812357326543296">Información de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar Chrome sin una cuenta</translation>
+<translation id="8172231188687329735">Descarga la aplicación Chrome para guardar contraseñas estés donde estés</translation>
 <translation id="8177472873527554730">No se encuentra contenido en la página</translation>
 <translation id="8221491193165283816">Normalmente bloqueas todas las notificaciones. Si quieres permitir que este sitio web te muestre notificaciones, haz clic aquí.</translation>
 <translation id="8253851811470049684">Abre enlaces en Chrome desde cualquier aplicación y accede fácilmente al navegador desde la barra de tareas</translation>
@@ -734,6 +738,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 
 No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si cierras sesión ahora, se eliminarán los marcadores que no hayas guardado.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
+<translation id="8458117863387545390">Descarga Chrome en tu teléfono</translation>
 <translation id="8496177819998570653">&amp;Gestor de contraseñas de Google</translation>
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia ahora y restauraremos las pestañas.</translation>
 <translation id="8516431725144212809">Tus intereses estimados por Chrome</translation>
@@ -787,7 +792,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>
 <translation id="9010418943148193727">Tu buscador predeterminado se ha cambiado desde fuera de Chrome. Para protegerte, Chrome lo ha restablecido.</translation>
 <translation id="9014771989710951291">Varias organizaciones gestionan Chrome</translation>
-<translation id="9024318700713112071">Establecer Chrome como navegador predeterminado</translation>
 <translation id="9066987883552592250">Cerrar Gemini en Chrome Canary</translation>
 <translation id="9090566250983691233">Averigua por qué bloquea Chrome algunos archivos</translation>
 <translation id="9106236359747881194">Seleccionar texto para buscarlo</translation>

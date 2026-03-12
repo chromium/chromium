@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">欢迎回来！</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
-<translation id="202070562065520783">向我解释</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">在所有设备上获取保存的书签、密码等信息。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6732087373923685049">摄像头</translation>
+<translation id="6736243959894955139">地址</translation>
 <translation id="6746338529702829275">检查您的账号数据</translation>
 <translation id="6750456911389438250">{count,plural, =1{已导入 {count} 项历史记录}other{已导入 {count} 项历史记录}}</translation>
 <translation id="6755200887046212842">管理账号</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="754655535278952384">上次检查时间：<ph name="TIME" /></translation>
 <translation id="7554645225856321710">全部关闭</translation>
-<translation id="7554791636758816595">新标签页</translation>
 <translation id="7557508262441527045">已退出账号</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />，已固定的网站</translation>
 <translation id="8990960056509724223">根据您所在组织的政策，您无法保存文件</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
-<translation id="9000532564152265066">所有标签页</translation>
 <translation id="9003677638446136377">再次检查</translation>
 <translation id="9006453925669499173">菜单 → 打开新的无痕式标签页</translation>
 <translation id="9008201768610948239">忽略</translation>

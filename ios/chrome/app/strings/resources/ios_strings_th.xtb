@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">ยินดีต้อนรับกลับมา</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
 <translation id="201759455285471444">ขยายกลุ่มแท็บ</translation>
-<translation id="202070562065520783">อธิบายให้ฉันฟังหน่อย</translation>
 <translation id="2044394949148788042">เปิดตารางกริดของแท็บ</translation>
 <translation id="2044681667265133332">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">รายการใหม่</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">รับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6729493062119577923">กิจกรรมในกลุ่มแท็บที่แชร์</translation>
 <translation id="6732087373923685049">กล้อง</translation>
+<translation id="6736243959894955139">ที่อยู่</translation>
 <translation id="6746338529702829275">ตรวจสอบข้อมูลบัญชีของคุณ</translation>
 <translation id="6750456911389438250">{count,plural, =1{นำเข้ารายการประวัติ {count} รายการแล้ว}other{นำเข้ารายการประวัติ {count} รายการแล้ว}}</translation>
 <translation id="6755200887046212842">จัดการบัญชี</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">ขออภัย ไม่สามารถติดตั้ง Pass ของคุณใน Passbook ในขณะนี้</translation>
 <translation id="754655535278952384">ตรวจสอบเมื่อ <ph name="TIME" /></translation>
 <translation id="7554645225856321710">ปิดทั้งหมด</translation>
-<translation id="7554791636758816595">แท็บใหม่</translation>
 <translation id="7557508262441527045">ออกจากระบบแล้ว</translation>
 <translation id="7561196759112975576">ทุกครั้ง</translation>
 <translation id="7561982940498449837">ปิดเมนู</translation>
@@ -2250,7 +2249,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, เว็บไซต์ที่ปักหมุด</translation>
 <translation id="8990960056509724223">บันทึกไฟล์ไม่ได้เนื่องจากนโยบายขององค์กร</translation>
 <translation id="8998289560386111590">ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
-<translation id="9000532564152265066">แท็บทั้งหมด</translation>
 <translation id="9003677638446136377">ตรวจสอบอีกครั้ง</translation>
 <translation id="9006453925669499173">เมนู → แท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>

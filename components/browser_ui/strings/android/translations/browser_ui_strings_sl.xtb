@@ -269,6 +269,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="3658847490588580244">Razdelek na dnu zaslona za privzeti brskalnik</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}one{<ph name="RWS_MEMBERS_COUNT" /> spletno mesto v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}two{<ph name="RWS_MEMBERS_COUNT" /> spletni mesti v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}few{<ph name="RWS_MEMBERS_COUNT" /> spletna mesta v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}other{<ph name="RWS_MEMBERS_COUNT" /> spletnih mest v skupini spletnih mest <ph name="RWS_OWNER" />, ki si lahko ogledajo vašo dejavnost v skupini}}</translation>
 <translation id="3676777756440746804">Spletnim mestom je preprečeno, da bi od vas zahtevala uporabo podatkov, ki so jih shranila o vas</translation>
+<translation id="3677897809642449131">Spletna mesta lahko zahtevajo uporabo tipal gibanja</translation>
 <translation id="3678318839615834650">Razdelek na dnu zaslona za kartice strani »Nov zavihek« je odprt pri polni višini</translation>
 <translation id="3697164069658504920">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo naprav USB. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati naprav USB.</translation>
 <translation id="3703430731944883733">Upravljanje vira</translation>
@@ -444,7 +445,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5515432237048785579">Razdelek na dnu zaslona za vir Odkrivanje je odprt pri polni višini</translation>
 <translation id="5516455585884385570">Odpiranje nastavitev obvestil</translation>
 <translation id="5527111080432883924">Prikaži poziv, preden se spletnim mestom dovoli branje besedila in slik v odložišču (priporočeno)</translation>
-<translation id="5553374991681107062">Najnovejše</translation>
 <translation id="5555115555607204100">Ne pospešite delovanja spletnih mest s Chromovim mehanizmom V8, vendar je Chrome zato nekoliko odpornejši proti napadom</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5591840828808741583">Blokirano: <ph name="SITE_NAME" /></translation>
@@ -676,7 +676,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8007176423574883786">Izklopljeno za to napravo</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8033047164036749181">Naročite se na obvestila tega spletnega mesta</translation>
-<translation id="8042586301629853791">Razvrsti po:</translation>
 <translation id="8051193500142930381">Funkcije, ki potrebujejo kamero, ne bodo delovale</translation>
 <translation id="8056330801132235235">Privzeto za Chrome</translation>
 <translation id="8067883171444229417">Predvajanje videa</translation>
@@ -748,6 +747,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8707904142362025782">Spletno mesto lahko zahteva uporabo fotoaparata</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8715862698998036666">Za izhod iz celozaslonskega načina povlecite z vrha in levega ali desnega roba.</translation>
+<translation id="8716050156658570300">Spletna mesta lahko zahtevajo uporabo tipal gibanja in svetlobe</translation>
 <translation id="8719283222052720129">V <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" /> vklopite dovoljenje za aplikacijo <ph name="APP_NAME" />.</translation>
 <translation id="8721719390026067591">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo iskanje naprav Bluetooth. Če je ta možnost izklopljena, spletna mesta ne smejo iskati naprav Bluetooth.</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>

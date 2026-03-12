@@ -444,7 +444,6 @@
 <translation id="5515432237048785579">「探索」動態消息底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="5516455585884385570">開啟通知設定</translation>
 <translation id="5527111080432883924">允許網站讀取剪貼簿中的文字和圖片前，必須先詢問你 (建議)</translation>
-<translation id="5553374991681107062">最新</translation>
 <translation id="5555115555607204100">不使用 Chrome 的 V8 引擎加快網站速度，但稍微提高 Chrome 防範攻擊的能力</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5591840828808741583">已封鎖「<ph name="SITE_NAME" />」</translation>
@@ -676,7 +675,6 @@
 <translation id="8007176423574883786">已在這個裝置上關閉</translation>
 <translation id="802154636333426148">下載失敗</translation>
 <translation id="8033047164036749181">訂閱這個網站的通知</translation>
-<translation id="8042586301629853791">排序依據：</translation>
 <translation id="8051193500142930381">需要攝影機的功能將無法運作</translation>
 <translation id="8056330801132235235">Chrome 預設主題</translation>
 <translation id="8067883171444229417">播放影片</translation>

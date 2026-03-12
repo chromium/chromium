@@ -53,6 +53,7 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="1182225749592316782">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头和麦克风</translation>
 <translation id="1182876754474670069">光标移至行首</translation>
+<translation id="1183237619868651138">无法将 <ph name="EXTERNAL_CRX_FILE" /> 安装在本地缓存中。</translation>
 <translation id="1183863904939664422">对此建议不感兴趣</translation>
 <translation id="1184126796192815024">此网络不支持从您的手机流式传输应用。请尝试使用手机热点。<ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">请输入密码或 PIN 码以增强安全性</translation>
@@ -63,6 +64,7 @@
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199716647557067911">确定要关闭“开关控制”吗？</translation>
 <translation id="1201402288615127009">下一步</translation>
+<translation id="1202596434010270079">自助服务终端应用已更新完毕。请拔下 U 盘。</translation>
 <translation id="1210557957257435379">屏幕录制</translation>
 <translation id="121097972571826261">前进一个字词</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />，Play 商店应用</translation>
@@ -132,6 +134,7 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />，已安装的应用</translation>
 <translation id="1414919006379339073">关闭当前窗口</translation>
 <translation id="1415846719612499304">显示网络列表。<ph name="STATE_TEXT" />。</translation>
+<translation id="1418559532423038045">从 <ph name="DEVICE_TYPE" /> 中移除 <ph name="VM_NAME" />。此操作会删除虚拟机中的所有应用和数据！</translation>
 <translation id="1419738280318246476">解锁设备即可执行通知操作</translation>
 <translation id="1420408895951708260">开启/关闭夜间光效。<ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">建议的分组</translation>
@@ -221,6 +224,7 @@
 <translation id="1720230731642245863">热点已关闭</translation>
 <translation id="1731815243805539470">切换到上一个用户</translation>
 <translation id="1733996486177697563">在深色主题和浅色主题之间切换。轻触并按住相应桌面，然后选择“壁纸和风格”。</translation>
+<translation id="1734230530703461088">未能在时限内加载扩展程序。请与您的管理员联系。</translation>
 <translation id="1735992454301033090">已选择区域，使用箭头键即可移动</translation>
 <translation id="1736898441010944794">“<ph name="NAME" />”对蓝牙设备可见。</translation>
 <translation id="1737078180382804488">取消设置查看手机中的通知</translation>
@@ -317,11 +321,13 @@
 <translation id="2079545284768500474">撤销</translation>
 <translation id="2086334242442703436">打开表情符号选择器</translation>
 <translation id="2088116547584365419">游戏</translation>
+<translation id="2089550919269323883">企业政策禁止安装“<ph name="VM_NAME" />”。请与您的系统管理员联系以寻求支持。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="2093792000875799555">Chromebook 版 Steam 资讯</translation>
 <translation id="209965399369889474">未连接到网络</translation>
 <translation id="2107581415810719320">其他按钮 <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">您的 USB-C 数据线不支持 Thunderbolt。设备性能可能会受到限制。</translation>
 <translation id="2108303511227308752">键盘快捷键“Alt + 退格键”已更改。若要使用 Delete 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 退格键。</translation>
+<translation id="2114145607116268663">无法安装，需要重新启动。请重启计算机，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="2115680839221566783">当前的电池电量为 <ph name="PERCENTAGE" />%，充电已暂停。</translation>
 <translation id="2126242104232412123">新建桌面</translation>
 <translation id="2132302418721800944">录制整个屏幕</translation>
@@ -347,7 +353,9 @@
 <translation id="2224075387478458881">禁止在屏幕显示受保护内容时录制屏幕</translation>
 <translation id="2227179592712503583">移除推荐内容</translation>
 <translation id="2248634276911611268">在新标签页中打开链接，同时切换到该标签页</translation>
+<translation id="2251809247798634662">打开新的无痕式窗口</translation>
 <translation id="2253808149208613283">安装应用即可自定义此设备</translation>
+<translation id="225614027745146050">欢迎</translation>
 <translation id="225680501294068881">正在查找设备...</translation>
 <translation id="2257486738914982088">下载“<ph name="FILENAME" />”时出了点问题</translation>
 <translation id="2258734398699965611">建议的文件</translation>
@@ -376,6 +384,7 @@
 <translation id="2341729377289034582">已锁定为纵向</translation>
 <translation id="2345226652884463045">按 Enter 键或搜索键 + 空格键即可选择要修改的文字。</translation>
 <translation id="2349785431103945039">显示热点详情。连接到移动网络即可使用热点。</translation>
+<translation id="2350182423316644347">正在初始化应用…</translation>
 <translation id="2350794187831162545">现在，<ph name="LANGUAGE" />语音均在本地处理，且可离线使用。您可在“设置”&gt;“无障碍”下更改语音输入语言。</translation>
 <translation id="2352467521400612932">触控笔设置</translation>
 <translation id="2354174487190027830">正在激活“<ph name="NAME" />”</translation>
@@ -482,6 +491,7 @@
 <translation id="2658778018866295321">点击并拖动</translation>
 <translation id="2665788051462227163">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />和<ph name="UNAVAILABLE_APPS_TWO" />。</translation>
 <translation id="2670350619068134931">经过简化的动画</translation>
+<translation id="2672142220933875349">crx 文件已损坏，未能成功解压。</translation>
 <translation id="2673968385134502798">游戏</translation>
 <translation id="2678852583403169292">“随选朗读”菜单</translation>
 <translation id="2683887737780133806">上周的<ph name="DAY_OF_WEEK" /></translation>
@@ -500,6 +510,7 @@
 <translation id="2718395828230677721">夜间光效</translation>
 <translation id="2726420622004325180">您的手机必须有移动数据网络，才能提供热点</translation>
 <translation id="2727175239389218057">回复</translation>
+<translation id="2727744317940422214">抱歉，出了点问题。请在说明中提交反馈并附上 #bruschetta。错误代码为 <ph name="ERROR" />。清理失败，您可能需要手动清理。</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
 <translation id="2743301740238894839">开始</translation>
 <translation id="2743387203779672305">复制到剪贴板</translation>
@@ -523,6 +534,7 @@
 <translation id="2802938996245446490">已选择“<ph name="BUTTON_LABEL" />”</translation>
 <translation id="2804617685448902294"><ph name="TITLE" /><ph name="BODY" /></translation>
 <translation id="2805756323405976993">应用</translation>
+<translation id="2805760958323556153">ExtensionInstallForcelist 的政策值无效。请与您的管理员联系。</translation>
 <translation id="2814448776515246190">截取/录制局部屏幕</translation>
 <translation id="2815594810045873507">请尝试使用功率更高的充电器，或使用原装充电器。</translation>
 <translation id="2819276065543622893">您将立即退出。</translation>
@@ -530,6 +542,7 @@
 <translation id="2825619548187458965">任务栏</translation>
 <translation id="2831035692318564937">已开启，直到日出</translation>
 <translation id="2834813915651407382">最近打开过</translation>
+<translation id="2838379631617906747">正在安装</translation>
 <translation id="2838589015763961627">退出全屏模式即可调整大小</translation>
 <translation id="2840766858109427815">前往下一页</translation>
 <translation id="2841907151129139818">已切换到平板电脑模式</translation>
@@ -551,6 +564,7 @@
 <translation id="2883271196820422439">恢复使用鼠标键</translation>
 <translation id="2885950158625301909">了解详情</translation>
 <translation id="2891209721153296020">“取消选择”</translation>
+<translation id="2893701697603065178">代管式开发环境</translation>
 <translation id="2894949423239620203">数据线可能会影响性能</translation>
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2914580577416829331">屏幕截图</translation>
@@ -575,6 +589,7 @@
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
 <translation id="2977598380246111477">下一个代码</translation>
 <translation id="2980700224869191055">“<ph name="EMOTICON_NAME" />”表情符</translation>
+<translation id="2981033191524548279">抱歉，出了点问题。请提交反馈并在说明中附上 #bruschetta。错误代码为 <ph name="ERROR" />，重新启动并重试或许可以解决此问题。</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
 <translation id="2992272421330787632">隐藏所有媒体建议</translation>
 <translation id="2992327365391326550">设备的麦克风按钮已关闭。</translation>
@@ -603,7 +618,9 @@
 <translation id="3077734595579995578">shift</translation>
 <translation id="3081696990447829002">展开菜单</translation>
 <translation id="3087734570205094154">底部</translation>
+<translation id="3088128611727407543">正在准备应用配置文件…</translation>
 <translation id="3090214513075567547">打开上下文菜单</translation>
+<translation id="3090819949319990166">无法将外部 crx 文件复制到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090989381251959936">开启/关闭“<ph name="FEATURE_NAME" />”功能。<ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">逾期未交</translation>
 <translation id="3095995014811312755">版本</translation>
@@ -659,6 +676,7 @@
 <translation id="3269597722229482060">右键点击</translation>
 <translation id="3271554781793662131">搜索即可插入</translation>
 <translation id="3274634049061007184">查看手机中的应用</translation>
+<translation id="3279230909244266691">此过程可能需要几分钟的时间。正在启动虚拟机。</translation>
 <translation id="3289364673986435196">电源菜单</translation>
 <translation id="3289544412142055976">尚不支持 Linux 应用</translation>
 <translation id="3289674678944039601">正在通过适配器充电</translation>
@@ -709,6 +727,7 @@
 <translation id="3444385531800624797">正在加载结果</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
+<translation id="3449393517661170867">打开新的标签页窗口</translation>
 <translation id="3454555520521576458">可调整大小</translation>
 <translation id="3455468639467374593">模板“<ph name="TEMPLATE_NAME" />”</translation>
 <translation id="3456931972722214204">1 部设备已连接到 <ph name="DEVICE_NAME" /> 热点</translation>
@@ -742,6 +761,8 @@
 <translation id="3554928024630051016">如需添加其他 USB 设备，请尝试移除一个设备，然后再插入新设备</translation>
 <translation id="3558768885091059911">要启用摄像头和麦克风使用权限吗？</translation>
 <translation id="3560174576767922131">录制视频</translation>
+<translation id="3563432852173030730">无法下载自助服务终端应用。</translation>
+<translation id="3563558822383875692">正在配置 DLC。</translation>
 <translation id="3563775809269155755">启用热点</translation>
 <translation id="3566240529365775567">刚才打开过</translation>
 <translation id="3571734092741541777">设置</translation>
@@ -766,6 +787,7 @@
 <translation id="3615926715408477684">如果您启用移动流量，蓝牙亦会随之开启</translation>
 <translation id="3616113530831147358">音频</translation>
 <translation id="3616883743181209306">菜单已移至屏幕的右上角。</translation>
+<translation id="3618286417582819036">抱歉，出错了</translation>
 <translation id="3619536907358025872">截屏设置</translation>
 <translation id="3621202678540785336">输入</translation>
 <translation id="3621712662352432595">音频设置</translation>
@@ -806,6 +828,7 @@
 <translation id="3712143870407382523">选择这一侧的窗口</translation>
 <translation id="371370241367527062">前置麦克风</translation>
 <translation id="3713734891607377840">下载完成后打开</translation>
+<translation id="3716065403310915079"><ph name="VM_NAME" /> 安装程序</translation>
 <translation id="3726171378575546917">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />、<ph name="UNAVAILABLE_APPS_TWO" />以及另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 个应用。</translation>
 <translation id="3727231512028252576">无法加载内容。请在联网后重试。</translation>
 <translation id="3735740477244556633">排序依据</translation>
@@ -823,6 +846,8 @@
 <translation id="3781910048497807059">将焦点移到上一个窗格</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">锁定</translation>
+<translation id="3788301286821743879">无法启动该自助服务终端应用。</translation>
+<translation id="3789841737615482174">安装</translation>
 <translation id="3796215473395753611">alt + 向上键</translation>
 <translation id="3798670284305777884">扬声器（内部）</translation>
 <translation id="3799080171973636491">您按下了全屏放大镜的键盘快捷键。要开启这项功能吗？</translation>
@@ -853,6 +878,7 @@
 <translation id="3900355044994618856">您的会话将在 <ph name="SESSION_TIME_REMAINING" />后结束</translation>
 <translation id="3901991538546252627">正在连接：<ph name="NAME" /></translation>
 <translation id="3904768293285573640">将平铺窗口向左调整大小</translation>
+<translation id="3923221004758245114">要从您的 <ph name="DEVICE_TYPE" /> 中卸载 <ph name="VM_NAME" /> 吗？此操作会删除虚拟机中的所有应用和数据！</translation>
 <translation id="3923494859158167397">未设置任何移动网络</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在加载活动。</translation>
 <translation id="3927049937406914450">由于位置信息权限已关闭，无法获取天气信息。您可以在设置中开启此权限。</translation>
@@ -905,6 +931,7 @@
 <translation id="4069532248403319695">打开“下载内容”页</translation>
 <translation id="4072264167173457037">信号中等</translation>
 <translation id="4072805772816336153">请稍后重试</translation>
+<translation id="4077623680826964850">启动或重新连接到虚拟机时超时。</translation>
 <translation id="4086921558679520050">在设备上开启物理麦克风开关</translation>
 <translation id="4101772068965291327">打开主页</translation>
 <translation id="4112140312785995938">快退</translation>
@@ -917,6 +944,7 @@
 <translation id="4123259114412175274">如需解锁 Chromebook，请确保手机的蓝牙已开启</translation>
 <translation id="4123868835475902435">您刚才看到的只是基本操作！您可继续使用内置的“探索”应用来获取各种提示和帮助：入门提示、特别优惠以及最新的 <ph name="PRODUCT_NAME" /> 功能，一应俱全。</translation>
 <translation id="4125970834901680537">无法在平板电脑模式下流式传输应用。请在笔记本电脑模式下重试。</translation>
+<translation id="4126375522951286587">关闭“<ph name="VM_NAME" />”</translation>
 <translation id="4131973331381812765">温度：<ph name="TEMPERATURE" />°C - 当前速度：<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">保持开启状态，直到日出</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />键 + 向右键</translation>
@@ -932,6 +960,7 @@
 <translation id="4177913004758410636">{0,plural, =1{请在 1 天内更新此设备}other{请在 # 天内更新此设备}}</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4185671786623711291">将活动窗口移至右侧桌面</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" />搜索</translation>
 <translation id="4189826113259617332">将当前窗口中所有打开的网页保存为书签，并放在新文件夹中</translation>
 <translation id="4190143678693626113">在 Chromebook 上快速回复手机短信，节省宝贵时间</translation>
 <translation id="4190780880566297084">取消设置查看手机中的近期照片、媒体内容和应用</translation>
@@ -958,6 +987,7 @@
 <translation id="4240486403425279990">概览模式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4247123849143712100">更新并关机</translation>
+<translation id="4249248555939881673">正在等待建立网络连接…</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="425364040945105958">无 SIM 卡</translation>
 <translation id="4261870227682513959">显示通知设置。通知已关闭</translation>
@@ -968,6 +998,8 @@
 <translation id="4274537685965975248">键盘快捷键“Ctrl + Alt + 向下键”已更改。若要使用 End 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向右键。</translation>
 <translation id="4275283744500212192">打开窗口布局选项</translation>
 <translation id="4275663329226226506">媒体</translation>
+<translation id="4276856098224910511">无法安装，操作系统更新待处理。请应用所有待处理的操作系统更新，然后重启并重试。错误代码为 <ph name="ERROR" />。</translation>
+<translation id="4278779213160967034">此过程可能需要几分钟的时间。正在下载文件。</translation>
 <translation id="4279490309300973883">正在镜像</translation>
 <translation id="4280601795273309128">安全更新已终止。请升级您的设备。</translation>
 <translation id="4283888303416325161">请输入密码以增强安全性</translation>
@@ -1014,11 +1046,14 @@
 <translation id="4406883609789734330">实时字幕</translation>
 <translation id="4412698727486357573">帮助中心</translation>
 <translation id="4412944820643904175">“<ph name="FEATURE_NAME" />”功能已关闭。</translation>
+<translation id="4414242853388122273">卸载 <ph name="VM_NAME" /> 时出错。请重试。</translation>
 <translation id="4417647906073317561">专注模式设置。您可以设置定时器、任务和音乐，让自己进入状态。</translation>
 <translation id="4418600384772451109">关闭面板</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4426817706804363424">好样的！</translation>
+<translation id="4426857487270413362">无法下载安装程序文件。请检查您的互联网连接，确保您有足够的可用磁盘空间，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="4439157218765614426">被政策禁止。</translation>
 <translation id="4441283832827406317">应用已按名称排序</translation>
 <translation id="4445159312344259901">登录即可解锁</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 条重要通知}other{# 条重要通知}}</translation>
@@ -1057,6 +1092,7 @@
 <translation id="4545950850562423083">将当前网页保存为书签</translation>
 <translation id="4548482551627849548">将活动窗口移至左侧桌面</translation>
 <translation id="4552748006424994716">为避免回声，您只能使用有线耳机收听麦克风的声音。</translation>
+<translation id="4554591392113183336">外部扩展程序的版本与现有版本相同或更低。</translation>
 <translation id="4556953949326137018">当您使用“添加到日历”或“创建 Google 文档”等建议的操作时，系统会将所选区域的内容发送到 Google 服务器以执行建议的操作，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="4560576029703263363">已开启</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1242,6 +1278,7 @@
 <translation id="5121628974188116412">转到网页底部</translation>
 <translation id="5122517996953421795">“<ph name="DESK_NAME" />”预览。非活动桌面。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
+<translation id="5139112070765735680"><ph name="QUERY_NAME" />，用<ph name="DEFAULT_SEARCH_ENGINE_NAME" />执行搜索</translation>
 <translation id="5144005092084035179">要切换音频输入设备吗？</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
@@ -1267,6 +1304,7 @@
 <translation id="5229343007215035173">开启/关闭隐私保护屏幕</translation>
 <translation id="5229860525743792999">从建议的分组中移除“<ph name="ITEM_LABEL" />”</translation>
 <translation id="5230516054153933099">窗口</translation>
+<translation id="5233638681132016545">打开新的标签页</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5238719049014159442">打开/关闭启动器</translation>
@@ -1275,6 +1313,7 @@
 <translation id="5245201184978705914">无法生成转录内容</translation>
 <translation id="5251174953851719648">刷新内容</translation>
 <translation id="5253783950165989294">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备，它的电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="52550593576409946">无法启动自助服务终端应用。</translation>
 <translation id="5256939106029293271">测试麦克风</translation>
 <translation id="5258528442992323769">尚未保存任何桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
@@ -1397,10 +1436,12 @@
 <translation id="5632485077360054581">操作步骤</translation>
 <translation id="5648021990716966815">麦克风耳机插孔</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" />中有需要您关注的新动态。</translation>
+<translation id="5657667036353380798">该外部扩展程序需要安装 <ph name="MINIMUM_CHROME_VERSION" /> 或更高版本的 Chrome。</translation>
 <translation id="5662075790140998213">桌面 10</translation>
 <translation id="5662709761327382534">麦克风录音功能已<ph name="CURRENT_STATE" />，按 Enter 键即可<ph name="NEW_STATE" />此功能</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />，<ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">正在激活</translation>
+<translation id="5671658447180261823">移除该项推荐内容：<ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">实用程序</translation>
 <translation id="5673434351075758678">当系统同步完您的设置后，“<ph name="FROM_LOCALE" />”即会改为“<ph name="TO_LOCALE" />”。</translation>
 <translation id="5675363643668471212">任务栏中的项目</translation>
@@ -1500,6 +1541,7 @@
 <translation id="5980301590375426705">退出访客模式</translation>
 <translation id="5983567367406220847">由于闲置过久，热点已关闭。</translation>
 <translation id="598407983968395253">使用模板</translation>
+<translation id="5984334442529819751">安装 DLC 时出错（通常需要重新启动，请依次查看“设置”\&gt;\&gt;“关于 ChromeOS”了解详情）。</translation>
 <translation id="5986723678596105470">通过 Google Meet 加入</translation>
 <translation id="598882571027504733">要想获取此项更新，请在已连接该键盘的情况下重新启动您的 Chromebook。</translation>
 <translation id="5990992855591814753">使用个性化专注播放列表保持专注。免费试用 YouTube Premium 3 个月，畅享无广告干扰的 YouTube Music 和 YouTube。须遵守相关条款。</translation>
@@ -1568,6 +1610,7 @@
 <translation id="6166852626429024716">搜索您的设备、应用、设置、网站…</translation>
 <translation id="6168318496333165060">打开“诊断”应用</translation>
 <translation id="6168622430237609329">您已安装的应用</translation>
+<translation id="6177412385419165772">正在移除…</translation>
 <translation id="6180193585172850042">返回按钮</translation>
 <translation id="6180651297859206670">前进按钮</translation>
 <translation id="6182592640011875895">打开桌面</translation>
@@ -1607,8 +1650,10 @@
 <translation id="6304076460080088478">关闭或最小化无痕式窗口，以便使用 Google 智能镜头搜索屏幕内容</translation>
 <translation id="6309219492973062892">点击或点按任务栏图标 1-8</translation>
 <translation id="6315170314923504164">语音</translation>
+<translation id="6317369057005134371">等待应用窗口…</translation>
 <translation id="6319058840130157106">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向后移动</translation>
 <translation id="6319503618073410818">在浏览器中查看详细信息</translation>
+<translation id="6324334979701518365">无法启动不受支持的 Chrome 应用，请告知管理员此问题。</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6325525973963619867">失败</translation>
 <translation id="6330012934079202188">正在显示所有桌面中的窗口，按向上键即可显示当前桌面中的窗口</translation>
@@ -1630,6 +1675,7 @@
 <translation id="639644700271529076">CAPS LOCK 已关闭</translation>
 <translation id="6406458002328242616">修改定时器。<ph name="FOCUS_DURATION" />。</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6414618057231176439">选择要安装的 <ph name="VM_NAME" /> 版本。</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="641817663353603351">向上翻页</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1666,6 +1712,7 @@
 <translation id="6507618042428827377">切换到下一种可用输入法</translation>
 <translation id="6508923215158854599">确保您的 Chromebook 与 Chromecast 设备连接到同一个 Wi-Fi 网络。</translation>
 <translation id="6515727200518652613">相机连接已中断，正在尝试重新连接。</translation>
+<translation id="651753338596587143">抱歉，安装 DLC 依赖项时出了点问题。请尝试重新启动。如果问题仍然存在，请提交反馈并在说明中附上 #bruschetta。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="6520517963145875092">选择一个窗口即可截图</translation>
 <translation id="652139407789908527">在此次更新期间，您的屏幕变为空白的时间会比平时长（可长达 1 分钟）。在更新过程中，请不要按电源按钮。</translation>
 <translation id="6528179044667508675">请勿打扰</translation>
@@ -1760,6 +1807,7 @@
 <translation id="6786750046913594791">关闭文件夹</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6792262051831399889">不可用</translation>
+<translation id="6792351896138862473">无法启动不受支持的自助服务终端应用，请告知管理员此问题。</translation>
 <translation id="679368458793552943">开启放大镜时放大</translation>
 <translation id="6794287755901682422">此项内容的其他元数据：<ph name="GLANCEABLES_TASK_ITEM_METADATA" />。</translation>
 <translation id="6797745268063125932">保持开启状态</translation>
@@ -1856,6 +1904,7 @@
 <translation id="7130207228079676353">很可能会点击的应用</translation>
 <translation id="7131634465328662194">您将会自动退出会话。</translation>
 <translation id="7143207342074048698">正在连接</translation>
+<translation id="7144878232160441200">重试</translation>
 <translation id="7144942256906679589">电池状态</translation>
 <translation id="7145639536026937076">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。省电模式已开启。</translation>
 <translation id="7147587499155271409">没有浏览记录</translation>
@@ -1897,6 +1946,7 @@
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7336943714413713812">搜索浏览记录</translation>
 <translation id="7337660433630200387">增加 10 分钟</translation>
+<translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7340731148882810149">“自动点击”菜单</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
@@ -1931,11 +1981,13 @@
 <translation id="7440404390546433462">Google 搜索</translation>
 <translation id="7441711280402516925">正在播放 · 切换到标签页</translation>
 <translation id="7453330308669753048">已移除搜索记录结果</translation>
+<translation id="7457027286267861992">磁盘空间不足。请释放更多的磁盘空间，然后重试。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="7459485586006128091">由于内部错误，热点已关闭。请过几分钟后尝试重新连接。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">录屏模式</translation>
 <translation id="7466449121337984263">请轻触传感器</translation>
 <translation id="7477793887173910789">控制您的音乐、视频等媒体内容</translation>
+<translation id="7478485216301680444">无法安装自助服务终端应用。</translation>
 <translation id="7488762544858401571">已修改</translation>
 <translation id="7489261257412536105">进入或退出全屏模式</translation>
 <translation id="7490157877815329797">如需畅听无广告干扰的音乐和个性化的专注模式音乐，请试用 YouTube Music Premium</translation>
@@ -1963,11 +2015,13 @@
 <translation id="7534543072325030705">选择“我喜欢”将提交您喜欢这条分组建议的反馈</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">更新左侧窗口</translation>
+<translation id="7541773865713908457">使用“<ph name="APP_NAME" />”应用来<ph name="ACTION_NAME" /></translation>
 <translation id="7543399541175347147">目前不支持 Linux 应用和无痕式窗口。其他应用会被保存。</translation>
 <translation id="7544300628205093162">键盘背光已开启</translation>
 <translation id="7548434653388805669">该睡觉了</translation>
 <translation id="7551643184018910560">固定到任务栏</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" />正在使用您的麦克风</translation>
+<translation id="7559719679815339381">请稍候…自助服务终端应用正在更新。请不要拔下 U 盘。</translation>
 <translation id="7561982940498449837">关闭菜单</translation>
 <translation id="7564874036684306347">将窗口移至另一桌面可能会导致出现意外行为 - 后续的通知、窗口和对话框可能会被拆分到不同的桌面中。</translation>
 <translation id="7568154670718626683">要使用 Delete 键吗？请使用</translation>
@@ -1992,6 +2046,8 @@
 <translation id="7621008024906456933">“快速分享”设置</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
 <translation id="7627303771480696593">提问</translation>
+<translation id="7629858978065675960">未知结果。</translation>
+<translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
 <translation id="7634648064048557203">相机已对准右下角</translation>
 <translation id="7638572816805275740">截取窗口或录屏</translation>
 <translation id="7642106959537987271">颜色反转模式</translation>
@@ -2013,6 +2069,7 @@
 <translation id="7684531502177797067">相机输入已设为“<ph name="CAMERA_NAME" />”。</translation>
 <translation id="7687172143976244806">您打开过</translation>
 <translation id="7689817529363080918">如果您取消麦克风静音，即意味着允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有麦克风使用权限的应用和网站使用麦克风</translation>
+<translation id="7691073721729883399">无法为该自助服务终端应用装载 cryptohome。</translation>
 <translation id="7704000866383261579">重新执行上一个操作</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">正在创建 GIF</translation>
@@ -2053,12 +2110,14 @@
 <translation id="7830453190047749513">您可以为 <ph name="PERIPHERAL_NAME" /> 设置个性化按钮操作、光标速度等</translation>
 <translation id="7842569679327885685">警告：实验性功能</translation>
 <translation id="7846634333498149051">键盘</translation>
+<translation id="7847212883280406910">按 Ctrl + Alt + S 键可切换到 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848989271541991537">已移至第 <ph name="PAGE_NUMBER" /> 页中第 <ph name="ROW_NUMBER" /> 行与第 <ph name="COLUMN_NUMBER" /> 列的相交处。</translation>
 <translation id="7850320739366109486">请勿打扰</translation>
 <translation id="7851039877802112575">将焦点移至弹出式窗口和对话框</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">要以访客身份使用设备，您需要退出账号，然后选择屏幕底部的“以访客身份浏览”。</translation>
 <translation id="7866482334467279021">开启</translation>
+<translation id="7870790288828963061">找不到自助服务终端应用的更高版本，因此没有要更新的内容。请拔下 U 盘。</translation>
 <translation id="7872786842639831132">关闭</translation>
 <translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎未开启。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7884446017008693258">热点设置</translation>
@@ -2117,11 +2176,13 @@
 <translation id="799296642788192631">您可以固定重要文件。如需固定某个文件，请将鼠标指针悬停在该文件上，或者打开“文件”应用并从中右键点击相应文件。</translation>
 <translation id="7994370417837006925">多账号登录</translation>
 <translation id="7995804128062002838">未能截取屏幕</translation>
+<translation id="7997828719430450286">成功。</translation>
 <translation id="8000020256436988724">工具栏</translation>
 <translation id="8000066093800657092">未连接任何网络</translation>
 <translation id="8001755249288974029">选中从光标处到行首的文字</translation>
 <translation id="8004512796067398576">增加</translation>
 <translation id="8005527720597583355">开启专注模式</translation>
+<translation id="8008356846765065031">网络已断开，请检查您的互联网连接是否正常。</translation>
 <translation id="8015361438441228492">无法修改任务。</translation>
 <translation id="8027187124910699148">恢复建议的分组</translation>
 <translation id="802782383769312836">上一个桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 个桌面（共 <ph name="DESK_COUNT" /> 个）。</translation>
@@ -2169,6 +2230,7 @@
 <translation id="8155628902202578800">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的信息对话框</translation>
 <translation id="8167567890448493835">目前使用的是“<ph name="LOCALE_NAME" />”</translation>
 <translation id="8168435359814927499">内容</translation>
+<translation id="8169177848833352618">很抱歉，此机器不符合安装 Bruschetta 的要求。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="8172370561760918656">已选择左上角手柄，使用箭头键即可移动</translation>
 <translation id="81817143961839203">插入图片失败</translation>
 <translation id="8185090165691050712">开启/关闭菜单即可调整锁定模式的范围</translation>
@@ -2191,6 +2253,7 @@
 <translation id="8239034820133090126">启用右侧桌面</translation>
 <translation id="8241650983304689286">向新的拆分视图中添加标签页</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
+<translation id="8249048954461686687">OEM文件夹</translation>
 <translation id="825129991941217170">显示所有 Google 云端硬盘内容</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
@@ -2206,6 +2269,7 @@
 <translation id="8314772463905284467">Caps Lock 已打开</translation>
 <translation id="8315514906653279104">正在开启…</translation>
 <translation id="8331351032546853669">待下载</translation>
+<translation id="8335587457941836791">取消固定到任务栏</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="834414266279889566">输出质量不佳</translation>
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
@@ -2235,10 +2299,13 @@
 <translation id="8433186206711564395">网络设置</translation>
 <translation id="8433977262951327081">用于在任务栏中显示输入法选项菜单气泡的快捷键已更改。请使用<ph name="NEW_SHORTCUT" />（而不是 <ph name="OLD_SHORTCUT" />）。</translation>
 <translation id="8437311513256731931">打开反馈工具</translation>
+<translation id="8440630305826533614">Linux 应用</translation>
 <translation id="8443879455002739353">“复制”</translation>
 <translation id="8444246603146515890">桌面 <ph name="DESK_TITILE" /> 已激活</translation>
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
+<translation id="8458259704995116343">未能启动虚拟机。</translation>
+<translation id="84613761564611563">正在显示请求的网络配置界面，请稍候…</translation>
 <translation id="8462305545768648477">关闭“随选朗读”功能</translation>
 <translation id="8466665972451889002">显示“<ph name="GROUP_NAME" />”中的内容</translation>
 <translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" />到期</translation>
@@ -2248,6 +2315,7 @@
 <translation id="8480418399907765580">显示工具栏</translation>
 <translation id="8487660088084188539">开启这些功能后，系统可能会将输入文本、文档内容和网页网址发送到 Google 服务器。系统会根据这些信息生成写作建议、总结内容、回答问题和改进产品，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="8487699605742506766">热点</translation>
+<translation id="8490896350101740396">下列自助服务终端应用“<ph name="UPDATED_APPS" />”已更新完毕。请重启设备，以便完成更新流程。</translation>
 <translation id="8491237443345908933">在新标签页中打开链接</translation>
 <translation id="8492573885090281069">“<ph name="DISPLAY_NAME" />”不支持 <ph name="SPECIFIED_RESOLUTION" />。分辨率已改为 <ph name="FALLBACK_RESOLUTION" />。点击“确认”即可保留更改。将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="8507563469658346379">所有人，<ph name="REMAINING_TIME" /></translation>
@@ -2258,6 +2326,7 @@
 <translation id="851660987304951246">使用“帮我读”功能可快速总结内容或提问</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
 <translation id="8519329096920173967">使用 Google 智能镜头搜索屏幕上的内容</translation>
+<translation id="8527869672961320915"><ph name="VM_NAME" /> 相关应用</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
 <translation id="8536886494750559755">显示“快速分享”设置。<ph name="TIME_REMAINING" />内所有人都可以看到该设备</translation>
 <translation id="8539803091108018926">已将文本复制到剪贴板</translation>
@@ -2285,6 +2354,7 @@
 <translation id="8627191004499078455">已连接到<ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">无障碍设置</translation>
 <translation id="8634326941504371857">您在此设备和 Google 云端硬盘中存储的文件</translation>
+<translation id="8636284842992792762">正在初始化扩展程序…</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="8638637208069328956">开启/关闭麦克风</translation>
 <translation id="8639760480004882931">剩余电量：<ph name="PERCENTAGE" /></translation>
@@ -2318,6 +2388,7 @@
 <translation id="8734991477317290293">当前连接的键盘可能会试图窃取您的击键操作</translation>
 <translation id="8735678380411481005">键盘背光颜色</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：正在启用…</translation>
+<translation id="8742395827132970586">安装失败，正在清理</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8751299148074971734">请再接再厉！</translation>
@@ -2328,6 +2399,7 @@
 <translation id="8759408218731716181">无法设置多账号登录</translation>
 <translation id="8763883995157866248">将设备设为睡眠模式</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />，已安装的应用，已禁用</translation>
+<translation id="8782565991310229362">已取消启动自助服务终端应用。</translation>
 <translation id="8785070478575117577">连接到“<ph name="NETWORK_NAME" />”</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />。<ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间向前移动</translation>
@@ -2355,6 +2427,8 @@
 <translation id="8860366331836346216">添加 eSIM 卡</translation>
 <translation id="8869149849311827122">确定要关闭光标控制功能吗？</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
+<translation id="8871551568777368300">已被管理员固定</translation>
+<translation id="8872155268274985541">发现无效的自助服务终端外部更新清单文件，未能成功更新自助服务终端应用。请拔下 U 盘。</translation>
 <translation id="8873203135446552888">确认您要停用内置触控板</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8875021410787719674">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间移动</translation>
@@ -2369,6 +2443,7 @@
 <translation id="890616557918890486">更改来源</translation>
 <translation id="8909138438987180327">剩余的电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="8916866375277139011">隐藏“<ph name="GROUP_NAME" />”中的内容</translation>
+<translation id="8921369299636221117">Concierge 服务不可用。</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google 助理不支持此语言。</translation>
 <translation id="8926951137623668982">任务栏始终处于隐藏状态</translation>
@@ -2387,6 +2462,7 @@
 <translation id="8956420987536947088">打开之前的窗口和应用</translation>
 <translation id="8959380109429710384">您按下了全屏放大镜的键盘快捷键。使用 Ctrl + Alt + 箭头键可在放大后的视图中四处移动。</translation>
 <translation id="8964525410783593407">1 小时</translation>
+<translation id="8967548289042494261">卸载 <ph name="VM_NAME" /></translation>
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8973885907461690937">将焦点移至菜单图标</translation>
 <translation id="8980862970816311842">将某个应用图标移入或移出应用网格内的文件夹</translation>

@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Astfel, se vor șterge datele de navigare de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Programul de instalare descărcat nu a putut fi stocat în memoria cache. Eroare: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="263447411082773721">Păstrează parolele, marcajele și istoricul perfect sincronizate pe toate dispozitivele. Accesează cu ușurință funcțiile pe care le cunoști și apreciezi actualizând browserul prestabilit la Chrome. Chrome va fi fixat în bara de activități pentru acces rapid.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
 <translation id="2652691236519827073">Deschide linkul într-o &amp;filă Chrome nouă</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Ulterior, Chrome te poate întreba dacă vrei să folosești informațiile salvate pentru a completa automat formulare</translation>
 <translation id="3352986031709923790">colțul din dreapta sus al zonei de căutare: dreapta <ph name="RIGHT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Unele funcții și extensii Chrome au comenzi rapide. Poți alege să le reactivezi.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se va relansa acum}=1{Chrome se va relansa într-o secundă}few{Chrome se va relansa în # secunde}other{Chrome se va relansa în # de secunde}}</translation>
 <translation id="3380249972812870825">Pentru a deschide Gemini în Chrome, apasă pe <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">S-a produs o eroare de sistem de operare în timpul instalării. Descarcă din nou Google Chrome.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Dă clic pe <ph name="BUTTON_LABEL" /> mai jos.
 2. Dă clic pe <ph name="BUTTON_2" /> în setările Windows.
 3. Dă clic pe <ph name="BUTTON_3" /> în notificarea Windows ca să fixezi Chrome în bara de activități pentru acces rapid.</translation>
+<translation id="8074398340364918139">Pentru a căuta o anumită funcție sau extensie Chrome, introdu comanda rapidă respectivă în bara de adrese, urmată de tasta de pe tastatură selectată</translation>
 <translation id="8077579734294125741">Alte profiluri Chrome</translation>
 <translation id="8086881907087796310">Nu s-a instalat deoarece computerul nu îndeplinește cerințele minime de hardware.</translation>
 <translation id="8113883687556086139">Confirmă-ți identitatea pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Despre &amp;Google Chrome</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8162006532256575008">Folosește Chrome fără cont</translation>
+<translation id="8172231188687329735">Descarcă aplicația Chrome pentru a salva parole din mers</translation>
 <translation id="8177472873527554730">Nu se găsește conținut în pagină</translation>
 <translation id="8221491193165283816">De obicei blochezi notificările. Ca să-i permiți acestui site să îți trimită notificări, dă clic aici.</translation>
 <translation id="8253851811470049684">Deschide linkuri în Chrome din orice aplicație și menține browserul accesibil în bara de activități</translation>
@@ -726,6 +730,7 @@
 
 Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te deconectezi acum, marcajele nesalvate vor fi șterse.</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
+<translation id="8458117863387545390">Instalează Chrome pe telefon</translation>
 <translation id="8496177819998570653">Manager de p&amp;arole Google</translation>
 <translation id="8498858610309223613">Tocmai a fost aplicată o actualizare de securitate specială pentru Google Chrome. Repornește acum și filele vor fi restabilite.</translation>
 <translation id="8516431725144212809">Interesele tale estimate de Chrome</translation>
@@ -779,7 +784,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8999208279178790196">{0,plural, =0{Este disponibilă o actualizare Chrome}=1{Este disponibilă o actualizare Chrome}few{O actualizare Chrome este disponibilă de # zile}other{O actualizare Chrome este disponibilă de # de zile}}</translation>
 <translation id="9010418943148193727">Motorul de căutare prestabilit a fost schimbat din afara browserului Chrome. Pentru a te proteja, Chrome l-a resetat.</translation>
 <translation id="9014771989710951291">Mai multe organizații gestionează Chrome</translation>
-<translation id="9024318700713112071">Setează Chrome ca prestabilit</translation>
 <translation id="9066987883552592250">Închide Gemini în Chrome Canary</translation>
 <translation id="9090566250983691233">Află de ce Chrome blochează unele fișiere</translation>
 <translation id="9106236359747881194">Selectează text pentru a căuta</translation>

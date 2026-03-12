@@ -444,7 +444,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="5515432237048785579">Arket på nedre delen av skärmen för flödet Upptäck har öppnats över hela skärmen</translation>
 <translation id="5516455585884385570">Öppna aviseringsinställningar</translation>
 <translation id="5527111080432883924">Fråga innan en webbplats ges läsbehörighet till text och bilder i Urklipp (rekommenderas)</translation>
-<translation id="5553374991681107062">Senaste</translation>
 <translation id="5555115555607204100">Öka inte webbplatsernas hastighet med Chromes V8-motor men gör Chrome något mer motståndskraftigt mot attacker</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blockeras</translation>
@@ -676,7 +675,6 @@ Avancerat skydd styr följande Chrome-inställningar:
 <translation id="8007176423574883786">Inaktiverad för den här enheten</translation>
 <translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8033047164036749181">Prenumerera på aviseringar från den här webbplatsen</translation>
-<translation id="8042586301629853791">Sortera efter:</translation>
 <translation id="8051193500142930381">Funktioner som kräver en kamera slutar fungera</translation>
 <translation id="8056330801132235235">Standard i Chrome</translation>
 <translation id="8067883171444229417">Spela upp video</translation>

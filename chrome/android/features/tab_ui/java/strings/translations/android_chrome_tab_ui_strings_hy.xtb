@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2371084566192454134">Ներդիրներ և ներդիրների խմբեր</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
+<translation id="2476179388576975626">Նկար նկարի մեջ</translation>
 <translation id="2498435670446402865">Վերանվանեք ներդիրների խումբը</translation>
 <translation id="2536366509642644298">«<ph name="TAB_GROUP_NAME_1" />» և «<ph name="TAB_GROUP_NAME_2" />» ներդիրների խմբերն այլևս հասանելի չեն</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>

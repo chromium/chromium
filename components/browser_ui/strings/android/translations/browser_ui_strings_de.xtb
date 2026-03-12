@@ -444,7 +444,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="5515432237048785579">Ansicht des Discover-Feeds am unteren Rand ist vollständig geöffnet</translation>
 <translation id="5516455585884385570">Benachrichtigungseinstellungen öffnen</translation>
 <translation id="5527111080432883924">Nachfragen, bevor einer Website erlaubt wird, Texte und Bilder aus der Zwischenablage abzurufen (empfohlen)</translation>
-<translation id="5553374991681107062">Letzte</translation>
 <translation id="5555115555607204100">Websites nicht mit der V8-Engine von Chrome beschleunigen (so wird Chrome etwas besser vor Angriffen geschützt)</translation>
 <translation id="5556459405103347317">Neu laden</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blockiert</translation>
@@ -676,7 +675,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="8007176423574883786">Für dieses Gerät deaktiviert</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
 <translation id="8033047164036749181">Benachrichtigungen von dieser Website abonnieren</translation>
-<translation id="8042586301629853791">Sortieren nach:</translation>
 <translation id="8051193500142930381">Funktionen, die eine Kamera benötigen, funktionieren dann nicht</translation>
 <translation id="8056330801132235235">Chrome-Standardeinstellung</translation>
 <translation id="8067883171444229417">Video ansehen</translation>

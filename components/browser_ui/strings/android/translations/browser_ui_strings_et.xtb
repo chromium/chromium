@@ -444,7 +444,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="5515432237048785579">Avastamisvoo alumine leht on avatud täiskõrguseni</translation>
 <translation id="5516455585884385570">Ava märguandeseaded</translation>
 <translation id="5527111080432883924">Küsi luba, kui sait soovib lugeda lõikelaual olevat teksti ja pilte (soovitatav)</translation>
-<translation id="5553374991681107062">Uusimad</translation>
 <translation id="5555115555607204100">Ära kiirenda saite Chrome’i V8 mootoriga, aga suurenda pisut Chrome’i vastupanuvõimet rünnetele</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5591840828808741583">Saidi <ph name="SITE_NAME" /> jaoks blokeeritud</translation>
@@ -676,7 +675,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="8007176423574883786">Selle seadme puhul on välja lülitatud</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
 <translation id="8033047164036749181">Selle saidi märguannete tellimine</translation>
-<translation id="8042586301629853791">Sortimisalus:</translation>
 <translation id="8051193500142930381">Kaamerat vajavad funktsioonid ei tööta</translation>
 <translation id="8056330801132235235">Chrome (vaikevalik)</translation>
 <translation id="8067883171444229417">Esita video</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Xush kelibsiz!</translation>
 <translation id="2015722694326466240">Parollarni ko‘rish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="201759455285471444">Varaqlar guruhini yoyish.</translation>
-<translation id="202070562065520783">Bu haqida izoh berilsin</translation>
 <translation id="2044394949148788042">Varaqlar jadvalida ochish</translation>
 <translation id="2044681667265133332">Bu hisobni (<ph name="USER_EMAIL" />) <ph name="HOSTED_DOMAIN" /> boshqaradi va ayrim maʼlumotlarga ruxsat olishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">yangi element</translation>
@@ -1614,6 +1613,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="672735642903863329">Bukmark, parol va barcha qurilmalaringizdagi maʼlumotlarni oling</translation>
 <translation id="6729493062119577923">Umumiy varaqlar guruhi faolligi</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Manzil</translation>
 <translation id="6746338529702829275">Hisobingiz maʼlumotlarini tekshiring</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ta tarix qaydi import qilindi}other{{count} ta tarix qaydi import qilindi}}</translation>
 <translation id="6755200887046212842">Hisoblarni boshqarish</translation>
@@ -1820,7 +1820,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="7537586195939242955">Passbook ilovasiga ma’lumotlarni yozib bo‘lmadi.</translation>
 <translation id="754655535278952384">Tekshirildi: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Hammasini yopish</translation>
-<translation id="7554791636758816595">Yangi varaq</translation>
 <translation id="7557508262441527045">Hisobdan chiqqansiz</translation>
 <translation id="7561196759112975576">Har doim</translation>
 <translation id="7561982940498449837">Menyuni yopish</translation>
@@ -2250,7 +2249,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, mahkamlangan sayt</translation>
 <translation id="8990960056509724223">Tashkilotingiz siyosatlari tufayli fayl saqlanmadi</translation>
 <translation id="8998289560386111590">Qurilmangizda ishlamaydi.</translation>
-<translation id="9000532564152265066">Barcha varaqlar</translation>
 <translation id="9003677638446136377">Qayta tekshirish</translation>
 <translation id="9006453925669499173">Menyu → Yangi inkognito varaq</translation>
 <translation id="9008201768610948239">Tashlab ketish</translation>

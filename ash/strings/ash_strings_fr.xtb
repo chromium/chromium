@@ -53,6 +53,7 @@
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1182225749592316782">L'accès est accordé à l'ensemble des sites Web et applis ayant l'autorisation d'accéder à l'appareil photo et au micro</translation>
 <translation id="1182876754474670069">Accueil</translation>
+<translation id="1183237619868651138">Impossible d'installer le fichier <ph name="EXTERNAL_CRX_FILE" /> dans le cache local.</translation>
 <translation id="1183863904939664422">Cette suggestion ne m'intéresse pas</translation>
 <translation id="1184126796192815024">Ce réseau n'est pas compatible avec les applis de streaming de votre téléphone. Essayez d'utiliser le point d'accès de votre téléphone. <ph name="LEARN_MORE" /></translation>
 <translation id="118437560755358292">Veuillez saisir votre mot de passe ou votre code d'accès pour renforcer la sécurité</translation>
@@ -63,6 +64,7 @@
 <translation id="119944043368869598">Tout effacer</translation>
 <translation id="1199716647557067911">Voulez-vous vraiment désactiver Switch Access ?</translation>
 <translation id="1201402288615127009">Suivant</translation>
+<translation id="1202596434010270079">L'application kiosque a été mise à jour. Veuillez débrancher la clé USB.</translation>
 <translation id="1210557957257435379">enregistrement de l'écran en cours</translation>
 <translation id="121097972571826261">Avancer par mot</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, application Play Store</translation>
@@ -132,6 +134,7 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, application installée</translation>
 <translation id="1414919006379339073">Fermer la fenêtre actuelle</translation>
 <translation id="1415846719612499304">Afficher la liste des réseaux. <ph name="STATE_TEXT" />.</translation>
+<translation id="1418559532423038045">Retire <ph name="VM_NAME" /> de votre <ph name="DEVICE_TYPE" />. Cela supprimera toutes les applis et données de la machine virtuelle.</translation>
 <translation id="1419738280318246476">Déverrouiller l'appareil pour effectuer l'action de notification</translation>
 <translation id="1420408895951708260">Activer/Désactiver l'éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1421166164855200062">Groupe suggéré</translation>
@@ -221,6 +224,7 @@
 <translation id="1720230731642245863">Le point d'accès est désactivé</translation>
 <translation id="1731815243805539470">Passer à l'utilisateur précédent</translation>
 <translation id="1733996486177697563">Basculez entre les thèmes sombre et clair. Appuyez de manière prolongée sur le bureau, puis sélectionnez "Fond d'écran et style".</translation>
+<translation id="1734230530703461088">Échec du chargement des extensions dans le délai imparti. Veuillez contacter votre administrateur.</translation>
 <translation id="1735992454301033090">Zone sélectionnée, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" est visible par les appareils Bluetooth.</translation>
 <translation id="1737078180382804488">Ignorer la configuration concernant l'affichage des notifications de votre téléphone</translation>
@@ -317,11 +321,13 @@
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2086334242442703436">Ouvrir le sélecteur d'emoji</translation>
 <translation id="2088116547584365419">jeux</translation>
+<translation id="2089550919269323883">Une règle d'entreprise a bloqué l'installation de <ph name="VM_NAME" />. Veuillez contacter votre administrateur système pour obtenir de l'aide. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="2093792000875799555">Actualités de Steam pour Chromebook</translation>
 <translation id="209965399369889474">Aucune connexion réseau</translation>
 <translation id="2107581415810719320">Autre bouton <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Votre câble USB-C n'est pas compatible Thunderbolt. Cela peut limiter les performances de l'appareil.</translation>
 <translation id="2108303511227308752">Le raccourci clavier Alt+Retour arrière a été modifié. Pour utiliser la touche Supprimer, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Retour arrière.</translation>
+<translation id="2114145607116268663">Installation impossible, redémarrage nécessaire. Veuillez redémarrer votre ordinateur et réessayer. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="2115680839221566783">Batterie à <ph name="PERCENTAGE" /> %. Recharge suspendue.</translation>
 <translation id="2126242104232412123">Nouveau bureau</translation>
 <translation id="2132302418721800944">Enregistrer tout l'écran</translation>
@@ -347,7 +353,9 @@
 <translation id="2224075387478458881">L'enregistrement d'écran n'est pas autorisé lorsqu'un contenu protégé est affiché</translation>
 <translation id="2227179592712503583">Supprimer la suggestion</translation>
 <translation id="2248634276911611268">Ouvrir le lien dans un nouvel onglet et basculer vers ce nouvel onglet</translation>
+<translation id="2251809247798634662">Nouvelle fenêtre de navigation privée</translation>
 <translation id="2253808149208613283">Installez l'appli pour personnaliser cet appareil</translation>
+<translation id="225614027745146050">Bienvenue</translation>
 <translation id="225680501294068881">Recherche d'appareils…</translation>
 <translation id="2257486738914982088">Une erreur s'est produite lors du téléchargement de <ph name="FILENAME" /></translation>
 <translation id="2258734398699965611">Fichiers suggérés</translation>
@@ -376,6 +384,7 @@
 <translation id="2341729377289034582">Verrouillée en position verticale</translation>
 <translation id="2345226652884463045">Appuyez sur Entrée ou Recherche+Espace pour sélectionner le texte à modifier.</translation>
 <translation id="2349785431103945039">Voir les détails du point d'accès. Pour l'utiliser, connectez-vous au réseau mobile.</translation>
+<translation id="2350182423316644347">Initialisation de l'application en cours…</translation>
 <translation id="2350794187831162545">La langue "<ph name="LANGUAGE" />" est maintenant traitée localement et fonctionne hors connexion. Vous pouvez changer la langue de dictée dans Paramètres &gt; Accessibilité.</translation>
 <translation id="2352467521400612932">Paramètres du stylet</translation>
 <translation id="2354174487190027830">Activation du réseau <ph name="NAME" /> en cours…</translation>
@@ -482,6 +491,7 @@
 <translation id="2658778018866295321">Cliquer et faire glisser</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> et <ph name="UNAVAILABLE_APPS_TWO" /> ne sont pas sur cet appareil.</translation>
 <translation id="2670350619068134931">Animations réduites</translation>
+<translation id="2672142220933875349">Fichier crx incorrect. Échec du déballage.</translation>
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2678852583403169292">Menu Sélectionner pour écouter</translation>
 <translation id="2683887737780133806"><ph name="DAY_OF_WEEK" /> de la semaine dernière</translation>
@@ -500,6 +510,7 @@
 <translation id="2718395828230677721">Éclairage nocturne</translation>
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
 <translation id="2727175239389218057">Répondre</translation>
+<translation id="2727744317940422214">Désolé, un problème est survenu. Veuillez envoyer vos commentaires en incluant #bruschetta dans la description. Code d'erreur : <ph name="ERROR" />. Échec du nettoyage. Vous devrez peut-être le faire manuellement.</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
 <translation id="2743301740238894839">Démarrer</translation>
 <translation id="2743387203779672305">Copier dans le presse-papiers</translation>
@@ -523,6 +534,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, sélectionné</translation>
 <translation id="2804617685448902294"><ph name="TITLE" /> <ph name="BODY" /></translation>
 <translation id="2805756323405976993">Applications</translation>
+<translation id="2805760958323556153">La valeur de la règle "ExtensionInstallForcelist" n'est pas valide. Veuillez contacter votre administrateur.</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
 <translation id="2815594810045873507">Essayez un chargeur avec plus de watts (W) ou utilisez votre chargeur d'origine.</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
@@ -530,6 +542,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2825619548187458965">Étagère</translation>
 <translation id="2831035692318564937">Activé jusqu'au lever du soleil</translation>
 <translation id="2834813915651407382">Ouvert récemment</translation>
+<translation id="2838379631617906747">Installation en cours…</translation>
 <translation id="2838589015763961627">Quitter le plein écran pour redimensionner</translation>
 <translation id="2840766858109427815">Passer à la page suivante</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
@@ -551,6 +564,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2883271196820422439">Réactiver les touches pour la souris</translation>
 <translation id="2885950158625301909">En savoir plus</translation>
 <translation id="2891209721153296020">"Désélectionner"</translation>
+<translation id="2893701697603065178">Environnement de développement géré</translation>
 <translation id="2894949423239620203">Le câble peut avoir une incidence sur les performances</translation>
 <translation id="2902312830803030883">Autres actions</translation>
 <translation id="2914580577416829331">Captures d'écran</translation>
@@ -575,6 +589,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2970920913501714344">Installer des applications, des extensions et des thèmes</translation>
 <translation id="2977598380246111477">Chiffre suivant</translation>
 <translation id="2980700224869191055">Émoticône <ph name="EMOTICON_NAME" /></translation>
+<translation id="2981033191524548279">Désolé, un problème est survenu. Veuillez envoyer vos commentaires en incluant #bruschetta dans la description. Code d'erreur : <ph name="ERROR" />. Vous pouvez peut-être résoudre le problème en redémarrant et en réessayant.</translation>
 <translation id="2985148236010982088">Voir toutes les applis</translation>
 <translation id="2992272421330787632">Masquer toutes les suggestions de contenus multimédias</translation>
 <translation id="2992327365391326550">Le bouton du micro de l'appareil est désactivé.</translation>
@@ -603,7 +618,9 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3077734595579995578">maj</translation>
 <translation id="3081696990447829002">Développer le menu</translation>
 <translation id="3087734570205094154">En bas</translation>
+<translation id="3088128611727407543">Préparation du profil de l'application…</translation>
 <translation id="3090214513075567547">Ouvrir le menu contextuel</translation>
+<translation id="3090819949319990166">Impossible de copier le fichier crx externe dans <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090989381251959936">Activer/Désactiver <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="3093423061078042895">Manquante</translation>
 <translation id="3095995014811312755">version</translation>
@@ -659,6 +676,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3271554781793662131">Recherchez pour insérer</translation>
 <translation id="3274634049061007184">Afficher les applis de votre téléphone</translation>
+<translation id="3279230909244266691">Cette opération peut prendre quelques minutes. Démarrage de la machine virtuelle…</translation>
 <translation id="3289364673986435196">Menu Marche/Arrêt</translation>
 <translation id="3289544412142055976">Les applis Linux ne sont pas prises en charge actuellement</translation>
 <translation id="3289674678944039601">En charge via un adaptateur</translation>
@@ -709,6 +727,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3444385531800624797">Chargement des résultats…</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB de type C</translation>
+<translation id="3449393517661170867">Nouvelle fenêtre à onglets</translation>
 <translation id="3454555520521576458">Redimensionnable</translation>
 <translation id="3455468639467374593">Modèle, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 appareil connecté au point d'accès <ph name="DEVICE_NAME" /></translation>
@@ -742,6 +761,8 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3554928024630051016">Pour ajouter des appareils USB supplémentaires, essayez d'en retirer un avant d'en brancher un autre</translation>
 <translation id="3558768885091059911">Activer l'accès à la caméra et au micro ?</translation>
 <translation id="3560174576767922131">Enregistrer une vidéo</translation>
+<translation id="3563432852173030730">Impossible de télécharger l'application kiosque.</translation>
+<translation id="3563558822383875692">Configuration du contenu téléchargeable.</translation>
 <translation id="3563775809269155755">Activer le point d'accès</translation>
 <translation id="3566240529365775567">Ouvert à l'instant</translation>
 <translation id="3571734092741541777">Configurer</translation>
@@ -766,6 +787,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="3615926715408477684">L'activation des données mobiles active aussi le Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Le menu a été déplacé dans l'angle supérieur droit de l'écran.</translation>
+<translation id="3618286417582819036">Désolé, une erreur s'est produite</translation>
 <translation id="3619536907358025872">Paramètres de capture d'écran</translation>
 <translation id="3621202678540785336">Entrée</translation>
 <translation id="3621712662352432595">Paramètres audio</translation>
@@ -806,6 +828,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3712143870407382523">Choisissez une fenêtre pour ce côté</translation>
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
+<translation id="3716065403310915079">Programme d'installation de <ph name="VM_NAME" /></translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applis ne sont pas sur cet appareil.</translation>
 <translation id="3727231512028252576">Impossible de charger les éléments. Réessayez une fois en ligne.</translation>
 <translation id="3735740477244556633">Trier par</translation>
@@ -823,6 +846,8 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3781910048497807059">Placer le curseur dans le volet précédent</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
+<translation id="3788301286821743879">Impossible de lancer l'application kiosque.</translation>
+<translation id="3789841737615482174">Installer</translation>
 <translation id="3796215473395753611">Alt+Flèche vers le haut</translation>
 <translation id="3798670284305777884">Haut-parleur (interne)</translation>
 <translation id="3799080171973636491">Vous avez appuyé sur le raccourci clavier de la loupe plein écran. Voulez-vous l'activer ?</translation>
@@ -853,6 +878,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3900355044994618856">Votre session va être fermée dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Connexion à <ph name="NAME" /> en cours…</translation>
 <translation id="3904768293285573640">Redimensionner la fenêtre en mosaïque vers la gauche</translation>
+<translation id="3923221004758245114">Supprimer <ph name="VM_NAME" /> de votre <ph name="DEVICE_TYPE" /> ? Cela supprimera toutes les applis et données de la machine virtuelle.</translation>
 <translation id="3923494859158167397">Aucun réseau mobile configuré</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Chargement des événements.</translation>
 <translation id="3927049937406914450">La météo n'est pas disponible, car l'accès à la position est désactivé. Vous pouvez modifier cela dans les paramètres.</translation>
@@ -905,6 +931,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4069532248403319695">Ouvrir la page des téléchargements</translation>
 <translation id="4072264167173457037">Signal de moyenne intensité</translation>
 <translation id="4072805772816336153">Réessayez plus tard</translation>
+<translation id="4077623680826964850">Expiration du délai d'attente lors du démarrage ou de la reconnexion à la VM.</translation>
 <translation id="4086921558679520050">Activer le bouton physique du micro sur votre appareil</translation>
 <translation id="4101772068965291327">Ouvrir la page d'accueil</translation>
 <translation id="4112140312785995938">Retour rapide</translation>
@@ -917,6 +944,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4123259114412175274">Pour déverrouiller votre Chromebook, assurez-vous que le Bluetooth est activé sur votre téléphone</translation>
 <translation id="4123868835475902435">Vous avez vu les bases. Pour obtenir des conseils et de l'aide, continuez dans Explorer, notre appli intégrée. Vous y trouverez des astuces pour démarrer, des offres spéciales et les dernières fonctionnalités <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4125970834901680537">Impossible de diffuser des applis en streaming en mode tablette. Réessayez en mode ordinateur portable.</translation>
+<translation id="4126375522951286587">Éteindre <ph name="VM_NAME" /></translation>
 <translation id="4131973331381812765">Température : <ph name="TEMPERATURE" /> °C – Vitesse actuelle : <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Activé jusqu'au lever du soleil</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite</translation>
@@ -933,6 +961,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4177913004758410636">{0,plural, =1{Mettre à jour l'appareil d'ici 1 jour}one{Mettre à jour l'appareil d'ici # jour}other{Mettre à jour l'appareil d'ici # jours}}</translation>
 <translation id="4181841719683918333">Langues</translation>
 <translation id="4185671786623711291">Déplacer la fenêtre active vers le bureau à droite</translation>
+<translation id="4186749321808907788"><ph name="QUERY_NAME" /> - Recherche <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="4189826113259617332">Enregistrer toutes les pages de la fenêtre active dans un nouveau dossier de favoris</translation>
 <translation id="4190143678693626113">Gagnez du temps en répondant rapidement aux messages de votre téléphone depuis votre Chromebook.</translation>
 <translation id="4190780880566297084">Ignorer la configuration concernant l'affichage des photos, applis et contenus multimédias récents de votre téléphone</translation>
@@ -959,6 +988,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4240486403425279990">Mode Aperçu</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4247123849143712100">Mettre à jour et arrêter</translation>
+<translation id="4249248555939881673">Connexion réseau en attente…</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="425364040945105958">Aucune carte SIM</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
@@ -969,6 +999,8 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4274537685965975248">Le raccourci clavier Ctrl+Alt+Flèche vers le bas a été modifié. Pour utiliser la touche Fin, appuyez sur la touche du <ph name="LAUNCHER_KEY_NAME" />+Flèche vers la droite.</translation>
 <translation id="4275283744500212192">Accéder aux options de mise en page des fenêtres</translation>
 <translation id="4275663329226226506">Médias</translation>
+<translation id="4276856098224910511">Installation impossible, mise à jour de l'OS en attente. Veuillez appliquer les mises à jour de l'OS en attente, puis redémarrez et réessayez. Code d'erreur : <ph name="ERROR" />.</translation>
+<translation id="4278779213160967034">Ce processus peut prendre quelques minutes. Téléchargement des fichiers…</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4280601795273309128">Mises à jour de sécurité terminées. Mettez à niveau votre appareil.</translation>
 <translation id="4283888303416325161">Veuillez saisir votre mot de passe pour renforcer la sécurité</translation>
@@ -1015,11 +1047,14 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4412698727486357573">Centre d'aide</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
+<translation id="4414242853388122273">Erreur lors de la suppression de <ph name="VM_NAME" />. Veuillez réessayer.</translation>
 <translation id="4417647906073317561">Paramètres du mode Sans distractions. Choisissez un minuteur, une tâche et de la musique pour vous concentrer.</translation>
 <translation id="4418600384772451109">Fermer le panneau</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
 <translation id="4426817706804363424">Bien joué !</translation>
+<translation id="4426857487270413362">Impossible de télécharger les fichiers du programme d'installation. Veuillez vérifier votre connexion Internet et vous assurer que l'espace disque disponible est suffisant, puis réessayez. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4439157218765614426">Interdit par le règlement.</translation>
 <translation id="4441283832827406317">Les applis sont triées par nom</translation>
 <translation id="4445159312344259901">Connectez-vous pour débloquer</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notification importante}one{# notification importante}other{# notifications importantes}}</translation>
@@ -1058,6 +1093,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4545950850562423083">Enregistrer la page active dans les favoris</translation>
 <translation id="4548482551627849548">Déplacer la fenêtre active vers le bureau à gauche</translation>
 <translation id="4552748006424994716">Pour éviter l'écho, vous pouvez n'écouter votre micro qu'avec un casque filaire.</translation>
+<translation id="4554591392113183336">La version d'extension externe est identique ou antérieure à la version existante.</translation>
 <translation id="4556953949326137018">Lorsque vous utilisez des actions suggérées comme "Ajouter à Agenda" ou "Créer un document Google Docs", le contenu de la zone sélectionnée est envoyé aux serveurs Google pour suggérer des actions, conformément aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="4560576029703263363">Activé</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -1243,6 +1279,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5121628974188116412">Accéder au bas de la page</translation>
 <translation id="5122517996953421795">Aperçu du <ph name="DESK_NAME" />. Bureau inactif.</translation>
 <translation id="5136175204352732067">Clavier différent branché</translation>
+<translation id="5139112070765735680"><ph name="QUERY_NAME" />, recherche dans <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5144005092084035179">Changer d'entrée audio ?</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5150070631291639005">Paramètres de confidentialité</translation>
@@ -1268,6 +1305,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5229343007215035173">Activer/Désactiver l'Écran Confidentialité</translation>
 <translation id="5229860525743792999">Supprimer <ph name="ITEM_LABEL" /> du groupe suggéré</translation>
 <translation id="5230516054153933099">Fenêtre</translation>
+<translation id="5233638681132016545">Nouvel onglet</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5238719049014159442">Ouvrir/Fermer le lanceur d'applications</translation>
@@ -1276,6 +1314,7 @@ Vous pouvez aussi utiliser le raccourci clavier. Mettez d'abord le texte en surb
 <translation id="5245201184978705914">Impossible de générer la transcription</translation>
 <translation id="5251174953851719648">Actualiser le contenu</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />", batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="52550593576409946">Impossible de lancer l'application kiosque.</translation>
 <translation id="5256939106029293271">Testez votre micro</translation>
 <translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
@@ -1399,10 +1438,12 @@ Aucun appareil connecté.</translation>
 <translation id="5632485077360054581">Démonstration</translation>
 <translation id="5648021990716966815">Connecteur micro</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> requiert votre attention.</translation>
+<translation id="5657667036353380798">L'extension externe nécessite que la version <ph name="MINIMUM_CHROME_VERSION" /> ou une version ultérieure de Chrome soit installée.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
 <translation id="5662709761327382534">Enregistrement via le micro <ph name="CURRENT_STATE" />, appuyez sur Entrée pour qu'il soit <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5669267381087807207">Activation</translation>
+<translation id="5671658447180261823">Supprimer la suggestion <ph name="SUGGESTION_NAME" /></translation>
 <translation id="5672890847723042801">Utilitaires</translation>
 <translation id="5673434351075758678">La langue utilisée est passée de "<ph name="FROM_LOCALE" />" à "<ph name="TO_LOCALE" />" après la synchronisation de vos paramètres.</translation>
 <translation id="5675363643668471212">Élément d'étagère</translation>
@@ -1502,6 +1543,7 @@ Aucun appareil connecté.</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
 <translation id="5983567367406220847">Le point d'accès a été désactivé pour cause d'inactivité.</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
+<translation id="5984334442529819751">Erreur lors de l'installation du contenu téléchargeable (un redémarrage est souvent nécessaire ; pour en savoir plus, accédez à Paramètres \&gt;\&gt;À propos de ChromeOS).</translation>
 <translation id="5986723678596105470">Participer avec Google Meet</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier branché.</translation>
 <translation id="5990992855591814753">Restez concentré grâce à des playlists personnalisées. Bénéficiez de YouTube Music et YouTube sans publicité avec 3 mois de YouTube Premium sans frais. Offre soumise à conditions.</translation>
@@ -1570,6 +1612,7 @@ Aucun appareil connecté.</translation>
 <translation id="6166852626429024716">Faire des recherches sur votre appareil, dans vos applications et paramètres, sur le Web, etc.</translation>
 <translation id="6168318496333165060">Ouvrir l'application Diagnostic</translation>
 <translation id="6168622430237609329">Vos applis installées</translation>
+<translation id="6177412385419165772">Suppression…</translation>
 <translation id="6180193585172850042">Bouton Retour</translation>
 <translation id="6180651297859206670">Bouton Suivant</translation>
 <translation id="6182592640011875895">Ouvrir le bureau</translation>
@@ -1609,8 +1652,10 @@ Aucun appareil connecté.</translation>
 <translation id="6304076460080088478">Fermer ou réduire les fenêtres de navigation privée pour rechercher depuis l'écran avec Google Lens</translation>
 <translation id="6309219492973062892">Cliquer ou appuyer sur les icônes d'étagère 1 à 8</translation>
 <translation id="6315170314923504164">Voix</translation>
+<translation id="6317369057005134371">Création de la fenêtre de l'application en cours…</translation>
 <translation id="6319058840130157106">Basculer vers l'arrière entre l'angle inférieur droit, le lanceur d'applications, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
 <translation id="6319503618073410818">Afficher les détails dans le navigateur</translation>
+<translation id="6324334979701518365">Impossible de lancer l'appli Chrome non prise en charge. Signalez ce problème à votre administrateur.</translation>
 <translation id="6324916366299863871">Modifier le raccourci</translation>
 <translation id="6325525973963619867">Échec</translation>
 <translation id="6330012934079202188">Affichage des fenêtres de tous les bureaux. Appuyez sur la flèche vers le haut pour afficher les fenêtres du bureau actuel.</translation>
@@ -1632,6 +1677,7 @@ Aucun appareil connecté.</translation>
 <translation id="639644700271529076">La touche de verrouillage des majuscules est désactivée.</translation>
 <translation id="6406458002328242616">Modifiez la valeur du minuteur. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
+<translation id="6414618057231176439">Sélectionnez la version de <ph name="VM_NAME" /> à installer.</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="641817663353603351">Page précédente</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
@@ -1668,6 +1714,7 @@ Aucun appareil connecté.</translation>
 <translation id="6507618042428827377">Passer au mode de saisie disponible suivant</translation>
 <translation id="6508923215158854599">Assurez-vous que votre Chromebook est connecté au même réseau Wi-Fi que votre Chromecast.</translation>
 <translation id="6515727200518652613">Appareil photo déconnecté, tentative de reconnexion en cours.</translation>
+<translation id="651753338596587143">Désolé, un problème est survenu lors de l'installation des dépendances du contenu téléchargeable. Veuillez essayer d'effectuer un redémarrage. Si le problème persiste, envoyez vos commentaires en incluant #bruschetta dans la description. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Sélectionner une fenêtre à capturer</translation>
 <translation id="652139407789908527">Votre écran restera éteint plus longtemps que d'habitude (jusqu'à une minute) le temps de la mise à jour. Veuillez ne pas appuyer sur le bouton Marche/Arrêt tant que la mise à jour n'est pas terminée.</translation>
 <translation id="6528179044667508675">Ne pas déranger</translation>
@@ -1762,6 +1809,7 @@ Nouvelle installation</translation>
 <translation id="6786750046913594791">Fermer le dossier</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6792262051831399889">Indisponible</translation>
+<translation id="6792351896138862473">Impossible de lancer l'application kiosque non prise en charge. Signalez ce problème à votre administrateur.</translation>
 <translation id="679368458793552943">Faire un zoom avant lorsque la loupe est activée</translation>
 <translation id="6794287755901682422">Cet élément comporte : <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6797745268063125932">Ne pas désactiver</translation>
@@ -1858,6 +1906,7 @@ Nouvelle installation</translation>
 <translation id="7130207228079676353">CLIC PROBABLE</translation>
 <translation id="7131634465328662194">Vous allez être déconnecté automatiquement.</translation>
 <translation id="7143207342074048698">Connexion</translation>
+<translation id="7144878232160441200">Réessayer</translation>
 <translation id="7144942256906679589">État de la batterie</translation>
 <translation id="7145639536026937076">La batterie est en charge, avec un niveau de <ph name="PERCENTAGE" /> % pour l'instant. Économiseur de batterie activé.</translation>
 <translation id="7147587499155271409">Aucun historique de navigation</translation>
@@ -1900,6 +1949,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7331646370422660166">Alt+Flèche vers le bas</translation>
 <translation id="7336943714413713812">Rechercher dans l'historique de navigation</translation>
 <translation id="7337660433630200387">+ 10 min</translation>
+<translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340731148882810149">Menu des clics automatiques</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Clavier à l'écran</translation>
@@ -1934,11 +1984,13 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="7440404390546433462">Recherche Google</translation>
 <translation id="7441711280402516925">En cours de lecture · Passer à l'onglet</translation>
 <translation id="7453330308669753048">Résultat de l'historique des recherches supprimé</translation>
+<translation id="7457027286267861992">Espace disque insuffisant. Veuillez libérer de l'espace disque et réessayer. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="7459485586006128091">Le point d'accès a été désactivé en raison d'une erreur interne. Essayez de vous reconnecter dans quelques minutes.</translation>
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746232733191930409">Mode d'enregistrement d'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
 <translation id="7477793887173910789">Contrôlez votre musique, vos vidéos et bien plus</translation>
+<translation id="7478485216301680444">Impossible d'installer l'application kiosque.</translation>
 <translation id="7488762544858401571">Modifié</translation>
 <translation id="7489261257412536105">Activer ou désactiver le mode plein écran</translation>
 <translation id="7490157877815329797">Pour écouter de la musique sans publicité et profiter de musique personnalisée pour vous concentrer, essayez YouTube Music Premium</translation>
@@ -1966,11 +2018,13 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7534543072325030705">J'aime indique que ce groupe suggéré vous convient</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Mettre à jour la fenêtre de gauche</translation>
+<translation id="7541773865713908457"><ph name="ACTION_NAME" /> avec l'application <ph name="APP_NAME" /></translation>
 <translation id="7543399541175347147">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
 <translation id="7544300628205093162">Le rétroéclairage du clavier est activé</translation>
 <translation id="7548434653388805669">Il est l'heure d'aller au lit</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre micro</translation>
+<translation id="7559719679815339381">Veuillez patienter… L'application kiosque est en cours de mise à jour. Ne débranchez pas la clé USB.</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7568154670718626683">Vous essayez d'utiliser Suppr ? Utilisez</translation>
@@ -1995,6 +2049,8 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7621008024906456933">Paramètres de Quick Share</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Poser une question</translation>
+<translation id="7629858978065675960">Résultat inconnu.</translation>
+<translation id="7632948528260659758">Échec de la mise à jour des applications kiosque suivantes :</translation>
 <translation id="7634648064048557203">Appareil photo aligné sur l'angle inférieur droit</translation>
 <translation id="7638572816805275740">Faire une capture d'écran de la fenêtre ou enregistrer l'écran</translation>
 <translation id="7642106959537987271">mode d'inversion des couleurs</translation>
@@ -2016,6 +2072,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7684531502177797067">Saisie par photo définie sur <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">Ouvert par vous</translation>
 <translation id="7689817529363080918">L'accès au micro est accordé à <ph name="APP1_NAME" /> et <ph name="APP2_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
+<translation id="7691073721729883399">Impossible d'installer l'élément "cryptohome" pour l'application kiosque.</translation>
 <translation id="7704000866383261579">Répéter la dernière action</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="770741401784017797">Création du GIF en cours</translation>
@@ -2056,12 +2113,14 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7830453190047749513">Vous pouvez personnaliser les actions des boutons, la vitesse du curseur et plus encore pour votre <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7842569679327885685">Avertissement : Fonctionnalité expérimentale</translation>
 <translation id="7846634333498149051">Clavier</translation>
+<translation id="7847212883280406910">Appuyez sur Ctrl+Alt+S pour passer à <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7848989271541991537">Application déplacée vers la page <ph name="PAGE_NUMBER" />, ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7850320739366109486">Ne pas déranger</translation>
 <translation id="7851039877802112575">Passer aux pop-ups et aux boîtes de dialogue</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Pour utiliser l'appareil en tant qu'invité, vous devez vous déconnecter, puis sélectionner "Naviguer en tant qu'invité" en bas de l'écran.</translation>
 <translation id="7866482334467279021">activé</translation>
+<translation id="7870790288828963061">Aucune nouvelle version d'une application kiosque n'a été trouvée. Aucune mise à jour n'est disponible. Veuillez débrancher la clé USB.</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Apparemment, le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Activez-le pour utiliser Phone Hub.</translation>
 <translation id="7884446017008693258">Paramètres de point d'accès</translation>
@@ -2120,11 +2179,13 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="799296642788192631">Vous pouvez épingler les fichiers importants. Pour épingler un élément, pointez dessus ou ouvrez Fichiers et faites un clic droit sur l'élément.</translation>
 <translation id="7994370417837006925">Connexion multicompte</translation>
 <translation id="7995804128062002838">Échec de la capture d'écran</translation>
+<translation id="7997828719430450286">Opération réussie.</translation>
 <translation id="8000020256436988724">Barre d'outils</translation>
 <translation id="8000066093800657092">Aucun réseau détecté</translation>
 <translation id="8001755249288974029">Sélectionner le texte entre le curseur et le début de la ligne</translation>
 <translation id="8004512796067398576">Augmenter</translation>
 <translation id="8005527720597583355">Lancer une session en mode Sans distractions</translation>
+<translation id="8008356846765065031">Connexion Internet interrompue. Veuillez vérifier votre connexion.</translation>
 <translation id="8015361438441228492">Impossible de modifier la tâche.</translation>
 <translation id="8027187124910699148">Réactiver le groupe suggéré</translation>
 <translation id="802782383769312836">Bureau précédent : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
@@ -2172,6 +2233,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8155628902202578800">Ouvrir la boîte de dialogue d'informations pour <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> en cours d'utilisation</translation>
 <translation id="8168435359814927499">Contenu</translation>
+<translation id="8169177848833352618">Malheureusement, cette machine ne répond pas aux exigences d'installation de Bruschetta. Code d'erreur : <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Poignée sélectionnée en haut à gauche, utiliser les touches fléchées pour la déplacer</translation>
 <translation id="81817143961839203">Échec de l'insertion de l'image</translation>
 <translation id="8185090165691050712">Activer/Désactiver le menu pour redimensionner le mode verrouillé</translation>
@@ -2194,6 +2256,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8239034820133090126">Activer le bureau à droite</translation>
 <translation id="8241650983304689286">Ajouter l'onglet à une nouvelle vue fractionnée</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, batterie du téléphone à <ph name="BATTERY_STATUS" /></translation>
+<translation id="8249048954461686687">Dossier OEM</translation>
 <translation id="825129991941217170">Afficher tout le contenu Google Drive</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8262312463845990408">Activer/Désactiver la lecture</translation>
@@ -2209,6 +2272,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8314772463905284467">Touche Verr Maj activée</translation>
 <translation id="8315514906653279104">Activation…</translation>
 <translation id="8331351032546853669">Téléchargement en attente</translation>
+<translation id="8335587457941836791">Retirer de l'étagère</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="834414266279889566">Mauvais résultat</translation>
 <translation id="8345019317483336363">Fenêtre <ph name="WINDOW_TITLE" /> sélectionnée</translation>
@@ -2238,10 +2302,13 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8433186206711564395">Paramètres réseau</translation>
 <translation id="8433977262951327081">Le raccourci pour afficher l'info-bulle du menu des options de saisie dans l'étagère a changé. Veuillez utiliser <ph name="NEW_SHORTCUT" /> au lieu de <ph name="OLD_SHORTCUT" />.</translation>
 <translation id="8437311513256731931">Ouvrir l'outil d'envoi de commentaires</translation>
+<translation id="8440630305826533614">Applications Linux</translation>
 <translation id="8443879455002739353">"Copier"</translation>
 <translation id="8444246603146515890">Bureau <ph name="DESK_TITILE" /> activé</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
+<translation id="8458259704995116343">Échec du démarrage de la VM.</translation>
+<translation id="84613761564611563">Demande d'interface utilisateur en cours pour la configuration réseau. Merci de patienter…</translation>
 <translation id="8462305545768648477">Fermer Sélectionner pour écouter</translation>
 <translation id="8466665972451889002">Afficher les éléments de <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">pour le <ph name="DUE_DATE_AND_TIME" /></translation>
@@ -2251,6 +2318,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8480418399907765580">Afficher la barre d'outils </translation>
 <translation id="8487660088084188539">Lorsque vous activez ces fonctionnalités, le texte saisi, le contenu du document et l'URL de la page Web peuvent être envoyés aux serveurs de Google. Ces informations sont utilisées pour générer des suggestions de texte et des résumés, répondre aux questions, et améliorer le produit, et sont soumises aux <ph name="LINK_TO_SERVICE_TERMS" />. N'incluez aucun élément personnel, sensible ou confidentiel.</translation>
 <translation id="8487699605742506766">Point d'accès</translation>
+<translation id="8490896350101740396">Les applications kiosque "<ph name="UPDATED_APPS" />" ont bien été mises à jour. Veuillez redémarrer l'appareil afin de terminer la procédure.</translation>
 <translation id="8491237443345908933">Ouvrir le lien dans un nouvel onglet</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8507563469658346379">Tout le monde, <ph name="REMAINING_TIME" /></translation>
@@ -2261,6 +2329,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="851660987304951246">Utilisez Aide à la lecture pour résumer rapidement un contenu ou poser des questions</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
 <translation id="8519329096920173967">Rechercher sur mon écran avec Google Lens</translation>
+<translation id="8527869672961320915">Applis <ph name="VM_NAME" /></translation>
 <translation id="8535393432370007982">Annuler le tri par couleur</translation>
 <translation id="8536886494750559755">Affichez les paramètres de Quick Share. Visible par tous pendant <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texte copié dans le presse-papiers</translation>
@@ -2288,6 +2357,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8627191004499078455">Connecté à <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Paramètres d'accessibilité</translation>
 <translation id="8634326941504371857">Vos fichiers stockés sur cet appareil et Google Drive</translation>
+<translation id="8636284842992792762">Initialisation des extensions…</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="8638637208069328956">Activer/Désactiver le micro</translation>
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> restant(s)</translation>
@@ -2321,6 +2391,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8734991477317290293">Il est possible que cet autre clavier tente d'enregistrer les touches sur lesquelles vous appuyez afin de vous soutirer des informations</translation>
 <translation id="8735678380411481005">Couleur de rétroéclairage du clavier</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" /> : Activation…</translation>
+<translation id="8742395827132970586">Échec de l'installation. Nettoyage en cours.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8751299148074971734">Continuez comme ça !</translation>
 <translation id="8753368202781196133">Cette langue n'est pas prise en charge pour le moment.</translation>
@@ -2330,6 +2401,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8759408218731716181">Impossible de configurer la connexion multicompte.</translation>
 <translation id="8763883995157866248">Mettre l'appareil en mode veille</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, appli installée, bloquée</translation>
+<translation id="8782565991310229362">Annulation du lancement de l'application kiosque.</translation>
 <translation id="8785070478575117577">Se connecter à <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8790632710469941716">Basculer vers l'avant entre l'angle inférieur droit, le lanceur d'applications, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
@@ -2357,6 +2429,8 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8860366331836346216">Ajouter une eSIM</translation>
 <translation id="8869149849311827122">Voulez-vous vraiment désactiver le contrôle avec le curseur de la souris ?</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
+<translation id="8871551568777368300">Épinglé par l'administrateur</translation>
+<translation id="8872155268274985541">Fichier manifeste de mise à jour externe de kiosque non valide. Échec de la mise à jour de l'application kiosque. Veuillez débrancher la clé USB.</translation>
 <translation id="8873203135446552888">Confirmer que vous voulez désactiver le pavé tactile intégré</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8875021410787719674">Basculer entre l'angle inférieur droit, le lanceur d'applications, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
@@ -2371,6 +2445,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="890616557918890486">Modifier la source</translation>
 <translation id="8909138438987180327">Niveau de charge de la batterie : <ph name="PERCENTAGE" /> %.</translation>
 <translation id="8916866375277139011">Masquer les éléments de <ph name="GROUP_NAME" /></translation>
+<translation id="8921369299636221117">Le service Concierge est indisponible.</translation>
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">L'Assistant Google ne parle pas cette langue.</translation>
 <translation id="8926951137623668982">Étagère toujours masquée</translation>
@@ -2389,6 +2464,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8956420987536947088">Ouvrez vos fenêtres et applications précédentes</translation>
 <translation id="8959380109429710384">Vous avez appuyé sur le raccourci clavier de la loupe plein écran. Appuyez simultanément sur Ctrl+Alt et sur les flèches pour vous déplacer dans la vue agrandie.</translation>
 <translation id="8964525410783593407">1 h</translation>
+<translation id="8967548289042494261">Supprimer <ph name="VM_NAME" /></translation>
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="8973885907461690937">Placer le curseur sur l'icône de menu</translation>
 <translation id="8980862970816311842">Déplacer une icône d'application dans/depuis un dossier de la grille d'applications</translation>

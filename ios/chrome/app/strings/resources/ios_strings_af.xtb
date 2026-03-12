@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Welkom terug!</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="201759455285471444">Vou oortjiegroep uit.</translation>
-<translation id="202070562065520783">Verduidelik dit vir my</translation>
 <translation id="2044394949148788042">Maak die oortjierooster oop</translation>
 <translation id="2044681667265133332">Die rekening <ph name="USER_EMAIL" /> word bestuur deur <ph name="HOSTED_DOMAIN" /> wat dalk sekere inligting kan bekyk. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuwe item</translation>
@@ -1614,6 +1613,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="672735642903863329">Kry jou boekmerke, wagwoorde en meer op al jou toestelle.</translation>
 <translation id="6729493062119577923">Gedeelde oortjiegroepaktiwiteit</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Adres</translation>
 <translation id="6746338529702829275">Gaan jou rekeningdata na</translation>
 <translation id="6750456911389438250">{count,plural, =1{Het {count} geskiedenisitem ingevoer}other{Het {count} geskiedenisitems ingevoer}}</translation>
 <translation id="6755200887046212842">Bestuur rekeninge</translation>
@@ -1820,7 +1820,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7537586195939242955">Jammer, jou Pass kan nie tans na Passbook geïnstalleer word nie.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> nagegaan</translation>
 <translation id="7554645225856321710">Maak alles toe</translation>
-<translation id="7554791636758816595">Nuwe oortjie</translation>
 <translation id="7557508262441527045">Afgemeld</translation>
 <translation id="7561196759112975576">Altyd</translation>
 <translation id="7561982940498449837">Maak kieslys toe</translation>
@@ -2250,7 +2249,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, vasgespelde werf</translation>
 <translation id="8990960056509724223">Lêer kon weens jou organisasie se beleide nie gestoor word nie</translation>
 <translation id="8998289560386111590">Nie op jou toestel beskikbaar nie</translation>
-<translation id="9000532564152265066">Alle oortjies</translation>
 <translation id="9003677638446136377">Kyk weer</translation>
 <translation id="9006453925669499173">Kieslys → Nuwe Incognito-oortjie</translation>
 <translation id="9008201768610948239">Ignoreer</translation>

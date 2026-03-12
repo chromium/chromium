@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">የነባሪ አሳሽ የግርጌ ሉህ</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="RWS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="RWS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
 <translation id="3676777756440746804">ጣቢያዎች ስለ እርስዎ ያስቀመጡትን መረጃ ለመጠቀም ከመጠየቅ ታግደዋል</translation>
+<translation id="3677897809642449131">ጣቢያዎች የእንቅስቃሴ ዳሳሾችን ለመጠቀም መጠየቅ ይችላሉ</translation>
 <translation id="3678318839615834650">በሙሉ ቁመት የተከፈተ አዲስ የትር ገፅ ካርዶች የግርጌ ሉህ</translation>
 <translation id="3697164069658504920">ሲበራ፣ ጣቢያዎች የUSB መሳሪያዎችን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የUSB መሳሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="3703430731944883733">ምግብዎን ያስተዳድሩ</translation>
@@ -444,7 +445,6 @@
 <translation id="5515432237048785579">በሙሉ ቁመት የተከፈተ የምግብ የግርጌ ሉህ ያግኙ</translation>
 <translation id="5516455585884385570">የማሳወቂያ ቅንብሮችን ክፈት</translation>
 <translation id="5527111080432883924">ጣቢያዎች ከቅንጥብ ሰሌዳ ጽሁፍ እና ምስሎችን እንዲያነብቡ ከመፍቀድ በፊት ጠይቅ (የሚመከር)</translation>
-<translation id="5553374991681107062">የቅርብ ጊዜው</translation>
 <translation id="5555115555607204100">በChrome V8 ፕሮግራም ጣቢያዎችን አታፋጥን ነገር ግን Chrome ለጥቃቶች ያለውን የመቋቋም ኃይል በትንሹ ጨምር</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ታግዷል</translation>
@@ -676,7 +676,6 @@
 <translation id="8007176423574883786">ለዚህ መሣሪያ ጠፍቷል</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
 <translation id="8033047164036749181">ከዚህ ጣቢያ ለሚመጡ ማሳወቂያዎች በደንበኝነት ይመዝገቡ</translation>
-<translation id="8042586301629853791">ደርድር በ፦</translation>
 <translation id="8051193500142930381">ካሜራ የሚያስፈልጋቸው ባህሪዎች አይሰሩም</translation>
 <translation id="8056330801132235235">Chrome ነባሪ</translation>
 <translation id="8067883171444229417">ቪዲዮ አጫውት</translation>
@@ -748,6 +747,7 @@
 <translation id="8707904142362025782">ጣቢያዎች ካሜራዎን ሊጠይቁ ይችላሉ</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8715862698998036666">ከሙሉ ማያ ገጽ ለመውጣት ከላይ ይጎትቱ እና ከግራ ወይም ቀኝ ጠርዝ ያንሸራትቱ።</translation>
+<translation id="8716050156658570300">ጣቢያዎች የእንቅስቃሴ እና የብርሃን ዳሳሾችን ለመጠቀም መጠየቅ ይችላሉ</translation>
 <translation id="8719283222052720129">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃድን ያብሩ።</translation>
 <translation id="8721719390026067591">ሲበራ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን ለመፈለግ ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የብሉቱዝ መሳሪያዎችን መፈለግ አይችሉም።</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>

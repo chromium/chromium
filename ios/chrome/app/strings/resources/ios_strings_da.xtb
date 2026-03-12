@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Velkommen tilbage.</translation>
 <translation id="2015722694326466240">Angiv en adgangskode på din enhed, før du kan se adgangskoder.</translation>
 <translation id="201759455285471444">Udvid fanegruppe.</translation>
-<translation id="202070562065520783">Forklar dette til mig</translation>
 <translation id="2044394949148788042">Åbn fanegitteret</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres af <ph name="HOSTED_DOMAIN" />, som muligvis kan se visse oplysninger. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nyt element</translation>
@@ -1614,6 +1613,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="672735642903863329">Få dine bogmærker, adgangskoder og meget mere på alle dine enheder.</translation>
 <translation id="6729493062119577923">Aktivitet i delt fanegruppe</translation>
 <translation id="6732087373923685049">kamera</translation>
+<translation id="6736243959894955139">Adresse</translation>
 <translation id="6746338529702829275">Gennemgå dine kontodata</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historikelement blev importeret}one{{count} historikelemente blev importeret}other{{count} historikelementer blev importeret}}</translation>
 <translation id="6755200887046212842">Administrer konti</translation>
@@ -1820,7 +1820,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7537586195939242955">Din adgangssætning kan ikke installeres på Passbook lige nu.</translation>
 <translation id="754655535278952384">Tjek udført for <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Luk alle</translation>
-<translation id="7554791636758816595">Ny fane</translation>
 <translation id="7557508262441527045">Logget ud</translation>
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7561982940498449837">Luk menu</translation>
@@ -2250,7 +2249,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, fastgjort website</translation>
 <translation id="8990960056509724223">Filen kunne ikke gemmes på grund af din organisations politikker</translation>
 <translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
-<translation id="9000532564152265066">Alle faner</translation>
 <translation id="9003677638446136377">Kontrollér igen</translation>
 <translation id="9006453925669499173">Menu → Ny inkognitofane</translation>
 <translation id="9008201768610948239">Ignorer</translation>

@@ -1358,6 +1358,23 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
 <translation id="1954612656043024615">De functie voor gedeeld klembord aanzetten</translation>
 <translation id="1955063069502242812">Geluid voor een bijna lege batterij aanzetten</translation>
 <translation id="1955806069704957172">Bepaalt de instellingen voor de Desk Connector API.</translation>
+<translation id="1956346847126765379">Als je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen. Beheerders kunnen de lijst met URL-patronen aangeven die moeten worden geblokkeerd. Als je dit beleid niet instelt, worden er geen URL's geblokkeerd in de browser. Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dynamisch geladen gegevens. Als je example.com/abc hebt geblokkeerd, kan example.com de pagina nog steeds laden met XMLHTTPRequest. Dit beleid voorkomt ook niet dat webpagina's de URL die in de omnibox wordt getoond, updaten naar een geblokkeerde site via de JavaScript History API.
+
+Vanaf versie 73 van <ph name="PRODUCT_NAME" /> kun je javascript://*-URL's blokkeren. Dit heeft alleen gevolgen voor JavaScript dat in de adresbalk wordt ingevoerd of voor bijvoorbeeld bookmarklets.
+
+Vanaf <ph name="PRODUCT_NAME" /> versie 92 wordt dit beleid ook ondersteund in de modus zonder interface.
+
+Vanaf versie 147 van <ph name="PRODUCT_NAME" /> is het jokerteken * op zichzelf niet van toepassing op interne chrome://-URL's. Als je deze wilt blokkeren, moet je expliciet het patroon chrome://* gebruiken.
+
+Opmerking: Als je interne URL's met chrome://* en chrome-untrusted://* blokkeert, kan dit leiden tot onverwachte fouten of kan de blokkering worden omzeild in speciale gevallen. In plaats van bepaalde interne URL's te blokkeren, kun je beter checken of er specifiekere beleidsregels beschikbaar zijn. Bijvoorbeeld:
+
+- Gebruik <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> in plaats van chrome://settings/certificates te blokkeren.
+
+- Gebruik <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> in plaats van chrome-untrusted://crosh te blokkeren.
+
+- Gebruik een van de beleidsregels <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> of <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> in plaats van devtools://* te blokkeren.</translation>
 <translation id="1957093168333856467">Virtueel toetsenbord voor toegankelijkheid uitzetten</translation>
 <translation id="1958110911685486719">Ondersteuning voor XFA-formulieren in pdf aangezet</translation>
 <translation id="1960059835237529462">Hiermee kan de promotie voor <ph name="IOS_NAME" />-appstore-beoordelingen worden getoond aan gebruikers</translation>
@@ -7012,21 +7029,6 @@ Als dit beleid is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, wordt d
 <translation id="5625771176514429288">Chrome-apps kunnen op deze platforms worden uitgevoerd.</translation>
 <translation id="5627270992026554674">Niet toestaan dat docenten de klassenlijst van Google Classroom gebruiken</translation>
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
-<translation id="5630952076819481843">Als je het beleid instelt, kun je een lijst met URL-patronen invoeren van sites waarvoor Chrome automatisch een clientcertificaat kan selecteren. De waarde is een matrix van JSON-woordenboeken met tekenreeksen, elk met de indeling <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, waarbij <ph name="URL_PATTERN_PLACEHOLDER" /> een patroon voor het instellen van content is. <ph name="FILTER_PLACEHOLDER" /> beperkt de clientcertificaten waaruit de browser automatisch kan kiezen. Onafhankelijk van het filter worden alleen certificaten geselecteerd die overeenkomen met het certificaatverzoek van de server. Op Android kan Chrome alleen clientcertificaten selecteren die het zelf heeft ingesteld. Chrome heeft geen toegang tot certificaten die zijn geïnstalleerd op het niveau van het besturingssysteem.
-
-      Voorbeelden voor het gebruik van het gedeelte <ph name="FILTER_PLACEHOLDER" />:
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> is ingesteld op <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, worden er alleen clientcertificaten geselecteerd die zijn uitgegeven door een certificaat met de CommonName <ph name="ISSUER_CN_PLACEHOLDER" />.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> zowel het gedeelte <ph name="ISSUER_STRING_VALUE" /> als het gedeelte <ph name="SUBJECT_STRING_VALUE" /> bevat, worden alleen clientcertificaten geselecteerd die aan beide voorwaarden voldoen.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> een gedeelte <ph name="SUBJECT_STRING_VALUE" /> met de waarde <ph name="FILTER_STRING_ORGANIZATION" /> bevat, moet een certificaat ten minste één organisatie hebben die overeenkomt met de ingevoerde waarde om te worden geselecteerd.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> een gedeelte <ph name="SUBJECT_STRING_VALUE" /> met een waarde <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> bevat, moet een certificaat ten minste één organisatie-eenheid hebben die overeenkomt met de ingevoerde waarde om te worden geselecteerd.
-
-      * Als <ph name="FILTER_PLACEHOLDER" /> is ingesteld op <ph name="EMPTY_DICTIONARY" />, wordt de selectie van clientcertificaten niet verder beperkt. Houd er rekening mee dat filters die door de webserver worden geleverd, nog steeds van toepassing zijn.
-
-      Als je het beleid niet instelt, worden clientcertificaten voor geen enkele site automatisch geselecteerd.</translation>
 <translation id="5633871703004128675">Toegankelijkheidsfunctie voor markering van het caret-teken aanzetten</translation>
 <translation id="5634032995857968056">De sandbox voor de app-container van het weergaveprogramma aanzetten</translation>
 <translation id="5638334542697444045">Niet toestaan dat gebruikers instant tethering gebruiken</translation>

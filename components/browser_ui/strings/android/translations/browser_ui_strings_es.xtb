@@ -269,6 +269,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="3658847490588580244">Hoja inferior del navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio incluido en el grupo de sitios de <ph name="RWS_OWNER" /> que puede ver tu actividad en el grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios incluidos en el grupo de sitios de <ph name="RWS_OWNER" /> que puede ver tu actividad en el grupo}}</translation>
 <translation id="3676777756440746804">Los sitios no pueden pedirte permiso para usar información que hayan guardado sobre ti</translation>
+<translation id="3677897809642449131">Los sitios pueden solicitar permiso para usar sensores de movimiento</translation>
 <translation id="3678318839615834650">Hoja inferior de las tarjetas de la página Nueva pestaña abierta a altura completa</translation>
 <translation id="3697164069658504920">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos USB. Si está desactivada, los sitios no pueden usar dispositivos USB.</translation>
 <translation id="3703430731944883733">Gestionar tu feed</translation>
@@ -444,7 +445,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="5515432237048785579">Hoja inferior del feed de Discover abierta a altura completa</translation>
 <translation id="5516455585884385570">Abrir ajustes de notificaciones</translation>
 <translation id="5527111080432883924">Preguntar antes de permitir que los sitios lean texto e imágenes del portapapeles (recomendado)</translation>
-<translation id="5553374991681107062">Más recientes</translation>
 <translation id="5555115555607204100">No acelerar los sitios con el motor V8 de Chrome, pero hacer que Chrome sea un poco más resistente a los ataques</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqueado</translation>
@@ -676,7 +676,6 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8007176423574883786">Desactivada para este dispositivo</translation>
 <translation id="802154636333426148">No se ha podido descargar el archivo</translation>
 <translation id="8033047164036749181">Suscribirse a las notificaciones de este sitio</translation>
-<translation id="8042586301629853791">Ordenar por:</translation>
 <translation id="8051193500142930381">Las funciones que necesiten una cámara no se podrán utilizar</translation>
 <translation id="8056330801132235235">Predeterminado en Chrome</translation>
 <translation id="8067883171444229417">Reproducir vídeo</translation>
@@ -748,6 +747,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="8707904142362025782">El sitio puede solicitar permiso para usar tu cámara</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8715862698998036666">Arrastra desde la parte superior y desliza desde el borde izquierdo o derecho para salir del modo de pantalla completa.</translation>
+<translation id="8716050156658570300">Los sitios pueden solicitar permiso para usar sensores de luz y movimiento</translation>
 <translation id="8719283222052720129">Activa el permiso para <ph name="APP_NAME" /> en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Cuando esta opción está activada, los sitios pueden solicitar permiso para buscar dispositivos Bluetooth. Si está desactivada, los sitios no pueden buscar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Reintentar</translation>

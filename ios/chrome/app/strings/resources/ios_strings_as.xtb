@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">পুনৰ স্বাগতম!</translation>
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
 <translation id="201759455285471444">টেবৰ গোট বিস্তাৰ কৰক।</translation>
-<translation id="202070562065520783">এইটো মোৰ বাবে বর্ণনা কৰক</translation>
 <translation id="2044394949148788042">টেব গ্ৰীডটো খোলক</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, যি হয়তো কিছুমান তথ্য চাব পাৰিব। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">নতুন বস্তু</translation>
@@ -1614,6 +1613,7 @@
 <translation id="672735642903863329">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক, পাছৱৰ্ড আৰু বহুতো লাভ কৰক।</translation>
 <translation id="6729493062119577923">শ্বেয়াৰ কৰা টেবৰ গোটৰ কাৰ্যকলাপ</translation>
 <translation id="6732087373923685049">কেমেৰা</translation>
+<translation id="6736243959894955139">ঠিকনা</translation>
 <translation id="6746338529702829275">আপোনাৰ একাউণ্টৰ ডেটা পৰ্যালোচনা কৰক</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} টা ইতিহাসৰ বস্তু আমদানি কৰা হৈছে}one{{count} টা ইতিহাসৰ বস্তু আমদানি কৰা হৈছে}other{{count} টা ইতিহাসৰ বস্তু আমদানি কৰা হৈছে}}</translation>
 <translation id="6755200887046212842">একাউণ্টসমূহ পৰিচালনা কৰক</translation>
@@ -1820,7 +1820,6 @@
 <translation id="7537586195939242955">দুঃখিত, এই সময়ত আপোনাৰ পাছ Passbookত ইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="754655535278952384"><ph name="TIME" /> পৰীক্ষা কৰা হৈছে</translation>
 <translation id="7554645225856321710">আটাইবোৰ বন্ধ কৰক</translation>
-<translation id="7554791636758816595">নতুন টেব</translation>
 <translation id="7557508262441527045">ছাইন আউট কৰা আছে</translation>
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="7561982940498449837">মেনু বন্ধ কৰক</translation>
@@ -2256,7 +2255,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, পিন কৰা ছাইট</translation>
 <translation id="8990960056509724223">আপোনাৰ প্ৰতিষ্ঠানৰ নীতিৰ বাবে ফাইল ছেভ কৰিব পৰা নগ’ল</translation>
 <translation id="8998289560386111590">আপোনাৰ ডিভাইচত উপলব্ধ নহয়</translation>
-<translation id="9000532564152265066">আটাইবোৰ টেব</translation>
 <translation id="9003677638446136377">পুনৰ পৰীক্ষা কৰক</translation>
 <translation id="9006453925669499173">মেনু → নতুন ইনক’গনিট’ টেব</translation>
 <translation id="9008201768610948239">উপেক্ষা কৰক</translation>

@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">Tere tulemast tagasi!</translation>
 <translation id="2015722694326466240">Paroolide nägemiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>
 <translation id="201759455285471444">Vahelehegrupi laiendamine.</translation>
-<translation id="202070562065520783">Selgita seda mulle</translation>
 <translation id="2044394949148788042">Avage vahelehtede ruudustik</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> haldab <ph name="HOSTED_DOMAIN" />, millel võib olla võimalik teatud teavet vaadata. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">uus üksus</translation>
@@ -1614,6 +1613,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="672735642903863329">Kasutage oma järjehoidjaid, paroole ja muud kõigis seadmetes.</translation>
 <translation id="6729493062119577923">Jagatud vahelehegrupi tegevus</translation>
 <translation id="6732087373923685049">kaamera</translation>
+<translation id="6736243959894955139">Aadress</translation>
 <translation id="6746338529702829275">Konto andmete ülevaatamine</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} ajalooüksus imporditi}other{{count} ajalooüksust imporditi}}</translation>
 <translation id="6755200887046212842">Kontode haldamine</translation>
@@ -1820,7 +1820,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7537586195939242955">Kahjuks ei saa teie Passi praegu Passbooki installida.</translation>
 <translation id="754655535278952384">Kontrolliti <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Sule kõik</translation>
-<translation id="7554791636758816595">Uus vaheleht</translation>
 <translation id="7557508262441527045">Välja logitud</translation>
 <translation id="7561196759112975576">Alati</translation>
 <translation id="7561982940498449837">Sule menüü</translation>
@@ -2250,7 +2249,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kinnitatud sait</translation>
 <translation id="8990960056509724223">Faili ei saanud teie organisatsiooni eeskirjade tõttu salvestada.</translation>
 <translation id="8998289560386111590">Pole teie seadmes saadaval</translation>
-<translation id="9000532564152265066">Kõik vahelehed</translation>
 <translation id="9003677638446136377">Kontrolli uuesti</translation>
 <translation id="9006453925669499173">Menüü → Uus inkognito vaheleht</translation>
 <translation id="9008201768610948239">Eira</translation>

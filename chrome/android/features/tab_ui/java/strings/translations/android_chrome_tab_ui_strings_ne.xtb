@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2371084566192454134">ट्याब र ट्याब समूहहरू</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह कोल्याप्स गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको <ph name="TITLE_OF_GROUP" /> ट्याब समूह कोल्याप्स गर्नुहोस्।}}</translation>
+<translation id="2476179388576975626">Picture-in-picture</translation>
 <translation id="2498435670446402865">ट्याब समूहको नाम बदल्नुहोस्</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" र "<ph name="TAB_GROUP_NAME_2" />" ट्याब समूहहरू अब उपलब्ध छैनन्</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>

@@ -10,6 +10,7 @@
 
 Es posible que algunas funciones no estén disponibles y que no se guarden los cambios que hagas en las preferencias.</translation>
 <translation id="1083934481477628225">Tus padres han desactivado Permisos de sitios, aplicaciones y extensiones en Chromium</translation>
+<translation id="1090946077924227754">Para buscar una función o extensión de Chromium específica, escribe su atajo en la barra de direcciones y, después, pulsa la tecla de teclado que hayas seleccionado</translation>
 <translation id="1104942323762546749">Chromium quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
 <translation id="112640046208448578">Identifica objetos o lugares y copia o traduce texto. Al usar la búsqueda por imágenes, se envía una captura de pantalla de la página al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium es tu navegador predeterminado</translation>
@@ -27,6 +28,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1262876892872089030">Mientras esta pestaña estaba inactiva, se ha liberado memoria para que Chromium siga funcionando rápido. Si quieres, puedes excluir este sitio para que no pueda estar inactivo.</translation>
 <translation id="1265577313130862557">Chromium ha bloqueado esta descarga porque el archivo es peligroso</translation>
 <translation id="126567311906253476">Al iniciar sesión en servicios de Google como Gmail o YouTube con <ph name="USER_EMAIL" />, puedes iniciar sesión automáticamente en Chromium con la misma cuenta</translation>
+<translation id="1287534462498555020">Descarga Chromium en tu teléfono</translation>
 <translation id="1290883685122687410">Error de configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configura tu nuevo perfil de Chromium</translation>
 <translation id="132092532143527429">Probar con Gemini en Chromium</translation>
@@ -382,6 +384,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5231355151045086930">Cerrar sesión en Chromium</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5254739261293693943">Pregunta sobre este vídeo</translation>
+<translation id="5276305953263010518">Descarga la aplicación Chromium para guardar contraseñas estés donde estés</translation>
 <translation id="5277894862589591112">Reinicia Chromium para aplicar los cambios</translation>
 <translation id="5286907366254680517">Detectado</translation>
 <translation id="5289287148052354622">Descarga la aplicación Chromium</translation>
@@ -695,6 +698,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8522801943730206384">Chromium puede comprobar tus contraseñas si las guardas</translation>
 <translation id="8548787790260785208">Recibe una advertencia si Chromium detecta que una de tus contraseñas aparece en una brecha pública de seguridad de datos</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Algunas funciones y extensiones de Chromium incluyen atajos. Puedes volver a activarlos.</translation>
 <translation id="8556420416730706394">Puedes fijar la búsqueda por imágenes para acceder a ella fácilmente. Haz clic en el botón Fijar en la parte superior del panel lateral.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
 <translation id="8568283329061645092">Chromium puede comprobar tus contraseñas si inicias sesión con tu cuenta de Google</translation>
@@ -730,6 +734,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8988036198400390003">Gestionar perfiles de Chromium</translation>
 <translation id="9019929317751753759">Para aumentar la seguridad de Chromium, hemos inhabilitado la siguiente extensión que no figura en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que puede haberse añadido sin tu conocimiento.</translation>
 <translation id="904366664621834601">Chromium ha bloqueado esta descarga porque el archivo incluye otros archivos que pueden ocultar malware</translation>
+<translation id="9053882453960391422">Mantén tus contraseñas, marcadores e historial perfectamente sincronizados en todos tus dispositivos. Accede fácilmente a las funciones que ya conoces y te encantan actualizando tu navegador predeterminado a Chromium. Chromium se fijará en la barra de tareas para que puedas acceder rápidamente.</translation>
 <translation id="9062666675513499497">Iniciar sesión en Chromium al iniciar sesión en otros servicios de Google</translation>
 <translation id="9078733879136747090">Chromium se ha cerrado automáticamente</translation>
 <translation id="9089354809943900324">Chromium no está actualizado</translation>

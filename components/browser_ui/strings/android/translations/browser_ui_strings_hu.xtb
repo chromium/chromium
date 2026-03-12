@@ -269,6 +269,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="3658847490588580244">Alapértelmezett böngésző alsó lapja</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>
 <translation id="3676777756440746804">A webhelyek nem kérhetik Öntől az Önről elmentett adatok használatát</translation>
+<translation id="3677897809642449131">A webhelyek engedélyt kérhetnek a mozgásérzékelők használatára</translation>
 <translation id="3678318839615834650">Az Új lap oldal kártyáinak alsó lapja teljes magasságban megnyitva</translation>
 <translation id="3697164069658504920">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek USB-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak USB-eszközöket.</translation>
 <translation id="3703430731944883733">A feed kezelése</translation>
@@ -444,7 +445,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="5515432237048785579">A Discover-feed alsó lapja teljes magasságban megnyitva</translation>
 <translation id="5516455585884385570">Értesítési beállítások megnyitása</translation>
 <translation id="5527111080432883924">Kérdezzen rá, mielőtt engedélyezi a webhelyeknek, hogy megtekintsék a vágólapon található szövegeket és képeket (ajánlott)</translation>
-<translation id="5553374991681107062">Legutóbbi</translation>
 <translation id="5555115555607204100">Nem gyorsítja fel a webhelyeket a Chrome V8 motorjával, de kissé ellenállóbbá teszi a Chrome-ot a támadásokkal szemben</translation>
 <translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> letiltva</translation>
@@ -676,7 +676,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8007176423574883786">Kikapcsolva ezen az eszközön</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
 <translation id="8033047164036749181">Feliratkozás az ettől a webhelytől érkező értesítésekre</translation>
-<translation id="8042586301629853791">Rendezés:</translation>
 <translation id="8051193500142930381">A kamerát igénylő funkciók nem működnek majd</translation>
 <translation id="8056330801132235235">Chrome – Alapértelmezett</translation>
 <translation id="8067883171444229417">Videó lejátszása</translation>
@@ -748,6 +747,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:
 <translation id="8707904142362025782">A webhely kérheti a kamerájához való hozzáférést</translation>
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8715862698998036666">A teljes képernyős nézetből való kilépéshez csúsztassa gyorsan le az ujját a képernyő tetejétől, majd csúsztasson a képernyő bal vagy jobb széléről.</translation>
+<translation id="8716050156658570300">A webhelyek engedélyt kérhetnek a mozgás- és fényérzékelők használatára</translation>
 <translation id="8719283222052720129">A(z) <ph name="APP_NAME" /> alkalmazásra vonatkozó engedélyt az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között lehet aktiválni.</translation>
 <translation id="8721719390026067591">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek Bluetooth-eszközök keresésére. Ha ki van kapcsolva, a webhelyek nem tudnak Bluetooth-eszközöket keresni.</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>

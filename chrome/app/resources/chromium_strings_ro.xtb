@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Ajută-ne să îmbunătățim modul incognito, răspunzând la acest sondaj de un minut.</translation>
 <translation id="1065672644894730302">Preferințele dvs. nu pot fi citite. Este posibil ca unele funcții să nu fie disponibile, iar modificările aduse preferințelor nu vor fi salvate.</translation>
 <translation id="1083934481477628225">Părintele tău a dezactivat opțiunea Permisiuni pentru site-uri, aplicații și extensii în Chromium</translation>
+<translation id="1090946077924227754">Pentru a căuta o anumită funcție sau extensie Chromium, introdu comanda rapidă respectivă în bara de adrese, urmată de tasta de pe tastatură selectată</translation>
 <translation id="1104942323762546749">Chromium vrea să îți exporte parolele. Pentru a permite asta, introdu parola pentru Windows.</translation>
 <translation id="112640046208448578">Identifică lucruri sau locuri și copiază sau tradu text. Când folosești Căutarea de imagini, se trimite la server o captură de ecran a paginii. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium este browserul prestabilit</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chromium. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="1265577313130862557">Chromium a blocat descărcarea, deoarece fișierul este periculos</translation>
 <translation id="126567311906253476">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chromium cu același cont</translation>
+<translation id="1287534462498555020">Instalează Chromium pe telefon</translation>
 <translation id="1290883685122687410">Eroare de configurare: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configurează noul profil Chromium</translation>
 <translation id="132092532143527429">Încearcă cu Gemini în Chromium</translation>
@@ -380,6 +382,7 @@
 <translation id="5231355151045086930">Deconectează-te de la Chromium</translation>
 <translation id="5234764350956374838">Închide</translation>
 <translation id="5254739261293693943">Întreabă despre acest videoclip</translation>
+<translation id="5276305953263010518">Descarcă aplicația Chromium pentru a salva parole din mers</translation>
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>
 <translation id="5286907366254680517">Detectat</translation>
 <translation id="5289287148052354622">Descarcă browserul Chromium.</translation>
@@ -693,6 +696,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8522801943730206384">Chromium îți poate verifica parolele dacă le salvezi</translation>
 <translation id="8548787790260785208">Primește avertismente dacă Chromium găsește una dintre parolele tale într-o încălcare a securității datelor publice</translation>
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Unele funcții și extensii Chromium au comenzi rapide. Poți alege să le reactivezi.</translation>
 <translation id="8556420416730706394">Poți să fixezi Căutarea de imagini pentru acces ușor. Dă clic pe butonul Fixează din partea de sus a panoului lateral.</translation>
 <translation id="856656450041460113">Caută lista de limbi</translation>
 <translation id="8568283329061645092">Chromium poate să îți verifice parolele atunci când te conectezi folosind Contul Google</translation>
@@ -728,6 +732,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8988036198400390003">Gestionează profilurile Chromium</translation>
 <translation id="9019929317751753759">Pentru mai multă siguranță în Chromium, am dezactivat următoarea extensie care nu este inclusă în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugată fără știrea ta.</translation>
 <translation id="904366664621834601">Chromium a blocat descărcarea deoarece fișierul arhivă include alte fișiere care pot ascunde programe malware</translation>
+<translation id="9053882453960391422">Păstrează parolele, marcajele și istoricul perfect sincronizate pe toate dispozitivele. Accesează cu ușurință funcțiile pe care le cunoști și apreciezi actualizând browserul prestabilit la Chromium. Chromium va fi fixat în bara de activități pentru acces rapid.</translation>
 <translation id="9062666675513499497">Conectează-te la Chromium când te conectezi la alte servicii Google</translation>
 <translation id="9078733879136747090">Chromium s-a închis automat</translation>
 <translation id="9089354809943900324">Chromium nu este actualizat</translation>

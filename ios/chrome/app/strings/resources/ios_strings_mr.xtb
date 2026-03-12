@@ -298,7 +298,6 @@
 <translation id="2012723204723845092">तुमचे पुन्हा स्वागत आहे!</translation>
 <translation id="2015722694326466240">पासवर्ड पाहण्यासाठी, तुम्ही प्रथम तुमच्या डीव्हाइसवर पासकोड सेट करणे आवश्यक आहे.</translation>
 <translation id="201759455285471444">टॅब गटाचा विस्तार करा.</translation>
-<translation id="202070562065520783">मला हे समजवा</translation>
 <translation id="2044394949148788042">टॅब ग्रिड उघडा</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> हे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले आहे, ज्याला काही माहिती दिसू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">नवीन आयटम</translation>
@@ -1615,6 +1614,7 @@
 <translation id="672735642903863329">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि आणखी बरेच काही मिळवा.</translation>
 <translation id="6729493062119577923">शेअर केलेल्या टॅब गटाची अ‍ॅक्टिव्हिटी</translation>
 <translation id="6732087373923685049">कॅमेरा</translation>
+<translation id="6736243959894955139">पत्ता</translation>
 <translation id="6746338529702829275">तुमच्या खाते डेटाचे पुनरावलोकन करा</translation>
 <translation id="6750456911389438250">{count,plural, =1{इतिहासाचा {count} आयटम इंपोर्ट केला आहे}other{इतिहासाचे {count} आयटम इंपोर्ट केले आहेत}}</translation>
 <translation id="6755200887046212842">खाती व्यवस्थापित करा</translation>
@@ -1821,7 +1821,6 @@
 <translation id="7537586195939242955">क्षमस्व, यावेळी तुमचा पास पासबुकमध्ये इंस्टॉल केला जाऊ शकत नाही.</translation>
 <translation id="754655535278952384"><ph name="TIME" /> तपासले</translation>
 <translation id="7554645225856321710">सर्व बंद करा</translation>
-<translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7557508262441527045">साइन आउट केले आहे</translation>
 <translation id="7561196759112975576">नेहमी</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
@@ -2251,7 +2250,6 @@
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन केलेली साइट</translation>
 <translation id="8990960056509724223">तुमच्या संस्थेच्या धोरणांमुळे फाइल सेव्ह करता आली नाही</translation>
 <translation id="8998289560386111590">तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
-<translation id="9000532564152265066">सर्व टॅब</translation>
 <translation id="9003677638446136377">पुन्हा तपासा</translation>
 <translation id="9006453925669499173">मेनू → नवीन गुप्त टॅब</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>

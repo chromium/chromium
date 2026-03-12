@@ -444,7 +444,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="5515432237048785579">Zone de contenu dans le bas de l'écran concernant le flux Découvertes ouvert à pleine hauteur</translation>
 <translation id="5516455585884385570">Ouvrir les paramètres de notification</translation>
 <translation id="5527111080432883924">Demander une autorisation lorsque les sites veulent lire du texte et des images du presse-papiers (recommandé)</translation>
-<translation id="5553374991681107062">Plus récentes</translation>
 <translation id="5555115555607204100">Ne pas accélérer les sites avec le moteur V8 de Chrome, mais rendre Chrome légèrement plus résistant aux attaques</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqué</translation>
@@ -676,7 +675,6 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="8007176423574883786">Désactivé pour cet appareil</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
 <translation id="8033047164036749181">S'abonner pour recevoir des notifications de ce site</translation>
-<translation id="8042586301629853791">Trier par :</translation>
 <translation id="8051193500142930381">Les fonctionnalités qui nécessitent une caméra ne seront pas accessibles</translation>
 <translation id="8056330801132235235">Chrome par défaut</translation>
 <translation id="8067883171444229417">Lire la vidéo</translation>

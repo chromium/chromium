@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Pestanas e grupos de pestanas</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Contraer o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer o grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
+<translation id="2476179388576975626">Pantalla superposta</translation>
 <translation id="2498435670446402865">Cambiar o nome do grupo</translation>
 <translation id="2536366509642644298">Os grupos de pestanas "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" xa non están dispoñibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer grupo de pestanas con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>

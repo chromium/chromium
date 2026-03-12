@@ -527,7 +527,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化等用途</translation>
 <translation id="648319183876919572">安全瀏覽強化防護功能可進一步協助你防範危險的網站和下載內容</translation>
 <translation id="6489302989675808168">已開啟 • Chrome 無法驗證這個擴充功能的來源</translation>
-<translation id="6491330562720922580">QR code，連結至 Chrome 行動版應用程式的下載頁面</translation>
+<translation id="6491330562720922580">QR code，可連結至 Chrome 行動版應用程式的下載頁面</translation>
 <translation id="6493527311031785448">Google Chrome 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome 已自動關閉</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
@@ -780,7 +780,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發布 # 天}}</translation>
 <translation id="9010418943148193727">預設搜尋引擎被 Chrome 以外的程式變更。Chrome 已重設這項設定，保護你的安全。</translation>
 <translation id="9014771989710951291">Chrome 是由多個機構管理</translation>
-<translation id="9024318700713112071">將 Chrome 設為預設瀏覽器</translation>
 <translation id="9066987883552592250">關閉 Chrome 內建 Gemini (Canary 版)</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖某些檔案的原因</translation>
 <translation id="9106236359747881194">選取要搜尋的文字</translation>

@@ -269,6 +269,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="3658847490588580244">Donja tabela podrazumevanog pregledača</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> sajt u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> sajta u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> sajtova u grupi sajtova vlasnika <ph name="RWS_OWNER" /> koji mogu da vide vaše aktivnosti u grupi}}</translation>
 <translation id="3676777756440746804">Sajtovima je onemogućeno da traže da koriste informacije koje su sačuvali o vama</translation>
+<translation id="3677897809642449131">Sajtovi mogu da traže da koriste senzore pokreta</translation>
 <translation id="3678318839615834650">Donja tabela kartica na stranici nove kartice je otvorena na celom ekranu</translation>
 <translation id="3697164069658504920">Kada je uključeno, sajtovi mogu da traže da koriste USB uređaje. Kada je isključeno, sajtovi ne mogu da koriste USB uređaje.</translation>
 <translation id="3703430731944883733">Upravljajte fidom</translation>
@@ -444,7 +445,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5515432237048785579">Donja tabela Discover fida je otvorena na celom ekranu</translation>
 <translation id="5516455585884385570">Otvorite podešavanja obaveštenja</translation>
 <translation id="5527111080432883924">Pitaj pre nego što dozvoliš sajtovima da čitaju tekst i slike iz privremene memorije (preporučeno)</translation>
-<translation id="5553374991681107062">Najnovije</translation>
 <translation id="5555115555607204100">Ne ubrzava sajtove pomoću Chrome mehanizma V8, ali čini Chrome malo otpornijim na napade</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> je blokiran</translation>
@@ -676,7 +676,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8007176423574883786">Isključeno je za ovaj uređaj</translation>
 <translation id="802154636333426148">Preuzimanje nije uspelo</translation>
 <translation id="8033047164036749181">Pratite za obaveštenja sa ovog sajta</translation>
-<translation id="8042586301629853791">Sortiraj prema:</translation>
 <translation id="8051193500142930381">Funkcije kojima je potrebna kamera neće raditi</translation>
 <translation id="8056330801132235235">Podrazumevano za Chrome</translation>
 <translation id="8067883171444229417">Pusti video</translation>
@@ -748,6 +747,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8707904142362025782">Sajt može da traži da koristi kameru</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8715862698998036666">Prevucite od vrha i prevucite od leve ili desne ivice da biste izašli iz režima celog ekrana.</translation>
+<translation id="8716050156658570300">Sajtovi mogu da traže da koriste senzore pokreta i svetlosti</translation>
 <translation id="8719283222052720129">Uključite dozvolu za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Kada je uključeno, sajtovi mogu da pitaju da traže Bluetooth uređaje. Kada je isključeno, sajtovi ne mogu da traže Bluetooth uređaje.</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>

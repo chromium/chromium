@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">Доња табела подразумеваног прегледача</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}one{<ph name="RWS_MEMBERS_COUNT" /> сајт у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}few{<ph name="RWS_MEMBERS_COUNT" /> сајта у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}other{<ph name="RWS_MEMBERS_COUNT" /> сајтова у групи сајтова власника <ph name="RWS_OWNER" /> који могу да виде ваше активности у групи}}</translation>
 <translation id="3676777756440746804">Сајтовима је онемогућено да траже да користе информације које су сачували о вама</translation>
+<translation id="3677897809642449131">Сајтови могу да траже да користе сензоре покрета</translation>
 <translation id="3678318839615834650">Доња табела картица на страници нове картице је отворена на целом екрану</translation>
 <translation id="3697164069658504920">Када је укључено, сајтови могу да траже да користе USB уређаје. Када је искључено, сајтови не могу да користе USB уређаје.</translation>
 <translation id="3703430731944883733">Управљајте фидом</translation>
@@ -444,7 +445,6 @@
 <translation id="5515432237048785579">Доња табела Discover фида је отворена на целом екрану</translation>
 <translation id="5516455585884385570">Отворите подешавања обавештења</translation>
 <translation id="5527111080432883924">Питај пре него што дозволиш сајтовима да читају текст и слике из привремене меморије (препоручено)</translation>
-<translation id="5553374991681107062">Најновије</translation>
 <translation id="5555115555607204100">Не убрзава сајтове помоћу Chrome механизма V8, али чини Chrome мало отпорнијим на нападе</translation>
 <translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> је блокиран</translation>
@@ -676,7 +676,6 @@
 <translation id="8007176423574883786">Искључено је за овај уређај</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
 <translation id="8033047164036749181">Пратите за обавештења са овог сајта</translation>
-<translation id="8042586301629853791">Сортирај према:</translation>
 <translation id="8051193500142930381">Функције којима је потребна камера неће радити</translation>
 <translation id="8056330801132235235">Подразумевано за Chrome</translation>
 <translation id="8067883171444229417">Пусти видео</translation>
@@ -748,6 +747,7 @@
 <translation id="8707904142362025782">Сајт може да тражи да користи камеру</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="8715862698998036666">Превуците од врха и превуците од леве или десне ивице да бисте изашли из режима целог екрана.</translation>
+<translation id="8716050156658570300">Сајтови могу да траже да користе сензоре покрета и светлости</translation>
 <translation id="8719283222052720129">Укључите дозволу за апликацију <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Када је укључено, сајтови могу да питају да траже Bluetooth уређаје. Када је искључено, сајтови не могу да траже Bluetooth уређаје.</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>

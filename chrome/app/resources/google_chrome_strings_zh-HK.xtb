@@ -155,6 +155,7 @@
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
 <translation id="2620436844016719705">系統</translation>
+<translation id="263447411082773721">讓密碼、書籤和記錄在所有裝置上完美同步。將預設瀏覽器更新為 Chrome，即可輕鬆存取你熟悉和喜愛的功能。Chrome 會固定在工作列，方便你快速取用。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>
@@ -233,6 +234,7 @@
 <translation id="3327226547491422998">日後 Chrome 可詢問你是否要使用已儲存的資料自動填入表格</translation>
 <translation id="3352986031709923790">搜尋區域嘅右上角：距右側 <ph name="RIGHT" />%，距頂部 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>
+<translation id="3373752068427117404">部分 Chrome 功能和擴充程式設有捷徑。你可以選擇重新開啟。</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將於 1 秒後重新啟動}other{Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="3380249972812870825">如果要開啟 Chrome 版 Gemini，請㩒 <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
@@ -698,6 +700,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8064965390968184078">1. 點擊下方的 [<ph name="BUTTON_LABEL" />]
 2. 在 Windows 設定中點擊 [<ph name="BUTTON_2" />]
 3.在 Windows 通知中點擊 [<ph name="BUTTON_3" />] 以將 Chrome 固定至工作列，方便快速取用</translation>
+<translation id="8074398340364918139">如要搜尋特定 Chrome 功能或擴充程式，請在網址列中輸入捷徑，然後按下你選取的鍵盤按鍵</translation>
 <translation id="8077579734294125741">其他 Chrome 設定檔</translation>
 <translation id="8086881907087796310">由於你的電腦不符合最低硬件要求，因此安裝失敗。</translation>
 <translation id="8113883687556086139">請驗證你的身分，以在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chrome 資料</translation>
@@ -706,6 +709,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8129812357326543296">關於 Google Chrome(&amp;G)</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8162006532256575008">在不登入帳戶的情況下使用 Chrome</translation>
+<translation id="8172231188687329735">取得 Chrome 應用程式，隨時隨地儲存密碼</translation>
 <translation id="8177472873527554730">在頁面上找不到內容</translation>
 <translation id="8221491193165283816">您通常會封鎖通知。如要允許此網站向您傳送通知，請按這裡。</translation>
 <translation id="8253851811470049684">你可以用 Chrome 開啟任何應用程式的連結，並將瀏覽器釘選在工作列方便隨時取用</translation>
@@ -733,6 +737,7 @@ Google Chrome 無法復原您的設定。</translation>
 
 你必須刪除部分書籤，才能將新書籤儲存至帳戶。如果你現在登出，未儲存的書籤將會刪除。</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
+<translation id="8458117863387545390">在手機下載 Chrome</translation>
 <translation id="8496177819998570653">Google 密碼管理工具(&amp;A)</translation>
 <translation id="8498858610309223613">Google Chrome 剛套用了特別的安全性更新。請立即重新啟動，我們將會還原您的分頁。</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>
@@ -786,7 +791,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
 <translation id="9010418943148193727">你的預設搜尋引擎已透過 Chrome 以外的服務變更，Chrome 已重設有關設定以保護你免受威脅。</translation>
 <translation id="9014771989710951291">Chrome 由多個機構管理</translation>
-<translation id="9024318700713112071">將 Chrome 設定為預設瀏覽器</translation>
 <translation id="9066987883552592250">關閉 Chrome Canary 版 Gemini</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖部分檔案的原因</translation>
 <translation id="9106236359747881194">選取文字即可搜尋</translation>
