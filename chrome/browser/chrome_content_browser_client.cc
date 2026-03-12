@@ -636,13 +636,14 @@
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #endif
 
-#else  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#elif BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/slim_web_view/slim_web_view_url_loader_factory_interceptor.h"  // nogncheck
+
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/guest_view/chrome_content_browser_client_guest_view_part.h"
 #endif
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "components/guest_view/browser/slim_web_view/slim_web_view_url_loader_factory_interceptor.h"  // nogncheck
-#endif
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1466,7 +1467,7 @@ ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extra_parts_.push_back(
       std::make_unique<ChromeContentBrowserClientExtensionsPart>());
-#elif BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(ENABLE_GUEST_VIEW) && BUILDFLAG(IS_ANDROID)
   extra_parts_.push_back(
       std::make_unique<android::ChromeContentBrowserClientGuestViewPart>());
 #endif
@@ -4109,21 +4110,23 @@ std::tuple<blink::mojom::PreferredColorScheme,
 GetPreferredColorScheme(const WebPreferences& web_prefs,
                         const GURL& url,
                         WebContents* web_contents) {
+  blink::mojom::PreferredColorScheme preferred_color_scheme;
+  blink::mojom::PreferredColorScheme preferred_root_scrollbar_color_scheme;
 #if BUILDFLAG(IS_ANDROID)
+  preferred_color_scheme = web_prefs.preferred_color_scheme;
+  preferred_root_scrollbar_color_scheme =
+      web_prefs.preferred_root_scrollbar_color_scheme;
+
   if (TabAndroid::FromWebContents(web_contents)) {
     if (auto* delegate = static_cast<android::TabWebContentsDelegateAndroid*>(
             web_contents->GetDelegate())) {
-      const auto preferred_color_scheme =
-          delegate->IsNightModeEnabled()
-              ? blink::mojom::PreferredColorScheme::kDark
-              : blink::mojom::PreferredColorScheme::kLight;
-      return {preferred_color_scheme, preferred_color_scheme};
+      preferred_color_scheme = delegate->IsNightModeEnabled()
+                                   ? blink::mojom::PreferredColorScheme::kDark
+                                   : blink::mojom::PreferredColorScheme::kLight;
+      preferred_root_scrollbar_color_scheme = preferred_color_scheme;
     }
   }
-  return {web_prefs.preferred_color_scheme,
-          web_prefs.preferred_root_scrollbar_color_scheme};
-#else
-  blink::mojom::PreferredColorScheme preferred_color_scheme;
+#else  // !BUILDFLAG(IS_ANDROID)
   if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->IsIncognitoProfile() &&
       !content::HasWebUIScheme(url)) {
@@ -4138,27 +4141,30 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
             ? blink::mojom::PreferredColorScheme::kLight
             : blink::mojom::PreferredColorScheme::kDark;
   }
+  // Update the preferred root scrollbar color based on the lightness level of
+  // the toolbar's color.
+  preferred_root_scrollbar_color_scheme =
+      color_utils::IsDark(
+          web_contents->GetColorProvider().GetColor(kColorToolbar))
+          ? blink::mojom::PreferredColorScheme::kDark
+          : blink::mojom::PreferredColorScheme::kLight;
+#endif
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   // Guest contents uses the same color scheme as the owner contents.
   content::WebContents* owner_contents =
       guest_view::GuestViewBase::GetTopLevelWebContents(web_contents);
   // If the top-level WebContents is the same as the guest, then
   // `web_contents` is *not* a guest.
   if (owner_contents != web_contents) {
-    preferred_color_scheme =
-        owner_contents->GetOrCreateWebPreferences().preferred_color_scheme;
+    const auto& preferences = owner_contents->GetOrCreateWebPreferences();
+    preferred_color_scheme = preferences.preferred_color_scheme;
+    preferred_root_scrollbar_color_scheme =
+        preferences.preferred_root_scrollbar_color_scheme;
   }
-
-  // Update the preferred root scrollbar color based on the lightness level of
-  // the toolbar's color.
-  const auto preferred_root_scrollbar_color_scheme =
-      color_utils::IsDark(
-          web_contents->GetColorProvider().GetColor(kColorToolbar))
-          ? blink::mojom::PreferredColorScheme::kDark
-          : blink::mojom::PreferredColorScheme::kLight;
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   return {preferred_color_scheme, preferred_root_scrollbar_color_scheme};
-#endif
 }
 
 std::optional<SkColor> GetRootScrollbarThemeColor(WebContents* web_contents) {

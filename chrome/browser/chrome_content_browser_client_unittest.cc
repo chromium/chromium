@@ -60,6 +60,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -88,6 +89,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
 #include "crypto/crypto_buildflags.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
@@ -133,7 +135,13 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
-#endif
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/android/guest_view/chrome_guest_view_manager_delegate.h"
+#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)  && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -1974,9 +1982,12 @@ class MockTabWebContentsDelegateAndroid
 };
 
 class ChromeContentBrowserClientPreferredColorSchemeAndroidTest
-    : public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<bool> {
  public:
   ChromeContentBrowserClientPreferredColorSchemeAndroidTest() = default;
+
+  bool IsDarkMode() const { return GetParam(); }
 
  protected:
   void SetUp() override { ChromeRenderViewHostTestHarness::SetUp(); }
@@ -1984,16 +1995,18 @@ class ChromeContentBrowserClientPreferredColorSchemeAndroidTest
   ChromeContentBrowserClient client_;
 };
 
-TEST_F(ChromeContentBrowserClientPreferredColorSchemeAndroidTest, DarkMode) {
+TEST_P(ChromeContentBrowserClientPreferredColorSchemeAndroidTest,
+       RootWebContents) {
   std::unique_ptr<TabAndroid> tab =
       TabAndroid::CreateForTesting(profile(), 1, CreateTestWebContents());
   content::WebContents* web_contents = tab->web_contents();
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents,
                                                         tab.get());
 
+  bool is_dark_mode = IsDarkMode();
   auto delegate = std::make_unique<MockTabWebContentsDelegateAndroid>();
   EXPECT_CALL(*delegate, IsNightModeEnabled())
-      .WillRepeatedly(testing::Return(true));
+      .WillRepeatedly(testing::Return(is_dark_mode));
   web_contents->SetDelegate(delegate.get());
 
   blink::web_pref::WebPreferences web_preferences;
@@ -2001,30 +2014,71 @@ TEST_F(ChromeContentBrowserClientPreferredColorSchemeAndroidTest, DarkMode) {
   client_.OverrideWebPreferences(web_contents, *site_instance,
                                  &web_preferences);
 
-  EXPECT_EQ(blink::mojom::PreferredColorScheme::kDark,
-            web_preferences.preferred_color_scheme);
+  auto expected_color_scheme = is_dark_mode
+                                   ? blink::mojom::PreferredColorScheme::kDark
+                                   : blink::mojom::PreferredColorScheme::kLight;
+  EXPECT_EQ(expected_color_scheme, web_preferences.preferred_color_scheme);
+  EXPECT_EQ(expected_color_scheme,
+            web_preferences.preferred_root_scrollbar_color_scheme);
 }
 
-TEST_F(ChromeContentBrowserClientPreferredColorSchemeAndroidTest, LightMode) {
-  std::unique_ptr<TabAndroid> tab =
-      TabAndroid::CreateForTesting(profile(), 1, CreateTestWebContents());
-  content::WebContents* web_contents = tab->web_contents();
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents,
-                                                        tab.get());
+#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_P(ChromeContentBrowserClientPreferredColorSchemeAndroidTest,
+       SlimWebViewGuest) {
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    GTEST_SKIP() << "MPArch based guests do not have inner WebContents.";
+  }
+  guest_view::TestGuestViewManagerFactory factory;
+  factory.GetOrCreateTestGuestViewManager(
+      profile(), std::make_unique<android::ChromeGuestViewManagerDelegate>());
 
+  // Create Owner WebContents
+  std::unique_ptr<TabAndroid> owner_tab =
+      TabAndroid::CreateForTesting(profile(), 1, CreateTestWebContents());
+  content::WebContents* owner_contents = owner_tab->web_contents();
+  tabs::TabLookupFromWebContents::CreateForWebContents(owner_contents,
+                                                       owner_tab.get());
+
+  // Set Color Scheme in Owner
+  bool is_dark_mode = IsDarkMode();
   auto delegate = std::make_unique<MockTabWebContentsDelegateAndroid>();
   EXPECT_CALL(*delegate, IsNightModeEnabled())
-      .WillRepeatedly(testing::Return(false));
-  web_contents->SetDelegate(delegate.get());
+      .WillRepeatedly(testing::Return(is_dark_mode));
+  owner_contents->SetDelegate(delegate.get());
 
+  // Create Guest WebContents
+  std::unique_ptr<content::WebContents> guest_contents =
+      CreateTestWebContents();
+
+  // Associate Guest with Owner
+  std::unique_ptr<guest_view::GuestViewBase> slim_webview_guest =
+      guest_view::SlimWebViewGuest::Create(
+          owner_contents->GetPrimaryMainFrame());
+  slim_webview_guest->InitWithWebContents(base::DictValue(),
+                                          guest_contents.get());
+
+  // Verify Color Scheme
   blink::web_pref::WebPreferences web_preferences;
-  content::SiteInstance* site_instance = web_contents->GetSiteInstance();
-  client_.OverrideWebPreferences(web_contents, *site_instance,
+  content::SiteInstance* site_instance = guest_contents->GetSiteInstance();
+  client_.OverrideWebPreferences(guest_contents.get(), *site_instance,
                                  &web_preferences);
 
-  EXPECT_EQ(blink::mojom::PreferredColorScheme::kLight,
-            web_preferences.preferred_color_scheme);
+  auto expected_color_scheme = is_dark_mode
+                                   ? blink::mojom::PreferredColorScheme::kDark
+                                   : blink::mojom::PreferredColorScheme::kLight;
+  EXPECT_EQ(expected_color_scheme, web_preferences.preferred_color_scheme);
+  EXPECT_EQ(expected_color_scheme,
+            web_preferences.preferred_root_scrollbar_color_scheme);
 }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ChromeContentBrowserClientPreferredColorSchemeAndroidTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "DarkMode" : "LightMode";
+    });
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

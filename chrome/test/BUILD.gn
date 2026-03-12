@@ -8268,6 +8268,13 @@ test("unit_tests") {
         "//chrome/android/modules/dev_ui/provider:java",
       ]
     }
+
+    if (enable_guest_view && !enable_extensions_core) {
+      deps += [
+        "//chrome/browser/android/guest_view",
+        "//components/guest_view/browser/slim_web_view",
+      ]
+    }
   } else {
     # !is_android
     sources += [

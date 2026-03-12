@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/guest_view/chrome_guest_view_manager_delegate.h"
 
+#include "base/check_is_test.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/common/buildflags.h"
@@ -43,7 +44,10 @@ void ChromeGuestViewManagerDelegate::DispatchEvent(
   }
   auto* handler =
       guest_view::SlimWebViewPageHandler::GetForCurrentDocument(rfh);
-  CHECK(handler);
+  if (!handler) {
+    CHECK_IS_TEST();
+    return;
+  }
   handler->DispatchEvent(event_name, std::move(args), instance_id);
 }
 
