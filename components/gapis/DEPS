@@ -1,3 +1,8 @@
 include_rules = [
   "+components/keyed_service/core",
+  "+google_apis",
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/test",
+  "+url",
 ]

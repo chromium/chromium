@@ -6,9 +6,30 @@ static_library("gapis") {
   sources = [
     "gapis_service.cc",
     "gapis_service.h",
+    "token_downloader.cc",
+    "token_downloader.h",
   ]
   deps = [
     "//base",
+    "//components/gapis/proto",
     "//components/keyed_service/core",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "token_downloader_unittest.cc" ]
+  deps = [
+    ":gapis",
+    "//base",
+    "//base/test:test_support",
+    "//components/gapis/proto",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//url",
   ]
 }
