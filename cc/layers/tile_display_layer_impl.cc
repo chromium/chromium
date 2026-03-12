@@ -204,21 +204,21 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
   bool has_draw_quad = false;
   auto* tile = *iter;
   if (tile && tile->IsReadyToDraw()) {
-    if (auto resource = tile->resource()) {
+    if (auto resource_id = tile->GetResourceId()) {
       const gfx::RectF texture_rect = iter.texture_rect();
       AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
                          offset_visible_geometry_rect, needs_blending,
-                         resource->resource_id, texture_rect,
-                         nearest_neighbor_);
+                         *resource_id, texture_rect, nearest_neighbor_);
       has_draw_quad = true;
-    } else if (auto color = tile->solid_color()) {
+    } else if (auto color = tile->GetSolidColor()) {
       has_draw_quad = true;
       AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
                            offset_visible_geometry_rect, *color);
-    } else if (tile->is_oom()) {
+    } else if (tile->IsOOM()) {
       // Keep `has_draw_quad` false to end up checkerboarding below.
     }
   }
+
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
     AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,

@@ -58,9 +58,9 @@ class CC_EXPORT TileDisplayLayerTile {
 
   TileDrawInfo::Mode draw_mode() {
     CHECK(IsReadyToDraw());
-    if (solid_color()) {
+    if (GetSolidColor()) {
       return TileDrawInfo::SOLID_COLOR_MODE;
-    } else if (is_oom()) {
+    } else if (IsOOM()) {
       return TileDrawInfo::OOM_MODE;
     } else {
       CHECK(resource());
@@ -70,7 +70,7 @@ class CC_EXPORT TileDisplayLayerTile {
 
   const TileDisplayLayerTileContents& contents() const { return contents_; }
 
-  std::optional<SkColor4f> solid_color() const {
+  std::optional<SkColor4f> GetSolidColor() const {
     if (std::holds_alternative<SkColor4f>(contents_)) {
       return std::get<SkColor4f>(contents_);
     }
@@ -84,7 +84,7 @@ class CC_EXPORT TileDisplayLayerTile {
     return std::nullopt;
   }
 
-  bool is_oom() const {
+  bool IsOOM() const {
     if (std::holds_alternative<TileDisplayLayerNoContents>(contents_)) {
       return std::get<TileDisplayLayerNoContents>(contents_).reason ==
              mojom::MissingTileReason::kOutOfMemory;
@@ -94,7 +94,14 @@ class CC_EXPORT TileDisplayLayerTile {
 
   bool IsReadyToDraw() const {
     return !std::holds_alternative<TileDisplayLayerNoContents>(contents_) ||
-           is_oom();
+           IsOOM();
+  }
+
+  std::optional<viz::ResourceId> GetResourceId() const {
+    if (auto res = resource()) {
+      return res->resource_id;
+    }
+    return std::nullopt;
   }
 
  private:

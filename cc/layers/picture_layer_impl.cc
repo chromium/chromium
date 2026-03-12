@@ -388,25 +388,22 @@ bool PictureLayerImpl::AppendQuadForTile(
 
   bool has_draw_quad = false;
   auto* tile = *iter;
-  if (tile && tile->draw_info().IsReadyToDraw()) {
-    const TileDrawInfo& draw_info = tile->draw_info();
+  if (tile && tile->IsReadyToDraw()) {
     // Mark the tile used for raster. This is used to reclaim old prepaint
     // tiles in TileManager.
     tile->mark_used();
 
-    if (draw_info.mode() == TileDrawInfo::RESOURCE_MODE) {
+    if (auto resource_id = tile->GetResourceId()) {
       gfx::RectF texture_rect = iter.texture_rect();
       AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
                          offset_visible_geometry_rect, needs_blending,
-                         draw_info.resource_id_for_export(), texture_rect,
-                         nearest_neighbor_);
+                         *resource_id, texture_rect, nearest_neighbor_);
       has_draw_quad = true;
-    } else if (draw_info.mode() == TileDrawInfo::SOLID_COLOR_MODE) {
+    } else if (auto color = tile->GetSolidColor()) {
       AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect,
-                           draw_info.solid_color());
+                           offset_visible_geometry_rect, *color);
       has_draw_quad = true;
-    } else if (draw_info.mode() == TileDrawInfo::OOM_MODE) {
+    } else if (tile->IsOOM()) {
       // Keep `has_draw_quad` false to end up checkerboarding below.
     }
   }

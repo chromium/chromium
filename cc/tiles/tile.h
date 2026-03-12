@@ -61,7 +61,23 @@ class CC_EXPORT Tile {
     return draw_info().mode();
   }
 
-  bool IsReadyToDraw() { return draw_info().IsReadyToDraw(); }
+  bool IsReadyToDraw() const { return draw_info().IsReadyToDraw(); }
+
+  std::optional<viz::ResourceId> GetResourceId() const {
+    if (draw_info().mode() == TileDrawInfo::RESOURCE_MODE) {
+      return draw_info().resource_id_for_export();
+    }
+    return std::nullopt;
+  }
+
+  std::optional<SkColor4f> GetSolidColor() const {
+    if (draw_info().mode() == TileDrawInfo::SOLID_COLOR_MODE) {
+      return draw_info().solid_color();
+    }
+    return std::nullopt;
+  }
+
+  bool IsOOM() const { return draw_info().mode() == TileDrawInfo::OOM_MODE; }
 
   // TODO(vmpstr): Move this to the iterators.
   bool required_for_activation() const { return required_for_activation_; }
@@ -103,8 +119,6 @@ class CC_EXPORT Tile {
   int layer_id() const { return layer_id_; }
 
   int source_frame_number() const { return source_frame_number_; }
-
-  bool IsReadyToDraw() const { return draw_info().IsReadyToDraw(); }
 
   size_t GPUMemoryUsageInBytes() const;
 

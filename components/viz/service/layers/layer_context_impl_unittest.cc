@@ -2168,8 +2168,8 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   EXPECT_EQ(tiling_impl1->tile_size(), kTileSize1);
   EXPECT_EQ(tiling_impl1->tiling_rect(), kTilingRect1);
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
-  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
-  EXPECT_EQ(tiling_impl1->TileAt(kTileIndex1)->solid_color().value(),
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->GetSolidColor().has_value());
+  EXPECT_EQ(tiling_impl1->TileAt(kTileIndex1)->GetSolidColor().value(),
             SkColors::kMagenta);
 
   // Test Case 2: Update existing Tiling (tile_size) and add a Resource Tile.
@@ -2294,7 +2294,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
   tiling_impl1 = tile_display_layer_impl->GetTilingForTesting(kScaleKey1);
   ASSERT_NE(nullptr, tiling_impl1);
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
-  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->GetSolidColor().has_value());
 
   // Now, update that tile to be a resource tile.
   auto update_change_tile_type = CreateDefaultUpdate();
@@ -2319,7 +2319,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTilingTest, TilingAndTileLifecycle) {
                   ->DoUpdateDisplayTree(std::move(update_change_tile_type))
                   .has_value());
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
-  EXPECT_FALSE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
+  EXPECT_FALSE(tiling_impl1->TileAt(kTileIndex1)->GetSolidColor().has_value());
   EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->resource().has_value());
 
   // Test Case 7: Attempt to add a tile with an invalid resource ID.

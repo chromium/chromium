@@ -1297,7 +1297,7 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
   TileDisplayLayerImpl::TileContents oom_contents{
       TileDisplayLayerNoContents(mojom::MissingTileReason::kOutOfMemory)};
   TileDisplayLayerTile oom_tile(*raw_layer, oom_contents);
-  EXPECT_TRUE(oom_tile.is_oom());
+  EXPECT_TRUE(oom_tile.IsOOM());
 
   // OOM tiles should be regarded as ready to draw.
   EXPECT_TRUE(oom_tile.IsReadyToDraw());
@@ -1306,7 +1306,7 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
   TileDisplayLayerImpl::TileContents resource_not_ready_contents{
       TileDisplayLayerNoContents(mojom::MissingTileReason::kResourceNotReady)};
   TileDisplayLayerTile not_oom_tile(*raw_layer, resource_not_ready_contents);
-  EXPECT_FALSE(not_oom_tile.is_oom());
+  EXPECT_FALSE(not_oom_tile.IsOOM());
 
   // Non-OOM missing tiles should not be regarded as ready to draw.
   EXPECT_FALSE(not_oom_tile.IsReadyToDraw());
@@ -1314,7 +1314,7 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
   // Solid color tile.
   TileDisplayLayerImpl::TileContents color_contents(SkColors::kRed);
   TileDisplayLayerTile color_tile(*raw_layer, color_contents);
-  EXPECT_FALSE(color_tile.is_oom());
+  EXPECT_FALSE(color_tile.IsOOM());
   EXPECT_TRUE(color_tile.IsReadyToDraw());
 
   // Resource tile.
@@ -1326,7 +1326,7 @@ TEST_F(TileDisplayLayerImplTest, TileResourceIsOOM) {
   TileDisplayLayerImpl::TileContents resource_contents =
       TileDisplayLayerTileResource(resource_id, gfx::Size(1, 1));
   TileDisplayLayerTile resource_tile(*raw_layer, resource_contents);
-  EXPECT_FALSE(resource_tile.is_oom());
+  EXPECT_FALSE(resource_tile.IsOOM());
   EXPECT_TRUE(resource_tile.IsReadyToDraw());
 }
 

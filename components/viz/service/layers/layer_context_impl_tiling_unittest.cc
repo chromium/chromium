@@ -115,7 +115,7 @@ TEST_F(LayerContextImplUpdateDisplayTilingTest, TilingAndTileLifecycle) {
   ASSERT_NE(nullptr, tiling_impl1);
   EXPECT_EQ(tiling_impl1->tile_size(), kTileSize);
   ASSERT_NE(nullptr, tiling_impl1->TileAt(kTileIndex1));
-  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->solid_color().has_value());
+  EXPECT_TRUE(tiling_impl1->TileAt(kTileIndex1)->GetSolidColor().has_value());
 
   // Test Case 2: Add a Resource Tile to the existing Tiling.
   auto tiling1_update = mojom::Tiling::New();

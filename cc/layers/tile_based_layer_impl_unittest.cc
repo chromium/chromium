@@ -33,6 +33,12 @@ class FakeTile {
   TileDrawInfo::Mode draw_mode() { return TileDrawInfo::SOLID_COLOR_MODE; }
 
   bool IsReadyToDraw() const { return true; }
+
+  std::optional<viz::ResourceId> GetResourceId() const { return std::nullopt; }
+
+  std::optional<SkColor4f> GetSolidColor() const { return std::nullopt; }
+
+  bool IsOOM() const { return false; }
 };
 
 class FakeTilingCoverageIterator;
