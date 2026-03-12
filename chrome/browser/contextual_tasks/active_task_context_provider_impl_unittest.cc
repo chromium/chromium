@@ -10,7 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -195,10 +197,12 @@ TEST_F(ActiveTaskContextProviderImplTest, RefreshContextWithTabs) {
   EXPECT_CALL(*tab_list_, GetTab(0)).WillRepeatedly(Return(tab1));
 
   std::set<tabs::TabHandle> expected_tabs = {tab1->GetHandle()};
-  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   provider_->RefreshContext();
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ActiveTaskContextProviderImplTest, AutoSuggestedTab) {
@@ -229,10 +233,12 @@ TEST_F(ActiveTaskContextProviderImplTest, AutoSuggestedTab) {
 
   // Expected tabs should include tab1.
   std::set<tabs::TabHandle> expected_tabs = {tab1->GetHandle()};
-  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs)).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnContextTabsChanged(expected_tabs))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
 
   provider_->RefreshContext();
-  task_environment_.RunUntilIdle();
+  run_loop.Run();
 }
 
 TEST_F(ActiveTaskContextProviderImplTest, RefreshContextStaleCallback) {
@@ -269,15 +275,16 @@ TEST_F(ActiveTaskContextProviderImplTest, RefreshContextStaleCallback) {
   // Second call to RefreshContext should invalidate the first callback.
   // This second call will trigger OnContextTabsChanged immediately due to our
   // mock.
-  EXPECT_CALL(observer_, OnContextTabsChanged(_)).Times(1);
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer_, OnContextTabsChanged(_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   provider_->RefreshContext();
+  run_loop.Run();
 
   // Run the first (stale) callback. It should NOT trigger OnContextTabsChanged.
   EXPECT_CALL(observer_, OnContextTabsChanged(_)).Times(0);
   std::move(captured_callback)
       .Run(std::make_unique<ContextualTaskContext>(task));
-
-  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ActiveTaskContextProviderImplTest, ServiceObserversTriggerRefresh) {
