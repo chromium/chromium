@@ -2700,7 +2700,11 @@ public class StripLayoutHelperTest {
         verify(mTabStripContextMenuCoordinator)
                 .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
         Rect rect = rectProviderCaptor.getValue().getRect();
-        assertEquals(new Rect(x, y, x, y), rect);
+        int tabWidthPx =
+                Math.round(
+                        mStripLayoutHelper.getUnpinnedTabWidthForTesting()
+                                * mContext.getResources().getDisplayMetrics().density);
+        assertEquals(new Rect(x, y, x + tabWidthPx, y), rect);
     }
 
     @Test
@@ -2724,7 +2728,11 @@ public class StripLayoutHelperTest {
         verify(mTabStripContextMenuCoordinator)
                 .showMenu(rectProviderCaptor.capture(), eq(mIncognito), any());
         Rect rect = rectProviderCaptor.getValue().getRect();
-        assertEquals(new Rect(x, y, x, y), rect);
+        int tabWidthPx =
+                Math.round(
+                        mStripLayoutHelper.getUnpinnedTabWidthForTesting()
+                                * mContext.getResources().getDisplayMetrics().density);
+        assertEquals(new Rect(x, y, x + tabWidthPx, y), rect);
     }
 
     @Test

@@ -3320,11 +3320,12 @@ public class StripLayoutHelper
         // Determine the anchor view rect to position the menu.
         float dpToPx = mContext.getResources().getDisplayMetrics().density;
         RectProvider anchorRectProvider = new RectProvider();
+        int tabWidthPx = Math.round(mCachedTabWidthSupplier.get() * dpToPx);
         anchorRectProvider.setRect(
                 new Rect(
                         Math.round(xDp * dpToPx),
                         Math.round(yDp * dpToPx),
-                        Math.round(xDp * dpToPx),
+                        Math.round(xDp * dpToPx) + tabWidthPx,
                         Math.round(yDp * dpToPx)));
         getAdjustedAnchorRect(anchorRectProvider);
 
