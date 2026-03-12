@@ -260,7 +260,7 @@ class ShellView : public views::BoxLayoutView,
       std::string text = base::UTF16ToUTF8(url_entry_->GetText());
       GURL url(text);
       if (!url.has_scheme()) {
-        url = GURL(std::string("http://") + std::string(text));
+        url = GURL(std::string("http://") + text);
         url_entry_->SetText(base::ASCIIToUTF16(url.spec()));
       }
       shell_->LoadURL(url);

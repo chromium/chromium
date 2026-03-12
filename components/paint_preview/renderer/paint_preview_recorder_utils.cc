@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_image.h"
@@ -17,6 +18,7 @@
 #include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -67,10 +69,9 @@ class OpConverterAndTracker {
       }
       case cc::PaintOpType::kAnnotate: {
         const auto& annotate_op = static_cast<const cc::AnnotateOp&>(op);
-        tracker_->AnnotateLink(GURL(std::string(reinterpret_cast<const char*>(
-                                                    annotate_op.data->data()),
-                                                annotate_op.data->size())),
-                               annotate_op.rect);
+        tracker_->AnnotateLink(
+            GURL(base::as_string_view(skia::as_byte_span(*annotate_op.data))),
+            annotate_op.rect);
         // Delete the op. We no longer need it.
         return nullptr;
       }

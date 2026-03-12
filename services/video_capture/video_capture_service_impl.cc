@@ -191,8 +191,7 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     scoped_refptr<viz::ContextProvider> context_provider =
         viz::ContextProviderCommandBuffer::CreateForGL(
             std::move(gpu_channel_host), 0 /* stream ID */,
-            gpu::SchedulingPriority::kNormal,
-            GURL(std::string("chrome://gpu/VideoCapture")),
+            gpu::SchedulingPriority::kNormal, GURL("chrome://gpu/VideoCapture"),
             viz::command_buffer_metrics::ContextType::VIDEO_CAPTURE);
 
     const gpu::ContextResult context_result =

@@ -28,7 +28,7 @@ void GraphicsDelegateWin::Initialize(base::OnceClosure on_initialized) {
 
   context_provider_ = viz::ContextProviderCommandBuffer::CreateForGL(
       gpu_channel_host_, content::kGpuStreamIdDefault,
-      content::kGpuStreamPriorityUI, GURL(std::string("chrome://gpu/VrUiWin")),
+      content::kGpuStreamPriorityUI, GURL("chrome://gpu/VrUiWin"),
       viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
 
   if (context_provider_->BindToCurrentSequence() ==

@@ -195,8 +195,7 @@ void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
   scoped_refptr<viz::ContextProvider> context_provider =
       viz::ContextProviderCommandBuffer::CreateForGL(
           viz_gpu_->GetGpuChannel(), content::kGpuStreamIdDefault,
-          content::kGpuStreamPriorityUI,
-          GURL(std::string("chrome://gpu/XrRuntime")),
+          content::kGpuStreamPriorityUI, GURL("chrome://gpu/XrRuntime"),
           viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
 
   std::move(viz_context_provider_callback).Run(context_provider);

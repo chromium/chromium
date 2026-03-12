@@ -31,9 +31,9 @@ void OnGpuChannelEstablished(
 
   auto context_provider = viz::ContextProviderCommandBuffer::CreateForRaster(
       std::move(gpu_channel_host), stream_id, stream_priority,
-      GURL(std::string("chrome://gpu/"
-                       "BrowserGpuVideoAcceleratorFactories::"
-                       "CreateGpuVideoAcceleratorFactories")),
+      GURL("chrome://gpu/"
+           "BrowserGpuVideoAcceleratorFactories::"
+           "CreateGpuVideoAcceleratorFactories"),
       automatic_flushes, support_locking,
       gpu::SharedMemoryLimits::ForMailboxContext(),
       viz::command_buffer_metrics::ContextType::UNKNOWN,

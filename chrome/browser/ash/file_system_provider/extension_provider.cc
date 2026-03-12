@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -47,10 +48,10 @@ IconSet DefaultIconSet(const extensions::ExtensionId& extension_id) {
   IconSet icon_set;
   icon_set.SetIcon(
       IconSet::IconSize::SIZE_16x16,
-      GURL(std::string("chrome://extension-icon/") + extension_id + "/16/1"));
+      GURL(base::StrCat({"chrome://extension-icon/", extension_id, "/16/1"})));
   icon_set.SetIcon(
       IconSet::IconSize::SIZE_32x32,
-      GURL(std::string("chrome://extension-icon/") + extension_id + "/32/1"));
+      GURL(base::StrCat({"chrome://extension-icon/", extension_id, "/32/1"})));
   return icon_set;
 }
 
