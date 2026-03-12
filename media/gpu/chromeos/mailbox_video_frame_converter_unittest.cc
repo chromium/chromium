@@ -607,57 +607,63 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
         std::make_unique<StrictMock<base::MockOnceCallback<void()>>>());
   }
 
+  std::array<scoped_refptr<VideoFrame>, std::size(mappable_frames)>
+      video_frames;
+  std::array<scoped_refptr<FrameResource>, std::size(mappable_frames)>
+      frame_resources;
   // |converted_frames| are the outputs of the MailboxVideoFrameConverter.
   std::array<scoped_refptr<VideoFrame>, std::size(mappable_frames)>
       converted_frames;
 
-  // Let's now feed each of the |mappable_frames| to the
-  // MailboxVideoFrameConverter and verify that the GpuDelegate gets used
-  // correctly.
-  auto gmb_handle =
-      CreatePixmapHandle(kCodedSize, viz::MultiPlaneFormat::kNV12);
   // Setting some default usage in order to get a mappable shared image.
   const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-
   auto shared_image_size =
       needs_detiling ? kCodedSize : gfx::Size(kVisibleRect.size());
-  auto shared_image = test_sii_->CreateSharedImage(
-      {viz::MultiPlaneFormat::kNV12, shared_image_size, gfx::ColorSpace(),
-       gpu::SharedImageUsageSet(si_usage),
-       "MailboxVideoFrameConverterWithUnwrappedFramesTest"},
-      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
-      std::move(gmb_handle));
-
-  // Create 1 frame that will be wrapped multiple times.
-  auto video_frame = VideoFrame::WrapMappableSharedImage(
-      std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
-      base::NullCallback(), kVisibleRect, kNaturalSize, base::TimeDelta());
-  ASSERT_TRUE(video_frame);
-  video_frame->metadata().needs_detiling = needs_detiling;
-  scoped_refptr<FrameResource> original_frame =
-      VideoFrameResource::Create(video_frame);
-  original_frame->metadata().tracking_token = base::UnguessableToken::Create();
-
-  // Provide a way to retreive the original frame.
-  FrameResourceConverter::GetOriginalFrameCB get_original_cb =
-      base::BindRepeating(
-          // Using dangling raw_ptr in order to not prolong the lifetime of
-          // `original_frame` beyond `video_frame` and `original_frame` due to
-          // binding arg.
-          [](raw_ptr<FrameResource, DisableDanglingPtrDetection> original,
-             const base::UnguessableToken&) { return original.get(); },
-          base::UnsafeDangling(original_frame.get()));
-  converter_->set_get_original_frame_cb(get_original_cb);
 
   for (size_t i = 0; i < std::size(mappable_frames); i++) {
-    scoped_refptr<FrameResource> mappable_frame =
-        original_frame->CreateWrappingFrame();
-    ASSERT_TRUE(mappable_frame);
-    // Change color space so shared_image needs to be recreated.
+    gfx::ColorSpace color_space;
+    // Change color space for the second shared image.
     if (i != 0) {
-      mappable_frame->set_color_space(gfx::ColorSpace::CreateHDR10());
+      color_space = gfx::ColorSpace::CreateHDR10();
     }
+    // Let's now feed each of the |mappable_frames| to the
+    // MailboxVideoFrameConverter and verify that the GpuDelegate gets used
+    // correctly.
+    auto gmb_handle =
+        CreatePixmapHandle(kCodedSize, viz::MultiPlaneFormat::kNV12);
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, shared_image_size, color_space,
+         gpu::SharedImageUsageSet(si_usage),
+         "MailboxVideoFrameConverterWithUnwrappedFramesTest"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ,
+        std::move(gmb_handle));
+
+    video_frames[i] = VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), kVisibleRect, kNaturalSize, base::TimeDelta());
+    ASSERT_TRUE(video_frames[i]);
+    video_frames[i]->metadata().needs_detiling = needs_detiling;
+
+    frame_resources[i] = VideoFrameResource::Create(video_frames[i]);
+    frame_resources[i]->metadata().tracking_token =
+        base::UnguessableToken::Create();
+
+    // Provide a way to retreive the original frame.
+    FrameResourceConverter::GetOriginalFrameCB get_original_cb =
+        base::BindRepeating(
+            // Using dangling raw_ptr in order to not prolong the lifetime of
+            // `original_frame` beyond `video_frame` and `original_frame` due to
+            // binding arg.
+            [](raw_ptr<FrameResource, DisableDanglingPtrDetection> original,
+               const base::UnguessableToken&) { return original.get(); },
+            base::UnsafeDangling(frame_resources[i].get()));
+    converter_->set_get_original_frame_cb(get_original_cb);
+
+    scoped_refptr<FrameResource> mappable_frame =
+        frame_resources[i]->CreateWrappingFrame();
+    ASSERT_TRUE(mappable_frame);
+    mappable_frame->set_color_space(color_space);
     mappable_frame->AddDestructionObserver(
         mock_frame_destruction_cbs_[i]->Get());
     mappable_frames[i] = mappable_frame.get();
@@ -738,8 +744,10 @@ TEST_P(MailboxVideoFrameConverterWithUnwrappedFramesTest,
                   /*mailbox=*/Matcher<const gpu::Mailbox&>(
                       mailboxes_seen_by_gpu_delegate[1])))
       .Times(1);
-  video_frame.reset();
-  original_frame.reset();
+  video_frames[0].reset();
+  frame_resources[0].reset();
+  video_frames[1].reset();
+  frame_resources[1].reset();
   ASSERT_TRUE(RunTasksAndVerifyAndClearExpectations());
 }
 
