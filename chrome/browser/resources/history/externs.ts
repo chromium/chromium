@@ -18,7 +18,6 @@ export interface ForeignSessionTab {
   sessionId: number;
   timestamp: number;
   title: string;
-  type: string;
   url: string;
   windowId: number;
 }

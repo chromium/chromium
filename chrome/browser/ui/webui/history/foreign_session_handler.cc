@@ -66,7 +66,6 @@ std::optional<base::DictValue> SessionTabToValue(
                                     tab_url);
   dictionary.Set("remoteIconUrlForUma",
                  current_navigation.favicon_url().spec());
-  dictionary.Set("type", "tab");
   dictionary.Set("timestamp",
                  static_cast<double>(tab.timestamp.ToInternalValue()));
   // TODO(jeremycho): This should probably be renamed to tabId to avoid
@@ -80,7 +79,6 @@ std::optional<base::DictValue> SessionTabToValue(
 base::DictValue BuildWindowData(base::Time modification_time,
                                 SessionID window_id) {
   base::DictValue dictionary;
-  dictionary.Set("type", "window");
   dictionary.Set("timestamp",
                  static_cast<double>(modification_time.ToInternalValue()));
 
