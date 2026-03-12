@@ -31,7 +31,7 @@ SchemeMatchingResult SchemeMatches(
     const network::mojom::blink::CSPSource& source,
     const String& protocol,
     const String& self_protocol) {
-  DCHECK_EQ(protocol, protocol.DeprecatedLower());
+  DCHECK(protocol.ContainsNoAsciiUpper());
   const String& scheme =
       (source.scheme.empty() ? self_protocol : source.scheme);
 

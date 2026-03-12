@@ -968,7 +968,7 @@ void KURL::InitProtocolMetadata() {
     protocol_ = protocol.ToAtomicString();
     protocol_is_in_http_family_ = false;
   }
-  DCHECK_EQ(protocol_, protocol_.DeprecatedLower());
+  DCHECK(protocol_.ContainsNoAsciiUpper());
 }
 
 void KURL::AssertStringSpecIsAscii() {
