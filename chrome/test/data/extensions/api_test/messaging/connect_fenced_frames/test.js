@@ -8,21 +8,6 @@ var listenForever = chrome.test.listenForever;
 // Keep track of the tab that we're running tests in, for simplicity.
 var testTab = null;
 
-function compareSenders(expected, actual) {
-  // documentId is a unique ID so we can't assume anything about it, just
-  // that it is provided.
-  chrome.test.assertNe(undefined, actual.documentId);
-  chrome.test.assertEq('active', actual.documentLifecycle);
-  chrome.test.assertEq(expected.frameId, actual.frameId);
-  chrome.test.assertEq(expected.url, actual.url);
-  chrome.test.assertEq(serverOrigin, actual.origin);
-  chrome.test.assertEq(chrome.runtime.id, actual.id);
-}
-
-function createExpectedSender(frameId, url) {
-  return {frameId: frameId, url: url};
-}
-
 var serverOrigin;
 var serverURL;
 
@@ -37,13 +22,13 @@ var tests = [
     // the tab and wait for that message.
     let actualSender;
     let messagePromise = new Promise((resolve) => {
-      chrome.runtime.onMessage.addListener(function messageListener(message,
-                                                                    sender) {
-        chrome.test.assertEq(message.connected, true);
-        chrome.runtime.onMessage.removeListener(messageListener);
-        actualSender = sender;
-        resolve();
-      });
+      chrome.runtime.onMessage.addListener(
+          function messageListener(message, sender) {
+            chrome.test.assertEq(message.connected, true);
+            chrome.runtime.onMessage.removeListener(messageListener);
+            actualSender = sender;
+            resolve();
+          });
     });
 
     // This tab will be used for the other tests as well.
@@ -53,8 +38,14 @@ var tests = [
       });
     });
     await messagePromise;
-    expectedSender = createExpectedSender(5, serverURL + 'fenced_frame.html');
-    compareSenders(expectedSender, actualSender);
+    // documentId / frameId are unique IDs so we can't assume anything about
+    // it, it's also possible that they are changed just that it is provided.
+    chrome.test.assertNe(undefined, actualSender.documentId);
+    chrome.test.assertNe(undefined, actualSender.frameId);
+    chrome.test.assertEq('active', actualSender.documentLifecycle);
+    chrome.test.assertEq(serverURL + 'fenced_frame.html', actualSender.url);
+    chrome.test.assertEq(serverOrigin, actualSender.origin);
+    chrome.test.assertEq(chrome.runtime.id, actualSender.id);
     chrome.test.succeed();
   },
 
@@ -77,7 +68,7 @@ var tests = [
 
 chrome.test.getConfig(async (config) => {
   serverOrigin = `http://localhost:${config.testServer.port}`;
-  serverURL = serverOrigin + '/extensions/api_test/messaging/'
-                           + 'connect_fenced_frames/';
+  serverURL = serverOrigin + '/extensions/api_test/messaging/' +
+      'connect_fenced_frames/';
   chrome.test.runTests(tests);
 });
