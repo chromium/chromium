@@ -201,14 +201,16 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
     const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale,
     AppendQuadsCustomSharedData* custom_data) {
-  bool has_draw_quad = AppendQuad(
-      iter, render_pass, shared_quad_state, offset_geometry_rect,
-      offset_visible_geometry_rect, needs_blending, nearest_neighbor_);
+  bool has_draw_quad =
+      AppendQuad(iter, render_pass, shared_quad_state, offset_geometry_rect,
+                 offset_visible_geometry_rect, needs_blending,
+                 nearest_neighbor_, append_quads_data);
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
     AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect);
+                           offset_visible_geometry_rect, iter,
+                           append_quads_data);
 
     // NOTE: TileDisplayLayerImpl does not currently track missing tiles, as
     // that info is used only to pass to `AppendQuadsData::num_missing_tiles` on

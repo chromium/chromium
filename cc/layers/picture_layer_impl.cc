@@ -274,11 +274,25 @@ void PictureLayerImpl::AppendQuadsForResourcelessSoftwareDraw(
       texture_rect, nearest_neighbor_, quad_content_rect, max_contents_scale,
       std::move(image_animation_map), raster_source_->GetDisplayItemList(),
       GetRasterInducingScrollOffsets());
-  DidAppendQuad(quad);
+  ValidateQuadResources(quad);
 }
 
-void PictureLayerImpl::DidAppendQuad(viz::DrawQuad* quad) {
+void PictureLayerImpl::DidAppendQuad(
+    viz::DrawQuad* quad,
+    const TilingSetCoverageIterator<PictureLayerTiling>& iter,
+    AppendQuadsData* append_quads_data,
+    bool is_checkerboard) {
   ValidateQuadResources(quad);
+
+  if (is_checkerboard) {
+    // Report data on any missing images that might be the largest
+    // contentful image.
+    if (*iter) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Compositing.DecodeLCPCandidateImage.MissedDeadline",
+          iter->HasMissingLCPCandidateImages());
+    }
+  }
 }
 
 void PictureLayerImpl::WillProcessReadyToDrawTile(
@@ -395,22 +409,16 @@ bool PictureLayerImpl::AppendQuadForTile(
   gfx::Rect geometry_rect = iter.geometry_rect();
   uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
 
-  bool has_draw_quad = AppendQuad(
-      iter, render_pass, shared_quad_state, offset_geometry_rect,
-      offset_visible_geometry_rect, needs_blending, nearest_neighbor_);
+  bool has_draw_quad =
+      AppendQuad(iter, render_pass, shared_quad_state, offset_geometry_rect,
+                 offset_visible_geometry_rect, needs_blending,
+                 nearest_neighbor_, append_quads_data);
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
     AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect);
-
-    // Report data on any missing images that might be the largest
-    // contentful image.
-    if (*iter) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.DecodeLCPCandidateImage.MissedDeadline",
-          iter->HasMissingLCPCandidateImages());
-    }
+                           offset_visible_geometry_rect, iter,
+                           append_quads_data);
 
     // Only report the tile as missing if it's in the viewport.
     return /*tile_produced=*/!geometry_rect.Intersects(

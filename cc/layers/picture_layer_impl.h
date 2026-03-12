@@ -425,7 +425,10 @@ class CC_EXPORT PictureLayerImpl
       float ideal_contents_scale) override;
   void WillProcessReadyToDrawTile(
       const TilingSetCoverageIterator<PictureLayerTiling>& iter) override;
-  void DidAppendQuad(viz::DrawQuad* quad) override;
+  void DidAppendQuad(viz::DrawQuad* quad,
+                     const TilingSetCoverageIterator<PictureLayerTiling>& iter,
+                     AppendQuadsData* append_quads_data,
+                     bool is_checkerboard) override;
 
   bool AppendQuadForTile(TilingSetCoverageIterator<PictureLayerTiling> iter,
                          const AppendQuadsContext& context,
