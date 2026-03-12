@@ -104,8 +104,9 @@ struct TemplateURLData {
   // Returns whether this search engine was created by the Default Search
   // Provider Enterprise policy.
   bool CreatedByDefaultSearchProviderPolicy() const;
-  // Returns whether this search engine was created by an Enterprise policy that
-  // doesn't define the Default Search Provider.
+  // Returns whether this search engine was created by an Enterprise policy,
+  // but not by the Default Search Provider policy (e.g., created by the
+  // SiteSearchSettings or EnterpriseSearchAggregatorSettings policies).
   bool CreatedByNonDefaultSearchProviderPolicy() const;
   // Returns whether this search engine was created by the
   // EnterpriseSearchAggregatorSettings policy.
