@@ -173,11 +173,19 @@ lens::LensSearchboxController* GetLensSearchboxController(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Whether the given contextual search `feature` is enabled for the specified
-// `country` and `locale`.
-bool IsContextualSearchFeatureEnabled(const base::Feature& feature,
-                                      const std::string& country,
-                                      const std::string& locale) {
+constexpr char kEnglishLanguageCode[] = "en";
+constexpr std::string kEnglishExpansionCountryCodes[] = {"au", "ca", "gb",
+                                                         "nz", "us", "za"};
+
+// Whether the given contextual search `feature` is enabled.
+bool IsContextualSearchFeatureEnabled(
+    const base::Feature& feature,
+    AimEligibilityService* aim_eligibility_service) {
+  // If not AIM eligible, return false.
+  if (!aim_eligibility_service || !aim_eligibility_service->IsAimEligible()) {
+    return false;
+  }
+
   // If the feature is overridden (e.g. via server-side config or command-line),
   // use that state.
   auto* feature_list = base::FeatureList::GetInstance();
@@ -196,9 +204,12 @@ bool IsContextualSearchFeatureEnabled(const base::Feature& feature,
     return false;
   }
 
-  return variations_service->GetStoredPermanentCountry() == country &&
+  return std::ranges::contains(
+             kEnglishExpansionCountryCodes,
+             variations_service->GetStoredPermanentCountry()) &&
          features->application_locale_storage() &&
-         features->application_locale_storage()->Get() == locale;
+         features->application_locale_storage()->Get().starts_with(
+             kEnglishLanguageCode);
 }
 
 }  // namespace
@@ -647,13 +658,13 @@ bool ChromeAutocompleteProviderClient::ShouldSendContextualUrlSuggestParam()
     const {
   return IsContextualSearchFeatureEnabled(
       omnibox_feature_configs::ContextualSearch::kSendContextualUrlSuggestParam,
-      /*country=*/"us", /*locale=*/"en-US");
+      GetAimEligibilityService());
 }
 
 bool ChromeAutocompleteProviderClient::ShouldSendPageTitleSuggestParam() const {
   return IsContextualSearchFeatureEnabled(
       omnibox_feature_configs::ContextualSearch::kSendPageTitleSuggestParam,
-      /*country=*/"us", /*locale=*/"en-US");
+      GetAimEligibilityService());
 }
 
 bool ChromeAutocompleteProviderClient::IsOmniboxNextLensSearchChipEnabled()
