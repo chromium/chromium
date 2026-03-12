@@ -649,6 +649,8 @@ enum AutofillSuggestionTriggerSource {
   kGlic = 21,
   // Suggestions triggered by the @memory feature (typing "@@").
   kAtMemory = 22,
+  // Suggestions triggered by the @memory feature via context menu.
+  kAtMemoryContextMenu = 23,
 };
 
 // Encapsulates the data for a potential "Sign in with Google" button.

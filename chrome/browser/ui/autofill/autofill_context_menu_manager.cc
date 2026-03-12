@@ -501,7 +501,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAtMemoryCommand(
     AutofillDriver& driver) {
   driver.RendererShouldTriggerSuggestions(
       {driver.GetFrameToken(), FieldRendererId(params_.field_renderer_id)},
-      AutofillSuggestionTriggerSource::kAtMemory);
+      AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(

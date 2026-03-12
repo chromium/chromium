@@ -447,6 +447,7 @@ bool IsTriggerSourceOnlyRelevantForCompose(
     case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
     case AutofillSuggestionTriggerSource::kGlic:
     case AutofillSuggestionTriggerSource::kAtMemory:
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
       return false;
   }
 }
@@ -551,6 +552,7 @@ DenseSet<FillingProduct> GetFillingProductsToSuggest(
       return {FillingProduct::kAddress, FillingProduct::kCreditCard,
               FillingProduct::kPassword};
     case kAtMemory:
+    case kAtMemoryContextMenu:
       return {FillingProduct::kAtMemory};
   }
 }
@@ -1265,7 +1267,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
 
-  if (trigger_source == AutofillSuggestionTriggerSource::kAtMemory) {
+  if (IsAtMemoryTriggerSource(trigger_source)) {
     // Show empty suggestions with a search bar to start the flow.
     external_delegate_->OnSuggestionsReturned(field_id, {});
     return;

@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/ui/popup_interaction.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/config.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -196,8 +197,13 @@ void AutofillPopupControllerImpl::Show(
   ui_session_id_ = ui_session_id;
   ignore_focus_loss_ = ignore_focus_loss;
   trigger_source_ = trigger_source;
-  if (trigger_source_ == AutofillSuggestionTriggerSource::kAtMemory) {
+  if (IsAtMemoryTriggerSource(trigger_source_)) {
     suggestions_filling_product_ = FillingProduct::kAtMemory;
+    base::UmaHistogramEnumeration(
+        "Autofill.AtMemory.Funnel.PopupDisplayed",
+        trigger_source_ == AutofillSuggestionTriggerSource::kAtMemory
+            ? AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger
+            : AutofillMetrics::AtMemoryTriggerSource::kContextMenu);
   } else if (!suggestions.empty() &&
              IsStandaloneSuggestionType(suggestions[0].type)) {
     suggestions_filling_product_ =
@@ -206,8 +212,7 @@ void AutofillPopupControllerImpl::Show(
     suggestions_filling_product_ = FillingProduct::kNone;
   }
 
-  if (suggestions.empty() &&
-      trigger_source_ != AutofillSuggestionTriggerSource::kAtMemory &&
+  if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source_) &&
       base::FeatureList::IsEnabled(
           features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
     Hide(SuggestionHidingReason::kNoSuggestions);
@@ -493,6 +498,7 @@ AutofillPopupControllerImpl::GetSearchBarConfig(
     AutofillSuggestionTriggerSource trigger_source) const {
   switch (trigger_source) {
     case AutofillSuggestionTriggerSource::kAtMemory:
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
       return AutofillPopupView::SearchBarConfig{
           .placeholder = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER),

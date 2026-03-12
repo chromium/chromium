@@ -1143,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
                         FieldRendererId(0)},
-          AutofillSuggestionTriggerSource::kAtMemory));
+          AutofillSuggestionTriggerSource::kAtMemoryContextMenu));
 
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);

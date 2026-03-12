@@ -90,6 +90,9 @@ IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
 bool IsPlusAddressesManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
+// Checks if the user triggered @memory on a field.
+bool IsAtMemoryTriggerSource(AutofillSuggestionTriggerSource trigger_source);
+
 // Returns whether the feature `kAutofillPaymentsFieldSwapping` is enabled
 // or not.
 // TODO(crbug.com/354175563): Remove when launched on all platforms.

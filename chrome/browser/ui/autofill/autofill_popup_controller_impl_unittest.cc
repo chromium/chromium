@@ -1141,5 +1141,23 @@ TEST_F(AutofillPopupControllerImplTestAccessibility,
 }
 #endif
 
+TEST_F(AutofillPopupControllerImplTest, AtMemoryPopupDisplayed_TypedTrigger) {
+  base::HistogramTester histogram_tester;
+  ShowSuggestions(manager(), std::vector<Suggestion>(),
+                  AutofillSuggestionTriggerSource::kAtMemory);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AtMemory.Funnel.PopupDisplayed",
+      AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
+}
+
+TEST_F(AutofillPopupControllerImplTest, AtMemoryPopupDisplayed_ContextMenu) {
+  base::HistogramTester histogram_tester;
+  ShowSuggestions(manager(), std::vector<Suggestion>(),
+                  AutofillSuggestionTriggerSource::kAtMemoryContextMenu);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AtMemory.Funnel.PopupDisplayed",
+      AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
+}
+
 }  // namespace
 }  // namespace autofill

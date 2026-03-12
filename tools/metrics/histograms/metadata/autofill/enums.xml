@@ -597,6 +597,11 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Other"/>
 </enum>
 
+<enum name="AutofillAtMemoryTriggerSource">
+  <int value="0" label="Typed trigger"/>
+  <int value="1" label="Context menu"/>
+</enum>
+
 <enum name="AutofillAutocompleteState">
   <int value="0" label="None"/>
   <int value="1" label="Valid"/>

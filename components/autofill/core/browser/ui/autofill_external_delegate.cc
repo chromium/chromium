@@ -368,8 +368,7 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     shown_suggestion_types_.push_back(suggestion.type);
   }
 
-  if (suggestions.empty() &&
-      trigger_source != AutofillSuggestionTriggerSource::kAtMemory) {
+  if (suggestions.empty() && !IsAtMemoryTriggerSource(trigger_source)) {
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete.
@@ -998,7 +997,7 @@ void AutofillExternalDelegate::ClearPreviewedForm() {
 }
 
 FillingProduct AutofillExternalDelegate::GetMainFillingProduct() const {
-  if (trigger_source_ == AutofillSuggestionTriggerSource::kAtMemory) {
+  if (IsAtMemoryTriggerSource(trigger_source_)) {
     return FillingProduct::kAtMemory;
   }
   bool has_plus_address_suggestion = false;

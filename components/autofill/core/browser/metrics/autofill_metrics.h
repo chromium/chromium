@@ -456,6 +456,14 @@ class AutofillMetrics {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  enum class AtMemoryTriggerSource {
+    kTypedTrigger = 0,
+    kContextMenu = 1,
+    kMaxValue = kContextMenu
+  };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   //
   // Represents the status of Autofill prompts when at least one prompt can be
   // displayed.

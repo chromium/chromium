@@ -2050,6 +2050,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.Funnel.PopupDisplayed"
+    enum="AutofillAtMemoryTriggerSource" expires_after="2027-03-09">
+  <owner>rahimis@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the trigger source of the Autofill @memory popup. Emitted once per
+    popup display.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
     enum="AutofilledFieldUserEditingStatus" expires_after="2026-06-21">
