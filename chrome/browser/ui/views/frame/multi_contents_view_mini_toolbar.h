@@ -9,13 +9,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class ContentsWebView;
-namespace tabs {
-struct TabData;
+class TabUIHelper;
+
+namespace content {
+class WebContents;
 }
 
 namespace tabs {
@@ -36,8 +37,7 @@ class WebView;
 
 // MultiContentsViewMiniToolbar is shown for the inactive side of a split and
 // displays the favicon, domain, tab alert state, and a menu button.
-class MultiContentsViewMiniToolbar : public views::View,
-                                     public TabStripModelObserver {
+class MultiContentsViewMiniToolbar : public views::View {
   METADATA_HEADER(MultiContentsViewMiniToolbar, views::View)
 
  public:
@@ -54,11 +54,6 @@ class MultiContentsViewMiniToolbar : public views::View,
   views::ImageButton* image_button_for_testing() { return image_button_; }
 
  private:
-  // TabStripModelObserver:
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
-                      TabChangeType change_type) override;
-
   // View:
   void OnPaint(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
@@ -66,13 +61,10 @@ class MultiContentsViewMiniToolbar : public views::View,
   void UpdateWebContents(views::WebView* web_view);
   void ClearWebContents(views::WebView*);
 
-  void RegisterTabAlertSubscription();
+  void RegisterTabSubscriptions();
   void OnAlertStatusIndicatorChanged(std::optional<tabs::TabAlert> new_alert);
 
-  std::optional<tabs::TabData> GetTabData();
-  // Updates the favicon and domain based on the provided |tab_data|.
-  void UpdateContents(tabs::TabData tab_data);
-  void UpdateFavicon(tabs::TabData tab_data);
+  void UpdateFavicon(TabUIHelper* tab_ui_helper);
 
   void OpenSplitViewMenu();
   void CloseCurrentView();
@@ -91,6 +83,7 @@ class MultiContentsViewMiniToolbar : public views::View,
   base::CallbackListSubscription web_contents_attached_subscription_;
   base::CallbackListSubscription web_contents_detached_subscription_;
   std::optional<base::CallbackListSubscription> tab_alert_status_subscription_;
+  std::optional<base::CallbackListSubscription> tab_ui_updated_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MULTI_CONTENTS_VIEW_MINI_TOOLBAR_H_

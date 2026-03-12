@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -13,12 +14,12 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
-#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
@@ -134,12 +135,6 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
           .WithOrder(1));
   views::InstallCircleHighlightPathGenerator(image_button_);
 
-  // Update minitoolbar contents.
-  std::optional<tabs::TabData> tab_data = GetTabData();
-  if (tab_data.has_value()) {
-    UpdateContents(tab_data.value());
-  }
-
   web_contents_attached_subscription_ =
       web_view->AddWebContentsAttachedCallback(
           base::BindRepeating(&MultiContentsViewMiniToolbar::UpdateWebContents,
@@ -149,14 +144,10 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
           base::BindRepeating(&MultiContentsViewMiniToolbar::ClearWebContents,
                               base::Unretained(this)));
 
-  RegisterTabAlertSubscription();
-
-  browser_view_->browser()->tab_strip_model()->AddObserver(this);
+  RegisterTabSubscriptions();
 }
 
-MultiContentsViewMiniToolbar::~MultiContentsViewMiniToolbar() {
-  browser_view_->browser()->tab_strip_model()->RemoveObserver(this);
-}
+MultiContentsViewMiniToolbar::~MultiContentsViewMiniToolbar() = default;
 
 void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
                                                bool is_highlighted) {
@@ -188,35 +179,59 @@ void MultiContentsViewMiniToolbar::UpdateState(bool is_active,
 }
 
 void MultiContentsViewMiniToolbar::UpdateContents() {
-  std::optional<tabs::TabData> tab_data = GetTabData();
-  if (tab_data.has_value()) {
-    UpdateContents(tab_data.value());
+  auto* const interface = GetTabInterface(web_contents_);
+  if (!interface) {
+    return;
   }
+
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(interface);
+
+  GURL domain_url = tab_ui_helper->GetVisibleURL();
+  if (tab_ui_helper->GetLastCommittedURL().is_valid()) {
+    domain_url = tab_ui_helper->GetLastCommittedURL();
+  }
+
+  // Create the formatted domain, this will match the hover card domain.
+  std::u16string domain;
+  if (IsNTP(domain_url)) {
+    domain = u"";
+  } else if (domain_url.SchemeIsFile()) {
+    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
+  } else if (domain_url.SchemeIsBlob()) {
+    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
+  } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
+    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
+  } else if (tab_ui_helper->ShouldDisplayURL()) {
+    domain = url_formatter::FormatUrl(
+        domain_url,
+        url_formatter::kFormatUrlOmitDefaults |
+            url_formatter::kFormatUrlOmitTrivialSubdomains |
+            url_formatter::kFormatUrlOmitHTTPS |
+            url_formatter::kFormatUrlTrimAfterHost,
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+  }
+  domain_label_->SetText(domain);
+  domain_label_->SetElideBehavior(domain_url.IsStandard() &&
+                                          !domain_url.SchemeIsFile() &&
+                                          !domain_url.SchemeIsFileSystem()
+                                      ? gfx::ELIDE_HEAD
+                                      : gfx::ELIDE_TAIL);
+  domain_label_->SetCustomTooltipText(base::ASCIIToUTF16(domain_url.spec()));
+
+  UpdateFavicon(tab_ui_helper);
 }
 
 void MultiContentsViewMiniToolbar::UpdateWebContents(views::WebView* web_view) {
   tab_alert_status_subscription_.reset();
+  tab_ui_updated_subscription_.reset();
   web_contents_ = web_view->web_contents();
-  RegisterTabAlertSubscription();
-  std::optional<tabs::TabData> tab_data = GetTabData();
-  if (tab_data.has_value()) {
-    UpdateContents(tab_data.value());
-  }
+  RegisterTabSubscriptions();
 }
 
 void MultiContentsViewMiniToolbar::ClearWebContents(views::WebView*) {
   tab_alert_status_subscription_.reset();
   OnAlertStatusIndicatorChanged(std::nullopt);
   web_contents_ = nullptr;
-}
-
-void MultiContentsViewMiniToolbar::OnTabChangedAt(tabs::TabInterface* tab,
-                                                  int index,
-                                                  TabChangeType change_type) {
-  if (!web_contents_ || tab->GetContents() != web_contents_) {
-    return;
-  }
-  UpdateContents(tabs::TabData::FromTabInterface(tab));
 }
 
 void MultiContentsViewMiniToolbar::OnPaint(gfx::Canvas* canvas) {
@@ -226,19 +241,20 @@ void MultiContentsViewMiniToolbar::OnPaint(gfx::Canvas* canvas) {
 
 void MultiContentsViewMiniToolbar::OnThemeChanged() {
   views::View::OnThemeChanged();
-  std::optional<tabs::TabData> tab_data = GetTabData();
-  if (tab_data.has_value()) {
-    UpdateFavicon(tab_data.value());
-  }
   if (auto* interface = GetTabInterface(web_contents_)) {
     auto* tab_alert_controller = tabs::TabAlertController::From(interface);
     if (tab_alert_controller) {
       OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
     }
+
+    TabUIHelper* const tab_ui_helper = TabUIHelper::From(interface);
+    if (tab_ui_helper) {
+      UpdateFavicon(tab_ui_helper);
+    }
   }
 }
 
-void MultiContentsViewMiniToolbar::RegisterTabAlertSubscription() {
+void MultiContentsViewMiniToolbar::RegisterTabSubscriptions() {
   if (auto* interface = GetTabInterface(web_contents_)) {
     auto* tab_alert_controller = tabs::TabAlertController::From(interface);
     OnAlertStatusIndicatorChanged(tab_alert_controller->GetAlertToShow());
@@ -246,6 +262,11 @@ void MultiContentsViewMiniToolbar::RegisterTabAlertSubscription() {
         tab_alert_controller->AddAlertToShowChangedCallback(base::BindRepeating(
             &MultiContentsViewMiniToolbar::OnAlertStatusIndicatorChanged,
             base::Unretained(this)));
+    tab_ui_updated_subscription_ =
+        TabUIHelper::From(interface)->AddTabUIChangeCallback(
+            base::BindRepeating(&MultiContentsViewMiniToolbar::UpdateContents,
+                                base::Unretained(this)));
+    UpdateContents();
   }
 }
 
@@ -265,62 +286,10 @@ void MultiContentsViewMiniToolbar::OnAlertStatusIndicatorChanged(
   }
 }
 
-std::optional<tabs::TabData> MultiContentsViewMiniToolbar::GetTabData() {
-  if (!web_contents_) {
-    return std::nullopt;
-  }
-
-  TabStripModel* const model = browser_view_->browser()->tab_strip_model();
-  const int tab_index = model->GetIndexOfWebContents(web_contents_);
-  if (tab_index == TabStripModel::kNoTab) {
-    return std::nullopt;
-  }
-
-  tabs::TabInterface* const tab_interface = GetTabInterface(web_contents_);
-  return tab_interface ? std::make_optional(
-                             tabs::TabData::FromTabInterface(tab_interface))
-                       : std::nullopt;
-}
-
-void MultiContentsViewMiniToolbar::UpdateContents(tabs::TabData tab_data) {
-  GURL domain_url = tab_data.visible_url;
-  if (tab_data.last_committed_url.is_valid()) {
-    domain_url = tab_data.last_committed_url;
-  }
-  // Create the formatted domain, this will match the hover card domain.
-  std::u16string domain;
-  if (IsNTP(domain_url)) {
-    domain = u"";
-  } else if (domain_url.SchemeIsFile()) {
-    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_FILE_URL_SOURCE);
-  } else if (domain_url.SchemeIsBlob()) {
-    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_BLOB_URL_SOURCE);
-  } else if (domain_url.SchemeIs(url::kViewSourceScheme)) {
-    domain = l10n_util::GetStringUTF16(IDS_HOVER_CARD_VIEW_SOURCE_URL_SOURCE);
-  } else if (tab_data.should_display_url) {
-    domain = url_formatter::FormatUrl(
-        domain_url,
-        url_formatter::kFormatUrlOmitDefaults |
-            url_formatter::kFormatUrlOmitTrivialSubdomains |
-            url_formatter::kFormatUrlOmitHTTPS |
-            url_formatter::kFormatUrlTrimAfterHost,
-        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
-  }
-  domain_label_->SetText(domain);
-  domain_label_->SetElideBehavior(domain_url.IsStandard() &&
-                                          !domain_url.SchemeIsFile() &&
-                                          !domain_url.SchemeIsFileSystem()
-                                      ? gfx::ELIDE_HEAD
-                                      : gfx::ELIDE_TAIL);
-  domain_label_->SetCustomTooltipText(base::ASCIIToUTF16(domain_url.spec()));
-
-  UpdateFavicon(tab_data);
-}
-
-void MultiContentsViewMiniToolbar::UpdateFavicon(tabs::TabData tab_data) {
+void MultiContentsViewMiniToolbar::UpdateFavicon(TabUIHelper* tab_ui_helper) {
   // Theme the favicon similar to how favicons are themed in the bookmarks bar.
-  ui::ImageModel favicon = tab_data.favicon;
-  bool themify_favicon = tab_data.should_themify_favicon;
+  ui::ImageModel favicon = tab_ui_helper->GetFavicon();
+  bool themify_favicon = tab_ui_helper->ShouldThemifyFavicon();
   if (favicon.IsEmpty()) {
     favicon = favicon::GetDefaultFaviconModel(kColorBookmarkBarBackground);
     themify_favicon = true;
