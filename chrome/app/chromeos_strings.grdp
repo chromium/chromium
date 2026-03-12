@@ -2987,33 +2987,6 @@
   <message name="IDS_NEW_PORTAL_DETECTION_NOTIFICATION_BUTTON" desc="The text to display on the button when the user needs to sign in to the captive portal">
     Sign in
   </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED" desc="Title for the system notification that current wired network is behind captive portal">
-    Connect to network
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI" desc="Title for the system notification that current Wi-Fi network is behind captive portal">
-    Connect to Wi-Fi network
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIRED" desc="Body of the system notification that current wired network is behind captive portal">
-    The network you are using (<ph name="NETWORK_ID">$1<ex>Public Network</ex></ph>) may require you to visit its login page.
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIFI" desc="Body of the system notification that current Wi-Fi network is behind captive portal">
-    The Wi-Fi network you are using (<ph name="NETWORK_ID">$1<ex>Public Network</ex></ph>) may require you to visit its login page.
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_ASK_WIFI" desc="Body of the system notification that asks a user whether to use an extension to authenticate to the network">
-    The Wi-Fi network you are using (<ph name="NETWORK_ID">$1<ex>Public Wifi</ex></ph>) may require authentication.
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_FAILED_WIFI" desc="Body of the system notification that authentication failed and current network is still behind captive portal">
-    Authentication failed. Click to visit the login page for the Wi-Fi network you are using (<ph name="NETWORK_ID">$1<ex>Public Wifi</ex></ph>).
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_BUTTON_EXTENSION" desc="Button caption to connect using the authenticating extension">
-    Connect using <ph name="ExtensionName">$1<ex>WiFi Company Authenticator</ex></ph>
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_BUTTON_EXTENSION_RETRY" desc="Button caption to connect using the authenticating extension">
-    Retry using <ph name="ExtensionName">$1<ex>WiFi Company Authenticator</ex></ph>
-  </message>
-  <message name="IDS_PORTAL_DETECTION_NOTIFICATION_BUTTON_PORTAL" desc="Button caption to open the captive portal login page.">
-    Visit captive portal login page
-  </message>
 
   <!-- 3G data Notifications -->
   <message name="IDS_MOBILE_DATA_NOTIFICATION_TITLE" desc="Title of notification telling that mobile data is enabled.">
