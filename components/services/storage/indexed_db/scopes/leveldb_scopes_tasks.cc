@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
@@ -19,11 +20,27 @@
 
 namespace content::indexed_db {
 namespace {
+
+// Calling CompactRange() as part of a cleanup task ensures that disk space
+// from deleted entries is reclaimed immediately. However, CompactRange()
+// can be slow and I/O intensive. During bulk database deletions, repetitive
+// [delete, compact] cycles can severely degrade performance and actually delay
+// overall space reclamation compared to simply deleting ranges and letting
+// LevelDB compact automatically.
+//
+// This feature inhibits CompactRange() calls within cleanup tasks, allowing us
+// to evaluate the performance impact of delegating space reclamation entirely
+// to LevelDB's automatic background compactions. Depending on the results, we
+// may adopt alternative strategies, such as threshold-based full-database
+// compactions.
+BASE_FEATURE(kIdbInhibitCompactRange, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsKeyBeforeEndOfRange(const leveldb::Comparator* comparator,
                            const leveldb::Slice& key,
                            const leveldb::Slice& end) {
   return comparator->Compare(key, end) < 0;
 }
+
 }  // namespace
 
 LevelDBScopesTask::LevelDBScopesTask(scoped_refptr<LevelDBState> level_db,
@@ -196,7 +213,10 @@ leveldb::Status CleanupScopeTask::ExecuteAndDeleteCleanupTasks(
     if (!s.ok() || level_db_->destruction_requested()) [[unlikely]] {
       return s;
     }
-    level_db_->db()->CompactRange(&begin, &end);
+
+    if (!base::FeatureList::IsEnabled(kIdbInhibitCompactRange)) {
+      level_db_->db()->CompactRange(&begin, &end);
+    }
 
     write_batch_.Delete(iterator->key());
 
