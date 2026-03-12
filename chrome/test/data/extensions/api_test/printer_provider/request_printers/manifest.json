@@ -1,11 +1,10 @@
 {
   "name": "Test printer provider",
   "description": "Test extension for chrome.printerProvider.onGetPrintersRequested event",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "version": "0.1",
   "background": {
-    "scripts": ["test.js"],
-    "persistent": false
+    "service_worker": "test.js"
   },
   "permissions": [
     "printerProvider"
