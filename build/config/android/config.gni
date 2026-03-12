@@ -175,6 +175,10 @@ if (is_android) {
     public_android_sdk = true
   }
 
+  if (!defined(default_target_sdk_version)) {
+    default_target_sdk_version = "36"
+  }
+
   if (!defined(default_lint_android_sdk_root)) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
@@ -357,9 +361,6 @@ if (is_android) {
   # We need a second declare_args block to make sure we are using the overridden
   # value of the arguments set above.
   declare_args() {
-    # Default value for targetSdkVersion for APK and bundle targets.
-    default_target_sdk_version = "36"
-
     # Whether java assertions and Preconditions checks are enabled.
     enable_java_asserts = dcheck_always_on || !is_official_build
 
