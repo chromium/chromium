@@ -20,7 +20,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {createTestBookmarks, getBookmarkWithId, initializeUi} from './power_bookmarks_list_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
-suite('TransportMode', () => {
+suite('MigrateUiChangesUseBrowserEditDialog', () => {
   let powerBookmarksList: PowerBookmarksListElement;
   let bookmarksApi: TestBookmarksApiProxy;
   const priceTrackingProxy = TestMock.fromClass(PriceTrackingBrowserProxyImpl);
@@ -65,13 +65,13 @@ suite('TransportMode', () => {
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
       bookmarksTreeViewEnabled: false,
-      isBookmarksInTransportModeEnabled: true,
+      isBookmarksMigrationUiChanges: true,
     });
 
     powerBookmarksList = await initializeUi(bookmarksApi);
   });
 
-  test('EditBookmarkWithBookmarksInTransportModeEnabled', async () => {
+  test('EditBookmarkWithBookmarks', async () => {
     const bookmarkId = '3';
     const contextMenu = powerBookmarksList.$.contextMenu;
     const editClicked = eventToPromise('edit-clicked', contextMenu);
@@ -105,7 +105,7 @@ suite('TransportMode', () => {
   });
 
 
-  test('MoveBookmarksWithBookmarksInTransportModeEnabled', async () => {
+  test('MoveBookmarksWithBookmarks', async () => {
     const bookmarkId = '3';
     const bookmarks = [
       getBookmarkWithId(powerBookmarksList, bookmarkId)!,

@@ -587,6 +587,14 @@ BASE_DECLARE_FEATURE(kSupportWebSigninAddSession);
 // TODO(crbug.com/40943550): Remove this.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
+// This feature flag is used as a subset of the original code that was behind
+// `kSyncEnableBookmarksInTransportMode` that introduced changes that are not
+// directly related to Transport Mode. Mostly the changes are Ui-visible and
+// will be migrated to be using this flag instead. This will allow to run
+// a Finch study on Cros and launch independently of TransportMode on Cros. The
+// flag is enabled by default on Windows/Mac/Linux.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kBookmarksMigrateUiChanges);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
