@@ -273,6 +273,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/system",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/site_isolation",
     "//chrome/browser/tracing",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/login",

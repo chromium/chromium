@@ -13,14 +13,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
-#include "extensions/buildflags/buildflags.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#endif
 
 using content::BrowserThread;
 using content::RenderFrameHost;

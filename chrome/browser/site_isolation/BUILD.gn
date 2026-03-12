@@ -1,0 +1,111 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
+
+source_set("site_isolation") {
+  public = [
+    "about_flags.h",
+    "prefs_observer.h",
+    "site_details.h",
+  ]
+
+  sources = [
+    "prefs_observer.cc",
+    "site_details.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/site_isolation",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_site_isolation_policy_unittest.cc" ]
+  deps = [
+    ":site_isolation",
+    "//base/test:test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/site_isolation",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//google_apis",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "chrome_site_per_process_browsertest.cc",
+      "chrome_site_per_process_test.cc",
+      "chrome_site_per_process_test.h",
+      "isolated_sandboxed_iframe_browsertest.cc",
+      "origin_agent_cluster_browsertest.cc",
+      "site_details_browsertest.cc",
+    ]
+    public_deps = [ "//chrome/test:test_support_ui" ]
+    deps = [
+      ":site_isolation",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//components/javascript_dialogs",
+      "//components/page_load_metrics/browser:test_support",
+      "//content/test:test_support",
+      "//net:test_support",
+    ]
+
+    if (enable_pdf) {
+      deps += [ "//pdf:features" ]
+    }
+  }
+
+  if (!is_chromeos_device) {
+    source_set("interactive_ui_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+      sources = [
+        "site_per_process_interactive_uitest.cc",
+        "site_per_process_text_input_interactive_uitest.cc",
+      ]
+      deps = [
+        ":site_isolation",
+        "//chrome/browser/ui/location_bar",
+        "//chrome/test:test_support",
+        "//chrome/test:test_support_ui",
+        "//content/test:browsertest_support",
+        "//content/test:test_support",
+        "//net:test_support",
+        "//ui/base:test_support",
+      ]
+
+      if (is_linux) {
+        deps += [
+          "//ui/base/ime/linux",
+          "//ui/linux:test_support",
+        ]
+      }
+
+      if (enable_pdf) {
+        deps += [ "//pdf:features" ]
+      }
+    }
+  }
+}
