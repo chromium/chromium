@@ -64,6 +64,15 @@ PageActionState ExpectedShowingChipState() {
   return expected_state;
 }
 
+PageActionState ExpectedShowingAnchoredMessageState() {
+  PageActionState expected_state;
+  expected_state.action_id = kTestPageActionId;
+  expected_state.showing = true;
+  expected_state.anchored_message_showing = true;
+  expected_state.tooltip = std::make_optional(kTestTooltip);
+  return expected_state;
+}
+
 class MockPageActionObserver : public PageActionObserver {
  public:
   MockPageActionObserver() : PageActionObserver(kTestPageActionId) {}
@@ -83,6 +92,14 @@ class MockPageActionObserver : public PageActionObserver {
               (override));
   MOCK_METHOD(void,
               OnPageActionChipHidden,
+              (const PageActionState&),
+              (override));
+  MOCK_METHOD(void,
+              OnPageActionAnchoredMessageShown,
+              (const PageActionState&),
+              (override));
+  MOCK_METHOD(void,
+              OnPageActionAnchoredMessageHidden,
               (const PageActionState&),
               (override));
 };
@@ -227,6 +244,61 @@ TEST_F(PageActionObserverTest,
   ON_CALL(model, GetVisible()).WillByDefault(Return(false));
   // Further change notifications shouldn't trigger the event anymore.
   EXPECT_CALL(observer(), OnPageActionChipHidden(_)).Times(1);
+  model.NotifyChanged();
+}
+
+TEST_F(PageActionObserverTest, OnPageActionAnchoredMessageShown) {
+  NotifierPageActionModel& model = factory().Get(kTestPageActionId);
+  ON_CALL(model, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(model, ShouldShowAnchoredMessage()).WillByDefault(Return(false));
+  observer().RegisterAsPageActionObserver(controller());
+
+  ON_CALL(model, ShouldShowAnchoredMessage()).WillByDefault(Return(true));
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageShown(
+                              ExpectedShowingAnchoredMessageState()))
+      .Times(1);
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageHidden(_)).Times(0);
+  model.NotifyChanged();
+
+  // Further change notifications shouldn't trigger the event anymore.
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageShown(_)).Times(0);
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageHidden(_)).Times(0);
+  model.NotifyChanged();
+}
+
+TEST_F(PageActionObserverTest, OnPageActionAnchoredMessageHidden) {
+  NotifierPageActionModel& model = factory().Get(kTestPageActionId);
+  ON_CALL(model, GetVisible()).WillByDefault(Return(true));
+  ON_CALL(model, ShouldShowAnchoredMessage()).WillByDefault(Return(true));
+  observer().RegisterAsPageActionObserver(controller());
+
+  ON_CALL(model, ShouldShowAnchoredMessage()).WillByDefault(Return(false));
+  EXPECT_CALL(observer(),
+              OnPageActionAnchoredMessageHidden(ExpectedShowingState()))
+      .Times(1);
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageShown(_)).Times(0);
+  model.NotifyChanged();
+
+  // Further change notifications shouldn't trigger the event anymore.
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageShown(_)).Times(0);
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageHidden(_)).Times(0);
+  model.NotifyChanged();
+}
+
+TEST_F(PageActionObserverTest,
+       OnPageActionAnchoredMessageVisibilityConsidersIconVisibility) {
+  NotifierPageActionModel& model = factory().Get(kTestPageActionId);
+  ON_CALL(model, GetVisible()).WillByDefault(Return(false));
+  ON_CALL(model, ShouldShowAnchoredMessage()).WillByDefault(Return(true));
+  observer().RegisterAsPageActionObserver(controller());
+
+  ON_CALL(model, GetVisible()).WillByDefault(Return(true));
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageShown(_)).Times(1);
+  model.NotifyChanged();
+
+  ON_CALL(model, GetVisible()).WillByDefault(Return(false));
+  // Further change notifications shouldn't trigger the event anymore.
+  EXPECT_CALL(observer(), OnPageActionAnchoredMessageHidden(_)).Times(1);
   model.NotifyChanged();
 }
 

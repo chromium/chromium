@@ -21,6 +21,8 @@ page_actions::PageActionState ModelToState(
   state.action_id = action_id;
   state.showing = model.GetVisible();
   state.chip_showing = model.IsChipShowing() && model.GetVisible();
+  state.anchored_message_showing =
+      model.ShouldShowAnchoredMessage() && model.GetVisible();
   state.tooltip = model.GetVisible()
                       ? std::make_optional(model.GetTooltipText())
                       : std::nullopt;
@@ -40,8 +42,9 @@ PageActionState& PageActionState::operator=(const PageActionState&) = default;
 
 bool PageActionState::operator==(const PageActionState& other) const {
   return action_id == other.action_id && showing == other.showing &&
-         chip_showing == other.chip_showing && label == other.label &&
-         tooltip == other.tooltip;
+         chip_showing == other.chip_showing &&
+         anchored_message_showing == other.anchored_message_showing &&
+         label == other.label && tooltip == other.tooltip;
 }
 
 // The internal implementation of `PageActionObserver`, that observes a
@@ -97,6 +100,14 @@ void PageActionObserverImpl::OnPageActionModelChanged(
     base_->OnPageActionChipShown(new_page_action_state);
   } else if (!new_page_action_state.chip_showing && page_action_.chip_showing) {
     base_->OnPageActionChipHidden(new_page_action_state);
+  }
+
+  if (new_page_action_state.anchored_message_showing &&
+      !page_action_.anchored_message_showing) {
+    base_->OnPageActionAnchoredMessageShown(new_page_action_state);
+  } else if (!new_page_action_state.anchored_message_showing &&
+             page_action_.anchored_message_showing) {
+    base_->OnPageActionAnchoredMessageHidden(new_page_action_state);
   }
 
   page_action_ = new_page_action_state;

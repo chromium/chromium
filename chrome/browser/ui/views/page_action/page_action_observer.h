@@ -33,6 +33,7 @@ struct PageActionState {
   actions::ActionId action_id;
   bool showing = false;
   bool chip_showing = false;
+  bool anchored_message_showing = false;
 
   // Not set if the page action is not showing.
   std::optional<std::u16string> tooltip = std::nullopt;
@@ -61,6 +62,13 @@ class PageActionObserver {
   // This is invoked in addition to the "icon shown" notification.
   virtual void OnPageActionChipShown(const PageActionState& page_action) {}
   virtual void OnPageActionChipHidden(const PageActionState& page_action) {}
+
+  // Invoked when the specified page action anchored message becomes
+  // visible/hidden.
+  virtual void OnPageActionAnchoredMessageShown(
+      const page_actions::PageActionState& page_action) {}
+  virtual void OnPageActionAnchoredMessageHidden(
+      const page_actions::PageActionState& page_action) {}
 
   const PageActionState& GetCurrentPageActionState() const;
 
