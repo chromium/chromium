@@ -12,8 +12,11 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -207,15 +210,44 @@ void TabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
 
 void TabletEventConverterEvdev::UpdateCursor() {
   gfx::Rect confined_bounds = cursor_->GetCursorConfinedBounds();
-  float x = ((x_abs_location_ - x_abs_min_) * confined_bounds.width()) /
-            static_cast<float>(x_abs_range_);
-  float y = ((y_abs_location_ - y_abs_min_) * confined_bounds.height()) /
-            static_cast<float>(y_abs_range_);
 
-  x += confined_bounds.x();
-  y += confined_bounds.y();
+  gfx::PointF point(
+      (x_abs_location_ - x_abs_min_) / static_cast<float>(x_abs_range_),
+      (y_abs_location_ - y_abs_min_) / static_cast<float>(y_abs_range_));
 
-  cursor_->MoveCursorTo(gfx::PointF(x, y));
+  gfx::Transform transform;
+  transform.Translate(confined_bounds.x(), confined_bounds.y());
+  transform.Scale(confined_bounds.width(), confined_bounds.height());
+
+  // For rotated panel, we would need to apply the same rotation to the tablet
+  // input device. i.e. When a panel is installed at 90 degree, the touch input
+  // also need to be rotated 90 degree.
+  const display::Screen* screen = display::Screen::Get();
+  if (screen) {
+    display::Display primary_display = screen->GetPrimaryDisplay();
+    const display::Display::Rotation panel_rotation =
+        primary_display.panel_rotation();
+    const display::Display::Rotation rotation = primary_display.rotation();
+
+    switch ((panel_rotation - rotation + 4) % 4) {
+      case display::Display::ROTATE_90:
+        transform.Translate(1, 0);
+        transform.PreConcat(gfx::Transform::Make90degRotation());
+        break;
+      case display::Display::ROTATE_180:
+        transform.Translate(1, 1);
+        transform.PreConcat(gfx::Transform::Make180degRotation());
+        break;
+      case display::Display::ROTATE_270:
+        transform.Translate(0, 1);
+        transform.PreConcat(gfx::Transform::Make270degRotation());
+        break;
+      default:
+        break;
+    }
+  }
+
+  cursor_->MoveCursorTo(transform.MapPoint(point));
 }
 
 void TabletEventConverterEvdev::DispatchMouseButton(const input_event& input) {
