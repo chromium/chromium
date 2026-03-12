@@ -60,6 +60,12 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // See https://w3c.github.io/clipboard-apis/#clipboard-events-and-interfaces.
   static const ClipboardFormatType& DataTransferCustomType();
 
+#if !BUILDFLAG(IS_IOS)
+  // Type used for bookmark entries formats, containing bookmark structure
+  // consisting of individual bookmark nodes and/or bookmark folders.
+  static const ClipboardFormatType& BookmarkEntriesType();
+#endif
+
 #if BUILDFLAG(IS_WIN)
   // ANSI formats. Only Windows differentiates between ANSI and UNICODE formats
   // in ClipboardFormatType. Reference:

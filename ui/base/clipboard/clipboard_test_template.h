@@ -1295,6 +1295,39 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadPng) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_APPLE)
+// Ensures that BookmarkEntriesType can be written to and read from the
+// clipboard.
+// TODO(crbug.com/489283076): After BookmarkEntry is merged, modify the data
+// written to the clipboard in this unit test from pickle to BookmarkEntry.
+TYPED_TEST(ClipboardTest, BookmarkEntriesTest) {
+  std::string payload("test string");
+  base::Pickle pickle;
+  pickle.WriteString(payload);
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WritePickledData(
+        pickle, ClipboardFormatType::BookmarkEntriesType());
+  }
+
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      ClipboardFormatType::BookmarkEntriesType(), ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
+
+  std::string output = clipboard_test_util::ReadData(
+      &this->clipboard(), ClipboardFormatType::BookmarkEntriesType(),
+      /* data_dst = */ nullptr);
+  ASSERT_FALSE(output.empty());
+
+  base::Pickle read_pickle = base::Pickle::WithData(base::as_byte_span(output));
+  base::PickleIterator iter(read_pickle);
+  std::string unpickled_string;
+  ASSERT_TRUE(iter.ReadString(&unpickled_string));
+  EXPECT_EQ(payload, unpickled_string);
+}
+#endif
+
 }  // namespace ui
 
 #endif  // UI_BASE_CLIPBOARD_CLIPBOARD_TEST_TEMPLATE_H_

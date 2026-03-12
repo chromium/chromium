@@ -32,10 +32,6 @@ bool ReadBookmarksFromPasteboard(
 // elements. It currently does not consider a plaintext url a valid bookmark.
 bool PasteboardContainsBookmarks(NSPasteboard* pb);
 
-// UTI for dictionary containing bookmark structure consisting of individual
-// bookmark nodes and/or bookmark folders.
-extern NSString* const kUTTypeChromiumBookmarkDictionaryList;
-
 }  // namespace bookmarks
 
 #endif  // COMPONENTS_BOOKMARKS_BROWSER_BOOKMARK_PASTEBOARD_HELPER_MAC_H_

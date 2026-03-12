@@ -317,4 +317,12 @@ const ClipboardFormatType& ClipboardFormatType::UploadCloudClipboardType() {
   return *format;
 }
 
+// static
+const ClipboardFormatType& ClipboardFormatType::BookmarkEntriesType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      RegisterClipboardFormatChecked(
+          base::ASCIIToWide(kMimeTypeBookmarkEntries).c_str()));
+  return *format;
+}
+
 }  // namespace ui

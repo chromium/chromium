@@ -15,15 +15,6 @@
 
 namespace bookmarks {
 
-// static
-const ui::ClipboardFormatType& BookmarkNodeData::GetBookmarkFormatType() {
-  static const base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::CustomPlatformType(
-          BookmarkNodeData::kClipboardFormatString));
-
-  return *format;
-}
-
 void BookmarkNodeData::Write(const base::FilePath& profile_path,
                              ui::OSExchangeData* data) const {
   DCHECK(data);
@@ -41,7 +32,8 @@ void BookmarkNodeData::Write(const base::FilePath& profile_path,
   base::Pickle data_pickle;
   WriteToPickle(profile_path, &data_pickle);
 
-  data->SetPickledData(GetBookmarkFormatType(), data_pickle);
+  data->SetPickledData(ui::ClipboardFormatType::BookmarkEntriesType(),
+                       data_pickle);
 }
 
 bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
@@ -49,9 +41,9 @@ bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
 
   profile_path_.clear();
 
-  if (data.HasCustomFormat(GetBookmarkFormatType())) {
+  if (data.HasCustomFormat(ui::ClipboardFormatType::BookmarkEntriesType())) {
     if (std::optional<base::Pickle> drag_data_pickle =
-            data.GetPickledData(GetBookmarkFormatType());
+            data.GetPickledData(ui::ClipboardFormatType::BookmarkEntriesType());
         drag_data_pickle.has_value()) {
       if (!ReadFromPickle(base::PickleIterator(*drag_data_pickle))) {
         return false;

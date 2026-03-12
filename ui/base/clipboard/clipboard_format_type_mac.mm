@@ -161,4 +161,11 @@ const ClipboardFormatType& ClipboardFormatType::DataTransferCustomType() {
   return *type;
 }
 
+// static
+const ClipboardFormatType& ClipboardFormatType::BookmarkEntriesType() {
+  static base::NoDestructor<ClipboardFormatType> type(
+      kUTTypeChromiumBookmarkDictionaryList);
+  return *type;
+}
+
 }  // namespace ui

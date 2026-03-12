@@ -129,4 +129,10 @@ const ClipboardFormatType& ClipboardFormatType::DataTransferCustomType() {
   return *type;
 }
 
+// static
+const ClipboardFormatType& ClipboardFormatType::BookmarkEntriesType() {
+  static base::NoDestructor<ClipboardFormatType> type(kMimeTypeBookmarkEntries);
+  return *type;
+}
+
 }  // namespace ui

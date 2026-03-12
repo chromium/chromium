@@ -106,12 +106,6 @@ struct BookmarkNodeData {
     int64_t id_;
   };
 
-#if !BUILDFLAG(IS_APPLE)
-  // The MIME type for the clipboard format for BookmarkNodeData. This type is
-  // not used on the Mac.
-  static const char kClipboardFormatString[];
-#endif
-
   BookmarkNodeData();
   BookmarkNodeData(const BookmarkNodeData& other);
 
@@ -122,10 +116,6 @@ struct BookmarkNodeData {
           nodes);
 
   ~BookmarkNodeData();
-
-#if defined(TOOLKIT_VIEWS)
-  static const ui::ClipboardFormatType& GetBookmarkFormatType();
-#endif
 
   static bool ClipboardContainsBookmarks();
 

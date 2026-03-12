@@ -21,9 +21,6 @@
 
 namespace bookmarks {
 
-NSString* const kUTTypeChromiumBookmarkDictionaryList =
-    @"org.chromium.bookmark-dictionary-list";
-
 namespace {
 
 // UTI used to store profile path to determine which profile a set of bookmarks
@@ -129,7 +126,8 @@ void ConvertNSArrayToElements(
 
 bool ReadChromiumBookmarks(NSPasteboard* pb,
                            std::vector<BookmarkNodeData::Element>* elements) {
-  id bookmarks = [pb propertyListForType:kUTTypeChromiumBookmarkDictionaryList];
+  id bookmarks =
+      [pb propertyListForType:ui::kUTTypeChromiumBookmarkDictionaryList];
   if (!bookmarks)
     return false;
 
@@ -254,7 +252,7 @@ NSArray<NSPasteboardItem*>* PasteboardItemsFromBookmarks(
   }
 
   [items.firstObject setPropertyList:GetNSArrayForBookmarkList(elements)
-                             forType:kUTTypeChromiumBookmarkDictionaryList];
+                             forType:ui::kUTTypeChromiumBookmarkDictionaryList];
 
   [items.firstObject setString:base::SysUTF8ToNSString(profile_path.value())
                        forType:kUTTypeChromiumProfilePath];
@@ -303,7 +301,7 @@ bool ReadBookmarksFromPasteboard(
 bool PasteboardContainsBookmarks(NSPasteboard* pb) {
   NSArray* availableTypes = @[
     ui::kUTTypeWebKitWebUrlsWithTitles,
-    kUTTypeChromiumBookmarkDictionaryList,
+    ui::kUTTypeChromiumBookmarkDictionaryList,
     NSPasteboardTypeURL,
   ];
   return [pb availableTypeFromArray:availableTypes] != nil;

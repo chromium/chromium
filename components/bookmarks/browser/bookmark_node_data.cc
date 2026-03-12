@@ -78,9 +78,6 @@ void OnReadDataFromClipboardComplete(
 namespace {
 constexpr size_t kMaxVectorPreallocateSize = 10000;
 }  // namespace
-
-const char BookmarkNodeData::kClipboardFormatString[] =
-    "chromium/x-bookmark-entries";
 #endif
 
 BookmarkNodeData::Element::Element() : is_url(false), id_(0) {}
@@ -281,7 +278,7 @@ bool BookmarkNodeData::ClipboardContainsBookmarks() {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
   return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-      ui::ClipboardFormatType::CustomPlatformType(kClipboardFormatString),
+      ui::ClipboardFormatType::BookmarkEntriesType(),
       ui::ClipboardBuffer::kCopyPaste, &data_dst);
 }
 #endif
@@ -365,8 +362,7 @@ void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
 
   base::Pickle pickle;
   WriteToPickle(base::FilePath(), &pickle);
-  scw.WritePickledData(pickle, ui::ClipboardFormatType::CustomPlatformType(
-                                   kClipboardFormatString));
+  scw.WritePickledData(pickle, ui::ClipboardFormatType::BookmarkEntriesType());
 }
 
 // static
@@ -376,7 +372,7 @@ void BookmarkNodeData::ReadFromClipboard(
   DCHECK_EQ(buffer, ui::ClipboardBuffer::kCopyPaste);
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
   clipboard->ReadData(
-      ui::ClipboardFormatType::CustomPlatformType(kClipboardFormatString),
+      ui::ClipboardFormatType::BookmarkEntriesType(),
       /*data_dst=*/std::nullopt,
       base::BindOnce(&OnReadDataFromClipboardComplete, std::move(callback)));
 }

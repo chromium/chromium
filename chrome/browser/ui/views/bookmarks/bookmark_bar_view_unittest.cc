@@ -46,6 +46,7 @@
 #include "components/search_engines/template_url_service_client.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -574,6 +575,15 @@ TEST_F(BookmarkBarViewTest, DISABLED_ChangeTitle) {
                                  bookmark_bar_view()->bounds().height());
   views::test::RunScheduledLayout(bookmark_bar_view());
   EXPECT_EQ("a1 b1 c d1 e f1", GetStringForVisibleButtons());
+}
+
+TEST_F(BookmarkBarViewTest, GetDropFormats) {
+  int formats = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+  EXPECT_TRUE(bookmark_bar_view()->GetDropFormats(&formats, &format_types));
+  EXPECT_EQ(ui::OSExchangeData::URL, formats);
+  EXPECT_NE(format_types.find(ui::ClipboardFormatType::BookmarkEntriesType()),
+            format_types.end());
 }
 
 TEST_F(BookmarkBarViewTest, DropCallbackTest) {

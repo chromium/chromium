@@ -46,4 +46,6 @@ NSString* const kUTTypeWebKitWebUrlsWithTitles =
 
 NSString* const kUTTypeChromiumSourceUrl = @"org.chromium.source-url";
 
+NSString* const kUTTypeChromiumBookmarkDictionaryList =
+    @"org.chromium.bookmark-dictionary-list";
 }  // namespace ui

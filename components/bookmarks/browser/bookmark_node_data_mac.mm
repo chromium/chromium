@@ -13,19 +13,6 @@
 
 namespace bookmarks {
 
-#if defined(TOOLKIT_VIEWS)
-
-// static
-const ui::ClipboardFormatType& BookmarkNodeData::GetBookmarkFormatType() {
-  static const base::NoDestructor<ui::ClipboardFormatType> format(
-      ui::ClipboardFormatType::CustomPlatformType(
-          base::SysNSStringToUTF8(kUTTypeChromiumBookmarkDictionaryList)));
-
-  return *format;
-}
-
-#endif  // TOOLKIT_VIEWS
-
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
   NSPasteboard* pb =

@@ -1014,7 +1014,7 @@ bool BookmarkBarView::GetDropFormats(
     return false;
   }
   *formats = ui::OSExchangeData::URL;
-  format_types->insert(bookmarks::BookmarkNodeData::GetBookmarkFormatType());
+  format_types->insert(ui::ClipboardFormatType::BookmarkEntriesType());
   return true;
 }
 
