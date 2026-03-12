@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -114,21 +113,9 @@ const String& NavigatorUAData::platform() const {
 }
 
 bool AllowedToCollectHighEntropyValues(ExecutionContext* execution_context) {
-  // To determine whether a document is allowed to use the get high-entropy
+  // To determine whether a document is allowed to get high-entropy
   // client hints returned by navigator.userAgentData.getHighEntropyValues(),
-  // check the following:
-
-  // 1. Check if our RuntimeEnabledFeature is enabled
-  // Note: We return true if not enabled because the default allowlist is "*",
-  // this permissions-policy allows a document to restrict it.
-  // TODO(crbug.com/388538952): remove this after it ships to stable
-  if (!RuntimeEnabledFeatures::
-          ClientHintUAHighEntropyValuesPermissionPolicyEnabled()) {
-    return true;
-  }
-
-  // 2. If Permissions Policy is enabled, return the policy for
-  // "ch-ua-high-entropy-values" feature.
+  // we need to check the "ch-ua-high-entropy-values" policy:
   return execution_context->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kClientHintUAHighEntropyValues,
       ReportOptions::kReportOnFailure,

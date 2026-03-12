@@ -1089,13 +1089,6 @@
       status: "stable",
     },
     {
-      // Allows top-level sites to restrict collection of high-entropy UA client
-      // hints (from 3Ps, or itself) via the getHighEntropyValues API.
-      // crbug.com/385161047
-      name: "ClientHintUAHighEntropyValuesPermissionPolicy",
-      status: "stable",
-    },
-    {
       // Enables clipboardchange event API for listening for changes to the
       // system clipboard
       // https://chromestatus.com/feature/5085102657503232

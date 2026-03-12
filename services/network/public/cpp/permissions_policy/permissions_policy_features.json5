@@ -226,7 +226,6 @@
       name: "ClientHintUAHighEntropyValues",
       permissions_policy_name: "ch-ua-high-entropy-values",
       feature_default: "EnableForAll",
-      depends_on: ["ClientHintUAHighEntropyValuesPermissionPolicy"],
     },
     {
       name: "ClientHintUAPlatform",
