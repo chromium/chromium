@@ -198,12 +198,12 @@ bool WebSocketHttp2HandshakeStream::CanReuseConnection() const {
   return false;
 }
 
-int64_t WebSocketHttp2HandshakeStream::GetTotalReceivedBytes() const {
-  return stream_ ? stream_->raw_received_bytes().InBytes() : 0;
+base::ByteSize WebSocketHttp2HandshakeStream::GetTotalReceivedBytes() const {
+  return stream_ ? stream_->raw_received_bytes() : base::ByteSize(0);
 }
 
-int64_t WebSocketHttp2HandshakeStream::GetTotalSentBytes() const {
-  return stream_ ? stream_->raw_sent_bytes().InBytes() : 0;
+base::ByteSize WebSocketHttp2HandshakeStream::GetTotalSentBytes() const {
+  return stream_ ? stream_->raw_sent_bytes() : base::ByteSize(0);
 }
 
 bool WebSocketHttp2HandshakeStream::GetAlternativeService(

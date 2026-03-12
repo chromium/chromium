@@ -601,8 +601,8 @@ void HttpNetworkTransaction::DidDrainBodyForAuthRestart(bool keep_alive) {
       next_state_ = STATE_CREATE_STREAM;
     } else {
       // Renewed streams shouldn't carry over sent or received bytes.
-      DCHECK_EQ(0, new_stream->GetTotalReceivedBytes());
-      DCHECK_EQ(0, new_stream->GetTotalSentBytes());
+      DCHECK_EQ(base::ByteSize(0), new_stream->GetTotalReceivedBytes());
+      DCHECK_EQ(base::ByteSize(0), new_stream->GetTotalSentBytes());
       next_state_ = STATE_CONNECTED_CALLBACK;
     }
     stream_ = std::move(new_stream);
@@ -655,17 +655,19 @@ int HttpNetworkTransaction::Read(IOBuffer* buf,
 void HttpNetworkTransaction::StopCaching() {}
 
 int64_t HttpNetworkTransaction::GetTotalReceivedBytes() const {
-  int64_t total_received_bytes = total_received_bytes_;
-  if (stream_)
+  base::ByteSize total_received_bytes = total_received_bytes_;
+  if (stream_) {
     total_received_bytes += stream_->GetTotalReceivedBytes();
-  return total_received_bytes;
+  }
+  return total_received_bytes.InBytes();
 }
 
 int64_t HttpNetworkTransaction::GetTotalSentBytes() const {
-  int64_t total_sent_bytes = total_sent_bytes_;
-  if (stream_)
+  base::ByteSize total_sent_bytes = total_sent_bytes_;
+  if (stream_) {
     total_sent_bytes += stream_->GetTotalSentBytes();
-  return total_sent_bytes;
+  }
+  return total_sent_bytes.InBytes();
 }
 
 int64_t HttpNetworkTransaction::GetReceivedBodyBytes() const {

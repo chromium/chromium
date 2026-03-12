@@ -14,6 +14,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -82,8 +83,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   bool IsConnectionReused() const override;
   void SetConnectionReused() override;
   bool CanReuseConnection() const override;
-  int64_t GetTotalReceivedBytes() const override;
-  int64_t GetTotalSentBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
   bool GetAlternativeService(
       AlternativeService* alternative_service) const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;

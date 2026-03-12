@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -441,11 +442,11 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   // Total number of bytes received on all destroyed HttpStreams for this
   // transaction.
-  int64_t total_received_bytes_ = 0;
+  base::ByteSize total_received_bytes_;
 
   // Total number of bytes sent on all destroyed HttpStreams for this
   // transaction.
-  int64_t total_sent_bytes_ = 0;
+  base::ByteSize total_sent_bytes_;
 
   // When the transaction started / finished creating a stream.
   base::TimeTicks create_stream_start_time_;

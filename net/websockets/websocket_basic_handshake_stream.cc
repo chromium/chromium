@@ -338,12 +338,12 @@ bool WebSocketBasicHandshakeStream::CanReuseConnection() const {
   return state_.CanReuseConnection();
 }
 
-int64_t WebSocketBasicHandshakeStream::GetTotalReceivedBytes() const {
-  return 0;
+base::ByteSize WebSocketBasicHandshakeStream::GetTotalReceivedBytes() const {
+  return base::ByteSize(0);
 }
 
-int64_t WebSocketBasicHandshakeStream::GetTotalSentBytes() const {
-  return 0;
+base::ByteSize WebSocketBasicHandshakeStream::GetTotalSentBytes() const {
+  return base::ByteSize(0);
 }
 
 bool WebSocketBasicHandshakeStream::GetAlternativeService(

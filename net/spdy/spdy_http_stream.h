@@ -11,6 +11,7 @@
 #include <set>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
@@ -78,12 +79,12 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // Total number of bytes received over the network of SPDY data, headers, and
   // push_promise frames associated with this stream, including the size of
   // frame headers, after SSL decryption and not including proxy overhead.
-  int64_t GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
   // Total number of bytes sent over the network of SPDY frames associated with
   // this stream, including the size of frame headers, before SSL encryption and
   // not including proxy overhead. Note that some SPDY frames such as pings are
   // not associated with any stream, and are not included in this value.
-  int64_t GetTotalSentBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
   bool GetAlternativeService(
       AlternativeService* alternative_service) const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
@@ -175,10 +176,10 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   LoadTimingInfo closed_stream_load_timing_info_;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes received over the network for |stream_| while it was open.
-  int64_t closed_stream_received_bytes_ = 0;
+  base::ByteSize closed_stream_received_bytes_;
   // After |stream_| has been closed, this keeps track of the total number of
   // bytes sent over the network for |stream_| while it was open.
-  int64_t closed_stream_sent_bytes_ = 0;
+  base::ByteSize closed_stream_sent_bytes_;
 
   // The request to send.
   // Set to null before response body is starting to be read. This is to allow

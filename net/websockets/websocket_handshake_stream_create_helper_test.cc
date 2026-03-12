@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -572,8 +573,8 @@ class WebSocketHandshakeStreamCreateHelperTest
 
         // After the handshake, byte counts should reflect the HEADERS
         // frames exchanged over the QUIC stream.
-        EXPECT_GT(handshake->GetTotalReceivedBytes(), 0);
-        EXPECT_GT(handshake->GetTotalSentBytes(), 0);
+        EXPECT_GT(handshake->GetTotalReceivedBytes().InBytes(), 0);
+        EXPECT_GT(handshake->GetTotalSentBytes().InBytes(), 0);
 
         return handshake->Upgrade();
       }

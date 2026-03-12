@@ -18,6 +18,7 @@
 #include <set>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_migration_information.h"
 #include "net/base/idempotency.h"
@@ -141,10 +142,10 @@ class NET_EXPORT_PRIVATE HttpStream {
   virtual bool CanReuseConnection() const = 0;
 
   // Get the total number of bytes received from network for this stream.
-  virtual int64_t GetTotalReceivedBytes() const = 0;
+  virtual base::ByteSize GetTotalReceivedBytes() const = 0;
 
   // Get the total number of bytes sent over the network for this stream.
-  virtual int64_t GetTotalSentBytes() const = 0;
+  virtual base::ByteSize GetTotalSentBytes() const = 0;
 
   // Populates the connection establishment part of |load_timing_info|, and
   // socket ID.  |load_timing_info| must have all null times when called.

@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -66,8 +67,8 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void Close(bool not_reusable) override;
   bool IsResponseBodyComplete() const override;
   bool IsConnectionReused() const override;
-  int64_t GetTotalReceivedBytes() const override;
-  int64_t GetTotalSentBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
   bool GetAlternativeService(
       AlternativeService* alternative_service) const override;
@@ -194,9 +195,9 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   int64_t headers_bytes_sent_ = 0;
 
   // Number of bytes received when the stream was closed.
-  int64_t closed_stream_received_bytes_ = 0;
+  base::ByteSize closed_stream_received_bytes_;
   // Number of bytes sent when the stream was closed.
-  int64_t closed_stream_sent_bytes_ = 0;
+  base::ByteSize closed_stream_sent_bytes_;
   // True if the stream is the first stream negotiated on the session. Set when
   // the stream was closed. If |stream_| is failed to be created, this takes on
   // the default value of false.

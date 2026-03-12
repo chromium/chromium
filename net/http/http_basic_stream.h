@@ -16,6 +16,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -74,9 +75,9 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   bool CanReuseConnection() const override;
 
-  int64_t GetTotalReceivedBytes() const override;
+  base::ByteSize GetTotalReceivedBytes() const override;
 
-  int64_t GetTotalSentBytes() const override;
+  base::ByteSize GetTotalSentBytes() const override;
 
   bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const override;
 

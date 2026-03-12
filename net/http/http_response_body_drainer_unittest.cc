@@ -12,6 +12,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -110,8 +111,12 @@ class MockHttpStream : public HttpStream {
   bool IsConnectionReused() const override { return false; }
   void SetConnectionReused() override {}
   bool CanReuseConnection() const override { return can_reuse_connection_; }
-  int64_t GetTotalReceivedBytes() const override { return 0; }
-  int64_t GetTotalSentBytes() const override { return 0; }
+  base::ByteSize GetTotalReceivedBytes() const override {
+    return base::ByteSize(0);
+  }
+  base::ByteSize GetTotalSentBytes() const override {
+    return base::ByteSize(0);
+  }
   bool GetAlternativeService(
       AlternativeService* alternative_service) const override {
     return false;
