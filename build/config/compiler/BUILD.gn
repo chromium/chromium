@@ -1055,12 +1055,15 @@ config("linker") {
     }
 
     # Linker warnings.
-    if (fatal_linker_warnings && !is_apple && current_os != "aix" &&
-        current_os != "zos") {
-      ldflags += [ "-Wl,--fatal-warnings" ]
-    }
-    if (fatal_linker_warnings && is_apple) {
-      ldflags += [ "-Wl,-fatal_warnings" ]
+    if (fatal_linker_warnings) {
+      if (is_apple && use_lld) {
+        # The Apple linker issues duplicate `-rpath` warnings which become fatal
+        # errors. We only apply fatal warnings when using lld.
+        ldflags += [ "-Wl,-fatal_warnings" ]
+      }
+      if (!is_apple && current_os != "aix" && current_os != "zos") {
+        ldflags += [ "-Wl,--fatal-warnings" ]
+      }
     }
   }
 
@@ -1095,6 +1098,15 @@ config("linker") {
 
   if (use_icf && (!is_apple || use_lld)) {
     ldflags += [ "-Wl,--icf=all" ]
+  }
+
+  # Note: `use_lld=false` on Apple platforms is experimental and may not
+  # run properly on bots due to toolchain limitations. It is mainly
+  # intended to unblock local builds for debugging.
+  if (is_apple && !use_lld) {
+    if (!use_icf) {
+      ldflags += [ "-Wl,-no_deduplicate" ]
+    }
   }
 
   if (is_chromeos_device && current_toolchain == default_toolchain) {

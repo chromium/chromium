@@ -525,7 +525,10 @@ template("single_apple_toolchain") {
 
         # Specify explicit path for libtool.
         libtool = invoker.bin_path + "libtool"
-        command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} @$rspfile"
+
+        # Apple's libtool fails if the response file is empty (e.g., for empty targets).
+        # We work around this by writing a dummy archive with the ar magic number.
+        command = "rm -f {{output}} && if [ -s \"$rspfile\" ]; then TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} @$rspfile; else printf '!<arch>\n' > {{output}}; fi"
         description = "LIBTOOL-STATIC {{output}}"
       } else {
         ar = "${prefix}llvm-ar"
