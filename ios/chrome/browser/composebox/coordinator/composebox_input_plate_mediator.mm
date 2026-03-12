@@ -325,11 +325,13 @@ CreateInputDataFromAnnotatedPageContent(
   if (self) {
     _prefService = prefService;
     _contextualSearchSession = std::move(contextualSearchSession);
-    _contextualSearchSession->NotifySessionStarted();
-    CHECK(_contextualSearchSession->GetController());
-    _composeboxObserverBridge =
-        std::make_unique<ComposeboxFileUploadObserverBridge>(
-            self, _contextualSearchSession->GetController());
+    if (_contextualSearchSession) {
+      _contextualSearchSession->NotifySessionStarted();
+      CHECK(_contextualSearchSession->GetController());
+      _composeboxObserverBridge =
+          std::make_unique<ComposeboxFileUploadObserverBridge>(
+              self, _contextualSearchSession->GetController());
+    }
     _webStateList = webStateList;
     _faviconLoader = faviconLoader;
     _webStateDeferredExecutor = [[WebStateDeferredExecutor alloc] init];
@@ -435,7 +437,9 @@ CreateInputDataFromAnnotatedPageContent(
 
   int remainingAttachmentCapacity = [self remainingAttachmentCapacity];
   if (EnableComposeboxServerSideState()) {
-    CHECK(_inputStateModel);
+    if (!_inputStateModel) {
+      return 0;
+    }
     auto limits = _inputState.max_instances;
     auto type = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
     if (limits.count(type)) {
@@ -480,9 +484,21 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)sendText:(NSString*)text
     additionalParams:(std::map<std::string, std::string>)additionalParams {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  auto advancedToolsParams = _inputStateModel->GetAdditionalQueryParams();
-  additionalParams.insert(advancedToolsParams.begin(),
-                          advancedToolsParams.end());
+  // Contextual search session can be null when fusebox is disabled.
+  if (!_contextualSearchSession) {
+    if (_templateURLService) {
+      GURL URL = GetDefaultSearchURLForSearchTerms(_templateURLService,
+                                                   [text cr_UTF16String]);
+      [self didCreateSearchURL:URL];
+    }
+    return;
+  }
+
+  if (_inputStateModel) {
+    auto advancedToolsParams = _inputStateModel->GetAdditionalQueryParams();
+    additionalParams.insert(advancedToolsParams.begin(),
+                            advancedToolsParams.end());
+  }
 
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
@@ -657,6 +673,9 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (void)setSearchboxConfig:(const omnibox::SearchboxConfig*)searchboxConfig {
+  if (!_contextualSearchSession) {
+    return;
+  }
   // Only preselect when there was already a input state model created.
   // Otherwise it's safe to assume it is the first time a searchbox config is
   // loaded.
@@ -1094,7 +1113,7 @@ CreateInputDataFromAnnotatedPageContent(
       imageGenUploadMode ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
                          : omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
   if (_inputState.active_tool != toolMode) {
-    _inputStateModel->setActiveTool(toolMode);
+    [self setActiveTool:toolMode];
   }
 }
 
@@ -2270,6 +2289,9 @@ CreateInputDataFromAnnotatedPageContent(
 // Creates a new input state model based on the config from the AIM eligibility
 // service.
 - (void)createInputStateModel {
+  if (!_contextualSearchSession) {
+    return;
+  }
   const omnibox::SearchboxConfig* config =
       _aimEligibilityService->GetSearchboxConfig();
   contextual_search::ContextualSearchSessionHandle* sessionHandle =
@@ -2281,6 +2303,9 @@ CreateInputDataFromAnnotatedPageContent(
 - (void)preselectPreferencesIfAvailable:
             (const contextual_search::InputState&)preselectionState
                              completion:(ProceduralBlock)completion {
+  if (!_inputStateModel) {
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   _inputStateSubscription = _inputStateModel->subscribe(
       base::BindRepeating(^(const contextual_search::InputState& inputState) {
@@ -2305,7 +2330,7 @@ CreateInputDataFromAnnotatedPageContent(
         forReferenceState:(const contextual_search::InputState&)referenceState {
   bool canSelectModel =
       [self canSelectModelBasedOnInputState:preselectionState.active_model];
-  if (canSelectModel) {
+  if (canSelectModel && _inputStateModel) {
     _inputStateModel->setActiveModel(preselectionState.active_model);
   }
 
@@ -2323,6 +2348,9 @@ CreateInputDataFromAnnotatedPageContent(
 // Starts observing changes in the input state. Emits the initial state
 // immediately after starting.
 - (void)startInputStateObservation {
+  if (!_inputStateModel) {
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
   _inputStateSubscription = _inputStateModel->subscribe(
       base::BindRepeating(^(const contextual_search::InputState& inputState) {
