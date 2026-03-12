@@ -148,7 +148,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // new tab will be able to activate it. PrerenderHostRegistry associated with
   // the new WebContents manages the started host, and `this`
   // PrerenderHostRegistry manages PrerenderNewTabHandle that owns the
-  // WebContents (see `prerender_new_tab_handle_by_frame_tree_node_id_`).
+  // WebContents (see `prerender_new_tab_handle_by_id_`).
   PrerenderHostId CreateAndStartHostForNewTab(
       const PrerenderAttributes& attributes,
       const PreloadingPredictor& creating_predictor,
@@ -176,18 +176,17 @@ class CONTENT_EXPORT PrerenderHostRegistry
   void CancelAllHosts(PrerenderFinalStatus final_status);
 
   // For activators. Finds the host to activate for a navigation for the given
-  // NavigationRequest. Returns the root frame tree node id of the prerendered
-  // page, which can be used as the id of the host. This doesn't reserve the
-  // host so it can be destroyed or activated by another navigation. This also
-  // cancels all the prerender hosts except the one to be activated. See also
-  // comments on ReserveHostToActivate().
+  // NavigationRequest. Returns the PrerenderHostId of the prerendered page.
+  // This doesn't reserve the host so it can be destroyed or activated by
+  // another navigation. This also cancels all the prerender hosts except the
+  // one to be activated. See also comments on ReserveHostToActivate().
   PrerenderHostId FindPotentialHostToActivate(
       NavigationRequest& navigation_request);
 
   // For activators. Reserves the host to activate for a navigation for the
   // given NavigationRequest.
-  // Returns a valid ReservedPrerenderHostInfo, which has the valid root frame
-  // tree node if of the prerendered page. Returns nullopt if it's not found
+  // Returns a valid ReservedPrerenderHostInfo, which has the valid
+  // PrerenderHostId of the prerendered page. Returns nullopt if it's not found
   // or not ready for activation yet.
   // The caller is responsible for calling OnActivationFinished() with the id to
   // release the reserved host. This also cancels all the prerender hosts except
@@ -335,8 +334,8 @@ class CONTENT_EXPORT PrerenderHostRegistry
       PreloadingTriggerType trigger_type,
       std::optional<blink::mojom::SpeculationEagerness> eagerness);
 
-  // Returns the number of hosts that prerender_host_by_frame_tree_node_id_
-  // holds by limit group.
+  // Returns the number of hosts that prerender_host_by_id_ holds by limit
+  // group.
   int GetHostCountByLimitGroup(PrerenderLimitGroup limit_group);
 
   // Returns whether a certain type of PreloadingTriggerType is allowed to be
@@ -359,8 +358,8 @@ class CONTENT_EXPORT PrerenderHostRegistry
   void OnMemoryPressure(
       base::MemoryPressureLevel memory_pressure_level) override;
 
-  void RecordPotentialPrerenderProcessReuse(bool has_machable_hosts,
-                                            const GURL& naivgation_url);
+  void RecordPotentialPrerenderProcessReuse(bool has_matchable_hosts,
+                                            const GURL& navigation_url);
 
   // Find a prerender host that is marked as reusable and under the
   // same site as attributes.prerendering_url.
@@ -382,7 +381,7 @@ class CONTENT_EXPORT PrerenderHostRegistry
   // trigger are prioritized and pushed to the front of the queue, while the
   // requests from the speculation rules are appended to the back. This may
   // contain ids of cancelled requests. You can identify cancelled requests by
-  // checking if an id is in `prerender_host_by_frame_tree_node_id_`.
+  // checking if an id is in `prerender_host_by_id_`.
   base::circular_deque<PrerenderHostId> pending_prerenders_;
 
   // Hosts that are not reserved for activation yet. This map also includes the

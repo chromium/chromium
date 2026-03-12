@@ -817,7 +817,7 @@ PrerenderHostId PrerenderHostRegistry::CreateAndStartHost(
         // the head of the queue if there's no running prerender and the
         // initiator is in the foreground. If the initiator page is in the
         // background, `StartPrerendering` will return a corresponding
-        // frame_tree_node_id if allowed by
+        // PrerenderHostId if allowed by
         // `PrerenderCanBeStartedWhenInitiatorIsInBackground`.
         if (IsBackground(initiator_web_contents.GetVisibility()) &&
             !initiator_web_contents.GetPrerenderHostRegistry()
@@ -2034,11 +2034,11 @@ void PrerenderHostRegistry::CancelHostsByOriginFilter(
 }
 
 void PrerenderHostRegistry::RecordPotentialPrerenderProcessReuse(
-    bool kHasMatchableHosts,
+    bool has_matchable_hosts,
     const GURL& navigation_url) {
   static constexpr char kPrerenderProcessReuseUMAName[] =
       "Prerender.Experimental.PrerenderProcessReuseAvailability";
-  if (kHasMatchableHosts) {
+  if (has_matchable_hosts) {
     base::UmaHistogramEnumeration(
         kPrerenderProcessReuseUMAName,
         PrerenderProcessReuseAvailability::kHasMatchableHosts);
