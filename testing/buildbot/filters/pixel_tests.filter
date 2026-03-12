@@ -82,7 +82,7 @@ IsolatedWebAppInstallerViewUiPixelTest.*
 JavascriptOptimizerUiTest.*
 *ContextualTasks*PixelTest*
 *LensSidePanel*PixelTest*
-LHSIndicatorsUiBrowserTest.*
+LHSIndicatorsInteractiveUITest.*
 LocalCardMigrationBrowserUiTest.*
 *MemorySaverChipInteractiveTest.*
 *MemorySaverFaviconTreatmentTest.*
@@ -118,6 +118,9 @@ PasswordBubbleInteractiveUiTest.NavigateToManagementDetailsViewWithMoveFooterVis
 PasswordReuseModalWarningTest.*
 PaymentsWindowUserConsentDialogBrowserTest*
 PerformanceInterventionInteractiveTest.InterventionToolbarButton
+PermissionChipKombuchaInteractiveUITest.PermissionChipClickTest
+PermissionChipKombuchaInteractiveUITest.QuietPermissionChipClickTest
+PermissionChipKombuchaInteractiveUITest.QuietestPermissionChipClickTest
 PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*View*BrowserTest.InvokeUi_*
 PermissionPromptPreviewBrowserTest.InvokeUi_*

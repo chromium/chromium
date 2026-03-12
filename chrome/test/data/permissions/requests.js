@@ -13,27 +13,35 @@ async function requestCamera() {
   try {
     var constraints = { video: true };
     cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function requestMicrophone() {
   try {
     var constraints = { audio: true };
     micStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function requestCameraAndMicrophone() {
   try {
     var constraints = { audio: true, video: true };
     await navigator.mediaDevices.getUserMedia(constraints);
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function requestLocation() {
   try {
     await navigator.geolocation.getCurrentPosition((position_) => {});
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function stopCamera() {

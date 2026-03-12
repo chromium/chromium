@@ -352,8 +352,9 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/491435561): Investigate why this test is flaky.
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsInteractiveUITest,
-                       InvokeUi_cameraandmicrophone_blocked) {
+                       DISABLED_InvokeUi_cameraandmicrophone_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
