@@ -184,6 +184,7 @@ public class EducationalTipModuleMediator {
                         () -> {
                             SetupListModuleUtils.finishCompletionAnimation(mModuleType);
                             mModuleDelegate.maybeMoveModuleToTheEnd(mModuleType);
+                            mModuleDelegate.scrollTo(0);
                             if (SetupListManager.getInstance().shouldShowCelebratoryPromo()) {
                                 mModuleDelegate.refreshModules();
                             }
