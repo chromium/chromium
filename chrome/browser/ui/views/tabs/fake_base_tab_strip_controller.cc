@@ -28,12 +28,13 @@ void FakeBaseTabStripController::AddTab(int index,
   tab_groups_.insert(tab_groups_.begin() + index, std::nullopt);
 
   std::vector<TabStrip::AddTabData> data_list;
+  tabs::TabData data;
   if (is_pinned == TabPinned::kPinned) {
     num_pinned_tabs_++;
+    data.pinned = true;
   }
-  data_list.push_back({.index = index,
-                       .handle = tabs::TabHandle(index),
-                       .is_pinned = (is_pinned == TabPinned::kPinned)});
+  data_list.push_back(
+      {.index = index, .handle = tabs::TabHandle(index), .data = data});
   if (tab_strip_) {
     tab_strip_->AddTabsAt(std::move(data_list));
   }
@@ -171,7 +172,7 @@ void FakeBaseTabStripController::MoveTab(int from_index, int to_index) {
   tab_groups_.erase(tab_groups_.begin() + from_index);
   tab_groups_.insert(tab_groups_.begin() + to_index, prev_group);
   if (tab_strip_) {
-    tab_strip_->MoveTab(from_index, to_index);
+    tab_strip_->MoveTab(from_index, to_index, tabs::TabData());
   }
 }
 

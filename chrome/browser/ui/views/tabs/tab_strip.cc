@@ -1236,28 +1236,29 @@ void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
   }
 }
 
-void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_data) {
+void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
   const int old_tab_count = GetTabCount();
   std::vector<TabContainer::TabInsertionParams> tabs_params;
 
-  for (const auto& tab_data : tabs_data) {
+  for (const auto& tab_data : tabs_datas) {
     CHECK(IsValidModelIndex(tab_data.index))
         << "Attempted to add a tab with an invalid model index.";
     TabContainer::TabInsertionParams param(
         std::make_unique<Tab>(tab_data.handle, this), tab_data.index,
-        tab_data.is_pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
+        tab_data.data.pinned ? TabPinned::kPinned : TabPinned::kUnpinned);
     tabs_params.push_back(std::move(param));
   }
 
   std::vector<Tab*> tabs = tab_container_->AddTabs(std::move(tabs_params));
 
-  for (int index = 0; index < static_cast<int>(tabs_data.size()); index++) {
+  for (int index = 0; index < static_cast<int>(tabs_datas.size()); index++) {
     Tab* tab = tabs[index];
+    tabs::TabData renderer_data = tabs_datas[index].data;
     tab->set_context_menu_controller(&context_menu_controller_);
-    selected_tabs_.IncrementFrom(tabs_data[index].index);
+    selected_tabs_.IncrementFrom(tabs_datas[index].index);
 
     if (observer_) {
-      observer_->OnTabAdded(tabs_data[index].index);
+      observer_->OnTabAdded(tabs_datas[index].index);
     }
 
     // At the start of AddTabAt() the model and tabs are out of sync. Any
@@ -1293,7 +1294,9 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_data) {
   }
 }
 
-void TabStrip::MoveTab(int from_model_index, int to_model_index) {
+void TabStrip::MoveTab(int from_model_index,
+                       int to_model_index,
+                       tabs::TabData data) {
   CHECK_GT(GetTabCount(), 0)
       << "The tab strip must contain at least one tab to perform a move "
          "operation.";
