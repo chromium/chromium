@@ -956,10 +956,9 @@ static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(
 static bool JNI_WebsitePreferenceBridge_IsDSEOrigin(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle,
-    const JavaRef<jstring>& jorigin) {
+    const GURL& jorigin) {
   return permissions::PermissionsClient::Get()->IsDseOrigin(
-      unwrap(jbrowser_context_handle),
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
+      unwrap(jbrowser_context_handle), url::Origin::Create(jorigin));
 }
 
 static bool JNI_WebsitePreferenceBridge_GetAdBlockingActivated(

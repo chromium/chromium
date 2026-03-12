@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.geo;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Process;
 import android.util.Base64;
 
@@ -234,15 +233,15 @@ public class GeolocationHeader {
             // Only send X-Geo in normal mode.
             if (profile.isOffTheRecord()) return HeaderState.INCOGNITO;
 
+            GURL gurl = new GURL(url);
             // Only send X-Geo header to Search Engines.
-            var isDseUrl = service.isSearchResultsPageFromDefaultSearchProvider(new GURL(url));
+            var isDseUrl = service.isSearchResultsPageFromDefaultSearchProvider(gurl);
             var isGoogleDse = service.isDefaultSearchEngineGoogle();
             if (!(isDseUrl || (isGoogleDse && UrlUtilities.isGoogleSearchUrl(url)))) {
                 return HeaderState.UNSUITABLE_URL;
             }
 
-            Uri uri = Uri.parse(url);
-            if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
+            if (!UrlConstants.HTTPS_SCHEME.equals(gurl.getScheme())) return HeaderState.NOT_HTTPS;
 
             if (!hasAppGeolocationPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
@@ -250,10 +249,10 @@ public class GeolocationHeader {
 
             // TODO(raymes): The call to isDseOrigin is only needed if this could be called for
             // an origin that isn't the default search engine. Otherwise remove this line.
-            boolean isDseOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString());
+            boolean isDseOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, gurl);
             if (!isDseOrigin) return HeaderState.LOCATION_PERMISSION_BLOCKED;
 
-            final GeolocationSetting setting = getGeolocationSettingForUrl(profile, uri);
+            final GeolocationSetting setting = getGeolocationSettingForUrl(profile, url);
             if (setting == null || setting.mApproximate != ContentSetting.ALLOW) {
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
@@ -354,20 +353,17 @@ public class GeolocationHeader {
      * the setting cannot be determined.
      */
     private static @Nullable GeolocationSetting getGeolocationSettingForUrl(
-            Profile profile, Uri uri) {
+            Profile profile, String url) {
         if (PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
             return WebsitePreferenceBridgeJni.get()
                     .getGeolocationSettingForOrigin(
-                            profile,
-                            ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
-                            uri.toString(),
-                            uri.toString());
+                            profile, ContentSettingsType.GEOLOCATION_WITH_OPTIONS, url, url);
         } else {
             @ContentSetting
             final Integer setting =
                     PermissionInfo.getContentSetting(
-                            profile, ContentSettingsType.GEOLOCATION, uri.toString(), null);
+                            profile, ContentSettingsType.GEOLOCATION, url, null);
             if (setting == null) return null;
             // When the approximate location feature is disabled, there's only one geolocation
             // permission. We treat it as the 'precise' setting and duplicate it for
