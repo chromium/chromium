@@ -9,7 +9,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "blink_extensions_browsertest\.cc": [
+  "blink_extensions_browsertest\\.cc": [
     "+chrome/browser/profiles/profile.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/browser/ui/web_applications/test",
