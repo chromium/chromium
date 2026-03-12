@@ -4,6 +4,7 @@
 
 #include "cc/mojo_embedder/viz_layer_context.h"
 
+#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -432,9 +433,15 @@ viz::mojom::TransformTreeUpdatePtr ComputeTransformTreePropertiesUpdate(
 
   auto wire = viz::mojom::TransformTreeUpdate::New();
   wire->page_scale_factor = new_tree.page_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(wire->page_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(wire->page_scale_factor));
   wire->device_scale_factor = new_tree.device_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(wire->device_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(wire->device_scale_factor));
   wire->device_transform_scale_factor =
       new_tree.device_transform_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(wire->device_transform_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(wire->device_transform_scale_factor));
   wire->nodes_affected_by_outer_viewport_bounds_delta =
       new_tree.nodes_affected_by_outer_viewport_bounds_delta();
   wire->nodes_affected_by_safe_area_bottom =
@@ -1375,14 +1382,28 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
       tree.primary_main_frame_item_sequence_number();
   update->selection = tree.selection();
   update->page_scale_factor = tree.page_scale_factor()->Current(true);
+  DUMP_WILL_BE_CHECK_GT(update->page_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(update->page_scale_factor));
   update->min_page_scale_factor = tree.min_page_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(update->min_page_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(update->min_page_scale_factor));
   update->max_page_scale_factor = tree.max_page_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(update->max_page_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(update->max_page_scale_factor));
+  DUMP_WILL_BE_CHECK_GE(update->max_page_scale_factor,
+                        update->min_page_scale_factor);
   update->external_page_scale_factor = tree.external_page_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(update->external_page_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(update->external_page_scale_factor));
   update->frame_has_damage = frame_has_damage;
   update->latency_info = std::move(latency_info);
   update->device_viewport = tree.GetDeviceViewport();
   update->device_scale_factor = tree.device_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(update->device_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(update->device_scale_factor));
   update->painted_device_scale_factor = tree.painted_device_scale_factor();
+  DUMP_WILL_BE_CHECK_GT(update->painted_device_scale_factor, 0.f);
+  DUMP_WILL_BE_CHECK(std::isfinite(update->painted_device_scale_factor));
   update->display_color_spaces = tree.display_color_spaces();
   if (tree.local_surface_id_from_parent().is_valid()) {
     update->local_surface_id_from_parent = tree.local_surface_id_from_parent();
