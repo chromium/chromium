@@ -168,6 +168,12 @@ scheme host and port.""")
                                       help="Enable tests that require WebTransport over HTTP/3 server (default: false)")
     test_selection_group.add_argument("--no-enable-webtransport-h3", action="store_false", dest="enable_webtransport_h3",
                                       help="Do not enable WebTransport tests on experimental channels")
+    test_selection_group.add_argument("--enable-dns",
+                                      action="store_true",
+                                      default=None,
+                                      help="Enable the DNS server for resolving test domains")
+    test_selection_group.add_argument("--no-enable-dns", action="store_false", dest="enable_dns",
+                                      help="Do not enable DNS server")
     test_selection_group.add_argument("--tag", action="append", dest="tags",
                                       help="Labels applied to tests to include in the run. "
                                            "Labels starting dir: are equivalent to top-level directories.")
