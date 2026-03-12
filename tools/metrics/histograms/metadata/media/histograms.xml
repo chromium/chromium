@@ -6366,6 +6366,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Media.PipelineStatus.HardwareContextResetRecovery.LastPipelineStatus"
+    enum="PipelineStatus" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The last status of media pipeline when trying to recover from a hardware
+    context reset. Recorded once when either the media pipeline is destroyed or
+    we fail to recover from a subsequent error.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.PipelineStatus.HardwareContextResetRecovery.TimeDeltaSinceLastHardwareContextReset"
+    units="ms" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The media time delta since the last hardware context reset when trying to
+    recover from a hardware context reset. Recorded once when either the media
+    pipeline is destroyed or we fail to recover from a subsequent error.
+  </summary>
+</histogram>
+
 <histogram name="Media.PipelineStatus.Start" enum="PipelineStatus"
     expires_after="2026-12-09">
   <owner>xhwang@chromium.org</owner>
