@@ -438,6 +438,10 @@ class CC_EXPORT PictureLayerImpl
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,
                          AppendQuadsCustomSharedData* custom_data) override;
+
+ private:
+  void WillProcessReadyToDrawTile(
+      const TilingSetCoverageIterator<PictureLayerTiling>& iter);
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
 };

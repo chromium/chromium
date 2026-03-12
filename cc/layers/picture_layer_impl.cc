@@ -281,6 +281,15 @@ void PictureLayerImpl::DidAppendQuad(viz::DrawQuad* quad) {
   ValidateQuadResources(quad);
 }
 
+void PictureLayerImpl::WillProcessReadyToDrawTile(
+    const TilingSetCoverageIterator<PictureLayerTiling>& iter) {
+  // Mark the tile used for raster. This is used to reclaim old prepaint
+  // tiles in TileManager.
+  if (*iter) {
+    (*iter)->mark_used();
+  }
+}
+
 bool PictureLayerImpl::ComputeCheckerboardedNeedsRecord() {
   if (is_backdrop_filter_mask()) {
     return false;
@@ -389,9 +398,7 @@ bool PictureLayerImpl::AppendQuadForTile(
   bool has_draw_quad = false;
   auto* tile = *iter;
   if (tile && tile->IsReadyToDraw()) {
-    // Mark the tile used for raster. This is used to reclaim old prepaint
-    // tiles in TileManager.
-    tile->mark_used();
+    WillProcessReadyToDrawTile(iter);
 
     has_draw_quad = AppendQuad(
         iter, render_pass, shared_quad_state, offset_geometry_rect,
