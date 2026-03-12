@@ -1,10 +1,9 @@
 {
   "name": "Extension API tests",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests for the extension api tests api.",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": true
+    "service_worker": "background.js"
   }
 }
