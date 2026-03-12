@@ -129,6 +129,17 @@ const std::u16string& ContentNavigationItem::GetTitleForDisplay() const {
   return entry_->GetTitleForDisplay();
 }
 
+void ContentNavigationItem::SetInternalScrollToTextFragment(
+    const std::optional<std::string>& internal_scroll_to_text_fragment) {
+  NOTREACHED();
+}
+
+const std::optional<std::string>&
+ContentNavigationItem::GetInternalScrollToTextFragment() const {
+  static const std::optional<std::string> text_fragment;
+  return text_fragment;
+}
+
 void ContentNavigationItem::SetTransitionType(
     ui::PageTransition transition_type) {
   NOTREACHED();

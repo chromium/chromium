@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #import "base/memory/raw_ptr.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/favicon/favicon_status.h"
@@ -49,6 +51,12 @@ class ContentNavigationItem : public NavigationItem {
   const std::u16string& GetTitle() const override;
 
   const std::u16string& GetTitleForDisplay() const override;
+
+  void SetInternalScrollToTextFragment(
+      const std::optional<std::string>& internal_scroll_to_text_fragment)
+      override;
+  const std::optional<std::string>& GetInternalScrollToTextFragment()
+      const override;
 
   void SetTransitionType(ui::PageTransition transition_type) override;
   ui::PageTransition GetTransitionType() const override;
