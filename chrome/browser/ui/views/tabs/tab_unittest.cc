@@ -459,7 +459,7 @@ TEST_F(TabTest, LayoutAndVisibilityOfElements) {
         data.pinned = is_pinned_tab;
         controller->set_active_tab(is_active_tab ? tab : nullptr);
         data.alert_state = alert_state;
-        tab->SetData(data);
+        tab->SetDataForTesting(data);
         StopFadeAnimationIfNecessary(*tab);
 
         // Test layout for every width from standard to minimum.
@@ -540,61 +540,61 @@ TEST_F(TabTest, LayeredThrobber) {
 
   // Simulate a "normal" tab load: should paint to a layer.
   data.network_state = TabNetworkState::kWaiting;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_TRUE(tab_slot_controller->CanPaintThrobberToLayer());
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   data.network_state = TabNetworkState::kLoading;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   data.network_state = TabNetworkState::kNone;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 
   // Simulate a tab that should hide throbber.
   data.should_hide_throbber = true;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
   data.network_state = TabNetworkState::kWaiting;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
   data.network_state = TabNetworkState::kLoading;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
   data.network_state = TabNetworkState::kNone;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 
   // Simulate a tab that should not hide throbber.
   data.should_hide_throbber = false;
   data.network_state = TabNetworkState::kWaiting;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_TRUE(tab_slot_controller->CanPaintThrobberToLayer());
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   data.network_state = TabNetworkState::kLoading;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   data.network_state = TabNetworkState::kNone;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 
   // After loading is done, simulate another resource starting to load.
   data.network_state = TabNetworkState::kWaiting;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
 
   // Reset.
   data.network_state = TabNetworkState::kNone;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 
   // Simulate a drag started and stopped during a load: layer painting stops
   // temporarily.
   data.network_state = TabNetworkState::kWaiting;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   tab_slot_controller->set_paint_throbber_to_layer(false);
@@ -606,18 +606,18 @@ TEST_F(TabTest, LayeredThrobber) {
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_TRUE(icon->layer());
   data.network_state = TabNetworkState::kNone;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 
   // Simulate a tab load starting and stopping during tab dragging:
   // no layer painting.
   tab_slot_controller->set_paint_throbber_to_layer(false);
   data.network_state = TabNetworkState::kWaiting;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
   EXPECT_FALSE(icon->layer());
   data.network_state = TabNetworkState::kNone;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 }
 
@@ -645,7 +645,7 @@ TEST_F(TabTest, FaviconDoesntMoveWhenShowingAlertIndicator) {
     int icon_x = icon->x();
     tabs::TabData data;
     data.alert_state = {tabs::TabAlert::kAudioPlaying};
-    tab->SetData(data);
+    tab->SetDataForTesting(data);
     EXPECT_EQ(icon_x, icon->x());
   }
 }
@@ -750,7 +750,7 @@ TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
   // Remove the favicon.
   tabs::TabData data;
   data.should_display_favicon = false;
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
   EndTitleAnimation(tab);
   EXPECT_FALSE(icon->GetVisible());
   // Title should be placed where the favicon was.
@@ -766,7 +766,7 @@ TEST_F(TabTest, ExtraAlertPaddingNotShownOnSmallActiveTab) {
   controller->set_active_tab(tab);
   tabs::TabData data;
   data.alert_state = {tabs::TabAlert::kAudioPlaying};
-  tab->SetData(data);
+  tab->SetDataForTesting(data);
 
   tab->SetBounds(0, 0, 200, 50);
   EXPECT_TRUE(GetTabIcon(tab)->GetVisible());
@@ -873,7 +873,7 @@ TEST_F(TabContentsTest, ShowsAndHidesAlertIndicator) {
   tabs::TabData start_media;
   start_media.alert_state = {tabs::TabAlert::kAudioPlaying};
   start_media.pinned = media_tab->data().pinned;
-  media_tab->SetData(std::move(start_media));
+  media_tab->SetDataForTesting(std::move(start_media));
 
   // When audio starts, pinned inactive tab shows indicator.
   EXPECT_FALSE(showing_icon(media_tab));
@@ -882,7 +882,7 @@ TEST_F(TabContentsTest, ShowsAndHidesAlertIndicator) {
 
   tabs::TabData stop_media;
   stop_media.pinned = media_tab->data().pinned;
-  media_tab->SetData(std::move(stop_media));
+  media_tab->SetDataForTesting(std::move(stop_media));
 
   // When audio ends, pinned inactive tab fades out indicator.
   EXPECT_FALSE(showing_icon(media_tab));
@@ -914,7 +914,7 @@ TEST_F(TabContentsTest, MinHoldDurationTest) {
   tabs::TabData start_media;
   start_media.alert_state = {tabs::TabAlert::kMediaRecording};
   start_media.pinned = media_tab->data().pinned;
-  media_tab->SetData(std::move(start_media));
+  media_tab->SetDataForTesting(std::move(start_media));
 
   // When audio starts, pinned inactive tab shows indicator.
   EXPECT_TRUE(showing_alert_indicator(media_tab));
@@ -922,7 +922,7 @@ TEST_F(TabContentsTest, MinHoldDurationTest) {
 
   tabs::TabData stop_media;
   stop_media.pinned = media_tab->data().pinned;
-  media_tab->SetData(std::move(stop_media));
+  media_tab->SetDataForTesting(std::move(stop_media));
 
   // The indicator's start time should be reset.
   EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));
@@ -945,7 +945,7 @@ TEST_F(TabContentsTest, 1SecondFadeoutAnimationTest) {
   tabs::TabData start_media;
   start_media.alert_state = {tabs::TabAlert::kMediaRecording};
   start_media.pinned = media_tab->data().pinned;
-  media_tab->SetData(std::move(start_media));
+  media_tab->SetDataForTesting(std::move(start_media));
 
   // When audio starts, pinned inactive tab shows indicator.
   EXPECT_TRUE(showing_alert_indicator(media_tab));
@@ -958,7 +958,7 @@ TEST_F(TabContentsTest, 1SecondFadeoutAnimationTest) {
 
   tabs::TabData stop_media;
   stop_media.pinned = media_tab->data().pinned;
-  media_tab->SetData(std::move(stop_media));
+  media_tab->SetDataForTesting(std::move(stop_media));
 
   // The indicator's start time should be reset.
   EXPECT_EQ(base::Time(), get_camera_mic_indicator_start_time(media_tab));

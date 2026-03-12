@@ -706,7 +706,6 @@ void BrowserTabStripController::OnTabStripModelChanged(
     std::optional<size_t> index = selection.new_model.active();
     if (new_contents && new_tab_interface && index.has_value()) {
       TabUIHelper::From(new_tab_interface)->SetWasActiveAtLeastOnce();
-      SetTabDataAt(index.value());
     }
   }
 
@@ -787,15 +786,9 @@ void BrowserTabStripController::OnTabGroupChanged(
   }
 }
 
-void BrowserTabStripController::OnTabChangedAt(tabs::TabInterface* tab,
-                                               int model_index,
-                                               TabChangeType change_type) {
-  SetTabDataAt(model_index);
-}
-
 void BrowserTabStripController::OnTabPinnedStateChanged(tabs::TabInterface* tab,
                                                         int model_index) {
-  SetTabDataAt(model_index);
+  tabstrip_->OnTabPinnedStateChanged(model_index, tab->IsPinned());
 }
 
 void BrowserTabStripController::TabGroupedStateChanged(
@@ -886,11 +879,6 @@ BrowserFrameView* BrowserTabStripController::GetFrameView() {
 
 const BrowserFrameView* BrowserTabStripController::GetFrameView() const {
   return browser_view_->browser_widget()->GetFrameView();
-}
-
-void BrowserTabStripController::SetTabDataAt(int model_index) {
-  tabstrip_->SetTabData(model_index, tabs::TabData::FromTabInterface(
-                                         model_->GetTabAtIndex(model_index)));
 }
 
 void BrowserTabStripController::AddTabs(

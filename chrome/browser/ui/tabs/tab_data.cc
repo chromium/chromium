@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -22,7 +23,6 @@
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace {
 using collaboration::messaging::MessagingBackendService;
@@ -121,14 +121,16 @@ bool TabData::operator==(const TabData& other) const {
 
 TabDataObserver::TabDataObserver(TabInterface* tab_interface)
     : tab_interface_(tab_interface) {
+  CHECK(tab_interface_);
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
   tab_ui_change_subscription_ =
-      TabUIHelper::From(tab_interface_)
-          ->AddTabUIChangeCallback(base::BindRepeating(
-              &TabDataObserver::OnTabUIChange, base::Unretained(this)));
+      tab_ui_helper->AddTabUIChangeCallback(base::BindRepeating(
+          &TabDataObserver::OnTabUIChange, base::Unretained(this)));
+  tabs::TabAlertController* const tab_alert_controller =
+      tabs::TabAlertController::From(tab_interface);
   alert_change_subscription_ =
-      tabs::TabAlertController::From(tab_interface_)
-          ->AddAlertToShowChangedCallback(base::BindRepeating(
-              &TabDataObserver::OnAlertsChanged, base::Unretained(this)));
+      tab_alert_controller->AddAlertToShowChangedCallback(base::BindRepeating(
+          &TabDataObserver::OnAlertsChanged, base::Unretained(this)));
   pinned_state_change_subscription_ =
       tab_interface_->RegisterPinnedStateChanged(base::BindRepeating(
           &TabDataObserver::OnPinnedStateChanged, base::Unretained(this)));
@@ -139,11 +141,8 @@ TabDataObserver::TabDataObserver(TabInterface* tab_interface)
       tab_interface_->RegisterWillDetach(base::BindRepeating(
           &TabDataObserver::OnTabDetached, base::Unretained(this)));
 
+  // Initialize the tab data.
   OnTabUIChange();
-  OnAlertsChanged(
-      tabs::TabAlertController::From(tab_interface_)->GetAlertToShow());
-  OnBlockedStateChanged(tab_interface_, tab_interface_->IsBlocked());
-  OnPinnedStateChanged(tab_interface_, tab_interface_->IsPinned());
 }
 
 TabDataObserver::~TabDataObserver() = default;

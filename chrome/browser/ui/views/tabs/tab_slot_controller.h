@@ -167,6 +167,10 @@ class TabSlotController {
   virtual void OnMouseEventInTab(views::View* source,
                                  const ui::MouseEvent& event) = 0;
 
+  // Updates the group's contents and metadata when its tab membership changes.
+  // This should be called when a tab is added to or removed from a group.
+  virtual void OnGroupContentsChanged(const tab_groups::TabGroupId& group) = 0;
+
   // Updates hover-card content, anchoring and visibility based on what tab is
   // hovered and whether the card should be shown. Providing a nullptr for `tab`
   // will cause the tab hover card to be hidden. `update_type` is used to decide
