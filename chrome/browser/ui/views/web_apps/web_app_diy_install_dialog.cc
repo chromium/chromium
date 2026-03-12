@@ -184,4 +184,19 @@ void SetAutoAcceptDiyAppsInstallDialogForTesting(bool auto_accept) {
   g_auto_accept_diy_dialog_for_testing = auto_accept;
 }
 
+// Creates a view for the DIY install dialog that contains the
+// input dialog.
+std::unique_ptr<views::View> CreateDiyInstallDialogView(
+    gfx::ImageSkia icon_image,
+    const std::u16string& title,
+    const GURL& start_url,
+    content::WebContents* web_contents,
+    base::RepeatingCallback<void(const std::u16string&)>
+        on_textfield_changed_callback) {
+  return std::make_unique<SiteIconTextAndOriginView>(
+      icon_image, title,
+      l10n_util::GetStringUTF16(IDS_DIY_APP_AX_BUBBLE_NAME_LABEL), start_url,
+      web_contents, std::move(on_textfield_changed_callback));
+}
+
 }  // namespace web_app

@@ -22,6 +22,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -44,6 +45,10 @@ namespace webapps {
 class MlInstallOperationTracker;
 enum class WebappUninstallSource;
 }  // namespace webapps
+
+namespace views {
+class View;
+}  // namespace views
 
 namespace web_app {
 
@@ -264,6 +269,34 @@ void ShowInstallNotSupportedDialog(content::WebContents* web_contents,
                                    Profile* profile,
                                    NotSupportedReason reason,
                                    base::OnceClosure callback);
+
+// Creates a simple install dialog view that contains
+// WebAppIconNameAndOriginView.
+std::unique_ptr<views::View> CreateSimpleInstallDialogView(
+    gfx::ImageSkia icon_image,
+    const std::u16string& title,
+    const GURL& start_url,
+    bool is_maskable);
+
+// Creates a detailed install dialog view that contains
+// a carousel.
+std::unique_ptr<views::View> CreateDetailedInstallDialogView(
+    gfx::ImageSkia icon_image,
+    const std::u16string& title,
+    const GURL& start_url,
+    bool is_maskable,
+    base::WeakPtr<WebAppScreenshotFetcher> fetcher,
+    const std::u16string& description);
+
+// Creates a view for the DIY install dialog that contains the
+// input dialog.
+std::unique_ptr<views::View> CreateDiyInstallDialogView(
+    gfx::ImageSkia icon_image,
+    const std::u16string& title,
+    const GURL& start_url,
+    content::WebContents* web_contents,
+    base::RepeatingCallback<void(const std::u16string&)>
+        on_textfield_changed_callback);
 
 }  // namespace web_app
 

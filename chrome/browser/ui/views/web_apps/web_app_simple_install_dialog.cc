@@ -179,4 +179,15 @@ base::AutoReset<bool> SetDontCloseOnDeactivateForTesting() {
   return base::AutoReset<bool>(&g_dont_close_on_deactivate, true);
 }
 
+// Creates a view for the simple install dialog that contains the
+// WebAppIconNameAndOriginView
+std::unique_ptr<views::View> CreateSimpleInstallDialogView(
+    gfx::ImageSkia icon_image,
+    const std::u16string& title,
+    const GURL& start_url,
+    bool is_maskable) {
+  return WebAppIconNameAndOriginView::Create(icon_image, title, start_url,
+                                             is_maskable);
+}
+
 }  // namespace web_app

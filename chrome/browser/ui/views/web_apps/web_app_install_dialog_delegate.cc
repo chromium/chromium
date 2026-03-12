@@ -7,13 +7,17 @@
 #include <memory>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -34,6 +38,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -164,6 +169,11 @@ WebAppInstallDialogDelegate::WebAppInstallDialogDelegate(
 
 WebAppInstallDialogDelegate::~WebAppInstallDialogDelegate() = default;
 
+bool WebAppInstallDialogDelegate::OnOkButtonClicked() {
+  OnAccept();
+  return true;
+}
+
 void WebAppInstallDialogDelegate::OnAccept() {
   MeasureAcceptUserActionsForInstallDialog();
   if (iph_state_ == PwaInProductHelpState::kShown) {
@@ -258,8 +268,19 @@ void WebAppInstallDialogDelegate::OnDestroyed() {
 void WebAppInstallDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
     const std::u16string& text_field_contents) {
   text_field_contents_ = text_field_contents;
-  ui::DialogModel::Button* ok_button =
-      dialog_model()->GetButtonByUniqueId(kDiyAppsDialogOkButtonId);
+  if (!dialog_model() || !dialog_model()->host()) {
+    return;
+  }
+
+  ui::DialogModel::Button* ok_button = nullptr;
+  if (dialog_model()->HasField(kDiyAppsDialogOkButtonId)) {
+    ok_button = dialog_model()->GetButtonByUniqueId(kDiyAppsDialogOkButtonId);
+  } else if (dialog_model()->HasField(kPwaInstallDialogInstallButton)) {
+    // Use the kPwaInstallDialogInstallButton id for for the Flow view.
+    ok_button =
+        dialog_model()->GetButtonByUniqueId(kPwaInstallDialogInstallButton);
+  }
+
   CHECK(ok_button);
   dialog_model()->SetButtonEnabled(ok_button,
                                    /*enabled=*/!text_field_contents.empty());
