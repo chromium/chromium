@@ -40,6 +40,7 @@ source_set("impl") {
     "//chrome/browser/engagement",
     "//chrome/browser/metrics",
     "//chrome/browser/search_engines",
+    "//chrome/browser/webapps/installable",
     "//chrome/common:chrome_features",
     "//components/content_settings/core/browser",
     "//components/search_engines",

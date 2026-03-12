@@ -8659,6 +8659,7 @@ test("unit_tests") {
       "//chrome/browser/user_education",
       "//chrome/browser/user_education:unit_tests",
       "//chrome/browser/vr",
+      "//chrome/browser/webapps/installable",
       "//chrome/browser/webauthn:local_credential_management",
       "//chrome/browser/webauthn:unexportable_key_utils",
       "//chrome/utility:unit_tests",
