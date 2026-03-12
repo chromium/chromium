@@ -95,7 +95,7 @@ cr-composebox::part(input) {
 }
 
 cr-composebox::part(context-menu-and-tools) {
-  margin-top: 2px;
+  margin-top: var(--omnibox-context-menu-container-margin-top);
 }
 
 cr-composebox[searchbox-layout-mode='TallBottomContext']::part(context-menu-and-tools) {

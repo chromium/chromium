@@ -29,4 +29,5 @@
    * TODO(crbug.com/450640041): Investigate webUI blink & views rendering
    * difference. */
   --omnibox-font-size: 14.3px;
+  --omnibox-context-menu-container-margin-top: 2px;
 }
