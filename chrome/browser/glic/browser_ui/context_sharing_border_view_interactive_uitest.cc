@@ -990,16 +990,8 @@ class ContextSharingBorderViewWithActorGlowUiTest
   base::test::ScopedFeatureList features_;
 };
 
-// TODO(https://crbug.com/478360939): Fix the flakiness.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff \
-  DISABLED_ActorGlowShowsBorderWhenIndicatorIsOff
-#else
-#define MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff \
-  ActorGlowShowsBorderWhenIndicatorIsOff
-#endif
 IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
-                       MAYBE_ActorGlowShowsBorderWhenIndicatorIsOff) {
+                       ActorGlowShowsBorderWhenIndicatorIsOff) {
   auto* border = browser()
                      ->window()
                      ->AsBrowserView()
@@ -1041,11 +1033,10 @@ IN_PROC_BROWSER_TEST_F(ContextSharingBorderViewWithActorGlowUiTest,
   actor_keyed_service->StopTask(task_id,
                                 actor::ActorTask::StoppedReason::kTaskComplete);
 
-  // Poll until the border is no longer showing.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return !border->IsShowing(); }));
+  // Poll until the border is no longer visible.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !border->GetVisible(); }));
 
   EXPECT_FALSE(border->IsShowing());
-  EXPECT_FALSE(border->GetVisible());
 }
 
 class ContextSharingBorderViewStandaloneGlowUiTest
