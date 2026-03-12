@@ -14,5 +14,12 @@
   const view = new Int32Array(sab);
   view[0] = 1337;
 
-  await chrome.tabs.sendMessage(receiverId, sab);
+  try {
+    await chrome.tabs.sendMessage(receiverId, sab);
+    chrome.test.fail('SharedArrayBuffer should fail serialization');
+  } catch (e) {
+    chrome.test.assertTrue(e.message.includes('Could not serialize message'));
+  }
+
+  chrome.runtime.sendMessage({testResult: 'success'});
 })();

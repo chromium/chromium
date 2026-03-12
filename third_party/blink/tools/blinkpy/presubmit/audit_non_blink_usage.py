@@ -1554,6 +1554,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/web/web_serialized_script_value.h',
+        ],
+        'allowed': [
+            'v8::Isolate',
+            'v8::Local',
+            'v8::Value',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.cc',
             'third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h',
         ],

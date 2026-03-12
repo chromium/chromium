@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SERIALIZED_SCRIPT_VALUE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SERIALIZED_SCRIPT_VALUE_H_
 
+#include "base/types/expected.h"
 #include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
@@ -44,6 +45,10 @@ class Value;
 namespace blink {
 
 class SerializedScriptValue;
+
+enum class DeserializationError {
+  kDefaultFailure,
+};
 
 // FIXME: Should this class be in platform?
 class BLINK_EXPORT WebSerializedScriptValue {
@@ -81,7 +86,8 @@ class BLINK_EXPORT WebSerializedScriptValue {
   bool IsValid() const;
 
   // Convert the serialized value to a parsed v8 value.
-  v8::Local<v8::Value> Deserialize(v8::Isolate*);
+  base::expected<v8::Local<v8::Value>, DeserializationError> Deserialize(
+      v8::Isolate*);
 
 #if INSIDE_BLINK
   WebSerializedScriptValue(scoped_refptr<SerializedScriptValue>);

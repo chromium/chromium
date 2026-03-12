@@ -117,9 +117,14 @@ bool WebSerializedScriptValue::IsValid() const {
   return !private_->GetWireData().empty();
 }
 
-v8::Local<v8::Value> WebSerializedScriptValue::Deserialize(
-    v8::Isolate* isolate) {
-  return private_->Deserialize(isolate);
+base::expected<v8::Local<v8::Value>, DeserializationError>
+WebSerializedScriptValue::Deserialize(v8::Isolate* isolate) {
+  SerializedScriptValue::DeserializeOptions options;
+  v8::Local<v8::Value> result = private_->Deserialize(isolate, options);
+  if (private_->HasDeserializationError()) {
+    return base::unexpected(DeserializationError::kDefaultFailure);
+  }
+  return result;
 }
 
 WebSerializedScriptValue::WebSerializedScriptValue(

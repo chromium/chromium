@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -39,8 +40,10 @@ v8::Local<v8::Value> SerializedScriptValueFactory::Deserialize(
     const SerializedScriptValue::DeserializeOptions& options) {
   TRACE_EVENT0("blink", "SerializedScriptValueFactory::deserialize");
   V8ScriptValueDeserializer deserializer(ScriptState::ForCurrentRealm(isolate),
-                                         std::move(value), options);
-  return deserializer.Deserialize();
+                                         value, options);
+  v8::Local<v8::Value> result = deserializer.Deserialize();
+  value->SetDeserializationError(deserializer.HasError());
+  return result;
 }
 
 v8::Local<v8::Value> SerializedScriptValueFactory::Deserialize(
@@ -50,7 +53,9 @@ v8::Local<v8::Value> SerializedScriptValueFactory::Deserialize(
   TRACE_EVENT0("blink", "SerializedScriptValueFactory::deserialize");
   V8ScriptValueDeserializer deserializer(ScriptState::ForCurrentRealm(isolate),
                                          value, options);
-  return deserializer.Deserialize();
+  v8::Local<v8::Value> result = deserializer.Deserialize();
+  value->Value()->SetDeserializationError(deserializer.HasError());
+  return result;
 }
 
 bool SerializedScriptValueFactory::ExecutionContextExposesInterface(

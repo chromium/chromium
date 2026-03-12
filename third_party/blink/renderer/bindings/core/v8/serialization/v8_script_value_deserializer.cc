@@ -217,8 +217,10 @@ v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
   }
 
   bool read_header;
-  if (!deserializer_.ReadHeader(context).To(&read_header))
+  if (!deserializer_.ReadHeader(context).To(&read_header)) {
+    has_error_ = true;
     return v8::Null(isolate);
+  }
   DCHECK(read_header);
 
   // If there was no Blink envelope earlier, Blink shares the wire format
@@ -230,8 +232,11 @@ v8::Local<v8::Value> V8ScriptValueDeserializer::Deserialize() {
   Transfer();
 
   v8::Local<v8::Value> value;
-  if (!deserializer_.ReadValue(context).ToLocal(&value))
+  if (!deserializer_.ReadValue(context).ToLocal(&value)) {
+    has_error_ = true;
     return v8::Null(isolate);
+  }
+
   if (slow_mode_ && value->IsObject()) {
     // TODO(caseq): consider additionally gating this on payload size.
     MaskDeserializationTimings(value.As<v8::Object>());

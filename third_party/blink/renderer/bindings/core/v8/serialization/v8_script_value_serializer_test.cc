@@ -226,6 +226,20 @@ TEST(V8ScriptValueSerializerTest, DeserializationErrorReturnsNull) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 }
 
+TEST(V8ScriptValueSerializerTest, DeserializationErrorSetsHasError) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  // This is a fundamentally invalid serialized payload.
+  scoped_refptr<SerializedScriptValue> serialized_script_value =
+      SerializedScriptValue::Create(
+          base::span<const uint8_t>({0xFF, 0xFF, 0xFF}));
+  SerializedScriptValue::DeserializeOptions options;
+  V8ScriptValueDeserializer deserializer(scope.GetScriptState(),
+                                         serialized_script_value, options);
+  deserializer.Deserialize();
+  EXPECT_TRUE(deserializer.HasError());
+}
+
 TEST(V8ScriptValueSerializerTest, DetachHappensAfterSerialization) {
   test::TaskEnvironment task_environment;
   // This object will throw an exception before the [[Transfer]] step.

@@ -101,6 +101,8 @@ export function getMessageSerializationTestCases(
   const unserializableErrorTestCases = structuredCloneFeatureEnabled ?
       testCases.structureCloneUnserializableError :
       testCases.jsonUnserializableError;
+  const expectedSerializationError =
+      testTabsAPI ? unserializableTabsError : unserializableRuntimeError;
 
 
   return [
@@ -338,10 +340,11 @@ export function getMessageSerializationTestCases(
       chrome.test.succeed();
     },
 
-    // Tests to/from v8 message serialization for `SharedArrayBuffer`.
-    // SAB serialization is currently unsupported in extension messaging
-    // regardless of isolation status, so we do not expect the message to
-    // serialize.
+    // Tests to/from v8 message serialization for a top-level
+    // `SharedArrayBuffer`. SAB serialization is currently unsupported in
+    // extension messaging regardless of isolation status. We expect the sender
+    // to be rejected synchronously with a serialization error before the
+    // message is ever sent.
     async function structuredCloneSharedArrayBufferToNonIsolatedContext() {
       if (!structuredCloneFeatureEnabled) {
         chrome.test.succeed();
@@ -361,13 +364,94 @@ export function getMessageSerializationTestCases(
       const int32 = new Int32Array(sab);
       int32[0] = 42;
 
-      const response = await sendMessage(sab);
+      try {
+        await sendMessage(sab);
+        chrome.test.fail('SharedArrayBuffer should fail serialization');
+      } catch (e) {
+        chrome.test.assertEq(expectedSerializationError, e.message);
+      }
 
-      // In the service worker, `SharedArrayBuffer` is defined but fails to
-      // successfully serialize.
-      chrome.test.assertEq(
-          null, response,
-          'SharedArrayBuffer should fail serialization and return null');
+      chrome.test.succeed();
+    },
+
+    // Tests a `SharedArrayBuffer` embedded in another object skipping the
+    // sender's top-level validation check and successfully serializing. The
+    // browser drops the side-channel handles across the IPC boundary, causing
+    // the receiver to fail deserialization of the entire top-level object
+    // dropping the message to the receiver. This also simulates the case of a
+    // compromised renderer embedding a `SharedArrayBuffer` into a top-level
+    // object.
+    async function oneTimeEmbeddedSharedArrayBufferDeserializationError() {
+      if (!structuredCloneFeatureEnabled) {
+        chrome.test.succeed();
+        return;
+      }
+
+      if (typeof SharedArrayBuffer === 'undefined') {
+        // In a tab (Content Script), `SharedArrayBuffer` is not defined
+        // so we do not test it.
+        chrome.test.succeed();
+        return;
+      }
+
+      const sab = new SharedArrayBuffer(16);
+      const embeddedSab = {buffer: sab};
+
+      // Send the embedded `SharedArrayBuffer`. The sender will serialize it,
+      // but the receiver will fail to deserialize it. The receiver will log a
+      // deserialization error and silently drop the message without invoking
+      // its `onMessage` handler or replying.
+      // We don't `await` this message because it will never get a response.
+      sendMessage(embeddedSab);
+
+      // Send a valid message immediately after. If the receiver's process was
+      // successfully kept alive and the port wasn't incorrectly closed, this
+      // message will succeed and be echoed back.
+      const validMessage = 'valid message';
+      const response = await sendMessage(validMessage);
+      chrome.test.assertEq(validMessage, response);
+
+      chrome.test.succeed();
+    },
+
+    // Tests a `SharedArrayBuffer` embedded in another object sent over a
+    // long-lived connection. The sender successfully serializes the object, but
+    // the receiver fails to deserialize it and drops the message without
+    // disconnecting the port.
+    async function connectEmbeddedSharedArrayBufferDeserializationError() {
+      if (!structuredCloneFeatureEnabled) {
+        chrome.test.succeed();
+        return;
+      }
+
+      if (typeof SharedArrayBuffer === 'undefined') {
+        // In a tab (Content Script), `SharedArrayBuffer` is not defined
+        // so we do not test it.
+        chrome.test.succeed();
+        return;
+      }
+
+      let port = connect();
+      const sab = new SharedArrayBuffer(16);
+      const embeddedSab = {buffer: sab};
+
+      let receivedMessagePromise = new Promise(resolve => {
+        port.onMessage.addListener((msg) => {
+          resolve(msg);
+        });
+      });
+
+      // Send the embedded `SharedArrayBuffer`. The receiver will drop it.
+      port.postMessage(embeddedSab);
+
+      // Send a valid message immediately after.
+      const validMessage = 'valid message';
+      port.postMessage(validMessage);
+
+      // We should receive the valid message back, proving the channel wasn't
+      // closed and the receiver and channel are still alive.
+      const response = await receivedMessagePromise;
+      chrome.test.assertEq(validMessage, response);
 
       chrome.test.succeed();
     },
@@ -449,8 +533,6 @@ export function getMessageSerializationTestCases(
     // Tests to/from v8 message serialization for one-time messages where
     // serialization is expected to fail synchronously.
     async function sendMessageUnserializableError() {
-      const expectedSerializationError =
-          testTabsAPI ? unserializableTabsError : unserializableRuntimeError;
       let testsRun = 0;
       for (const test of unserializableErrorTestCases) {
         try {

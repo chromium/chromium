@@ -210,6 +210,9 @@ class CORE_EXPORT SerializedScriptValue
     return data_buffer_.as_span();
   }
 
+  bool HasDeserializationError() const { return deserialization_error_; }
+  void SetDeserializationError(bool error) { deserialization_error_ = error; }
+
   // Deserializes the value (in the current context). Returns a null value in
   // case of failure.
   struct DeserializeOptions {
@@ -439,6 +442,7 @@ class CORE_EXPORT SerializedScriptValue
   std::optional<v8::SharedValueConveyor> shared_value_conveyor_;
   raw_ptr<v8::Isolate> isolate_;
   bool has_registered_external_allocation_;
+  bool deserialization_error_ = false;
 #if DCHECK_IS_ON()
   bool was_unpacked_ = false;
 #endif
