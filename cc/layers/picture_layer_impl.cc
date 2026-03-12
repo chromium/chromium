@@ -282,6 +282,21 @@ bool PictureLayerImpl::ShouldUpdateApproximatedVisibleContentArea(
   return resolution != HIGH_RESOLUTION;
 }
 
+bool PictureLayerImpl::ShouldReportTileAsMissing(
+    const gfx::Rect& tile_geometry_rect,
+    AppendQuadsCustomSharedData* custom_data) const {
+  // By contract, this data will have been populated via a call to
+  // WillAppendQuads().
+  CHECK(custom_data);
+
+  auto* shared_data =
+      static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
+
+  // Only report the tile as missing if it's in the viewport.
+  return tile_geometry_rect.Intersects(
+      shared_data->scaled_viewport_for_tile_priority_);
+}
+
 void PictureLayerImpl::DidAppendQuad(
     viz::DrawQuad* quad,
     const TilingSetCoverageIterator<PictureLayerTiling>& iter,
@@ -405,12 +420,6 @@ bool PictureLayerImpl::AppendQuadForTile(
     const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale,
     AppendQuadsCustomSharedData* custom_data) {
-  // By contract, this data will have been populated via a call to
-  // WillAppendQuads().
-  CHECK(custom_data);
-  auto* shared_data =
-      static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
-
   gfx::Rect geometry_rect = iter.geometry_rect();
 
   bool has_draw_quad =
@@ -424,9 +433,8 @@ bool PictureLayerImpl::AppendQuadForTile(
                            offset_visible_geometry_rect, iter,
                            append_quads_data);
 
-    // Only report the tile as missing if it's in the viewport.
-    return /*tile_produced=*/!geometry_rect.Intersects(
-        shared_data->scaled_viewport_for_tile_priority_);
+    return /*tile_produced=*/!ShouldReportTileAsMissing(geometry_rect,
+                                                        custom_data);
   }
 
   produced_tile_last_append_quads_ = true;

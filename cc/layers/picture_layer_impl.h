@@ -447,6 +447,9 @@ class CC_EXPORT PictureLayerImpl
                          AppendQuadsCustomSharedData* custom_data) override;
 
  private:
+  bool ShouldReportTileAsMissing(
+      const gfx::Rect& tile_geometry_rect,
+      AppendQuadsCustomSharedData* custom_data) const;
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
 };
