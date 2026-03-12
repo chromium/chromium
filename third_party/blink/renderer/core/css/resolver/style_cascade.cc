@@ -2945,7 +2945,7 @@ const CSSParserContext* StyleCascade::GetParserContext(
 
 bool StyleCascade::HasFontSizeDependency(const CustomProperty& property,
                                          CSSVariableData* data) const {
-  if (!property.IsRegistered() || !data) {
+  if (!property.IsRegistered() || property.HasUniversalSyntax() || !data) {
     return false;
   }
   if (data->HasFontUnits() || data->HasLineHeightUnits()) {
