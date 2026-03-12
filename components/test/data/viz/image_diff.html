@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: system-ui, sans-serif;
+    }
+
+    td {
+      border: 1px solid gray;
+      padding: 0;
+      line-height: 0;
+    }
+
+    pre {
+      font-family: ui-monospace, monospace;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1 id="test-name">Test</h1>
+  <table>
+    <tr>
+      <th id="left-name">Left</th>
+      <th>Diff</th>
+      <th id="right-name">Right</th>
+    </tr>
+    <tr>
+      <td id="left-cell">
+        <img id="left" alt="left image">
+      </td>
+      <td>
+        <canvas id="diff-canvas"></canvas>
+      </td>
+      <td id="right-cell">
+        <img id="right" alt="right image">
+      </td>
+    </tr>
+  </table>
+  <button id="swap-button">Swap Left/Right</button>
+
+  <pre id="log"></pre>
+
+  <script>
+    function writeLogLine(line) {
+      document.getElementById('log').innerText += `${line}\n`;
+    }
+
+    function loadImage(imageElement, src) {
+      return new Promise((resolve, reject) => {
+        if (!imageElement) {
+          reject(new Error(`No image element.`));
+          return;
+        }
+        imageElement.onload = () => resolve();
+        imageElement.onerror = () => reject(new Error(`Failed to load image: ${src}`));
+        imageElement.src = src;
+      });
+    }
+
+    const params = new URLSearchParams(window.location.search);
+
+    if (!params.get('leftSrc') || !params.get('rightSrc')) {
+      writeLogLine(`Usage: image_diff.html\n\t?testName=...\n\t&leftName=Actual\n\t&leftSrc=data:image/png...\n\t&rightName=Expected\n\t&rightSrc=data:image/png...`);
+    }
+
+    const testName = params.get('testName') ?? "";
+    document.getElementById('test-name').innerText = testName;
+    document.title = `pixel_test.cc diff: ${testName}`;
+
+    const leftImageName = params.get('leftName');
+    document.getElementById('left-name').innerText = leftImageName;
+    const rightImageName = params.get('rightName');
+    document.getElementById('right-name').innerText = rightImageName;
+
+    const leftImage = document.getElementById('left');
+    const rightImage = document.getElementById('right');
+
+    Promise.all([
+      loadImage(leftImage, params.get('leftSrc')),
+      loadImage(rightImage, params.get('rightSrc'))
+    ]).then(() => {
+      {
+        // Set the favicon to the right (i.e. "expected") image.
+        const link = document.createElement('link');
+        link.type = 'image/x-icon';
+        link.rel = 'shortcut icon';
+        link.href = params.get('rightSrc');
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+
+      if (leftImage.width != rightImage.width || leftImage.height != rightImage.height) {
+        writeLogLine(`Image sizes differ!`);
+        writeLogLine(`  ${leftImageName} = ${leftImage.width}x${leftImage.height}`);
+        writeLogLine(`  ${rightImageName} = ${rightImage.width}x${rightImage.height}`);
+      }
+
+      const canvas = document.getElementById('diff-canvas');
+      canvas.width = rightImage.width;
+      canvas.height = rightImage.height;
+      const ctx = canvas.getContext('2d');
+
+      ctx.globalCompositeOperation = 'copy';
+      ctx.drawImage(leftImage, 0, 0);
+      const leftImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(rightImage, 0, 0);
+      const rightImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+      // Diff stats
+      let numDiffPixels = 0;
+      let largestDiffR = 0;
+      let largestDiffG = 0;
+      let largestDiffB = 0;
+      let hasAlphaDiff = false;
+      let diffLeft = Number.MAX_SAFE_INTEGER;
+      let diffRight = Number.MIN_SAFE_INTEGER;
+      let diffTop = Number.MAX_SAFE_INTEGER;
+      let diffBottom = Number.MIN_SAFE_INTEGER;
+
+      let diffImageData = new ImageData(canvas.width, canvas.height);
+      for (let i = 0; i < diffImageData.data.length; i += 4) {
+        const diffR = Math.abs(rightImageData.data[i + 0] - leftImageData.data[i + 0]);
+        const diffG = Math.abs(rightImageData.data[i + 1] - leftImageData.data[i + 1]);
+        const diffB = Math.abs(rightImageData.data[i + 2] - leftImageData.data[i + 2]);
+
+        const hasDiff = diffR || diffG || diffB;
+        if (hasDiff) {
+          diffImageData.data[i + 0] = Math.min(100 + (diffR + diffG + diffB) / 3, 255);
+        }
+        diffImageData.data[i + 3] = 255;
+
+        hasAlphaDiff |= Math.abs(rightImageData.data[i + 3] - leftImageData.data[i + 3]) != 0;
+
+        if (hasDiff) {
+          numDiffPixels++;
+
+          largestDiffR = Math.max(largestDiffR, diffR);
+          largestDiffG = Math.max(largestDiffG, diffG);
+          largestDiffB = Math.max(largestDiffB, diffB);
+
+          const y = Math.floor((i / 4) / canvas.width);
+          const x = (i / 4) % canvas.width;
+          if (x < diffLeft) {
+            diffLeft = x;
+          }
+          if (x > diffRight) {
+            diffRight = x;
+          }
+          if (y < diffTop) {
+            diffTop = y;
+          }
+          if (y > diffBottom) {
+            diffBottom = y;
+          }
+        }
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.putImageData(diffImageData, 0, 0);
+
+      if (hasAlphaDiff) {
+        writeLogLine(`hasAlphaDiff: ${hasAlphaDiff}`);
+      }
+      if (numDiffPixels > 0) {
+        writeLogLine(`numDiffPixels: ${numDiffPixels}`);
+        writeLogLine(`largest diff per channel: ${[largestDiffR, largestDiffG, largestDiffB]}`);
+
+        const diffWidth = diffRight - diffLeft;
+        const diffHeight = diffBottom - diffTop;
+        writeLogLine(`diff bounds: ${diffLeft},${diffTop} ${diffWidth}x${diffHeight}`);
+      }
+    }).catch(error => {
+      writeLogLine(error);
+    });
+
+    // Add a button to swap the images.
+    function setSwapped(swapped) {
+      document.getElementById('left-name').innerText = swapped ? rightImageName : leftImageName;
+      document.getElementById('right-name').innerText = swapped ? leftImageName : rightImageName;
+      document.getElementById('left-cell').appendChild(swapped ? rightImage : leftImage);
+      document.getElementById('right-cell').appendChild(swapped ? leftImage : rightImage);
+    }
+    const swapButton = document.getElementById('swap-button');
+    swapButton.addEventListener('pointerdown', () => setSwapped(true));
+    swapButton.addEventListener('pointerup', () => setSwapped(false));
+    swapButton.addEventListener('pointerleave', () => setSwapped(false));
+  </script>
+</body>
+
+</html>

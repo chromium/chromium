@@ -208,15 +208,8 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
       SkImageInfo::MakeN32Premul(result_bitmap_->width(),
                                  result_bitmap_->height()),
       ref_pixels->data(), result_bitmap_->width() * sizeof(SkColor));
-  bool result = comparator.Compare(*result_bitmap_, ref_pixels_bitmap);
-  if (!result) {
-    std::string res_bmp_data_url = GetPNGDataUrl(*result_bitmap_);
-    std::string ref_bmp_data_url = GetPNGDataUrl(ref_pixels_bitmap);
-    LOG(ERROR) << "Pixels do not match!";
-    LOG(ERROR) << "Actual: " << res_bmp_data_url;
-    LOG(ERROR) << "Expected: " << ref_bmp_data_url;
-  }
-  return result;
+
+  return MatchesBitmap(*result_bitmap_, ref_pixels_bitmap, comparator);
 }
 
 bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
@@ -225,15 +218,7 @@ bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
   RenderReadbackTargetAndAreaToResultBitmap(pass_list, pass_list->back().get(),
                                             nullptr);
 
-  bool result = comparator.Compare(*result_bitmap_, ref_bitmap);
-  if (!result) {
-    std::string res_bmp_data_url = GetPNGDataUrl(*result_bitmap_);
-    std::string ref_bmp_data_url = GetPNGDataUrl(ref_bitmap);
-    LOG(ERROR) << "Pixels do not match!";
-    LOG(ERROR) << "Actual: " << res_bmp_data_url;
-    LOG(ERROR) << "Expected: " << ref_bmp_data_url;
-  }
-  return result;
+  return MatchesBitmap(*result_bitmap_, ref_bitmap, comparator);
 }
 
 bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,

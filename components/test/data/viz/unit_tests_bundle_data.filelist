@@ -110,6 +110,7 @@
 //components/test/data/viz/green_with_blue_corner.png
 //components/test/data/viz/half_of_one_of_16_color_rects.png
 //components/test/data/viz/heavy_layer_tree.json
+//components/test/data/viz/image_diff.html
 //components/test/data/viz/image_mask_of_layer.png
 //components/test/data/viz/image_mask_with_effect.png
 //components/test/data/viz/inset_bottom_right.png
