@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
-#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -182,9 +181,12 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
   model_->SetTabStripUI(this);
 
   // Add all pinned / unpinned tabs regardless of group / split affiliation.
-  std::vector<std::pair<tabs::TabInterface*, int>> tabs_to_add;
+  std::vector<TabStrip::AddTabData> tabs_to_add;
   for (int i = 0; i < model_->count(); ++i) {
-    tabs_to_add.emplace_back(model_->GetTabAtIndex(i), i);
+    tabs::TabInterface* const tab_interface = model_->GetTabAtIndex(i);
+    tabs_to_add.push_back({.index = i,
+                           .handle = tab_interface->GetHandle(),
+                           .is_pinned = tab_interface->IsPinned()});
   }
   AddTabs(tabs_to_add);
 
@@ -655,10 +657,13 @@ void BrowserTabStripController::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   switch (change.type()) {
     case TabStripModelChange::kInserted: {
-      std::vector<std::pair<tabs::TabInterface*, int>> tabs_to_add;
+      std::vector<TabStrip::AddTabData> tabs_to_add;
       for (const auto& contents : change.GetInsert()->contents) {
         DCHECK(model_->ContainsIndex(contents.index));
-        tabs_to_add.emplace_back(contents.tab, contents.index);
+        tabs::TabInterface* const tab_interface = contents.tab;
+        tabs_to_add.push_back({.index = contents.index,
+                               .handle = tab_interface->GetHandle(),
+                               .is_pinned = tab_interface->IsPinned()});
       }
       AddTabs(tabs_to_add);
       break;
@@ -679,12 +684,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
       auto* move = change.GetMove();
       // Cancel any pending tab transition.
       hover_tab_selector_.CancelTabTransition();
-
-      // A move may have resulted in the pinned state changing, so pass in a
-      // tabs::TabData.
-      tabstrip_->MoveTab(move->from_index, move->to_index,
-                         tabs::TabData::FromTabInterface(
-                             model_->GetTabAtIndex(move->to_index)));
+      tabstrip_->MoveTab(move->from_index, move->to_index);
       break;
     }
     case TabStripModelChange::kReplaced:
@@ -882,18 +882,11 @@ const BrowserFrameView* BrowserTabStripController::GetFrameView() const {
 }
 
 void BrowserTabStripController::AddTabs(
-    std::vector<std::pair<tabs::TabInterface*, int>> contents_list) {
+    const std::vector<TabStrip::AddTabData>& tabs_data) {
   // Cancel any pending tab transition.
   hover_tab_selector_.CancelTabTransition();
 
-  std::vector<TabStrip::AddTabData> tabs_data;
-  for (const auto& [tab, index] : contents_list) {
-    tabs_data.push_back({.index = index,
-                         .handle = tab->GetHandle(),
-                         .data = tabs::TabData::FromTabInterface(tab)});
-  }
-
-  tabstrip_->AddTabsAt(std::move(tabs_data));
+  tabstrip_->AddTabsAt(tabs_data);
 }
 
 bool BrowserTabStripController::IsContextMenuCommandChecked(
