@@ -131,7 +131,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       })");
 
 // LINT.IfChange(ClientSafeBrowsingReportTypeString)
-std::string GetReportTypeSuffix(
+std::string_view GetReportTypeSuffix(
     safe_browsing::ClientSafeBrowsingReportRequest::ReportType report_type) {
   switch (report_type) {
     case safe_browsing::ClientSafeBrowsingReportRequest_ReportType_UNKNOWN:
@@ -349,7 +349,8 @@ void PingManager::OnThreatDetailsReportURLLoaderComplete(
   std::string metric = "SafeBrowsing.ClientSafeBrowsingReport.NetworkResult";
   std::string access_token_suffix =
       (has_access_token ? ".YesAccessToken" : ".NoAccessToken");
-  std::string report_type_token_suffix = "." + GetReportTypeSuffix(report_type);
+  std::string report_type_token_suffix =
+      base::StrCat({".", GetReportTypeSuffix(report_type)});
   RecordHttpResponseOrErrorCode(metric.c_str(), source->NetError(),
                                 response_code);
   RecordHttpResponseOrErrorCode((metric + access_token_suffix).c_str(),

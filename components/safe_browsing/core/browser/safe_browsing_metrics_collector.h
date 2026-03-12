@@ -177,7 +177,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
 
   static bool IsBypassEventType(const EventType& type);
   static bool IsSecuritySensitiveEventType(const EventType& type);
-  static std::string GetUserStateMetricSuffix(const UserState& user_state);
+  static std::string_view GetUserStateMetricSuffix(const UserState& user_state);
 
   // For daily metrics.
   void LogMetricsAndScheduleNextLogging();

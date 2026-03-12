@@ -151,7 +151,7 @@ base::FilePath GetDebugFeatureDirectory() {
       switches::kCsdDebugFeatureDirectoryFlag);
 }
 
-std::string GetRequestTypeName(
+std::string_view GetRequestTypeName(
     ClientSideDetectionType client_side_detection_type) {
   switch (client_side_detection_type) {
     case safe_browsing::ClientSideDetectionType::
@@ -261,8 +261,8 @@ void RecordPreClassificationCheckResultWithAndWithoutSuffix(
                                 result,
                                 PreClassificationCheckResult::NO_CLASSIFY_MAX);
   base::UmaHistogramEnumeration(
-      "SBClientPhishing.PreClassificationCheckResult." +
-          GetRequestTypeName(request_type),
+      base::StrCat({"SBClientPhishing.PreClassificationCheckResult.",
+                    GetRequestTypeName(request_type)}),
       result, PreClassificationCheckResult::NO_CLASSIFY_MAX);
 }
 
@@ -304,16 +304,19 @@ safe_browsing::ThreatSubtype GetThreatSubtype(
 void LogPhishingDetectionResult(ClientSideDetectionType request_type,
                                 mojom::PhishingDetectorResult result,
                                 std::optional<base::TimeDelta> duration) {
-  std::string request_type_name = GetRequestTypeName(request_type);
+  std::string_view request_type_name = GetRequestTypeName(request_type);
   base::UmaHistogramEnumeration("SBClientPhishing.PhishingDetectorResult",
                                 result);
   base::UmaHistogramEnumeration(
-      "SBClientPhishing.PhishingDetectorResult." + request_type_name, result);
+      base::StrCat(
+          {"SBClientPhishing.PhishingDetectorResult.", request_type_name}),
+      result);
   if (duration) {
     UmaHistogramMediumTimes("SBClientPhishing.PhishingDetectionDuration",
                             duration.value());
     UmaHistogramMediumTimes(
-        "SBClientPhishing.PhishingDetectionDuration." + request_type_name,
+        base::StrCat(
+            {"SBClientPhishing.PhishingDetectionDuration.", request_type_name}),
         duration.value());
   }
 }
@@ -449,8 +452,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     // We should only log if the callback has not been answered yet.
     if (ShouldClassifyForPhishing()) {
       base::UmaHistogramExactLinear(
-          "SBClientPhishing.PreClassificationCheckCancelActor." +
-              GetRequestTypeName(phishing_detection_request_type_),
+          base::StrCat({"SBClientPhishing.PreClassificationCheckCancelActor.",
+                        GetRequestTypeName(phishing_detection_request_type_)}),
           request_type, ClientSideDetectionType_MAX + 1);
     }
     Cancel();
@@ -579,8 +582,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
         case CREDIT_CARD_FORM:
         case CLIPBOARD_COPY_API:
           base::UmaHistogramBoolean(
-              "SBClientPhishing.MatchCSDAllowlistOn" +
-                  GetRequestTypeName(phishing_detection_request_type_),
+              base::StrCat(
+                  {"SBClientPhishing.MatchCSDAllowlistOn",
+                   GetRequestTypeName(phishing_detection_request_type_)}),
               match_allowlist);
           break;
         default:
@@ -625,8 +629,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     base::UmaHistogramEnumeration(
         "SBClientPhishing.MatchHighConfidenceAllowlist", match_result);
     base::UmaHistogramEnumeration(
-        "SBClientPhishing.MatchHighConfidenceAllowlist." +
-            GetRequestTypeName(phishing_detection_request_type_),
+        base::StrCat({"SBClientPhishing.MatchHighConfidenceAllowlist.",
+                      GetRequestTypeName(phishing_detection_request_type_)}),
         match_result);
 
     if (phishing_reason == NO_CLASSIFY_MAX && ShouldAcceptHCAllowlist()) {
@@ -1282,8 +1286,9 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
       "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification",
       intelligent_scan_ongoing);
   base::UmaHistogramBoolean(
-      "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification." +
-          GetRequestTypeName(request_type),
+      base::StrCat(
+          {"SBClientPhishing.IntelligentScanOngoingOnNewPreclassification.",
+           GetRequestTypeName(request_type)}),
       intelligent_scan_ongoing);
   if (intelligent_scan_ongoing) {
     intelligent_scan_delegate_->CancelIntelligentScan(*intelligent_scan_id_);
@@ -1359,8 +1364,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       ClientSideDetectionFeatureCache::FromWebContents(web_contents());
 
   phishing_detector_.reset();
-
-  std::string request_type_name = GetRequestTypeName(request_type);
 
   base::TimeDelta duration = base::TimeTicks::Now() - start_time;
   LogPhishingDetectionResult(request_type, result, duration);
@@ -1544,14 +1547,15 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     mojom::PhishingDetectorResult result) {
-  std::string request_type_name =
+  std::string_view request_type_name =
       GetRequestTypeName(verdict->client_side_detection_type());
   if (result != mojom::PhishingDetectorResult::CLASSIFICATION_SKIPPED) {
     ClassifyPhishingThroughThresholds(verdict.get());
     base::UmaHistogramBoolean("SBClientPhishing.LocalModelDetectsPhishing",
                               verdict->is_phishing());
     base::UmaHistogramBoolean(
-        "SBClientPhishing.LocalModelDetectsPhishing." + request_type_name,
+        base::StrCat(
+            {"SBClientPhishing.LocalModelDetectsPhishing.", request_type_name}),
         verdict->is_phishing());
   }
   // When there is a tflite match, the target image embeddings are not
@@ -1665,7 +1669,7 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
     mojom::PhishingImageEmbeddingResult result,
     std::optional<mojo_base::ProtoWrapper> image_feature_embedding_wrapper,
     std::optional<mojo_base::ProtoWrapper> visual_features_wrapper) {
-  std::string request_type_name =
+  std::string_view request_type_name =
       GetRequestTypeName(verdict->client_side_detection_type());
   base::TimeDelta image_embedding_duration =
       base::TimeTicks::Now() - image_embedding_start_time_;
@@ -1673,12 +1677,14 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
       "SBClientPhishing.PhishingImageEmbeddingDuration",
       image_embedding_duration);
   base::UmaHistogramMediumTimes(
-      "SBClientPhishing.PhishingImageEmbeddingDuration." + request_type_name,
+      base::StrCat({"SBClientPhishing.PhishingImageEmbeddingDuration.",
+                    request_type_name}),
       image_embedding_duration);
   base::UmaHistogramEnumeration("SBClientPhishing.PhishingImageEmbeddingResult",
                                 result);
   base::UmaHistogramEnumeration(
-      "SBClientPhishing.PhishingImageEmbeddingResult." + request_type_name,
+      base::StrCat({"SBClientPhishing.PhishingImageEmbeddingResult.",
+                    request_type_name}),
       result);
   if (result == mojom::PhishingImageEmbeddingResult::kSuccess) {
     std::optional<ImageFeatureEmbedding> embedding;
@@ -1767,12 +1773,14 @@ void ClientSideDetectionHost::MaybeStartIntelligentScanForScamDetection(
         "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime",
         intelligent_scan_eligible);
     base::UmaHistogramBoolean(
-        "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
-            GetRequestTypeName(verdict->client_side_detection_type()),
+        base::StrCat(
+            {"SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime.",
+             GetRequestTypeName(verdict->client_side_detection_type())}),
         intelligent_scan_eligible);
     base::UmaHistogramBoolean(
-        "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime." +
-            GetRequestTypeName(verdict->client_side_detection_type()),
+        base::StrCat(
+            {"SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime.",
+             GetRequestTypeName(verdict->client_side_detection_type())}),
         intelligent_scan_eligible);
 
     if (!intelligent_scan_eligible) {
@@ -1821,12 +1829,12 @@ void ClientSideDetectionHost::OnInnerTextComplete(
   base::UmaHistogramCounts100000(
       "SBClientPhishing.IntelligentScanInnerTextSize", inner_text.size());
   base::UmaHistogramCounts100000(
-      "SBClientPhishing.OnDeviceModelInnerTextSize." +
-          GetRequestTypeName(verdict->client_side_detection_type()),
+      base::StrCat({"SBClientPhishing.OnDeviceModelInnerTextSize.",
+                    GetRequestTypeName(verdict->client_side_detection_type())}),
       inner_text.size());
   base::UmaHistogramCounts100000(
-      "SBClientPhishing.IntelligentScanInnerTextSize." +
-          GetRequestTypeName(verdict->client_side_detection_type()),
+      base::StrCat({"SBClientPhishing.IntelligentScanInnerTextSize.",
+                    GetRequestTypeName(verdict->client_side_detection_type())}),
       inner_text.size());
   if (inner_text.size() <= kInnerTextMinThresholdBytes) {
     IntelligentScanInfo intelligent_scan_info;
@@ -1866,12 +1874,12 @@ void ClientSideDetectionHost::OnIntelligentScanDone(
       "SBClientPhishing.IntelligentScanHasSuccessfulResponse",
       response.execution_success);
   base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
-          GetRequestTypeName(verdict->client_side_detection_type()),
+      base::StrCat({"SBClientPhishing.OnDeviceModelHasSuccessfulResponse.",
+                    GetRequestTypeName(verdict->client_side_detection_type())}),
       response.execution_success);
   base::UmaHistogramBoolean(
-      "SBClientPhishing.IntelligentScanHasSuccessfulResponse." +
-          GetRequestTypeName(verdict->client_side_detection_type()),
+      base::StrCat({"SBClientPhishing.IntelligentScanHasSuccessfulResponse.",
+                    GetRequestTypeName(verdict->client_side_detection_type())}),
       response.execution_success);
   IntelligentScanInfo intelligent_scan_info;
   if (response.execution_success) {
@@ -1935,12 +1943,13 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
     std::optional<IntelligentScanVerdict> intelligent_scan_verdict) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::string request_type_name = GetRequestTypeName(request_type);
+  std::string_view request_type_name = GetRequestTypeName(request_type);
   if (!is_from_cache) {
     base::UmaHistogramBoolean("SBClientPhishing.ServerModelDetectsPhishing",
                               is_phishing);
     base::UmaHistogramBoolean(
-        "SBClientPhishing.ServerModelDetectsPhishing." + request_type_name,
+        base::StrCat({"SBClientPhishing.ServerModelDetectsPhishing.",
+                      request_type_name}),
         is_phishing);
   }
 
@@ -1974,9 +1983,9 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
           "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
           did_match_high_confidence_allowlist.value());
       base::UmaHistogramBoolean(
-          "SBClientPhishing."
-          "HighConfidenceAllowlistMatchOnServerVerdictPhishy." +
-              request_type_name,
+          base::StrCat({"SBClientPhishing."
+                        "HighConfidenceAllowlistMatchOnServerVerdictPhishy.",
+                        request_type_name}),
           did_match_high_confidence_allowlist.value());
     }
     DCHECK(web_contents());
