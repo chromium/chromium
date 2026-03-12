@@ -173,7 +173,8 @@ public class NewTabPage
     private final WindowAndroid mWindowAndroid;
     private FeedSurfaceProvider mFeedSurfaceProvider;
 
-    private NewTabPageLayout mNewTabPageLayout;
+    private NtpLayout mNewTabPageLayout;
+    private NewTabPageCoordinator mNewTabPageCoordinator;
     private @Nullable TabObserver mTabObserver;
     private @Nullable LifecycleObserver mLifecycleObserver;
     protected boolean mSearchProviderHasLogo;
@@ -292,7 +293,7 @@ public class NewTabPage
         @Override
         public boolean isLocationBarShownInNtp() {
             if (mIsDestroyed) return false;
-            return isInSingleUrlBarMode() && !mNewTabPageLayout.urlFocusAnimationsDisabled();
+            return isInSingleUrlBarMode() && !mNewTabPageCoordinator.urlFocusAnimationsDisabled();
         }
 
         @Override
@@ -385,7 +386,7 @@ public class NewTabPage
             if (mIsDestroyed) return;
 
             super.onLoadingComplete(tiles);
-            mNewTabPageLayout.onTilesLoaded();
+            mNewTabPageCoordinator.onTilesLoaded();
         }
 
         @Override
@@ -512,7 +513,7 @@ public class NewTabPage
                             recordNtpShown();
                         }
                         maybeUpdateMagicStack();
-                        mNewTabPageLayout.onSwitchToForeground();
+                        mNewTabPageCoordinator.onSwitchToForeground();
                     }
 
                     @Override
@@ -602,9 +603,7 @@ public class NewTabPage
 
         NewTabPageUma.recordContentSuggestionsDisplayStatus(profile);
 
-        mNewTabPageLayout.initialize(
-                mNewTabPageManager,
-                activity,
+        mNewTabPageCoordinator.initialize(
                 mTileGroupDelegate,
                 mSearchProviderHasLogo,
                 mIsDefaultSearchEngineGoogle,
@@ -643,7 +642,7 @@ public class NewTabPage
      * @param edgeToEdgeControllerSupplier The supplier to {@link EdgeToEdgeController}.
      * @param startupMetricsTracker Used to record NTP startup metric.
      */
-    @EnsuresNonNull({"mNewTabPageLayout", "mFeedSurfaceProvider"})
+    @EnsuresNonNull({"mNewTabPageCoordinator", "mNewTabPageLayout", "mFeedSurfaceProvider"})
     protected void initializeMainView(
             Activity activity,
             WindowAndroid windowAndroid,
@@ -660,7 +659,9 @@ public class NewTabPage
         LayoutInflater inflater = LayoutInflater.from(activity);
         // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
         Log.i(TAG, "NewTabPageLayout inflate");
-        mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
+        mNewTabPageLayout = (NtpLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
+        mNewTabPageCoordinator =
+                new NewTabPageCoordinator(mNewTabPageManager, activity, mNewTabPageLayout);
 
         FeedSurfaceCoordinator.ActionDelegateFactory createActionDelegate =
                 () ->
@@ -689,7 +690,7 @@ public class NewTabPage
                         activity,
                         snackbarManager,
                         windowAndroid,
-                        new SnapScrollHelperImpl(mNewTabPageManager, mNewTabPageLayout),
+                        new SnapScrollHelperImpl(mNewTabPageManager, mNewTabPageCoordinator),
                         mNewTabPageLayout,
                         mBrowserControlsStateProvider.getTopControlsHeight(),
                         isInNightMode,
@@ -789,7 +790,7 @@ public class NewTabPage
         if (!mIsTablet) {
             mUseLightIconTint = applyWhiteBackgroundOnSearchBox;
         }
-        mNewTabPageLayout.onCustomizedBackgroundChanged(applyWhiteBackgroundOnSearchBox);
+        mNewTabPageCoordinator.onCustomizedBackgroundChanged(applyWhiteBackgroundOnSearchBox);
     }
 
     /** Initializes whether to use a light tint color on icons of toolbar and status bar. */
@@ -821,7 +822,7 @@ public class NewTabPage
         // However, consumeTopInset being false takes priority — if the parent is not consuming top
         // insets (e.g. status indicator is visible), the NTP must not apply its own top inset
         // either, since the content view already has the system top padding.
-        mNewTabPageLayout.onToEdgeChange(
+        mNewTabPageCoordinator.onToEdgeChange(
                 systemTopInset, consumeTopInset && supportsEdgeToEdgeOnTop());
     }
 
@@ -880,16 +881,16 @@ public class NewTabPage
                 - mTabStripHeightSupplier.get();
     }
 
-    /** Returns the instance of {@link NewTabPageLayout}. */
+    /** Returns the instance of {@link NewTabPageCoordinator}. */
     @VisibleForTesting
-    public NewTabPageLayout getNewTabPageLayout() {
-        return mNewTabPageLayout;
+    public NewTabPageCoordinator getNewTabPageCoordinator() {
+        return mNewTabPageCoordinator;
     }
 
     /** Returns the view container for the new tab layout. */
     @VisibleForTesting
     public View getLayout() {
-        return mNewTabPageLayout;
+        return mNewTabPageCoordinator.getNewTabPageLayout();
     }
 
     /**
@@ -898,7 +899,7 @@ public class NewTabPage
      * @param disable Whether to disable the animations.
      */
     public void setUrlFocusAnimationsDisabled(boolean disable) {
-        mNewTabPageLayout.setUrlFocusAnimationsDisabled(disable);
+        mNewTabPageCoordinator.setUrlFocusAnimationsDisabled(disable);
     }
 
     private boolean isInSingleUrlBarMode() {
@@ -914,7 +915,7 @@ public class NewTabPage
     private void onSearchEngineUpdated() {
         updateSearchProvider();
 
-        mNewTabPageLayout.setSearchProviderInfo(
+        mNewTabPageCoordinator.setSearchProviderInfo(
                 mSearchProviderHasLogo, mIsDefaultSearchEngineGoogle);
         // TODO(crbug.com/40226731): Remove this call when the Feed position experiment is
         // cleaned up.
@@ -929,7 +930,7 @@ public class NewTabPage
      * @param percent The percentage of the URL bar focus animation.
      */
     public void setUrlFocusChangeAnimationPercent(float percent) {
-        mNewTabPageLayout.setUrlFocusChangeAnimationPercent(percent);
+        mNewTabPageCoordinator.setUrlFocusChangeAnimationPercent(percent);
     }
 
     /**
@@ -940,7 +941,7 @@ public class NewTabPage
      *     to the NewTabPage view.
      */
     public void getSearchBoxBounds(Rect bounds, Point translation) {
-        mNewTabPageLayout.getSearchBoxBounds(bounds, translation, getView());
+        mNewTabPageCoordinator.getSearchBoxBounds(bounds, translation, getView());
     }
 
     /**
@@ -949,7 +950,7 @@ public class NewTabPage
      * @return The vertical inset in pixels.
      */
     public int getSearchBoxBoundsVerticalInset() {
-        return mNewTabPageLayout.getSearchBoxBoundsVerticalInset();
+        return mNewTabPageCoordinator.getSearchBoxBoundsVerticalInset();
     }
 
     /**
@@ -958,7 +959,7 @@ public class NewTabPage
      * @param alpha opacity (alpha) value to use.
      */
     public void setSearchBoxAlpha(float alpha) {
-        mNewTabPageLayout.setSearchBoxAlpha(alpha);
+        mNewTabPageCoordinator.setSearchBoxAlpha(alpha);
     }
 
     /**
@@ -967,7 +968,7 @@ public class NewTabPage
      * @param alpha opacity (alpha) value to use.
      */
     public void setSearchProviderLogoAlpha(float alpha) {
-        mNewTabPageLayout.setSearchProviderLogoAlpha(alpha);
+        mNewTabPageCoordinator.setSearchProviderLogoAlpha(alpha);
     }
 
     /**
@@ -981,14 +982,14 @@ public class NewTabPage
      * @see org.chromium.chrome.browser.omnibox.NewTabPageDelegate#hasCompletedFirstLayout().
      */
     public boolean hasCompletedFirstLayout() {
-        return mNewTabPageLayout.getHeight() > 0;
+        return mNewTabPageCoordinator.getNewTabPageLayout().getHeight() > 0;
     }
 
     /**
      * @return Whether the location bar has been scrolled to top in the NTP.
      */
     public boolean isLocationBarScrolledToTopInNtp() {
-        return mNewTabPageLayout.getToolbarTransitionPercentage() == 1;
+        return mNewTabPageCoordinator.getToolbarTransitionPercentage() == 1;
     }
 
     /**
@@ -997,7 +998,7 @@ public class NewTabPage
      * @param listener The listener to be notified on changes.
      */
     public void setSearchBoxScrollListener(@Nullable OnSearchBoxScrollListener listener) {
-        mNewTabPageLayout.setSearchBoxScrollListener(listener);
+        mNewTabPageCoordinator.setSearchBoxScrollListener(listener);
     }
 
     /** Sets the OmniboxStub that this page interacts with. */
@@ -1007,7 +1008,7 @@ public class NewTabPage
             // The toolbar can't get the reference to the native page until its initialization is
             // finished, so we can't cache it here and transfer it to the view later. We pull that
             // state from the location bar when we get a reference to it as a workaround.
-            mNewTabPageLayout.setUrlFocusChangeAnimationPercent(
+            mNewTabPageCoordinator.setUrlFocusChangeAnimationPercent(
                     omniboxStub.isUrlBarFocused() ? 1f : 0f);
 
             FeedReliabilityLogger feedReliabilityLogger =
@@ -1020,7 +1021,7 @@ public class NewTabPage
         mVoiceRecognitionHandler = mOmniboxStub.getVoiceRecognitionHandler();
         if (mVoiceRecognitionHandler != null) {
             mVoiceRecognitionHandler.addObserver(this);
-            mNewTabPageLayout.updateActionButtonVisibility();
+            mNewTabPageCoordinator.updateActionButtonVisibility();
         }
     }
 
@@ -1042,7 +1043,7 @@ public class NewTabPage
 
     @Override
     public void onVoiceAvailabilityImpacted() {
-        mNewTabPageLayout.updateActionButtonVisibility();
+        mNewTabPageCoordinator.updateActionButtonVisibility();
     }
 
     /** Adds an observer to be notified on most visited tile clicks. */
@@ -1247,26 +1248,26 @@ public class NewTabPage
     @Override
     public void reload() {
         mFeedSurfaceProvider.reload();
-        mNewTabPageLayout.reload();
+        mNewTabPageCoordinator.reload();
     }
 
     @Override
     public int getTopInset() {
-        return mNewTabPageLayout.getTopInset();
+        return mNewTabPageCoordinator.getTopInset();
     }
 
     // InvalidationAwareThumbnailProvider
 
     @Override
     public boolean shouldCaptureThumbnail() {
-        return mNewTabPageLayout.shouldCaptureThumbnail()
+        return mNewTabPageCoordinator.shouldCaptureThumbnail()
                 || mFeedSurfaceProvider.shouldCaptureThumbnail()
                 || mSnapshotSingleTabCardChanged;
     }
 
     @Override
     public void captureThumbnail(Canvas canvas) {
-        mNewTabPageLayout.onPreCaptureThumbnail();
+        mNewTabPageCoordinator.onPreCaptureThumbnail();
         mFeedSurfaceProvider.captureThumbnail(canvas);
         mSnapshotSingleTabCardChanged = false;
     }
@@ -1331,7 +1332,7 @@ public class NewTabPage
 
         mSearchResumptionModuleCoordinator =
                 SearchResumptionModuleUtils.mayCreateSearchResumptionModule(
-                        mNewTabPageLayout,
+                        mNewTabPageCoordinator.getNewTabPageLayout(),
                         mTabModelSelector.getCurrentModel(),
                         mTab,
                         profile,
@@ -1384,8 +1385,10 @@ public class NewTabPage
         mSingleTabCardContainer =
                 (FrameLayout)
                         ((ViewStub)
-                                        mNewTabPageLayout.findViewById(
-                                                R.id.tab_switcher_module_container_stub))
+                                        mNewTabPageCoordinator
+                                                .getNewTabPageLayout()
+                                                .findViewById(
+                                                        R.id.tab_switcher_module_container_stub))
                                 .inflate();
         mSingleTabSwitcherCoordinator =
                 new SingleTabSwitcherCoordinator(
@@ -1410,10 +1413,11 @@ public class NewTabPage
      */
     @EnsuresNonNull({"mHomeModulesContainer", "mHomeModulesCoordinator"})
     private void initializeMagicStack() {
+        NtpLayout newTabPageLayout = mNewTabPageCoordinator.getNewTabPageLayout();
         mHomeModulesContainer =
                 (ViewGroup)
                         ((ViewStub)
-                                        mNewTabPageLayout.findViewById(
+                                        newTabPageLayout.findViewById(
                                                 R.id.home_modules_recycler_view_stub))
                                 .inflate();
         MonotonicObservableSupplier<Profile> profileSupplier =
@@ -1422,7 +1426,7 @@ public class NewTabPage
                 new HomeModulesCoordinator(
                         mActivity,
                         this,
-                        mNewTabPageLayout,
+                        newTabPageLayout,
                         HomeModulesConfigManager.getInstance(),
                         profileSupplier,
                         assertNonNull(assumeNonNull(mModuleRegistrySupplier).get()));
@@ -1487,7 +1491,7 @@ public class NewTabPage
         return mHomeModulesContainer.getVisibility() == View.VISIBLE;
     }
 
-    /** Destroy the single tab card on the {@link NewTabPageLayout}. */
+    /** Destroy the single tab card on the {@link NewTabPageCoordinator}. */
     @VisibleForTesting
     void destroySingleTabCard() {
         if (mSingleTabCardContainer != null) mSingleTabCardContainer.removeAllViews();
@@ -1586,6 +1590,6 @@ public class NewTabPage
     }
 
     public void enableSearchBoxEditText(boolean enable) {
-        mNewTabPageLayout.enableSearchBoxEditText(enable);
+        mNewTabPageCoordinator.enableSearchBoxEditText(enable);
     }
 }

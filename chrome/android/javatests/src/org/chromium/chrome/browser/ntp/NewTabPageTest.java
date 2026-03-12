@@ -460,25 +460,27 @@ public class NewTabPageTest {
                 new Runnable() {
                     @Override
                     public void run() {
-                        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
+                        NewTabPageCoordinator ntpCoordinator = mNtp.getNewTabPageCoordinator();
                         View logoView = mNtp.getLayout().findViewById(R.id.search_provider_logo);
                         Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
 
-                        ntpLayout.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle= */ true);
+                        ntpCoordinator.setSearchProviderInfo(
+                                /* hasLogo= */ false, /* isGoogle= */ true);
                         // Mock to notify the template URL service observer.
                         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo())
                                 .thenReturn(false);
                         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
-                        ntpLayout
+                        ntpCoordinator
                                 .getLogoCoordinatorForTesting()
                                 .onTemplateURLServiceChangedForTesting();
                         Assert.assertEquals(View.GONE, logoView.getVisibility());
 
-                        ntpLayout.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
+                        ntpCoordinator.setSearchProviderInfo(
+                                /* hasLogo= */ true, /* isGoogle= */ true);
                         // Mock to notify the template URL service observer.
                         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo())
                                 .thenReturn(true);
-                        ntpLayout
+                        ntpCoordinator
                                 .getLogoCoordinatorForTesting()
                                 .onTemplateURLServiceChangedForTesting();
                         Assert.assertEquals(View.VISIBLE, logoView.getVisibility());
@@ -802,8 +804,8 @@ public class NewTabPageTest {
     @Feature({"NewTabPage"})
     public void testRecordHistogramLogoClick_Ntp() {
         LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
-        NewTabPageLayout ntpLayout = mNtp.getNewTabPageLayout();
-        LogoCoordinator logoCoordinator = ntpLayout.getLogoCoordinatorForTesting();
+        NewTabPageCoordinator ntpCoordinator = mNtp.getNewTabPageCoordinator();
+        LogoCoordinator logoCoordinator = ntpCoordinator.getLogoCoordinatorForTesting();
         logoCoordinator.setLogoBridgeForTesting(mLogoBridge);
         logoCoordinator.setOnLogoClickUrlForTesting(TEST_URL);
         HistogramWatcher histogramWatcher =
@@ -996,7 +998,7 @@ public class NewTabPageTest {
                 new Callable<>() {
                     @Override
                     public Boolean call() {
-                        return mNtp.getNewTabPageLayout().urlFocusAnimationsDisabled();
+                        return mNtp.getNewTabPageCoordinator().urlFocusAnimationsDisabled();
                     }
                 });
     }
@@ -1021,7 +1023,7 @@ public class NewTabPageTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            ntp.getNewTabPageLayout().getUrlFocusChangeAnimationPercent(),
+                            ntp.getNewTabPageCoordinator().getUrlFocusChangeAnimationPercent(),
                             is(percent));
                 });
     }

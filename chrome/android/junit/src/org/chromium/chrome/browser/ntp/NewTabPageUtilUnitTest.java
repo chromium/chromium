@@ -34,7 +34,9 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 
-/** Unit tests for helper functions in {@link NewTabPage} and {@link NewTabPageLayout} classes. */
+/**
+ * Unit tests for helper functions in {@link NewTabPage} and {@link NewTabPageCoordinator} classes.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NewTabPageUtilUnitTest {
