@@ -443,10 +443,13 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
 }
 
 bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
-  return MaySupportWebGLImageChromium() &&
-         (WebGLImageChromiumEnabled() ||
-          base::FeatureList::IsEnabled(
-              features::kLowLatencyWebGLImageChromium));
+  if (!MaySupportWebGLImageChromium()) {
+    return false;
+  }
+  if (WebGLImageChromiumEnabled()) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
 }
 
 bool SharedGpuContext::WebGLImageChromiumEnabled() {
