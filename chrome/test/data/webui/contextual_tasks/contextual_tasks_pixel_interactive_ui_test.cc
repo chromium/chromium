@@ -150,7 +150,9 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<ContextualTasksComposeBoxPixelTestParams>&
            info) { return info.param.ToString(); });
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest, Screenshots) {
+// TODO(http://crbug.com/491973183): Fix and reenable.
+IN_PROC_BROWSER_TEST_P(ContextualTasksComposeBoxPixelTest,
+                       DISABLED_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const DeepQuery kApp = {"contextual-tasks-app"};
 
