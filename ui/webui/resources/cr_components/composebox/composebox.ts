@@ -1930,6 +1930,12 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     this.submitCleanup_();
+    // We only close the composebox when opening in a new tab because doing
+    // so in the current tab causes a visual jitter where the composebox
+    // closes before the new results page finishes loading.
+    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+      this.closeComposebox_();
+    }
   }
 
   /**
@@ -1940,8 +1946,19 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.matches.selectIndex(e.detail.index);
   }
 
-  protected onMatchClick_() {
+  protected onMatchClick_(e: CustomEvent<{
+    ctrlKey: boolean,
+    metaKey: boolean,
+    shiftKey: boolean,
+  }>) {
     this.clearAutocompleteMatches();
+    // We only close the composebox when opening in a new tab because doing
+    // so in the current tab causes a visual jitter where the composebox
+    // closes before the new results page finishes loading.
+    if (e && e.detail &&
+        (e.detail.ctrlKey || e.detail.metaKey || e.detail.shiftKey)) {
+      this.closeComposebox_();
+    }
   }
 
   protected onSelectedMatchIndexChanged_(e: CustomEvent<{value: number}>) {
