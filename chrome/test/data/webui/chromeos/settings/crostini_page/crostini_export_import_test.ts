@@ -119,6 +119,7 @@ suite('<settings-crostini-export-import>', () => {
       showCrostiniExportImport: true,
       showCrostiniPortForwarding: true,
       showCrostiniDiskResize: true,
+      arcAdbSideloadingSupported: true,
       showCrostiniExtraContainers: true,
     });
     crostiniBrowserProxy = new TestCrostiniBrowserProxy();
