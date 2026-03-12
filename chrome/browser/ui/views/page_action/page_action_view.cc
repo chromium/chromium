@@ -353,6 +353,7 @@ void PageActionView::CreateAndShowAnchoredMessage(
   const std::u16string chip_text(label()->GetText());
 
   if (anchored_message_) {
+    anchored_message_->UpdateContent(model);
     return;
   }
 

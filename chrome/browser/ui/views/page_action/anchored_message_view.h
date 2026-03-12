@@ -11,17 +11,21 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
 namespace views {
+class ImageButton;
+class ImageView;
+class Label;
 class Widget;
 }
 
 namespace page_actions {
+
+class ChipContainerView;
 
 // AnchoredMessageBubbleView is the view displaying the anchored message for a
 // given page action. It is created and destroyed dynamically.
@@ -44,6 +48,8 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
 
+  void UpdateContent(const PageActionModelInterface& model);
+
  protected:
   void OnThemeChanged() override;
 
@@ -51,12 +57,12 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   void ChipCallback();
 
   raw_ptr<views::Label> label_ = nullptr;
-  raw_ptr<views::View> chip_container_ = nullptr;
+  raw_ptr<ChipContainerView> chip_container_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   std::optional<ui::ImageModel> icon_ = std::nullopt;
-  const std::u16string label_text_;
-  const bool show_close_button_;
+  std::u16string label_text_;
+  bool show_close_button_;
   base::RepeatingClosure chip_callback_;
   base::RepeatingClosure close_callback_;
 };

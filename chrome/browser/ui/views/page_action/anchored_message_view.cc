@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
-#include "base/functional/callback_forward.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,17 +24,21 @@
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
 namespace page_actions {
-
-namespace {
 
 // ChipContainerView holds the clickable chip of the anchored message, similar
 // to the Suggestion Chip version of the Page Action View.
@@ -41,23 +48,24 @@ class ChipContainerView : public views::View {
   ChipContainerView(const std::u16string& label_text,
                     const std::optional<ui::ImageModel>& icon,
                     base::RepeatingClosure callback)
-      : icon_(icon), callback_(callback) {
-    if (icon_) {
-      icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-    }
-    if (label_text.size() > 0) {
-      label_ = AddChildView(std::make_unique<views::Label>(label_text));
-      label_->SetAutoColorReadabilityEnabled(false);
-    }
+      : callback_(callback) {
+    icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+    icon_view_->SetVisible(false);
+    label_ = AddChildView(std::make_unique<views::Label>());
+    label_->SetVisible(false);
+    label_->SetAutoColorReadabilityEnabled(false);
 
     SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 4))
         ->set_cross_axis_alignment(
             views::BoxLayout::CrossAxisAlignment::kCenter);
-    SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 16, 0, 0));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(4, 15)));
+
+    Update(label_text, icon);
   }
+
+  ~ChipContainerView() override = default;
 
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
@@ -69,7 +77,7 @@ class ChipContainerView : public views::View {
 
     SetBackground(views::CreateRoundedRectBackground(
         color_provider->GetColor(ui::kColorSysPrimary), 18));
-    if (icon_view_ && icon_) {
+    if (icon_) {
       // Assuming `icon_` is a vector icon, re-colorize it.
       if (icon_->IsVectorIcon()) {
         ui::ImageModel colored_icon = ui::ImageModel::FromVectorIcon(
@@ -81,9 +89,7 @@ class ChipContainerView : public views::View {
       }
       icon_view_->SetImageSize(gfx::Size(20, 20));
     }
-    if (label_) {
-      label_->SetEnabledColor(color_provider->GetColor(ui::kColorSysOnPrimary));
-    }
+    label_->SetEnabledColor(color_provider->GetColor(ui::kColorSysOnPrimary));
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
@@ -96,6 +102,16 @@ class ChipContainerView : public views::View {
     return false;
   }
 
+ public:
+  void Update(const std::u16string& label_text,
+              const std::optional<ui::ImageModel>& icon) {
+    icon_ = icon;
+    icon_view_->SetVisible(icon_ != std::nullopt);
+    label_->SetVisible(label_text.size() > 0);
+    label_->SetText(label_text);
+    OnThemeChanged();
+  }
+
  private:
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
@@ -106,8 +122,6 @@ class ChipContainerView : public views::View {
 BEGIN_METADATA(ChipContainerView)
 END_METADATA
 
-}  // namespace
-
 AnchoredMessageBubbleView::AnchoredMessageBubbleView(
     views::BubbleAnchor parent,
     const PageActionModelInterface& model,
@@ -117,9 +131,6 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
                            views::BubbleBorder::Arrow::TOP_RIGHT,
                            views::BubbleBorder::DIALOG_SHADOW,
                            true),
-      icon_(model.GetAnchoredMessageIcon()),
-      label_text_(model.GetAnchoredMessageText()),
-      show_close_button_(model.GetAnchoredMessageCloseIcon()),
       chip_callback_(std::move(chip_callback)),
       close_callback_(std::move(close_callback)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -132,44 +143,71 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  if (icon_) {
-    icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-    icon_view_->SetImage(icon_.value());
-    icon_view_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 12));
-    icon_view_->SetImageSize(gfx::Size(20, 20));
-  }
+  icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_view_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 12));
+  icon_view_->SetImageSize(gfx::Size(20, 20));
 
-  label_ = AddChildView(std::make_unique<views::Label>(label_text_));
+  label_ = AddChildView(std::make_unique<views::Label>());
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   label_->SetMultiLine(false);
 
-  std::optional<ui::ImageModel> chip_icon;
+  chip_container_ = AddChildView(std::make_unique<ChipContainerView>(
+      std::u16string(), std::nullopt,
+      base::BindRepeating(&AnchoredMessageBubbleView::ChipCallback,
+                          base::Unretained(this))));
 
+  close_button_ =
+      AddChildView(std::make_unique<views::ImageButton>(close_callback_));
+  close_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(vector_icons::kCloseRoundedIcon,
+                                     ui::kColorIcon, 16));
+  close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
+  close_button_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 8, 0, 0));
+
+  UpdateContent(model);
+}
+
+void AnchoredMessageBubbleView::UpdateContent(
+    const PageActionModelInterface& model) {
+  icon_ = model.GetAnchoredMessageIcon();
   if (icon_) {
-    chip_icon = std::nullopt;
+    icon_view_->SetImage(icon_.value());
+    icon_view_->SetVisible(true);
   } else {
-    chip_icon = model.GetImage();
+    icon_view_->SetVisible(false);
   }
 
-  if (chip_icon || model.GetText().size() > 0) {
-    chip_container_ = AddChildView(std::make_unique<ChipContainerView>(
-        model.GetText(), chip_icon,
-        base::BindRepeating(&AnchoredMessageBubbleView::ChipCallback,
-                            base::Unretained(this))));
-  }
+  label_text_ = model.GetAnchoredMessageText();
+  label_->SetText(label_text_);
+  label_->SetVisible(!label_text_.empty());
 
-  if (show_close_button_) {
-    close_button_ =
-        AddChildView(std::make_unique<views::ImageButton>(close_callback_));
-    close_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(vector_icons::kCloseRoundedIcon,
-                                       ui::kColorIcon, 16));
-    close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
-    close_button_->SetProperty(views::kMarginsKey,
-                               gfx::Insets::TLBR(0, 8, 0, 0));
-  }
+  std::optional<ui::ImageModel> chip_icon =
+      icon_ ? std::nullopt : std::optional<ui::ImageModel>(model.GetImage());
+  bool show_chip = chip_icon || model.GetText().size() > 0;
+
+  chip_container_->Update(model.GetText(), chip_icon);
+  chip_container_->SetVisible(show_chip);
+
+  show_close_button_ = model.GetAnchoredMessageCloseIcon();
+  close_button_->SetVisible(show_close_button_);
+
+  // Update margins dynamically to avoid excessive spacing when some components
+  // are hidden.
+  bool add_padding_before_chip =
+      icon_view_->GetVisible() || label_->GetVisible();
+  chip_container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, add_padding_before_chip ? 16 : 0, 0, 0));
+
+  bool add_padding_before_close_icon =
+      add_padding_before_chip || chip_container_->GetVisible();
+  close_button_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0, add_padding_before_close_icon ? 8 : 0, 0, 0));
+
+  OnThemeChanged();
 }
 
 void AnchoredMessageBubbleView::OnThemeChanged() {
