@@ -1706,7 +1706,7 @@
     },
     {
       name: "CSSRandomFunction",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CSSRandomFunctionTypedOM",
