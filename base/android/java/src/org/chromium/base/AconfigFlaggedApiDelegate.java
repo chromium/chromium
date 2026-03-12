@@ -12,8 +12,10 @@ import android.content.ServiceConnection;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.OutcomeReceiver;
+import android.os.ParcelFileDescriptor;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.Display;
@@ -462,5 +464,27 @@ public interface AconfigFlaggedApiDelegate {
     /** Checks whether content restriction is supported and enabled for WebViews. */
     default boolean isContentRestrictionEnabled() {
         return false;
+    }
+
+    /**
+     * Calls the platform to determine if the content should be allowed or blocked.
+     *
+     * @param uri The URI of the content to be classified.
+     * @param requestBody The request body of the content to be classified. Can be null for requests
+     *     that have no body (for ex. GET requests).
+     * @param mimeType The MIME type of the content to be classified.
+     * @param executor The executor to run the callback on.
+     * @return A promise fulfilled with the boolean classification result (true if allowed),
+     *     rejected otherwise with {@link UnsupportedOperationException} if not supported or with
+     *     the exception received from the API call.
+     */
+    default Promise<Boolean> requestContentRestrictionClassification(
+            Uri uri,
+            @Nullable ParcelFileDescriptor requestBody,
+            String mimeType,
+            Executor executor) {
+        Promise<Boolean> promise = new Promise<>();
+        promise.reject(new UnsupportedOperationException("Not supported"));
+        return promise;
     }
 }

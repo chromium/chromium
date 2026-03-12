@@ -20,10 +20,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.android_webview.AwContentRestrictionManagerBridge;
 import org.chromium.android_webview.ManifestMetadataUtil;
@@ -31,6 +33,8 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.ManifestMetadataMockApplicationContext;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.JniOnceCallback;
+import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -47,12 +51,26 @@ public class AwContentRestrictionManagerBridgeTest {
             "android.webkit.WebView.EnableContentRestriction";
     private static final String METADATA_HOLDER_SERVICE_NAME =
             "android.webkit.MetaDataHolderService";
+    private static final String TEST_URL = "https://example.com";
+    private static final String TEST_MIME_TYPE = "text/html";
 
     private ManifestMetadataMockApplicationContext mContext;
     private ComponentName mMetadataServiceName;
+    private Boolean mCallbackResult;
+    private final JniOnceCallback<Boolean> mMockCallback =
+            new JniOnceCallback<Boolean>() {
+                @Override
+                public void onResult(Boolean result) {
+                    mCallbackResult = result;
+                }
+
+                @Override
+                public void destroy() {}
+            };
 
     @Before
     public void setUp() {
+        mCallbackResult = null;
         mContext = new ManifestMetadataMockApplicationContext(RuntimeEnvironment.application);
         mMetadataServiceName = new ComponentName(mContext, METADATA_HOLDER_SERVICE_NAME);
         ContextUtils.initApplicationContextForTests(mContext);
@@ -98,5 +116,61 @@ public class AwContentRestrictionManagerBridgeTest {
         setEnableContentRestrictionMetadata(false);
         Assert.assertFalse(AwContentRestrictionManagerBridge.isContentRestrictionEnabled());
         verifyNoInteractions(mFlaggedApiDelegate);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRequestContentClassification_invalidUrl() {
+        AwContentRestrictionManagerBridge.requestContentClassification(
+                /* url= */ null, TEST_MIME_TYPE, mMockCallback);
+        Assert.assertEquals(false, mCallbackResult);
+        verifyNoInteractions(mFlaggedApiDelegate);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRequestContentClassification_delegateMissing() {
+        AconfigFlaggedApiDelegate.setInstanceForTesting(null);
+        AwContentRestrictionManagerBridge.requestContentClassification(
+                TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertEquals(false, mCallbackResult);
+        verifyNoInteractions(mFlaggedApiDelegate);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRequestContentClassification_allowed() {
+        Promise<Boolean> promise = new Promise<>();
+        when(mFlaggedApiDelegate.requestContentRestrictionClassification(
+                        Mockito.any(), Mockito.eq(null), Mockito.eq(TEST_MIME_TYPE), Mockito.any()))
+                .thenReturn(promise);
+        AwContentRestrictionManagerBridge.requestContentClassification(
+                TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        promise.fulfill(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertEquals(true, mCallbackResult);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRequestContentClassification_blocked() {
+        Promise<Boolean> promise = new Promise<>();
+        when(mFlaggedApiDelegate.requestContentRestrictionClassification(
+                        Mockito.any(), Mockito.eq(null), Mockito.eq(TEST_MIME_TYPE), Mockito.any()))
+                .thenReturn(promise);
+        AwContentRestrictionManagerBridge.requestContentClassification(
+                TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        promise.fulfill(false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertEquals(false, mCallbackResult);
     }
 }
