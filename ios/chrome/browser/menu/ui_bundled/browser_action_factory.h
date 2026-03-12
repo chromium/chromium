@@ -82,6 +82,16 @@ class WebState;
                                      webState:(web::WebState*)webState
                                         block:(ProceduralBlock)block;
 
+// Creates a UIAction instance whose title and icon are configured for opening a
+// new tab. When triggered, the action will invoke the `block` which needs to
+// open a new tab.
+- (UIAction*)actionToOpenNewTabWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance whose title and icon are configured for opening a
+// new incognito tab. When triggered, the action will invoke the `block` which
+// needs to open a new incognito tab.
+- (UIAction*)actionToOpenNewIncognitoTabWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance for opening a new tab.
 - (UIAction*)actionToOpenNewTab;
 

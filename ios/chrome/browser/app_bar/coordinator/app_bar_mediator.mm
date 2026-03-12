@@ -494,20 +494,26 @@
   BOOL isTabGroupsPageVisible = _currentPage == TabGridPageTabGroups;
   BOOL isTabGroupVisible = _tabGridState.visibleTabGroup;
 
-  __weak __typeof(self) weakSelf = self;
+  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
+                                            ? self.incognitoActionFactory
+                                            : self.regularActionFactory;
 
-  UIAction* newTabAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
-                image:DefaultSymbolWithConfiguration(kPlusSymbol, nil)
-           identifier:nil
-              handler:^(UIAction*) {
-                [weakSelf createNewTabFromView:nil];
-              }];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock createNewTabBlock = ^{
+    [weakSelf createNewTabFromView:nil];
+  };
+  UIAction* newTabAction =
+      _incognitoState.incognitoContentVisible
+          ? [actionFactory
+                actionToOpenNewIncognitoTabWithBlock:createNewTabBlock]
+          : [actionFactory actionToOpenNewTabWithBlock:createNewTabBlock];
+  newTabAction.image =
+      DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize);
 
   // Context menu for when a tab group is open in the tab grid.
   if (isTabGroupVisible) {
     UIAction* newTabInCurrentGroupAction =
-        [self.regularActionFactory actionToAddNewTabInGroupWithBlock:^{
+        [actionFactory actionToAddNewTabInGroupWithBlock:^{
           [weakSelf addNewTabInCurrentTabGroup];
         }];
 
@@ -517,15 +523,12 @@
 
   // Context menu for when the tab groups page is visible in the tab grid.
   if (isTabGroupsPageVisible) {
-    UIAction* newTabGroupAction = [UIAction
-        actionWithTitle:l10n_util::GetNSString(
-                            IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP)
-                  image:DefaultSymbolWithConfiguration(kNewTabGroupActionSymbol,
-                                                       nil)
-             identifier:nil
-                handler:^(UIAction*) {
-                  [weakSelf createNewTabGroupFromView:nil];
-                }];
+    UIAction* newTabGroupAction =
+        [actionFactory actionToCreateEmptyTabGroupWithBlock:^{
+          [weakSelf createNewTabGroupFromView:nil];
+        }];
+    newTabGroupAction.title =
+        l10n_util::GetNSString(IDS_IOS_APP_BAR_CONTEXT_MENU_NEW_TAB_GROUP);
 
     return [UIMenu menuWithChildren:@[ newTabGroupAction, newTabAction ]];
   }
@@ -538,10 +541,6 @@
 
   // Context menu for while browsing.
   CHECK(_templateURLService);
-  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
-                                            ? self.incognitoActionFactory
-                                            : self.regularActionFactory;
-
   const bool useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
           LensEntrypoint::PlusButton,
