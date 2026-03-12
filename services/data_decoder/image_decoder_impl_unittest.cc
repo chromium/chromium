@@ -77,10 +77,7 @@ class Request {
   const SkBitmap& bitmap() const { return bitmap_; }
 
  private:
-  void OnRequestDone(base::TimeDelta ignored_decoding_time,
-                     const SkBitmap& result_image) {
-    bitmap_ = result_image;
-  }
+  void OnRequestDone(const SkBitmap& result_image) { bitmap_ = result_image; }
 
   raw_ptr<ImageDecoderImpl> decoder_;
   SkBitmap bitmap_;

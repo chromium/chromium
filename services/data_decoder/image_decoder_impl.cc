@@ -8,8 +8,6 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -69,10 +67,9 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
                                    const gfx::Size& desired_image_frame_size,
                                    DecodeImageCallback callback) {
   TRACE_EVENT0("ui", "ImageDecoderImpl::DecodeImage");
-  base::ElapsedTimer timer;
 
   if (encoded_data.size() == 0) {
-    std::move(callback).Run(timer.Elapsed(), SkBitmap());
+    std::move(callback).Run(SkBitmap());
     return;
   }
 
@@ -97,7 +94,7 @@ void ImageDecoderImpl::DecodeImage(mojo_base::BigBuffer encoded_data,
   if (!decoded_image.isNull())
     ResizeImage(&decoded_image, shrink_to_fit, max_size_in_bytes);
 
-  std::move(callback).Run(timer.Elapsed(), decoded_image);
+  std::move(callback).Run(decoded_image);
 }
 
 void ImageDecoderImpl::DecodeAnimation(mojo_base::BigBuffer encoded_data,

@@ -56,23 +56,6 @@ bool ReadTestFile(const base::FilePath& relative_path,
   return true;
 }
 
-// Populates `out_measurement_value` and returns true on success (i.e. if the
-// `metric_name` has a single measurement in `histograms`).  Otherwise returns
-// false.
-bool GetSingleMeasurement(const base::HistogramTester& histograms,
-                          const char* metric_name,
-                          base::TimeDelta& out_measurement_value) {
-  DCHECK(metric_name);
-
-  std::vector<base::Bucket> buckets = histograms.GetAllSamples(metric_name);
-  if (buckets.size() != 1u)
-    return false;
-
-  EXPECT_EQ(1u, buckets.size());
-  out_measurement_value = base::Milliseconds(buckets.front().min);
-  return true;
-}
-
 }  // namespace
 
 using DataDecoderBrowserTest = ContentBrowserTest;
@@ -175,32 +158,6 @@ IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest, DecodeImageIsolated) {
         std::move(callback));
     run_loop.Run();
   }
-
-  FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(
-      histograms.GetTotalCountsForPrefix("Security.DataDecoder"),
-      UnorderedElementsAre(
-          Pair("Security.DataDecoder.Image.Isolated.EndToEndTime", 1),
-          Pair("Security.DataDecoder.Image.Isolated.ProcessOverhead", 1),
-          Pair("Security.DataDecoder.Image.DecodingTime", 1)));
-
-  base::TimeDelta end_to_end_duration_estimate;
-  EXPECT_TRUE(GetSingleMeasurement(
-      histograms, "Security.DataDecoder.Image.Isolated.EndToEndTime",
-      end_to_end_duration_estimate));
-
-  base::TimeDelta overhead_estimate;
-  EXPECT_TRUE(GetSingleMeasurement(
-      histograms, "Security.DataDecoder.Image.Isolated.ProcessOverhead",
-      overhead_estimate));
-
-  base::TimeDelta decoding_duration_estimate;
-  EXPECT_TRUE(GetSingleMeasurement(histograms,
-                                   "Security.DataDecoder.Image.DecodingTime",
-                                   decoding_duration_estimate));
-
-  EXPECT_LE(decoding_duration_estimate, end_to_end_duration_estimate);
-  EXPECT_LE(overhead_estimate, end_to_end_duration_estimate);
 }
 
 IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest, DecodeImage) {
@@ -229,32 +186,6 @@ IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest, DecodeImage) {
         std::move(callback));
     run_loop.Run();
   }
-
-  FetchHistogramsFromChildProcesses();
-  EXPECT_THAT(
-      histograms.GetTotalCountsForPrefix("Security.DataDecoder"),
-      UnorderedElementsAre(
-          Pair("Security.DataDecoder.Image.Reusable.EndToEndTime", 1),
-          Pair("Security.DataDecoder.Image.Reusable.ProcessOverhead", 1),
-          Pair("Security.DataDecoder.Image.DecodingTime", 1)));
-
-  base::TimeDelta end_to_end_duration_estimate;
-  EXPECT_TRUE(GetSingleMeasurement(
-      histograms, "Security.DataDecoder.Image.Reusable.EndToEndTime",
-      end_to_end_duration_estimate));
-
-  base::TimeDelta overhead_estimate;
-  EXPECT_TRUE(GetSingleMeasurement(
-      histograms, "Security.DataDecoder.Image.Reusable.ProcessOverhead",
-      overhead_estimate));
-
-  base::TimeDelta decoding_duration_estimate;
-  EXPECT_TRUE(GetSingleMeasurement(histograms,
-                                   "Security.DataDecoder.Image.DecodingTime",
-                                   decoding_duration_estimate));
-
-  EXPECT_LE(decoding_duration_estimate, end_to_end_duration_estimate);
-  EXPECT_LE(overhead_estimate, end_to_end_duration_estimate);
 }
 
 IN_PROC_BROWSER_TEST_F(DataDecoderBrowserTest,

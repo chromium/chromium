@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/test/in_process_data_decoder.h"
 
-#include "base/timer/elapsed_timer.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,10 +33,9 @@ class ImageDecoderImpl : public data_decoder::mojom::ImageDecoder {
                    const gfx::Size& desired_image_frame_size,
                    DecodeImageCallback callback) override {
     ASSERT_TRUE(callback);
-    base::ElapsedTimer timer;
     SkBitmap output;
     if (encoded_data.size() == 0) {
-      std::move(callback).Run(timer.Elapsed(), output);
+      std::move(callback).Run(output);
       return;
     }
 
@@ -51,7 +49,7 @@ class ImageDecoderImpl : public data_decoder::mojom::ImageDecoder {
         output = gfx::PNGCodec::Decode(encoded_data);
         break;
     }
-    std::move(callback).Run(timer.Elapsed(), output);
+    std::move(callback).Run(output);
   }
 
   void DecodeAnimation(mojo_base::BigBuffer encoded_data,

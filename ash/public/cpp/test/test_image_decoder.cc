@@ -33,7 +33,7 @@ class ImageDecoderImpl : public data_decoder::mojom::ImageDecoder {
                    int64_t max_size_in_bytes,
                    const gfx::Size& desired_image_frame_size,
                    DecodeImageCallback callback) override {
-    std::move(callback).Run(base::TimeDelta(), image_callback_.Run());
+    std::move(callback).Run(image_callback_.Run());
   }
 
   void DecodeAnimation(mojo_base::BigBuffer encoded_data,
