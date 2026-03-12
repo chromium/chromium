@@ -881,6 +881,10 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 
       if (auto it = model_for_command_id_.find(id);
           it != model_for_command_id_.end()) {
+        // This call is necessary in order to guarantee that the composebox
+        // text input field gets focused after the user has selected a model.
+        UpdateSearchboxContext(/*tab_info=*/std::nullopt,
+                               /*tool_mode=*/std::nullopt);
         if (composebox_handler) {
           composebox_handler->SetActiveModelMode(it->second);
         }
