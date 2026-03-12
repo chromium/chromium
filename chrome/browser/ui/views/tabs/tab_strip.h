@@ -150,7 +150,8 @@ class TabStrip : public views::View,
 
   void OnTabWillBeRemoved(content::WebContents* contents, int model_index);
 
-  void OnTabPinnedStateChanged(int model_index, bool is_pinned);
+  // Sets the tab data at the specified model index.
+  void SetTabData(int model_index, tabs::TabData data);
 
   // Sets the tab group at the specified model index.
   void AddTabToGroup(std::optional<tab_groups::TabGroupId> group,
@@ -162,6 +163,10 @@ class TabStrip : public views::View,
   // Opens the editor bubble for the tab `group` as a result of an explicit user
   // action to create the `group`.
   void OnGroupEditorOpened(const tab_groups::TabGroupId& group);
+
+  // Updates the group's contents and metadata when its tab membership changes.
+  // This should be called when a tab is added to or removed from a group.
+  void OnGroupContentsChanged(const tab_groups::TabGroupId& group);
 
   // Updates the group's tabs and header when its associated TabGroupVisualData
   // changes. This should be called when the result of
@@ -295,7 +300,6 @@ class TabStrip : public views::View,
   std::vector<Tab*> GetTabsInSplit(const Tab* tab) override;
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override;
-  void OnGroupContentsChanged(const tab_groups::TabGroupId& group) override;
   void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override;
   bool HoverCardIsShowingForTab(Tab* tab) override;
   void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) override;
@@ -367,6 +371,8 @@ class TabStrip : public views::View,
   void Init();
 
   std::map<tab_groups::TabGroupId, TabGroupHeader*> GetGroupHeaders();
+
+  void MaybeUpdateGroupOnTabChanged(int model_index);
 
   // Returns whether the close button should be highlighted after a remove.
   bool ShouldHighlightCloseButtonAfterRemove();

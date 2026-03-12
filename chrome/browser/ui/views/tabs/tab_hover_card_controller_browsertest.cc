@@ -184,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardControllerTest, ShowPreviewsForCrashedTab) {
   data.thumbnail = image;
   views::View* tab_view =
       GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(1);
-  AsViewClass<Tab>(tab_view)->SetDataForTesting(std::move(data));
+  AsViewClass<Tab>(tab_view)->SetData(std::move(data));
 
   controller()->CreateHoverCard(target_tab);
   controller()->UpdateCardContent(target_tab);
