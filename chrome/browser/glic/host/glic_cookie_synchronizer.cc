@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 
+#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -40,6 +41,11 @@
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace glic {
+// If enabled, clears the glic partition's cookies before the first cookie sync.
+// This ensures a fresh cookie state after restart.
+BASE_FEATURE(kGlicClearCookiesOnFirstSync, base::FEATURE_DISABLED_BY_DEFAULT);
+
+namespace {
 
 BASE_FEATURE(kGlicCookieSyncTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
@@ -47,8 +53,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kGlicCookieSyncTimeout,
                    "glic_cookie_sync_timeout_duration",
                    GlicCookieSynchronizer::kCookieSyncDefaultTimeout);
-
-namespace {
 
 content::StoragePartitionConfig GetGlicMainStoragePartitionConfig(
     content::BrowserContext* browser_context) {
@@ -74,6 +78,27 @@ content::StoragePartitionConfig GetGlicStoragePartitionConfig(
 }
 
 }  // namespace
+
+class GlicCookieSynchronizer::ClearCookiesTask {
+ public:
+  ClearCookiesTask(content::StoragePartition* storage_partition,
+                   base::OnceClosure callback)
+      : callback_(std::move(callback)) {
+    network::mojom::CookieManager* cookie_manager =
+        storage_partition->GetCookieManagerForBrowserProcess();
+
+    cookie_manager->DeleteCookies(
+        network::mojom::CookieDeletionFilter::New(),
+        base::BindOnce(&ClearCookiesTask::DeleteDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+ private:
+  void DeleteDone(uint32_t num_deleted) { std::move(callback_).Run(); }
+
+  base::OnceClosure callback_;
+  base::WeakPtrFactory<ClearCookiesTask> weak_ptr_factory_{this};
+};
 
 // Synchronize cookies from the main partition to the webview partition. This
 // is an alternative way to sync cookies which supports glic development, and
@@ -230,7 +255,8 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
   CHECK(!callback.is_null());
   callbacks_.push_back(std::move(callback));
 
-  if (cookie_loader_ || sync_cookies_for_development_task_) {
+  if (cookie_loader_ || sync_cookies_for_development_task_ ||
+      clear_cookies_task_) {
     // A request is in progress already.
     return;
   }
@@ -240,8 +266,8 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
                    base::BindOnce(&GlicCookieSynchronizer::OnTimeout,
                                   base::Unretained(this)));
   }
-
-  if (!GetStoragePartition()) {
+  auto* glic_storage_partition = GetStoragePartition();
+  if (!glic_storage_partition) {
     DLOG(ERROR) << "glic webview storage partition does not exist";
     CompleteAuth(false);
     return;
@@ -256,6 +282,12 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
             base::BindOnce(
                 &GlicCookieSynchronizer::SyncCookiesForDevelopmentComplete,
                 GetWeakPtr()));
+  } else if (base::FeatureList::IsEnabled(kGlicClearCookiesOnFirstSync) &&
+             !has_cleared_cookies_) {
+    clear_cookies_task_ = std::make_unique<ClearCookiesTask>(
+        glic_storage_partition,
+        base::BindOnce(&GlicCookieSynchronizer::ClearCookiesComplete,
+                       GetWeakPtr()));
   } else {
     BeginCookieSync();
   }
@@ -265,6 +297,12 @@ void GlicCookieSynchronizer::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   observation_.Reset();
   cookie_loader_.reset();
+}
+
+void GlicCookieSynchronizer::ClearCookiesComplete() {
+  clear_cookies_task_.reset();
+  has_cleared_cookies_ = true;
+  BeginCookieSync();
 }
 
 void GlicCookieSynchronizer::SyncCookiesForDevelopmentComplete(bool success) {

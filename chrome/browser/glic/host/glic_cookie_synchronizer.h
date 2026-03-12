@@ -27,6 +27,7 @@ enum class SetAccountsInCookieResult;
 }  // namespace signin
 
 namespace glic {
+BASE_DECLARE_FEATURE(kGlicClearCookiesOnFirstSync);
 
 // Helper to sync cookies to the webview storage partition.
 class GlicCookieSynchronizer
@@ -70,11 +71,13 @@ class GlicCookieSynchronizer
 
  private:
   class SyncCookiesForDevelopmentTask;
+  class ClearCookiesTask;
   base::WeakPtr<GlicCookieSynchronizer> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
   void SyncCookiesForDevelopmentComplete(bool success);
+  void ClearCookiesComplete();
   void BeginCookieSync();
 
   // signin::AccountsCookieMutator::PartitionDelegate:
@@ -92,6 +95,7 @@ class GlicCookieSynchronizer
   void CompleteAuth(bool is_success);
   void OnTimeout();
 
+  bool has_cleared_cookies_ = false;
   const raw_ptr<content::BrowserContext> context_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   base::ScopedObservation<signin::IdentityManager,
@@ -105,6 +109,7 @@ class GlicCookieSynchronizer
   base::OneShotTimer timeout_;
   std::unique_ptr<signin::AccountsCookieMutator::SetAccountsInCookieTask>
       cookie_loader_;
+  std::unique_ptr<ClearCookiesTask> clear_cookies_task_;
   std::unique_ptr<SyncCookiesForDevelopmentTask>
       sync_cookies_for_development_task_;
   base::WeakPtrFactory<GlicCookieSynchronizer> weak_ptr_factory_{this};

@@ -93,6 +93,26 @@ class GlicCookieSynchronizerWithTestPartition : public GlicCookieSynchronizer {
 
 }  // namespace
 
+class GlicTestCookieManager : public network::TestCookieManager {
+ public:
+  GlicTestCookieManager() = default;
+  ~GlicTestCookieManager() override = default;
+
+  void DeleteCookies(network::mojom::CookieDeletionFilterPtr filter,
+                     DeleteCookiesCallback callback) override {
+    delete_cookies_called_count_++;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), 0));
+  }
+
+  int delete_cookies_called_count() const {
+    return delete_cookies_called_count_;
+  }
+
+ private:
+  int delete_cookies_called_count_ = 0;
+};
+
 class GlicCookieSynchronizerTest : public testing::Test {
  public:
   GlicCookieSynchronizerTest() = default;
@@ -100,6 +120,8 @@ class GlicCookieSynchronizerTest : public testing::Test {
 
  protected:
   GlicCookieSynchronizer& cookie_synchronizer() { return cookie_synchronizer_; }
+
+  GlicTestCookieManager& test_cookie_manager() { return test_cookie_manager_; }
 
   // Sets the network response to the given result. Applies to all subsequent
   // network requests.
@@ -139,7 +161,7 @@ class GlicCookieSynchronizerTest : public testing::Test {
       /*test_url_loader_factory=*/nullptr, &prefs_, &test_signin_client_};
 
   content::TestStoragePartition test_storage_partition_;
-  network::TestCookieManager test_cookie_manager_;
+  GlicTestCookieManager test_cookie_manager_;
 
   GlicCookieSynchronizerWithTestPartition cookie_synchronizer_{
       &test_profile_, identity_test_env_.identity_manager(),
@@ -316,6 +338,28 @@ TEST_F(GlicCookieSynchronizerTest, StandaloneFreUsesFrePartition) {
     EXPECT_NE(fre_cookie_synchronizer.GetStoragePartition()->GetConfig(),
               glic_cookie_synchronizer.GetStoragePartition()->GetConfig());
   }
+}
+
+TEST_F(GlicCookieSynchronizerTest, ClearsCookiesOnFirstSync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kGlicClearCookiesOnFirstSync);
+
+  base::test::TestFuture<bool> result;
+  SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
+  EXPECT_EQ(0, test_cookie_manager().delete_cookies_called_count());
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  EXPECT_EQ(1, test_cookie_manager().delete_cookies_called_count());
+
+  // Second sync should not clear cookies again.
+  result.Clear();
+  SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  EXPECT_TRUE(result.Get());
+  EXPECT_EQ(1, test_cookie_manager().delete_cookies_called_count());
 }
 
 }  // namespace glic
