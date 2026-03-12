@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -54,8 +55,8 @@ ReaderModePanelItemConfiguration::ReaderModePanelItemConfiguration(
   entrypoint_image_name = base::SysNSStringToUTF8(GetReaderModeSymbolName());
   image_type = ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
   relevance = ContextualPanelItemConfiguration::low_relevance - 1;
-  entrypoint_custom_action =
-      base::BindRepeating(&ActivateReaderModeInWebState, web_state->GetWeakPtr());
+  entrypoint_custom_action = base::BindRepeating(&ActivateReaderModeInWebState,
+                                                 web_state->GetWeakPtr());
 
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state);
@@ -69,7 +70,7 @@ ReaderModePanelItemConfiguration::~ReaderModePanelItemConfiguration() = default;
 #pragma mark - ContextualPanelItemConfiguration
 
 void ReaderModePanelItemConfiguration::DidTransitionToSmallEntrypoint() {
-  if (engagement_tracker_) {
+  if (!ShouldIgnoreReaderModeBadgeThreshold() && engagement_tracker_) {
     engagement_tracker_->Dismissed(
         feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature);
   }
@@ -89,8 +90,7 @@ void ReaderModePanelItemConfiguration::ReaderModeTabHelperDestroyed(
 
 void ReaderModePanelItemConfiguration::ReaderModeWebStateDidLoadContent(
     ReaderModeTabHelper* tab_helper,
-    web::WebState* web_state) {
-}
+    web::WebState* web_state) {}
 
 void ReaderModePanelItemConfiguration::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper,
@@ -114,8 +114,7 @@ void ReaderModePanelItemConfiguration::WebStateDestroyed(
   web_state_observation_.Reset();
 }
 
-void ReaderModePanelItemConfiguration::WasHidden(web::WebState* web_state) {
-}
+void ReaderModePanelItemConfiguration::WasHidden(web::WebState* web_state) {}
 
 #pragma mark - Private
 
@@ -144,6 +143,9 @@ bool ReaderModePanelItemConfiguration::IsProfileEligibleForGemini() {
 }
 
 bool ReaderModePanelItemConfiguration::CanShowLargeEntrypointMessage() {
+  if (ShouldIgnoreReaderModeBadgeThreshold()) {
+    return true;
+  }
   return engagement_tracker_ &&
          engagement_tracker_->ShouldTriggerHelpUI(
              feature_engagement::

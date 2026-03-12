@@ -27,6 +27,9 @@ BASE_DECLARE_FEATURE(kEnableReaderModeOptimizationGuideEligibility);
 // Feature to enable disabling links in Reading Mode from Content Settings.
 BASE_DECLARE_FEATURE(kEnableContentSettingsOptionForLinks);
 
+// Feature to ignore the badge threshold.
+BASE_DECLARE_FEATURE(kReaderModeIgnoreBadgeThreshold);
+
 // Returns whether the Reader Mode feature is available.
 bool IsReaderModeAvailable();
 
@@ -38,5 +41,8 @@ bool IsReaderModeOptimizationGuideEligibilityAvailable();
 
 // Returns whether option to disable links in Content Settings is enabled.
 bool IsReaderModeContentSettingsForLinkEnabled();
+
+// Returns whether the badge threshold should be ignored.
+bool ShouldIgnoreReaderModeBadgeThreshold();
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_FEATURES_H_

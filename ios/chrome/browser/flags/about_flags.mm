@@ -2742,6 +2742,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAimUrlNavigationFetchEnabledDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kAimUrlNavigationFetchEnabled)},
+    {"reader-mode-ignore-badge-threshold",
+     flag_descriptions::kReaderModeIgnoreBadgeThresholdName,
+     flag_descriptions::kReaderModeIgnoreBadgeThresholdDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kReaderModeIgnoreBadgeThreshold)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
