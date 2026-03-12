@@ -12,7 +12,6 @@
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "components/device_signals/core/common/win/win_types.h"
 
 namespace device_signals {
@@ -52,19 +51,11 @@ void WinSignalsCollector::GetAntiVirusSignal(
     return;
   }
 
-  if (enterprise_signals::features::
-          IsSystemSignalCollectionImprovementEnabled()) {
-    int callback_id = AddPendingCallback(std::move(done_closure));
-    system_signals_service->GetAntiVirusSignals(
-        base::BindOnce(&WinSignalsCollector::OnAntiVirusSignalCollected,
-                       weak_factory_.GetWeakPtr(), std::ref(response),
-                       callback_id, base::OnceClosure()));
-  } else {
-    system_signals_service->GetAntiVirusSignals(
-        base::BindOnce(&WinSignalsCollector::OnAntiVirusSignalCollected,
-                       weak_factory_.GetWeakPtr(), std::ref(response),
-                       /*callback_id=*/0, std::move(done_closure)));
-  }
+  int callback_id = AddPendingCallback(std::move(done_closure));
+  system_signals_service->GetAntiVirusSignals(
+      base::BindOnce(&WinSignalsCollector::OnAntiVirusSignalCollected,
+                     weak_factory_.GetWeakPtr(), std::ref(response),
+                     callback_id, base::OnceClosure()));
 }
 
 void WinSignalsCollector::OnAntiVirusSignalCollected(
@@ -87,12 +78,7 @@ void WinSignalsCollector::OnAntiVirusSignalCollected(
 
   av_response.av_products = std::move(av_products);
   response.av_signal_response = std::move(av_response);
-  if (enterprise_signals::features::
-          IsSystemSignalCollectionImprovementEnabled()) {
-    RunPendingCallback(callback_id);
-  } else {
-    std::move(done_closure).Run();
-  }
+  RunPendingCallback(callback_id);
 }
 
 void WinSignalsCollector::GetHotfixSignal(
@@ -115,19 +101,10 @@ void WinSignalsCollector::GetHotfixSignal(
     return;
   }
 
-  if (enterprise_signals::features::
-          IsSystemSignalCollectionImprovementEnabled()) {
-    int callback_id = AddPendingCallback(std::move(done_closure));
-    system_signals_service->GetHotfixSignals(
-        base::BindOnce(&WinSignalsCollector::OnHotfixSignalCollected,
-                       weak_factory_.GetWeakPtr(), std::ref(response),
-                       callback_id, base::OnceClosure()));
-  } else {
-    system_signals_service->GetHotfixSignals(
-        base::BindOnce(&WinSignalsCollector::OnHotfixSignalCollected,
-                       weak_factory_.GetWeakPtr(), std::ref(response),
-                       /*callback_id=*/0, std::move(done_closure)));
-  }
+  int callback_id = AddPendingCallback(std::move(done_closure));
+  system_signals_service->GetHotfixSignals(base::BindOnce(
+      &WinSignalsCollector::OnHotfixSignalCollected, weak_factory_.GetWeakPtr(),
+      std::ref(response), callback_id, base::OnceClosure()));
 }
 
 void WinSignalsCollector::OnHotfixSignalCollected(
@@ -139,13 +116,7 @@ void WinSignalsCollector::OnHotfixSignalCollected(
   HotfixSignalResponse hotfix_response;
   hotfix_response.hotfixes = std::move(hotfixes);
   response.hotfix_signal_response = std::move(hotfix_response);
-
-  if (enterprise_signals::features::
-          IsSystemSignalCollectionImprovementEnabled()) {
-    RunPendingCallback(callback_id);
-  } else {
-    std::move(done_closure).Run();
-  }
+  RunPendingCallback(callback_id);
 }
 
 }  // namespace device_signals

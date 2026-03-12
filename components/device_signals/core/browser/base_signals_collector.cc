@@ -12,7 +12,6 @@
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
-#include "components/device_signals/core/common/signals_features.h"
 
 namespace device_signals {
 
@@ -29,17 +28,11 @@ BaseSignalsCollector::BaseSignalsCollector(
       system_service_host_(system_service_host) {
   CHECK(!signals_collection_map_.empty());
   CHECK(system_service_host_);
-
-  if (enterprise_signals::features::
-          IsSystemSignalCollectionImprovementEnabled()) {
-    system_service_host_->AddObserver(this);
-  }
+  system_service_host_->AddObserver(this);
 }
 
 BaseSignalsCollector::~BaseSignalsCollector() {
-  if (enterprise_signals::features::
-          IsSystemSignalCollectionImprovementEnabled() &&
-      system_service_host_) {
+  if (system_service_host_) {
     system_service_host_->RemoveObserver(this);
   }
 }

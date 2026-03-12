@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "chrome/grit/generated_resources.h"  // nogncheck
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "content/public/browser/service_process_host.h"  // nogncheck
 
 namespace system_signals {
@@ -30,12 +29,9 @@ SystemSignalsServiceHostImpl::GetService() {
     DCHECK(remote_service_);
 
     remote_service_.reset_on_idle_timeout(base::Seconds(10));
-    if (enterprise_signals::features::
-            IsSystemSignalCollectionImprovementEnabled()) {
-      remote_service_.set_disconnect_handler(
-          base::BindOnce(&SystemSignalsServiceHostImpl::NotifyServiceDisconnect,
-                         weak_factory_.GetWeakPtr()));
-    }
+    remote_service_.set_disconnect_handler(
+        base::BindOnce(&SystemSignalsServiceHostImpl::NotifyServiceDisconnect,
+                       weak_factory_.GetWeakPtr()));
   }
 
   return remote_service_.get();

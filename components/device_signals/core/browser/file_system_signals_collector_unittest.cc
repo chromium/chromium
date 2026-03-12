@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
@@ -17,7 +16,6 @@
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/signals_constants.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,30 +55,19 @@ SignalsAggregationRequest CreateRequest(SignalName signal_name,
 using GetFileSystemSignalsCallback =
     MockSystemSignalsService::GetFileSystemSignalsCallback;
 
-class FileSystemSignalsCollectorTest
-    : public testing::Test,
-      public testing::WithParamInterface<bool> {
+class FileSystemSignalsCollectorTest : public testing::Test {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kSystemSignalCollectionImprovementEnabled,
-        is_system_signals_collection_improvement_enabled());
-
     ON_CALL(service_host_, GetService()).WillByDefault(Return(&service_));
-    if (is_system_signals_collection_improvement_enabled()) {
-      EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
-      EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
-    }
+    EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
+    EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
 
     signal_collector_ =
         std::make_unique<FileSystemSignalsCollector>(&service_host_);
   }
 
-  bool is_system_signals_collection_improvement_enabled() { return GetParam(); }
-
   base::test::TaskEnvironment task_environment_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   StrictMock<MockSystemSignalsServiceHost> service_host_;
   StrictMock<MockSystemSignalsService> service_;
   std::unique_ptr<FileSystemSignalsCollector> signal_collector_;
@@ -88,7 +75,7 @@ class FileSystemSignalsCollectorTest
 
 // Test that runs a sanity check on the set of signals supported by this
 // collector. Will need to be updated if new signals become supported.
-TEST_P(FileSystemSignalsCollectorTest, SupportedSignalNames) {
+TEST_F(FileSystemSignalsCollectorTest, SupportedSignalNames) {
   const std::array<SignalName, 1> supported_signals{
       {SignalName::kFileSystemInfo}};
 
@@ -101,7 +88,7 @@ TEST_P(FileSystemSignalsCollectorTest, SupportedSignalNames) {
 }
 
 // Tests that an unsupported signal is marked as unsupported.
-TEST_P(FileSystemSignalsCollectorTest, GetSignal_Unsupported) {
+TEST_F(FileSystemSignalsCollectorTest, GetSignal_Unsupported) {
   SignalName signal_name = SignalName::kAntiVirus;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
@@ -117,7 +104,7 @@ TEST_P(FileSystemSignalsCollectorTest, GetSignal_Unsupported) {
 }
 
 // Tests that signal collection is halted if permission is not sufficient.
-TEST_P(FileSystemSignalsCollectorTest, GetSignal_MissingConsent) {
+TEST_F(FileSystemSignalsCollectorTest, GetSignal_MissingConsent) {
   SignalName signal_name = SignalName::kFileSystemInfo;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
@@ -133,7 +120,7 @@ TEST_P(FileSystemSignalsCollectorTest, GetSignal_MissingConsent) {
 
 // Tests that the request does not contain the required parameters for the
 // File System signal.
-TEST_P(FileSystemSignalsCollectorTest, GetSignal_File_MissingParameters) {
+TEST_F(FileSystemSignalsCollectorTest, GetSignal_File_MissingParameters) {
   SignalName signal_name = SignalName::kFileSystemInfo;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
@@ -153,7 +140,7 @@ TEST_P(FileSystemSignalsCollectorTest, GetSignal_File_MissingParameters) {
 
 // Tests that not being able to retrieve a pointer to the SystemSignalsService
 // returns an error.
-TEST_P(FileSystemSignalsCollectorTest,
+TEST_F(FileSystemSignalsCollectorTest,
        GetSignal_File_MissingSystemSignalsService) {
   EXPECT_CALL(service_host_, GetService()).WillOnce(Return(nullptr));
 
@@ -174,7 +161,7 @@ TEST_P(FileSystemSignalsCollectorTest,
 }
 
 // Tests a successful File System signal retrieval.
-TEST_P(FileSystemSignalsCollectorTest, GetSignal_FileSystemInfo) {
+TEST_F(FileSystemSignalsCollectorTest, GetSignal_FileSystemInfo) {
   // Can be any value really.
   FileSystemItem retrieved_item;
   retrieved_item.file_path =
@@ -215,5 +202,4 @@ TEST_P(FileSystemSignalsCollectorTest, GetSignal_FileSystemInfo) {
             file_system_items[0]);
 }
 
-INSTANTIATE_TEST_SUITE_P(, FileSystemSignalsCollectorTest, testing::Bool());
 }  // namespace device_signals

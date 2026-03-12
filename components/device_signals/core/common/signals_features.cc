@@ -22,10 +22,6 @@ BASE_FEATURE(kDetectedAgentSignalCollectionEnabled,
 BASE_FEATURE(kBrowserSignalsReportingEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the improvements made during system signals collection in Chrome.
-BASE_FEATURE(kSystemSignalCollectionImprovementEnabled,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the collection of policies in a Chrome Profile signals report.
 BASE_FEATURE(kPolicyDataCollectionEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -51,11 +47,6 @@ bool IsBrowserSignalsReportingEnabled() {
 
 bool IsDetectedAgentSignalCollectionEnabled() {
   return base::FeatureList::IsEnabled(kDetectedAgentSignalCollectionEnabled);
-}
-
-bool IsSystemSignalCollectionImprovementEnabled() {
-  return base::FeatureList::IsEnabled(
-      kSystemSignalCollectionImprovementEnabled);
 }
 
 bool IsPolicyDataCollectionEnabled() {

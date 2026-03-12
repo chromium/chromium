@@ -7,12 +7,10 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
 #include "components/device_signals/core/browser/system_signals_service_host.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,10 +38,6 @@ class SystemSignalsServiceHostImplTest : public testing::Test {
   ~SystemSignalsServiceHostImplTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_signals::features::
-            kSystemSignalCollectionImprovementEnabled);
-
     service_host_impl_ = std::make_unique<SystemSignalsServiceHostImpl>();
 
     service_host_impl_->AddObserver(&mock_observer_);
@@ -57,7 +51,6 @@ class SystemSignalsServiceHostImplTest : public testing::Test {
   StrictMock<MockSystemSignalsServiceHostObserver> mock_observer_;
   StrictMock<device_signals::MockSystemSignalsService> mock_service_;
   std::unique_ptr<SystemSignalsServiceHostImpl> service_host_impl_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that GetService() returns a valid service.
@@ -86,21 +79,6 @@ TEST_F(SystemSignalsServiceHostImplTest, ServiceDisconnect_NotifiesObservers) {
 TEST_F(SystemSignalsServiceHostImplTest,
        ServiceDisconnect_NoObservers_NoObserversNotified) {
   service_host_impl_->RemoveObserver(&mock_observer_);
-  auto* service = service_host_impl_->GetService();
-  ASSERT_TRUE(service);
-
-  EXPECT_CALL(mock_observer_, OnServiceDisconnect()).Times(0);
-
-  mock_service_.SimulateDisconnect();
-}
-
-// Tests that no observers are notified when the service disconnects and the
-// feature is disabled.
-TEST_F(SystemSignalsServiceHostImplTest,
-       ServiceDisconnect_FeatureDisabled_NoObserversNotified) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      enterprise_signals::features::kSystemSignalCollectionImprovementEnabled);
   auto* service = service_host_impl_->GetService();
   ASSERT_TRUE(service);
 

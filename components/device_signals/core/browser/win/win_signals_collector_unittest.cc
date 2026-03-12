@@ -7,14 +7,12 @@
 #include <array>
 
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/device_signals/core/browser/mock_system_signals_service_host.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,32 +42,22 @@ class WinSignalsCollectorTestBase : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   StrictMock<MockSystemSignalsServiceHost> service_host_;
   StrictMock<MockSystemSignalsService> service_;
   std::unique_ptr<WinSignalsCollector> win_collector_;
 };
 
-class WinSignalsCollectorTest : public WinSignalsCollectorTestBase,
-                                public testing::WithParamInterface<bool> {
+class WinSignalsCollectorTest : public WinSignalsCollectorTestBase {
  protected:
   WinSignalsCollectorTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kSystemSignalCollectionImprovementEnabled,
-        is_system_signals_collection_improvement_enabled());
-
-    if (is_system_signals_collection_improvement_enabled()) {
-      EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
-      EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
-    }
+    EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
+    EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
   }
-
-  bool is_system_signals_collection_improvement_enabled() { return GetParam(); }
 };
 
 // Test that runs a sanity check on the set of signals supported by this
 // collector. Will need to be updated if new signals become supported.
-TEST_P(WinSignalsCollectorTest, SupportedSignalNames) {
+TEST_F(WinSignalsCollectorTest, SupportedSignalNames) {
   const std::array<SignalName, 2> supported_signals{
       {SignalName::kAntiVirus, SignalName::kHotfixes}};
 
@@ -82,7 +70,7 @@ TEST_P(WinSignalsCollectorTest, SupportedSignalNames) {
 }
 
 // Tests that an unsupported signal is marked as unsupported.
-TEST_P(WinSignalsCollectorTest, GetSignal_Unsupported) {
+TEST_F(WinSignalsCollectorTest, GetSignal_Unsupported) {
   SignalName signal_name = SignalName::kFileSystemInfo;
   SignalsAggregationResponse response;
   base::RunLoop run_loop;
@@ -99,7 +87,7 @@ TEST_P(WinSignalsCollectorTest, GetSignal_Unsupported) {
 
 // Tests that not being able to retrieve a pointer to the SystemSignalsService
 // returns an error.
-TEST_P(WinSignalsCollectorTest, GetSignal_AV_MissingSystemSignalsService) {
+TEST_F(WinSignalsCollectorTest, GetSignal_AV_MissingSystemSignalsService) {
   EXPECT_CALL(service_host_, GetService()).WillOnce(Return(nullptr));
 
   SignalName signal_name = SignalName::kAntiVirus;
@@ -120,7 +108,7 @@ TEST_P(WinSignalsCollectorTest, GetSignal_AV_MissingSystemSignalsService) {
 
 // Tests that not being able to retrieve a pointer to the SystemSignalsService
 // returns an error.
-TEST_P(WinSignalsCollectorTest, GetSignal_Hotfix_MissingSystemSignalsService) {
+TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix_MissingSystemSignalsService) {
   EXPECT_CALL(service_host_, GetService()).WillOnce(Return(nullptr));
 
   SignalName signal_name = SignalName::kHotfixes;
@@ -140,7 +128,7 @@ TEST_P(WinSignalsCollectorTest, GetSignal_Hotfix_MissingSystemSignalsService) {
 }
 
 // Tests a successful hotfix signal retrieval.
-TEST_P(WinSignalsCollectorTest, GetSignal_Hotfix) {
+TEST_F(WinSignalsCollectorTest, GetSignal_Hotfix) {
   std::vector<InstalledHotfix> hotfixes;
   hotfixes.push_back({"hotfix id"});
 
@@ -166,7 +154,7 @@ TEST_P(WinSignalsCollectorTest, GetSignal_Hotfix) {
   EXPECT_EQ(response.hotfix_signal_response->hotfixes[0], hotfixes[0]);
 }
 
-TEST_P(WinSignalsCollectorTest, GetSignal_AV_Empty) {
+TEST_F(WinSignalsCollectorTest, GetSignal_AV_Empty) {
   EXPECT_CALL(service_host_, GetService()).Times(1);
   EXPECT_CALL(service_, GetAntiVirusSignals(_))
       .WillOnce([](GetAntiVirusSignalsCallback signal_callback) {
@@ -200,11 +188,8 @@ class AntivirusWinSignalsCollectorTest
       public testing::WithParamInterface<AntivirusTestCase> {
  protected:
   AntivirusWinSignalsCollectorTest() {
-    if (enterprise_signals::features::
-            IsSystemSignalCollectionImprovementEnabled()) {
-      EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
-      EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
-    }
+    EXPECT_CALL(service_host_, AddObserver(_)).WillOnce(Return());
+    EXPECT_CALL(service_host_, RemoveObserver(_)).WillOnce(Return());
   }
 };
 
@@ -243,8 +228,6 @@ TEST_P(AntivirusWinSignalsCollectorTest, GetSignal_AV) {
     EXPECT_EQ(response.av_signal_response->av_products[i], av_products[i]);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(, WinSignalsCollectorTest, testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(
     ,

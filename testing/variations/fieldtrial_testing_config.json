@@ -21497,23 +21497,6 @@
             ]
         }
     ],
-    "SystemSignalCollectionImprovementEnabled": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SystemSignalCollectionImprovementEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "TLSTrustAnchorIDs": [
         {
             "platforms": [
