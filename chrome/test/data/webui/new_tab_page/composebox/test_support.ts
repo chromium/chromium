@@ -117,6 +117,7 @@ export function setupComposeboxTest(): ComposeboxTestElement {
       'searchboxComposePlaceholder': 'Placeholder',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     const handler = installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
