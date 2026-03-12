@@ -60,6 +60,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
   // Page actions on the new framework that don't have an implementation on the legacy path
   // and don't have a feature param.
   switch (page_action) {
+    case PageActionIconType::kGlic:
     case PageActionIconType::kLensOverlay:
     case PageActionIconType::kMemorySaver:
     case PageActionIconType::kTranslate:

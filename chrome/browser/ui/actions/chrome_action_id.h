@@ -605,6 +605,7 @@
   E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionSplitTab, IDC_SPLIT_TAB) \
   E(kActionFederation) \
+  E(kActionGlicContextualCueing) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

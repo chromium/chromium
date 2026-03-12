@@ -246,6 +246,13 @@ constexpr auto kPageActionProperties =
                 .element_identifier = kFederationElementId,
             },
         },
+        {
+            kActionGlicContextualCueing,
+            {
+                .histogram_name = "Glic",
+                .type = PageActionIconType::kGlic,
+            },
+        },
     });
 
 constexpr bool CheckIgnoreFlagUsage() {

@@ -55,7 +55,8 @@ enum class PageActionIconType {
   kRecordReplay = 39,
   kIndigo = 40,
   kFederation = 41,
-  kMaxValue = kFederation,
+  kGlic = 42,
+  kMaxValue = kGlic,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
@@ -93,6 +94,7 @@ static_assert(static_cast<int>(PageActionIconType::kJsOptimizations) == 38);
 static_assert(static_cast<int>(PageActionIconType::kRecordReplay) == 39);
 static_assert(static_cast<int>(PageActionIconType::kIndigo) == 40);
 static_assert(static_cast<int>(PageActionIconType::kFederation) == 41);
+static_assert(static_cast<int>(PageActionIconType::kGlic) == 42);
 
 // Returns a bool indicating whether the given page action type has been
 // migrated to the new framework, which is based on ActionItems instead of
