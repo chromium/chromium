@@ -111,7 +111,7 @@ base::expected<TriggerRegistration, TriggerRegistrationError> ParseDict(
 
   ASSIGN_OR_RETURN(
       registration.aggregation_coordinator_origin,
-      ParseAggregationCoordinator(dict).transform_error([](ParseError) {
+      ParseAggregationCoordinator(dict).transform_error([](std::monostate) {
         return TriggerRegistrationError::kAggregationCoordinatorValueInvalid;
       }));
 

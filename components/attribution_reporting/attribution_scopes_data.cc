@@ -70,7 +70,8 @@ AttributionScopesData::FromJSON(base::Value& v) {
           scopes_dict->Find(kLimit)) {
     ASSIGN_OR_RETURN(
         attribution_scope_limit,
-        ParsePositiveUint32(*attribution_scope_limit_value), [](ParseError) {
+        ParsePositiveUint32(*attribution_scope_limit_value),
+        [](std::monostate) {
           return SourceRegistrationError::kAttributionScopeLimitInvalid;
         });
   } else {
@@ -82,7 +83,7 @@ AttributionScopesData::FromJSON(base::Value& v) {
   if (const base::Value* event_states_value =
           scopes_dict->Find(kMaxEventStates)) {
     ASSIGN_OR_RETURN(max_event_states, ParsePositiveUint32(*event_states_value),
-                     [](ParseError) {
+                     [](std::monostate) {
                        return SourceRegistrationError::kMaxEventStatesInvalid;
                      });
     if (max_event_states > MaxTriggerStateCardinality()) {

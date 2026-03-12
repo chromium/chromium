@@ -43,7 +43,7 @@ constexpr char kDebugKey[] = "debug_key";
 constexpr char kDebugReporting[] = "debug_reporting";
 
 template <typename T>
-base::expected<std::optional<T>, ParseError> ParseIntegerFromString(
+base::expected<std::optional<T>, std::monostate> ParseIntegerFromString(
     const base::DictValue& dict,
     std::string_view key,
     bool (*parse)(std::string_view, T*)) {
@@ -55,25 +55,25 @@ base::expected<std::optional<T>, ParseError> ParseIntegerFromString(
   T parsed_val;
   if (const std::string* str = value->GetIfString();
       !str || !parse(*str, &parsed_val)) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
   return parsed_val;
 }
 
 }  // namespace
 
-base::expected<absl::uint128, ParseError> ParseAggregationKeyPiece(
+base::expected<absl::uint128, std::monostate> ParseAggregationKeyPiece(
     const base::Value& value) {
   const std::string* str = value.GetIfString();
   if (!str) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   absl::uint128 key_piece;
 
   if (!base::StartsWith(*str, "0x", base::CompareCase::INSENSITIVE_ASCII) ||
       !base::HexStringToUInt128(*str, &key_piece)) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   return key_piece;
@@ -87,19 +87,20 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   return std::move(out).str();
 }
 
-base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
+base::expected<std::optional<uint64_t>, std::monostate> ParseUint64(
     const base::DictValue& dict,
     std::string_view key) {
   return ParseIntegerFromString<uint64_t>(dict, key, &base::StringToUint64);
 }
 
-base::expected<std::optional<int64_t>, ParseError> ParseInt64(
+base::expected<std::optional<int64_t>, std::monostate> ParseInt64(
     const base::DictValue& dict,
     std::string_view key) {
   return ParseIntegerFromString<int64_t>(dict, key, &base::StringToInt64);
 }
 
-base::expected<int64_t, ParseError> ParsePriority(const base::DictValue& dict) {
+base::expected<int64_t, std::monostate> ParsePriority(
+    const base::DictValue& dict) {
   return ParseInt64(dict, kPriority).transform(&ValueOrZero<int64_t>);
 }
 
@@ -107,7 +108,7 @@ std::optional<uint64_t> ParseDebugKey(const base::DictValue& dict) {
   return ParseUint64(dict, kDebugKey).value_or(std::nullopt);
 }
 
-base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
+base::expected<std::optional<uint64_t>, std::monostate> ParseDeduplicationKey(
     const base::DictValue& dict) {
   return ParseUint64(dict, kDeduplicationKey);
 }
@@ -122,7 +123,7 @@ bool HasFractionalPart(double v) {
 }
 
 template <typename T>
-base::expected<T, ParseError> ParseIntFromIntOrDouble(
+base::expected<T, std::monostate> ParseIntFromIntOrDouble(
     const base::Value& value) {
   // JSON serialization does not distinguish between integer and non-integer
   // numbers, but `base::Value` does. To be maximally compatible, we permit
@@ -131,21 +132,21 @@ base::expected<T, ParseError> ParseIntFromIntOrDouble(
 
   if (std::optional<int> int_value = value.GetIfInt()) {
     if (!base::IsValueInRangeForNumericType<T>(*int_value)) {
-      return base::unexpected(ParseError());
+      return base::unexpected(std::monostate());
     }
     return static_cast<T>(*int_value);
   } else if (std::optional<double> double_value = value.GetIfDouble()) {
     if (HasFractionalPart(*double_value) ||
         !base::IsValueInRangeForNumericType<T>(*double_value)) {
-      return base::unexpected(ParseError());
+      return base::unexpected(std::monostate());
     }
     return static_cast<T>(*double_value);
   } else {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 }
 
-base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+base::expected<base::TimeDelta, std::monostate> ParseLegacyDuration(
     const base::Value& value,
     const base::TimeDelta clamp_min,
     const base::TimeDelta clamp_max) {
@@ -160,7 +161,7 @@ base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
   if (const std::string* str = value.GetIfString()) {
     uint64_t seconds;
     if (!base::StringToUint64(*str, &seconds)) {
-      return base::unexpected(ParseError());
+      return base::unexpected(std::monostate());
     }
     duration = base::Seconds(seconds);
   } else {
@@ -168,27 +169,27 @@ base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
   }
 
   if (duration.is_negative()) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   return std::clamp(duration, clamp_min, clamp_max);
 }
 
-base::expected<base::TimeDelta, ParseError> ParseDuration(
+base::expected<base::TimeDelta, std::monostate> ParseDuration(
     const base::Value& value) {
   if (std::optional<int> int_value = value.GetIfInt()) {
     return base::Seconds(*int_value);
   } else if (std::optional<double> double_value = value.GetIfDouble()) {
     if (HasFractionalPart(*double_value)) {
-      return base::unexpected(ParseError());
+      return base::unexpected(std::monostate());
     }
     return base::Seconds(*double_value);
   } else {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 }
 
-base::expected<std::optional<SuitableOrigin>, ParseError>
+base::expected<std::optional<SuitableOrigin>, std::monostate>
 ParseAggregationCoordinator(const base::DictValue& dict) {
   const base::Value* value = dict.Find(kAggregationCoordinatorOrigin);
 
@@ -201,13 +202,13 @@ ParseAggregationCoordinator(const base::DictValue& dict) {
 
   const std::string* str = value->GetIfString();
   if (!str) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   std::optional<url::Origin> aggregation_coordinator =
       aggregation_service::ParseAggregationCoordinator(*str);
   if (!aggregation_coordinator.has_value()) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
   auto aggregation_coordinator_origin =
       SuitableOrigin::Create(*std::move(aggregation_coordinator));
@@ -215,10 +216,11 @@ ParseAggregationCoordinator(const base::DictValue& dict) {
   return *std::move(aggregation_coordinator_origin);
 }
 
-base::expected<int, ParseError> ParseAggregatableValue(const base::Value& v) {
+base::expected<int, std::monostate> ParseAggregatableValue(
+    const base::Value& v) {
   ASSIGN_OR_RETURN(int value, ParseInt(v));
   if (!IsAggregatableValueInRange(value)) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
   return value;
 }
@@ -268,11 +270,11 @@ void SerializeTimeDeltaInSeconds(base::DictValue& dict,
   }
 }
 
-base::expected<int, ParseError> ParseInt(const base::Value& value) {
+base::expected<int, std::monostate> ParseInt(const base::Value& value) {
   return ParseIntFromIntOrDouble<int>(value);
 }
 
-base::expected<uint32_t, ParseError> ParseUint32(const base::Value& value) {
+base::expected<uint32_t, std::monostate> ParseUint32(const base::Value& value) {
   // Assumes that all `uint32_t` can be represented either by `int` or `double`,
   // and that when represented internally by `base::Value` as an `int`, can be
   // precisely represented by `double`.
@@ -282,11 +284,11 @@ base::expected<uint32_t, ParseError> ParseUint32(const base::Value& value) {
   return ParseIntFromIntOrDouble<uint32_t>(value);
 }
 
-base::expected<uint32_t, ParseError> ParsePositiveUint32(
+base::expected<uint32_t, std::monostate> ParsePositiveUint32(
     const base::Value& value) {
   ASSIGN_OR_RETURN(uint32_t int_value, ParseUint32(value));
   if (int_value == 0) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
   return int_value;
 }

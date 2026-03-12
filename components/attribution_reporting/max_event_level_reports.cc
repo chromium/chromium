@@ -46,7 +46,7 @@ MaxEventLevelReports::Parse(const base::DictValue& dict,
     return MaxEventLevelReports(source_type);
   }
 
-  ASSIGN_OR_RETURN(int i, ParseInt(*value), [](ParseError) {
+  ASSIGN_OR_RETURN(int i, ParseInt(*value), [](std::monostate) {
     return SourceRegistrationError::kMaxEventLevelReportsValueInvalid;
   });
 

@@ -34,7 +34,7 @@ base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
         TriggerRegistrationError::kAggregatableTriggerDataKeyPieceMissing);
   }
 
-  return ParseAggregationKeyPiece(*v).transform_error([](ParseError) {
+  return ParseAggregationKeyPiece(*v).transform_error([](std::monostate) {
     return TriggerRegistrationError::kAggregatableTriggerDataKeyPieceInvalid;
   });
 }

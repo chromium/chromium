@@ -69,7 +69,7 @@ AggregatableNamedBudgetDefs::FromJSON(const base::Value* v) {
           SourceRegistrationError::kAggregatableNamedBudgetsKeyTooLong);
     }
 
-    ASSIGN_OR_RETURN(int budget, ParseInt(value), [](ParseError) {
+    ASSIGN_OR_RETURN(int budget, ParseInt(value), [](std::monostate) {
       return SourceRegistrationError::kAggregatableNamedBudgetsValueInvalid;
     });
 

@@ -57,9 +57,10 @@ ParseTriggerData(const base::Value& value) {
   trigger_data.reserve(size);
 
   for (const base::Value& item : *list) {
-    ASSIGN_OR_RETURN(uint32_t trigger_datum, ParseUint32(item), [](ParseError) {
-      return SourceRegistrationError::kTriggerDataListInvalid;
-    });
+    ASSIGN_OR_RETURN(uint32_t trigger_datum, ParseUint32(item),
+                     [](std::monostate) {
+                       return SourceRegistrationError::kTriggerDataListInvalid;
+                     });
 
     auto [_, inserted] = trigger_data.insert(trigger_datum);
     if (!inserted) {

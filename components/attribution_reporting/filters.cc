@@ -369,7 +369,7 @@ base::expected<FiltersDisjunction, TriggerRegistrationError> FiltersFromJSON(
     if (std::optional<base::Value> lookback_window_value =
             dict->Extract(FilterConfig::kLookbackWindowKey)) {
       ASSIGN_OR_RETURN(lookback_window, ParseDuration(*lookback_window_value),
-                       [lookback_window_error](ParseError) {
+                       [lookback_window_error](std::monostate) {
                          return lookback_window_error;
                        });
 

@@ -74,13 +74,13 @@ AggregatableValuesValue::FromJSON(const base::Value& json,
       return base::unexpected(value_error);
     }
     ASSIGN_OR_RETURN(value, ParseAggregatableValue(*value_v),
-                     [value_error](ParseError) { return value_error; });
+                     [value_error](std::monostate) { return value_error; });
 
     ASSIGN_OR_RETURN(filtering_id, ParseUint64(*dict, kFilteringId),
-                     [value_error](ParseError) { return value_error; });
+                     [value_error](std::monostate) { return value_error; });
   } else {
     ASSIGN_OR_RETURN(value, ParseAggregatableValue(json),
-                     [value_error](ParseError) { return value_error; });
+                     [value_error](std::monostate) { return value_error; });
   }
   return AggregatableValuesValue(value,
                                  filtering_id.value_or(kDefaultFilteringId));

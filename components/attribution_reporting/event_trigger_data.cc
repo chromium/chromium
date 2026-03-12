@@ -38,17 +38,18 @@ EventTriggerData::FromJSON(base::Value& value) {
   ASSIGN_OR_RETURN(
       out.data,
       ParseUint64(*dict, kTriggerData).transform(&ValueOrZero<uint64_t>),
-      [](ParseError) {
+      [](std::monostate) {
         return TriggerRegistrationError::kEventTriggerDataValueInvalid;
       });
 
-  ASSIGN_OR_RETURN(out.priority, ParsePriority(*dict), [](ParseError) {
+  ASSIGN_OR_RETURN(out.priority, ParsePriority(*dict), [](std::monostate) {
     return TriggerRegistrationError::kEventPriorityValueInvalid;
   });
 
-  ASSIGN_OR_RETURN(out.dedup_key, ParseDeduplicationKey(*dict), [](ParseError) {
-    return TriggerRegistrationError::kEventDedupKeyValueInvalid;
-  });
+  ASSIGN_OR_RETURN(
+      out.dedup_key, ParseDeduplicationKey(*dict), [](std::monostate) {
+        return TriggerRegistrationError::kEventDedupKeyValueInvalid;
+      });
 
   ASSIGN_OR_RETURN(out.filters, FilterPair::FromJSON(*dict));
 

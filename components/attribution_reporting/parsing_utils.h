@@ -12,6 +12,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
@@ -29,12 +30,8 @@ namespace attribution_reporting {
 
 class SuitableOrigin;
 
-struct ParseError {
-  friend bool operator==(ParseError, ParseError) = default;
-};
-
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<absl::uint128, ParseError> ParseAggregationKeyPiece(
+base::expected<absl::uint128, std::monostate> ParseAggregationKeyPiece(
     const base::Value&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
@@ -47,16 +44,16 @@ constexpr T ValueOrZero(std::optional<T> value) {
 }
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
+base::expected<std::optional<uint64_t>, std::monostate> ParseUint64(
     const base::DictValue&,
     std::string_view key);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::optional<int64_t>, ParseError> ParseInt64(
+base::expected<std::optional<int64_t>, std::monostate> ParseInt64(
     const base::DictValue&,
     std::string_view key);
 
-base::expected<int64_t, ParseError> ParsePriority(const base::DictValue&);
+base::expected<int64_t, std::monostate> ParsePriority(const base::DictValue&);
 
 // Returns `debug_key` value as we do not need to fail the source registration
 // if the value is invalid, see
@@ -67,14 +64,14 @@ std::optional<uint64_t> ParseDebugKey(const base::DictValue& dict);
 // invalid, returns true otherwise.
 [[nodiscard]] bool ParseDebugReporting(const base::DictValue& dict);
 
-base::expected<std::optional<uint64_t>, ParseError> ParseDeduplicationKey(
+base::expected<std::optional<uint64_t>, std::monostate> ParseDeduplicationKey(
     const base::DictValue&);
 
 // The given value must be a non-negative `int`, or a non-negative `double`
 // without a fractional part, or a string containing a base-10-formatted
 // unsigned 64-bit integer. That value is interpreted as a number of seconds
 // clamped to the given range.
-base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
+base::expected<base::TimeDelta, std::monostate> ParseLegacyDuration(
     const base::Value&,
     base::TimeDelta clamp_min,
     base::TimeDelta clamp_max);
@@ -84,12 +81,13 @@ base::expected<base::TimeDelta, ParseError> ParseLegacyDuration(
 // is that of `base::TimeDelta` itself, which only affects extremely large
 // `double` values that for the purposes of Attribution Reporting are
 // effectively infinity and will be clamped or tolerated properly elsewhere.
-base::expected<base::TimeDelta, ParseError> ParseDuration(const base::Value&);
+base::expected<base::TimeDelta, std::monostate> ParseDuration(
+    const base::Value&);
 
-base::expected<std::optional<SuitableOrigin>, ParseError>
+base::expected<std::optional<SuitableOrigin>, std::monostate>
 ParseAggregationCoordinator(const base::DictValue&);
 
-base::expected<int, ParseError> ParseAggregatableValue(const base::Value&);
+base::expected<int, std::monostate> ParseAggregatableValue(const base::Value&);
 
 void SerializeUint64(base::DictValue&, std::string_view key, uint64_t value);
 
@@ -109,13 +107,14 @@ void SerializeTimeDeltaInSeconds(base::DictValue& dict,
                                  base::TimeDelta value);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<int, ParseError> ParseInt(const base::Value&);
+base::expected<int, std::monostate> ParseInt(const base::Value&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<uint32_t, ParseError> ParseUint32(const base::Value&);
+base::expected<uint32_t, std::monostate> ParseUint32(const base::Value&);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<uint32_t, ParseError> ParsePositiveUint32(const base::Value&);
+base::expected<uint32_t, std::monostate> ParsePositiveUint32(
+    const base::Value&);
 
 base::Value Uint32ToJson(uint32_t);
 

@@ -58,7 +58,7 @@ AggregatableFilteringIdsMaxBytes::Parse(const base::DictValue& registration) {
     return AggregatableFilteringIdsMaxBytes();
   }
 
-  ASSIGN_OR_RETURN(int v, ParseInt(*value), [](ParseError) {
+  ASSIGN_OR_RETURN(int v, ParseInt(*value), [](std::monostate) {
     return mojom::TriggerRegistrationError::
         kAggregatableFilteringIdMaxBytesInvalidValue;
   });

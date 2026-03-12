@@ -19,7 +19,7 @@ namespace attribution_reporting {
 
 namespace {
 
-base::expected<std::optional<Registrar>, ParseError> ParsePreferredPlatform(
+base::expected<std::optional<Registrar>, std::monostate> ParsePreferredPlatform(
     const net::structured_headers::Dictionary& dict) {
   auto iter = dict.find("preferred-platform");
   if (iter == dict.end()) {
@@ -28,12 +28,12 @@ base::expected<std::optional<Registrar>, ParseError> ParsePreferredPlatform(
 
   const auto& parameterized_member = iter->second;
   if (parameterized_member.member_is_inner_list) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   const auto& parameterized_item = parameterized_member.member.front();
   if (!parameterized_item.item.is_token()) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   const std::string& token = parameterized_item.item.GetString();
@@ -42,11 +42,11 @@ base::expected<std::optional<Registrar>, ParseError> ParsePreferredPlatform(
   } else if (token == "os") {
     return Registrar::kOs;
   } else {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 }
 
-base::expected<bool, ParseError> ParseReportHeaderErrors(
+base::expected<bool, std::monostate> ParseReportHeaderErrors(
     const net::structured_headers::Dictionary& dict) {
   auto iter = dict.find("report-header-errors");
   if (iter == dict.end()) {
@@ -55,12 +55,12 @@ base::expected<bool, ParseError> ParseReportHeaderErrors(
 
   const auto& parameterized_member = iter->second;
   if (parameterized_member.member_is_inner_list) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   const auto& parameterized_item = parameterized_member.member.front();
   if (!parameterized_item.item.is_boolean()) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   return parameterized_item.item.GetBoolean();
@@ -92,14 +92,15 @@ RegistrationInfo::ParseInfo(std::string_view header) {
 // static
 base::expected<RegistrationInfo, RegistrationInfoError>
 RegistrationInfo::ParseInfo(const net::structured_headers::Dictionary& dict) {
-  ASSIGN_OR_RETURN(std::optional<Registrar> preferred_platform,
-                   ParsePreferredPlatform(dict).transform_error([](ParseError) {
-                     return RegistrationInfoError::kInvalidPreferredPlatform;
-                   }));
+  ASSIGN_OR_RETURN(
+      std::optional<Registrar> preferred_platform,
+      ParsePreferredPlatform(dict).transform_error([](std::monostate) {
+        return RegistrationInfoError::kInvalidPreferredPlatform;
+      }));
 
   ASSIGN_OR_RETURN(
       bool report_header_errors,
-      ParseReportHeaderErrors(dict).transform_error([](ParseError) {
+      ParseReportHeaderErrors(dict).transform_error([](std::monostate) {
         return RegistrationInfoError::kInvalidReportHeaderErrors;
       }));
 

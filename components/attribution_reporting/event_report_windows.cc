@@ -212,7 +212,7 @@ EventReportWindows::FromJSON(const base::DictValue& registration,
         ParseLegacyDuration(*singular_window,
                             /*clamp_min=*/kMinReportWindow,
                             /*clamp_max=*/expiry),
-        [](ParseError) {
+        [](std::monostate) {
           return SourceRegistrationError::kEventReportWindowValueInvalid;
         });
 
@@ -230,7 +230,7 @@ EventReportWindows::FromJSON(const base::DictValue& registration,
   base::TimeDelta start_time = base::Seconds(0);
   if (const base::Value* start_time_value = dict->Find(kStartTime)) {
     ASSIGN_OR_RETURN(
-        int int_value, ParseInt(*start_time_value), [](ParseError) {
+        int int_value, ParseInt(*start_time_value), [](std::monostate) {
           return SourceRegistrationError::kEventReportWindowsStartTimeInvalid;
         });
     start_time = base::Seconds(int_value);
@@ -259,7 +259,7 @@ EventReportWindows::FromJSON(const base::DictValue& registration,
   base::TimeDelta start_duration = start_time;
   for (const auto& item : *end_times_list) {
     ASSIGN_OR_RETURN(base::TimeDelta end_time, ParseDuration(item),
-                     [](ParseError) {
+                     [](std::monostate) {
                        return SourceRegistrationError::
                            kEventReportWindowsEndTimeValueInvalid;
                      });

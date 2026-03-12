@@ -170,10 +170,6 @@ std::ostream& operator<<(
   return out << dict;
 }
 
-std::ostream& operator<<(std::ostream& out, const ParseError&) {
-  return out << "ParseError";
-}
-
 std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport& r) {
   return out << "{trigger_data=" << r.trigger_data
              << ",window_index=" << r.window_index << "}";

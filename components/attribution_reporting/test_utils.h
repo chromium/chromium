@@ -38,7 +38,6 @@ struct AggregatableDedupKey;
 struct EventTriggerData;
 struct FakeEventLevelReport;
 struct OsRegistrationItem;
-struct ParseError;
 struct SourceRegistration;
 struct TriggerRegistration;
 
@@ -88,8 +87,6 @@ std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
 std::ostream& operator<<(std::ostream&, const TriggerDataSet&);
 
 std::ostream& operator<<(std::ostream&, const AggregatableTriggerConfig&);
-
-std::ostream& operator<<(std::ostream&, const ParseError&);
 
 std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport&);
 

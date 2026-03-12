@@ -77,7 +77,7 @@ AggregationKeys::FromJSON(const base::Value* value) {
 
     ASSIGN_OR_RETURN(
         absl::uint128 key, ParseAggregationKeyPiece(maybe_string_value),
-        [](ParseError) {
+        [](std::monostate) {
           return SourceRegistrationError::kAggregationKeysValueInvalid;
         });
 

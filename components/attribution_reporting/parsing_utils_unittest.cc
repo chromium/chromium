@@ -24,13 +24,13 @@ namespace {
 TEST(AttributionReportingParsingUtilsTest, ParseAggregationKeyPiece) {
   const struct {
     base::Value value;
-    base::expected<absl::uint128, ParseError> expected;
+    base::expected<absl::uint128, std::monostate> expected;
   } kTestCases[] = {
-      {base::Value(), base::unexpected(ParseError())},
-      {base::Value("123"), base::unexpected(ParseError())},
+      {base::Value(), base::unexpected(std::monostate())},
+      {base::Value("123"), base::unexpected(std::monostate())},
       {base::Value("0x123"), 291},
       {base::Value("0X123"), 291},
-      {base::Value("0xG"), base::unexpected(ParseError())},
+      {base::Value("0xG"), base::unexpected(std::monostate())},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -42,7 +42,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<std::optional<uint64_t>, ParseError> expected;
+    base::expected<std::optional<uint64_t>, std::monostate> expected;
   } kTestCases[] = {
       {
           "missing_key",
@@ -52,17 +52,17 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
       {
           "not_string",
           R"json({"key":123})json",
-          base::unexpected(ParseError()),
+          base::unexpected(std::monostate()),
       },
       {
           "invalid_format",
           R"json({"key":"0x123"})json",
-          base::unexpected(ParseError()),
+          base::unexpected(std::monostate()),
       },
       {
           "negative",
           R"json({"key":"-1"})json",
-          base::unexpected(ParseError()),
+          base::unexpected(std::monostate()),
       },
       {
           "zero",
@@ -77,7 +77,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseUint64) {
       {
           "out_of_range",
           R"json({"key":"18446744073709551616"})json",
-          base::unexpected(ParseError()),
+          base::unexpected(std::monostate()),
       },
   };
 
@@ -92,7 +92,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
   const struct {
     const char* description;
     const char* json;
-    base::expected<std::optional<int64_t>, ParseError> expected;
+    base::expected<std::optional<int64_t>, std::monostate> expected;
   } kTestCases[] = {
       {
           "missing_key",
@@ -102,12 +102,12 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
       {
           "not_string",
           R"json({"key":123})json",
-          base::unexpected(ParseError()),
+          base::unexpected(std::monostate()),
       },
       {
           "invalid_format",
           R"json({"key":"0x123"})json",
-          base::unexpected(ParseError()),
+          base::unexpected(std::monostate()),
       },
       {
           "zero",
@@ -127,7 +127,7 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
       {
           "out_of_range",
           R"json({"key":"9223372036854775808"})json",
-          base::unexpected(ParseError()),
+          base::unexpected(std::monostate()),
       },
   };
 

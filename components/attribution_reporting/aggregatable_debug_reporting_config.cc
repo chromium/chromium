@@ -41,7 +41,7 @@ constexpr char kDebugData[] = "debug_data";
 constexpr char kTypes[] = "types";
 
 using ParseDebugDataTypeFunc =
-    base::FunctionRef<base::expected<DebugDataType, ParseError>(
+    base::FunctionRef<base::expected<DebugDataType, std::monostate>(
         std::string_view)>;
 
 bool IsValueInRange(int value, std::optional<int> max_value) {
@@ -50,34 +50,34 @@ bool IsValueInRange(int value, std::optional<int> max_value) {
   return value > 0 && value <= effective_max_value;
 }
 
-base::expected<int, ParseError> ParseValue(const base::DictValue& dict,
-                                           std::optional<int> max_value) {
+base::expected<int, std::monostate> ParseValue(const base::DictValue& dict,
+                                               std::optional<int> max_value) {
   const base::Value* value = dict.Find(kValue);
   if (!value) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   ASSIGN_OR_RETURN(int int_value, ParseInt(*value));
 
   if (!IsValueInRange(int_value, max_value)) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
   return int_value;
 }
 
-base::expected<int, ParseError> ParseBudget(const base::DictValue& dict) {
+base::expected<int, std::monostate> ParseBudget(const base::DictValue& dict) {
   const base::Value* value = dict.Find(kBudget);
   if (!value) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
   return ParseAggregatableValue(*value);
 }
 
-base::expected<absl::uint128, ParseError> ParseKeyPiece(
+base::expected<absl::uint128, std::monostate> ParseKeyPiece(
     const base::DictValue& dict) {
   const base::Value* v = dict.Find(kKeyPiece);
   if (!v) {
-    return base::unexpected(ParseError());
+    return base::unexpected(std::monostate());
   }
 
   return ParseAggregationKeyPiece(*v);
@@ -99,13 +99,13 @@ ParseDebugDataElement(base::Value& elem,
 
   ASSIGN_OR_RETURN(
       absl::uint128 key_piece,
-      ParseKeyPiece(*dict).transform_error([](ParseError) {
+      ParseKeyPiece(*dict).transform_error([](std::monostate) {
         return AggregatableDebugReportingConfigError::kDebugDataKeyPieceInvalid;
       }));
 
   ASSIGN_OR_RETURN(
       int int_value,
-      ParseValue(*dict, max_value).transform_error([](ParseError) {
+      ParseValue(*dict, max_value).transform_error([](std::monostate) {
         return AggregatableDebugReportingConfigError::kDebugDataValueInvalid;
       }));
 
@@ -230,12 +230,12 @@ ParseConfig(base::DictValue& dict,
             const DebugDataTypes& debug_data_types,
             ParseDebugDataTypeFunc parse_debug_data_type) {
   ASSIGN_OR_RETURN(
-      auto key_piece, ParseKeyPiece(dict).transform_error([](ParseError) {
+      auto key_piece, ParseKeyPiece(dict).transform_error([](std::monostate) {
         return AggregatableDebugReportingConfigError::kKeyPieceInvalid;
       }));
   ASSIGN_OR_RETURN(
       auto aggregation_coordinator_origin,
-      ParseAggregationCoordinator(dict).transform_error([](ParseError) {
+      ParseAggregationCoordinator(dict).transform_error([](std::monostate) {
         return AggregatableDebugReportingConfigError::
             kAggregationCoordinatorOriginInvalid;
       }));
@@ -260,7 +260,7 @@ ParseSourceConfig(base::DictValue& dict) {
         AggregatableDebugReportingConfigError::kRootInvalid);
   }
 
-  ASSIGN_OR_RETURN(int budget, ParseBudget(*d), [](ParseError) {
+  ASSIGN_OR_RETURN(int budget, ParseBudget(*d), [](std::monostate) {
     return AggregatableDebugReportingConfigError::kBudgetInvalid;
   });
 

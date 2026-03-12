@@ -6,6 +6,7 @@
 #define COMPONENTS_ATTRIBUTION_REPORTING_DEBUG_TYPES_H_
 
 #include <string_view>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
@@ -14,17 +15,15 @@
 
 namespace attribution_reporting {
 
-struct ParseError;
-
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::string_view SerializeDebugDataType(mojom::DebugDataType);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<mojom::DebugDataType, ParseError> ParseSourceDebugDataType(
+base::expected<mojom::DebugDataType, std::monostate> ParseSourceDebugDataType(
     std::string_view);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<mojom::DebugDataType, ParseError> ParseTriggerDebugDataType(
+base::expected<mojom::DebugDataType, std::monostate> ParseTriggerDebugDataType(
     std::string_view);
 
 using DebugDataTypes = base::EnumSet<mojom::DebugDataType,

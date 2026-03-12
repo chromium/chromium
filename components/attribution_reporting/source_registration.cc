@@ -105,12 +105,12 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
   ASSIGN_OR_RETURN(result.source_event_id,
                    ParseUint64(registration, kSourceEventId)
                        .transform(&ValueOrZero<uint64_t>),
-                   [](ParseError) {
+                   [](std::monostate) {
                      return SourceRegistrationError::kSourceEventIdValueInvalid;
                    });
 
   ASSIGN_OR_RETURN(result.priority, ParsePriority(registration),
-                   [](ParseError) {
+                   [](std::monostate) {
                      return SourceRegistrationError::kPriorityValueInvalid;
                    });
 
@@ -119,7 +119,7 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
                      ParseLegacyDuration(*value,
                                          /*clamp_min=*/kMinSourceExpiry,
                                          /*clamp_max=*/kMaxSourceExpiry),
-                     [](ParseError) {
+                     [](std::monostate) {
                        return SourceRegistrationError::kExpiryValueInvalid;
                      });
 
@@ -132,7 +132,7 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
         ParseLegacyDuration(*value,
                             /*clamp_min=*/kMinReportWindow,
                             /*clamp_max=*/result.expiry),
-        [](ParseError) {
+        [](std::monostate) {
           return SourceRegistrationError::kAggregatableReportWindowValueInvalid;
         });
   } else {
@@ -189,7 +189,7 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
       result.destination_limit_priority,
       ParseInt64(registration, kDestinationLimitPriority)
           .transform(&ValueOrZero<int64_t>),
-      [](ParseError) {
+      [](std::monostate) {
         return SourceRegistrationError::kDestinationLimitPriorityInvalid;
       });
 
