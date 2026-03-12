@@ -631,4 +631,64 @@ public class SetupListManagerUnitTest {
         manager.onPrimaryAccountChanged(signOutEvent);
         verify(observer, times(2)).onSetupListStateChanged();
     }
+
+    @Test
+    @SmallTest
+    public void testSyncStateChanged_CompletesHistorySync() {
+        // 1. Setup: User is signed in but history sync is disabled.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
+        when(mSyncService.getSelectedTypes()).thenReturn(Set.of());
+
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+
+        // Capture the observer registered by the manager.
+        ArgumentCaptor<SyncService.SyncStateChangedListener> listenerCaptor =
+                ArgumentCaptor.forClass(SyncService.SyncStateChangedListener.class);
+        manager.maybePrimeCompletionStatus(mProfile);
+        verify(mSyncService).addSyncStateChangedListener(listenerCaptor.capture());
+        SyncService.SyncStateChangedListener listener = listenerCaptor.getValue();
+
+        assertFalse(manager.isModuleCompleted(ModuleType.HISTORY_SYNC_PROMO));
+
+        // 2. Act: Trigger a sync state change event where history and tabs are now enabled.
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
+        listener.syncStateChanged();
+
+        // 3. Assert: History Sync should be completed and awaiting animation.
+        assertTrue(manager.isModuleCompleted(ModuleType.HISTORY_SYNC_PROMO));
+        assertTrue(manager.isModuleAwaitingCompletionAnimation(ModuleType.HISTORY_SYNC_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testSyncStateChanged_CompletesEnhancedSafeBrowsing() {
+        // 1. Setup: ESB is currently off.
+        when(mSafeBrowsingBridgeJni.getSafeBrowsingState(any()))
+                .thenReturn(SafeBrowsingState.STANDARD_PROTECTION);
+
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+
+        // Capture the observer registered by the manager.
+        ArgumentCaptor<SyncService.SyncStateChangedListener> listenerCaptor =
+                ArgumentCaptor.forClass(SyncService.SyncStateChangedListener.class);
+        manager.maybePrimeCompletionStatus(mProfile);
+        verify(mSyncService).addSyncStateChangedListener(listenerCaptor.capture());
+        SyncService.SyncStateChangedListener listener = listenerCaptor.getValue();
+
+        assertFalse(manager.isModuleCompleted(ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
+
+        // 2. Act: ESB state changes to enhanced (e.g., via sync down) and sync triggers an update.
+        when(mSafeBrowsingBridgeJni.getSafeBrowsingState(any()))
+                .thenReturn(SafeBrowsingState.ENHANCED_PROTECTION);
+        listener.syncStateChanged();
+
+        // 3. Assert: ESB should be completed and awaiting animation.
+        assertTrue(manager.isModuleCompleted(ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
+        assertTrue(
+                manager.isModuleAwaitingCompletionAnimation(
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO));
+    }
 }
