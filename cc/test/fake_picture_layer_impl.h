@@ -129,10 +129,6 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   void ReleaseResources() override;
   void ReleaseTileResources() override;
 
-  bool produced_tile_last_append_quads() const {
-    return produced_tile_last_append_quads_;
-  }
-
   scoped_refptr<const DiscardableImageMap> discardable_image_map() const {
     return discardable_image_map_;
   }

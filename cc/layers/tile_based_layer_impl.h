@@ -74,6 +74,13 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
     return last_append_quads_scales_;
   }
 
+  void set_produced_tile_last_append_quads(bool value) {
+    produced_tile_last_append_quads_ = value;
+  }
+  bool produced_tile_last_append_quads() const {
+    return produced_tile_last_append_quads_;
+  }
+
  protected:
   TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
       : LayerImpl(tree_impl, id) {}
@@ -224,6 +231,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   // used as an optimization not to remove tilings if they are still being
   // drawn.
   std::vector<float> last_append_quads_scales_;
+
+  bool produced_tile_last_append_quads_ : 1 = true;
 };
 
 template <typename Tiling>

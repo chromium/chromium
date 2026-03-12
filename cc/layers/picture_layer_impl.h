@@ -345,7 +345,6 @@ class CC_EXPORT PictureLayerImpl
   }
 
   bool was_screen_space_transform_animating_ : 1 = false;
-  bool produced_tile_last_append_quads_ : 1 = true;
 
   bool nearest_neighbor_ : 1 = false;
 

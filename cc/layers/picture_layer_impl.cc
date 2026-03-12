@@ -397,7 +397,7 @@ bool PictureLayerImpl::ComputeCheckerboardedNeedsRecord() {
 
 std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
     float max_contents_scale) {
-  produced_tile_last_append_quads_ = false;
+  set_produced_tile_last_append_quads(false);
 
   auto custom_data = std::make_unique<AppendQuadsCustomSharedDataImpl>();
   custom_data->scaled_viewport_for_tile_priority_ = gfx::ScaleToEnclosingRect(
@@ -437,7 +437,7 @@ bool PictureLayerImpl::AppendQuadForTile(
                                                         custom_data);
   }
 
-  produced_tile_last_append_quads_ = true;
+  set_produced_tile_last_append_quads(true);
 
   AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
 
@@ -502,7 +502,7 @@ bool PictureLayerImpl::UpdateTiles() {
   bool can_require_tiles_for_activation = false;
   if (contributes_to_drawn_render_surface()) {
     can_require_tiles_for_activation =
-        produced_tile_last_append_quads_ || RequiresHighResToDraw() ||
+        produced_tile_last_append_quads() || RequiresHighResToDraw() ||
         !layer_tree_impl()->SmoothnessTakesPriority();
   }
 
