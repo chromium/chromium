@@ -217,6 +217,9 @@ public interface BottomSheetController {
      */
     boolean isAnchoredToBottomControls();
 
+    /** Whether the bottom sheet has a bottom inset. */
+    boolean hasBottomInset();
+
     /**
      * Get the current background color for the bottom sheet. If the sheet does not have a solid
      * background color, this will return null.
