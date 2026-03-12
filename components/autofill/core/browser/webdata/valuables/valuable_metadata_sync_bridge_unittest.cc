@@ -1021,9 +1021,9 @@ TEST_F(ValuableMetadataSyncBridgeTest,
       ValuableMetadataChange::ADD, metadata.valuable_id, metadata));
 }
 
-// Tests that DeleteOldOrphanMetadata() deletes metadata that has no
+// Tests that DeleteOldOrphanMetadata() deletes EntityMetadata that has no
 // corresponding data entity.
-TEST_F(ValuableMetadataSyncBridgeTest, DeleteOldOrphanMetadata) {
+TEST_F(ValuableMetadataSyncBridgeTest, DeleteOldOrphanMetadata_EntityMetadata) {
   base::HistogramTester histogram_tester;
 
   // 1. Setup initial state with two server vehicles and three metadata entries,
@@ -1084,6 +1084,104 @@ TEST_F(ValuableMetadataSyncBridgeTest, DeleteOldOrphanMetadata) {
                                    server_vehicle2.metadata()));
   histogram_tester.ExpectUniqueSample(
       "Autofill.ValuableMetadata.OrphanEntriesRemovedCount", 1, 1);
+}
+
+// Tests that DeleteOldOrphanMetadata() deletes ValuableMetadata that has no
+// corresponding data entity.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       DeleteOldOrphanMetadata_ValuableMetadata) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list{syncer::kSyncLoyaltyCardMetadata};
+
+  // 1. Setup initial state with two loyalty cards and three metadata entries,
+  // one of which is an orphan.
+  const LoyaltyCard loyalty_card_1 = TestLoyaltyCard("1");
+  const LoyaltyCard loyalty_card_2 = TestLoyaltyCard("2");
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card_1);
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card_2);
+
+  const ValuableMetadata orphan_metadata = TestValuableMetadata("3");
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *loyalty_card_1.id(),
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          loyalty_card_1.metadata(),
+          sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *loyalty_card_2.id(),
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          loyalty_card_2.metadata(),
+          sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      *orphan_metadata.valuable_id,
+      SpecificsToEntity(CreateSpecificsFromValuableMetadata(
+          orphan_metadata,
+          sync_pb::AutofillValuableMetadataSpecifics::LOYALTY_CARD,
+          /*base_specifics=*/{}))));
+
+  bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                             std::move(entity_change_list));
+
+  ASSERT_THAT(GetValuableMetadataEntries(),
+              UnorderedElementsAre(loyalty_card_1.metadata(),
+                                   loyalty_card_2.metadata(), orphan_metadata));
+
+  // 2. Expect that the orphan metadata is deleted from the sync server.
+  EXPECT_CALL(mock_processor(), Delete(*orphan_metadata.valuable_id, _, _));
+  EXPECT_CALL(backend(), CommitChanges());
+
+  // 3. Restart the bridge to force the cleanup of orphan metadata.
+  bridge_ = std::make_unique<ValuableMetadataSyncBridge>(
+      mock_processor_.CreateForwardingProcessor(), &backend_);
+
+  // 4. Verify that the orphan metadata is deleted locally and the UMA metric is
+  // recorded.
+  EXPECT_THAT(GetValuableMetadataEntries(),
+              UnorderedElementsAre(loyalty_card_1.metadata(),
+                                   loyalty_card_2.metadata()));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ValuableMetadata.OrphanEntriesRemovedCount", 1, 1);
+}
+
+// Tests that DeleteOldOrphanEntityMetadata() ignores metadata associated with
+// loyalty cards, even if it is stored in the EntityMetadata table.
+TEST_F(ValuableMetadataSyncBridgeTest,
+       DeleteOldOrphanMetadata_EntityMetadata_IgnoresLoyaltyCards) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Create a loyalty card.
+  const LoyaltyCard loyalty_card = TestLoyaltyCard("card1");
+  valuables_table().AddOrUpdateLoyaltyCard(loyalty_card);
+
+  // 2. Create metadata for this card in the EntityMetadata table (simulating
+  // legacy data). Ensure it is old enough to be deleted if it were an orphan.
+  EntityInstance::EntityMetadata legacy_metadata;
+  legacy_metadata.guid = EntityInstance::EntityId(loyalty_card.id().value());
+  legacy_metadata.use_date = base::Time::Now() - base::Days(400);
+  entity_table().AddOrUpdateEntityMetadata(legacy_metadata);
+
+  // 3. Verify initial state.
+  EXPECT_THAT(GetEntityMetadataEntries(),
+              UnorderedElementsAre(legacy_metadata));
+
+  // 4. Expect that no delete is sent to the server.
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+
+  // 5. Trigger orphan cleanup.
+  bridge_ = std::make_unique<ValuableMetadataSyncBridge>(
+      mock_processor_.CreateForwardingProcessor(), &backend_);
+
+  // 6. Verify that the local metadata is removed from EntityTable.
+  EXPECT_THAT(GetEntityMetadataEntries(), IsEmpty());
+
+  // 7. Verify that no deletions were counted (since we didn't delete from
+  // server).
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.ValuableMetadata.OrphanEntriesRemovedCount", 0, 1);
 }
 
 }  // namespace

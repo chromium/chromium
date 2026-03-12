@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -109,11 +110,20 @@ class ValuableMetadataSyncBridge
   const sync_pb::AutofillValuableMetadataSpecifics&
   GetPossiblyTrimmedValuableMetadataSpecifics(std::string_view storage_key);
 
-  // This routine performs cleanup by deleting old metadata records that have
+  // These functions perform cleanup by deleting old metadata records that have
   // become orphaned (i.e., they have no matching data entity). It's primarily
   // here to handle uncommon scenarios, like receiving metadata for an entity
   // that was deleted before the entity data itself could reach the client.
+  // `DeleteOrphanValuableMetadata()` and `DeleteOrphanEntityMetadata()` return
+  // the number of metadata records that were deleted from the valuables and
+  // entity tables, respectively.
   void DeleteOrphanMetadata();
+  int DeleteOrphanEntityMetadata(
+      syncer::MetadataChangeList* metadata_change_list,
+      const base::flat_set<ValuableId>& non_orphan_loyalty_card_ids);
+  int DeleteOrphanValuableMetadata(
+      syncer::MetadataChangeList* metadata_change_list,
+      const base::flat_set<ValuableId>& non_orphan_loyalty_card_ids);
 
   // To ensures that metadata and model data is  committed in a single
   // transaction, `CreateMetadataChangeList()` is implemented using an
