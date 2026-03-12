@@ -491,7 +491,8 @@ void CreditCardSuggestionGenerator::FetchSuggestionData(
   if (base::FeatureList::IsEnabled(features::kAutofillEnableSaveAndFill) &&
       ShouldShowCreditCardSaveAndFill(const_cast<AutofillClient&>(client),
                                       is_complete_form, trigger_field)) {
-    callback({SuggestionDataSource::kSaveAndFillPromo, {}});
+    callback({SuggestionDataSource::kSaveAndFillPromo,
+              {SaveAndFillAvailability(true)}});
     return;
   }
 
@@ -538,7 +539,10 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   std::vector<Suggestion> suggestions;
-  if (all_suggestion_data.contains(SuggestionDataSource::kSaveAndFillPromo)) {
+  const std::vector<SuggestionData>* entries = base::FindOrNull(
+      all_suggestion_data, SuggestionDataSource::kSaveAndFillPromo);
+  if (entries) {
+    CHECK(entries->size() == 1u);
     bool display_gpay_logo = false;
     suggestions.push_back(
         CreateSaveAndFillSuggestion(client, display_gpay_logo));

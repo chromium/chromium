@@ -165,7 +165,7 @@ class SuggestionGenerator {
                                       LoyaltyCard,
                                       IdentityCredential,
                                       HybridPasskeyAvailability,
-                                      SaveAndFillSuggestion,
+                                      SaveAndFillAvailability,
                                       VirtualCardSuggestionData,
                                       OneTimePasswordSuggestionData,
                                       PlusAddress,

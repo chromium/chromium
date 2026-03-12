@@ -11,8 +11,8 @@ namespace autofill {
 
 // A strong alias for a boolean that indicates whether save and fill is
 // available.
-using SaveAndFillSuggestion =
-    base::StrongAlias<class SaveAndFillSuggestedTag, bool>;
+using SaveAndFillAvailability =
+    base::StrongAlias<class SaveAndFillAvailabilityTag, bool>;
 
 }  // namespace autofill
 
