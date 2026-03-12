@@ -2040,6 +2040,9 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kOmniboxAimMultiContextCompactFusebox[] = {
     {"multi_context", "true"},
     {"compact_fusebox", "true"}};
+const FeatureEntry::FeatureParam kOmniboxAimOriginalComposeplate[] = {
+    {"multi_context", "true"},
+    {"redirect_composeplate_button", "false"}};
 const FeatureEntry::FeatureParam kOmniboxAimModelPickerAndCanvas[] = {
     {"multi_context", "true"},
     {"show_model_picker", "true"}};
@@ -2054,6 +2057,7 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"MC Button with Hint", kOmniboxAimMultiContextDedicatedModeButtonWithHint,
      "3395755"},
     {"MC Compact", kOmniboxAimMultiContextCompactFusebox, "3395755"},
+    {"Original Composeplate", kOmniboxAimOriginalComposeplate, "3395755"},
     {"Model Picker & Canvas", kOmniboxAimModelPickerAndCanvas, "3395755"},
 };
 
