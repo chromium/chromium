@@ -507,6 +507,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     // If the new parent folder is visible, notify to ensure its displayed
     // child count is updated.
     this.notifyPathIfVisible_(newParent.id, 'children');
+    this.notifyPathIfVisible_(oldParent.id, 'children');
     // If compact and tree view is active, we must resize open folders
     if (this.bookmarksTreeViewEnabled_ && this.compact_) {
       this.notifyBookmarksListResize_();

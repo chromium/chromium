@@ -105,7 +105,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
   accessor hasActiveDrag: boolean = false;
   accessor activeFolderPath: BookmarksTreeNode[] = [];
   accessor hasFolders: boolean = false;
-  accessor sortedChildren: BookmarksTreeNode[] = [];
   accessor activeSortIndex: number = 0;
 
   accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
@@ -156,10 +155,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
     if (changedProperties.has('bookmark') &&
         this.bookmark.id !== changedProperties.get('bookmark')?.id) {
       this.toggleExpand = false;
-      this.sortedChildren =
-          this.bookmark.children ? [...this.bookmark.children] : [];
-      this.bookmarksService_.sortBookmarks(
-          this.sortedChildren, this.activeSortIndex);
+      if (this.isFolder_() && this.bookmark.children) {
+        this.bookmarksService_.sortBookmarks(
+            this.bookmark.children, this.activeSortIndex);
+      }
     }
 
     if (changedProperties.has('activeFolderPath')) {
@@ -180,9 +179,10 @@ export class PowerBookmarkRowElement extends CrLitElement {
       }
     }
 
-    if (changedProperties.has('activeSortIndex')) {
+    if (changedProperties.has('activeSortIndex') && this.isFolder_() &&
+        this.bookmark.children) {
       this.bookmarksService_.sortBookmarks(
-          this.sortedChildren, this.activeSortIndex);
+          this.bookmark.children, this.activeSortIndex);
     }
   }
 
