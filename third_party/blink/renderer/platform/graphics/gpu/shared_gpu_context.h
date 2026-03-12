@@ -56,8 +56,6 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   // "ImageChromium" refers to putting a canvas into a hardware layer which is
   // directly scanned out of display, bypassing chromium's own GPU composite.
-  // It is the same "ImageChromium" referenced by
-  // `WebGLImageChromiumEnabled` for example.
   // The name is out of date and refers to the system that morphed into
   // SharedImage.
   // This method performs context-specific check that's not available when
@@ -68,13 +66,11 @@ class PLATFORM_EXPORT SharedGpuContext {
   static bool MaySupportWebGLImageChromium() { return true; }
 #endif
 
-  static bool WebGLImageChromiumEnabled();
-
   // Whether WebGL content should be placed into overlays.
   static bool UseOverlaysForWebGL();
 
-  // Forces MaySupportWebGLImageChromium() and WebGLImageChromiumEnabled() to
-  // return the passed-in value.
+  // Forces MaySupportWebGLImageChromium(), UseOverlaysForWebGL(), and
+  // LowLatencyUsageSupportedForWebGL() to return the passed-in value.
   // Cleared on the next invocation of Reset() of the global context.
   static void SetWebGLImageChromiumEnabledForTesting(bool enable);
 

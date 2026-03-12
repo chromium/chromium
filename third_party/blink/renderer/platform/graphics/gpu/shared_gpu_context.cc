@@ -446,27 +446,25 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
   if (!MaySupportWebGLImageChromium()) {
     return false;
   }
-  if (WebGLImageChromiumEnabled()) {
-    return true;
-  }
-  return base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
-}
 
-bool SharedGpuContext::WebGLImageChromiumEnabled() {
   if (g_webgl_image_chromium_enabled_for_testing) {
     return g_webgl_image_chromium_enabled_for_testing.value();
   }
 
 #if BUILDFLAG(IS_APPLE)
-  return IsDelegatedCompositingEnabled();
+  if (IsDelegatedCompositingEnabled()) {
+    return true;
+  }
 #elif BUILDFLAG(IS_CHROMEOS)
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
-  return enable_web_gl_image_chromium;
-#else
-  return false;
+  if (enable_web_gl_image_chromium) {
+    return true;
+  }
 #endif
+
+  return base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
 }
 
 bool SharedGpuContext::UseOverlaysForWebGL() {
