@@ -134,6 +134,20 @@ TEST_F(AccountCapabilitiesTest,
       signin::Tribool::kFalse);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(AccountCapabilitiesTest, CanSubmitFeedback) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_submit_feedback(), signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_submit_feedback(true);
+  EXPECT_EQ(capabilities.can_submit_feedback(), signin::Tribool::kTrue);
+
+  mutator.set_can_submit_feedback(false);
+  EXPECT_EQ(capabilities.can_submit_feedback(), signin::Tribool::kFalse);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_IOS)
 TEST_F(AccountCapabilitiesTest, CanSignInToChrome) {
   base::test::ScopedFeatureList feature_list{

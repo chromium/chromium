@@ -145,6 +145,12 @@ signin::Tribool AccountCapabilities::can_sign_in_to_chrome() const {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+signin::Tribool AccountCapabilities::can_submit_feedback() const {
+  return GetCapabilityByName(kCanSubmitFeedbackInChromeCapabilityName);
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 signin::Tribool AccountCapabilities::can_toggle_auto_updates() const {
   return GetCapabilityByName(kCanToggleAutoUpdatesName);

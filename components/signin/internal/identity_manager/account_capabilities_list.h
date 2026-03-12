@@ -71,6 +71,12 @@ ACCOUNT_CAPABILITY(
     CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
     "accountcapabilities/gi2tklldmfya")
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+ACCOUNT_CAPABILITY(kCanSubmitFeedbackInChromeCapabilityName,
+                   CAN_SUBMIT_FEEDBACK_IN_CHROME_CAPABILITY_NAME,
+                   "accountcapabilities/gizdqmrnmnqxa")
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 ACCOUNT_CAPABILITY(kCanToggleAutoUpdatesName,
                    CAN_TOGGLE_AUTO_UPDATES_NAME,

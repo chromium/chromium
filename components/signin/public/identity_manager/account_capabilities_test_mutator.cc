@@ -83,6 +83,13 @@ void AccountCapabilitiesTestMutator::set_can_sign_in_to_chrome(bool value) {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void AccountCapabilitiesTestMutator::set_can_submit_feedback(bool value) {
+  capabilities_->capabilities_map_[kCanSubmitFeedbackInChromeCapabilityName] =
+      value;
+}
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 void AccountCapabilitiesTestMutator::set_can_toggle_auto_updates(bool value) {
   capabilities_->capabilities_map_[kCanToggleAutoUpdatesName] = value;
