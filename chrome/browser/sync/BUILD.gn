@@ -118,6 +118,7 @@ source_set("sync") {
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_group_sync:utils",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/undo",
     "//chrome/common",
     "//chrome/common:buildflags",
     "//chrome/common:channel_info",

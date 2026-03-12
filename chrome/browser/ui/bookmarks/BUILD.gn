@@ -76,6 +76,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tab_group",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs/saved_tab_groups",
+    "//chrome/browser/undo",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
     "//components/feature_engagement/public",

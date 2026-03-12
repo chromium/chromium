@@ -548,6 +548,7 @@ source_set("extensions") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/undo",
     "//chrome/common",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",

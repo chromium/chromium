@@ -34,6 +34,7 @@ source_set("impl") {
     "//chrome/browser/profiles",
     "//chrome/browser/reading_list",
     "//chrome/browser/signin",
+    "//chrome/browser/undo",
     "//components/query_parser",
     "//components/undo",
   ]

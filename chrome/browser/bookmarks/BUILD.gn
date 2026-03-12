@@ -59,6 +59,7 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/sync",
+    "//chrome/browser/undo",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
     "//components/commerce/core:feature_list",
