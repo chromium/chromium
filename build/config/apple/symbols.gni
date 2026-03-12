@@ -25,7 +25,9 @@ declare_args() {
 
   # Allow the use of swift/c++ interop. When disabled, features that
   # depend on swift/c++ interop are excluded from the build.
-  enable_swift_cxx_interop = false
+  # TODO(crbug.com/469059700): Re-disable the flag before the branch cut of M148
+  # (April 6, 2026).
+  enable_swift_cxx_interop = true
 }
 
 # Save unstripped copies of targets with a ".unstripped" suffix. This is
