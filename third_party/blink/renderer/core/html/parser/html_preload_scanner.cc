@@ -517,7 +517,7 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (Match(attribute_name, html_names::kNonceAttr)) {
       SetNonce(attribute_value);
     } else if (Match(attribute_name, html_names::kAsAttr)) {
-      as_attribute_value_ = attribute_value.DeprecatedLower();
+      as_attribute_value_ = attribute_value.ToAsciiLower();
     } else if (Match(attribute_name, html_names::kTypeAttr)) {
       type_attribute_value_ = attribute_value;
     } else if (!referrer_policy_set_ &&

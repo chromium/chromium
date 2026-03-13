@@ -393,7 +393,7 @@ void PreloadHelper::PreconnectIfNeeded(
 // to disable these preloads.
 std::optional<ResourceType> PreloadHelper::GetResourceTypeFromAsAttribute(
     const String& as) {
-  DCHECK_EQ(as.DeprecatedLower(), as);
+  DCHECK(as.ContainsNoAsciiUpper());
   if (as == "image")
     return ResourceType::kImage;
   if (as == "script")

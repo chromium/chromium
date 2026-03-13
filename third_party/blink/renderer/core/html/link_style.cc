@@ -339,8 +339,7 @@ void LinkStyle::Process(LinkLoadParameters::Reason reason) {
       owner_->RelAttribute(),
       GetCrossOriginAttributeValue(
           owner_->FastGetAttribute(html_names::kCrossoriginAttr)),
-      owner_->TypeValue().DeprecatedLower(),
-      owner_->AsValue().DeprecatedLower(), owner_->Media().DeprecatedLower(),
+      owner_->TypeValue(), owner_->AsValue().ToAsciiLower(), owner_->Media(),
       owner_->nonce(), owner_->IntegrityValue(),
       owner_->FetchPriorityHintValue().ToAsciiLower(),
       owner_->GetReferrerPolicy(),
