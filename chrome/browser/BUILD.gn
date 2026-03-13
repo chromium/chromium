@@ -7780,6 +7780,9 @@ static_library("browser") {
       if (is_chrome_branded) {
         sources += [ "internal/google_chrome_cdm_storage_id_key.h" ]
       }
+      if (enable_rlz) {
+        deps += [ "//rlz:rlz_lib" ]
+      }
     }
 
     if (mojo_media_host == "browser") {
@@ -7962,11 +7965,9 @@ static_library("browser") {
   }
 
   if (enable_rlz) {
-    sources += [
-      "rlz/chrome_rlz_tracker_delegate.cc",
-      "rlz/chrome_rlz_tracker_delegate.h",
-      "rlz/chrome_rlz_tracker_web_contents_observer.cc",
-      "rlz/chrome_rlz_tracker_web_contents_observer.h",
+    deps += [
+      "//chrome/browser/rlz",
+      "//components/rlz",
     ]
   }
 
@@ -8390,13 +8391,6 @@ group("browser_public_dependencies") {
     public_deps += [
       "//components/offline_pages/core",
       "//components/offline_pages/core/background:background_offliner",
-    ]
-  }
-  if (enable_rlz) {
-    public_deps += [
-      "//components/google/core/common",
-      "//components/rlz",
-      "//rlz:rlz_lib",
     ]
   }
 }

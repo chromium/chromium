@@ -727,6 +727,10 @@ static_library("ui") {
     deps += [ "//chrome/browser/compose" ]
   }
 
+  if (enable_rlz) {
+    deps += [ "//chrome/browser/rlz" ]
+  }
+
   # TODO(crbug.com/41437292): Remove this circular dependency.
   # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
   # These are all-platform circular includes.
@@ -1762,6 +1766,10 @@ static_library("ui") {
       "//ui/webui/resources/js/browser_command:mojo_bindings",
       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
     ]
+
+    if (enable_rlz) {
+      deps += [ "//components/rlz" ]
+    }
 
     if (is_win || is_chromeos) {
       deps += [

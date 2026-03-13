@@ -152,7 +152,10 @@ static_library("session") {
   ]
 
   if (enable_rlz) {
-    deps += [ "//components/rlz" ]
+    deps += [
+      "//chrome/browser/rlz",
+      "//components/rlz",
+    ]
   }
 }
 

@@ -8,6 +8,7 @@ import("//components/on_device_translation/buildflags/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
@@ -179,6 +180,10 @@ source_set("impl") {
 
   if (enable_background_mode) {
     deps += [ "//chrome/browser/background/extensions" ]
+  }
+
+  if (enable_rlz) {
+    deps += [ "//chrome/browser/rlz" ]
   }
 
   if (is_chromeos) {
