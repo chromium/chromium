@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -429,7 +430,8 @@ TEST_F(DemoSetupControllerTest, EnrollTwice) {
 }
 
 TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
-  std::string email = DemoSetupController::GetSubOrganizationEmail();
+  std::string email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
   // kDemoModeCountry defaults to "US".
   EXPECT_EQ(email, "admin-us@cros-demo-mode.com");
@@ -443,7 +445,8 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
   for (auto country : testing_supported_countries) {
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                                 country);
-    email = DemoSetupController::GetSubOrganizationEmail();
+    email = DemoSetupController::GetSubOrganizationEmail(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     std::string country_lowercase = base::ToLowerASCII(country);
     EXPECT_EQ(email,
@@ -452,23 +455,27 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmail) {
 
   // Test unsupported country string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "KR");
-  email = DemoSetupController::GetSubOrganizationEmail();
+  email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "");
 
   // Test unsupported region string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                               "NORDIC");
-  email = DemoSetupController::GetSubOrganizationEmail();
+  email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "");
 
   // Test random string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "foo");
-  email = DemoSetupController::GetSubOrganizationEmail();
+  email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "");
 }
 
 TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailWithLowercase) {
-  std::string email = DemoSetupController::GetSubOrganizationEmail();
+  std::string email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
   // kDemoModeCountry defaults to "US".
   EXPECT_EQ(email, "admin-us@cros-demo-mode.com");
@@ -481,14 +488,16 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailWithLowercase) {
   for (auto country : testing_supported_countries) {
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                                 country);
-    email = DemoSetupController::GetSubOrganizationEmail();
+    email = DemoSetupController::GetSubOrganizationEmail(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     EXPECT_EQ(email, "admin-" + country + "@" + policy::kDemoModeDomain);
   }
 
   // Test unsupported country string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "kr");
-  email = DemoSetupController::GetSubOrganizationEmail();
+  email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "");
 }
 
@@ -506,7 +515,8 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailForBlazeyDevice) {
   for (auto country : testing_supported_countries) {
     g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                                 country);
-    email = DemoSetupController::GetSubOrganizationEmail();
+    email = DemoSetupController::GetSubOrganizationEmail(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     std::string country_lowercase = base::ToLowerASCII(country);
     EXPECT_EQ(email, "admin-" + country_lowercase + "-blazey@" +
@@ -515,18 +525,21 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailForBlazeyDevice) {
 
   // Test unsupported country string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "KR");
-  email = DemoSetupController::GetSubOrganizationEmail();
+  email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "");
 
   // Test unsupported region string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                               "NORDIC");
-  email = DemoSetupController::GetSubOrganizationEmail();
+  email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "");
 
   // Test random string.
   g_browser_process->local_state()->SetString(prefs::kDemoModeCountry, "foo");
-  email = DemoSetupController::GetSubOrganizationEmail();
+  email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "");
 }
 
@@ -535,7 +548,8 @@ TEST_F(DemoSetupControllerTest, GetSubOrganizationEmailForCustomOU) {
   command_line.GetProcessCommandLine()->AppendSwitchASCII(
       switches::kDemoModeEnrollingUsername, "test-user-name");
 
-  std::string email = DemoSetupController::GetSubOrganizationEmail();
+  std::string email = DemoSetupController::GetSubOrganizationEmail(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   EXPECT_EQ(email, "test-user-name@cros-demo-mode.com");
 }
 

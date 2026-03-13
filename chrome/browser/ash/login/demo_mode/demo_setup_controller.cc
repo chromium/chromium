@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -421,7 +420,8 @@ bool DemoSetupController::IsOobeDemoSetupFlowInProgress() {
 }
 
 // static
-std::string DemoSetupController::GetSubOrganizationEmail() {
+std::string DemoSetupController::GetSubOrganizationEmail(
+    const PrefService& local_state) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   DCHECK(command_line);
 
@@ -435,8 +435,7 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
     }
   }
 
-  const std::string country =
-      g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
+  const std::string country = local_state.GetString(prefs::kDemoModeCountry);
 
   std::string country_uppercase = base::ToUpperASCII(country);
   std::string country_lowercase = base::ToLowerASCII(country);
@@ -629,7 +628,7 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   policy::EnrollmentRequisitionManager::SetDeviceRequisition(
       policy::EnrollmentRequisitionManager::kDemoRequisition);
   policy::EnrollmentRequisitionManager::SetSubOrganization(
-      GetSubOrganizationEmail());
+      GetSubOrganizationEmail(local_state_.get()));
   policy::EnrollmentConfig config =
       policy::EnrollmentConfig::GetDemoModeEnrollmentConfig();
 

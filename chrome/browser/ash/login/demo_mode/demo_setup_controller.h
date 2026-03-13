@@ -222,7 +222,7 @@ class DemoSetupController
   // If chrome flag "--demo-mode-enrolling-username" is set for test, it
   // will override the current country-derived user. If neither of above is
   // true, returns an empty string.
-  static std::string GetSubOrganizationEmail();
+  static std::string GetSubOrganizationEmail(const PrefService& local_state);
 
   // Returns a dictionary mapping setup steps to step indices.
   static base::DictValue GetDemoSetupSteps();
