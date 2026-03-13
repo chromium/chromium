@@ -39,10 +39,11 @@ message PrivatePass {
     reserved "issue_date_unix_epoch_micros";
     reserved 6;
     reserved "expiration_date_unix_epoch_micros";
+    reserved 7, 8;
     // The value of the issue date of the driver license.
-    optional NaiveDate issue_date = 7;
+    optional NaiveDate issue_date = 9;
     // The value of the expiration date of the driver license.
-    optional NaiveDate expiration_date = 8;
+    optional NaiveDate expiration_date = 10;
   }
 
   // Passport data.
@@ -58,10 +59,11 @@ message PrivatePass {
     reserved "issue_date_unix_epoch_micros";
     reserved 5;
     reserved "expiration_date_unix_epoch_micros";
+    reserved 6, 7;
     // The value of the issue date of the passport.
-    optional NaiveDate issue_date = 6;
+    optional NaiveDate issue_date = 8;
     // The value of the expiration date of the passport.
-    optional NaiveDate expiration_date = 7;
+    optional NaiveDate expiration_date = 9;
   }
 
   // ID card data.
@@ -79,10 +81,11 @@ message PrivatePass {
     reserved "issue_date_unix_epoch_micros";
     reserved 6;
     reserved "expiration_date_unix_epoch_micros";
+    reserved 7, 8;
     // The value of the issue date of the national ID.
-    optional NaiveDate issue_date = 7;
+    optional NaiveDate issue_date = 9;
     // The value of the expiration date of the national ID.
-    optional NaiveDate expiration_date = 8;
+    optional NaiveDate expiration_date = 10;
   }
 
   // Redress number data.
@@ -103,8 +106,9 @@ message PrivatePass {
     optional string known_traveler_number = 2;
     reserved 3;
     reserved "expiration_date_unix_epoch_micros";
+    reserved 4;
     // The value of the expiration date of the known traveler number.
-    optional NaiveDate expiration_date = 4;
+    optional NaiveDate expiration_date = 5;
   }
 
   // The private pass data to be created or updated.
