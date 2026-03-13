@@ -4155,10 +4155,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // this frame's subtree.
   void PendingDeletionCheckCompletedOnSubtree();
 
-  // Call PendingDeletionCheckCompletedOnSubtree now or later, depending on
-  // the feature gate DelayRfhDestructionsOnUnloadAndDetach.
-  void PendingDeletionCheckCompletedOnSubtreeNowOrLater();
-
   // In this RenderFramehost, cancels every:
   // - Non-pending commit NavigationRequest owned by the FrameTreeNode that
   // intends to commit in this RFH
