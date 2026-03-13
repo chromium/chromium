@@ -10,6 +10,3 @@
  * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
 
-:host([direction='forward']) cr-icon-button {
-  transform: scaleX(-1);
-}
