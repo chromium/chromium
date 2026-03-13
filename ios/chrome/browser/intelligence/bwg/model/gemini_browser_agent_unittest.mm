@@ -513,6 +513,9 @@ TEST_F(GeminiBrowserAgentTest,
 // controller is still presenting.
 TEST_F(GeminiBrowserAgentTest,
        TestFloatyRemainsHiddenWhenKeyboardDismissedIfViewPresent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiCopresence, {{kGeminiCopresenceTrackSources, "true"}});
   SetIsFloatyInvoked(true);
   gemini_browser_agent_->HideFloatyIfInvoked(
       /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);

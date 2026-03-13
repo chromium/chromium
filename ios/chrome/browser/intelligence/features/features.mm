@@ -484,6 +484,17 @@ bool IsGeminiCopresenceWithFullscreenDisablerEnabled() {
       kGeminiCopresence, kGeminiCopresenceWithFullscreenDisabler, false);
 }
 
+const char kGeminiCopresenceTrackSources[] = "GeminiCopresenceTrackSources";
+
+bool IsGeminiCopresenceTrackSourcesEnabled() {
+  if (!IsGeminiCopresenceEnabled()) {
+    return false;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiCopresence, kGeminiCopresenceTrackSources, false);
+}
+
 BASE_FEATURE(kGeminiResponseViewDynamicResizing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

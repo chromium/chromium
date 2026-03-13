@@ -299,6 +299,10 @@ BASE_DECLARE_FEATURE(kGeminiChatPersistence);
 bool IsGeminiCopresenceWithFullscreenDisablerEnabled();
 extern const char kGeminiCopresenceWithFullscreenDisabler[];
 
+// Returns true if Gemini Copresence tracks multiple hiding sources.
+bool IsGeminiCopresenceTrackSourcesEnabled();
+extern const char kGeminiCopresenceTrackSources[];
+
 // Feature flag for Gemini Dynamic Resizing.
 BASE_DECLARE_FEATURE(kGeminiResponseViewDynamicResizing);
 

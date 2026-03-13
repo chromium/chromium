@@ -286,6 +286,7 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
       return;
     }
 
+    is_hidden_by_keyboard_ = true;
     HideFloatyIfInvoked(/*animated=*/false,
                         gemini::FloatyUpdateSource::Keyboard);
     return;
@@ -294,6 +295,7 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   if (IsOnlyHiddenByKeyboard()) {
     ShowFloatyIfInvoked(/*animated=*/false,
                         gemini::FloatyUpdateSource::Keyboard);
+    is_hidden_by_keyboard_ = false;
   }
 }
 
@@ -681,6 +683,7 @@ void GeminiBrowserAgent::DismissFloaty() {
 
   is_floaty_invoked_ = false;
   active_hiding_sources_.clear();
+  is_hidden_by_keyboard_ = false;
   // TODO(crbug.com/484045717): Refactor to merge these two provider calls.
   if (IsGeminiCopresenceEnabled()) {
     ios::provider::UpdateGeminiViewState(
@@ -693,6 +696,10 @@ void GeminiBrowserAgent::DismissFloaty() {
 
 bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
     gemini::FloatyUpdateSource source) const {
+  if (!IsGeminiCopresenceTrackSourcesEnabled()) {
+    return false;
+  }
+
   switch (source) {
     case gemini::FloatyUpdateSource::Unknown:
     case gemini::FloatyUpdateSource::ContextMenu:
@@ -778,6 +785,7 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   if (is_web_navigation) {
     active_hiding_sources_.clear();
   }
+
   if (DoesFloatyHaveActiveHidingSources()) {
     return;
   }
@@ -922,10 +930,16 @@ void GeminiBrowserAgent::FullscreenDidAnimate(FullscreenController* controller,
 }
 
 bool GeminiBrowserAgent::DoesFloatyHaveActiveHidingSources() const {
+  if (!IsGeminiCopresenceTrackSourcesEnabled()) {
+    return false;
+  }
   return !active_hiding_sources_.empty();
 }
 
 bool GeminiBrowserAgent::IsOnlyHiddenByKeyboard() const {
+  if (!IsGeminiCopresenceTrackSourcesEnabled()) {
+    return is_hidden_by_keyboard_;
+  }
   return active_hiding_sources_.size() == 1 &&
          active_hiding_sources_.contains(gemini::FloatyUpdateSource::Keyboard);
 }
