@@ -11,7 +11,7 @@
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
-#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/ime/input_method.h"
@@ -23,9 +23,6 @@ namespace ui {
 class Event;
 }  // namespace ui
 
-namespace views {
-class ImageView;
-}  // namespace views
 
 namespace ash {
 
@@ -35,12 +32,12 @@ class ProgressIndicator;
 // users to have their speech transcribed into a text area. This tray will
 // only be visible after Dictation is enabled in settings. This tray does not
 // provide any bubble view windows.
-class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
+class ASH_EXPORT DictationButtonTray : public ImagedTrayIcon,
                                        public ShellObserver,
                                        public AccessibilityObserver,
                                        public SessionObserver,
                                        public ui::InputMethodObserver {
-  METADATA_HEADER(DictationButtonTray, TrayBackgroundView)
+  METADATA_HEADER(DictationButtonTray, ImagedTrayIcon)
 
  public:
   DictationButtonTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
@@ -58,7 +55,7 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  // TrayBackgroundView:
+  // ImagedTrayIcon:
   void Initialize() override;
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
@@ -104,9 +101,6 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
   // Called when text input state changes to determine whether Dictation
   // should still be enabled and update the icon.
   void TextInputChanged(const ui::TextInputClient* client);
-
-  // Weak pointer, will be parented by TrayContainer for its lifetime.
-  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // SODA download progress. A value of 0 < X < 100 indicates that download is
   // in-progress.
