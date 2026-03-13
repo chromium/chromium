@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# IMPORTANT
+# We are not accepting any new build flags in //chrome. See
+# docs/chrome_browser_design_principles.md.
+
 declare_args() {
   enable_glic_internal_resources = true
 }

@@ -4,6 +4,10 @@
 
 import("//build/config/chrome_build.gni")
 
+# IMPORTANT
+# We are not accepting any new build flags in //chrome. See
+# docs/chrome_browser_design_principles.md.
+
 declare_args() {
   # By default, only branded builds allow for platform experience.
   enable_platform_experience = is_chrome_branded
