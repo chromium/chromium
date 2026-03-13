@@ -104,6 +104,9 @@ export abstract class SelectionOverlayBaseLitElement extends
         type: Boolean,
         reflect: true,
       },
+      activeRegionId: {
+        type: String,
+      },
     };
   }
 
@@ -145,6 +148,7 @@ export abstract class SelectionOverlayBaseLitElement extends
   protected accessor isPointerInside: boolean = false;
 
   protected accessor theme: OverlayTheme = getFallbackTheme();
+  protected accessor activeRegionId: string = '';
 
   protected eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -161,7 +165,7 @@ export abstract class SelectionOverlayBaseLitElement extends
   protected cursorOffsetX: number = 3;
   protected cursorOffsetY: number = 6;
   private hasInitialFlashAnimationEnded = false;
-  private baseHandler: SelectionOverlayBaseHandler =
+  protected baseHandler: SelectionOverlayBaseHandler =
       SelectionOverlayBaseHandler.getInstance();
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition,
@@ -187,6 +191,11 @@ export abstract class SelectionOverlayBaseLitElement extends
       this.baseHandler.addNotifyOverlayClosingListener(() => {
         this.isClosing = true;
         this.removeDragListeners();
+      }),
+      this.baseHandler.addMultiRegionSelectionListener((regions) => {
+        if (regions.length > 0 && !this.activeRegionId) {
+          this.activeRegionId = regions[0].id;
+        }
       }),
     ];
     ScreenshotBitmapBrowserProxyImpl.getInstance().fetchScreenshot(
@@ -239,6 +248,9 @@ export abstract class SelectionOverlayBaseLitElement extends
             this.handlePostSelectionUpdated(e.detail.height, e.detail.width);
           });
     }
+
+    this.updateSelectionOverlayRect();
+    this.updateDevicePixelRatioListener();
   }
 
   override disconnectedCallback() {
@@ -279,8 +291,11 @@ export abstract class SelectionOverlayBaseLitElement extends
           }
           this.onInitialFlashAnimationEnd();
         });
-    this.updateSelectionOverlayRect();
-    this.updateDevicePixelRatioListener();
+  }
+
+  protected onActivateRegion(event: CustomEvent<{id: string}>) {
+    this.activeRegionId = event.detail.id;
+    event.stopPropagation();
   }
 
   private addDragListeners() {

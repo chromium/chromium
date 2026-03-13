@@ -12,38 +12,16 @@ export enum RegionSource {
   SELECTION_CHANGE,
 }
 
-/*
- * Interface definition of the core functionality that the common selection
- * controller requires from the embedding code.
- */
-export interface SelectionOverlayBaseHandler {
-  addBackgroundBlur(): void;
-  addOnOverlayReshownListener(
-      callback: (screenshotData: BitmapMappedFromTrustedProcess) => void):
-      number;
-  addNotifyOverlayClosingListener(callback: () => void): number;
-  addScreenshotDataReceivedListener(
-      callback:
-          (screenshotData: BitmapMappedFromTrustedProcess,
-           isSidePanelOpen: boolean) => void,
-      ): number;
-  addClearRegionSelectionListener(callback: () => void): number;
-  addClearAllSelectionsListener(callback: () => void): number;
-  addNotifyResultsPanelOpenedListener(callback: () => void): number;
-  addSetPostRegionSelectionListener(callback: (region: RectF) => void): number;
-  adjustRegionSelected(rect: RectF, source: RegionSource): void;
-  closePreselectionBubble(): void;
-  notifyOverlayInitialized(): void;
-  removeListener(id: number): boolean;
-  setLiveBlur(enabled: boolean): void;
+export interface SelectedRegion {
+  id: string;
+  region: RectF;
 }
 
 /*
- * This class has a static member pointing to the implementation of the
- * installed SelectionOverlayBaseHandler. setInstance should be called in each
- * embedder.
+ * Base class definition of the core functionality that the common selection
+ * controller requires from the embedding code.
  */
-export class SelectionOverlayBaseHandler {
+export abstract class SelectionOverlayBaseHandler {
   private static instance: SelectionOverlayBaseHandler|null = null;
 
   static getInstance(): SelectionOverlayBaseHandler {
@@ -53,4 +31,29 @@ export class SelectionOverlayBaseHandler {
   static setInstance(obj: SelectionOverlayBaseHandler) {
     SelectionOverlayBaseHandler.instance = obj;
   }
+
+  abstract addMultiRegionSelectionListener(
+      callback: (regions: SelectedRegion[]) => void): number;
+  abstract removeListener(id: number): boolean;
+
+  abstract addBackgroundBlur(): void;
+  abstract addOnOverlayReshownListener(
+      callback: (screenshotData: BitmapMappedFromTrustedProcess) => void):
+      number;
+  abstract addNotifyOverlayClosingListener(callback: () => void): number;
+  abstract addScreenshotDataReceivedListener(
+      callback:
+          (screenshotData: BitmapMappedFromTrustedProcess,
+           isSidePanelOpen: boolean) => void,
+      ): number;
+  abstract addClearRegionSelectionListener(callback: () => void): number;
+  abstract addClearAllSelectionsListener(callback: () => void): number;
+  abstract addNotifyResultsPanelOpenedListener(callback: () => void): number;
+  abstract addSetPostRegionSelectionListener(callback: (region: RectF) => void):
+      number;
+  abstract adjustRegionSelected(rect: RectF, source: RegionSource, id?: string):
+      void;
+  abstract closePreselectionBubble(): void;
+  abstract notifyOverlayInitialized(): void;
+  abstract setLiveBlur(enabled: boolean): void;
 }

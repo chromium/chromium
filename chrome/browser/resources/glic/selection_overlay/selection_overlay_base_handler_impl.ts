@@ -2,14 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
 import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/mojom/bitmap.mojom-webui.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
+import type {RegionSource, SelectedRegion} from '/lens/selection_overlay_base_handler.js';
+import {SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {SelectedRegionMojoType} from './selection_overlay.mojom-webui.js';
 
-export class SelectionOverlayBaseHandlerImpl implements
+function generateRandomHexId(): string {
+  return Array
+      .from(
+          {length: 32},
+          () => Math.floor(Math.random() * 16).toString(16).toUpperCase())
+      .join('');
+}
+
+export class SelectionOverlayBaseHandlerImpl extends
     SelectionOverlayBaseHandler {
   addNotifyOverlayClosingListener(_callback: () => void): number {
     return -1;
@@ -30,6 +40,9 @@ export class SelectionOverlayBaseHandlerImpl implements
   }
 
   removeListener(id: number): boolean {
+    if (id === -1) {
+      return true;
+    }
     return BrowserProxyImpl.getInstance().callbackRouter.removeListener(id);
   }
 
@@ -51,12 +64,24 @@ export class SelectionOverlayBaseHandlerImpl implements
             });
   }
 
-  addClearRegionSelectionListener(_callback: () => void): number {
-    return -1;
+  addClearRegionSelectionListener(callback: () => void): number {
+    return BrowserProxyImpl.getInstance()
+        .callbackRouter.setPostRegionSelections.addListener(
+            (regions: SelectedRegionMojoType[]) => {
+              if (regions.length === 0) {
+                callback();
+              }
+            });
   }
 
-  addClearAllSelectionsListener(_callback: () => void): number {
-    return -1;
+  addClearAllSelectionsListener(callback: () => void): number {
+    return BrowserProxyImpl.getInstance()
+        .callbackRouter.setPostRegionSelections.addListener(
+            (regions: SelectedRegionMojoType[]) => {
+              if (regions.length === 0) {
+                callback();
+              }
+            });
   }
 
   addNotifyResultsPanelOpenedListener(callback: () => void): number {
@@ -70,19 +95,32 @@ export class SelectionOverlayBaseHandlerImpl implements
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
               const firstRegion = regions[0];
-              if (!firstRegion || !firstRegion.region) {
-                return;
+              if (firstRegion) {
+                assert(firstRegion.region);
+                callback(firstRegion.region);
               }
-              callback(new DOMRect(
-                  firstRegion.region.x, firstRegion.region.y,
-                  firstRegion.region.width, firstRegion.region.height));
             });
   }
 
-  adjustRegionSelected(rect: RectF, _source: RegionSource): void {
-    BrowserProxyImpl.getInstance().handler.adjustRegion({
+  addMultiRegionSelectionListener(
+      callback: (regions: SelectedRegion[]) => void): number {
+    return BrowserProxyImpl.getInstance()
+        .callbackRouter.setPostRegionSelections.addListener(
+            (regions: SelectedRegionMojoType[]) => {
+              callback(regions.map(r => ({
+                                     id: r.id,
+                                     region: r.region,
+                                   })));
+            });
+  }
+
+  adjustRegionSelected(
+      rect: RectF, _source: RegionSource,
+      id: string = generateRandomHexId()): void {
+    const proxy = BrowserProxyImpl.getInstance();
+    proxy.handler.adjustRegion({
       region: rect,
-      id: '0123456789ABCDEF0123456789ABCDEF',
+      id,
     });
   }
 }
