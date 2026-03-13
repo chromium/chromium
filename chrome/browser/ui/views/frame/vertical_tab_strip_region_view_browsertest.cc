@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_manager.h"

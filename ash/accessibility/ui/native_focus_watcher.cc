@@ -5,6 +5,8 @@
 #include "ash/accessibility/ui/native_focus_watcher.h"
 
 #include "ash/wm/window_util.h"
+#include "ui/views/controls/button/label_button.h"
+
 namespace ash {
 
 NativeFocusWatcher::NativeFocusWatcher() = default;

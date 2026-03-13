@@ -59,6 +59,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/resize_area.h"
 #include "ui/views/controls/scroll_view.h"

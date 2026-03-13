@@ -31,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 

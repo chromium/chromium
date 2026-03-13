@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 

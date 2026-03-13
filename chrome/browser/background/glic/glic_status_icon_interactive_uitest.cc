@@ -30,6 +30,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace glic {
 

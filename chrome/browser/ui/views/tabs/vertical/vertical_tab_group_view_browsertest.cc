@@ -23,6 +23,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
 
 class VerticalTabGroupViewTest

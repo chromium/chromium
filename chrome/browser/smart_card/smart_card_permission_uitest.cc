@@ -23,6 +23,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/views_switches.h"
 
 namespace {

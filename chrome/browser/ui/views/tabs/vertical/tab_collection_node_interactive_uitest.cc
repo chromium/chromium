@@ -17,6 +17,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/controls/button/label_button.h"
 
 class TabCollectionNodeInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
