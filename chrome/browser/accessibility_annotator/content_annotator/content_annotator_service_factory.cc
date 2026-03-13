@@ -11,6 +11,8 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_embeddings_service_factory.h"
+#include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
+#include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -44,6 +46,8 @@ ContentAnnotatorServiceFactory::ContentAnnotatorServiceFactory()
   DependsOn(
       page_content_annotations::PageEmbeddingsServiceFactory::GetInstance());
   DependsOn(AccessibilityAnnotatorBackendFactory::GetInstance());
+  DependsOn(
+      passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
 }
 
 ContentAnnotatorServiceFactory::~ContentAnnotatorServiceFactory() = default;
@@ -88,10 +92,15 @@ ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  auto* passage_embeddings_service_controller =
+      passage_embeddings::ChromePassageEmbeddingsServiceController::Get();
+
   return ContentAnnotatorService::Create(
       *page_content_annotations_service, *page_content_extraction_service,
       *optimization_guide_service, *page_embeddings_service,
-      *accessibility_annotator_backend);
+      *accessibility_annotator_backend,
+      passage_embeddings_service_controller->GetEmbedder(),
+      passage_embeddings_service_controller);
 }
 
 bool ContentAnnotatorServiceFactory::ServiceIsCreatedWithBrowserContext()

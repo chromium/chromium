@@ -87,6 +87,7 @@ struct ContentClassificationResult {
 
   std::optional<Result> title_keyword_result;
   std::optional<Result> url_match_result;
+  std::optional<Result> semantic_match_result;
   std::optional<bool> is_sensitive;
   std::optional<bool> is_in_target_language;
 };

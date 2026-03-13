@@ -7,11 +7,13 @@
 #include <string_view>
 
 #include "base/containers/map_util.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_rule_based_classifier.h"
+#include "components/accessibility_annotator/content/content_annotator/content_annotator_semantic_match_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_url_matcher_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -21,7 +23,9 @@
 
 namespace accessibility_annotator {
 
-std::unique_ptr<ContentClassifier> ContentClassifier::Create() {
+// static
+std::unique_ptr<ContentClassifier> ContentClassifier::Create(
+    passage_embeddings::Embedder* embedder) {
   std::unique_ptr<ContentAnnotatorRuleBasedClassifier> title_keyword_classifier;
   const std::string& title_keyword_rules =
       kContentAnnotatorClassifierTitleKeywordRules.Get();
@@ -63,27 +67,55 @@ std::unique_ptr<ContentClassifier> ContentClassifier::Create() {
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
   return std::make_unique<ContentClassifier>(
-      PassKey(), std::move(title_keyword_classifier),
+      PassKey(), embedder, std::move(title_keyword_classifier),
       std::move(url_match_classifier), std::move(classifier_relevance_values),
       std::move(supported_languages));
 }
 
 ContentClassifier::ContentClassifier(
     PassKey pass_key,
+    passage_embeddings::Embedder* embedder,
     std::unique_ptr<ContentAnnotatorRuleBasedClassifier>
         title_keyword_classifier,
     std::unique_ptr<ContentAnnotatorUrlMatcherClassifier> url_match_classifier,
     base::flat_map<std::string, ContentClassifierRelevance>
         classifier_relevance_values,
     base::flat_set<std::string> supported_languages)
-    : title_keyword_classifier_(std::move(title_keyword_classifier)),
+    : embedder_(embedder),
+      title_keyword_classifier_(std::move(title_keyword_classifier)),
       url_match_classifier_(std::move(url_match_classifier)),
       classifier_relevance_values_(std::move(classifier_relevance_values)),
-      supported_languages_(std::move(supported_languages)) {}
+      supported_languages_(std::move(supported_languages)) {
+  OnEmbedderModelChanged();
+}
 
 ContentClassifier::~ContentClassifier() = default;
-ContentClassifier::ContentClassifier(ContentClassifier&&) = default;
-ContentClassifier& ContentClassifier::operator=(ContentClassifier&&) = default;
+
+void ContentClassifier::OnEmbedderModelChanged() {
+  if (semantic_classifier_ || !embedder_) {
+    return;
+  }
+
+  const std::string& semantic_rules =
+      kContentAnnotatorClassifierSemanticMatchRules.Get();
+  if (semantic_rules.empty()) {
+    return;
+  }
+
+  CreateSemanticMatchClassifier(
+      semantic_rules, embedder_,
+      base::BindOnce(&ContentClassifier::OnSemanticClassifierCreated,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ContentClassifier::OnSemanticClassifierCreated(
+    std::unique_ptr<ContentAnnotatorSemanticMatchClassifier> classifier) {
+  semantic_classifier_ = std::move(classifier);
+}
+
+bool ContentClassifier::IsSemanticClassifierReadyForTesting() const {
+  return !!semantic_classifier_;
+}
 
 // For testing.
 ContentClassifier::ContentClassifier() = default;
@@ -104,6 +136,11 @@ std::string_view ContentClassifier::ClassifierResultStatusToString(
       return "DidNotRun.MissingClassifierEmptyPageTitle";
     case ClassifierResultStatus::kDidNotRunMissingClassifierInvalidUrl:
       return "DidNotRun.MissingClassifierInvalidUrl";
+    case ClassifierResultStatus::kDidNotRunMissingPageTitleEmbedding:
+      return "DidNotRun.MissingPageTitleEmbedding";
+    case ClassifierResultStatus::
+        kDidNotRunMissingClassifierMissingPageTitleEmbedding:
+      return "DidNotRun.MissingClassifierMissingPageTitleEmbedding";
   }
 }
 
@@ -118,6 +155,129 @@ int64_t ContentClassifier::GetRelevanceAsInt(
     }
   }
   return static_cast<int64_t>(relevance);
+}
+
+void ContentClassifier::RunTitleKeywordClassifier(
+    const ContentClassificationInput& input,
+    ContentClassificationResult& result,
+    ukm::builders::AccessibilityAnnotator_ContentAnnotator_ClassifierResults&
+        ukm_builder) const {
+  std::string_view title_classifier_result = ClassifierResultStatusToString(
+      ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle);
+  if (title_keyword_classifier_ && !input.page_title->empty()) {
+    base::ElapsedTimer timer;
+    ContentClassificationResult::Result title_result;
+    std::optional<std::string_view> category =
+        title_keyword_classifier_->Classify(*input.page_title);
+    base::UmaHistogramTimes(
+        "AccessibilityAnnotator.TitleKeywordClassifierDuration",
+        timer.Elapsed());
+
+    if (category) {
+      title_result.category = std::string(*category);
+    }
+    ukm_builder.SetTitleKeywordResult(GetRelevanceAsInt(title_result.category));
+    result.title_keyword_result = title_result;
+    title_classifier_result =
+        result.title_keyword_result->category
+            ? std::string_view(*result.title_keyword_result->category)
+            : ClassifierResultStatusToString(
+                  ClassifierResultStatus::kInconclusiveNoMatch);
+  } else if (!input.page_title->empty()) {
+    // Classifier missing, but page title is valid.
+    title_classifier_result = ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunMissingClassifier);
+  } else if (title_keyword_classifier_) {
+    // Classifier present, but page title is empty.
+    title_classifier_result = ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunEmptyPageTitle);
+  }
+  base::UmaHistogramSparse(
+      "AccessibilityAnnotator.TitleKeywordClassifierResult",
+      variations::HashName(title_classifier_result));
+}
+
+void ContentClassifier::RunUrlMatchClassifier(
+    const ContentClassificationInput& input,
+    ContentClassificationResult& result,
+    ukm::builders::AccessibilityAnnotator_ContentAnnotator_ClassifierResults&
+        ukm_builder) const {
+  std::string_view url_classifier_result = ClassifierResultStatusToString(
+      ClassifierResultStatus::kDidNotRunMissingClassifierInvalidUrl);
+  if (url_match_classifier_ && input.url.is_valid()) {
+    base::ElapsedTimer timer;
+    ContentClassificationResult::Result url_result;
+    std::optional<std::string_view> category =
+        url_match_classifier_->Classify(input.url);
+    base::UmaHistogramTimes("AccessibilityAnnotator.UrlClassifierDuration",
+                            timer.Elapsed());
+
+    if (category) {
+      url_result.category = std::string(*category);
+    }
+    ukm_builder.SetUrlMatchResult(GetRelevanceAsInt(url_result.category));
+    result.url_match_result = url_result;
+    url_classifier_result =
+        result.url_match_result->category
+            ? std::string_view(*result.url_match_result->category)
+            : ClassifierResultStatusToString(
+                  ClassifierResultStatus::kInconclusiveNoMatch);
+  } else if (input.url.is_valid()) {
+    // Classifier missing, but URL is valid.
+    url_classifier_result = ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunMissingClassifier);
+  } else if (url_match_classifier_) {
+    // Classifier present, but URL is invalid.
+    url_classifier_result = ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunInvalidUrl);
+  }
+  base::UmaHistogramSparse("AccessibilityAnnotator.UrlClassifierResult",
+                           variations::HashName(url_classifier_result));
+}
+
+void ContentClassifier::RunSemanticMatchClassifier(
+    const ContentClassificationInput& input,
+    ContentClassificationResult& result,
+    ukm::builders::AccessibilityAnnotator_ContentAnnotator_ClassifierResults&
+        ukm_builder) const {
+  std::string_view semantic_classifier_result = ClassifierResultStatusToString(
+      ClassifierResultStatus::
+          kDidNotRunMissingClassifierMissingPageTitleEmbedding);
+  if (semantic_classifier_ && input.page_title_embedding.has_value()) {
+    base::ElapsedTimer timer;
+    ContentClassificationResult::Result semantic_result;
+    std::optional<ContentAnnotatorSemanticMatchClassifier::ClassificationResult>
+        classification_result =
+            semantic_classifier_->Classify(*input.page_title_embedding);
+    base::UmaHistogramTimes("AccessibilityAnnotator.SemanticClassifierDuration",
+                            timer.Elapsed());
+
+    if (classification_result &&
+        classification_result->score >=
+            kContentAnnotatorSemanticMatchThreshold.Get()) {
+      semantic_result.category = classification_result->category;
+      // TODO(crbug.com/478246547): Log the value to UKM.
+    }
+    result.semantic_match_result = semantic_result;
+
+    if (result.semantic_match_result->category) {
+      semantic_classifier_result =
+          std::string_view(*result.semantic_match_result->category);
+    } else {
+      semantic_classifier_result = ClassifierResultStatusToString(
+          ClassifierResultStatus::kInconclusiveNoMatch);
+    }
+  } else if (input.page_title_embedding.has_value()) {
+    // Classifier missing, but page title embedding is valid.
+    semantic_classifier_result = ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunMissingClassifier);
+  } else if (semantic_classifier_) {
+    // Classifier present, but page title embedding is missing.
+    semantic_classifier_result = ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunMissingPageTitleEmbedding);
+  }
+  base::UmaHistogramSparse("AccessibilityAnnotator.SemanticClassifierResult",
+                           variations::HashName(semantic_classifier_result));
 }
 
 ContentClassificationResult ContentClassifier::Classify(
@@ -146,71 +306,9 @@ ContentClassificationResult ContentClassifier::Classify(
                             !result.is_sensitive.value());
 
   // 3. Run value classifiers.
-  std::string title_classifier_result(ClassifierResultStatusToString(
-      ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle));
-  if (title_keyword_classifier_ && !input.page_title->empty()) {
-    base::ElapsedTimer timer;
-    ContentClassificationResult::Result title_result;
-    std::optional<std::string_view> category =
-        title_keyword_classifier_->Classify(*input.page_title);
-    base::UmaHistogramTimes(
-        "AccessibilityAnnotator.TitleKeywordClassifierDuration",
-        timer.Elapsed());
-
-    if (category) {
-      title_result.category = std::string(*category);
-    }
-    ukm_builder.SetTitleKeywordResult(GetRelevanceAsInt(title_result.category));
-    result.title_keyword_result = title_result;
-    title_classifier_result =
-        result.title_keyword_result->category
-            ? *result.title_keyword_result->category
-            : std::string(ClassifierResultStatusToString(
-                  ClassifierResultStatus::kInconclusiveNoMatch));
-  } else if (!input.page_title->empty()) {
-    // Classifier missing, but page title is valid.
-    title_classifier_result = std::string(ClassifierResultStatusToString(
-        ClassifierResultStatus::kDidNotRunMissingClassifier));
-  } else if (title_keyword_classifier_) {
-    // Classifier present, but page title is empty.
-    title_classifier_result = std::string(ClassifierResultStatusToString(
-        ClassifierResultStatus::kDidNotRunEmptyPageTitle));
-  }
-  base::UmaHistogramSparse(
-      "AccessibilityAnnotator.TitleKeywordClassifierResult",
-      variations::HashName(title_classifier_result));
-
-  std::string url_classifier_result(ClassifierResultStatusToString(
-      ClassifierResultStatus::kDidNotRunMissingClassifierInvalidUrl));
-  if (url_match_classifier_ && input.url.is_valid()) {
-    base::ElapsedTimer timer;
-    ContentClassificationResult::Result url_result;
-    std::optional<std::string_view> category =
-        url_match_classifier_->Classify(input.url);
-    base::UmaHistogramTimes("AccessibilityAnnotator.UrlClassifierDuration",
-                            timer.Elapsed());
-
-    if (category) {
-      url_result.category = std::string(*category);
-    }
-    ukm_builder.SetUrlMatchResult(GetRelevanceAsInt(url_result.category));
-    result.url_match_result = url_result;
-    url_classifier_result =
-        result.url_match_result->category
-            ? *result.url_match_result->category
-            : std::string(ClassifierResultStatusToString(
-                  ClassifierResultStatus::kInconclusiveNoMatch));
-  } else if (input.url.is_valid()) {
-    // Classifier missing, but URL is valid.
-    url_classifier_result = std::string(ClassifierResultStatusToString(
-        ClassifierResultStatus::kDidNotRunMissingClassifier));
-  } else if (url_match_classifier_) {
-    // Classifier present, but URL is invalid.
-    url_classifier_result = std::string(ClassifierResultStatusToString(
-        ClassifierResultStatus::kDidNotRunInvalidUrl));
-  }
-  base::UmaHistogramSparse("AccessibilityAnnotator.UrlClassifierResult",
-                           variations::HashName(url_classifier_result));
+  RunTitleKeywordClassifier(input, result, ukm_builder);
+  RunUrlMatchClassifier(input, result, ukm_builder);
+  RunSemanticMatchClassifier(input, result, ukm_builder);
 
   ukm_builder.Record(ukm::UkmRecorder::Get());
   return result;

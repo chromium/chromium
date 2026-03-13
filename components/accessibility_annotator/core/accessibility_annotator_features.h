@@ -30,6 +30,9 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<bool> kContentAnnotatorEnableFullAnnotation;
 extern const base::FeatureParam<bool> kContentAnnotatorLanguageCheckEnabled;
 extern const base::FeatureParam<int> kContentAnnotatorMaxCacheAnnotations;
+extern const base::FeatureParam<std::string>
+    kContentAnnotatorClassifierSemanticMatchRules;
+extern const base::FeatureParam<double> kContentAnnotatorSemanticMatchThreshold;
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
 
