@@ -15,7 +15,7 @@
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/system_tray_observer.h"
-#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/functional/callback_forward.h"
@@ -35,7 +35,6 @@ enum class TabletState;
 
 namespace views {
 
-class ImageView;
 class ImageButton;
 class View;
 class Widget;
@@ -68,7 +67,7 @@ class Shell;
 // This class represents the Eche tray button in the status area and
 // controls the bubble that is shown when the tray button is clicked.
 class ASH_EXPORT EcheTray
-    : public TrayBackgroundView,
+    : public ImagedTrayIcon,
       public SessionObserver,
       public ScreenLayoutObserver,
       public ShelfObserver,
@@ -77,7 +76,7 @@ class ASH_EXPORT EcheTray
       public KeyboardControllerObserver,
       public ShellObserver,
       public eche_app::EcheConnectionStatusHandler::Observer {
-  METADATA_HEADER(EcheTray, TrayBackgroundView)
+  METADATA_HEADER(EcheTray, ImagedTrayIcon)
 
  public:
   // TODO(b/226687249): Move to ash/webui/eche_app_ui if dependency cycle error
@@ -135,7 +134,7 @@ class ASH_EXPORT EcheTray
 
   bool IsInitialized() const;
 
-  // TrayBackgroundView:
+  // ImagedTrayIcon:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
   void HandleLocaleChange() override;
@@ -352,9 +351,6 @@ class ASH_EXPORT EcheTray
   // Eche window URL. However, the bubble does not interpret,
   // validate, or expect a special url format or page behabvior.
   GURL url_;
-
-  // Icon of the tray. Unowned.
-  const raw_ptr<views::ImageView> icon_;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

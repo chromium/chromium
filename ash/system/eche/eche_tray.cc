@@ -211,22 +211,19 @@ void EcheTray::EventInterceptor::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 EcheTray::EcheTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kEche),
-      icon_(
-          tray_container()->AddChildView(std::make_unique<views::ImageView>())),
+    : ImagedTrayIcon(shelf,
+                     ui::ImageModel::FromVectorIcon(
+                         kPhoneHubPhoneIcon,
+                         cros_tokens::kCrosSysOnSurface),
+                     GetAccessibleName(),
+                     TrayBackgroundViewCatalogName::kEche),
       event_interceptor_(std::make_unique<EventInterceptor>(this)) {
   SetCallback(
       base::BindRepeating(&EcheTray::OnButtonPressed, base::Unretained(this)));
 
-  const int icon_padding = (kTrayItemSize - kIconSize) / 2;
-
-  icon_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(icon_padding, icon_padding)));
-
   // Observers setup
   // Note: `ScreenLayoutObserver` starts observing at its constructor.
   observed_session_.Observe(Shell::Get()->session_controller());
-  icon_->SetTooltipText(GetAccessibleName());
   UpdateTrayItemColor(is_active());
 
   shelf_observation_.Observe(shelf);
@@ -254,14 +251,14 @@ void EcheTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {
 }
 
 void EcheTray::UpdateTrayItemColor(bool is_active) {
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       kPhoneHubPhoneIcon, is_active
                               ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                               : cros_tokens::kCrosSysOnSurface));
 }
 
 void EcheTray::HandleLocaleChange() {
-  icon_->SetTooltipText(GetAccessibleName());
+  image_view()->SetTooltipText(GetAccessibleName());
 }
 
 void EcheTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
