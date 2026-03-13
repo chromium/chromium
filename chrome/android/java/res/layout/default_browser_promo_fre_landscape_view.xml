@@ -59,6 +59,10 @@ found in the LICENSE file.
           app:leading="@dimen/text_size_medium_leading"
           android:gravity="start" />
 
+      <include android:id="@+id/instruction_1" layout="@layout/default_browser_promo_fre_row" />
+      <include android:id="@+id/instruction_2" layout="@layout/default_browser_promo_fre_row" />
+      <include android:id="@+id/instruction_3" layout="@layout/default_browser_promo_fre_row" />
+
       <LinearLayout
           android:id="@+id/default_browser_fre_button_group"
           android:layout_width="match_parent"

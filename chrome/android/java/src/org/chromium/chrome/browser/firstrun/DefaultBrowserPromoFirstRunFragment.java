@@ -151,12 +151,45 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
             view.findViewById(R.id.subtitle).setVisibility(View.GONE);
             view.getContinueButtonView().setText(R.string.set_chrome_as_your_default);
 
-            // Adjust the top margin for the first row so it's not touching the title.
-            var firstRow = view.findViewById(R.id.instruction_1);
-            var params = (MarginLayoutParams) firstRow.getLayoutParams();
-            params.topMargin =
-                    getResources().getDimensionPixelSize(R.dimen.promo_large_padding_horizontal);
-            firstRow.setLayoutParams(params);
+            int topMargin =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    useLandscape
+                                            ? R.dimen.promo_large_padding_vertical
+                                            : R.dimen.promo_large_padding_horizontal);
+            int buttonBottomMargin =
+                    getResources()
+                            .getDimensionPixelSize(
+                                    useLandscape
+                                            ? R.dimen.promo_large_padding_vertical
+                                            : R.dimen.promo_large_padding_horizontal);
+
+            if (useLandscape) {
+                // For landscape mode, remove the top and bottom padding of the LinearLayout to
+                // reduce scrolling.
+                View contentContainer = (View) view.findViewById(R.id.title).getParent();
+                contentContainer.setPadding(0, 0, 0, 0);
+            }
+
+            int[] rowIds = new int[] {R.id.instruction_1, R.id.instruction_2, R.id.instruction_3};
+            for (int i = 0; i < rowIds.length; i++) {
+                View row = view.findViewById(rowIds[i]);
+                var params = (MarginLayoutParams) row.getLayoutParams();
+
+                // Adjust the top margin for the first row so it's not touching the title.
+                if (i == 0) {
+                    params.topMargin = topMargin;
+                }
+
+                // Align rows to the start (left) with the title.
+                if (useLandscape) {
+                    params.setMarginStart(0);
+                    params.setMarginEnd(
+                            getResources()
+                                    .getDimensionPixelSize(R.dimen.promo_large_padding_horizontal));
+                }
+                row.setLayoutParams(params);
+            }
 
             setUpPromotionalRows(
                     view,
@@ -180,8 +213,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
             // Decrease the button group bottom margin to create space for the promotional rows.
             View buttonGroup = view.findViewById(R.id.default_browser_fre_button_group);
             var buttonParams = (MarginLayoutParams) buttonGroup.getLayoutParams();
-            buttonParams.bottomMargin =
-                    getResources().getDimensionPixelSize(R.dimen.promo_large_padding_horizontal);
+            buttonParams.bottomMargin = buttonBottomMargin;
             buttonGroup.setLayoutParams(buttonParams);
         }
 
