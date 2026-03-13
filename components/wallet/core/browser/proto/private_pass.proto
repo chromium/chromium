@@ -19,9 +19,9 @@ message PrivatePass {
   // Represents a date without a time zone. This is useful for issue and expiry
   // dates on private passes.
   message NaiveDate {
-    optional int32 day = 1;
+    optional int32 year = 1;
     optional int32 month = 2;
-    optional int32 year = 3;
+    optional int32 day = 3;
   }
 
   // Driver license data.
