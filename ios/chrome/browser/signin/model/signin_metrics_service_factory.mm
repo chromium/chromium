@@ -9,6 +9,7 @@
 #import "base/no_destructor.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/core/browser/signin_metrics_service.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
@@ -32,6 +33,7 @@ SigninMetricsServiceFactory::SigninMetricsServiceFactory()
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
 }
 
 SigninMetricsServiceFactory::~SigninMetricsServiceFactory() {}
@@ -41,7 +43,8 @@ SigninMetricsServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<SigninMetricsService>(
       *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
-      GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder());
+      GetApplicationContext()->GetActivePrimaryAccountsMetricsRecorder(),
+      IOSProfileMetricsServiceFactory::GetForProfile(profile));
 }
 
 void SigninMetricsServiceFactory::RegisterProfilePrefs(

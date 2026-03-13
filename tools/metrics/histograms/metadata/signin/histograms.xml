@@ -3331,17 +3331,6 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SigninPending.Resolution"
-    enum="PendingResolutionSource" expires_after="2026-09-06">
-  <owner>rsult@google.com</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records the resolution method used when in Signin Pending, either Sign in
-    (reauth) or sign out of Chrome. The value is recorded when the resolution is
-    applied.
-  </summary>
-</histogram>
-
 <histogram name="Signin.SigninPending.ResolutionSource{Status}"
     enum="SigninAccessPoint" expires_after="2026-09-06">
   <owner>rsult@google.com</owner>
@@ -3372,6 +3361,20 @@ OAuth Multilogin call. -->
     <variant name="Reauth" summary="signing back in (reauth)"/>
     <variant name="Signout" summary="signing out"/>
   </token>
+</histogram>
+
+<histogram name="Signin.SigninPending.Resolution{Profile}"
+    enum="PendingResolutionSource" expires_after="2026-09-06">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the resolution method used when in Signin Pending, either Sign in
+    (reauth) or sign out of Chrome. The value is recorded when the resolution is
+    applied.
+
+    {Profile}
+  </summary>
+  <token key="Profile" variants="ProfileIndexSignin"/>
 </histogram>
 
 <histogram name="Signin.SignInPromo.{UserAction}" enum="SigninAccessPoint"

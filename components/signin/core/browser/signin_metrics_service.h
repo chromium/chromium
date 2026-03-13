@@ -15,6 +15,10 @@
 class PrefService;
 class PrefRegistrySimple;
 
+namespace metrics {
+class ProfileMetricsService;
+}
+
 namespace signin {
 class ActivePrimaryAccountsMetricsRecorder;
 }
@@ -28,10 +32,12 @@ class SigninMetricsService : public KeyedService,
  public:
   // `active_primary_accounts_metrics_recorder` may be null (this should happen
   // only in tests).
-  explicit SigninMetricsService(signin::IdentityManager& identity_manager,
-                                PrefService& pref_service,
-                                signin::ActivePrimaryAccountsMetricsRecorder*
-                                    active_primary_accounts_metrics_recorder);
+  explicit SigninMetricsService(
+      signin::IdentityManager& identity_manager,
+      PrefService& pref_service,
+      signin::ActivePrimaryAccountsMetricsRecorder*
+          active_primary_accounts_metrics_recorder,
+      metrics::ProfileMetricsService* profile_metrics_service);
   ~SigninMetricsService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -83,6 +89,8 @@ class SigninMetricsService : public KeyedService,
 
   const raw_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
       active_primary_accounts_metrics_recorder_;
+
+  const raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
 
   signin::AccountManagementTypeMetricsRecorder management_type_recorder_;
 

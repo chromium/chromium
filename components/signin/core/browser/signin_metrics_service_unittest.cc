@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/core/browser/active_primary_accounts_metrics_recorder.h"
@@ -59,12 +60,15 @@ class SigninMetricsServiceTest : public ::testing::Test {
     active_primary_accounts_metrics_recorder_ =
         std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
             local_state_);
+    profile_metrics_service_ = std::make_unique<metrics::ProfileMetricsService>(
+        /*context=*/1);
   }
 
   void CreateSigninMetricsService() {
     signin_metrics_service_ = std::make_unique<SigninMetricsService>(
         *identity_manager(), pref_service_,
-        active_primary_accounts_metrics_recorder_.get());
+        active_primary_accounts_metrics_recorder_.get(),
+        profile_metrics_service_.get());
   }
 
   void DestroySigninMetricsService() { signin_metrics_service_ = nullptr; }
@@ -217,6 +221,7 @@ class SigninMetricsServiceTest : public ::testing::Test {
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
       active_primary_accounts_metrics_recorder_;
+  std::unique_ptr<metrics::ProfileMetricsService> profile_metrics_service_;
   signin::IdentityTestEnvironment identity_test_environment_;
 
   std::unique_ptr<SigninMetricsService> signin_metrics_service_;
@@ -238,6 +243,9 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
                                       /*PendingResolutionSource::kReauth*/ 0,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Resolution.Profile1",
+      /*PendingResolutionSource::kReauth*/ 0, 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Reauth", 1);
 
@@ -267,6 +275,9 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionSignout) {
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
                                       /*PendingResolutionSource::kSignout*/ 1,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Resolution.Profile1",
+      /*PendingResolutionSource::kSignout*/ 1, 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Signout", 1);
 
@@ -293,6 +304,9 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionAfterRestart) {
   histogram_tester.ExpectUniqueSample("Signin.SigninPending.Resolution",
                                       /*PendingResolutionSource::kSignout*/ 1,
                                       1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Resolution.Profile1",
+      /*PendingResolutionSource::kSignout*/ 1, 1);
   histogram_tester.ExpectTotalCount(
       "Signin.SigninPending.ResolutionTime.Signout", 1);
 }

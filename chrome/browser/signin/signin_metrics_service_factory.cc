@@ -4,6 +4,7 @@
 #include "chrome/browser/signin/signin_metrics_service_factory.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -13,6 +14,7 @@
 SigninMetricsServiceFactory::SigninMetricsServiceFactory()
     : ProfileKeyedServiceFactory("SigninMetricsHelper") {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(ProfileMetricsServiceFactory::GetInstance());
 }
 
 SigninMetricsServiceFactory::~SigninMetricsServiceFactory() = default;
@@ -36,7 +38,8 @@ SigninMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SigninMetricsService>(
       *IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs(),
-      g_browser_process->active_primary_accounts_metrics_recorder());
+      g_browser_process->active_primary_accounts_metrics_recorder(),
+      ProfileMetricsServiceFactory::GetForProfile(profile));
 }
 
 bool SigninMetricsServiceFactory::ServiceIsCreatedWithBrowserContext() const {

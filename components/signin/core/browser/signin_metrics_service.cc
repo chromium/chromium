@@ -7,12 +7,14 @@
 #include <optional>
 #include <string_view>
 
+#include "base/check_deref.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -87,9 +89,12 @@ void RecordPendingResolutionTime(const char* histogram_base_name,
                                 base::Days(14), 50);
 }
 
-void RecordSigninPendingResolution(PendingResolutionSource resolution,
-                                   base::Time signin_pending_start_time) {
-  base::UmaHistogramEnumeration("Signin.SigninPending.Resolution", resolution);
+void RecordSigninPendingResolution(
+    PendingResolutionSource resolution,
+    base::Time signin_pending_start_time,
+    metrics::ProfileMetricsService& profile_metrics_service) {
+  profile_metrics_service.UmaHistogramEnumeration(
+      "Signin.SigninPending.Resolution", resolution);
 
   RecordPendingResolutionTime(kSigingPendingResolutionTimeBaseHistogram,
                               resolution, signin_pending_start_time);
@@ -230,11 +235,13 @@ SigninMetricsService::SigninMetricsService(
     signin::IdentityManager& identity_manager,
     PrefService& pref_service,
     signin::ActivePrimaryAccountsMetricsRecorder*
-        active_primary_accounts_metrics_recorder)
+        active_primary_accounts_metrics_recorder,
+    metrics::ProfileMetricsService* profile_metrics_service)
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
       active_primary_accounts_metrics_recorder_(
           active_primary_accounts_metrics_recorder),
+      profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
       management_type_recorder_(identity_manager) {
   identity_manager_scoped_observation_.Observe(&identity_manager_.get());
 
@@ -295,7 +302,8 @@ void SigninMetricsService::OnPrimaryAccountChanged(
       if (pref_service_->HasPrefPath(kSigninPendingStartTimePref)) {
         RecordSigninPendingResolution(
             PendingResolutionSource::kSignout,
-            pref_service_->GetTime(kSigninPendingStartTimePref));
+            pref_service_->GetTime(kSigninPendingStartTimePref),
+            profile_metrics_service_.get());
         pref_service_->ClearPref(kSigninPendingStartTimePref);
       }
       break;
@@ -414,7 +422,8 @@ void SigninMetricsService::HandleSigninErrors(
           token_operation_source)) {
     RecordSigninPendingResolution(
         PendingResolutionSource::kReauth,
-        pref_service_->GetTime(kSigninPendingStartTimePref));
+        pref_service_->GetTime(kSigninPendingStartTimePref),
+        profile_metrics_service_.get());
     pref_service_->ClearPref(kSigninPendingStartTimePref);
 
     AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
