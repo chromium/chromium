@@ -56,9 +56,14 @@ void TaskUpdate::Cancel() {
   cancel_callback_.Run();
 }
 
-std::vector<std::string> TaskUpdate::GetIds() const {
+std::vector<std::string> TaskUpdate::ids() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return ids_;
+}
+
+std::string TaskUpdate::name() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return "update";
 }
 
 void TaskUpdate::TaskComplete(Error error) {

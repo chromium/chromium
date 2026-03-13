@@ -57,9 +57,14 @@ void TaskCheckForUpdate::Cancel() {
                      Error::UPDATE_CANCELED));
 }
 
-std::vector<std::string> TaskCheckForUpdate::GetIds() const {
+std::vector<std::string> TaskCheckForUpdate::ids() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return {id_};
+}
+
+std::string TaskCheckForUpdate::name() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return "update check";
 }
 
 }  // namespace update_client

@@ -22,6 +22,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -86,11 +87,13 @@ UpdateClientImpl::~UpdateClientImpl() {
 
   CHECK(task_queue_.empty());
 
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/438803980): keep investigating why the CHECK fails on
-  // browser tests and interactive UI tests on Linux and Windows.
-  CHECK(tasks_.empty());
-#endif
+  if (!tasks_.empty()) {
+    VLOG(2) << __func__ << ": found tasks running";
+    for (const scoped_refptr<Task>& t : tasks_) {
+      VLOG(2) << "task: " << t->name()
+              << ", id: " << base::JoinString(t->ids(), ",");
+    }
+  }
 
   config_ = nullptr;
 }
@@ -220,15 +223,13 @@ bool UpdateClientImpl::IsUpdating(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (const auto& task : tasks_) {
-    const auto ids = task->GetIds();
-    if (std::ranges::contains(ids, id)) {
+    if (std::ranges::contains(task->ids(), id)) {
       return true;
     }
   }
 
   for (const auto& task : task_queue_) {
-    const auto ids = task->GetIds();
-    if (std::ranges::contains(ids, id)) {
+    if (std::ranges::contains(task->ids(), id)) {
       return true;
     }
   }

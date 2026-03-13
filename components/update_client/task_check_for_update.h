@@ -36,7 +36,8 @@ class TaskCheckForUpdate : public Task {
   // Overrides for Task.
   void Run() override;
   void Cancel() override;
-  std::vector<std::string> GetIds() const override;
+  std::vector<std::string> ids() const override;
+  std::string name() const override;
 
  private:
   ~TaskCheckForUpdate() override;
