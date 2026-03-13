@@ -75,6 +75,8 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
   MinimizeAnimationObserver& operator=(const MinimizeAnimationObserver&) =
       delete;
 
+  ~MinimizeAnimationObserver() override { animator_ = nullptr; }
+
   base::TimeDelta duration() { return duration_; }
 
  protected:
@@ -83,12 +85,13 @@ class MinimizeAnimationObserver : public ui::LayerAnimationObserver {
       ui::LayerAnimationSequence* sequence) override {
     duration_ = animator_->GetTransitionDuration();
     animator_->RemoveObserver(this);
+    animator_ = nullptr;
   }
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {}
   void OnLayerAnimationAborted(ui::LayerAnimationSequence* sequence) override {}
 
  private:
-  raw_ptr<ui::LayerAnimator, DanglingUntriaged> animator_;
+  raw_ptr<ui::LayerAnimator> animator_;
   base::TimeDelta duration_;
 };
 
