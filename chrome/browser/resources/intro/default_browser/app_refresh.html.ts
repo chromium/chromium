@@ -9,6 +9,9 @@ import type {AppRefreshElement} from './app_refresh.js';
 export function getHtml(this: AppRefreshElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+<img class="background-shape" id="background-right" alt="">
+<img class="background-shape" id="background-bottom" alt="">
+
 <div id="header"></div>
 <div id="content-div">
 

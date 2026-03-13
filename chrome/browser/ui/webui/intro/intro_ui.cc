@@ -129,6 +129,21 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
           ? IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_REFRESH_HTML
           : IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_HTML);
 
+  if (is_first_run_desktop_refresh_enabled) {
+    source->AddResourcePath(
+        "images/default_browser_bg_right_dark.png",
+        IDR_INTRO_IMAGES_DEFAULT_BROWSER_BG_RIGHT_DARK_PNG);
+    source->AddResourcePath(
+        "images/default_browser_bg_right_light.png",
+        IDR_INTRO_IMAGES_DEFAULT_BROWSER_BG_RIGHT_LIGHT_PNG);
+    source->AddResourcePath(
+      "images/default_browser_bg_bottom_dark.png",
+      IDR_INTRO_IMAGES_DEFAULT_BROWSER_BG_BOTTOM_DARK_PNG);
+    source->AddResourcePath(
+      "images/default_browser_bg_bottom_light.png",
+      IDR_INTRO_IMAGES_DEFAULT_BROWSER_BG_BOTTOM_LIGHT_PNG);
+  }
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(
       "images/refresh_showcase_illustration.png",

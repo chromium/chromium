@@ -13,6 +13,10 @@ build_webui("build") {
   static_files = [
     "default_browser/default_browser.html",
     "default_browser/default_browser_refresh.html",
+    "images/default_browser_bg_bottom_dark.png",
+    "images/default_browser_bg_bottom_light.png",
+    "images/default_browser_bg_right_dark.png",
+    "images/default_browser_bg_right_light.png",
     "images/default_browser_frame.svg",
     "images/default_browser_frame_dark.svg",
     "images/refresh_showcase_illustration_chromium.png",
