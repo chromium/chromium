@@ -700,12 +700,16 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
     if (loadTimeData.getBoolean('updatedFeedbackEnabled')) {
       this.feedbackToastShowAfterDelayTimeoutId = setTimeout(() => {
-        if (this.isComposeboxFocused) {
+        if (this.$.composebox.isExpanded()) {
           return;
         }
         this.feedbackToastShown = true;
         this.$.feedbackToast.show();
       }, loadTimeData.getInteger('updatedFeedbackToastTimeoutMs'));
+      return;
+    }
+
+    if (this.$.composebox.isExpanded()) {
       return;
     }
 

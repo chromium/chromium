@@ -712,6 +712,10 @@ export class ComposeboxElement extends I18nMixinLit
     return carousel.getThumbnailElementByUuid(this.automaticActiveTab_.uuid);
   }
 
+  isExpanded(): boolean {
+    return this.expanding_;
+  }
+
   protected async initializeState_(
       text: string = '', files: ContextualUpload[] = [],
       mode: ComposeboxToolMode = ComposeboxToolMode.kUnspecified,
