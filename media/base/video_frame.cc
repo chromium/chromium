@@ -370,6 +370,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp) {
+  CHECK(shared_image, base::NotFatalUntil::M149);
   scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
       format, coded_size, visible_rect, natural_size, timestamp);
   if (!frame) {
@@ -385,9 +386,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
         << shared_image->size().ToString() << ")";
   }
   frame->shared_image_release_cb_ = std::move(shared_image_release_cb);
-
-  DCHECK(frame->HasSharedImage());
-
   return frame;
 }
 
