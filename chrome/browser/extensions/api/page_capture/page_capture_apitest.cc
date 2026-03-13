@@ -17,8 +17,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-using ContextType = extensions::browser_test_util::ContextType;
-
 class PageCaptureSaveAsMHTMLDelegate
     : public PageCaptureSaveAsMHTMLFunction::TestDelegate {
  public:
@@ -59,9 +57,7 @@ class PageCaptureSaveAsMHTMLDelegate
   base::WeakPtrFactory<PageCaptureSaveAsMHTMLDelegate> weak_factory_{this};
 };
 
-class ExtensionPageCaptureApiTest
-    : public ExtensionApiTest,
-      public testing::WithParamInterface<ContextType> {
+class ExtensionPageCaptureApiTest : public ExtensionApiTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionApiTest::SetUpCommandLine(command_line);
@@ -80,38 +76,36 @@ class ExtensionPageCaptureApiTest
     return RunExtensionTest(extension_name, {.custom_arg = custom_arg},
                             {.allow_file_access = allow_file_access});
   }
-  void WaitForFileCleanup(PageCaptureSaveAsMHTMLDelegate* delegate) {
-    // Garbage collection in SW-based extensions doesn't clean up the temp
-    // file.
-    if (GetParam() != ContextType::kServiceWorker) {
-      delegate->WaitForFinalRelease();
-    }
-  }
 };
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionPageCaptureApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionPageCaptureApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       SaveAsMHTMLWithoutFileAccess) {
+// https://crbug.com/492228013: Flaky on desktop android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SaveAsMHTMLWithoutFileAccess \
+    DISABLED_SaveAsMHTMLWithoutFileAccess
+#else
+#define MAYBE_SaveAsMHTMLWithoutFileAccess SaveAsMHTMLWithoutFileAccess
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
+                       MAYBE_SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))
       << message_;
-  WaitForFileCleanup(&delegate);
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, SaveAsMHTMLWithFileAccess) {
+// https://crbug.com/492228013: Flaky on desktop android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SaveAsMHTMLWithFileAccess DISABLED_SaveAsMHTMLWithFileAccess
+#else
+#define MAYBE_SaveAsMHTMLWithFileAccess SaveAsMHTMLWithFileAccess
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionPageCaptureApiTest,
+                       MAYBE_SaveAsMHTMLWithFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", /*custom_arg=*/nullptr,
                       /*allow_file_access=*/true))
       << message_;
-  WaitForFileCleanup(&delegate);
 }
 
 }  // namespace extensions

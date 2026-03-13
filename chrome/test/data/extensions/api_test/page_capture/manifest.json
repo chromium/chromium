@@ -1,11 +1,10 @@
 {
   "name": "chrome.extension.pageCapture",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests that the pageCapture extension API work.",
   "background": {
-    "scripts": ["test.js"],
-    "persistent": true
+    "service_worker": "test.js"
   },
   "permissions": ["pageCapture", "tabs"]
 }
