@@ -100,7 +100,7 @@ function onSignatureResponseFromCpp(signatureRequest, response) {
               requestPinResponse.userInput :
               '';
           const pinStatus = chrome.runtime.lastError ?
-              ('failed:' + chrome.runtime.lastError) :
+              (`failed:${chrome.runtime.lastError}`) :
               (pin ? 'ok' : 'canceled');
           requestSignatureFromCpp(signatureRequest, pinStatus, pin);
         });

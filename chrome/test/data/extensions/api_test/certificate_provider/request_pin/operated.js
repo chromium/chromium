@@ -30,28 +30,28 @@ function stopPinRequest(details) {
 }
 
 function reportPinRequestBegun(pinRequestId) {
-  chrome.test.sendMessage('request' + pinRequestId + ':begun');
+  chrome.test.sendMessage(`request${pinRequestId}:begun`);
 }
 
 function reportPinRequestEnded(pinRequestId, responseDetails) {
-  let dataToSend = 'request' + pinRequestId;
+  let dataToSend = `request${pinRequestId}`;
   if (responseDetails)
-    dataToSend += ':success:' + responseDetails.userInput;
+    dataToSend += `:success:${responseDetails.userInput}`;
   else if (chrome.runtime.lastError)
-    dataToSend += ':error:' + chrome.runtime.lastError.message;
+    dataToSend += `:error:${chrome.runtime.lastError.message}`;
   else
     dataToSend += ':empty';
   chrome.test.sendMessage(dataToSend);
 }
 
 function reportStopPinRequestBegun(pinRequestStopId) {
-  chrome.test.sendMessage('stop' + pinRequestStopId + ':begun');
+  chrome.test.sendMessage(`stop${pinRequestStopId}:begun`);
 }
 
 function reportStopPinRequestEnded(pinRequestStopId) {
-  let dataToSend = 'stop' + pinRequestStopId;
+  let dataToSend = `stop${pinRequestStopId}`;
   if (chrome.runtime.lastError)
-    dataToSend += ':error:' + chrome.runtime.lastError.message;
+    dataToSend += `:error:${chrome.runtime.lastError.message}`;
   else
     dataToSend += ':success';
   chrome.test.sendMessage(dataToSend);

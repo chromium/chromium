@@ -58,7 +58,7 @@ function onPinRequested(responseDetails) {
 
 function onPinRequestStopped() {
   if (chrome.runtime.lastError) {
-    console.error('Error: ' + chrome.runtime.lastError.message);
+    console.error(`Error: ${chrome.runtime.lastError.message}`);
     lastError = chrome.runtime.lastError.message;
   }
 }
