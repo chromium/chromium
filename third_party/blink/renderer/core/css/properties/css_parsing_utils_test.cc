@@ -453,40 +453,6 @@ TEST(CSSParsingUtilsTest, ConsumeProgressType) {
   }
 }
 
-struct XYSelfTestCase {
-  // The input string to parse as position-area value.
-  const char* input;
-
-  // The expected serialization of the parsed value if accepted.
-  const char* expected;
-};
-
-const XYSelfTestCase legacy_xy_self_position_area_tests[] = {
-    {"x-self-start y-self-start", "self-x-start self-y-start"},
-    {"x-self-end y-self-end", "self-x-end self-y-end"},
-    {"span-x-self-start span-y-self-start",
-     "span-self-x-start span-self-y-start"},
-    {"span-x-self-end span-y-self-end", "span-self-x-end span-self-y-end"},
-};
-
-class PositionAreaXYSelfParseTest
-    : public ::testing::TestWithParam<XYSelfTestCase> {};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PositionAreaXYSelfParseTest,
-                         testing::ValuesIn(legacy_xy_self_position_area_tests));
-
-TEST_P(PositionAreaXYSelfParseTest, ConsumeLegacyXYSelfPositionArea) {
-  // Old *x/y-self* are aliases for *self-x/y* values with PositionAreaXYSelf
-  // enabled.
-  ScopedPositionAreaXYSelfForTest enabled(true);
-  auto param = GetParam();
-  SCOPED_TRACE(param.input);
-  CSSParserTokenStream stream(param.input);
-  CSSValue* val = css_parsing_utils::ConsumePositionArea(stream);
-  ASSERT_TRUE(val);
-  EXPECT_EQ(val->CssText(), String(param.expected));
-}
 
 TEST(CSSParsingUtilsTest, ConsumeRevertRuleUnderFlags) {
   test::TaskEnvironment task_environment;

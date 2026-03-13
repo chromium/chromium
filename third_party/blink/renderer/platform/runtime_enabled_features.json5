@@ -4213,13 +4213,6 @@
       status: "stable",
     },
     {
-      // Kill switch for removing *x-self*, *y-self* as valid values.
-      // Enabling this flag will make *x-self* and *y-self* aliases of
-      // *self-x* and *self-y* at parse time.
-      // https://crbug.com/448642325
-      name: "PositionAreaXYSelf",
-    },
-    {
       name: "PositionOutsideTabSpanCheckSiblingNode",
       status: "stable",
     },

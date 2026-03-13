@@ -9685,46 +9685,6 @@ struct PositionAreaKeyword {
 
 namespace {
 
-std::optional<PositionAreaKeyword> ConsumeLegacyPositionAreaKeyword(
-    CSSParserTokenStream& stream) {
-  CHECK(RuntimeEnabledFeatures::PositionAreaXYSelfEnabled());
-  PositionAreaKeyword::Type type = PositionAreaKeyword::kHorizontal;
-  CSSValueID value_id = stream.ConsumeIncludingWhitespace().Id();
-  switch (value_id) {
-    case CSSValueID::kXSelfStart:
-      value_id = CSSValueID::kSelfXStart;
-      break;
-    case CSSValueID::kXSelfEnd:
-      value_id = CSSValueID::kSelfXEnd;
-      break;
-    case CSSValueID::kSpanXSelfStart:
-      value_id = CSSValueID::kSpanSelfXStart;
-      break;
-    case CSSValueID::kSpanXSelfEnd:
-      value_id = CSSValueID::kSpanSelfXEnd;
-      break;
-    case CSSValueID::kYSelfStart:
-      value_id = CSSValueID::kSelfYStart;
-      type = PositionAreaKeyword::kVertical;
-      break;
-    case CSSValueID::kYSelfEnd:
-      value_id = CSSValueID::kSelfYEnd;
-      type = PositionAreaKeyword::kVertical;
-      break;
-    case CSSValueID::kSpanYSelfStart:
-      value_id = CSSValueID::kSpanSelfYStart;
-      type = PositionAreaKeyword::kVertical;
-      break;
-    case CSSValueID::kSpanYSelfEnd:
-      value_id = CSSValueID::kSpanSelfYEnd;
-      type = PositionAreaKeyword::kVertical;
-      break;
-    default:
-      NOTREACHED();
-  }
-  return PositionAreaKeyword(CSSIdentifierValue::Create(value_id), type);
-}
-
 }  // namespace
 
 std::optional<PositionAreaKeyword> ConsumePositionAreaKeyword(
@@ -9805,18 +9765,6 @@ std::optional<PositionAreaKeyword> ConsumePositionAreaKeyword(
     case CSSValueID::kSpanSelfEnd:
       type = PositionAreaKeyword::kSelfStartEnd;
       break;
-    case CSSValueID::kXSelfStart:
-    case CSSValueID::kXSelfEnd:
-    case CSSValueID::kSpanXSelfStart:
-    case CSSValueID::kSpanXSelfEnd:
-    case CSSValueID::kYSelfStart:
-    case CSSValueID::kYSelfEnd:
-    case CSSValueID::kSpanYSelfStart:
-    case CSSValueID::kSpanYSelfEnd:
-      if (RuntimeEnabledFeatures::PositionAreaXYSelfEnabled()) {
-        return ConsumeLegacyPositionAreaKeyword(stream);
-      }
-      return std::nullopt;
     default:
       return std::nullopt;
   }
