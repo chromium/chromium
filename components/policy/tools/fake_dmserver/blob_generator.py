@@ -23,6 +23,18 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 POLICY_TEST_TOOL_PATH = "/usr/local/share/policy-test-tool"
 sys.path.insert(0, POLICY_TEST_TOOL_PATH)
 
+# Attempt to import protobufs from the standard DUT location.
+# These are needed by functions like apply_user_policies, which are imported
+# by orchestrator.py. These variables will be None if import fails.
+try:
+  import chrome_device_policy_pb2
+  import chrome_settings_pb2
+  import policy_common_definitions_pb2
+  import device_management_backend_pb2
+except ImportError as e:
+  logging.warning(
+      f"Could not import core protobufs from {POLICY_TEST_TOOL_PATH}: {e}")
+
 
 def generate_device_policy_schema(manual_map_path):
   """Builds a schema for device policies by parsing the manual map."""
@@ -228,23 +240,6 @@ please refer to the README.md in this directory.""",
         0,
         os.path.join(args.build_path,
                      "pyproto/third_party/shell-encryption/src"))
-
-  try:
-    import chrome_device_policy_pb2
-    import chrome_settings_pb2
-    global policy_common_definitions_pb2
-    import policy_common_definitions_pb2
-    if args.build_path:
-      # Only used for the desktop (Chromium checkout) config.
-      global device_management_backend_pb2
-      import device_management_backend_pb2
-  except ImportError as e:
-    logging.error(f"Failed to import Chrome policy protobuf modules: {e}")
-    if args.build_path:
-      logging.error(
-          f"Make sure you build `chrome` in {args.build_path} before running "
-          "this tool.")
-    sys.exit(1)
 
   try:
     with open(args.input_policies, "r", encoding="utf-8") as f:
