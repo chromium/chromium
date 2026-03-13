@@ -5700,9 +5700,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
     if (IsPseudoElement() && new_style->MayUseImplicitAnchor()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kCSSPseudoElementUsesImplicitAnchor);
-      if (RuntimeEnabledFeatures::OriginatingElementIsImplicitAnchorEnabled()) {
-        parentElement()->SetMayBeImplicitAnchor();
-      }
+      parentElement()->SetMayBeImplicitAnchor();
     }
   }
 
@@ -10449,9 +10447,7 @@ bool Element::SetAssociatedPseudoElement(
   if (pseudo_style->MayUseImplicitAnchor()) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kCSSPseudoElementUsesImplicitAnchor);
-    if (RuntimeEnabledFeatures::OriginatingElementIsImplicitAnchorEnabled()) {
-      SetMayBeImplicitAnchor();
-    }
+    SetMayBeImplicitAnchor();
   }
 
   // Since we just styled a new pseudo element, we have to inform its potential
@@ -13360,12 +13356,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdScrollButtonInlineEnd:
       case kPseudoIdScrollButtonBlockEnd:
       case kPseudoIdOverscrollAreaParent:
-        if (RuntimeEnabledFeatures::
-                OriginatingElementIsImplicitAnchorEnabled()) {
-          return parentElement();
-        }
-        return pseudo_element->UltimateOriginatingElement()
-            .ImplicitAnchorElement();
+        return parentElement();
       default:
         return nullptr;
     }

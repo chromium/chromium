@@ -3920,13 +3920,6 @@
       status: "stable",
     },
     {
-      // Originating elements are implicit anchors for pseudo elements.
-      // This is a spec change since anchor positioning was shipped in Blink.
-      // https://issues.chromium.org/issues/408223892
-      name: "OriginatingElementIsImplicitAnchor",
-      status: "stable",
-    },
-    {
       name: "OriginIsolationHeader",
       status: "stable",
       base_feature: "none",
