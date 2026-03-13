@@ -39,9 +39,26 @@ void ReaderModeModel::FetchConfigurationForWebState(
     web::WebState* web_state,
     FetchConfigurationForWebStateCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This is called on DidFinishNavigation. Reader mode is also doing tasks in
+  // DidFinishNavigation so post the task to ensure Reader Mode is ready.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReaderModeModel::DelayedFetchConfigurationForWebState,
+                     weak_ptr_factory_.GetWeakPtr(), web_state->GetWeakPtr(),
+                     std::move(callback)));
+}
 
+void ReaderModeModel::DelayedFetchConfigurationForWebState(
+    base::WeakPtr<web::WebState> web_state,
+    FetchConfigurationForWebStateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!web_state || web_state->IsBeingDestroyed()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(nullptr)));
+    return;
+  }
   ReaderModeTabHelper* reader_mode_tab_helper =
-      ReaderModeTabHelper::FromWebState(web_state);
+      ReaderModeTabHelper::FromWebState(web_state.get());
   PrefService* prefs = profile_->GetPrefs();
   if (!reader_mode_tab_helper ||
       !prefs->GetBoolean(prefs::kIosReaderModeShowAvailability)) {
@@ -49,8 +66,7 @@ void ReaderModeModel::FetchConfigurationForWebState(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(nullptr)));
     return;
   }
-
   reader_mode_tab_helper->FetchLastCommittedUrlDistillabilityResult(
-      base::BindOnce(&HandleCurrentPageIsDistillableResult, profile_,
-                     web_state->GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&HandleCurrentPageIsDistillableResult, profile_, web_state,
+                     std::move(callback)));
 }
