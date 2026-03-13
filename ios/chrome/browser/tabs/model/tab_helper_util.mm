@@ -21,6 +21,7 @@
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "components/webauthn/ios/features.h"
 #import "components/webauthn/ios/passkey_tab_helper.h"
+#import "ios/chrome/browser/aim/model/aim_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
@@ -464,6 +465,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
 
   attacher.Create<EditMenuTabHelper>();
 
+
+  if (IsComposeboxIOSEnabled()) {
+    attacher.CreateWhen<AimTabHelper>(!attacher.IsForPrerender() &&
+                                      !attacher.IsForReaderMode());
+  }
 
   attacher.CreateWhen<BwgTabHelper>(!attacher.IsOffTheRecord() &&
                                     !attacher.IsForPrerender() &&

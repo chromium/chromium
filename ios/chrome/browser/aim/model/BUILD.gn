@@ -30,6 +30,24 @@ source_set("aim_availability") {
   ]
 }
 
+source_set("tab_helper") {
+  sources = [
+    "aim_tab_helper.h",
+    "aim_tab_helper.mm",
+  ]
+  deps = [
+    ":aim_availability",
+    "//base",
+    "//components/omnibox/browser",
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/web/public",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -46,5 +64,24 @@ source_set("test_support") {
     "//ios/chrome/browser/signin/model",
     "//services/network/public/cpp",
     "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "aim_tab_helper_unittest.mm" ]
+  deps = [
+    ":aim_availability",
+    ":tab_helper",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/omnibox/browser:test_support",
+    "//components/search_engines",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }
