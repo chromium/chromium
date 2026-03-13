@@ -5,14 +5,14 @@
 chrome.test.getConfig(function(config) {
   chrome.test.runTests([
     function fileAccessNotAllowed() {
-      var req = new XMLHttpRequest();
+      let req = new XMLHttpRequest();
 
-      var url = config.testDataDirectory + '/../test_file.txt';
-      chrome.test.log('Requesting url: ' + url);
+      let url = `${config.testDataDirectory}/../test_file.txt`;
+      chrome.test.log(`Requesting url: ${url}`);
       req.open('GET', url, true);
 
       req.onload = function() {
-        chrome.test.fail('Unexpected success for url: ' + url);
+        chrome.test.fail(`Unexpected success for url: ${url}`);
       }
       req.onerror = function() {
         chrome.test.assertEq(0, req.status);

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Tab where the content script has been injected.
-var testTabId;
+let testTabId;
 
 chrome.test.getConfig(function(config) {
 
@@ -12,7 +12,7 @@ chrome.test.getConfig(function(config) {
   }
 
   function doReq(domain, expectSuccess) {
-    var url = rewriteURL(domain + ':PORT/extensions/test_file.txt');
+    let url = rewriteURL(`${domain}:PORT/extensions/test_file.txt`);
 
     chrome.tabs.sendRequest(testTabId, url, function(response) {
       if (response.thrownError) {
