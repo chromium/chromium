@@ -14,6 +14,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -163,6 +164,13 @@ class GeminiBrowserAgentTest : public PlatformTest {
     return gemini_browser_agent_->last_shown_view_state_;
   }
 
+  // Returns true if the conversation ID preference is empty.
+  bool IsConversationIdPrefCleared() {
+    return profile_->GetPrefs()
+        ->GetString(prefs::kGeminiConversationId)
+        .empty();
+  }
+
   // Setter for `is_floaty_invoked_`.
   void SetIsFloatyInvoked(bool is_invoked) {
     gemini_browser_agent_->is_floaty_invoked_ = is_invoked;
@@ -171,6 +179,11 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // Clear `active_hiding_sources_`.
   void ClearActiveHidingSources() {
     gemini_browser_agent_->active_hiding_sources_.clear();
+  }
+
+  // Setter for `is_floaty_temporarily_hidden_`.
+  void SetIsFloatyTemporarilyHidden(bool is_hidden) {
+    gemini_browser_agent_->is_floaty_temporarily_hidden_ = is_hidden;
   }
 
   // Setter for `floaty_hidden_timestamp_`.
@@ -607,4 +620,49 @@ TEST_F(GeminiBrowserAgentTest, TestDismissGeminiFromOtherWindows) {
   run_loop.Run();
   [mock_second_handler verify];
   browser_list->RemoveBrowser(second_browser.get());
+}
+
+// Tests that the floaty is dismissed when the primary account changes.
+TEST_F(GeminiBrowserAgentTest, TestDismissedOnPrimaryAccountChanged) {
+  SetIsFloatyInvoked(true);
+  ClearActiveHidingSources();
+
+  signin::PrimaryAccountChangeEvent::State previous_state;
+  CoreAccountInfo account_info;
+  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia_id"));
+  account_info.gaia = GaiaId("gaia_id");
+  account_info.email = "test@test.com";
+  signin::PrimaryAccountChangeEvent::State current_state(
+      account_info, signin::ConsentLevel::kSignin);
+
+  signin::PrimaryAccountChangeEvent event(
+      previous_state, current_state, signin_metrics::AccessPoint::kSettings);
+
+  gemini_browser_agent_->OnPrimaryAccountChanged(event);
+
+  EXPECT_FALSE(IsFloatyInvoked());
+  EXPECT_TRUE(IsConversationIdPrefCleared());
+}
+
+// Tests that the floaty is dismissed even if it is temporarily hidden.
+TEST_F(GeminiBrowserAgentTest, TestForceDismissedWhenTemporarilyHidden) {
+  SetIsFloatyInvoked(true);
+  SetIsFloatyTemporarilyHidden(true);
+
+  signin::PrimaryAccountChangeEvent::State previous_state;
+  CoreAccountInfo account_info;
+  account_info.account_id = CoreAccountId::FromGaiaId(GaiaId("gaia_id"));
+  account_info.gaia = GaiaId("gaia_id");
+  account_info.email = "test@test.com";
+  signin::PrimaryAccountChangeEvent::State current_state(
+      account_info, signin::ConsentLevel::kSignin);
+
+  signin::PrimaryAccountChangeEvent event(
+      previous_state, current_state, signin_metrics::AccessPoint::kSettings);
+
+  gemini_browser_agent_->OnPrimaryAccountChanged(event);
+
+  EXPECT_FALSE(IsFloatyInvoked());
+  EXPECT_FALSE(IsFloatyTemporarilyHidden());
+  EXPECT_TRUE(IsConversationIdPrefCleared());
 }
