@@ -76,4 +76,7 @@
   <message name="IDS_ACTOR_OVERLAY_SNACKBAR_MESSAGE" desc="Message shown in a snackbar when the user clicks on the actor overlay but they cannot interact with the tab until the task is paused or complete." formatter_data="android_java">
     You cannot interact with this tab until the task is paused or complete
   </message>
+  <message name="IDS_GLIC_BUTTON_STATUS_REVIEW" desc="Label on the Gemini entry point button when Gemini requires user attention." formatter_data="android_java">
+    Review
+  </message>
 </grit-part>
