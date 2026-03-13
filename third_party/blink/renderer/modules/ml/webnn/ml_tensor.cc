@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_tensor.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -419,15 +421,20 @@ ScriptPromise<GPUBuffer> MLTensor::ExportToGPUImpl(
       script_state, exception_state.GetContext());
   pending_gpu_buffer_resolver_ = resolver;
 
-  remote_tensor_->ExportTensor(
+  const uint64_t flow_id = base::RandUint64();
+  TRACE_EVENT("webnn", "MLTensor::ExportTensor",
+              perfetto::Flow::Global(flow_id));
+
+  remote_tensor_->ExportTensor(flow_id,
       blink::BindOnce(&MLTensor::OnDidExportTensor, WrapPersistent(this),
-                    std::move(scoped_trace), WrapPersistent(resolver)));
+                    std::move(scoped_trace), flow_id, WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
 
 void MLTensor::OnDidExportTensor(
     webnn::ScopedTrace scoped_trace,
+    uint64_t flow_id,
     ScriptPromiseResolver<GPUBuffer>* resolver,
     base::expected<gpu::SyncToken, webnn::mojom::blink::ErrorPtr> result) {
   pending_gpu_buffer_resolver_ = nullptr;
@@ -447,7 +454,7 @@ void MLTensor::OnDidExportTensor(
   }
 
   auto webgpu_finished_access_callback = blink::BindOnce(
-      [](MLTensor* tensor, gpu::ClientSharedImage* shared_image,
+      [](MLTensor* tensor, gpu::ClientSharedImage* shared_image, uint64_t flow_id,
          const gpu::SyncToken& webgpu_finished_access_token) {
         // Update the SyncToken to ensure that we will wait for it even if we
         // immediately destroy the exported tensor.
@@ -459,14 +466,16 @@ void MLTensor::OnDidExportTensor(
           return;
         }
 
+        TRACE_EVENT("webnn", "MLTensor::ImportTensor", perfetto::Flow::Global(flow_id));
+
         // WaitSyncToken(t3)
         // WebNNTensor::ImportTensor calls WaitSyncToken.
-        tensor->remote_tensor_->ImportTensor(webgpu_finished_access_token);
+        tensor->remote_tensor_->ImportTensor(flow_id, webgpu_finished_access_token);
 
         // Resume use of MLTensor.
         tensor->gpu_buffer_.Clear();
       },
-      WrapWeakPersistent(this), base::RetainedRef(shared_image_));
+      WrapWeakPersistent(this), base::RetainedRef(shared_image_), flow_id);
 
   // TODO(crbug.com/345352987): use the label from MLTensor.
   const wgpu::BufferDescriptor tensor_buffer_desc = {

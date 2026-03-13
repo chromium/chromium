@@ -131,6 +131,7 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   // The callback of exporting a `WebNNTensor` to WebGPU.
   void OnDidExportTensor(
       webnn::ScopedTrace scoped_trace,
+      uint64_t flow_id,
       ScriptPromiseResolver<GPUBuffer>* resolver,
       base::expected<gpu::SyncToken, webnn::mojom::blink::ErrorPtr> result);
 

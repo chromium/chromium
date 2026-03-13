@@ -426,11 +426,12 @@ class FakeWebNNTensor : public blink_mojom::WebNNTensor {
     base::span(buffer_).copy_prefix_from(src_buffer);
   }
 
-  void ExportTensor(ExportTensorCallback callback) override {
+  void ExportTensor(uint64_t flow_id, ExportTensorCallback callback) override {
     NOTIMPLEMENTED();
   }
 
-  void ImportTensor(const gpu::SyncToken& sync_token_fence) override {
+  void ImportTensor(uint64_t flow_id,
+                    const gpu::SyncToken& sync_token_fence) override {
     NOTIMPLEMENTED();
   }
 
