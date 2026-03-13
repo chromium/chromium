@@ -536,6 +536,15 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
+    public void testTabSearch() {
+        assertTrue(
+                keyDown(KeyEvent.KEYCODE_A, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON, true));
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(/* id= */ eq(R.id.tab_search), /* fromMenu= */ eq(false));
+    }
+
+    @Test
+    @SmallTest
     public void testOpenStripContextMenu() {
         keyDown(KeyEvent.KEYCODE_F10, KeyEvent.META_SHIFT_ON, true);
         verify(mMenuOrKeyboardActionController, times(1))

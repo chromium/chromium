@@ -28787,6 +28787,15 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="MobileMenuTabSearch">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <description>
+    User pressed 'Search tabs' in the app menu, or used the keyboard shortcut
+    Ctrl+Shift+A.
+  </description>
+</action>
+
 <action name="MobileMenuTaskManager">
   <owner>massan@google.com</owner>
   <description>User pressed 'Task manager' in the app menu.</description>

@@ -46,6 +46,7 @@ found in the LICENSE file.
     <item type="id" name="esc_key" />
     <item type="id" name="feedback_form" />
     <item type="id" name="view_source" />
+    <item type="id" name="tab_search" />
 
     <!-- Editor dialog -->
     <item type="id" name="editor_dialog_done_button" />

@@ -1727,7 +1727,7 @@ Unknown properties are collapsed to zero. -->
   <int value="9" label="Move to tab right"/>
   <int value="10" label="Move to specific tab"/>
   <int value="11" label="Move to last tab"/>
-  <int value="12" label="Search currently-open tabs (not implemented)"/>
+  <int value="12" label="Search currently-open tabs"/>
   <int value="13" label="Toggle multi-task menu (not implemented)"/>
   <int value="14" label="Close tab"/>
   <int value="15" label="Close window"/>
@@ -1791,7 +1791,7 @@ Unknown properties are collapsed to zero. -->
   <int value="64" label="Zoom out (Visual/Legacy)"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning) -->
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyCode">
   <int value="0" label="UNKNOWN"/>
