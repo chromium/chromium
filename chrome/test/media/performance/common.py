@@ -91,16 +91,12 @@ SENDER_CHROMEDRIVER_CHECK_CMD = {
 
 SENDER_STATUS_CMD = {
     'mac': (
-        f'curl '
-        f'-s '
-        f'-o /dev/null '
-        f"-w '%{{http_code}}' "
+        'curl -s -o /dev/null -w "%{http_code}" '
         f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
     ),
     'win': (
-        f'powershell -Command "(Invoke-WebRequest -Uri '
-        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status -UseBasicParsing '
-        f'-ErrorAction SilentlyContinue).StatusCode"'
+        f'curl.exe -s -o NUL -w "%{{http_code}}" '
+        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
     ),
 }
 
@@ -109,14 +105,15 @@ SENDER_TERMINATE_DRIVER_CMD = {
         'killall chromedriver && killall "Google Chrome for Testing"'
     ),
     'win': (
-        'powershell -Command "Stop-Process -Name chromedriver -Force '
-        '-ErrorAction SilentlyContinue; Stop-Process -Name chrome -Force '
-        '-ErrorAction SilentlyContinue; taskkill /F /IM chromedriver.exe /t; '
-        'taskkill /F /IM chrome.exe /t"'
+        'powershell -Command "Stop-Process -Name chromedriver,chrome '
+        '-ErrorAction SilentlyContinue; '
+        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T '
+        '/FI \'STATUS eq RUNNING\' /FI \'SESSION ne 0\'"'
     ),
 }
 
-WIN_REMOTE_TMP_DIR = 'C:\\cft_temp'
+
+WIN_REMOTE_TMP_DIR = 'C:/cft_temp'
 
 
 class StartProcess(AbstractContextManager):
@@ -191,7 +188,67 @@ def terminate_old_chromedriver(args):
     raise RuntimeError("Chromedriver processes lingered after kill attempts.")
 
 
-def download_cft_urls(sender_os, version=None):
+def get_remote_info(args):
+    """Detects info (arch, OS version) of the remote machine."""
+    info = {'arch': None, 'os_version': None}
+    if args.sender_os == 'mac':
+        arch_result = send_ssh_command(args.sender,
+                                       args.username,
+                                       'uname -m',
+                                       blocking=True)
+        arch = arch_result.stdout.strip()
+        info['arch'] = 'x64' if arch == 'x86_64' else arch
+
+        version_result = send_ssh_command(args.sender,
+                                          args.username,
+                                          'sw_vers -productVersion',
+                                          blocking=True)
+        info['os_version'] = version_result.stdout.strip()
+
+    elif args.sender_os == 'win':
+        # Get architecture using CIM to avoid shell-specific environment issues.
+        arch_cmd = (
+            'powershell -Command '
+            '"(Get-CimInstance Win32_Processor).Architecture"'
+        )
+        arch_result = send_ssh_command(args.sender,
+                                       args.username,
+                                       arch_cmd,
+                                       blocking=True)
+        # Architecture codes: 0 = x86, 9 = x64, 12 = ARM64
+        arch_code = arch_result.stdout.strip()
+        if arch_code == '9':
+            info['arch'] = 'x64'
+        elif arch_code == '12':
+            info['arch'] = 'x64'  # Map ARM64 to x64 for emulation
+        elif arch_code == '0':
+            info['arch'] = 'x86'
+        else:
+            # Fallback to environment variables if CIM fails
+            arch_cmd_fallback = (
+                'powershell -Command "if ($env:PROCESSOR_ARCHITEW6432) '
+                '{ $env:PROCESSOR_ARCHITEW6432 } else '
+                '{ $env:PROCESSOR_ARCHITECTURE }"'
+            )
+            arch_result = send_ssh_command(args.sender,
+                                           args.username,
+                                           arch_cmd_fallback,
+                                           blocking=True)
+            arch = arch_result.stdout.strip()
+            info['arch'] = 'x64' if arch in ['AMD64', 'ARM64'] else 'x86'
+
+        version_result = send_ssh_command(
+            args.sender,
+            args.username,
+            'powershell -Command '
+            '"[System.Environment]::OSVersion.Version.ToString()"',
+            blocking=True)
+        info['os_version'] = version_result.stdout.strip()
+
+    return info
+
+
+def download_cft_urls(platform_name, version=None):
     """
     Downloads the CfT JSON and finds the URLs for a specific version.
     """
@@ -199,30 +256,23 @@ def download_cft_urls(sender_os, version=None):
     with urllib.request.urlopen(CFT_JSON_URL) as url:
         data = json.loads(url.read().decode())
 
-    platform = {
-        'mac': (
-            'mac-arm64'
-        ),
-        'win': (
-            'win64'
-        ),
-    }
-
     for v in reversed(data['versions']):
         if not version or v['version'] == version:
             chrome_url = None
             driver_url = None
             for download in v['downloads']['chrome']:
-                if download['platform'] == platform[sender_os]:
+                if download['platform'] == platform_name:
                     chrome_url = download['url']
             for download in v['downloads']['chromedriver']:
-                if download['platform'] == platform[sender_os]:
+                if download['platform'] == platform_name:
                     driver_url = download['url']
             if chrome_url and driver_url:
-                logging.info("Found URLs for version %s", v['version'])
+                logging.info("Found URLs for version %s on platform %s",
+                             v['version'], platform_name)
                 return chrome_url, driver_url
 
-    raise RuntimeError(f"Could not find downloads for version {version}")
+    raise RuntimeError(
+        f"Could not find downloads for version {version} on {platform_name}")
 
 
 def install_and_setup_chrome(args, chrome_version):
@@ -230,7 +280,29 @@ def install_and_setup_chrome(args, chrome_version):
     Downloads and sets up a specific version of Chrome for Testing and its
     matching chromedriver.
     """
-    chrome_url, driver_url = download_cft_urls(args.sender_os, chrome_version)
+    info = get_remote_info(args)
+    arch = info['arch']
+    os_version = info['os_version']
+    logging.info("Detected remote info: %s", info)
+
+    platform_map = {
+        'mac': {
+            'arm64': 'mac-arm64',
+            'x64': 'mac-x64'
+        },
+        'win': {
+            'x64': 'win64',
+            'x86': 'win32'
+        }
+    }
+
+    if args.sender_os not in platform_map or arch not in platform_map[
+            args.sender_os]:
+        raise NotImplementedError(
+            f"Unsupported OS/Arch: {args.sender_os}/{arch}")
+
+    platform_name = platform_map[args.sender_os][arch]
+    chrome_url, driver_url = download_cft_urls(platform_name, chrome_version)
     remote_app_path = None
 
     # --- Download and Unzip on Remote ---
@@ -254,56 +326,75 @@ def install_and_setup_chrome(args, chrome_version):
         remote_chromedriver_path = (
             f"{remote_tmp_dir}/{driver_zip.replace('.zip', '')}/chromedriver")
 
+        send_ssh_command(
+            args.sender, args.username,
+            (f"xattr -cr {remote_tmp_dir}/{chrome_zip.replace('.zip', '')} && "
+             f"xattr -cr {remote_tmp_dir}/{driver_zip.replace('.zip', '')}"),
+            blocking=True)
+
         send_ssh_command(args.sender, args.username,
-                         f'chmod +x {remote_chromedriver_path}', blocking=True)
+                         f'chmod +x {remote_chromedriver_path}',
+                         blocking=True)
         send_ssh_command(
             args.sender, args.username,
             (f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
-             f'--allowed-origins=\"*\" --verbose '
-             f'--log-path=/tmp/chromedriver_verbose.log '
+             '--disable-ipv6 --allowed-origins=\"*\" --allowed-ips= '
+             '--verbose --log-path=/tmp/chromedriver_verbose.log '
              '--enable-chrome-logs '
-             f'> /dev/null 2>&1 &'))
+             f'> /tmp/chromedriver_console.log 2>&1 &'))
 
     elif args.sender_os == 'win':
         remote_tmp_dir = WIN_REMOTE_TMP_DIR
+        # Use shell-agnostic PowerShell for directory creation
         send_ssh_command(
-            args.sender, args.username,
-            f'if not exist {remote_tmp_dir} mkdir {remote_tmp_dir}',
+            args.sender,
+            args.username,
+            f'powershell -Command "if (!(Test-Path \'{remote_tmp_dir}\')) '
+            '{{ New-Item -ItemType Directory -Path \'{remote_tmp_dir}\' '
+            '-Force }}"',
             blocking=True)
 
-        chrome_zip_path = f"{remote_tmp_dir}\\{chrome_url.split('/')[-1]}"
-        driver_zip_path = f"{remote_tmp_dir}\\{driver_url.split('/')[-1]}"
+        chrome_zip_name = chrome_url.split('/')[-1]
+        driver_zip_name = driver_url.split('/')[-1]
+        chrome_zip_path = f"{remote_tmp_dir}/{chrome_zip_name}"
+        driver_zip_path = f"{remote_tmp_dir}/{driver_zip_name}"
 
-        # Download and Unzip files
-        send_ssh_command(
-            args.sender, args.username,
-            (f"powershell -Command \"Start-BitsTransfer -Source '{chrome_url}' "
-             f"-Destination '{chrome_zip_path}'; "
-             f"Start-BitsTransfer -Source '{driver_url}' "
-             f"-Destination '{driver_zip_path}'; "
-             f"Expand-Archive -Path '{chrome_zip_path}' "
-             f"-DestinationPath '{remote_tmp_dir}' -Force; "
-             f"Expand-Archive -Path '{driver_zip_path}' "
-             f"-DestinationPath '{remote_tmp_dir}' -Force\""),
-            blocking=True)
+        # Download and Unzip using a single robust PowerShell command
+        logging.info("Downloading and unzipping Chrome and Chromedriver...")
+        setup_cmd = (
+            f"powershell -Command \"$ErrorActionPreference = 'Stop'; "
+            f"curl.exe -L '{chrome_url}' -o '{chrome_zip_path}'; "
+            f"curl.exe -L '{driver_url}' -o '{driver_zip_path}'; "
+            f"Expand-Archive -Path '{chrome_zip_path}' "
+            f"-DestinationPath '{remote_tmp_dir}' -Force; "
+            f"Expand-Archive -Path '{driver_zip_path}' "
+            f"-DestinationPath '{remote_tmp_dir}' -Force\""
+        )
+        result = send_ssh_command(args.sender, args.username, setup_cmd,
+                                  blocking=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"Failed to setup Chrome/Chromedriver on "
+                               f"Windows: {result.stderr}")
 
-        remote_app_path = f'{remote_tmp_dir}\\chrome-win64\\chrome.exe'
+        chrome_dir = chrome_zip_name.replace('.zip', '')
+        driver_dir = driver_zip_name.replace('.zip', '')
+        remote_app_path = f'{remote_tmp_dir}/{chrome_dir}/chrome.exe'
 
         # Create and run the batch script
         batch_script_content = (
-            f'set PATH=%PATH%;{remote_tmp_dir}\\chromedriver-win64\n'
-            f'cd /d "{remote_tmp_dir}\\chromedriver-win64"\n'
-            f'"{remote_tmp_dir}\\chromedriver-win64\\chromedriver.exe" '
+            f'set PATH=%PATH%;{remote_tmp_dir}/{driver_dir}\n'
+            f'cd /d "{remote_tmp_dir}/{driver_dir}"\n'
+            f'"{remote_tmp_dir}/{driver_dir}/chromedriver.exe" '
             f'--port={CHROMEDRIVER_PORT} '
             '--disable-ipv6 --allowed-origins=* --allowed-ips= --verbose '
-            f'--log-path="{remote_tmp_dir}\\chromedriver-win64\\'
+            f'--log-path="{remote_tmp_dir}/{driver_dir}/'
             'chromedriver_verbose.log" '
             '--enable-chrome-logs > '
-            f'"{remote_tmp_dir}\\chromedriver-win64\\chromedriver_console.log" '
+            f'"{remote_tmp_dir}/{driver_dir}/chromedriver_console.log" '
             '2>&1\n'
         )
 
-        batch_script_path = f'{remote_tmp_dir}\\start_chromedriver.bat'
+        batch_script_path = f'{remote_tmp_dir}/start_chromedriver.bat'
         send_ssh_command(
             args.sender, args.username,
             (f"powershell -Command \"'{batch_script_content}' | "
@@ -311,17 +402,20 @@ def install_and_setup_chrome(args, chrome_version):
              '-Encoding ascii"'),
             blocking=True)
 
-        # Schedule and run task
+        # Schedule and run task (wrapped in PowerShell to handle bash shells)
         send_ssh_command(args.sender, args.username,
-                         'schtasks /delete /tn StartChromeDriverTask /f',
+                         'powershell -Command '
+                         '"schtasks /delete /tn StartChromeDriverTask /f"',
                          blocking=True)
         send_ssh_command(
             args.sender, args.username,
-            (f'schtasks /create /tn StartChromeDriverTask /tr '
-             f'"{batch_script_path}" /sc ONCE /st 23:59 /f'),
+            (f'powershell -Command '
+              '"schtasks /create /tn StartChromeDriverTask /tr '
+             f'\'{batch_script_path}\' /sc ONCE /st 23:59 /f"'),
             blocking=True)
         send_ssh_command(args.sender, args.username,
-                         'schtasks /run /tn StartChromeDriverTask',
+                         'powershell -Command '
+                         '"schtasks /run /tn StartChromeDriverTask"',
                          blocking=True)
     else:
         raise NotImplementedError(
@@ -329,6 +423,25 @@ def install_and_setup_chrome(args, chrome_version):
 
     logging.info("Finished chromedriver setup attempt.")
     return remote_app_path
+
+
+def dump_remote_logs(args):
+    """Tries to dump the remote Chromedriver console logs to the local log."""
+    logging.error("Dumping remote console logs:")
+    if args.sender_os == 'win':
+        # On Windows, the log is in the temp dir under a dynamic driver dir.
+        log_cmd = (f'powershell -Command "Get-Content {WIN_REMOTE_TMP_DIR}/'
+                   '*/chromedriver_console.log"')
+    else:
+        log_cmd = 'cat /tmp/chromedriver_console.log'
+
+    log_result = send_ssh_command(args.sender,
+                                  args.username,
+                                  log_cmd,
+                                  blocking=True)
+    if log_result.stdout.strip() or log_result.stderr.strip():
+        logging.error("REMOTE CONSOLE LOG:\nSTDOUT: %s\nSTDERR: %s",
+                      log_result.stdout, log_result.stderr)
 
 
 def wait_for_chromedriver(args):
@@ -344,8 +457,7 @@ def wait_for_chromedriver(args):
             if result.returncode == 0 and stdout == '200':
                 logging.info("Chromedriver is ready.")
                 return
-            logging.warning("Attempt %d failed. Chromedriver not "
-                            "ready. "
+            logging.warning("Attempt %d failed. Chromedriver not ready. "
                             "Return code: %d, stdout: '%s', stderr: '%s'",
                             i + 1, result.returncode, stdout,
                             result.stderr.strip())
@@ -355,6 +467,9 @@ def wait_for_chromedriver(args):
             logging.warning("A script-level error occurred: %s. Retrying...", e)
         time.sleep(2)
 
+    # If we reached here, Chromedriver failed to start. Try to dump logs.
+    logging.error("Chromedriver failed to start.")
+    dump_remote_logs(args)
     raise RuntimeError("Chromedriver still not ready after multiple attempts.")
 
 def start_ssh_tunnel(args):
@@ -364,10 +479,12 @@ def start_ssh_tunnel(args):
         'ssh',
         '-i',
         '~/.ssh/id_ed25519',
-        # Send a keep-alive message every 60 seconds to prevent the tunnel from
-        # closing due to inactivity.
-        '-o',
-        'ServerAliveInterval=60',
+        # Optimization for tunnel throughput. Disable compression as video
+        # data is already compressed.
+        '-o', 'Compression=no',
+        '-o', 'ServerAliveInterval=30',
+        '-o', 'ServerAliveCountMax=3',
+        '-o', 'ExitOnForwardFailure=yes',
         '-L',
         f'{CHROMEDRIVER_PORT}:{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}',
         '-R',
@@ -426,7 +543,7 @@ def teardown_test_environment(driver, tunnel_proc, args):
 
     cleanup_command = {
         'mac': (
-            "rm -rf /tmp/chrome-mac-arm64 /tmp/chromedriver-mac-arm64 "
+            "rm -rf /tmp/chrome-mac-* /tmp/chromedriver-mac-* "
             "/tmp/*.zip"
         ),
         'win': (

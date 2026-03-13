@@ -274,11 +274,24 @@ def run_performance_test(video_file: str, driver: webdriver, args):
                                               'loading'), \
              RepeatingLog(f'Waiting for video {video_file} to be loaded.'):
             if not _wait_js_condition(driver, video, 'readyState >= 2'):
+                # Capture video element state for better root-causing.
+                v_state = driver.execute_script(
+                    "return { "
+                    "  error: arguments[0].error ? "
+                    "arguments[0].error.code : 'none', "
+                    "  networkState: arguments[0].networkState, "
+                    "  readyState: arguments[0].readyState, "
+                    "  src: arguments[0].src "
+                    "}", video)
                 logging.warning(
-                    '%s may never be loaded, still go ahead to play it.',
-                    video_file)
+                    '%s failed to load within timeout. Skipping. State: %s',
+                    video_file, v_state)
                 common.measures.average(video_file, 'video_perf', 'playback',
                                  'failed_to_load').record(1)
+                # Gracefully stop the recording process since we're skipping.
+                rec_proc_local.terminate()
+                rec_proc_local.wait()
+                return None
 
         video.click()
         logging.info("Started playing video.")
@@ -366,8 +379,12 @@ def main():
             rec_proc = None
             try:
                 rec_proc = run_performance_test(video['name'], driver, args)
+                if rec_proc is None:
+                    logging.warning("Video %s was skipped.", video['name'])
+                    continue
             except Exception: # pylint: disable=broad-exception-caught
                 logging.exception("Error during video %s test", video['name'])
+                common.dump_remote_logs(args)
                 raise
             finally:
                 common.teardown_recording_process(rec_proc)
