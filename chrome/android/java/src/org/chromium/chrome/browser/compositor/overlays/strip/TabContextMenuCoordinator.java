@@ -30,6 +30,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
@@ -777,6 +778,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     @Override
+    @RequiresNonNull("mMultiInstanceManager")
     protected void moveToNewWindow(AnchorInfo anchorInfo) {
         List<Integer> tabIds = anchorInfo.getAllTabIds();
         if (tabIds.isEmpty()) return;
@@ -785,15 +787,15 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_new_window_sub_menu_id, tabs.size() > 1);
-        MultiInstanceManager multiInstanceManager = assumeNonNull(mMultiInstanceManager);
         moveAndCleanupSource(
-                multiInstanceManager,
+                mMultiInstanceManager,
                 () ->
-                        multiInstanceManager.moveTabsToNewWindow(
+                        mMultiInstanceManager.moveTabsToNewWindow(
                                 tabs, /* finalizeCallback= */ null, NewWindowAppSource.MENU));
     }
 
     @Override
+    @RequiresNonNull("mMultiInstanceManager")
     protected void moveToWindow(InstanceInfo instanceInfo, AnchorInfo anchorInfo) {
         List<Integer> tabIds = anchorInfo.getAllTabIds();
         if (tabIds.isEmpty()) return;
@@ -802,11 +804,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (tabs.isEmpty()) return;
         ungroupTabs(tabs);
         recordMenuAction(R.id.move_to_other_window_sub_menu_id, tabs.size() > 1);
-        MultiInstanceManager multiInstanceManager = assumeNonNull(mMultiInstanceManager);
         moveAndCleanupSource(
-                multiInstanceManager,
+                mMultiInstanceManager,
                 () ->
-                        multiInstanceManager.moveTabsToWindowByIdChecked(
+                        mMultiInstanceManager.moveTabsToWindowByIdChecked(
                                 instanceInfo.instanceId,
                                 tabs,
                                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
