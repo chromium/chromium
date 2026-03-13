@@ -2,14 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_android)
+
 source_set("critical_user_journeys") {
   sources = [
     "critical_user_journey.h",
+    "critical_user_journey_registry.h",
+    "critical_user_journey_service.h",
+    "critical_user_journey_service_factory.h",
+    "critical_user_journey_session.h",
     "critical_user_journey_step.h",
+    "features.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
     "//ui/base/interaction",
   ]
 }
@@ -17,7 +26,12 @@ source_set("critical_user_journeys") {
 source_set("impl") {
   sources = [
     "critical_user_journey.cc",
+    "critical_user_journey_registry.cc",
+    "critical_user_journey_service.cc",
+    "critical_user_journey_service_factory.cc",
+    "critical_user_journey_session.cc",
     "critical_user_journey_step.cc",
+    "features.cc",
   ]
 
   deps = [ ":critical_user_journeys" ]
@@ -25,12 +39,16 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "critical_user_journey_unittest.cc" ]
+  sources = [
+    "critical_user_journey_session_unittest.cc",
+    "critical_user_journey_unittest.cc",
+  ]
   deps = [
     ":critical_user_journeys",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",
     "//ui/base/interaction",
+    "//ui/base/interaction:test_support",
   ]
 }

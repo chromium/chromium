@@ -1,4 +1,6 @@
 include_rules = [
   "+ui/base/interaction/interaction_sequence.h",
   "+ui/base/interaction/element_identifier.h",
+  "+components/keyed_service/core",
+  "+ui/base/interaction",
 ]

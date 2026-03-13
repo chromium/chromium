@@ -342,6 +342,7 @@
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_service_factory.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_profile_session_durations_service_factory.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/new_tab_page/microsoft_auth/microsoft_auth_service_factory.h"
@@ -869,6 +870,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   ContextualSearchServiceFactory::GetInstance();
   CookieSettingsFactory::GetInstance();
+#if !BUILDFLAG(IS_ANDROID)
+  metrics::CriticalUserJourneyServiceFactory::GetInstance();
+#endif  // BUILDFLAG(!IS_ANDROID)
   CrossDevicePrefTrackerFactory::GetInstance();
   DataTypeStoreServiceFactory::GetInstance();
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
