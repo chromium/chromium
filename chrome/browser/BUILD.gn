@@ -3801,6 +3801,10 @@ static_library("browser") {
       "page_load_metrics/observers/top_chrome_webui_metrics_observer.h",
       "password_manager/generated_password_leak_detection_pref.cc",
       "password_manager/generated_password_leak_detection_pref.h",
+
+      # TODO(crbug.com/485620841): Make delegate not dependent on client and move this back to /password_change.
+      "password_manager/password_change/password_change_from_checkup_delegate.cc",
+      "password_manager/password_change/password_change_from_checkup_delegate.h",
       "password_manager/password_change_delegate_impl.cc",
       "password_manager/password_change_delegate_impl.h",
       "password_manager/web_app_profile_switcher.cc",

@@ -12,8 +12,14 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
+#include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
+// TODO(crbug.com/485620841): Make delegate not dependent on client and move
+// this back to /password_change.
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -36,6 +42,21 @@ std::string GetPromptToReachForm(std::string_view domain,
        ". The task is finished when the change password form is visible."});
 }
 
+std::u16string GeneratePassword(
+    const password_manager::PasswordForm& form,
+    password_manager::PasswordGenerationFrameHelper* generation_helper) {
+  auto iter = std::ranges::find(form.form_data.fields(),
+                                form.new_password_element_renderer_id,
+                                &autofill::FormFieldData::renderer_id);
+  CHECK(iter != form.form_data.fields().end());
+
+  return generation_helper->GeneratePassword(
+      form.url,
+      autofill::password_generation::PasswordGenerationType::kAutomatic,
+      autofill::CalculateFormSignature(form.form_data),
+      autofill::CalculateFieldSignatureForField(*iter), iter->max_length());
+}
+
 }  // namespace
 
 PasswordChangeFromCheckupDelegate::PasswordChangeFromCheckupDelegate() =
@@ -51,12 +72,6 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
     return;
   }
   originator_ = std::move(web_contents);
-
-  actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
-      Profile::FromBrowserContext(originator_->GetBrowserContext()));
-  if (actor_service && actor_service->GetActiveTasksCount() > 0) {
-    return;
-  }
 
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(originator_.get());
@@ -109,6 +124,18 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       new_tab_interface, std::move(options));
+
+  actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
+      Profile::FromBrowserContext(new_contents->GetBrowserContext()));
+  if (actor_service) {
+    username_ = credential.username;
+    current_password_ = credential.password;
+    actuation_web_contents_ = new_contents->GetWeakPtr();
+    actor_task_state_subscription_ =
+        actor_service->AddTaskStateChangedCallback(base::BindRepeating(
+            &PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged,
+            base::Unretained(this)));
+  }
 }
 
 glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
@@ -117,4 +144,81 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
   }
   return glic::GlicKeyedService::Get(
       Profile::FromBrowserContext(originator_->GetBrowserContext()));
+}
+
+void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
+    actor::TaskId task_id,
+    actor::ActorTask::State state) {
+  if (!actor_task_id_ && state == actor::ActorTask::State::kCreated) {
+    actor::ActorKeyedService* actor_service =
+        actor::ActorKeyedService::Get(Profile::FromBrowserContext(
+            actuation_web_contents_->GetBrowserContext()));
+    CHECK(actor_service);
+
+    actor::ActorTask* actor_task_for_actuation =
+        actor_service->GetTaskFromTab(*tabs::TabInterface::MaybeGetFromContents(
+            actuation_web_contents_.get()));
+    if (!actor_task_for_actuation) {
+      return;
+    }
+    actor_task_id_ = actor_task_for_actuation->id();
+    return;
+  }
+
+  if (actor_task_id_ && *actor_task_id_ != task_id) {
+    // Ignore tasks unrelated to the password change flow.
+    return;
+  }
+
+  // TODO(crbug.com/485620841): Handle interruption states.
+  if (state == actor::ActorTask::State::kFinished) {
+    actor_task_state_subscription_ = {};
+    if (!actuation_web_contents_) {
+      return;
+    }
+
+    auto* client = ChromePasswordManagerClient::FromWebContents(
+        actuation_web_contents_.get());
+    if (!client) {
+      return;
+    }
+
+    form_waiter_ = ChangePasswordFormWaiter::Builder(
+                       actuation_web_contents_.get(), client,
+                       base::BindOnce(&PasswordChangeFromCheckupDelegate::
+                                          OnChangePasswordFormManagerFound,
+                                      weak_ptr_factory_.GetWeakPtr()))
+                       .Build();
+  }
+}
+
+void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(
+    password_manager::PasswordFormManager* form_manager) {
+  form_waiter_.reset();
+
+  if (!actuation_web_contents_ || !form_manager) {
+    return;
+  }
+
+  std::u16string new_password = GeneratePassword(
+      *form_manager->GetParsedObservedForm(),
+      form_manager->GetDriver()->GetPasswordGenerationHelper());
+
+  auto* client = ChromePasswordManagerClient::FromWebContents(
+      actuation_web_contents_.get());
+
+  submission_helper_ =
+      std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
+          actuation_web_contents_.get(), client,
+          base::BindOnce(
+              &PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted,
+              weak_ptr_factory_.GetWeakPtr()));
+
+  submission_helper_->FillChangePasswordForm(form_manager, username_,
+                                             current_password_, new_password);
+}
+
+void PasswordChangeFromCheckupDelegate::OnChangePasswordFormSubmitted(
+    ChangePasswordFormFillingSubmissionHelper::SubmissionResult result) {
+  submission_helper_.reset();
 }

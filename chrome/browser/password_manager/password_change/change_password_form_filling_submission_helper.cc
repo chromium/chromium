@@ -106,17 +106,27 @@ ChangePasswordFormFillingSubmissionHelper::
     ChangePasswordFormFillingSubmissionHelper(
         content::WebContents* web_contents,
         password_manager::PasswordManagerClient* client,
-        ModelQualityLogsUploader* logs_uploader,
         base::OnceCallback<void(SubmissionResult)> callback)
     : creation_time_(base::Time::Now()),
       web_contents_(web_contents),
       client_(client),
-      logs_uploader_(logs_uploader),
       callback_(base::BindOnce(&LogError).Then(std::move(callback))) {
-  CHECK(logs_uploader_);
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
                      GetAIPageContentOptions());
+}
+
+ChangePasswordFormFillingSubmissionHelper::
+    ChangePasswordFormFillingSubmissionHelper(
+        content::WebContents* web_contents,
+        password_manager::PasswordManagerClient* client,
+        ModelQualityLogsUploader* logs_uploader,
+        base::OnceCallback<void(SubmissionResult)> callback)
+    : ChangePasswordFormFillingSubmissionHelper(web_contents,
+                                                client,
+                                                std::move(callback)) {
+  CHECK(logs_uploader);
+  logs_uploader_ = logs_uploader;
 }
 
 ChangePasswordFormFillingSubmissionHelper::
@@ -140,7 +150,9 @@ ChangePasswordFormFillingSubmissionHelper::
   base::TimeDelta time_delta = base::Time::Now() - creation_time_;
   base::UmaHistogramMediumTimes("PasswordManager.TimeSpentChangingPassword",
                                 time_delta);
-  logs_uploader_->SetStepDuration(kSubmitFormFlowStep, time_delta);
+  if (logs_uploader_) {
+    logs_uploader_->SetStepDuration(kSubmitFormFlowStep, time_delta);
+  }
 }
 
 void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
@@ -158,8 +170,10 @@ void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
 
   // TODO(crbug.com/422125487): Fix metrics duplication.
   form_manager_ = form_manager->Clone();
-  logs_uploader_->SetChangePasswordFormData(
-      *form_manager->GetParsedObservedForm());
+  if (logs_uploader_) {
+    logs_uploader_->SetChangePasswordFormData(
+        *form_manager->GetParsedObservedForm());
+  }
 
   const password_manager::PasswordForm* best_match =
       password_manager_util::FindFormByUsername(form_manager_->GetBestMatches(),
@@ -297,10 +311,12 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
   }
 
   if (!provisionally_saved) {
-    logs_uploader_->SetFlowInterrupted(
-        kSubmitFormFlowStep,
-        ModelQualityLogsUploader::QualityStatus::
-            PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_FILLING_FAILED);
+    if (logs_uploader_) {
+      logs_uploader_->SetFlowInterrupted(
+          kSubmitFormFlowStep,
+          ModelQualityLogsUploader::QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_FILLING_FAILED);
+    }
     // Change password form disappeared, some websites practice updating form
     // dynamically which resets the form. Try to find a new change-pwd form.
     form_waiter_ =
@@ -386,7 +402,9 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
         optimization_guide::proto::PasswordChangeResponse>(
         execution_result.response.value());
   }
-  logs_uploader_->SetSubmitFormQuality(response, std::move(logging_data));
+  if (logs_uploader_) {
+    logs_uploader_->SetSubmitFormQuality(response, std::move(logging_data));
+  }
 
   if (!response) {
     std::move(callback_).Run(
@@ -427,7 +445,9 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
     if (result == actor::mojom::ActionResultCode::kOk) {
       std::move(callback_).Run(std::move(form_manager_));
     } else {
-      logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
+      if (logs_uploader_) {
+        logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
+      }
       std::move(callback_).Run(
         base::unexpected(SubmissionError::kFailedToClickSubmit));
     }
@@ -436,7 +456,9 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
 
   if (result != actor::mojom::ActionResultCode::kOk && !submission_detected_) {
     // Fail immediately as click failed and no form submission was detected.
-    logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
+    if (logs_uploader_) {
+      logs_uploader_->RecordButtonClickFailure(kSubmitFormFlowStep, result);
+    }
     std::move(callback_).Run(
         base::unexpected(SubmissionError::kFailedToClickSubmit));
     return;
