@@ -288,11 +288,3 @@ struct DisplayConfigProperties {
   // modes may or may not be valid.
   DisplayMode? display_mode@5;
 };
-
-// Interface for clients needing to be informed when the display configuration
-// changes.
-[Uuid="61eda0c8-63dc-49eb-ad43-02acfd48d4f5"]
-interface CrosDisplayConfigObserver {
-  // Called any time the display configuration changes.
-  OnDisplayConfigChanged@0();
-};
