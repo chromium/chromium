@@ -20,7 +20,6 @@ source_set("app_service") {
     "browser_app_launcher.h",
     "intent_util.cc",
     "intent_util.h",
-    "launch_result_type.cc",
     "launch_result_type.h",
     "launch_utils.cc",
     "launch_utils.h",

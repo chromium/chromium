@@ -189,7 +189,7 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
     LaunchCallback callback) {
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension || !extensions::util::IsAppLaunchable(app_id, profile_)) {
-    std::move(callback).Run(ConvertBoolToLaunchResult(/*success=*/false));
+    std::move(callback).Run(LaunchResult::kFailed);
     return nullptr;
   }
 
@@ -208,7 +208,7 @@ content::WebContents* ExtensionAppsBase::LaunchAppWithIntentImpl(
       extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
                                      extension),
       std::move(intent), profile_);
-  std::move(callback).Run(ConvertBoolToLaunchResult(/*success=*/true));
+  std::move(callback).Run(LaunchResult::kSuccess);
   return LaunchImpl(std::move(params));
 }
 

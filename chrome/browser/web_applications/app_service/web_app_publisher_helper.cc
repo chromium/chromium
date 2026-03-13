@@ -1077,15 +1077,12 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
         window_info ? window_info->display_id : display::kInvalidDisplayId;
     guest_os::LaunchTerminalWithIntent(
         profile_, display_id, std::move(intent),
-        base::BindOnce(
-            [](apps::LaunchCallback callback, bool success,
-               const std::string& failure_reason) {
-              if (!success) {
-                LOG(WARNING) << "Launch terminal failed: " << failure_reason;
-              }
-              std::move(callback).Run(apps::ConvertBoolToLaunchResult(success));
-            },
-            std::move(callback)));
+        base::BindOnce([](bool success, const std::string& failure_reason) {
+          LOG_IF(WARNING, !success)
+              << "Launch terminal failed: " << failure_reason;
+          return success ? apps::LaunchResult::kSuccess
+                         : apps::LaunchResult::kFailed;
+        }).Then(std::move(callback)));
     return;
   }
 #endif
@@ -1094,7 +1091,7 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
       app_id, event_flags, std::move(intent), launch_source,
       window_info ? window_info->display_id : display::kInvalidDisplayId,
       base::BindOnce(
-          [](apps::LaunchCallback callback, apps::LaunchSource launch_source,
+          [](apps::LaunchSource launch_source,
              std::vector<content::WebContents*> web_contentses) {
 #if BUILDFLAG(IS_CHROMEOS)
             for (content::WebContents* web_contents : web_contentses) {
@@ -1107,10 +1104,11 @@ void WebAppPublisherHelper::LaunchAppWithIntent(
               }
             }
 #endif
-            std::move(callback).Run(
-                apps::ConvertBoolToLaunchResult(!web_contentses.empty()));
+            return !web_contentses.empty() ? apps::LaunchResult::kSuccess
+                                           : apps::LaunchResult::kFailed;
           },
-          std::move(callback), launch_source));
+          launch_source)
+          .Then(std::move(callback)));
 }
 
 void WebAppPublisherHelper::LaunchAppWithParams(

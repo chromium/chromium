@@ -752,12 +752,10 @@ void ArcApps::LaunchAppWithIntent(const std::string& app_id,
           base::BindOnce(&OnContentUrlResolved, profile_->GetPath(), app_id,
                          event_flags, std::move(intent), std::move(activity),
                          std::move(new_window_info),
-                         base::BindOnce(
-                             [](LaunchCallback callback, bool success) {
-                               std::move(callback).Run(
-                                   ConvertBoolToLaunchResult(success));
-                             },
-                             std::move(callback))));
+                         base::BindOnce([](bool success) {
+                           return success ? apps::LaunchResult::kSuccess
+                                          : apps::LaunchResult::kFailed;
+                         }).Then(std::move(callback))));
       return;
     }
   } else {

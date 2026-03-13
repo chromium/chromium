@@ -18,9 +18,6 @@ using LaunchCallback = base::OnceCallback<void(LaunchResult)>;
 // TODO(crbug.com/477191550): Remove this alias.
 using State = LaunchResult;
 
-// TODO(crbug.com/477191550): Remove this converter function.
-LaunchResult ConvertBoolToLaunchResult(bool success);
-
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_RESULT_TYPE_H_

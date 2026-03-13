@@ -493,15 +493,14 @@ void ExtensionAppsChromeOs::LaunchExtension(const std::string& app_id,
   file_manager::file_browser_handlers::ExecuteFileBrowserHandler(
       profile(), extension, action_id, file_urls,
       base::BindOnce(
-          [](LaunchCallback callback,
-             extensions::api::file_manager_private::TaskResult result,
+          [](extensions::api::file_manager_private::TaskResult result,
              std::string error) {
             bool success =
                 result !=
                 extensions::api::file_manager_private::TaskResult::kFailed;
-            std::move(callback).Run(ConvertBoolToLaunchResult(success));
-          },
-          std::move(callback)));
+            return success ? LaunchResult::kSuccess : LaunchResult::kFailed;
+          })
+          .Then(std::move(callback)));
 }
 
 void ExtensionAppsChromeOs::PauseApp(const std::string& app_id) {
