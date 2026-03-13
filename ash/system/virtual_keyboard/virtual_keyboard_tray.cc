@@ -39,21 +39,16 @@ class TrayBubbleView;
 VirtualKeyboardTray::VirtualKeyboardTray(
     Shelf* shelf,
     TrayBackgroundViewCatalogName catalog_name)
-    : TrayBackgroundView(shelf, catalog_name), shelf_(shelf) {
+    : ImagedTrayIcon(
+          shelf,
+          ui::ImageModel::FromVectorIcon(kShelfKeyboardNewuiIcon,
+                                         kColorAshIconColorPrimary),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD),
+          catalog_name) {
   SetCallback(base::BindRepeating(&VirtualKeyboardTray::OnButtonPressed,
                                   base::Unretained(this)));
 
-  auto icon = std::make_unique<views::ImageView>();
-  const ui::ImageModel image = ui::ImageModel::FromVectorIcon(
-      kShelfKeyboardNewuiIcon, kColorAshIconColorPrimary);
-  icon->SetImage(image);
-  icon->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
-  const int vertical_padding = (kTrayItemSize - image.Size().height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - image.Size().width()) / 2;
-  icon->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  icon_ = tray_container()->AddChildView(std::move(icon));
   // First sets the image with non-Jelly color to get the image dimension and
   // create the correct paddings, and then updates the color if Jelly is
   // enabled.
@@ -72,8 +67,9 @@ VirtualKeyboardTray::VirtualKeyboardTray(
 
 VirtualKeyboardTray::~VirtualKeyboardTray() {
   // The Shell may not exist in some unit tests.
-  if (!Shell::HasInstance())
+  if (!Shell::HasInstance()) {
     return;
+  }
 
   keyboard::KeyboardUIController::Get()->RemoveObserver(this);
   Shell::Get()->RemoveShellObserver(this);
@@ -87,8 +83,9 @@ void VirtualKeyboardTray::OnButtonPressed(const ui::Event& event) {
   auto* keyboard_controller = keyboard::KeyboardUIController::Get();
 
   // Keyboard may not always be enabled. https://crbug.com/749989
-  if (!keyboard_controller->IsEnabled())
+  if (!keyboard_controller->IsEnabled()) {
     return;
+  }
 
   // Normally, active status is set when virtual keyboard is shown/hidden,
   // however, showing virtual keyboard happens asynchronously and, especially
@@ -101,9 +98,8 @@ void VirtualKeyboardTray::OnButtonPressed(const ui::Event& event) {
     return;
   }
   keyboard_controller->ShowKeyboardInDisplay(
-      display::Screen::Get()->GetDisplayNearestWindow(shelf_->GetWindow()));
+      display::Screen::Get()->GetDisplayNearestWindow(shelf()->GetWindow()));
   SetIsActive(true);
-  return;
 }
 
 void VirtualKeyboardTray::Initialize() {
@@ -113,7 +109,7 @@ void VirtualKeyboardTray::Initialize() {
 }
 
 void VirtualKeyboardTray::HandleLocaleChange() {
-  icon_->SetTooltipText(l10n_util::GetStringUTF16(
+  image_view()->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
 }
 
@@ -123,7 +119,7 @@ void VirtualKeyboardTray::HideBubbleWithView(
 void VirtualKeyboardTray::ClickedOutsideBubble(const ui::LocatedEvent& event) {}
 
 void VirtualKeyboardTray::UpdateTrayItemColor(bool is_active) {
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+  image_view()->SetImage(ui::ImageModel::FromVectorIcon(
       kShelfKeyboardNewuiIcon,
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                 : cros_tokens::kCrosSysOnSurface));

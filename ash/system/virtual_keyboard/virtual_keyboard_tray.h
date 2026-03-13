@@ -10,22 +10,18 @@
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
-#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-
-namespace views {
-class ImageView;
-}
 
 namespace ash {
 
 // TODO(sky): make this visible on non-chromeos platforms.
-class VirtualKeyboardTray : public TrayBackgroundView,
+class VirtualKeyboardTray : public ImagedTrayIcon,
                             public AccessibilityObserver,
                             public KeyboardControllerObserver,
                             public ShellObserver {
-  METADATA_HEADER(VirtualKeyboardTray, TrayBackgroundView)
+  METADATA_HEADER(VirtualKeyboardTray, ImagedTrayIcon)
 
  public:
   VirtualKeyboardTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
@@ -36,7 +32,7 @@ class VirtualKeyboardTray : public TrayBackgroundView,
   // Callback called when this is pressed.
   void OnButtonPressed(const ui::Event& event);
 
-  // TrayBackgroundView:
+  // ImagedTrayIcon:
   void Initialize() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -49,13 +45,6 @@ class VirtualKeyboardTray : public TrayBackgroundView,
 
   // KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool is_visible) override;
-
- private:
-  // Owned by the views hierarchy.
-  raw_ptr<views::ImageView> icon_ = nullptr;
-
-  // Unowned.
-  const raw_ptr<Shelf> shelf_;
 };
 
 }  // namespace ash
