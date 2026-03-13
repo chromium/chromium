@@ -21,9 +21,6 @@ namespace {
 
 const char kChromeSelection[] = "CHROME_SELECTION";
 
-// The amount of time to wait for a request to complete before aborting it.
-const int kRequestTimeoutMs = 1000;
-
 // Combines |data| into a single std::vector<uint8_t>.
 std::vector<uint8_t> CombineData(
     const std::vector<scoped_refptr<base::RefCountedMemory>>& data) {
@@ -58,17 +55,10 @@ void SelectionRequester::PerformConvertSelectionAsync(
     x11::Atom selection,
     x11::Atom target,
     ConvertSelectionCallback callback) {
-  requests_.push_back(std::make_unique<Request>(
-      selection, target,
-      base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs),
-      std::move(callback)));
+  requests_.push_back(
+      std::make_unique<Request>(selection, target, std::move(callback)));
   if (requests_.size() == 1) {
     ConvertSelectionForCurrentRequest();
-  }
-
-  if (!abort_timer_.IsRunning()) {
-    abort_timer_.Start(FROM_HERE, base::Milliseconds(kRequestTimeoutMs), this,
-                       &SelectionRequester::AbortStaleRequests);
   }
 }
 
@@ -148,8 +138,6 @@ void SelectionRequester::OnSelectionNotify(
     request->data_sent_incrementally = true;
     request->out_data.clear();
     request->out_type = x11::Atom::None;
-    request->timeout =
-        base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
   } else {
     // Note: `this` may be deleted after this call.
     CompleteRequest(0, success);
@@ -191,32 +179,9 @@ void SelectionRequester::OnPropertyEvent(
   // Delete the property to tell the selection owner to send the next chunk.
   x11::Connection::Get()->DeleteProperty(x_window_, x_property_);
 
-  request->timeout =
-      base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
-
   if (!out_data->size()) {
     // Note: `this` may be deleted after this call.
     CompleteRequest(0, true);
-  }
-}
-
-void SelectionRequester::AbortStaleRequests() {
-  base::TimeTicks now = base::TimeTicks::Now();
-  auto weak_this = GetWeakPtr();
-  // Iterate backwards. CompleteRequest() only erases from the front, so
-  // trailing items shifting left won't affect our backward scan.
-  for (int i = static_cast<int>(requests_.size()) - 1; i >= 0; --i) {
-    if (requests_[i]->timeout <= now && !requests_[i]->completed) {
-      CompleteRequest(i, false);
-      if (!weak_this) {
-        return;
-      }
-    }
-  }
-
-  if (!requests_.empty()) {
-    abort_timer_.Start(FROM_HERE, base::Milliseconds(kRequestTimeoutMs), this,
-                       &SelectionRequester::AbortStaleRequests);
   }
 }
 
@@ -281,14 +246,12 @@ SelectionRequester::Request* SelectionRequester::GetCurrentRequest() {
 
 SelectionRequester::Request::Request(x11::Atom selection,
                                      x11::Atom target,
-                                     base::TimeTicks timeout,
                                      ConvertSelectionCallback callback)
     : selection(selection),
       target(target),
       data_sent_incrementally(false),
       out_type(x11::Atom::None),
       success(false),
-      timeout(timeout),
       completed(false),
       callback(std::move(callback)) {}
 

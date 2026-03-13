@@ -14,8 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "ui/gfx/x/connection.h"
 
 namespace ui {
@@ -71,7 +69,6 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
   struct Request {
     Request(x11::Atom selection,
             x11::Atom target,
-            base::TimeTicks timeout,
             ConvertSelectionCallback callback);
     ~Request();
 
@@ -91,17 +88,11 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
     // Whether the XConvertSelection() request was successful.
     bool success;
 
-    // The time when the request should be aborted.
-    base::TimeTicks timeout;
-
     // True if the request is complete.
     bool completed;
 
     ConvertSelectionCallback callback;
   };
-
-  // Aborts requests which have timed out.
-  void AbortStaleRequests();
 
   // Mark |request| as completed. If the current request is completed, converts
   // the selection for the next request.
@@ -137,8 +128,6 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
 
   // In progress requests.
   std::vector<std::unique_ptr<Request>> requests_;
-
-  base::OneShotTimer abort_timer_;
 
   base::WeakPtrFactory<SelectionRequester> weak_ptr_factory_{this};
 };

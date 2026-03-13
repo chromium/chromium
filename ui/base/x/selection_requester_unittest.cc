@@ -115,22 +115,6 @@ TEST_F(SelectionRequesterTest, NestedRequests) {
   EXPECT_EQ(x11::Atom::STRING, future2.Get<2>());
 }
 
-TEST_F(SelectionRequesterTest, AbortStaleRequests) {
-  x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
-  x11::Atom target = x11::GetAtom("TARGET");
-
-  base::test::TestFuture<bool, std::vector<uint8_t>, x11::Atom> future;
-  requestor_->PerformConvertSelectionAsync(selection, target,
-                                           future.GetCallback());
-
-  // Fast forward to trigger timeout.
-  task_environment_.FastForwardBy(base::Seconds(10));
-
-  EXPECT_FALSE(future.Get<0>());
-  EXPECT_TRUE(future.Get<1>().empty());
-  EXPECT_EQ(x11::Atom::None, future.Get<2>());
-}
-
 TEST_F(SelectionRequesterTest, RequestTypesAsync) {
   x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
   x11::Atom target1 = x11::GetAtom("TARGET1");
