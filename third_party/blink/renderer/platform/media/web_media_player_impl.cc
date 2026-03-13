@@ -2298,17 +2298,25 @@ void WebMediaPlayerImpl::OnProgress() {
 }
 
 bool WebMediaPlayerImpl::CanPlayThrough() {
-  if (!base::FeatureList::IsEnabled(media::kSpecCompliantCanPlayThrough))
+  if (!base::FeatureList::IsEnabled(media::kSpecCompliantCanPlayThrough)) {
     return true;
-  if (GetDemuxerType() == media::DemuxerType::kChunkDemuxer)
-    return true;
+  }
+  switch (GetDemuxerType().value_or(media::DemuxerType::kUnknownDemuxer)) {
+    case media::DemuxerType::kChunkDemuxer:
+    case media::DemuxerType::kManifestDemuxer:
+      return true;
+    default:
+      break;
+  }
   if (demuxer_manager_->DataSourceFullyBuffered()) {
     return true;
   }
   // If we're not currently downloading, we have as much buffer as
   // we're ever going to get, which means we say we can play through.
-  if (network_state_ == WebMediaPlayer::kNetworkStateIdle)
+  if (network_state_ == WebMediaPlayer::kNetworkStateIdle) {
     return true;
+  }
+
   return buffered_data_source_host_->CanPlayThrough(
       base::Seconds(CurrentTime()), base::Seconds(Duration()),
       playback_rate_ == 0.0 ? 1.0 : playback_rate_);
