@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var pass = chrome.test.callbackPass;
-var fail = chrome.test.callbackFail;
+const pass = chrome.test.callbackPass;
+const fail = chrome.test.callbackFail;
 
 function getTestFunctionFor(keys, fails) {
   return function generatedTest () {
     // Debug.
-    console.warn('keys: ' + keys + '; fails: ' + fails);
+    console.warn(`keys: ${keys}; fails: ${fails}`);
 
     chrome.chromeosInfoPrivate.get(
         keys,
         pass(
           function(values) {
-            for (var i = 0; i < keys.length; ++i) {
+            for (let i = 0; i < keys.length; ++i) {
               // Default session type should be normal.
               if (keys[i] == 'sessionType') {
                 chrome.test.assertEq('normal', values[keys[i]]);
@@ -28,10 +28,9 @@ function getTestFunctionFor(keys, fails) {
               }
               // Debug
               if (keys[i] in values) {
-                console.log('  values["' + keys[i] + '"] = ' +
-                            values[keys[i]]);
+                console.log(`  values["${keys[i]}"] = ${values[keys[i]]}`);
               } else {
-                console.log('  ' + keys[i] + ' is missing in values');
+                console.log(`  ${keys[i]} is missing in values`);
               }
 
               chrome.test.assertEq(fails.indexOf(keys[i]) == -1,
@@ -46,16 +45,16 @@ function getTestFunctionFor(keys, fails) {
 // Automatically generates tests for the given possible keys. Note, this
 // tests do not check return value, only the fact that it is presented.
 function generateTestsForKeys(keys) {
-  var tests = [];
+  let tests = [];
   // Test with all the keys at one.
   tests.push(getTestFunctionFor(keys, []));
   // Tests with key which hasn't corresponding value.
-  var noValueKey = 'noValueForThisKey';
+  const noValueKey = 'noValueForThisKey';
   tests.push(getTestFunctionFor([noValueKey], [noValueKey]));
 
   if (keys.length > 1) {
     // Tests with the separate keys.
-    for (var i = 0; i < keys.length; ++i) {
+    for (let i = 0; i < keys.length; ++i) {
       tests.push(getTestFunctionFor([keys[i]], []));
     }
   }
@@ -91,7 +90,7 @@ function prefsTest(prefs) {
 }
 
 chrome.test.getConfig(function(config) {
-  var tests = [];
+  let tests = [];
   switch (config.customArg) {
     case 'dockedMagnifier':
       tests.push(() => prefsTest(['a11yDockedMagnifierEnabled']));

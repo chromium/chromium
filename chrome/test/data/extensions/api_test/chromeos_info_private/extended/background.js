@@ -4,9 +4,9 @@
 
 chrome.app.runtime.onLaunched.addListener(function() {
   chrome.test.getConfig(function(config) {
-    var testName = config.customArg;
+    const testName = config.customArg;
     if (!testName) {
-      chrome.test.fail("Missing test name.");
+      chrome.test.fail('Missing test name.');
       return;
     }
     chrome.chromeosInfoPrivate.get([
