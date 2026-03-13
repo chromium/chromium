@@ -32,11 +32,9 @@ extern "C" typedef struct _ClientBuffer* ClientBuffer;
 extern "C" typedef struct _ClientGpuFence* ClientGpuFence;
 extern "C" typedef const struct _GLcolorSpace* GLcolorSpace;
 
-namespace viz {
-class SharedImageFormat;
-}
-
 namespace gpu {
+class ClientSharedImage;
+
 namespace gles2 {
 
 // This class is the interface for all client side GL functions.
@@ -48,8 +46,7 @@ class GLES2Interface : public InterfaceBase {
   // Returns true if it's possible to do a copy of a SharedImage to a GL texture
   // via CopyTexture().
   virtual bool CanCopySharedImageToGLTextureViaTextureCopy(
-      const viz::SharedImageFormat& si_format,
-      uint32_t texture_target);
+      ClientSharedImage* shared_image);
 
   virtual void FreeSharedMemory(void*) {}
 

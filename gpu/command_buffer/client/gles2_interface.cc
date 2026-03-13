@@ -10,8 +10,7 @@ namespace gpu {
 namespace gles2 {
 
 bool GLES2Interface::CanCopySharedImageToGLTextureViaTextureCopy(
-    const viz::SharedImageFormat& si_format,
-    uint32_t texture_target) {
+    ClientSharedImage* shared_image) {
   return false;
 }
 

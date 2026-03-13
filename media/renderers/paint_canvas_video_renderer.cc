@@ -826,8 +826,7 @@ bool CanCopyVideoFrameDirectlyToGLTexture(gpu::gles2::GLES2Interface* gl,
   CHECK(video_frame->HasSharedImage());
   const auto shared_image = video_frame->shared_image();
 
-  return gl->CanCopySharedImageToGLTextureViaTextureCopy(
-             shared_image->format(), shared_image->GetTextureTarget()) ||
+  return gl->CanCopySharedImageToGLTextureViaTextureCopy(shared_image.get()) ||
          CanCopySharedImageToGLTextureViaSkia(
              video_frame->format(), shared_image->GetTextureTarget(), target,
              internal_format, type, level, dst_alpha_type);
@@ -853,7 +852,7 @@ void CopyVideoFrameDirectlyToGLTexture(
   const auto shared_image = video_frame->shared_image();
   std::unique_ptr<gpu::RasterScopedAccess> destination_access;
   if (destination_gl->CanCopySharedImageToGLTextureViaTextureCopy(
-          shared_image->format(), shared_image->GetTextureTarget())) {
+          shared_image.get())) {
     CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,

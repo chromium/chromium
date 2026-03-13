@@ -5,7 +5,7 @@
 #include "gpu/command_buffer/client/gles2_trace_implementation.h"
 
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 
 namespace gpu {
 namespace gles2 {
@@ -17,10 +17,8 @@ GLES2TraceImplementation::GLES2TraceImplementation(GLES2Interface* gl)
 GLES2TraceImplementation::~GLES2TraceImplementation() = default;
 
 bool GLES2TraceImplementation::CanCopySharedImageToGLTextureViaTextureCopy(
-    const viz::SharedImageFormat& si_format,
-    uint32_t texture_target) {
-  return gl_->CanCopySharedImageToGLTextureViaTextureCopy(si_format,
-                                                          texture_target);
+    ClientSharedImage* shared_image) {
+  return gl_->CanCopySharedImageToGLTextureViaTextureCopy(shared_image);
 }
 
 // InterfaceBase implementation.

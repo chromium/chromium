@@ -28,8 +28,7 @@ class GLES2_IMPL_EXPORT GLES2TraceImplementation : public GLES2Interface {
 
   // GLES2Interface implementation
   bool CanCopySharedImageToGLTextureViaTextureCopy(
-      const viz::SharedImageFormat& si_format,
-      uint32_t texture_target) override;
+      ClientSharedImage* shared_image) override;
 
   // Include the auto-generated part of this class. We split this because
   // it means we can easily edit the non-auto generated parts right here in
