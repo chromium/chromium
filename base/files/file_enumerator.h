@@ -126,6 +126,9 @@ class BASE_EXPORT FileEnumerator {
     NAMES_ONLY = 1 << 3,
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    // Report symlinks in the enumeration. If not set, instead report their
+    // targets. Recursive enumerations traverse symlinks to directories only if
+    // SHOW_SYM_LINKS is not set.
     SHOW_SYM_LINKS = 1 << 4,
 #endif
   };
