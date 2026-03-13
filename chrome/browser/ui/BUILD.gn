@@ -2932,8 +2932,6 @@ static_library("ui") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
-      "frame/window_frame_util.cc",
-      "frame/window_frame_util.h",
       "incognito_clear_browsing_data_dialog_interface.h",
       "views/autofill/payments/webauthn_dialog_view.cc",
       "views/autofill/payments/webauthn_dialog_view.h",
@@ -2959,6 +2957,8 @@ static_library("ui") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/autofill/payments",
       "//chrome/browser/ui/context_highlight",
+      "//chrome/browser/ui/frame",
+      "//chrome/browser/ui/frame:impl",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:impl",
       "//chrome/browser/ui/wallet",

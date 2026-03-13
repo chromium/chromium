@@ -5,12 +5,14 @@
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("frame") {
-  sources = [
-    "window_frame_util.cc",
-    "window_frame_util.h",
-  ]
+  public = [ "window_frame_util.h" ]
   public_deps = [ "//skia" ]
+}
+
+source_set("impl") {
+  sources = [ "window_frame_util.cc" ]
   deps = [
+    ":frame",
     "//chrome/browser/ui:layout_constants",
     "//ui/gfx/geometry",
   ]
