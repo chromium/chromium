@@ -1037,6 +1037,10 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
   // sign-in to be enabled by default. This is to specifically handle the case
   // when `syncer::kExplicitSigninForExtension` is true.
   bool extensions_enabled = everything_enabled;
+  // Explicitly set the bookmarks toggle, which otherwise requires an explicit
+  // sign-in to be enabled by default. This is to specifically handle the case
+  // when `syncer::kExplicitSigninForBookmarks` is true.
+  bool bookmarks_enabled = everything_enabled;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (everything_enabled) {
     // On desktop, Passwords is considered disabled by default and
@@ -1064,6 +1068,8 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
         GetPrefNameForType(UserSelectableType::kSavedTabGroups));
     extensions_enabled = pref_service->GetBoolean(
         GetPrefNameForType(UserSelectableType::kExtensions));
+    bookmarks_enabled = pref_service->GetBoolean(
+        GetPrefNameForType(UserSelectableType::kBookmarks));
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1080,23 +1086,29 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(PrefService* pref_service,
                         history_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kTabs),
                         tabs_enabled);
+  account_settings->Set(GetPrefNameForType(UserSelectableType::kBookmarks),
+                        bookmarks_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kSavedTabGroups),
                         saved_tab_groups_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kExtensions),
                         extensions_enabled);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Another special case: For custom passphrase users, "Addresses and more"
   // gets disabled by default. The reason is that for syncing custom passphrase
   // users, this toggle mapped to the legacy AUTOFILL_PROFILE type (which
   // supported custom passphrase), but for migrated users it maps to
-  // CONTACT_INFO (which does not).
+  // CONTACT_INFO (which does not). This is only done on Mobile because on
+  // Desktop the strings already mention that the addresses are not encrypted
+  // with the passphrase.
   std::optional<PassphraseType> passphrase_type = ProtoPassphraseInt32ToEnum(
       pref_service->GetInteger(prefs::internal::kSyncCachedPassphraseType));
   if (passphrase_type.has_value() && IsExplicitPassphrase(*passphrase_type)) {
     account_settings->Set(GetPrefNameForType(UserSelectableType::kAutofill),
                           false);
   }
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Usually, the "SyncToSignin" migration (aka phase 2) will have completed
   // previously. But just in case it hasn't, make sure it doesn't run in the
