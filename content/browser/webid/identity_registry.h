@@ -25,10 +25,7 @@ class CONTENT_EXPORT IdentityRegistry
   virtual void NotifyClose(const url::Origin& notifier_origin);
   virtual bool NotifyResolve(const url::Origin& notifier_origin,
                              const std::optional<std::string>& account_id,
-                             blink::mojom::FedCmRedirectMethod method,
-                             const std::optional<GURL>& redirect_to,
-                             const std::string& request_body,
-                             const base::Value& token);
+                             blink::mojom::ResolveTokenParamsPtr params);
 
  private:
   friend class content::WebContentsUserData<IdentityRegistry>;

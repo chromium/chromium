@@ -107,10 +107,27 @@ enum Format {
   kSdJwt,
 };
 
+// The parameters for a GET redirect.
+struct RedirectGetParams {
+  url.mojom.Url url;
+};
+
+// The parameters for a POST redirect.
+struct RedirectPostParams {
+  url.mojom.Url url;
+  string request_body;
+};
+
 // Whether to load the redirect URL with a GET or POST HTTP method.
-enum FedCmRedirectMethod {
-  kGet,
-  kPost
+union RedirectParams {
+  RedirectGetParams get;
+  RedirectPostParams post;
+};
+
+// The parameters for a ResolveTokenRequest call.
+union ResolveTokenParams {
+  mojo_base.mojom.Value token;
+  RedirectParams redirect_to;
 };
 
 // The request parameters for a navigator.credentials.get() FedCM call.
@@ -233,17 +250,13 @@ interface FederatedAuthRequest {
   // Resolve the token request from a JS call from a WebView dialog,
   // when the id_assertion_endpoint returns a continue_on rather than the
   // actual token.
-  // If `redirect_to` is specified, that URL is loaded in the context that
-  // triggered the FedCM call using the HTTP method specified in `method` and
-  // `token` is ignored. If `method` is `kPost`, `request_body` will be used as
-  // the body of the POST request.
+  // If `params` specifies a redirect, that URL is loaded in the context that
+  // triggered the FedCM call using the HTTP method and request body (if any)
+  // specified in the redirect parameters.
   // If no account ID is provided, the account ID of the account that was
   // selected in the account chooser will be used.
   ResolveTokenRequest(string? account_id,
-                      FedCmRedirectMethod method,
-                      url.mojom.Url? redirect_to,
-                      string request_body,
-                      mojo_base.mojom.Value token) => (bool success);
+                      ResolveTokenParams params) => (bool success);
 
   // Marks the user as logged in/out to the IDP on this origin. 'origin' must
   // not be opaque. Options such as a list of pushed accounts may be provided.

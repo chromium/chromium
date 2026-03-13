@@ -22,7 +22,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -252,7 +252,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
   using RedirectToCallback =
       base::OnceCallback<void(FetchStatus,
-                              blink::mojom::FedCmRedirectMethod,
+                              blink::mojom::RedirectParams::Tag,
                               const GURL&,
                               const std::string& request_body)>;
   using RecordErrorMetricsCallback =

@@ -74,10 +74,7 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
   MOCK_METHOD(void,
               ResolveTokenRequest,
               (const String&,
-               mojom::blink::FedCmRedirectMethod,
-               const std::optional<KURL>&,
-               const String&,
-               base::Value,
+               mojom::blink::ResolveTokenParamsPtr,
                ResolveTokenRequestCallback),
               (override));
   MOCK_METHOD(void,

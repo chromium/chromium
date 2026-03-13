@@ -259,10 +259,7 @@ class MockFederatedAuthRequest : public mojom::blink::FederatedAuthRequest {
                        RequestUserInfoCallback callback) override {}
   void CancelTokenRequest() override {}
   void ResolveTokenRequest(const String& account_id,
-                           mojom::blink::FedCmRedirectMethod method,
-                           const std::optional<::blink::KURL>& redirect_to,
-                           const String& request_body,
-                           base::Value token,
+                           mojom::blink::ResolveTokenParamsPtr params,
                            ResolveTokenRequestCallback callback) override {}
   void SetIdpSigninStatus(
       const ::scoped_refptr<const ::blink::SecurityOrigin>& origin,

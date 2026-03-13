@@ -7,6 +7,7 @@
 #include "content/browser/webid/identity_registry_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -37,10 +38,7 @@ void IdentityRegistry::NotifyClose(const url::Origin& notifier_origin) {
 bool IdentityRegistry::NotifyResolve(
     const url::Origin& notifier_origin,
     const std::optional<std::string>& account_id,
-    blink::mojom::FedCmRedirectMethod method,
-    const std::optional<GURL>& redirect_to,
-    const std::string& request_body,
-    const base::Value& token) {
+    blink::mojom::ResolveTokenParamsPtr params) {
   url::Origin idp_origin(url::Origin::Create(idp_config_url_));
   if (!idp_origin.IsSameOriginWith(notifier_origin) || !delegate_) {
     if (delegate_) {
@@ -50,8 +48,7 @@ bool IdentityRegistry::NotifyResolve(
     return false;
   }
 
-  return delegate_->OnResolve(idp_config_url_, account_id, method, redirect_to,
-                              request_body, token);
+  return delegate_->OnResolve(idp_config_url_, account_id, std::move(params));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IdentityRegistry);

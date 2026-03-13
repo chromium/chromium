@@ -352,12 +352,6 @@ struct MODULES_EXPORT TypeConverter<blink::mojom::blink::LoginStatusOptionsPtr,
       const blink::LoginStatusOptions&);
 };
 
-template <>
-struct MODULES_EXPORT TypeConverter<blink::mojom::blink::FedCmRedirectMethod,
-                                    blink::V8ResolveRedirectRequestMethod> {
-  static blink::mojom::blink::FedCmRedirectMethod Convert(
-      const blink::V8ResolveRedirectRequestMethod&);
-};
 
 }  // namespace mojo
 

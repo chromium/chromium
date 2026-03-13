@@ -635,20 +635,13 @@ void RequestService::CancelTokenRequest() {
 
 void RequestService::ResolveTokenRequest(
     const std::optional<std::string>& account_id,
-    blink::mojom::FedCmRedirectMethod method,
-    const std::optional<GURL>& redirect_to,
-    const std::string& request_body,
-    base::Value token,
+    blink::mojom::ResolveTokenParamsPtr params,
     ResolveTokenRequestCallback callback) {
-  if (redirect_to) {
-    // GET must not have a body; POST must have a body.
-    if (method == blink::mojom::FedCmRedirectMethod::kGet &&
-        !request_body.empty()) {
-      ReportBadMessage("GET redirects must not have a body");
-      return;
-    }
-    if (method == blink::mojom::FedCmRedirectMethod::kPost &&
-        request_body.empty()) {
+  if (params->is_redirect_to()) {
+    const blink::mojom::RedirectParamsPtr& redirect_to =
+        params->get_redirect_to();
+    if (redirect_to->is_post() &&
+        redirect_to->get_post()->request_body.empty()) {
       ReportBadMessage("POST redirects must have a body");
       return;
     }
@@ -659,8 +652,8 @@ void RequestService::ResolveTokenRequest(
     return;
   }
 
-  bool accepted = identity_registry_->NotifyResolve(
-      origin(), account_id, method, redirect_to, request_body, token);
+  bool accepted = identity_registry_->NotifyResolve(origin(), account_id,
+                                                    std::move(params));
   std::move(callback).Run(accepted);
 }
 
@@ -1807,14 +1800,14 @@ void RequestService::OnContinueOnResponseReceived(
 void RequestService::OnRedirectToResponseReceived(
     IdentityProviderRequestOptionsPtr idp,
     FetchStatus status,
-    blink::mojom::FedCmRedirectMethod method,
+    blink::mojom::RedirectParams::Tag method,
     const GURL& redirect_to,
     const std::string& request_body) {
   RedirectTo(idp->config->config_url, method, redirect_to, request_body);
 }
 
 void RequestService::RedirectTo(const GURL& idp_config_url,
-                                blink::mojom::FedCmRedirectMethod method,
+                                blink::mojom::RedirectParams::Tag method,
                                 const GURL& redirect_to,
                                 const std::string& request_body) {
   // Navigate the top-level frame to the URL specified by the IdP.
@@ -1857,7 +1850,7 @@ void RequestService::RedirectTo(const GURL& idp_config_url,
   // TODO(crbug.com/475549548): Is it correct to copy the UI data from the
   // initial navigation?
   params.navigation_ui_data = std::move(intercepted_navigation_ui_data_);
-  if (method == blink::mojom::FedCmRedirectMethod::kPost) {
+  if (method == blink::mojom::RedirectParams::Tag::kPost) {
     params.transition_type = ui::PAGE_TRANSITION_FORM_SUBMIT;
     params.load_type = NavigationController::LOAD_TYPE_HTTP_POST;
     // It is very important that we only allow bytes in the post data, so that
@@ -2403,10 +2396,7 @@ void RequestService::OnClose() {
 
 bool RequestService::OnResolve(GURL idp_config_url,
                                const std::optional<std::string>& account_id,
-                               blink::mojom::FedCmRedirectMethod method,
-                               const std::optional<GURL>& redirect_to,
-                               const std::string& request_body,
-                               const base::Value& token) {
+                               blink::mojom::ResolveTokenParamsPtr params) {
   // Close the pop-up window post user permission.
   if (!request_dialog_controller_) {
     return false;
@@ -2433,12 +2423,28 @@ bool RequestService::OnResolve(GURL idp_config_url,
       idp_infos_[idp_config_url]->provider;
   DCHECK(provider);
 
-  if (redirect_to && redirect_to->is_valid() &&
-      IsNavigationInterceptionEnabled()) {
-    RedirectTo(idp_config_url, method, *redirect_to, request_body);
+  if (params->is_redirect_to() && IsNavigationInterceptionEnabled()) {
+    const auto& redirect_to = params->get_redirect_to();
+    if (redirect_to->is_get()) {
+      RedirectTo(idp_config_url, blink::mojom::RedirectParams::Tag::kGet,
+                 redirect_to->get_get()->url, "");
+    } else {
+      DCHECK(redirect_to->is_post());
+      RedirectTo(idp_config_url, blink::mojom::RedirectParams::Tag::kPost,
+                 redirect_to->get_post()->url,
+                 redirect_to->get_post()->request_body);
+    }
     return true;
   }
 
+  if (!params->is_token()) {
+    // This could happen if we get a redirect request but interception is
+    // disabled. This should only be possible with a compromised renderer.
+    ReportBadMessage("redirect requested but interception disabled");
+    return false;
+  }
+
+  const base::Value& token = params->get_token();
   if (provider->format && *provider->format == blink::mojom::Format::kSdJwt) {
     if (token.is_string()) {
       federated_sdjwt_handler_->ProcessSdJwt(token.GetString());

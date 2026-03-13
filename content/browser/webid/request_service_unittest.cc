@@ -6324,9 +6324,10 @@ TEST_F(RequestServiceTest, SuccessfulAuthZRequestWithPopUpWindow) {
   auto impl = federated_auth_request_impl_;
   EXPECT_CALL(*weak_dialog_controller, ShowModalDialog)
       .WillOnce(::testing::WithArg<0>([&modal, &impl](const GURL& url) {
+        auto params = blink::mojom::ResolveTokenParams::NewToken(
+            base::Value("an-access-token"));
         impl->OnResolve(GURL(kProviderUrlFull), std::nullopt,
-                        blink::mojom::FedCmRedirectMethod::kGet, std::nullopt,
-                        std::string(), base::Value("an-access-token"));
+                        std::move(params));
         return modal.get();
       }));
 

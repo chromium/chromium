@@ -137,10 +137,7 @@ class CONTENT_EXPORT RequestService
                        RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
   void ResolveTokenRequest(const std::optional<std::string>& account_id,
-                           blink::mojom::FedCmRedirectMethod method,
-                           const std::optional<GURL>& redirect_to,
-                           const std::string& request_body,
-                           base::Value token,
+                           blink::mojom::ResolveTokenParamsPtr params,
                            ResolveTokenRequestCallback callback) override;
   void SetIdpSigninStatus(
       const url::Origin& origin,
@@ -168,10 +165,7 @@ class CONTENT_EXPORT RequestService
   void OnClose() override;
   bool OnResolve(GURL idp_config_url,
                  const std::optional<std::string>& account_id,
-                 blink::mojom::FedCmRedirectMethod method,
-                 const std::optional<GURL>& redirect_to,
-                 const std::string& request_body,
-                 const base::Value& token) override;
+                 blink::mojom::ResolveTokenParamsPtr params) override;
   void OnOriginMismatch(Method method,
                         const url::Origin& expected,
                         const url::Origin& actual) override;
@@ -403,11 +397,11 @@ class CONTENT_EXPORT RequestService
   void OnRedirectToResponseReceived(
       blink::mojom::IdentityProviderRequestOptionsPtr idp,
       FetchStatus status,
-      blink::mojom::FedCmRedirectMethod method,
+      blink::mojom::RedirectParams::Tag method,
       const GURL& redirect_to,
       const std::string& request_body);
   void RedirectTo(const GURL& idp_config_url,
-                  blink::mojom::FedCmRedirectMethod method,
+                  blink::mojom::RedirectParams::Tag method,
                   const GURL& redirect_to,
                   const std::string& request_body);
 
