@@ -324,13 +324,10 @@ void WaylandClipboard::GetAvailableMimeTypes(
   std::move(callback).Run(mime_types);
 }
 
-void WaylandClipboard::IsSelectionOwner(ClipboardBuffer buffer,
-                                        IsSelectionOwnerClosure callback) {
-  if (auto* clipboard = GetClipboard(buffer)) {
-    std::move(callback).Run(clipboard->IsSelectionOwner());
-    return;
-  }
-  std::move(callback).Run(false);
+bool WaylandClipboard::IsSelectionOwner(ClipboardBuffer buffer) {
+  if (auto* clipboard = GetClipboard(buffer))
+    return clipboard->IsSelectionOwner();
+  return false;
 }
 
 void WaylandClipboard::SetClipboardDataChangedCallback(

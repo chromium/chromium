@@ -50,8 +50,7 @@ class WaylandClipboard : public PlatformClipboard {
   void GetAvailableMimeTypes(
       ClipboardBuffer buffer,
       PlatformClipboard::GetMimeTypesClosure callback) override;
-  void IsSelectionOwner(ClipboardBuffer buffer,
-                        IsSelectionOwnerClosure callback) override;
+  bool IsSelectionOwner(ClipboardBuffer buffer) override;
   void SetClipboardDataChangedCallback(
       ClipboardDataChangedCallback data_changed_callback) override;
   bool IsSelectionBufferAvailable() const override;

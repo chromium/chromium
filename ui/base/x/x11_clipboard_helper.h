@@ -75,10 +75,8 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
                               const ClipboardFormatType& format,
                               base::OnceCallback<void(bool)> callback);
 
-  // Runs `callback` with whether we currently own the selection for a given
-  // clipboard `buffer`.
-  void IsSelectionOwnerAsync(ClipboardBuffer buffer,
-                             base::OnceCallback<void(bool)> callback) const;
+  // Tells if we currently own the selection for a given clipboard `buffer`.
+  bool IsSelectionOwner(ClipboardBuffer buffer) const;
 
   // Returns a list of all text atoms that we handle.
   std::vector<x11::Atom> GetTextAtoms() const;
@@ -104,15 +102,6 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
 
   void GetTargetListAsync(ClipboardBuffer buffer,
                           base::OnceCallback<void(TargetList)> callback);
-
-  void OnGetTargetList(ClipboardBuffer buffer,
-                       base::OnceCallback<void(TargetList)> callback,
-                       x11::Window owner);
-
-  void OnReadAsync(ClipboardBuffer buffer,
-                   const std::vector<x11::Atom>& types,
-                   base::OnceCallback<void(SelectionData)> callback,
-                   x11::Window owner);
 
   void OnReadAsyncTargetList(x11::Atom selection_name,
                              const std::vector<x11::Atom>& types,
