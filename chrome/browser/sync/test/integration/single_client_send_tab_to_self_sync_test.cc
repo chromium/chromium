@@ -510,8 +510,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
                   .Wait());
 }
 
+// TODO(crbug.com/492352020): Re-enable on Windows AMR64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_SendTextFragment DISABLED_SendTextFragment
+#else
+#define MAYBE_SendTextFragment SendTextFragment
+#endif
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
-                       SendTextFragment) {
+                       MAYBE_SendTextFragment) {
   ASSERT_TRUE(SetupSync());
 
   GURL test_url =
