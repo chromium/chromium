@@ -45,6 +45,12 @@ bool IsDelegatedCompositingEnabled() {
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+bool IsSurfaceControlEnabled() {
+  return ::features::IsAndroidSurfaceControlEnabled();
+}
+#endif
+
 }  // namespace
 
 SharedGpuContext* SharedGpuContext::GetInstanceForCurrentSequence() {
@@ -421,7 +427,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
 
 #if BUILDFLAG(IS_ANDROID)
   // Low-latency usage on Android is possible only with SurfaceControl.
-  if (!::features::IsAndroidSurfaceControlEnabled()) {
+  if (!IsSurfaceControlEnabled()) {
     return false;
   }
 #endif
@@ -442,7 +448,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
 
 #if BUILDFLAG(IS_ANDROID)
   // Low-latency usage on Android is possible only with SurfaceControl.
-  if (!::features::IsAndroidSurfaceControlEnabled()) {
+  if (!IsSurfaceControlEnabled()) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
