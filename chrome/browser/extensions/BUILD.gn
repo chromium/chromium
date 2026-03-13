@@ -546,6 +546,7 @@ source_set("extensions") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/undo",

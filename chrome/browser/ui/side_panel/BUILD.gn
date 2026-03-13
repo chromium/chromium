@@ -54,37 +54,34 @@ source_set("side_panel") {
   }
 }
 
-source_set("side_panel_views_dependent") {
-  sources = [
-    "side_panel_action_callback.cc",
-    "side_panel_action_callback.h",
-    "side_panel_entry.cc",
-    "side_panel_entry.h",
-    "side_panel_entry_waiter.cc",
-    "side_panel_entry_waiter.h",
-    "side_panel_metrics.cc",
-    "side_panel_metrics.h",
-    "side_panel_registry.cc",
-    "side_panel_registry.h",
-    "side_panel_ui.h",
-    "side_panel_ui_base.cc",
-    "side_panel_ui_base.h",
-  ]
-  deps = [
-    ":side_panel",
-    "//base",
-    "//chrome/browser/tab_list",
-    "//chrome/browser/ui/actions:actions_headers",
-    "//chrome/browser/ui/browser_window",
-    "//ui/base",
-    "//ui/base/unowned_user_data",
-  ]
-
-  # No dependency on ui/views allowed on Android.
-  if (!is_android) {
-    deps += [
+# Android can't depend on anything that needs ui/views.
+if (!is_android) {
+  source_set("side_panel_views_dependent") {
+    sources = [
+      "side_panel_action_callback.cc",
+      "side_panel_action_callback.h",
+      "side_panel_entry.cc",
+      "side_panel_entry.h",
+      "side_panel_entry_waiter.cc",
+      "side_panel_entry_waiter.h",
+      "side_panel_metrics.cc",
+      "side_panel_metrics.h",
+      "side_panel_registry.cc",
+      "side_panel_registry.h",
+      "side_panel_ui.h",
+      "side_panel_ui_base.cc",
+      "side_panel_ui_base.h",
+    ]
+    deps = [
+      ":side_panel",
+      "//base",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui/actions:actions_headers",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
+      "//ui/base",
+      "//ui/base/unowned_user_data",
       "//ui/views",
     ]
 
