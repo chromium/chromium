@@ -57,10 +57,9 @@ class PLATFORM_EXPORT SharedGpuContext {
   // Whether WebGL content should be placed into overlays.
   static bool UseOverlaysForWebGL();
 
-  // Forces UseOverlaysForWebGL() and LowLatencyUsageSupportedForWebGL() to
-  // return the passed-in value.
+  // Forces UseOverlaysForWebGL() to return the passed-in value.
   // Cleared on the next invocation of Reset() of the global context.
-  static void SetWebGLImageChromiumEnabledForTesting(bool enable);
+  static void SetUseOverlaysForWebGLForTesting(bool enable);
 
   // Whether mappable SharedImages should be used for canvas2d content with CPU
   // raster.
@@ -82,6 +81,10 @@ class PLATFORM_EXPORT SharedGpuContext {
   // Whether SharedImages used for WebGL content may be given usage optimized
   // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
   static bool LowLatencyUsageSupportedForWebGL();
+
+  // Forces LowLatencyUsageSupportedForWebGL() to return the passed-in value.
+  // Cleared on the next invocation of Reset() of the global context.
+  static void SetLowLatencyUsageSupportedForWebGLForTesting(bool enable);
 
   // Forces LowLatencyUsageSupportedForCanvas2D() to return the
   // passed-in value. Cleared on the next invocation of Reset() of the global

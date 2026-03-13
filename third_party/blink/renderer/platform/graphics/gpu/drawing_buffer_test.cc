@@ -373,8 +373,8 @@ TEST_F(DrawingBufferTest, TransferableResourcesAreNotOverlayCandidates) {
 
 TEST_F(
     DrawingBufferTest,
-    TransferableResourcesAreOverlayCandidatesWhenWebGLImageChromiumIsEnabled) {
-  SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(true);
+    TransferableResourcesAreOverlayCandidatesWhenUseOverlaysForWebGLIsEnabled) {
+  SharedGpuContext::SetUseOverlaysForWebGLForTesting(true);
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
 
@@ -708,8 +708,8 @@ TEST_F(DrawingBufferTest,
 
 TEST_F(
     DrawingBufferTest,
-    VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrueAndWebGLImageChromiumIsEnabled) {
-  SharedGpuContext::SetWebGLImageChromiumEnabledForTesting(true);
+    VerifyLowLatencyRenderingIsSetWhenDesynchronizedIsTrueAndLowLatencyUsageIsSupportedForWebGL) {
+  SharedGpuContext::SetLowLatencyUsageSupportedForWebGLForTesting(true);
 
   gfx::Size initial_size(kInitialWidth, kInitialHeight);
   auto gl = std::make_unique<GLES2InterfaceForTests>();
