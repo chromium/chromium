@@ -20,6 +20,7 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
               {"url", "https://search.example.com/prewarm.html"},
               {"throttle_prefetch", "true"},
               {"revalidate", "true"},
+              {"throttle_user_navigation", "true"},
           });
       break;
     case PrewarmState::kEnabledWithDefaultTrigger:
@@ -31,6 +32,7 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
               {"user_interaction_trigger", "false"},
               {"throttle_prefetch", "true"},
               {"revalidate", "true"},
+              {"throttle_user_navigation", "true"},
           });
       break;
     case PrewarmState::kEnabledWithInterationTrigger:
@@ -42,6 +44,7 @@ ScopedPrewarmFeatureList::ScopedPrewarmFeatureList(PrewarmState state) {
               {"user_interaction_trigger", "true"},
               {"throttle_prefetch", "true"},
               {"revalidate", "true"},
+              {"throttle_user_navigation", "true"},
           });
       break;
   }

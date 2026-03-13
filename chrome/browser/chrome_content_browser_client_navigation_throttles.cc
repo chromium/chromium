@@ -24,6 +24,7 @@
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prerender/dse_prewarm_navigation_throttle.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
@@ -286,6 +287,8 @@ void CreateAndAddChromeThrottlesForNavigation(
     // NavigationThrottleRegistry::AddThrottle().
     page_load_metrics::MetricsNavigationThrottle::CreateAndAdd(registry);
   }
+
+  DSEPrewarmNavigationThrottle::MaybeCreateAndAdd(registry);
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(davidben): This is insufficient to integrate with prerender properly.

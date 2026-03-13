@@ -6,6 +6,7 @@ source_set("browser_tests") {
   testonly = true
 
   sources = [
+    "dse_prewarm_navigation_throttle_browsertest.cc",
     "omnibox_prerender_browsertest.cc",
     "prerender_browsertest.cc",
   ]
