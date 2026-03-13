@@ -54,9 +54,6 @@ class AudioSourceProvider {
   // If a client is set, we call it back when the audio format is available or
   // changes.
   virtual void SetClient(AudioSourceProviderClient*) = 0;
-
-  // Connect to the destination node.
-  virtual void ConnectToDestinationReady() {}
 };
 
 }  // namespace blink

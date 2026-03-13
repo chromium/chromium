@@ -37,9 +37,6 @@ MATCHER(IsMuted, std::string(negation ? "isn't" : "is") + " muted") {
 const float kTestVolume = 0.25;
 const int kTestSampleRate = 48000;
 
-// TODO(crbug.com/420150619): Re-enable this and make it a global feature.
-constexpr bool kDelayStopForMediaElementSourceNode = false;
-
 std::vector<base::span<float>> GetChannelSpans(media::AudioBus* bus) {
   std::vector<base::span<float>> channel_spans;
   channel_spans.reserve(static_cast<size_t>(bus->channels()));
@@ -97,8 +94,7 @@ class WebAudioSourceProviderImplTest : public testing::Test,
     testing::InSequence s;
 
     if (client) {
-      EXPECT_CALL(*mock_sink_, Stop())
-          .Times(kDelayStopForMediaElementSourceNode ? 0 : 1);
+      EXPECT_CALL(*mock_sink_, Stop());
       if (expect_format) {
         EXPECT_CALL(*this,
                     SetFormat(params_.channels(), params_.sample_rate()));
@@ -185,7 +181,7 @@ TEST_F(WebAudioSourceProviderImplTest, SinkMethods) {
 
   // Removing the client should cause WASP to revert to the underlying sink.
   SetClient(nullptr);
-  CallAllSinkMethodsAndVerify(kDelayStopForMediaElementSourceNode);
+  CallAllSinkMethodsAndVerify(false);
 }
 
 // Test tainting effects on Render().
@@ -468,32 +464,4 @@ TEST_F(WebAudioSourceProviderImplTest, SetClientCallback) {
   base::RunLoop().RunUntilIdle();
   ::testing::Mock::VerifyAndClearExpectations(this);
 }
-
-TEST_F(WebAudioSourceProviderImplTest, ConnectToDestinationReadyCallStop) {
-  wasp_impl_ = base::MakeRefCounted<WebAudioSourceProviderImpl>(
-      mock_sink_, &media_log_,
-      blink::BindOnce(&WebAudioSourceProviderImplTest::OnClientSet,
-                      weak_factory_.GetWeakPtr()));
-
-  // ConnectToDestinationReady call without client does not call stop().
-  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
-  wasp_impl_->ConnectToDestinationReady();
-
-  EXPECT_CALL(*this, OnClientSet()).Times(1);
-  SetClient(this, /*expect_format=*/false);
-
-  // ConnectToDestinationReady after client calls sink stop()
-  EXPECT_CALL(*mock_sink_, Stop())
-      .Times(kDelayStopForMediaElementSourceNode ? 1 : 0);
-  wasp_impl_->ConnectToDestinationReady();
-  base::RunLoop().RunUntilIdle();
-
-  // ConnectToDestinationReady again after Stop() does not call stop() again.
-  EXPECT_CALL(*mock_sink_, Stop()).Times(0);
-  wasp_impl_->ConnectToDestinationReady();
-  base::RunLoop().RunUntilIdle();
-
-  ::testing::Mock::VerifyAndClearExpectations(this);
-}
-
 }  // namespace blink
