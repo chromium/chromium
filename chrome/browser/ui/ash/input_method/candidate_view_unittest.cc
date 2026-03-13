@@ -7,9 +7,10 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
+#include <string_view>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -29,11 +30,11 @@ namespace ui {
 namespace ime {
 namespace {
 
-const char* const kDummyCandidates[] = {
+constexpr auto kDummyCandidates = std::to_array<std::string_view>({
     "candidate1",
     "candidate2",
     "candidate3",
-};
+});
 
 }  // namespace
 
@@ -59,11 +60,11 @@ class CandidateViewTest : public views::ViewsTestBase {
     container_ = init_params.delegate->GetContentsView();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
-    for (size_t i = 0; i < std::size(kDummyCandidates); ++i) {
+    for (const auto& dummy_candidate : kDummyCandidates) {
       CandidateView* candidate = new CandidateView(
           views::Button::PressedCallback(), ui::CandidateWindow::VERTICAL);
       ui::CandidateWindow::Entry entry;
-      entry.value = base::UTF8ToUTF16(UNSAFE_TODO(kDummyCandidates[i]));
+      entry.value = base::UTF8ToUTF16(dummy_candidate);
       candidate->SetEntry(entry);
       container_->AddChildViewRaw(candidate);
     }
