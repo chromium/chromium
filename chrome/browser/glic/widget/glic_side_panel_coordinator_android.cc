@@ -10,7 +10,6 @@
 #include "base/rand_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViewFactory_jni.h"
-#include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/CoBrowseViews_jni.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/jni_headers/TabBottomSheetNativeInterface_jni.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -38,10 +37,6 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
 }
 
 GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() {
-  if (co_browse_views_) {
-    Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
-                                      nullptr);
-  }
   Java_TabBottomSheetNativeInterface_destroy(AttachCurrentThread(),
                                              java_interface_);
 }
@@ -95,13 +90,9 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
     return;
   }
 
-  if (co_browse_views_) {
-    Java_CoBrowseViews_setWebContents(AttachCurrentThread(), co_browse_views_,
-                                      nullptr);
-  }
-
   Java_TabBottomSheetNativeInterface_close(AttachCurrentThread(),
                                            java_interface_);
+  SetState(State::kClosed);
 }
 
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
