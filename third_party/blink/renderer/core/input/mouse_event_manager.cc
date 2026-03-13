@@ -404,6 +404,12 @@ void MouseEventManager::RecomputeMouseHoverState() {
   if (frame_->GetPage()->GetPointerLockController().GetElement())
     return;
 
+  // Don't dispatch a synthetic event if a drag is ongoing.
+  if (RuntimeEnabledFeatures::SuppressPointerStreamAfterDragEnabled() &&
+      frame_->GetPage()->GetDragController().GetDragState().drag_src_) {
+    return;
+  }
+
   WebPointerEvent::Button button = WebPointerProperties::Button::kNoButton;
   int modifiers = KeyboardEventManager::GetCurrentModifierState() |
                   WebInputEvent::kRelativeMotionEvent;
