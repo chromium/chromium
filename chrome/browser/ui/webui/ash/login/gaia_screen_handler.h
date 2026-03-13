@@ -31,6 +31,7 @@
 #include "net/cookies/cookie_access_result.h"
 
 class AccountId;
+class PrefService;
 
 namespace base {
 class ElapsedTimer;
@@ -141,9 +142,10 @@ class GaiaScreenHandler final
     FRAME_STATE_BLOCKED
   };
 
-  // `browser_policy_connector_ash` must be non-null and must outlvie `this`.
-  // `shared_url_loader_factory` must be non-null.
+  // `local_state` and `browser_policy_connector_ash` must be non-null and must
+  // outlvie `this`. `shared_url_loader_factory` must be non-null.
   GaiaScreenHandler(
+      PrefService* local_state,
       policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,

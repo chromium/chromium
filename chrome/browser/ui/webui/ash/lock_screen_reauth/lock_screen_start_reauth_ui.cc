@@ -11,6 +11,7 @@
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
@@ -51,7 +52,11 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       profile, ash::kChromeUILockScreenStartReauthHost);
   ash::EnableTrustedTypesCSP(source);
 
-  auto main_handler = std::make_unique<LockScreenReauthHandler>(email);
+  // TODO(crbug.com/489931062): Avoid using g_browser_process.
+  PrefService* local_state = g_browser_process->local_state();
+
+  auto main_handler =
+      std::make_unique<LockScreenReauthHandler>(local_state, email);
   main_handler_ = main_handler.get();
   web_ui->AddMessageHandler(std::move(main_handler));
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());

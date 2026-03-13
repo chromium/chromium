@@ -491,6 +491,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   // TODO(crbug.com/489929275): Avoid using g_browser_process.
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(
+      g_browser_process->local_state(),
       g_browser_process->platform_part()->browser_policy_connector_ash(),
       g_browser_process->shared_url_loader_factory(), network_state_informer_,
       error_screen));

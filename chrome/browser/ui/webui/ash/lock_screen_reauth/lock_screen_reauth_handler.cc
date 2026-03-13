@@ -108,8 +108,9 @@ const char kMainElement[] = "$(\'main-element\').";
 
 }  // namespace
 
-LockScreenReauthHandler::LockScreenReauthHandler(const std::string& email)
-    : email_(email) {}
+LockScreenReauthHandler::LockScreenReauthHandler(PrefService* local_state,
+                                                 const std::string& email)
+    : email_(email), auth_flow_auto_reload_manager_(local_state) {}
 
 LockScreenReauthHandler::~LockScreenReauthHandler() = default;
 

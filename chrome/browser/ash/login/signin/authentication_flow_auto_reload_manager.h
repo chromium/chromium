@@ -6,11 +6,14 @@
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTHENTICATION_FLOW_AUTO_RELOAD_MANAGER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/idle/idle_polling_service.h"
+
+class PrefService;
 
 namespace base {
 class Clock;
@@ -27,7 +30,8 @@ class AuthenticationFlowAutoReloadManager
  public:
   static constexpr base::TimeDelta kPostponeInterval = base::Minutes(1);
 
-  AuthenticationFlowAutoReloadManager();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit AuthenticationFlowAutoReloadManager(PrefService* local_state);
 
   AuthenticationFlowAutoReloadManager(
       const AuthenticationFlowAutoReloadManager&) = delete;
@@ -61,6 +65,8 @@ class AuthenticationFlowAutoReloadManager
 
   // ui::IdlePollingService::Observer:
   void OnIdleStateChange(const ui::IdlePollingService::State& state) override;
+
+  const raw_ref<PrefService> local_state_;
 
   // By default assume the device is idle and autoreload should be fired.
   bool is_idle_ = true;

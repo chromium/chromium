@@ -6,10 +6,10 @@
 
 #include <functional>
 
+#include "base/check_deref.h"
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -23,8 +23,10 @@ const base::TickClock* tick_clock_for_testing = nullptr;
 
 static constexpr base::TimeDelta kIdleThreshold = base::Seconds(15);
 
-AuthenticationFlowAutoReloadManager::AuthenticationFlowAutoReloadManager() {
-  local_state_registrar_.Init(g_browser_process->local_state());
+AuthenticationFlowAutoReloadManager::AuthenticationFlowAutoReloadManager(
+    PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {
+  local_state_registrar_.Init(&local_state_.get());
   local_state_registrar_.Add(
       prefs::kAuthenticationFlowAutoReloadInterval,
       base::BindRepeating(&AuthenticationFlowAutoReloadManager::OnPolicyUpdated,
@@ -131,9 +133,8 @@ AuthenticationFlowAutoReloadManager::GetAutoReloadInterval() {
   int pref_reload_interval =
       constants::kDefaultAuthenticationFlowAutoReloadInterval;
 
-  PrefService* local_state = g_browser_process->local_state();
   pref_reload_interval =
-      local_state->GetInteger(prefs::kAuthenticationFlowAutoReloadInterval);
+      local_state_->GetInteger(prefs::kAuthenticationFlowAutoReloadInterval);
 
   // auto reload disabled
   if (pref_reload_interval == 0) {

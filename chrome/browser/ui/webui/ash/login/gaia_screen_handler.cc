@@ -416,6 +416,7 @@ void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
 }  // namespace
 
 GaiaScreenHandler::GaiaScreenHandler(
+    PrefService* local_state,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const scoped_refptr<NetworkStateInformer>& network_state_informer,
@@ -426,7 +427,8 @@ GaiaScreenHandler::GaiaScreenHandler(
       network_state_informer_(network_state_informer),
       error_screen_(error_screen),
       histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
-          ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)) {
+          ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)),
+      auth_flow_auto_reload_manager_(local_state) {
   CHECK(shared_url_loader_factory_);
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);

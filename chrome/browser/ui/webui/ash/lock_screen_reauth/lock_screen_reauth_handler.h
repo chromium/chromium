@@ -17,13 +17,16 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cookies/cookie_access_result.h"
 
+class PrefService;
+
 namespace ash {
 
 class LockScreenReauthManager;
 
 class LockScreenReauthHandler : public content::WebUIMessageHandler {
  public:
-  explicit LockScreenReauthHandler(const std::string& email);
+  // `local_state` must be non-null and must outlive `this`.
+  LockScreenReauthHandler(PrefService* local_state, const std::string& email);
   ~LockScreenReauthHandler() override;
 
   void RegisterMessages() override;
