@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.PINNED_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.isTabPinningFromStripEnabled;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.animation.Animator;
@@ -1574,9 +1573,7 @@ public class StripLayoutHelper
     }
 
     private void recordPinnedOnlyTabStripUserAction() {
-        if (isTabPinningFromStripEnabled()
-                && !mIsPinnedOnlyStripRecorded
-                && doPinnedTabsOccupyEntireVisibleArea()) {
+        if (!mIsPinnedOnlyStripRecorded && doPinnedTabsOccupyEntireVisibleArea()) {
             mIsPinnedOnlyStripRecorded = true;
             RecordUserAction.record("MobileToolbarPinnedOnlyTabStripSkipInit");
         }
@@ -3974,7 +3971,7 @@ public class StripLayoutHelper
             final Tab tab = assumeNonNull(mModel.getTabAt(i));
             final int id = tab.getId();
             final StripLayoutTab oldTab = findTabById(id);
-            boolean isPinned = isTabPinningFromStripEnabled() && tab.getIsPinned();
+            boolean isPinned = tab.getIsPinned();
             tabs[i] = oldTab != null ? oldTab : createStripTab(id, isPinned, tab.getMediaState());
             setAccessibilityDescription(tabs[i], tab);
         }

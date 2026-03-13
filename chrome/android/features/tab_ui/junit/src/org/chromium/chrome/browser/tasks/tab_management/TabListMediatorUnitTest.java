@@ -4428,7 +4428,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS})
     public void testIsTabPinned_TabSwitcher() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
 
@@ -4463,7 +4462,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testOnTabPinnedStateChanged() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
 
@@ -4496,7 +4494,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testOnTabPinnedStateChanged_MovesTab() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
 
@@ -4578,7 +4575,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testOnTabPinnedStateChanged_MovesTab_OutOfBounds() {
         mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
 

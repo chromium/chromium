@@ -45,7 +45,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -273,7 +272,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testDuplicateTab() {
         // 0:Tab0 | 1:Tab1 (tabToDuplicate) | 2:Tab2
         GURL url = new GURL(mTestUrl);
@@ -402,7 +400,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testDuplicateTab_PinnedTab() {
         mPage.openNewTabFast();
         // 0:Tab0 | 1:Tab1 (tabToDuplicate)
@@ -459,7 +456,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinUnpinTab() {
         createTabs(2);
 
@@ -810,7 +806,6 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/447152102")
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testAddTab_CurrentTabPinned() {
         createTabs(4);
 
@@ -1105,7 +1100,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void pinTab_NoExistingPinnedTabs_PinSingleTab() {
         createTabs(3);
 
@@ -1126,7 +1120,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void pinTab_PinMultipleTabs() {
         createTabs(3);
 
@@ -1157,7 +1150,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void unpinTab_NoExistingUnpinnedTabs_UnpinSingleTab() {
         createTabs(3);
 
@@ -1193,7 +1185,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void unpinTab_ExistingUnpinnedTabs_UnpinSingleTab() {
         createTabs(3);
 
@@ -1232,7 +1223,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void pinTab_thenUnpinTab_verifyObserverCalls() {
         createTabs(3);
 
@@ -1670,7 +1660,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTab_TryPinningExistingPinnedTab() {
         createTabs(2);
 
@@ -1706,7 +1695,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testUnpinTab_AlreadyUnpinned() {
         createTabs(2);
 
@@ -1730,36 +1718,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_PINNED_TABS,
-        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP
-    })
-    public void removePinState_WhenFeatureDisabled() {
-        createTabs(2);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel tabModel =
-                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-                    assertEquals(3, tabModel.getCount());
-
-                    Tab tab1 = tabModel.getTabAt(/* index= */ 1);
-                    tab1.setIsPinned(true);
-                    tabModel.getTabRemover().removeTab(tab1, /* allowDialog= */ false);
-                    assertEquals(2, tabModel.getCount());
-
-                    tabModel.addTab(
-                            tab1,
-                            -1,
-                            TabLaunchType.FROM_RESTORE,
-                            TabCreationState.FROZEN_ON_RESTORE);
-                    assertFalse(tab1.getIsPinned());
-                });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testGetPinnedTabsCount() {
         createTabs(3);
 
@@ -1788,7 +1746,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void restoreMultiplePinnedTabs_OrderIsPreserved() {
         createTabs(4); // Creates 5 tabs in total (including the initial one)
 
@@ -1981,10 +1938,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_PINNED_TABS,
-        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP
-    })
     public void testPinUnpinTab_RecordsHistogram() {
         createTabs(2);
 
@@ -2010,7 +1963,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTabInGroup_ActionListener_Accept() {
         TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
         createTabGroup(1, filter); // Group with 1 tab.
@@ -2046,7 +1998,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTabInGroup_ActionListener_Reject() {
         TabGroupModelFilter filter = mPage.getTabGroupModelFilter();
         createTabGroup(1, filter); // Group with 1 tab.

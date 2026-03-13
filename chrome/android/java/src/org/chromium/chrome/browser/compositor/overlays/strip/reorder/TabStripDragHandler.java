@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.isTabPinningFromStripEnabled;
 
 import android.app.Activity;
 import android.content.ClipDescription;
@@ -689,7 +688,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     public static boolean isDraggingPinnedItem() {
         DragDropGlobalState globalState = getDragDropGlobalState(/* dragEvent= */ null);
-        if (!isTabPinningFromStripEnabled() || globalState == null) return false;
+        if (globalState == null) return false;
 
         Tab tab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (tab != null && tab.getIsPinned()) return true;

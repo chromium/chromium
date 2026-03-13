@@ -32,13 +32,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 
@@ -245,7 +243,6 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     @SuppressWarnings("DirectInvocationOnMock")
     public void testStartReorder_nonPinnedPrimaryTab_pinnedTabMoveToLastPinnedPosition() {
         // Pin first two tabs.
@@ -279,7 +276,6 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testStartReorder_pinnedPrimaryTab_unpinnedTabMovedToFirstNonPinnedPosition() {
         // Pin first two tabs.
         mUngroupedTab1.setIsPinned(true);
@@ -360,7 +356,6 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testUpdateReorder_success_dragPinnedTabPastPinnedTab() {
         mUngroupedTab2.setIsPinned(true);
         mUngroupedTab3.setIsPinned(true);
@@ -371,7 +366,6 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testUpdateReorder_unpinnedReorderSuccess_dragMixedPinnedUnpinnedPastUnpinnedTab() {
         // Pin first two tabs.
         mUngroupedTab1.setIsPinned(true);
@@ -419,7 +413,6 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testUpdateReorder_unpinnedReorderSuccess_dragMixedPinnedUnpinnedPastPinnedTab() {
         // Pin first two tabs.
         mUngroupedTab1.setIsPinned(true);
@@ -464,7 +457,6 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
     // updateReorderPosition failure tests
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
-    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP})
     public void testUpdateReorder_fail_dragPinnedTabPastUnpinnedTab() {
         mUngroupedTab2.setIsPinned(true);
         selectTabs(mUngroupedTab2);

@@ -558,7 +558,6 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testSingleTabReparentingIntent_PinnedTab() {
         AtomicInteger initialTabCount = new AtomicInteger();
         ThreadUtils.runOnUiThreadBlocking(
@@ -945,7 +944,6 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testMultiUrlReparentingIntent_PinnedTabs() {
         AtomicInteger initialTabCount = new AtomicInteger();
         ThreadUtils.runOnUiThreadBlocking(
@@ -1025,7 +1023,6 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testMaybeLaunchDraggedMultiTabInWindow_PinnedTabs() {
         AtomicInteger initialTabCount = new AtomicInteger();
         ThreadUtils.runOnUiThreadBlocking(

@@ -48,7 +48,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.actions.FullButtonData;
@@ -81,7 +80,6 @@ public class HubToolbarView extends LinearLayout {
     private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable List<FullButtonData> mCachedButtonDataList;
     private final int mSearchBoxHeightPx;
-    private final boolean mIsSquishAnimationEnabled;
 
     /** Default {@link LinearLayout} constructor called by inflation. */
     public HubToolbarView(Context context, AttributeSet attributeSet) {
@@ -90,9 +88,6 @@ public class HubToolbarView extends LinearLayout {
         mHandler = new Handler();
         mToolbarOverviewColorSetter = (color) -> {};
         mSearchBoxHeightPx = getResources().getDimensionPixelSize(R.dimen.hub_search_box_height);
-        mIsSquishAnimationEnabled =
-                ChromeFeatureList.sAndroidPinnedTabs.isEnabled()
-                        && ChromeFeatureList.sAndroidPinnedTabsSearchBoxSquishAnimation.getValue();
     }
 
     @Override
@@ -527,14 +522,9 @@ public class HubToolbarView extends LinearLayout {
         if (!mManualSearchBoxAnimation) return;
 
         mSearchBoxLayout.setAlpha(fraction);
-        if (mIsSquishAnimationEnabled) {
-            mSearchBoxLayout.setPivotY(0);
-            mSearchBoxLayout.setScaleY(fraction);
-            mSearchBoxLayout.setTranslationY(0);
-        } else {
-            mSearchBoxLayout.setTranslationY((fraction - 1) * mSearchBoxHeightPx);
-            mSearchBoxLayout.setScaleY(1.0f);
-        }
+        mSearchBoxLayout.setPivotY(0);
+        mSearchBoxLayout.setScaleY(fraction);
+        mSearchBoxLayout.setTranslationY(0);
 
         // Physical Height Reduction (Reduces the Canvas size).
         int targetHeight =
@@ -626,11 +616,7 @@ public class HubToolbarView extends LinearLayout {
                 ObjectAnimator.ofFloat(mSearchBoxLayout, View.ALPHA, fadeAlphaFrom, fadeAlphaTo);
 
         Animator primaryAnimator;
-        if (mIsSquishAnimationEnabled) {
-            primaryAnimator = createSquishAnimation(visible);
-        } else {
-            primaryAnimator = createSlideAnimation(visible);
-        }
+        primaryAnimator = createSquishAnimation(visible);
 
         transitionAnimator.play(primaryAnimator).with(fade);
         transitionAnimator.setDuration(PANE_FADE_ANIMATION_DURATION_MS);
@@ -643,11 +629,6 @@ public class HubToolbarView extends LinearLayout {
         float scaleYFrom = visible ? 0f : 1f;
         float scaleYTo = visible ? 1f : 0f;
         return ObjectAnimator.ofFloat(mSearchBoxLayout, View.SCALE_Y, scaleYFrom, scaleYTo);
-    }
-
-    private Animator createSlideAnimation(boolean visible) {
-        float slideTransitionY = visible ? 0 : -mSearchBoxLayout.getHeight();
-        return ObjectAnimator.ofFloat(mSearchBoxLayout, View.TRANSLATION_Y, slideTransitionY);
     }
 
     private GradientDrawable buildBackgroundDrawableForTab() {

@@ -29,8 +29,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -51,7 +49,6 @@ import java.util.stream.Collectors;
 /** Unit tests for {@link TabListEditorPinAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
 public class TabListEditorPinActionUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

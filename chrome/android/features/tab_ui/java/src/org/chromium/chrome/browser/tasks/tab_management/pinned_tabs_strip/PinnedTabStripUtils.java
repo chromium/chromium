@@ -12,7 +12,6 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -23,17 +22,6 @@ import java.util.List;
 /** Utility class for the pinned tabs strip. */
 @NullMarked
 public class PinnedTabStripUtils {
-
-    /** Returns whether the pinned tabs feature is enabled. */
-    public static boolean isPinnedTabsEnabled() {
-        return ChromeFeatureList.sAndroidPinnedTabs.isEnabled();
-    }
-
-    /** Returns whether the search box should move for pinned tabs. */
-    public static boolean isSearchBoxMovementEnabledForPinnedTabs() {
-        return isPinnedTabsEnabled()
-                && ChromeFeatureList.sAndroidPinnedTabsSearchBoxMovement.getValue();
-    }
 
     /**
      * Helper method to quickly check if two lists of tabs are the same by comparing their sizes and

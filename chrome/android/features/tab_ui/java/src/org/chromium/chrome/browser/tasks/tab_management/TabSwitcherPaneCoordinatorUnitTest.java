@@ -554,7 +554,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinnedTabStrip_FeatureEnabled() {
         assertNotNull(mCoordinator.getPinnedTabsCoordinatorForTesting());
 
@@ -572,22 +571,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
-    public void testPinnedTabStrip_FeatureDisabled() {
-        assertNull(mCoordinator.getPinnedTabsCoordinatorForTesting());
-
-        // Verify that the container is a LinearLayout with the original TabListRecyclerView.
-        ViewGroup container = (ViewGroup) mContainerView.getChildAt(0);
-        assertTrue(container instanceof FrameLayout);
-        FrameLayout pinnedTabsContainer = container.findViewById(R.id.pinned_tabs_container);
-        FrameLayout tabListContainer = container.findViewById(R.id.tab_list_container);
-        assertEquals(0, pinnedTabsContainer.getChildCount());
-        assertEquals(1, tabListContainer.getChildCount());
-        assertTrue(tabListContainer.getChildAt(0) instanceof TabListRecyclerView);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testTabModelObserver_didChangePinState_noPinnedTabs() {
         MockTab tab = new MockTab(1, mProfile);
 
@@ -600,7 +583,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testTabModelObserver_didChangePinState_withPinnedTabs_searchNotVisible() {
         MockTab tab = new MockTab(1, mProfile);
 

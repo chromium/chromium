@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.Di
 import org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SupplementaryContainerAnimationMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
-import org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -421,12 +420,6 @@ public class TabSwitcherPaneMediator
 
     /** Translates the pinned strip to make space for the search box. */
     void maybeTranslatePinnedStrip(boolean shouldShowSearchBox, boolean forced) {
-        // Show search box always when screen size is less than tablet and search box movement is
-        // disabled.
-        if (!PinnedTabStripUtils.isSearchBoxMovementEnabledForPinnedTabs()) {
-            shouldShowSearchBox = true;
-        }
-
         Configuration config = mContext.getResources().getConfiguration();
         boolean isTabletOrLandscape = HubUtils.isScreenWidthTablet(config.screenWidthDp);
         boolean shouldShow = shouldShowSearchBox && !isTabletOrLandscape;

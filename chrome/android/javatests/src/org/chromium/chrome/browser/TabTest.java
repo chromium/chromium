@@ -38,7 +38,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -248,7 +247,6 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testRestoreTabState() {
         TabState tabState =
                 ThreadUtils.runOnUiThreadBlocking(

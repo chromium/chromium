@@ -101,9 +101,6 @@ TEST_F(TabAndroidTest, TabIsInitialized) {
 }
 
 TEST_F(TabAndroidTest, PinnedCollectionParent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chrome::android::kAndroidPinnedTabs);
-
   EXPECT_FALSE(tab_android_->IsPinned());
 
   std::unique_ptr<tabs::PinnedTabCollection> pinned_collection =

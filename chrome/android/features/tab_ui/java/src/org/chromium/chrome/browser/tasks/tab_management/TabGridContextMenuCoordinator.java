@@ -289,9 +289,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                             .build());
         }
 
-        if (shouldBuildPinTabMenuItem()) {
-            itemList.add(buildTogglePinStateItem(tab));
-        }
+        itemList.add(buildTogglePinStateItem(tab));
 
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             itemList.add(buildMuteUnmuteSiteItem(tab, isIncognito));
@@ -337,10 +335,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     private static void recordUserActionWithPrefix(String action) {
         RecordUserAction.record(MENU_USER_ACTION_PREFIX + action);
-    }
-
-    private static boolean shouldBuildPinTabMenuItem() {
-        return ChromeFeatureList.sAndroidPinnedTabs.isEnabled();
     }
 
     private ListItem buildTogglePinStateItem(Tab tab) {

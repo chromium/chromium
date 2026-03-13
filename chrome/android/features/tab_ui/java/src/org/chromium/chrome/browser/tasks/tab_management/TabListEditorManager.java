@@ -15,7 +15,6 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -203,14 +202,12 @@ public class TabListEditorManager {
                             ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT,
                             IconPosition.START));
-            if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
-                mTabListEditorActions.add(
-                        TabListEditorPinAction.createAction(
-                                mActivity,
-                                ShowMode.MENU_ONLY,
-                                ButtonType.ICON_AND_TEXT,
-                                IconPosition.START));
-            }
+            mTabListEditorActions.add(
+                    TabListEditorPinAction.createAction(
+                            mActivity,
+                            ShowMode.MENU_ONLY,
+                            ButtonType.ICON_AND_TEXT,
+                            IconPosition.START));
         }
 
         var controller = mControllerSupplier.get();
@@ -218,7 +215,7 @@ public class TabListEditorManager {
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assumeNonNull(filter);
         controller.show(
-                filter.getRepresentativeTabList(),
+                /* tabs= */ filter.getRepresentativeTabList(),
                 /* tabGroupSyncIds= */ Collections.emptyList(),
                 mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(mTabListEditorActions);

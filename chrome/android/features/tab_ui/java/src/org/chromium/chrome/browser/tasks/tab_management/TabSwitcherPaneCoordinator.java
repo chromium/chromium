@@ -241,6 +241,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final SettableNonNullObservableSupplier<Float> mSearchBoxVisibilityFractionSupplier =
             ObservableSuppliers.createNonNull(0.0f);
     private final @Nullable ImageView mPaneHairline;
+    private final @Nullable PinnedTabStripCoordinator mPinnedTabsCoordinator;
+    private final @Nullable DirectionalScrollListener mSearchBoxVisibilityScrollListener;
     private @Nullable TabGridContextMenuCoordinator mContextMenuCoordinator;
     private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
@@ -252,8 +254,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private TabListCoordinator.@Nullable DragObserver mDragObserver;
     private @Nullable TabSwitcherGroupSuggestionService mTabSwitcherGroupSuggestionService;
-    private @Nullable PinnedTabStripCoordinator mPinnedTabsCoordinator;
-    private @Nullable DirectionalScrollListener mSearchBoxVisibilityScrollListener;
     private int mEdgeToEdgeBottomInsets;
 
     /**
@@ -486,31 +486,28 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mActivity.registerComponentCallbacks(mComponentsCallbacks);
 
             // TODO(crbug.com/436614730): Inline the view construction once feature is launched.
-            if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
-                // If the feature is enabled, create and set up the pinned tab strip, and add it as
-                // a sibling of the regular tab list. The pinned tab strip will be positioned above
-                // the regular tab list.
-                mPinnedTabsCoordinator =
-                        new PinnedTabStripCoordinator(
-                                mActivity,
-                                parentView,
-                                tabListCoordinator,
-                                mTabGroupModelFilterSupplier,
-                                tabBookmarkerSupplier,
-                                bottomSheetController,
-                                modalDialogManager,
-                                onTabGroupCreation);
+            // Create and set up the pinned tab strip, and add it as a sibling of the regular tab
+            // list. The pinned tab strip will be positioned above the regular tab list.
+            mPinnedTabsCoordinator =
+                    new PinnedTabStripCoordinator(
+                            mActivity,
+                            parentView,
+                            tabListCoordinator,
+                            mTabGroupModelFilterSupplier,
+                            tabBookmarkerSupplier,
+                            bottomSheetController,
+                            modalDialogManager,
+                            onTabGroupCreation);
 
-                mContainerViewModel.set(
-                        TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
-                        mPinnedTabsCoordinator.getIsVisibilityAnimationRunningSupplier());
+            mContainerViewModel.set(
+                    TabListContainerProperties.IS_PINNED_TAB_STRIP_ANIMATING_SUPPLIER,
+                    mPinnedTabsCoordinator.getIsVisibilityAnimationRunningSupplier());
 
-                TabListRecyclerView pinnedTabStripRecyclerView =
-                        mPinnedTabsCoordinator.getPinnedTabsRecyclerView();
+            TabListRecyclerView pinnedTabStripRecyclerView =
+                    mPinnedTabsCoordinator.getPinnedTabsRecyclerView();
 
-                FrameLayout pinnedTabsContainer = layout.findViewById(R.id.pinned_tabs_container);
-                pinnedTabsContainer.addView(pinnedTabStripRecyclerView);
-            }
+            FrameLayout pinnedTabsContainer = layout.findViewById(R.id.pinned_tabs_container);
+            pinnedTabsContainer.addView(pinnedTabStripRecyclerView);
 
             if (DeviceInfo.isXr()) {
                 recyclerView.setVerticalFadingEdgeEnabled(true);
@@ -524,40 +521,39 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             recyclerView.setVisibility(View.VISIBLE);
             recyclerView.setBackgroundColor(Color.TRANSPARENT);
             recyclerView.addOnScrollListener(mTabListOnScrollListener);
-            if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
-                mSearchBoxVisibilityScrollListener =
-                        new DirectionalScrollListener(
-                                () -> {
-                                    // Swipe down -> Moving towards top of list.
-                                    updatePinnedTabsStripOnScroll(
-                                            /* shouldShowSearchBox= */ true, /* forced= */ false);
-                                },
-                                () -> {
-                                    // Swipe up -> Moving towards bottom of list.
-                                    updatePinnedTabsStripOnScroll(
-                                            /* shouldShowSearchBox= */ false, /* forced= */ false);
-                                });
-                // While the DirectionalScrollListener handles continuous scrolling, this is needed
-                // to notify the PinnedTabStripCoordinator of the final scroll position once a
-                // fling settles, ensuring its internal state is consistent.
-                RecyclerView.OnScrollListener scrollStateChangedListener =
-                        new RecyclerView.OnScrollListener() {
-                            @Override
-                            public void onScrollStateChanged(
-                                    RecyclerView recyclerView, int newState) {
-                                super.onScrollStateChanged(recyclerView, newState);
 
-                                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                                    assert mPinnedTabsCoordinator != null;
-                                    if (isAnyTabPinned()) {
-                                        mPinnedTabsCoordinator.onScrolled();
-                                    }
+            mSearchBoxVisibilityScrollListener =
+                    new DirectionalScrollListener(
+                            () -> {
+                                // Swipe down -> Moving towards top of list.
+                                updatePinnedTabsStripOnScroll(
+                                        /* shouldShowSearchBox= */ true, /* forced= */ false);
+                            },
+                            () -> {
+                                // Swipe up -> Moving towards bottom of list.
+                                updatePinnedTabsStripOnScroll(
+                                        /* shouldShowSearchBox= */ false, /* forced= */ false);
+                            });
+            // While the DirectionalScrollListener handles continuous scrolling, this is needed
+            // to notify the PinnedTabStripCoordinator of the final scroll position once a
+            // fling settles, ensuring its internal state is consistent.
+            RecyclerView.OnScrollListener scrollStateChangedListener =
+                    new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                            super.onScrollStateChanged(recyclerView, newState);
+
+                            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                assert mPinnedTabsCoordinator != null;
+                                if (isAnyTabPinned()) {
+                                    mPinnedTabsCoordinator.onScrolled();
                                 }
                             }
-                        };
-                recyclerView.addOnScrollListener(mSearchBoxVisibilityScrollListener);
-                recyclerView.addOnScrollListener(scrollStateChangedListener);
-            }
+                        }
+                    };
+            recyclerView.addOnScrollListener(mSearchBoxVisibilityScrollListener);
+            recyclerView.addOnScrollListener(scrollStateChangedListener);
+
             // TODO(agrieve): mTabGroupModelFilterSupplier can be changed to be NonNull assuming
             // that this assumeNonNull() is not a bug.
             assumeNonNull(mTabGroupModelFilterSupplier.get())
@@ -703,12 +699,12 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabSwitcherGroupSuggestionService != null) {
             mTabSwitcherGroupSuggestionService.destroy();
         }
-        if (ChromeFeatureList.sAndroidPinnedTabs.isEnabled()) {
-            if (mTabGroupModelFilterSupplier.get() != null
-                    && mTabGroupModelFilterSupplier.get().getTabModel() != null) {
-                mTabGroupModelFilterSupplier.get().getTabModel().removeObserver(mTabModelObserver);
-            }
+
+        if (mTabGroupModelFilterSupplier.get() != null
+                && mTabGroupModelFilterSupplier.get().getTabModel() != null) {
+            mTabGroupModelFilterSupplier.get().getTabModel().removeObserver(mTabModelObserver);
         }
+
         if (mPinnedTabsCoordinator != null) {
             mPinnedTabsCoordinator.destroy();
         }

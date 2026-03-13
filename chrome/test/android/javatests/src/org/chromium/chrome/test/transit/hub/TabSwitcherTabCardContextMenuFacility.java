@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.SimpleConditions.uiThreadCondition;
@@ -24,7 +23,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.ScrollableFacility;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
@@ -154,8 +152,6 @@ public class TabSwitcherTabCardContextMenuFacility<HostStationT extends TabSwitc
     }
 
     private void changePinnedState(boolean newPinnedState, Item pinListItem) {
-        assertTrue(ChromeFeatureList.sAndroidPinnedTabs.isEnabled());
-
         noopTo().waitFor(
                         new TabsPinnedStatusCondition(
                                 mHostStation.getTabModel(), List.of(mTabId), !newPinnedState));

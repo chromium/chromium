@@ -182,7 +182,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinAndUnpinTab() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1216,7 +1215,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTabInGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1272,7 +1270,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTabInGroup_ActionListener_Accept() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1303,7 +1300,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTabInGroup_ActionListener_Reject() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -1334,7 +1330,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testPinTabInMultiTabGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -3249,7 +3244,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testCloseTab_UndoPinnedTab() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();

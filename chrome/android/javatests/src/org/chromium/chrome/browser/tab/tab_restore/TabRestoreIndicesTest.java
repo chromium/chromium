@@ -125,7 +125,6 @@ public class TabRestoreIndicesTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testRestoreNonUndoableTab_Pinned() {
         List<Tab> tabs = getTabs();
         final Tab tab0 = tabs.get(0);
@@ -165,7 +164,6 @@ public class TabRestoreIndicesTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testRestoreNonUndoableTabs_Multiple_Pinned() {
         List<Tab> tabs = getTabs();
         final Tab tab0 = tabs.get(0);

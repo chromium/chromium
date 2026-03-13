@@ -417,9 +417,4 @@ public class StripLayoutUtils {
         return ChromeFeatureList.sTabStripDensityChangeAndroid.isEnabled()
                 && DeviceInfo.isDesktop();
     }
-
-    // Testing booleans
-    public static boolean isTabPinningFromStripEnabled() {
-        return ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled();
-    }
 }

@@ -348,16 +348,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "android-pinned-tabs",
-    "owners": [ "madhavpruthi@google.com", "ckitagawa@chromium.org" ],
-    "expiry_milestone": 148
-  },
-  {
-    "name": "android-pinned-tabs-tablet-tab-strip",
-    "owners": [ "zheliooo@google.com", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 148
-  },
-  {
     "name": "android-progress-bar-visual-update",
     "owners": ["agazal@google.com", "peilinwang@google.com", "clank-app-team@google.com"],
     "expiry_milestone": 170
