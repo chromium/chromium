@@ -471,7 +471,7 @@ public class TabGroupUiTest {
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getToolbarManager()
-                        .getBottomControlsCoordinatorForTesting();
+                        .getTabGroupUiBottomControlsCoordinatorForTesting();
 
         // Scene overlay should be visible
         CriteriaHelper.pollUiThread(

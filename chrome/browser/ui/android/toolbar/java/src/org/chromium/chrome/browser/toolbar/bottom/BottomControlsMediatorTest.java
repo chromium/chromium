@@ -41,6 +41,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -126,6 +127,7 @@ public class BottomControlsMediatorTest {
                         mBottomControlsStacker,
                         mBrowserControlsVisibilityDelegate,
                         mFullscreenManager,
+                        LayerType.TABSTRIP_TOOLBAR,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
@@ -143,6 +145,7 @@ public class BottomControlsMediatorTest {
                         mBottomControlsStacker,
                         mBrowserControlsVisibilityDelegate,
                         mFullscreenManager,
+                        LayerType.TABSTRIP_TOOLBAR,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
@@ -187,6 +190,7 @@ public class BottomControlsMediatorTest {
                         mBottomControlsStacker,
                         mBrowserControlsVisibilityDelegate,
                         mFullscreenManager,
+                        LayerType.TABSTRIP_TOOLBAR,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
                         DEFAULT_SHADOW_HEIGHT,
@@ -218,6 +222,7 @@ public class BottomControlsMediatorTest {
                 mBottomControlsStacker,
                 mBrowserControlsVisibilityDelegate,
                 mFullscreenManager,
+                LayerType.TABSTRIP_TOOLBAR,
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,
                 DEFAULT_SHADOW_HEIGHT,

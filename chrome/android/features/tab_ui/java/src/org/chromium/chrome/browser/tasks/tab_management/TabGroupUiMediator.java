@@ -555,18 +555,10 @@ public class TabGroupUiMediator implements BackPressHandler {
         mOnSnapshotTokenChange.onResult(token);
     }
 
-    public boolean onBackPressed() {
-        @Nullable DialogController controller = getTabGridDialogControllerIfExists();
-        return controller != null ? controller.handleBackPressed() : false;
-    }
-
     @Override
     public @BackPressResult int handleBackPress() {
         @Nullable DialogController controller = getTabGridDialogControllerIfExists();
-        if (controller != null) {
-            return controller.handleBackPress();
-        }
-        return BackPressResult.FAILURE;
+        return controller != null ? controller.handleBackPress() : BackPressResult.FAILURE;
     }
 
     @Override

@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -42,6 +41,7 @@ import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -83,8 +83,6 @@ public class ToolbarTabControllerImplTest {
     @Mock private TabCreator mTabCreator;
     @Mock private MultiInstanceManager mMultiInstanceManager;
 
-    private final SettableMonotonicObservableSupplier<BottomControlsCoordinator>
-            mBottomControlsCoordinatorSupplier = ObservableSuppliers.createMonotonic();
     private final GURL mGURL = new GURL("https://example.com");
     private ToolbarTabControllerImpl mToolbarTabController;
 
@@ -96,6 +94,10 @@ public class ToolbarTabControllerImplTest {
         doReturn(mNativePage).when(mTab).getNativePage();
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         doReturn(mGURL).when(mTab).getUrl();
+        doReturn(BackPressResult.FAILURE).when(mBottomControlsCoordinator).handleBackPress();
+        doReturn(ObservableSuppliers.alwaysFalse())
+                .when(mBottomControlsCoordinator)
+                .getHandleBackPressChangedSupplier();
         TrackerFactory.setTrackerForTests(mTracker);
         initToolbarTabController();
     }
@@ -124,11 +126,10 @@ public class ToolbarTabControllerImplTest {
 
     @Test
     public void back_handledByBottomControls() {
-        mBottomControlsCoordinatorSupplier.set(mBottomControlsCoordinator);
-        doReturn(true).when(mBottomControlsCoordinator).onBackPressed();
-        Assert.assertTrue(mToolbarTabController.back());
+        doReturn(BackPressResult.SUCCESS).when(mBottomControlsCoordinator).handleBackPress();
+        assertTrue(mToolbarTabController.back());
 
-        verify(mBottomControlsCoordinator).onBackPressed();
+        verify(mBottomControlsCoordinator).handleBackPress();
         verify(mRunnable, never()).run();
         verify(mTab, never()).goBack();
     }
@@ -319,7 +320,7 @@ public class ToolbarTabControllerImplTest {
                 new ToolbarTabControllerImpl(
                         mTabSupplier,
                         mTrackerSupplier,
-                        mBottomControlsCoordinatorSupplier,
+                        () -> mBottomControlsCoordinator,
                         urlConstantResolver::getNtpUrl,
                         mRunnable,
                         mActivityTabProvider,

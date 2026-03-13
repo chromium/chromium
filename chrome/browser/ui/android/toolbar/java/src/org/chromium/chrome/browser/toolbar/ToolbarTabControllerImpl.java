@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -14,8 +13,9 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -31,8 +31,7 @@ import java.util.function.Supplier;
 public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<@Nullable Tab> mTabSupplier;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
-    private final MonotonicObservableSupplier<BottomControlsCoordinator>
-            mBottomControlsCoordinatorSupplier;
+    private final Supplier<@Nullable BackPressHandler> mBottomControlsBackPressHandlerSupplier;
     private final Supplier<String> mHomepageUrlSupplier;
     private final Runnable mOnSuccessRunnable;
     private final Supplier<@Nullable Tab> mActivityTabSupplier;
@@ -42,6 +41,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     /**
      * @param tabSupplier Supplier for the currently active tab.
      * @param trackerSupplier Supplier for the current profile tracker.
+     * @param bottomControlsBackPressHandlerSupplier Supplier for the bottom controls back press
+     *     handler.
      * @param homepageUrlSupplier Supplier for the homepage URL.
      * @param onSuccessRunnable Runnable that is invoked when the active tab is asked to perform the
      *     corresponding ToolbarTabController action; it is not invoked if the tab cannot
@@ -55,8 +56,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     public ToolbarTabControllerImpl(
             Supplier<@Nullable Tab> tabSupplier,
             Supplier<@Nullable Tracker> trackerSupplier,
-            MonotonicObservableSupplier<BottomControlsCoordinator>
-                    bottomControlsCoordinatorSupplier,
+            Supplier<@Nullable BackPressHandler> bottomControlsBackPressHandlerSupplier,
             Supplier<String> homepageUrlSupplier,
             Runnable onSuccessRunnable,
             Supplier<@Nullable Tab> activityTabSupplier,
@@ -64,7 +64,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             @Nullable MultiInstanceManager multiInstanceManager) {
         mTabSupplier = tabSupplier;
         mTrackerSupplier = trackerSupplier;
-        mBottomControlsCoordinatorSupplier = bottomControlsCoordinatorSupplier;
+        mBottomControlsBackPressHandlerSupplier = bottomControlsBackPressHandlerSupplier;
         mHomepageUrlSupplier = homepageUrlSupplier;
         mOnSuccessRunnable = onSuccessRunnable;
         mActivityTabSupplier = activityTabSupplier;
@@ -74,8 +74,10 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
 
     @Override
     public boolean back() {
-        BottomControlsCoordinator controlsCoordinator = mBottomControlsCoordinatorSupplier.get();
-        if (controlsCoordinator != null && controlsCoordinator.onBackPressed()) {
+        BackPressHandler bottomControlsBackPressHandler =
+                mBottomControlsBackPressHandlerSupplier.get();
+        if (bottomControlsBackPressHandler != null
+                && bottomControlsBackPressHandler.handleBackPress() == BackPressResult.SUCCESS) {
             return true;
         }
         Tab tab = mActivityTabSupplier.get();
@@ -224,10 +226,11 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      * @return True if a back press can be consumed.
      */
     boolean canGoBack() {
-        BottomControlsCoordinator controlsCoordinator = mBottomControlsCoordinatorSupplier.get();
-        if (controlsCoordinator != null
+        BackPressHandler bottomControlsBackPressHandler =
+                mBottomControlsBackPressHandlerSupplier.get();
+        if (bottomControlsBackPressHandler != null
                 && Boolean.TRUE.equals(
-                        controlsCoordinator.getHandleBackPressChangedSupplier().get())) {
+                        bottomControlsBackPressHandler.getHandleBackPressChangedSupplier().get())) {
             return true;
         }
         Tab tab = mActivityTabSupplier.get();

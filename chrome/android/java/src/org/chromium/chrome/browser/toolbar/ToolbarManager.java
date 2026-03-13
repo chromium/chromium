@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -295,7 +296,7 @@ public class ToolbarManager
                                                     .getObservableConstraints(tab));
 
     private SettableMonotonicObservableSupplier<BottomControlsCoordinator>
-            mBottomControlsCoordinatorSupplier = ObservableSuppliers.createMonotonic();
+            mTabGroupUiBottomControlsCoordinatorSupplier = ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableMonotonicObservableSupplier<Long> mCaptureResourceIdSupplier =
@@ -951,7 +952,7 @@ public class ToolbarManager
                 new ToolbarTabControllerImpl(
                         mLocationBarModel::getTab,
                         () -> TrackerFactory.getTrackerForProfile(mProfileSupplier),
-                        mBottomControlsCoordinatorSupplier,
+                        () -> mTabGroupUiBottomControlsCoordinatorSupplier.get(),
                         this::homepageUrl,
                         this::updateButtonStatus,
                         mActivityTabProvider,
@@ -2282,11 +2283,11 @@ public class ToolbarManager
                         mUndoBarThrottle,
                         mTabBookmarkerSupplier,
                         mShareDelegateSupplier);
-        var bottomControlsContentDelegateSupplier =
+        var tabGroupUiBottomControlsContentDelegateSupplier =
                 (OneshotSupplier<BottomControlsContentDelegate>)
                         ((OneshotSupplier<? extends BottomControlsContentDelegate>)
                                 mTabGroupUiOneshotSupplier);
-        var bottomControlsCoordinator =
+        var tabGroupUiBottomControlsCoordinator =
                 new BottomControlsCoordinator(
                         mWindowAndroid,
                         mLayoutManager,
@@ -2296,7 +2297,8 @@ public class ToolbarManager
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
                         (ScrollingBottomViewResourceFrameLayout) root,
-                        bottomControlsContentDelegateSupplier,
+                        LayerType.TABSTRIP_TOOLBAR,
+                        tabGroupUiBottomControlsContentDelegateSupplier,
                         mTabObscuringHandler,
                         mOverlayPanelVisibilitySupplier,
                         mConstraintsSupplier,
@@ -2305,12 +2307,12 @@ public class ToolbarManager
                             return readAloud != null && readAloud.isRestoringPlayer();
                         });
         if (mInitializedWithNative) {
-            bottomControlsCoordinator.initializeWithNative();
+            tabGroupUiBottomControlsCoordinator.initializeWithNative();
         }
-        mBottomControlsCoordinatorSupplier.set(bottomControlsCoordinator);
+        mTabGroupUiBottomControlsCoordinatorSupplier.set(tabGroupUiBottomControlsCoordinator);
         if (mBackPressManager != null) {
             mBackPressManager.addHandler(
-                    bottomControlsCoordinator, BackPressHandler.Type.BOTTOM_CONTROLS);
+                    tabGroupUiBottomControlsCoordinator, BackPressHandler.Type.BOTTOM_CONTROLS);
         }
     }
 
@@ -2491,10 +2493,10 @@ public class ToolbarManager
         mIncognitoStateProvider.setTabModelSelector(mTabModelSelector);
         mAppThemeColorProvider.setIncognitoStateProvider(mIncognitoStateProvider);
 
-        BottomControlsCoordinator bottomControlsCoordinator =
-                mBottomControlsCoordinatorSupplier.get();
-        if (bottomControlsCoordinator != null) {
-            bottomControlsCoordinator.initializeWithNative();
+        BottomControlsCoordinator tabGroupUiBottomControlsCoordinator =
+                mTabGroupUiBottomControlsCoordinatorSupplier.get();
+        if (tabGroupUiBottomControlsCoordinator != null) {
+            tabGroupUiBottomControlsCoordinator.initializeWithNative();
         }
 
         if (mOnInitializedRunnable != null) {
@@ -2630,11 +2632,11 @@ public class ToolbarManager
 
         HomepageManager.getInstance().removeListener(mHomepageStateListener);
 
-        BottomControlsCoordinator bottomControlsCoordinator =
-                mBottomControlsCoordinatorSupplier.get();
-        if (bottomControlsCoordinator != null) {
-            bottomControlsCoordinator.destroy();
-            mBottomControlsCoordinatorSupplier = null;
+        BottomControlsCoordinator tabGroupUiBottomControlsCoordinator =
+                mTabGroupUiBottomControlsCoordinatorSupplier.get();
+        if (tabGroupUiBottomControlsCoordinator != null) {
+            tabGroupUiBottomControlsCoordinator.destroy();
+            mTabGroupUiBottomControlsCoordinatorSupplier = null;
         }
 
         if (mLocationBar != null) {
@@ -3266,10 +3268,8 @@ public class ToolbarManager
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
 
         // TODO(crbug.com/40187309): We shouldn't need to post this. Instead we should wait until
-        // the
-        //                dependencies are ready. This logic was introduced to move asynchronous
-        //                observer events from the infra (LayoutManager) into the feature using
-        //                it.
+        // the dependencies are ready. This logic was introduced to move asynchronous observer
+        // events from the infra (LayoutManager) into the feature using it.
         if (mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
             mControlContainer.post(
                     mCallbackController.makeCancelable(
@@ -3277,10 +3277,10 @@ public class ToolbarManager
         }
 
         mAppThemeColorProvider.setLayoutStateProvider(mLayoutStateProvider);
-        BottomControlsCoordinator bottomControlsCoordinator =
-                mBottomControlsCoordinatorSupplier.get();
-        if (bottomControlsCoordinator != null) {
-            bottomControlsCoordinator.setLayoutStateProvider(mLayoutStateProvider);
+        BottomControlsCoordinator tabGroupUiBottomControlsCoordinator =
+                mTabGroupUiBottomControlsCoordinatorSupplier.get();
+        if (tabGroupUiBottomControlsCoordinator != null) {
+            tabGroupUiBottomControlsCoordinator.setLayoutStateProvider(mLayoutStateProvider);
         }
     }
 
@@ -3409,8 +3409,8 @@ public class ToolbarManager
         return mToolbarTabController;
     }
 
-    public BottomControlsCoordinator getBottomControlsCoordinatorForTesting() {
-        return mBottomControlsCoordinatorSupplier.get();
+    public BottomControlsCoordinator getTabGroupUiBottomControlsCoordinatorForTesting() {
+        return mTabGroupUiBottomControlsCoordinatorSupplier.get();
     }
 
     public @Nullable ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinatorForTesting() {
