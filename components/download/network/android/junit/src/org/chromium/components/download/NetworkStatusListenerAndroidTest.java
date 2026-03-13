@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.net.ConnectionType;
+import org.chromium.net.ConnectivityManagerWrapper;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 
 /**
@@ -32,7 +33,7 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect;
 public class NetworkStatusListenerAndroidTest {
     private static final int NATIVE_PTR = 1;
     @Mock private NetworkChangeNotifierAutoDetect mAutoDetect;
-    @Mock NetworkChangeNotifierAutoDetect.NetworkState mNetworkState;
+    @Mock ConnectivityManagerWrapper.NetworkState mNetworkState;
     @Mock private NetworkStatusListenerAndroid.Natives mNativeMock;
 
     private NetworkStatusListenerAndroid mListener;

@@ -267,7 +267,7 @@ public class NetworkChangeNotifier {
                     // the experiment as its definitely a redundant call.
                     if (forceUpdateNetworkState) mAutoDetector.updateCurrentNetworkState();
 
-                    final NetworkChangeNotifierAutoDetect.NetworkState networkState =
+                    final ConnectivityManagerWrapper.NetworkState networkState =
                             mAutoDetector.getCurrentNetworkState();
 
                     updateCurrentConnectionType(networkState.getConnectionType());
