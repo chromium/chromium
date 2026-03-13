@@ -350,8 +350,6 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update) override;
 
-  std::unique_ptr<PublisherHost> publisher_host_;
-
   AppIconReader icon_reader_;
   AppIconWriter icon_writer_;
 

@@ -21,6 +21,8 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/publisher.h"
+#include "chrome/browser/apps/app_service/publisher_host.h"
+#include "chrome/browser/apps/app_service/publisher_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -171,12 +173,22 @@ void AppServiceProxyBase::Initialize() {
   // Make the chrome://app-icon/ resource available.
   content::URLDataSource::Add(profile_,
                               std::make_unique<apps::AppIconSource>(profile_));
+
+  publisher_host_ = publisher_host_factory_->CreatePublisherHost(this);
 }
 
 Publisher* AppServiceProxyBase::GetPublisher(AppType app_type) {
   auto it = publishers_.find(app_type);
   return it == publishers_.end() ? nullptr : it->second;
 }
+
+// In ChromeOS, this is defined in AppServiceProxyAsh.
+#if !BUILDFLAG(IS_CHROMEOS)
+bool AppServiceProxyBase::MaybeShowLaunchPreventionDialog(
+    const apps::AppUpdate& update) {
+  return false;
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 apps::AppRegistryCache& AppServiceProxyBase::AppRegistryCache() {
   return app_registry_cache_;

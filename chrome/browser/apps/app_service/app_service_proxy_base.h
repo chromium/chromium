@@ -52,6 +52,7 @@ class AppUpdate;
 class BrowserAppLauncher;
 class PreferredAppsListHandle;
 class PublisherHostFactory;
+class PublisherHost;
 
 struct IntentLaunchInfo {
   IntentLaunchInfo();
@@ -394,8 +395,14 @@ class AppServiceProxyBase : public KeyedService,
   // Returns true if the app cannot be launched and a launch prevention dialog
   // is shown to the user (e.g. the app is paused or blocked). Returns false
   // otherwise (and the app can be launched).
-  virtual bool MaybeShowLaunchPreventionDialog(
-      const apps::AppUpdate& update) = 0;
+  // TODO(crbug.com/477191550): Conditional pure virtual declaration depending
+  // on platform is a short term workaround. This should be cleaned on
+  // extracting an interface.
+  virtual bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update)
+#if BUILDFLAG(IS_CHROMEOS)
+      = 0
+#endif
+      ;
 
   IntentFilterPtr FindBestMatchingFilter(const IntentPtr& intent);
 
@@ -435,6 +442,7 @@ class AppServiceProxyBase : public KeyedService,
       const apps::AppUpdate& update);
 
   const raw_ref<PublisherHostFactory> publisher_host_factory_;
+  std::unique_ptr<PublisherHost> publisher_host_;
   base::flat_map<AppType, raw_ptr<Publisher, CtnExperimental>> publishers_;
 
   apps::AppRegistryCache app_registry_cache_;

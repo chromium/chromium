@@ -18,7 +18,7 @@ class PublisherHostFactoryImpl : public PublisherHostFactory {
 
   // PublisherHostFactory override:
   std::unique_ptr<PublisherHost> CreatePublisherHost(
-      AppServiceProxy* proxy) override;
+      AppServiceProxyBase* proxy) override;
 };
 
 }  // namespace apps

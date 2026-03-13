@@ -7,10 +7,11 @@
 
 #include <memory>
 
-#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-
 namespace apps {
 
+// TODO(crbug.com/477191550): Extracting an interface should resolve the
+// dependency.
+class AppServiceProxyBase;
 class PublisherHost;
 
 class PublisherHostFactory {
@@ -18,7 +19,7 @@ class PublisherHostFactory {
   virtual ~PublisherHostFactory() = default;
 
   virtual std::unique_ptr<PublisherHost> CreatePublisherHost(
-      AppServiceProxy* proxy) = 0;
+      AppServiceProxyBase* proxy) = 0;
 };
 
 }  // namespace apps

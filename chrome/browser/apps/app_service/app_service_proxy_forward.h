@@ -15,7 +15,8 @@ namespace apps {
 class AppServiceProxyAsh;
 using AppServiceProxy = AppServiceProxyAsh;
 #else
-class AppServiceProxy;
+class AppServiceProxyBase;
+using AppServiceProxy = AppServiceProxyBase;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

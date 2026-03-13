@@ -255,13 +255,6 @@ source_set("app_service") {
       "//chrome/browser/ui/webui/ash/add_supervision",
     ]
   }
-
-  if (!is_chromeos) {
-    sources += [
-      "app_service_proxy_desktop.cc",
-      "app_service_proxy_desktop.h",
-    ]
-  }
 }
 
 source_set("unit_tests") {

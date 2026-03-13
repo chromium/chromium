@@ -138,15 +138,13 @@ void AppServiceProxyAsh::Initialize() {
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetAppRegistryCache(
       profile_->GetPath(), &app_registry_cache_);
 
-  AppServiceProxyBase::Initialize();
-
   auto* cache = &AppRegistryCache();
   if (!app_registry_cache_observer_.IsObservingSource(cache)) {
     app_registry_cache_observer_.Reset();
     app_registry_cache_observer_.Observe(cache);
   }
 
-  publisher_host_ = publisher_host_factory_->CreatePublisherHost(this);
+  AppServiceProxyBase::Initialize();
 
   if (!profile_->AsTestingProfile() &&
       !::ash::IsShimlessRmaAppBrowserContext(profile_)) {

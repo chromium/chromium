@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/publishers/publisher_host_impl.h"
 
 namespace apps {
@@ -14,8 +15,9 @@ PublisherHostFactoryImpl::PublisherHostFactoryImpl() = default;
 PublisherHostFactoryImpl::~PublisherHostFactoryImpl() = default;
 
 std::unique_ptr<PublisherHost> PublisherHostFactoryImpl::CreatePublisherHost(
-    AppServiceProxy* proxy) {
-  return std::make_unique<PublisherHostImpl>(proxy);
+    AppServiceProxyBase* proxy) {
+  return std::make_unique<PublisherHostImpl>(
+      static_cast<AppServiceProxy*>(proxy));
 }
 
 }  // namespace apps
