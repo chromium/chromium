@@ -102,6 +102,12 @@ class ServiceWorkerSyntheticResponseManagerTest : public testing::Test {
         manager->write_buffer_manager_->ReleaseProducerHandle());
   }
 
+  void CallMaybeSetResponseHead(
+      ServiceWorkerSyntheticResponseManager* manager,
+      const network::mojom::URLResponseHead& response_head) {
+    manager->MaybeSetResponseHead(response_head);
+  }
+
  protected:
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
@@ -165,6 +171,47 @@ TEST_F(ServiceWorkerSyntheticResponseManagerTest, NotifyReloading_PipeClosed) {
   histogram_tester.ExpectUniqueSample(
       "ServiceWorker.SyntheticResponse.WriteFallbackBodyResult",
       MOJO_RESULT_FAILED_PRECONDITION, 1);
+}
+
+TEST_F(ServiceWorkerSyntheticResponseManagerTest, MaybeSetResponseHead) {
+  ServiceWorkerSyntheticResponseManager manager(version_);
+
+  // 1. Successful response with BOTH opt-in and CSP headers -> header is
+  // stored.
+  auto head_with_both = network::mojom::URLResponseHead::New();
+  head_with_both->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  head_with_both->headers->AddHeader("Service-Worker-Synthetic-Response", "?1");
+  head_with_both->headers->AddHeader("Content-Security-Policy",
+                                     "default-src 'none'");
+  CallMaybeSetResponseHead(&manager, *head_with_both);
+  EXPECT_TRUE(version_->GetResponseHeadForSyntheticResponse());
+  version_->ResetResponseHeadForSyntheticResponse();
+
+  // 2. Successful response with ONLY opt-in header -> header is NOT stored.
+  auto head_with_opt_in = network::mojom::URLResponseHead::New();
+  head_with_opt_in->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  head_with_opt_in->headers->AddHeader("Service-Worker-Synthetic-Response",
+                                       "?1");
+  CallMaybeSetResponseHead(&manager, *head_with_opt_in);
+  EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+
+  // 3. Successful response with ONLY CSP header -> header is NOT stored.
+  auto head_with_csp = network::mojom::URLResponseHead::New();
+  head_with_csp->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  head_with_csp->headers->AddHeader("Content-Security-Policy",
+                                    "default-src 'none'");
+  CallMaybeSetResponseHead(&manager, *head_with_csp);
+  EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
+
+  // 4. Successful response with NO headers -> header is NOT stored.
+  auto head_with_no_headers = network::mojom::URLResponseHead::New();
+  head_with_no_headers->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  CallMaybeSetResponseHead(&manager, *head_with_no_headers);
+  EXPECT_FALSE(version_->GetResponseHeadForSyntheticResponse());
 }
 
 }  // namespace content

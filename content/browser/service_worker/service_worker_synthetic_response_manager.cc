@@ -114,6 +114,7 @@ namespace {
 constexpr std::string_view kOptInHeaderName =
     "Service-Worker-Synthetic-Response";
 constexpr std::string_view kOptInHeaderValue = "?1";
+constexpr std::string_view kCSPHeaderName = "Content-Security-Policy";
 
 // Convert `network::mojom::URLResponseHead` to
 // `blink::mojom::FetchAPIResponse`.
@@ -122,7 +123,8 @@ constexpr std::string_view kOptInHeaderValue = "?1";
 blink::mojom::FetchAPIResponsePtr GetFetchAPIResponse(
     const network::mojom::URLResponseHead& head) {
   CHECK(IsBypassSyntheticResponseHeaderCheckEnabled() ||
-        head.headers->HasHeaderValue(kOptInHeaderName, kOptInHeaderValue));
+        (head.headers->HasHeaderValue(kOptInHeaderName, kOptInHeaderValue) &&
+         head.headers->HasHeader(kCSPHeaderName)));
   auto out_response = blink::mojom::FetchAPIResponse::New();
   out_response->status_code = net::HTTP_OK;
   out_response->response_time = base::Time::Now();
@@ -356,10 +358,13 @@ void ServiceWorkerSyntheticResponseManager::MaybeSetResponseHead(
   bool is_header_stored = false;
   // If the response is not successful or there is no opt-in header, do not
   // update the response head.
+  // In addition to the opt-in header, we guarantee that the response has a
+  // Content-Security-Policy header as well.
   if (network::IsSuccessfulStatus(response_head.headers->response_code()) &&
       (IsBypassSyntheticResponseHeaderCheckEnabled() ||
-       response_head.headers->HasHeaderValue(kOptInHeaderName,
-                                             kOptInHeaderValue))) {
+       (response_head.headers->HasHeaderValue(kOptInHeaderName,
+                                              kOptInHeaderValue) &&
+        response_head.headers->HasHeader(kCSPHeaderName)))) {
     version_->SetMainScriptResponse(
         std::make_unique<ServiceWorkerVersion::MainScriptResponse>(
             response_head));
