@@ -63,6 +63,14 @@ CWV_EXPORT
 // -earlyInitWithFlags for more details.
 - (void)earlyInit;
 
+#if defined(CWV_ENABLE_DUMP_WITHOUT_CRASHING_HANDLER)
+// Sets a handler function to be called for non-fatal error reporting
+// via Chromium's base::debug::DumpWithoutCrashing mechanism.
+// The provided `handler` will be executed when a non-fatal CHECK or
+// similar error condition triggers a dump.
+- (void)setDumpWithoutCrashingHandler:(void (*_Nullable)(void))handler;
+#endif  // defined(CWV_ENABLE_DUMP_WITHOUT_CRASHING_HANDLER)
+
 // Initializes internal global state machinery with `flags` specifying options
 // that should be set before starting the early initialization. This should be
 // called as early as possible during the host app's launch process. For
