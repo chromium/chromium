@@ -75,7 +75,6 @@ void ChromeTemplateURLServiceClient::OnURLVisited(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   // Filter out `SOURCE_ACTOR` visits to prevent them from informing search
   // recommendations and impacting user journeys.
   // TODO(crbug.com/464331451): Add tests to check that `SOURCE ACTOR` visits
@@ -86,7 +85,6 @@ void ChromeTemplateURLServiceClient::OnURLVisited(
       return;
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   TemplateURLService::URLVisitedDetails visited_details;
   visited_details.url = visited_url_info.url_row.url();

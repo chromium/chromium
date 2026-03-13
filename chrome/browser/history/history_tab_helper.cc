@@ -328,7 +328,6 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // Most Visited tiles in the NTP.
   bool visit_source_qualifies_for_ntp_most_visited = true;
   std::optional<int32_t> actor_task_id;
-#if !BUILDFLAG(IS_ANDROID)
   actor_task_id =
       chrome_ui_data && chrome_ui_data->actor_task_id()
           ? std::make_optional(chrome_ui_data->actor_task_id().value())
@@ -336,7 +335,6 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   visit_source_qualifies_for_ntp_most_visited =
       !history::IsBrowsingHistoryActorIntegrationM2Enabled() ||
       !actor_task_id.has_value();
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool should_consider_for_ntp_most_visited =
       status_code_qualifies_for_ntp_most_visited &&

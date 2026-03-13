@@ -885,12 +885,12 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   }
   AddContextAnnotationsForVisit(visit_404.visit_id, context_annotations_404);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   for (auto& test_visit_row : test_visit_rows) {
     test_visit_row.source = std::nullopt;
   }
   visit_404.source = std::nullopt;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Query the visits for all time.
   VisitVector results;
@@ -1115,11 +1115,11 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
   // Make `visit_info9` a 404 visit.
   AddContextAnnotationsForVisit(visit_info9.visit_id, context_annotations_404);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   for (auto& test_visit_row : test_visit_rows) {
     test_visit_row.source = std::nullopt;
   }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
   // Query the visits for the first url id, excluding 404s.
   VisitVector results;
