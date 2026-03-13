@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 // Expiration is capped at 400 days in the future, so we use 100 days here.
-var TEST_EXPIRATION_DATE = Math.round(Date.now() / 1000) + 100 * 24 * 60 * 60;
+const TEST_EXPIRATION_DATE = Math.round(Date.now() / 1000) + 100 * 24 * 60 * 60;
 
 // These are the cookies we expect to see along the way.
-var SET_REMOVE_COOKIE = {
+const SET_REMOVE_COOKIE = {
   name: 'testSetRemove',
   value: '42',
   domain: 'a.com',
@@ -17,10 +17,10 @@ var SET_REMOVE_COOKIE = {
   sameSite: chrome.cookies.SameSiteStatus.UNSPECIFIED,
   session: false,
   expirationDate: TEST_EXPIRATION_DATE,
-  storeId: "0"
+  storeId: '0'
 };
 
-var OVERWRITE_COOKIE_PRE = {
+const OVERWRITE_COOKIE_PRE = {
   name: 'testOverwrite',
   value: '42',
   domain: 'a.com',
@@ -31,10 +31,10 @@ var OVERWRITE_COOKIE_PRE = {
   sameSite: chrome.cookies.SameSiteStatus.UNSPECIFIED,
   session: false,
   expirationDate: TEST_EXPIRATION_DATE,
-  storeId: "0"
+  storeId: '0'
 };
 
-var OVERWRITE_COOKIE_POST = {
+const OVERWRITE_COOKIE_POST = {
   name: 'testOverwrite',
   value: '43',
   domain: 'a.com',
@@ -45,7 +45,7 @@ var OVERWRITE_COOKIE_POST = {
   sameSite: chrome.cookies.SameSiteStatus.UNSPECIFIED,
   session: false,
   expirationDate: TEST_EXPIRATION_DATE,
-  storeId: "0"
+  storeId: '0'
 };
 
 chrome.test.runTests([
@@ -87,9 +87,9 @@ chrome.test.runTests([
     });
   },
   function overwriteSecondSet() {
-    var haveRemoved = false;
-    var haveSet = false;
-    var done = chrome.test.listenForever(chrome.cookies.onChanged,
+    let haveRemoved = false;
+    let haveSet = false;
+    let done = chrome.test.listenForever(chrome.cookies.onChanged,
       function(info) {
         if (info.removed) {
           chrome.test.assertEq('overwrite', info.cause);
@@ -130,14 +130,14 @@ chrome.test.runTests([
   },
   // Regression test for https://crbug.com/423096904.
   function overwriteNoChange() {
-    var eventsObserved = 0;
-    var cookieOpts = {
+    let eventsObserved = 0;
+    const cookieOpts = {
       url: 'http://a.com/path',
       name: 'testOverwrite',
       value: '42',
       expirationDate: TEST_EXPIRATION_DATE
     };
-    var done = chrome.test.listenForever(
+    let done = chrome.test.listenForever(
         chrome.cookies.onChanged,
         function (info) {
           eventsObserved++;

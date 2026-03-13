@@ -27,8 +27,8 @@ function getFrames(id) {
   });
 }
 
-let pass = chrome.test.callbackPass;
-let fail = chrome.test.callbackFail;
+const pass = chrome.test.callbackPass;
+const fail = chrome.test.callbackFail;
 
 let tab;
 let topLevelFrame;
@@ -86,8 +86,8 @@ chrome.test.runTests([
 
     await chrome.test.assertPromiseRejects(
         chrome.cookies.getPartitionKey({documentId: noHostPermissionsDocId}),
-        'Error: No host permissions for cookies at url: "' +
-            noHostPermissionsFrame.url + '".')
+        `Error: No host permissions for cookies at url: "${
+            noHostPermissionsFrame.url}".`)
     chrome.test.succeed();
   },
   async function testFameIdOnlyInput() {
@@ -96,8 +96,8 @@ chrome.test.runTests([
         'Error: `frameId` may not be 0 if no `tabId` is present.')
 
     const expectedCrossSiteKey = {
-      'partitionKey':
-          {'topLevelSite': 'http://a.com', 'hasCrossSiteAncestor': true}
+      partitionKey:
+          {topLevelSite: 'http://a.com', hasCrossSiteAncestor: true}
     };
 
     let actualPartitionKey =
@@ -110,8 +110,8 @@ chrome.test.runTests([
     chrome.test.assertNe(topLevelDocId.length, 0);
 
     const expectedTopLevelKey = {
-      'partitionKey':
-          {'topLevelSite': 'http://a.com', 'hasCrossSiteAncestor': false}
+      partitionKey:
+          {topLevelSite: 'http://a.com', hasCrossSiteAncestor: false}
     };
 
     let actualPartitionKey =
@@ -141,8 +141,8 @@ chrome.test.runTests([
     chrome.test.assertNe(crossSiteDocId.length, 0);
 
     const expectedCrossSiteKey = {
-      'partitionKey':
-          {'topLevelSite': 'http://a.com', 'hasCrossSiteAncestor': true}
+      partitionKey:
+          {topLevelSite: 'http://a.com', hasCrossSiteAncestor: true}
     };
 
     let actualPartitionKey =

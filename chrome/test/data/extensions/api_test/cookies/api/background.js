@@ -2,54 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var TEST_DOMAIN = 'cookies.com';
-var TEST_PATH = '/auth';
-var TEST_HOST = 'www.chrome_extensions.' + TEST_DOMAIN;
-var TEST_URL = 'http://' + TEST_HOST + '/foobar.html?arg=toolbar&param=true';
-var TEST_URL_HTTPS =
-    'https://' + TEST_HOST + '/foobar.html?arg=toolbar&param=true';
-var TEST_URL2 = 'http://chromium.' + TEST_DOMAIN + '/index.html';
-var TEST_URL3 = 'https://' + TEST_HOST + '/content.html';
-var TEST_URL4 = 'https://' + TEST_HOST + TEST_PATH + '/content.html';
-var TEST_URL5 = 'http://' + TEST_HOST + TEST_PATH + '/content.html';
-var TEST_OPAQUE_URL = 'file://' + TEST_DOMAIN;
-var TEST_EXPIRATION_DATE = 12345678900;
-var TEST_ODD_DOMAIN_HOST_ONLY = 'strange stuff!!.com';
-var TEST_ODD_DOMAIN = '.' + TEST_ODD_DOMAIN_HOST_ONLY;
-var TEST_ODD_PATH = '/hello = world';
-var TEST_ODD_URL =
-    'http://' + TEST_ODD_DOMAIN_HOST_ONLY + TEST_ODD_PATH + '/index.html';
-var TEST_UNPERMITTED_URL = 'http://illegal.' + TEST_DOMAIN + '/';
-var TEST_TOP_LEVEL_SITE = 'https://' + TEST_DOMAIN;
-var TEST_CROSS_SITE_TOP_LEVEL_SITE = 'https://example.com';
+const TEST_DOMAIN = 'cookies.com';
+const TEST_PATH = '/auth';
+const TEST_HOST = `www.chrome_extensions.${TEST_DOMAIN}`;
+const TEST_URL = `http://${TEST_HOST}/foobar.html?arg=toolbar&param=true`;
+const TEST_URL_HTTPS =
+    `https://${TEST_HOST}/foobar.html?arg=toolbar&param=true`;
+const TEST_URL2 = `http://chromium.${TEST_DOMAIN}/index.html`;
+const TEST_URL3 = `https://${TEST_HOST}/content.html`;
+const TEST_URL4 = `https://${TEST_HOST}${TEST_PATH}/content.html`;
+const TEST_URL5 = `http://${TEST_HOST}${TEST_PATH}/content.html`;
+const TEST_OPAQUE_URL = `file://${TEST_DOMAIN}`;
+const TEST_EXPIRATION_DATE = 12345678900;
+const TEST_ODD_DOMAIN_HOST_ONLY = 'strange stuff!!.com';
+const TEST_ODD_DOMAIN = `.${TEST_ODD_DOMAIN_HOST_ONLY}`;
+const TEST_ODD_PATH = '/hello = world';
+const TEST_ODD_URL =
+    `http://${TEST_ODD_DOMAIN_HOST_ONLY}${TEST_ODD_PATH}/index.html`;
+const TEST_UNPERMITTED_URL = `http://illegal.${TEST_DOMAIN}/`;
+const TEST_TOP_LEVEL_SITE = `https://${TEST_DOMAIN}`;
+const TEST_CROSS_SITE_TOP_LEVEL_SITE = 'https://example.com';
 
-var TEST_BASIC_COOKIE = {
+const TEST_BASIC_COOKIE = {
   url: TEST_URL,
   name: 'api_test_basic_cookie',
   value: 'helloworld'
 };
-var TEST_DOMAIN_COOKIE = {
+const TEST_DOMAIN_COOKIE = {
   url: TEST_URL,
   name: 'TEST_domain',
   value: '32849395FFDSAA**##@@@',
   domain: TEST_DOMAIN,
   expirationDate: TEST_EXPIRATION_DATE
 };
-var TEST_SECURE_COOKIE = {
+const TEST_SECURE_COOKIE = {
   url: TEST_URL4,
   name: 'SECRETCOOKIE',
   value: 'foobar_password',
   secure: true,
   httpOnly: true
 };
-var TEST_BASIC_EXPIRED_COOKIE = {
+const TEST_BASIC_EXPIRED_COOKIE = {
   url: TEST_BASIC_COOKIE.url,
   name: TEST_BASIC_COOKIE.name,
   value: TEST_BASIC_COOKIE.value,
   expirationDate: 0
 };
 
-var TEST_PARTITIONED_COOKIE = {
+const TEST_PARTITIONED_COOKIE = {
   url: TEST_URL4,
   name: 'PARTITIONED_COOKIE',
   value: 'partitioned_cookie_val',
@@ -59,7 +59,7 @@ var TEST_PARTITIONED_COOKIE = {
   path: '/',
   partitionKey: {topLevelSite: TEST_TOP_LEVEL_SITE, hasCrossSiteAncestor: true}
 };
-var TEST_UNPARTITIONED_COOKIE = {
+const TEST_UNPARTITIONED_COOKIE = {
   url: TEST_URL4,
   name: 'UNPARTITIONED_COOKIE',
   value: 'unpartitioned_cookie_val',
@@ -68,7 +68,7 @@ var TEST_UNPARTITIONED_COOKIE = {
   httpOnly: true,
   path: '/',
 };
-var TEST_FIRST_PARTY_PARTITIONED_COOKIE = {
+const TEST_FIRST_PARTY_PARTITIONED_COOKIE = {
   url: TEST_PARTITIONED_COOKIE.url,
   name: 'FIRST_PARTY_PARTITIONED_COOKIE',
   value: 'TEST_FIRST_PARTY_PARTITIONED_COOKIE_VAL',
@@ -78,7 +78,7 @@ var TEST_FIRST_PARTY_PARTITIONED_COOKIE = {
   path: '/',
   partitionKey: {topLevelSite: TEST_TOP_LEVEL_SITE, hasCrossSiteAncestor: false}
 };
-var TEST_PARTITIONED_COOKIE_SAME_KEY = {
+const TEST_PARTITIONED_COOKIE_SAME_KEY = {
   url: TEST_PARTITIONED_COOKIE.url,
   name: 'PARTITIONED_COOKIE_SAME_KEY',
   value: 'partitioned_cookie_same_key',
@@ -88,7 +88,7 @@ var TEST_PARTITIONED_COOKIE_SAME_KEY = {
   path: '/',
   partitionKey: TEST_PARTITIONED_COOKIE.partitionKey
 };
-var TEST_PARTITIONED_COOKIE_DIFFERENT_KEY = {
+const TEST_PARTITIONED_COOKIE_DIFFERENT_KEY = {
   url: TEST_PARTITIONED_COOKIE.url,
   name: 'PARTITIONED_COOKIE_DIFFERENT_KEY',
   value: 'partitioned_cookie_different_key',
@@ -98,7 +98,7 @@ var TEST_PARTITIONED_COOKIE_DIFFERENT_KEY = {
   path: '/',
   partitionKey: {topLevelSite: TEST_URL5, hasCrossSiteAncestor: true}
 };
-var TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME = {
+const TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME = {
   url: TEST_PARTITIONED_COOKIE.url,
   name: TEST_BASIC_COOKIE.name,
   value: 'TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME',
@@ -108,7 +108,7 @@ var TEST_PARTITIONED_COOKIE_BASIC_COOKIE_NAME = {
   path: '/',
   partitionKey: TEST_PARTITIONED_COOKIE.partitionKey
 };
-var TEST_PARTITIONED_INVALID_TOP_LEVEL_SITE = {
+const TEST_PARTITIONED_INVALID_TOP_LEVEL_SITE = {
   url: TEST_PARTITIONED_COOKIE.url,
   name: 'TEST_PARTITIONED_INVALID_TOP_LEVEL_SITE',
   value: 'TEST_PARTITIONED_INVALID_TOP_LEVEL_SITE',
@@ -119,7 +119,7 @@ var TEST_PARTITIONED_INVALID_TOP_LEVEL_SITE = {
   partitionKey:
       {topLevelSite: 'INVALID_PARTITION_KEY', hasCrossSiteAncestor: true}
 };
-var TEST_PARTITIONED_INVALID_HAS_CROSS_SITE_ANCESTOR = {
+const TEST_PARTITIONED_INVALID_HAS_CROSS_SITE_ANCESTOR = {
   url: TEST_PARTITIONED_COOKIE.url,
   name: 'INVALID_HAS_CROSS_SITE_ANCESTOR',
   value: 'INVALID_HAS_CROSS_SITE_ANCESTOR',
@@ -132,7 +132,7 @@ var TEST_PARTITIONED_INVALID_HAS_CROSS_SITE_ANCESTOR = {
     hasCrossSiteAncestor: false
   }
 };
-var TEST_PARTITIONED_COOKIE_SECURE_FALSE = {
+const TEST_PARTITIONED_COOKIE_SECURE_FALSE = {
   url: TEST_URL,
   name: 'SECURE_FALSE',
   value: 'partitioned_cookie_val',
@@ -142,7 +142,7 @@ var TEST_PARTITIONED_COOKIE_SECURE_FALSE = {
   path: '/',
   partitionKey: TEST_PARTITIONED_COOKIE.partitionKey
 };
-var TEST_PARTITIONED_COOKIE_OPAQUE_TOP_LEVEL_SITE = {
+const TEST_PARTITIONED_COOKIE_OPAQUE_TOP_LEVEL_SITE = {
   url: TEST_PARTITIONED_COOKIE.url,
   name: 'OPAQUE_TOP_LEVEL_SITE',
   value: 'partitioned_cookie_val',
@@ -212,16 +212,16 @@ function removeTestCookies() {
   });
 }
 
-var pass = chrome.test.callbackPass;
-var fail = chrome.test.callbackFail;
+const pass = chrome.test.callbackPass;
+const fail = chrome.test.callbackFail;
 
 chrome.test.runTests([
   function invalidScheme() {
     // Invalid schemes don't work with the cookie API.
-    var ourUrl = chrome.runtime.getURL('background.js');
+    const ourUrl = chrome.runtime.getURL('background.js');
     chrome.cookies.get(
         {url: ourUrl, name: 'a'},
-        fail('No host permissions for cookies at url: "' + ourUrl + '".'));
+        fail(`No host permissions for cookies at url: "${ourUrl}".`));
   },
   function getBasicCookie() {
     removeTestCookies();
@@ -237,8 +237,8 @@ chrome.test.runTests([
       // URL lacking permissions.
       chrome.cookies.get(
           {url: TEST_UNPERMITTED_URL, name: TEST_BASIC_COOKIE.name},
-          fail('No host permissions for cookies at url: "' +
-               TEST_UNPERMITTED_URL + '".'));
+          fail(`No host permissions for cookies at url: "${
+               TEST_UNPERMITTED_URL}".`));
       // Store ID invalid.
       chrome.cookies.get({
         url: TEST_BASIC_COOKIE.url,
@@ -274,7 +274,7 @@ chrome.test.runTests([
             expectValidCookie(cookie);
             chrome.test.assertEq(TEST_DOMAIN_COOKIE.name, cookie.name);
             chrome.test.assertEq(TEST_DOMAIN_COOKIE.value, cookie.value);
-            chrome.test.assertEq('.' + TEST_DOMAIN, cookie.domain);
+            chrome.test.assertEq(`.${TEST_DOMAIN}`, cookie.domain);
             chrome.test.assertEq(false, cookie.hostOnly);
             chrome.test.assertEq('/', cookie.path);
             chrome.test.assertEq(false, cookie.secure);
@@ -1240,8 +1240,8 @@ chrome.test.runTests([
     // URL lacking permissions.
     chrome.cookies.set(
         {url: TEST_UNPERMITTED_URL, name: 'abcd', domain: TEST_DOMAIN},
-        fail('No host permissions for cookies at url: "' +
-            TEST_UNPERMITTED_URL + '".',
+        fail(`No host permissions for cookies at url: "${
+            TEST_UNPERMITTED_URL}".`,
             function () {
               chrome.cookies.get({url: TEST_URL, name: 'abcd'},
                 pass(expectNullCookie));
@@ -1296,9 +1296,9 @@ chrome.test.runTests([
 
     // Property is left out
     chrome.cookies.set(
-      {url: TEST_URL, name: "AA", value: "1"},
+      {url: TEST_URL, name: 'AA', value: '1'},
       pass(function () {
-        chrome.cookies.get({url: TEST_URL, name: "AA"}, pass(function (c) {
+        chrome.cookies.get({url: TEST_URL, name: 'AA'}, pass(function (c) {
           expectValidCookie(c);
           chrome.test.assertEq('unspecified', c.sameSite);
         }));
@@ -1306,40 +1306,40 @@ chrome.test.runTests([
 
     // No same-site restriction
     chrome.cookies.set(
-      {url: TEST_URL_HTTPS, name: "A", value: "1", sameSite: "no_restriction",
+      {url: TEST_URL_HTTPS, name: 'A', value: '1', sameSite: 'no_restriction',
        secure: true},
       pass(function () {
-        chrome.cookies.get({url: TEST_URL_HTTPS, name: "A"}, pass(function (c) {
+        chrome.cookies.get({url: TEST_URL_HTTPS, name: 'A'}, pass(function (c) {
           expectValidCookie(c);
-          chrome.test.assertEq("no_restriction", c.sameSite);
+          chrome.test.assertEq('no_restriction', c.sameSite);
         }));
       }));
 
     // Lax same-site restriction
     chrome.cookies.set(
-      {url: TEST_URL, name: "B", value: "1", sameSite: "lax"},
+      {url: TEST_URL, name: 'B', value: '1', sameSite: 'lax'},
       pass(function () {
-        chrome.cookies.get({url: TEST_URL, name: "B"}, pass(function (c) {
+        chrome.cookies.get({url: TEST_URL, name: 'B'}, pass(function (c) {
           expectValidCookie(c);
-          chrome.test.assertEq("lax", c.sameSite);
+          chrome.test.assertEq('lax', c.sameSite);
         }));
       }));
 
     // Strict same-site restriction
     chrome.cookies.set(
-      {url: TEST_URL, name: "C", value: "1", sameSite: "strict"},
+      {url: TEST_URL, name: 'C', value: '1', sameSite: 'strict'},
       pass(function () {
-        chrome.cookies.get({url: TEST_URL, name: "C"}, pass(function (c) {
+        chrome.cookies.get({url: TEST_URL, name: 'C'}, pass(function (c) {
           expectValidCookie(c);
-          chrome.test.assertEq("strict", c.sameSite);
+          chrome.test.assertEq('strict', c.sameSite);
         }));
       }));
 
     // Unspecified
     chrome.cookies.set(
-      {url: TEST_URL, name: "D", value: "1", sameSite: "unspecified"},
+      {url: TEST_URL, name: 'D', value: '1', sameSite: 'unspecified'},
       pass(function () {
-        chrome.cookies.get({url: TEST_URL, name: "D"}, pass(function (c) {
+        chrome.cookies.get({url: TEST_URL, name: 'D'}, pass(function (c) {
           expectValidCookie(c);
           chrome.test.assertEq('unspecified', c.sameSite);
         }));
@@ -1350,11 +1350,11 @@ chrome.test.runTests([
       // No same-site restriction but also not secure. This should succeed if
       // and only if the feature requiring SameSite=none cookies to be secure
       // cookies is disabled.
-      var sameSiteNoneRequiresSecure = config.customArg === 'true';
+      const sameSiteNoneRequiresSecure = config.customArg === 'true';
       removeTestCookies();
 
       chrome.cookies.set(
-        {url: TEST_URL, name: "AI", value: "1", sameSite: "no_restriction"},
+        {url: TEST_URL, name: 'AI', value: '1', sameSite: 'no_restriction'},
         setResult => {
           if (sameSiteNoneRequiresSecure) {
             chrome.test.assertLastError(
@@ -1364,10 +1364,10 @@ chrome.test.runTests([
           } else {
             chrome.test.assertNoLastError();
             chrome.cookies.get(
-                {url: TEST_URL_HTTPS, name: "AI"},
+                {url: TEST_URL_HTTPS, name: 'AI'},
                 pass(function (c) {
                   expectValidCookie(c);
-                  chrome.test.assertEq("no_restriction", c.sameSite);
+                  chrome.test.assertEq('no_restriction', c.sameSite);
                 }));
           }
         });
@@ -1397,8 +1397,8 @@ chrome.test.runTests([
     chrome.cookies.set(
         {url: TEST_UNPERMITTED_URL, name: 'abcd', domain: TEST_DOMAIN},
         fail(
-            'No host permissions for cookies at url: "'
-                + TEST_UNPERMITTED_URL + '".',
+            `No host permissions for cookies at url: "${
+                TEST_UNPERMITTED_URL}".`,
              expectUndefinedCookie));
     chrome.cookies.set(
         {url: TEST_URL, name: 'abcd=efg'},
@@ -1470,8 +1470,8 @@ chrome.test.runTests([
             chrome.cookies.remove(
               {url: TEST_UNPERMITTED_URL, name: TEST_DOMAIN_COOKIE.name},
               fail(
-                  'No host permissions for cookies at url: "'
-                      + TEST_UNPERMITTED_URL + '".',
+                  `No host permissions for cookies at url: "${
+                      TEST_UNPERMITTED_URL}".`,
                   function () {
                   chrome.cookies.get(
                       {url: TEST_URL2, name: TEST_DOMAIN_COOKIE.name},
@@ -1503,8 +1503,8 @@ chrome.test.runTests([
       chrome.cookies.remove(
           {url: TEST_UNPERMITTED_URL, name: TEST_DOMAIN_COOKIE.name},
           fail(
-              'No host permissions for cookies at url: "'
-                + TEST_UNPERMITTED_URL + '".',
+              `No host permissions for cookies at url: "${
+                TEST_UNPERMITTED_URL}".`,
               expectUndefinedCookie));
     }));
   },

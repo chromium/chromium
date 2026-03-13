@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 function readCookie(name) {
-  var nameEQ = name + '=';
-  var cookies = document.cookie.split(';');
-  for(var i=0; i < cookies.length; i++) {
-    var c = cookies[i];
-    while (c.charAt(0)==' ') {
+  let nameEQ = `${name}=`;
+  let cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    let c = cookies[i];
+    while (c.charAt(0) === ' ') {
       c = c.substring(1);
     }
-    if (c.indexOf(nameEQ) == 0) {
+    if (c.indexOf(nameEQ) === 0) {
       return c.substring(nameEQ.length);
     }
   }
