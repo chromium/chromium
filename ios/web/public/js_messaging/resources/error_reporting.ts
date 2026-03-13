@@ -25,6 +25,12 @@ export function catchAndReportErrors(
       }
     }
     if (errorMessage && errorStack) {
+      const stackFrames = errorStack.split('\n');
+      if (stackFrames?.length > 0 &&
+          stackFrames[0]?.includes('@http')) {
+        // If the top of the stack is a webpage script, redact the message.
+        errorMessage = 'JS error in webpage script.';
+      }
       const crashKeys = getCrashKeys();
       clearAllCrashKeys();
       sendWebKitMessage('WindowErrorResultHandler', {

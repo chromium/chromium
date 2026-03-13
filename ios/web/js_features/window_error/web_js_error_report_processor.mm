@@ -151,6 +151,10 @@ std::string RedactStack(std::string stack) {
                               base::SPLIT_WANT_NONEMPTY)) {
     if (frame.find("@user-script:") != std::string::npos) {
       kept_frames.push_back(frame);
+    } else if (frame.find("@http") != std::string::npos) {
+      kept_frames.push_back("FRAME@HTTP_URL");
+    } else {
+      kept_frames.push_back("FRAME");
     }
   }
   return base::JoinString(kept_frames, kNewlineSeparator);
