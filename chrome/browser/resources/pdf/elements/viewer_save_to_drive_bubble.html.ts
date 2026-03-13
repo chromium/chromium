@@ -12,10 +12,12 @@ import type {ViewerSaveToDriveBubbleElement} from './viewer_save_to_drive_bubble
 export function getHtml(this: ViewerSaveToDriveBubbleElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    <dialog id="dialog" @close="${this.onDialogClose_}"
+    <dialog id="dialog"
+        aria-labelledby="status"
+        @close="${this.onDialogClose_}"
         @focusout="${this.onFocusout_}">
       <div id="header">
-        <h2>${this.dialogTitle_}</h2>
+        <h2 id="status">${this.dialogTitle_}</h2>
         <cr-icon-button id="close" iron-icon="cr:close"
             aria-label="$i18n{propertiesDialogClose}"
             title="$i18n{propertiesDialogClose}"
