@@ -6,6 +6,11 @@
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
@@ -33,8 +38,8 @@ FilterUiController::~FilterUiController() = default;
 void FilterUiController::OnSuggestionGenerated(
     std::optional<UrlFilterSuggestion> suggestion) {
   if (suggestion) {
-    current_url_filter_suggestion_ = suggestion;
-    ShowSuggestionUi(*suggestion);
+    current_url_filter_suggestion_ = std::move(suggestion);
+    ShowSuggestionUi(*current_url_filter_suggestion_);
   }
 }
 
@@ -45,12 +50,16 @@ FilterUiController::GetSuggestionCallback() {
 }
 
 void FilterUiController::ClearSuggestion() {
+  // TODO(crbug.com/491210510): This method is currently only called when a
+  // suggestion is applied or when a new navigation is committed. Update the
+  // implementation to also call this when the toast is dismissed to free the
+  // cached suggestion memory, ensuring we don't accidentally clear a newly
+  // generated suggestion due to async callbacks.
   weak_factory_.InvalidateWeakPtrs();
   if (!current_url_filter_suggestion_) {
     return;
   }
   current_url_filter_suggestion_.reset();
-  HideSuggestionUi();
 }
 
 void FilterUiController::ApplySuggestion() {
@@ -58,19 +67,25 @@ void FilterUiController::ApplySuggestion() {
       current_url_filter_suggestion_->url().is_empty()) {
     return;
   }
-  NavigateTo(current_url_filter_suggestion_->url());
+  GURL url = current_url_filter_suggestion_->url();
+  ClearSuggestion();
+  NavigateTo(url);
 }
 
 void FilterUiController::ShowSuggestionUi(
     const UrlFilterSuggestion& suggestion) {
-  // TODO(crbug.com/484315974): Implement the logic to show the suggestion UI.
-  NOTIMPLEMENTED();
+  if (BrowserWindowInterface* browser_window_interface =
+          tab().GetBrowserWindowInterface()) {
+    if (ToastController* toast_controller =
+            browser_window_interface->GetFeatures().toast_controller()) {
+      ToastParams params(ToastId::kMultistepFilterSuggestion);
+      // TODO(crbug.com/491202866) : Override the suggestion string in the
+      // toast.
+      toast_controller->MaybeShowToast(std::move(params));
+    }
+  }
 }
 
-void FilterUiController::HideSuggestionUi() {
-  // TODO(crbug.com/484315974): Implement the logic to hide the suggestion UI.
-  NOTIMPLEMENTED();
-}
 
 void FilterUiController::NavigateTo(const GURL& url) {
   content::WebContents* web_contents = tab().GetContents();

@@ -24,34 +24,28 @@ namespace multistep_filter {
 
 namespace {
 
+class MockFilterUiController : public FilterUiController {
+ public:
+  explicit MockFilterUiController(tabs::TabInterface& tab)
+      : FilterUiController(tab) {}
+  ~MockFilterUiController() override = default;
+
+  MOCK_METHOD(void,
+              ShowSuggestionUi,
+              (const UrlFilterSuggestion& suggestion),
+              (override));
+  MOCK_METHOD(void, NavigateTo, (const GURL& url), (override));
+};
+
 class TestFilterUiController : public FilterUiController {
  public:
   explicit TestFilterUiController(tabs::TabInterface& tab)
       : FilterUiController(tab) {}
   ~TestFilterUiController() override = default;
 
-  MOCK_METHOD(void,
-              ShowSuggestionUi,
-              (const UrlFilterSuggestion& suggestion),
-              (override));
-  MOCK_METHOD(void, HideSuggestionUi, (), (override));
-  MOCK_METHOD(void, NavigateTo, (const GURL& url), (override));
-};
-
-class TestFilterUiControllerWithRealNavigate : public FilterUiController {
- public:
-  explicit TestFilterUiControllerWithRealNavigate(tabs::TabInterface& tab)
-      : FilterUiController(tab) {}
-  ~TestFilterUiControllerWithRealNavigate() override = default;
-
-  MOCK_METHOD(void,
-              ShowSuggestionUi,
-              (const UrlFilterSuggestion& suggestion),
-              (override));
-  MOCK_METHOD(void, HideSuggestionUi, (), (override));
-
-  // Expose NavigateTo for testing purposes
+  // Expose protected methods for testing
   using FilterUiController::NavigateTo;
+  using FilterUiController::ShowSuggestionUi;
 };
 
 class MockWebContentsDelegate : public content::WebContentsDelegate {
@@ -79,7 +73,7 @@ class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
         .WillByDefault(testing::Return(web_contents()));
     ON_CALL(*mock_tab_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
-    controller_ = std::make_unique<TestFilterUiController>(*mock_tab_);
+    controller_ = std::make_unique<MockFilterUiController>(*mock_tab_);
   }
 
   void TearDown() override {
@@ -99,16 +93,10 @@ class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  void NotifySuggestionAvailable(const UrlFilterSuggestion& suggestion) {
-    controller_->OnSuggestionGenerated(suggestion);
-  }
-
-  void NotifySuggestionCleared() { controller_->ClearSuggestion(); }
-
   base::test::ScopedFeatureList feature_list_{kMultistepFilter};
   ui::UnownedUserDataHost unowned_user_data_host_;
   std::unique_ptr<tabs::MockTabInterface> mock_tab_;
-  std::unique_ptr<TestFilterUiController> controller_;
+  std::unique_ptr<MockFilterUiController> controller_;
 };
 
 TEST_F(FilterUiControllerTest, FromReturnsInstance) {
@@ -120,39 +108,7 @@ TEST_F(FilterUiControllerTest, FromReturnsNullIfNotFound) {
   EXPECT_EQ(FilterUiController::From(mock_tab_.get()), nullptr);
 }
 
-TEST_F(FilterUiControllerTest, ShowSuggestionUiOnSuggestionAvailable) {
-  GURL url("https://example.com");
-  UrlFilterSuggestion suggestion("Example", url);
-  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
-  NotifySuggestionAvailable(suggestion);
-}
-
-TEST_F(FilterUiControllerTest, HideSuggestionUiOnSuggestionCleared) {
-  GURL url("https://example.com");
-  UrlFilterSuggestion suggestion("Example", url);
-  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
-  NotifySuggestionAvailable(suggestion);
-
-  EXPECT_CALL(*controller_, HideSuggestionUi());
-  NotifySuggestionCleared();
-}
-
-TEST_F(FilterUiControllerTest, ClearSuggestionDoesNothingIfNoSuggestion) {
-  EXPECT_CALL(*controller_, HideSuggestionUi()).Times(0);
-  NotifySuggestionCleared();
-}
-
-TEST_F(FilterUiControllerTest, ClearSuggestionInvalidatesPendingRequests) {
-  auto callback = controller_->GetSuggestionCallback();
-  NotifySuggestionCleared();
-
-  // The callback should be invalidated and not trigger UI changes.
-  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
-  std::move(callback).Run(
-      UrlFilterSuggestion("Example", GURL("https://example.com")));
-}
-
-TEST_F(FilterUiControllerTest, GetSuggestionCallbackTriggersShowSuggestionUi) {
+TEST_F(FilterUiControllerTest, SuggestionCallbackGeneratesSuggestion) {
   GURL url("https://example.com");
   UrlFilterSuggestion suggestion("Example", url);
 
@@ -161,35 +117,67 @@ TEST_F(FilterUiControllerTest, GetSuggestionCallbackTriggersShowSuggestionUi) {
   std::move(callback).Run(suggestion);
 }
 
-TEST_F(FilterUiControllerTest, GetSuggestionCallbackIgnoresNullopt) {
+TEST_F(FilterUiControllerTest, SuggestionCallbackIgnoresNullopt) {
   auto callback = controller_->GetSuggestionCallback();
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
   std::move(callback).Run(std::nullopt);
+
+  // Also verify that direct calls with nullopt are ignored.
+  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
+  controller_->OnSuggestionGenerated(std::nullopt);
 }
 
-TEST_F(FilterUiControllerTest, ApplySuggestionDoesNothingIfNoSuggestion) {
-  EXPECT_CALL(*controller_, NavigateTo(testing::_)).Times(0);
-  controller_->ApplySuggestion();
-}
-
-TEST_F(FilterUiControllerTest, ApplySuggestionNavigatesToUrl) {
+TEST_F(FilterUiControllerTest, ClearSuggestion) {
   GURL url("https://example.com");
   UrlFilterSuggestion suggestion("Example", url);
+  auto callback = controller_->GetSuggestionCallback();
 
+  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
+  controller_->OnSuggestionGenerated(suggestion);
+
+  controller_->ClearSuggestion();
+
+  // Verify that the current suggestion is reset.
+  EXPECT_CALL(*controller_, NavigateTo(testing::_)).Times(0);
+  controller_->ApplySuggestion();
+
+  // Verify that pending callbacks are invalidated.
+  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
+  std::move(callback).Run(suggestion);
+}
+
+TEST_F(FilterUiControllerTest, ShowSuggestionUiWithNullBrowserWindowInterface) {
+  // Destroy the mocked controller created in SetUp()
+  controller_.reset();
+
+  auto controller = std::make_unique<TestFilterUiController>(*mock_tab_);
+  EXPECT_CALL(*mock_tab_, GetBrowserWindowInterface())
+      .WillOnce(testing::Return(nullptr));
+
+  // Should not crash.
+  controller->OnSuggestionGenerated(
+      UrlFilterSuggestion("Example", GURL("https://example.com")));
+}
+
+TEST_F(FilterUiControllerTest, ApplySuggestion) {
+  // Should do nothing if there's no suggestion.
+  EXPECT_CALL(*controller_, NavigateTo(testing::_)).Times(0);
+  controller_->ApplySuggestion();
+
+  // Should do nothing if the URL is empty.
+  UrlFilterSuggestion empty_url_suggestion("Example", GURL());
+  EXPECT_CALL(*controller_,
+              ShowSuggestionUi(testing::Eq(empty_url_suggestion)));
+  controller_->OnSuggestionGenerated(empty_url_suggestion);
+  controller_->ApplySuggestion();
+
+  // Should navigate to the suggestion URL.
+  GURL url("https://example.com");
+  UrlFilterSuggestion suggestion("Example", url);
   EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
   controller_->OnSuggestionGenerated(suggestion);
 
   EXPECT_CALL(*controller_, NavigateTo(url));
-  controller_->ApplySuggestion();
-}
-
-TEST_F(FilterUiControllerTest, ApplySuggestionDoesNothingWhenUrlIsEmpty) {
-  UrlFilterSuggestion suggestion("Example", GURL());
-
-  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::Eq(suggestion)));
-  controller_->OnSuggestionGenerated(suggestion);
-
-  EXPECT_CALL(*controller_, NavigateTo(testing::_)).Times(0);
   controller_->ApplySuggestion();
 }
 
@@ -200,17 +188,9 @@ TEST_F(FilterUiControllerTest, NullWebContentsDoesNotCrash) {
   // Instantiating FilterUiController with a null WebContents should not crash.
   auto controller_null_contents =
       std::make_unique<TestFilterUiController>(*mock_tab_null_contents);
-}
-
-TEST_F(FilterUiControllerTest, NavigateToWithNullWebContents) {
-  ui::UnownedUserDataHost null_contents_host;
-  auto mock_tab_null_contents = CreateMockTab(nullptr, null_contents_host);
-
-  auto controller = std::make_unique<TestFilterUiControllerWithRealNavigate>(
-      *mock_tab_null_contents);
 
   // Should not crash.
-  controller->NavigateTo(GURL("https://example.com"));
+  controller_null_contents->NavigateTo(GURL("https://example.com"));
 }
 
 TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
@@ -218,8 +198,7 @@ TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
   // on the same tab without hitting a reinsertion check.
   controller_.reset();
 
-  auto controller =
-      std::make_unique<TestFilterUiControllerWithRealNavigate>(*mock_tab_);
+  auto controller = std::make_unique<TestFilterUiController>(*mock_tab_);
 
   MockWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);

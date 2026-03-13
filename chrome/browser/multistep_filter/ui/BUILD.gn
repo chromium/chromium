@@ -23,6 +23,8 @@ source_set("ui") {
     ]
 
     deps += [
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//components/multistep_filter/content",
       "//components/tabs:public",
       "//content/public/browser",
@@ -43,6 +45,8 @@ source_set("unit_tests") {
       ":ui",
       "//base/test:test_support",
       "//chrome/browser/multistep_filter/core",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/test:test_support",
       "//components/multistep_filter/content",
       "//components/multistep_filter/core",

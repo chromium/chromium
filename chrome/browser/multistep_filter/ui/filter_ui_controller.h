@@ -7,11 +7,14 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+enum class ToastId;
 
 namespace tabs {
 class TabInterface;
@@ -48,9 +51,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
  protected:
   // Shows the UI for the given suggestion.
   virtual void ShowSuggestionUi(const UrlFilterSuggestion& suggestion);
-
-  // Hides the suggestion UI.
-  virtual void HideSuggestionUi();
 
   // Navigates the current tab to the given URL. Virtual for testing.
   virtual void NavigateTo(const GURL& url);

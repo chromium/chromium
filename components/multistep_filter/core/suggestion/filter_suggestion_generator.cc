@@ -18,9 +18,9 @@ FilterSuggestionGenerator::~FilterSuggestionGenerator() = default;
 void FilterSuggestionGenerator::GenerateSuggestion(
     const GURL& url,
     base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback) {
-  // TODO crbug.com/489001569: Implement core filter actor suggestion logic.
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/489001569): Implement core filter actor suggestion logic.
   std::move(callback).Run(std::nullopt);
+  NOTIMPLEMENTED();
 }
 
 }  // namespace multistep_filter
