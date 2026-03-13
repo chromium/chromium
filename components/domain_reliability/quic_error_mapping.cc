@@ -117,6 +117,10 @@ const auto kQuicErrorMap = std::to_array<QuicErrorMapping>({
     // The peer received an invalid flow control window.
     {quic::QUIC_FLOW_CONTROL_INVALID_WINDOW,
      "quic.flow_control.invalid_window"},
+    // The peer sent a RESET_STREAM or STREAM frame indicating a change in the
+    // final size for the stream.
+    {quic::QUIC_FLOW_CONTROL_FINAL_SIZE_CHANGED,
+     "quic.flow_control.final_size_changed"},
     // The connection has been IP pooled into an existing connection.
     {quic::QUIC_CONNECTION_IP_POOLED, "quic.connection.ip_pooled"},
     // The connection has too many outstanding sent packets.
