@@ -63,9 +63,13 @@ ProfileMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     return std::make_unique<metrics::ProfileMetricsService>(0);
   }
 
+  // `base::FilePath::MaybeAsASCII()` returns an `std::string` copy which may
+  // then be truncated via `base::RemovePrefix`. So we need to hold the copied
+  // string to ensure a proper lifecycle.
+  std::string profile_path_str = profile_path.MaybeAsASCII();
   // We expect the profile path to be of the form "Profile N".
-  std::optional<std::string_view> index_str = base::RemovePrefix(
-      profile_path.MaybeAsASCII(), chrome::kMultiProfileDirPrefix);
+  std::optional<std::string_view> index_str =
+      base::RemovePrefix(profile_path_str, chrome::kMultiProfileDirPrefix);
   if (!index_str.has_value()) {
     // This may happen if the profile path has been manually overridden.
     return std::make_unique<metrics::ProfileMetricsService>();

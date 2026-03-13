@@ -37,6 +37,7 @@ BASE_DECLARE_FEATURE(kMetricsLogJobSchedulerUpload);
 
 // Creates the ProfileMetricsService, which can be used to log per-profile UMA
 // histograms.
+// Enabled by default - intended as a kill-switch.
 BASE_DECLARE_FEATURE(kPerProfileMetrics);
 
 }  // namespace metrics::features
