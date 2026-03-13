@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -28,7 +29,8 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   // Does not take ownership of |time_factory|.
   TabRestoreServiceImpl(std::unique_ptr<TabRestoreServiceClient> client,
                         PrefService* pref_service,
-                        tab_restore::TimeFactory* time_factory);
+                        tab_restore::TimeFactory* time_factory,
+                        os_crypt_async::OSCryptAsync* os_crypt_async);
 
   TabRestoreServiceImpl(const TabRestoreServiceImpl&) = delete;
   TabRestoreServiceImpl& operator=(const TabRestoreServiceImpl&) = delete;
@@ -71,7 +73,7 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
                            RestoreGroupInBrowserThatDoesNotSupportGroups);
 
   class PersistenceDelegate;
-  void UpdatePersistenceDelegate();
+  void UpdatePersistenceDelegate(os_crypt_async::OSCryptAsync* os_crypt_async);
 
   // Exposed for testing.
   Entries* mutable_entries();

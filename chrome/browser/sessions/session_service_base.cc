@@ -160,6 +160,7 @@ SessionServiceBase::SessionServiceBase(Profile* profile,
 
   command_storage_manager_ = std::make_unique<sessions::CommandStorageManager>(
       backend_type, profile->GetPath(), this,
+      g_browser_process->os_crypt_async(),
       TaskRunnerData::GetBackendTaskRunnerForProfile(profile, type));
 
   // We should never be created when incognito.

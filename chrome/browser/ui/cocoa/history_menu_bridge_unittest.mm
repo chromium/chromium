@@ -27,6 +27,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
@@ -41,11 +42,12 @@ namespace {
 
 class MockTRS : public sessions::TabRestoreServiceImpl {
  public:
-  explicit MockTRS(Profile* profile)
+  MockTRS(Profile* profile, os_crypt_async::OSCryptAsync* os_crypt_async)
       : sessions::TabRestoreServiceImpl(
             std::make_unique<ChromeTabRestoreServiceClient>(profile),
             profile->GetPrefs(),
-            nullptr) {}
+            nullptr,
+            os_crypt_async) {}
   MOCK_CONST_METHOD0(entries, const sessions::TabRestoreService::Entries&());
 };
 
@@ -130,6 +132,7 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     [AppController.sharedController setLastProfileForTesting:profile()];
 
     bridge_ = std::make_unique<MockBridge>(profile());
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
   }
 
   void TearDown() override {
@@ -201,6 +204,7 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
 
  protected:
   std::unique_ptr<MockBridge> bridge_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 class HistoryMenuBridgeLifetimeTest : public testing::Test {
@@ -344,7 +348,7 @@ TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
 
 // Test that the menu is created for a set of simple tabs.
 TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabs) {
-  std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
   auto entries{CreateSessionEntries({
       CreateSessionTab(24, "http://google.com", "Google"),
       CreateSessionTab(42, "http://apple.com", "Apple"),
@@ -378,7 +382,7 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabs) {
 
 // Test that the menu is created for a mix of windows and tabs.
 TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
-  std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
   auto entries{CreateSessionEntries({
       CreateSessionTab(24, "http://google.com", "Google"),
       CreateSessionWindow(30,
@@ -467,7 +471,7 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
   tab_groups::TabGroupVisualData visual_data2(
       u"title", tab_groups::TabGroupColorId::kBlue);
 
-  std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
   auto entries{CreateSessionEntries({
       CreateSessionGroup(30, visual_data1,
                          {
@@ -638,7 +642,10 @@ TEST_F(HistoryMenuBridgeLifetimeTest, StillValidAfterProfileShutdown) {
   std::ignore = AppController.sharedController;
 
   auto bridge = std::make_unique<MockBridge>(profile.get());
-  std::unique_ptr<MockTRS> trs(new MockTRS(profile.get()));
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async =
+      os_crypt_async::GetTestOSCryptAsyncForTesting(true);
+  std::unique_ptr<MockTRS> trs(
+      new MockTRS(profile.get(), os_crypt_async.get()));
   auto entries{CreateSessionEntries({
       CreateSessionTab(24, "http://google.com", "Google"),
       CreateSessionTab(42, "http://apple.com", "Apple"),
@@ -714,7 +721,10 @@ TEST_F(HistoryMenuBridgeLifetimeTest, EmptyTabRestoreService) {
 
   // Load an empty `TabRestoreService`. `TabRestoreServiceChanged()` is not
   // called because the service is empty.
-  std::unique_ptr<MockTRS> trs(new MockTRS(profile.get()));
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async =
+      os_crypt_async::GetTestOSCryptAsyncForTesting(true);
+  std::unique_ptr<MockTRS> trs(
+      new MockTRS(profile.get(), os_crypt_async.get()));
   MockTRS::Entries no_entries;
   EXPECT_CALL(*trs.get(), entries()).WillOnce(testing::ReturnRef(no_entries));
   bridge->TabRestoreServiceLoaded(trs.get());
@@ -726,7 +736,7 @@ TEST_F(HistoryMenuBridgeLifetimeTest, EmptyTabRestoreService) {
 }
 
 TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsInGroup) {
-  std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile(), os_crypt_async_.get()));
 
   tab_groups::TabGroupVisualData visual_data(
       std::u16string(), tab_groups::TabGroupColorId::kGrey);

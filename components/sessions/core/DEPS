@@ -4,6 +4,8 @@ include_rules = [
   "+components/prefs",
   "+components/tab_groups",
   "+components/split_tabs",
+  "+components/os_crypt/async/browser",
+  "+components/os_crypt/async/common",
 
   # SkColor is referenced in a struct in session_types.h
   "+third_party/skia/include/core/SkColor.h",

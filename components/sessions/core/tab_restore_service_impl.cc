@@ -484,7 +484,8 @@ class TabRestoreServiceImpl::PersistenceDelegate
     : public CommandStorageManagerDelegate,
       public TabRestoreServiceHelper::Observer {
  public:
-  explicit PersistenceDelegate(TabRestoreServiceClient* client);
+  PersistenceDelegate(TabRestoreServiceClient* client,
+                      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   PersistenceDelegate(const PersistenceDelegate&) = delete;
   PersistenceDelegate& operator=(const PersistenceDelegate&) = delete;
@@ -636,12 +637,15 @@ class TabRestoreServiceImpl::PersistenceDelegate
 };
 
 TabRestoreServiceImpl::PersistenceDelegate::PersistenceDelegate(
-    TabRestoreServiceClient* client)
+    TabRestoreServiceClient* client,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : client_(client),
       command_storage_manager_(std::make_unique<CommandStorageManager>(
           CommandStorageManager::SessionType::kTabRestore,
           client_->GetPathToSaveTo(),
-          this)),
+          this,
+          os_crypt_async,
+          CommandStorageManager::CreateDefaultBackendTaskRunner())),
       tab_restore_service_helper_(nullptr),
       entries_to_write_(0),
       entries_written_(0),
@@ -1539,16 +1543,18 @@ void TabRestoreServiceImpl::PersistenceDelegate::
 TabRestoreServiceImpl::TabRestoreServiceImpl(
     std::unique_ptr<TabRestoreServiceClient> client,
     PrefService* pref_service,
-    tab_restore::TimeFactory* time_factory)
+    tab_restore::TimeFactory* time_factory,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : client_(std::move(client)), helper_(this, client_.get(), time_factory) {
   if (pref_service) {
     pref_change_registrar_.Init(pref_service);
     pref_change_registrar_.Add(
         prefs::kSavingBrowserHistoryDisabled,
         base::BindRepeating(&TabRestoreServiceImpl::UpdatePersistenceDelegate,
-                            base::Unretained(this)));
+                            base::Unretained(this),
+                            base::Unretained(os_crypt_async)));
   }
-  UpdatePersistenceDelegate();
+  UpdatePersistenceDelegate(os_crypt_async);
 }
 
 TabRestoreServiceImpl::~TabRestoreServiceImpl() = default;
@@ -1654,7 +1660,8 @@ void TabRestoreServiceImpl::LoadTabsFromLastSession() {
   }
 }
 
-void TabRestoreServiceImpl::UpdatePersistenceDelegate() {
+void TabRestoreServiceImpl::UpdatePersistenceDelegate(
+    os_crypt_async::OSCryptAsync* os_crypt_async) {
   // When a persistence delegate has been created, it must be shut down and
   // deleted if a pref service is available and saving history is disabled.
   if (pref_change_registrar_.prefs() &&
@@ -1670,7 +1677,7 @@ void TabRestoreServiceImpl::UpdatePersistenceDelegate() {
     } else {
       // In case this is the first time Chrome is launched with saving history
       // disabled, we must make sure to clear the previously saved session.
-      PersistenceDelegate persistence_delegate(client_.get());
+      PersistenceDelegate persistence_delegate(client_.get(), os_crypt_async);
       persistence_delegate.DeleteLastSession();
     }
   } else if (!persistence_delegate_) {
@@ -1678,7 +1685,7 @@ void TabRestoreServiceImpl::UpdatePersistenceDelegate() {
     // there are no persistence delegate yet, one must be created and
     // initialized.
     persistence_delegate_ =
-        std::make_unique<PersistenceDelegate>(client_.get());
+        std::make_unique<PersistenceDelegate>(client_.get(), os_crypt_async);
     persistence_delegate_->set_tab_restore_service_helper(&helper_);
     helper_.SetHelperObserver(persistence_delegate_.get());
   }

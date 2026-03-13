@@ -18,7 +18,8 @@ std::unique_ptr<KeyedService> BuildTabRestoreService(ProfileIOS* profile) {
   return std::make_unique<sessions::TabRestoreServiceImpl>(
       std::make_unique<IOSChromeTabRestoreServiceClient>(
           profile->GetStatePath(), BrowserListFactory::GetForProfile(profile)),
-      profile->GetPrefs(), /*time_factory=*/nullptr);
+      profile->GetPrefs(), /*time_factory=*/nullptr,
+      /*os_crypt_async=*/nullptr);
 }
 
 }  // namespace

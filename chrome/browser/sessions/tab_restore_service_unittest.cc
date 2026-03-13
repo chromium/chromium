@@ -32,6 +32,7 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/common/pref_names.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
@@ -192,6 +193,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
         time_factory_(nullptr),
         window_id_(SessionID::FromSerializedValue(1)),
         tab_id_(SessionID::FromSerializedValue(2)) {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
     user_agent_override_.ua_metadata_override.emplace();
     user_agent_override_.ua_metadata_override->brand_version_list.emplace_back(
         "Chrome", "18");
@@ -252,7 +254,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   virtual void CreateService() {
     service_ = std::make_unique<sessions::TabRestoreServiceImpl>(
         std::make_unique<ChromeTabRestoreServiceClient>(profile()),
-        profile()->GetPrefs(), time_factory_);
+        profile()->GetPrefs(), time_factory_, os_crypt_async_.get());
   }
 
   void RecreateService() {
@@ -332,6 +334,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<sessions::LiveTab> live_tab_;
   std::unique_ptr<sessions::TabRestoreServiceImpl> service_;
   raw_ptr<TabRestoreTimeFactory, DanglingUntriaged> time_factory_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   SessionID window_id_;
   SessionID tab_id_;
 };
@@ -351,7 +354,8 @@ class TabRestoreServiceImplWithMockClientTest
         .WillByDefault(Return(profile()->GetPath()));
 
     service_ = std::make_unique<sessions::TabRestoreServiceImpl>(
-        std::move(service_client), profile()->GetPrefs(), time_factory_);
+        std::move(service_client), profile()->GetPrefs(), time_factory_,
+        os_crypt_async_.get());
   }
 
   raw_ptr<MockTabRestoreServiceClient, DanglingUntriaged>

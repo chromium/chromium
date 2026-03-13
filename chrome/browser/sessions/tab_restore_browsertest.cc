@@ -53,6 +53,8 @@
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
@@ -95,6 +97,7 @@ class TabRestoreTest : public InProcessBrowserTest {
     url2_ = chrome_test_utils::GetTestUrl(
         base::FilePath().AppendASCII("session_history"),
         base::FilePath().AppendASCII("bot2.html"));
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
   }
 
   TabRestoreTest(const TabRestoreTest&) = delete;
@@ -290,6 +293,8 @@ class TabRestoreTest : public InProcessBrowserTest {
 
   GURL url1_;
   GURL url2_;
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
  private:
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
@@ -672,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   // Create a tab entry with a group and add it to TabRestoreService directly.
   auto service = std::make_unique<sessions::TabRestoreServiceImpl>(
       std::make_unique<ChromeTabRestoreServiceClient>(app_browser->profile()),
-      app_browser->profile()->GetPrefs(), nullptr);
+      app_browser->profile()->GetPrefs(), nullptr, os_crypt_async_.get());
 
   tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
   std::unique_ptr<sessions::tab_restore::Tab> tab =

@@ -10,6 +10,8 @@
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
@@ -204,6 +206,7 @@ class RecentlyClosedTabsBridgeTest : public ChromeRenderViewHostTestHarness {
  protected:
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
   raw_ptr<recent_tabs::RecentlyClosedTabsBridge> bridge_ = nullptr;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -224,16 +227,22 @@ class RecentlyClosedTabsBridgeTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CreateService() {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
     // Override the TabRestoreServiceFactory to use a custom testing instance.
     TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating([](content::BrowserContext* context) {
-          Profile* profile = Profile::FromBrowserContext(context);
-          auto service = std::make_unique<sessions::TabRestoreServiceImpl>(
-              std::make_unique<ChromeTabRestoreServiceClient>(profile),
-              profile->GetPrefs(), nullptr);
+        profile(),
+        base::BindRepeating(
+            [](os_crypt_async::OSCryptAsync* os_crypt_async,
+               content::BrowserContext* context) {
+              Profile* profile = Profile::FromBrowserContext(context);
+              auto service = std::make_unique<sessions::TabRestoreServiceImpl>(
+                  std::make_unique<ChromeTabRestoreServiceClient>(profile),
+                  profile->GetPrefs(), nullptr, os_crypt_async);
 
-          return std::unique_ptr<KeyedService>(std::move(service));
-        }));
+              return std::unique_ptr<KeyedService>(std::move(service));
+            },
+            os_crypt_async_.get()));
 
     // Retrieve and cache the raw pointer for use in the test class.
     tab_restore_service_ = TabRestoreServiceFactory::GetForProfile(profile());

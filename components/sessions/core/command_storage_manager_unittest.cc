@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/sessions/core/session_command.h"
@@ -20,13 +22,19 @@ using SessionType = CommandStorageManager::SessionType;
 
 class CommandStorageManagerTest : public testing::Test {
  protected:
-  // testing::TestWithParam:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     path_ = temp_dir_.GetPath();
+    backend_task_runner_ =
+        CommandStorageManager::CreateDefaultBackendTaskRunner();
+#if !BUILDFLAG(IS_IOS)
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
+#endif
   }
 
   base::FilePath path_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
+  scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -52,7 +60,8 @@ class TestCommandStorageManagerDelegate : public CommandStorageManagerDelegate {
 
 TEST_F(CommandStorageManagerTest, AppendCommandsAndSave) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});
@@ -68,7 +77,8 @@ TEST_F(CommandStorageManagerTest, AppendCommandsAndSave) {
 
 TEST_F(CommandStorageManagerTest, ScheduleCommandsAndSave) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.ScheduleCommand({std::make_unique<SessionCommand>(101, 0)});
   manager.ScheduleCommand({std::make_unique<SessionCommand>(102, 0)});
@@ -86,7 +96,8 @@ TEST_F(CommandStorageManagerTest, ScheduleCommandsAndSave) {
 TEST_F(CommandStorageManagerTest, HasPendingSave) {
   TestCommandStorageManagerDelegate delegate;
   delegate.set_delayed_save(true);
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   EXPECT_FALSE(manager.HasPendingSave());
 
@@ -102,7 +113,8 @@ TEST_F(CommandStorageManagerTest, GetLastSessionCommands) {
   TestCommandStorageManagerDelegate delegate;
   {  // Setup by writing commands to the backend.
     CommandStorageManager manager(SessionType::kSessionRestore, path_,
-                                  &delegate);
+                                  &delegate, os_crypt_async_.get(),
+                                  backend_task_runner_);
     CommandStorageManagerTestHelper test_helper(&manager);
     manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
     manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});
@@ -111,7 +123,8 @@ TEST_F(CommandStorageManagerTest, GetLastSessionCommands) {
   }
 
   // Read the commands from the backend (using a new manager).
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   std::vector<std::unique_ptr<SessionCommand>> commands;
   bool error = false;
@@ -132,7 +145,8 @@ TEST_F(CommandStorageManagerTest, GetLastSessionCommands) {
 
 TEST_F(CommandStorageManagerTest, OnErrorWritingSessionCommands) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   test_helper.ForceAppendCommandsToFailForTesting();
 
@@ -146,7 +160,8 @@ TEST_F(CommandStorageManagerTest, OnErrorWritingSessionCommands) {
 TEST_F(CommandStorageManagerTest, MoveCurrentSessionToLastSession) {
   TestCommandStorageManagerDelegate delegate;
   // Setup by writing commands to the backend.
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});
@@ -174,7 +189,8 @@ TEST_F(CommandStorageManagerTest, MoveCurrentSessionToLastSession) {
 
 TEST_F(CommandStorageManagerTest, ClearPendingCommands) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});
@@ -189,7 +205,8 @@ TEST_F(CommandStorageManagerTest, ClearPendingCommands) {
 
 TEST_F(CommandStorageManagerTest, EraseCommand) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.ScheduleCommand(std::make_unique<SessionCommand>(101, 0));
   manager.ScheduleCommand(std::make_unique<SessionCommand>(102, 0));
@@ -206,7 +223,8 @@ TEST_F(CommandStorageManagerTest, EraseCommand) {
 
 TEST_F(CommandStorageManagerTest, SwapCommand) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.ScheduleCommand(std::make_unique<SessionCommand>(101, 0));
   manager.ScheduleCommand(std::make_unique<SessionCommand>(102, 0));
@@ -226,7 +244,8 @@ TEST_F(CommandStorageManagerTest, SwapCommand) {
 TEST_F(CommandStorageManagerTest, SaveTwiceWithReset) {
   TestCommandStorageManagerDelegate delegate;
   // Setup by writing commands to the backend.
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});
@@ -264,7 +283,8 @@ TEST_F(CommandStorageManagerTest, SaveTwiceWithReset) {
 TEST_F(CommandStorageManagerTest, SaveTwiceWithoutReset) {
   TestCommandStorageManagerDelegate delegate;
   // Setup by writing commands to the backend.
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});
@@ -304,7 +324,8 @@ TEST_F(CommandStorageManagerTest, SaveTwiceWithoutReset) {
 TEST_F(CommandStorageManagerTest, DeleteLastSession) {
   TestCommandStorageManagerDelegate delegate;
   // Setup by writing commands to the backend.
-  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate,
+                                os_crypt_async_.get(), backend_task_runner_);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(101, 0)});
   manager.AppendRebuildCommand({std::make_unique<SessionCommand>(102, 0)});

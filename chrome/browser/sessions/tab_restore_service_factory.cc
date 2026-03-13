@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
@@ -21,7 +22,8 @@ std::unique_ptr<KeyedService> BuildTemplateService(
   DCHECK(!profile->IsOffTheRecord());
   auto client = std::make_unique<ChromeTabRestoreServiceClient>(profile);
   return std::make_unique<sessions::TabRestoreServiceImpl>(
-      std::move(client), profile->GetPrefs(), nullptr);
+      std::move(client), profile->GetPrefs(), /*time_factory=*/nullptr,
+      g_browser_process->os_crypt_async());
 }
 
 }  // namespace

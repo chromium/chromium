@@ -44,6 +44,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -191,6 +192,17 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
         page_.BindAndGetRemote(), web_ui(), webui_controller_.get());
     EXPECT_CALL(page_, HostWindowChanged()).Times(1);
 
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(true);
+
+    TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService,
+                            os_crypt_async_.get()));
+    TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+        profile2(),
+        base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService,
+                            os_crypt_async_.get()));
+
     // Wait for the TabGroupSyncService to properly initialize before making any
     // changes to tab groups.
     WaitForTabGroupSyncServiceInitialized();
@@ -236,11 +248,12 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   bool IsTimerRunning() { return handler_->mock_debounce_timer()->IsRunning(); }
 
   static std::unique_ptr<KeyedService> GetTabRestoreService(
+      os_crypt_async::OSCryptAsync* os_crypt_async,
       content::BrowserContext* browser_context) {
     return std::make_unique<sessions::TabRestoreServiceImpl>(
         std::make_unique<ChromeTabRestoreServiceClient>(
             Profile::FromBrowserContext(browser_context)),
-        nullptr, nullptr);
+        nullptr, nullptr, os_crypt_async);
   }
 
   void WaitForTabGroupSyncServiceInitialized() {
@@ -275,6 +288,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   testing::StrictMock<MockPage> page_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
  private:
   std::unique_ptr<Browser> CreateTestBrowser(Profile* profile, bool popup) {
@@ -418,10 +432,6 @@ TEST_F(TabSearchPageHandlerTest, TabActivationChangedByInteraction) {
 TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
-
   // Add tabs to a browser.
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
@@ -514,10 +524,6 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
-
   // Add tabs to a browser.
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
@@ -571,10 +577,6 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
-
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
 
   // Add tabs to browser windows.
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
@@ -729,9 +731,6 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
   AddTabWithTitle(browser2(), GURL(kTabUrl3), kTabName3);
@@ -758,9 +757,6 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
 }
 
 TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
 
@@ -797,10 +793,6 @@ TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabsHaveNoRepeatedURLEntry) {
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
-
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   browser1()->tab_strip_model()->CloseAllTabs();
@@ -821,10 +813,6 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabsHaveNoRepeatedURLEntry) {
 TEST_F(TabSearchPageHandlerTest,
        RecentlyClosedTabGroupsHaveNoRepeatedURLEntries) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
-
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
 
   // Add tabs to a browser.
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
@@ -862,10 +850,6 @@ TEST_F(TabSearchPageHandlerTest,
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
-
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
 
@@ -889,10 +873,6 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
-
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
 
@@ -989,9 +969,6 @@ TEST_F(TabSearchPageHandlerTest, TabSearchUsedPref) {
 
   // OpenRecentlyClosedEntry should set the pref.
   // We need to add an entry to the tab restore service first.
-  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
-      profile(),
-      base::BindRepeating(&TabSearchPageHandlerTest::GetTabRestoreService));
   AddTabWithTitle(browser1(), GURL(kTabUrl3), kTabName3);
   const int32_t tab_id3 =
       browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();

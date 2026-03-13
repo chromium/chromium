@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_manager_delegate.h"
 #include "components/sessions/core/session_command.h"
@@ -47,6 +48,7 @@ CommandStorageManager::CommandStorageManager(
     SessionType type,
     const base::FilePath& path,
     CommandStorageManagerDelegate* delegate,
+    os_crypt_async::OSCryptAsync* os_crypt_async,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : backend_(base::MakeRefCounted<CommandStorageBackend>(
           backend_task_runner ? backend_task_runner
@@ -54,7 +56,14 @@ CommandStorageManager::CommandStorageManager(
           path,
           type)),
       delegate_(delegate),
-      backend_task_runner_(backend_->owning_task_runner()) {}
+      backend_task_runner_(backend_->owning_task_runner()) {
+#if BUILDFLAG(IS_IOS)
+  CHECK(!os_crypt_async);
+#else
+  CHECK(os_crypt_async);
+#endif
+  // TODO(crbug.com/479420496): Use os_crypt_async to encrypt commands.
+}
 
 CommandStorageManager::~CommandStorageManager() = default;
 

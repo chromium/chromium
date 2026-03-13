@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/sessions/core/sessions_export.h"
 
 namespace base {
@@ -55,7 +56,8 @@ class SESSIONS_EXPORT CommandStorageManager {
       SessionType type,
       const base::FilePath& path,
       CommandStorageManagerDelegate* delegate,
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner = nullptr);
+      os_crypt_async::OSCryptAsync* os_crypt_async,
+      scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
   CommandStorageManager(const CommandStorageManager&) = delete;
   CommandStorageManager& operator=(const CommandStorageManager&) = delete;
   virtual ~CommandStorageManager();
