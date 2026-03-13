@@ -25,7 +25,7 @@ import Combine
 
   /// The menu to be displayed as a submenu for this action. If this is set,
   /// the menu will be presented when the action is tapped.
-  @Published public var menu: UIMenu? = nil
+  @Published public var menu: UIMenuElement? = nil
 
   /// The uniquely-identifying `overflow_menu::ActionType` of the action,
   /// stored as an int because Swift does not yet support C++ enum variables.
