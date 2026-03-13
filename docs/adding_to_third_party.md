@@ -308,6 +308,10 @@ Updated automatically by a service e.g. Skia Autoroller, Copybara.
 
 No exception required.
 
+Please refer to
+[https://chromium.googlesource.com/chromium/src/+/main/docs/managing-third-party/](docs/managing-third-party)
+for automation options and usage guide.
+
 ### Manual
 
 Updated manually by OWNERS e.g., using `roll_deps`.
@@ -333,10 +337,22 @@ has diverged from the upstream, and is no longer updatable.
 > coverage is optimal.
 ### Autoroll Exceptions
 
-If a dependency can't be autorolled, it needs an exception. OWNERS
-should file a bug using the template in
-[`Chromium > ThirdParty > Autoroll Exceptions`](https://issues.chromium.org/issues/new?component=1801247&template=2135097).
-This component has auto-assignment and will help you track the exception.
+You can request your dependency to be exempted from autorolling. You MUST
+demonstrate a strong technical need for doing so.
+
+For example, the following justifications ARE NOT sufficient for granting an
+exemption:
+
+* The dependency is test-only
+* The dependency isn't shipped
+
+The exemption is evaluated on a case-by-case basis by Chrome ATLs and Chrome's
+third-party supply chain security team.
+
+To request an exemption, file a bug in
+[Chromium > ThirdParty > Autoroll Exceptions](https://issues.chromium.org/issues/new?component=1801247&template=2135097)
+and explain your reasons.
+
 
 ### Transitive Dependencies
 If a child dependency is rolled with a parent, it should specify an
