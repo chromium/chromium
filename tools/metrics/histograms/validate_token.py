@@ -49,7 +49,7 @@ def ValidateTokenInFile(xml_path: str) -> bool:
   return has_token_error
 
 
-def main():
+def main() -> None:
   """Checks that the histograms at given path use variants defined in the file.
 
   Args:

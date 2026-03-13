@@ -215,7 +215,7 @@ class ValidatorImplTemplate:
 
   def _stamp_file(self, file_info) -> str:
     event_code = []
-    project_event_maps = []
+    project_event_maps: list[str] = []
     project_code = []
 
     for project in self.projects:

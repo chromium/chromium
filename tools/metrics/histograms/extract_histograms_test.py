@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import logging
-from parameterized import parameterized  # pylint: disable=import-error
+from parameterized import parameterized  # type: ignore # pylint: disable=import-error
 import unittest
 import xml.dom.minidom
 

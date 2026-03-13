@@ -40,7 +40,7 @@ def CheckNamespaces(xml_paths: List[str]):
   Args:
     xml_paths: A list of paths to the xml files to validate.
   """
-  namespaces = {}
+  namespaces: dict[str, str] = {}
   has_errors = False
   for path in xml_paths:
     tree = xml.dom.minidom.parse(path)

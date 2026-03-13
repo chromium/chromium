@@ -12,7 +12,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from xml.dom import minidom
 
 import setup_modules
@@ -105,6 +105,11 @@ class Token(object):
     key: token key.
   """
 
+  key: str
+  variants_name: Optional[str]
+  variants: List[Variant]
+  implicit: bool
+
   def __init__(self, key: str):
     self.key = key
     self.variants_name = None
@@ -114,7 +119,7 @@ class Token(object):
 
 def ExtractVariants(variants_node: minidom.Element) -> List[Variant]:
   """Extracts a list of variants from a <variants> or <token> node."""
-  variants = []
+  variants: List[Variant] = []
   for variant_node in xml_utils.IterElementsWithTag(variants_node, 'variant',
                                                     1):
     name = variant_node.getAttribute('name')
@@ -215,7 +220,7 @@ def ParseActionFile(
   """
   dom = minidom.parseString(file_content)
 
-  comment_nodes = []
+  comment_nodes: List[minidom.Node] = []
   # Get top-level comments. It is assumed that all comments are placed before
   # <actions> tag. Therefore the loop will stop if it encounters a non-comment
   # node.

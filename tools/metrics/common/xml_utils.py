@@ -57,7 +57,7 @@ def NormalizeString(text: str) -> str:
   return html.unescape(line)
 
 
-def NormalizeAllAttributeValues(node: DomTree) -> DomTree:
+def NormalizeAllAttributeValues(node: minidom.Node) -> minidom.Node:
   """Recursively normalizes all tag attribute values in the given tree.
 
   Args:
@@ -67,8 +67,10 @@ def NormalizeAllAttributeValues(node: DomTree) -> DomTree:
     The normalized minidom node.
   """
   if node.nodeType == _ELEMENT_NODE:
-    for a in node.attributes.keys():
-      node.attributes[a].value = NormalizeString(node.attributes[a].value)
+    # Casting because only Element nodes have attributes.
+    elem = typing.cast(minidom.Element, node)
+    for a in elem.attributes.keys():
+      elem.attributes[a].value = NormalizeString(elem.attributes[a].value)
 
   for c in node.childNodes:
     NormalizeAllAttributeValues(c)
@@ -125,7 +127,7 @@ def GetTextFromChildNodes(node: DomTree) -> str:
   return ''.join(text_parts).strip()
 
 
-def IterElementsWithTag(root: minidom.Element,
+def IterElementsWithTag(root: minidom.Node,
                         tag: str,
                         depth: int = -1) -> Iterator[minidom.Element]:
   """Iterates over DOM tree and yields elements matching tag name.
@@ -145,8 +147,9 @@ def IterElementsWithTag(root: minidom.Element,
   Yields:
     xml.dom.minidom.Node: Element matching criteria.
   """
-  if depth == 0 and root.nodeType == _ELEMENT_NODE and root.tagName == tag:
-    yield root
+  if depth == 0 and root.nodeType == _ELEMENT_NODE and typing.cast(
+      minidom.Element, root).tagName == tag:
+    yield typing.cast(minidom.Element, root)
     return
 
   had_tag = False
@@ -154,9 +157,10 @@ def IterElementsWithTag(root: minidom.Element,
   skipped = 0
 
   for child in root.childNodes:
-    if child.nodeType == _ELEMENT_NODE and child.tagName == tag:
+    if child.nodeType == _ELEMENT_NODE and typing.cast(minidom.Element,
+                                                       child).tagName == tag:
       had_tag = True
-      yield child
+      yield typing.cast(minidom.Element, child)
     else:
       skipped += 1
 

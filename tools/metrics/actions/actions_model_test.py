@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from parameterized import parameterized
+from parameterized import parameterized  # type: ignore
 import unittest
 import xml.dom.minidom
 

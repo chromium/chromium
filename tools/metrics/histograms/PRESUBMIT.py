@@ -50,8 +50,8 @@ _CACHE_DIR_PATH = os.path.join(tempfile.gettempdir(),
                                'histograms_presubmit_cache')
 
 
-def _RunCheckWithCache(check_method: Callable[[Type, Type, Any], List[Any]],
-                       check_id: int, input_api: type, output_api: type,
+def _RunCheckWithCache(check_method: Callable[[Any, Any, Any], List[Any]],
+                       check_id: int, input_api: Any, output_api: Any,
                        cache_file_path: str, *args, **kwargs):
   """Runs a check method with caching support.
 
@@ -114,7 +114,7 @@ def GetTokenErrors(input_api, output_api, cwd, rel_path, results):
     results.append(output_api.PresubmitError(error_msg))
 
 
-def GetValidateHistogramsError(input_api: Type, output_api: Type, cwd: str,
+def GetValidateHistogramsError(input_api: Any, output_api: Any, cwd: str,
                                xml_paths_override: List[str],
                                results: List[Any]):
   """Validates histograms format using validate_format.py tool.
@@ -149,8 +149,8 @@ def GetValidateHistogramsError(input_api: Type, output_api: Type, cwd: str,
     results.append(output_api.PresubmitError(error_msg))
 
 
-def _GetValidateHistogramsIndexError(input_api: Type, output_api: Type,
-                                     cwd: str, results: List[Any]):
+def _GetValidateHistogramsIndexError(input_api: Any, output_api: Any, cwd: str,
+                                     results: List[Any]):
   """Validates if index file is up-to-date with current state of the tree using
   validate_histograms_index.py tool.
 

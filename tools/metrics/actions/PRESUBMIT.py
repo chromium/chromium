@@ -112,7 +112,7 @@ def _CheckForHashConflicts(actions_xml_path: str, input_api: Any,
   actions_dict, _, _ = action_utils.ParseActionFile(data)
   expanded_actions = action_utils.CreateActionsFromVariants(actions_dict)
 
-  name_by_hash = {}
+  name_by_hash: dict[int, str] = {}
   errors = []
 
   for action_name in expanded_actions.keys():

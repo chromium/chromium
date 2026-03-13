@@ -13,7 +13,7 @@ from xml.dom import minidom
 
 import setup_modules
 
-import chromium_src.tools.metrics.common.path_util
+import chromium_src.tools.metrics.common.path_util as path_util
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.merge_xml as merge_xml

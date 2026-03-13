@@ -21,6 +21,7 @@ import re
 import struct
 import subprocess
 import sys
+from typing import Container, Iterable
 
 import setup_modules
 
@@ -344,7 +345,7 @@ def _read_chromium_histograms() -> dict[str, str]:
 
 
 def _find_histograms(grep_expression: str, regex: re.Pattern,
-                     all_suffixes: list[str], all_others: list[str],
+                     all_suffixes: Container[str], all_others: Container[str],
                      require_literals: bool) -> dict[str, str]:
   """Searches the Chromium source for histogram names.
 
@@ -481,7 +482,7 @@ def _cast_to_int32(n):
     return n
 
 
-def _output_csv(unmapped_histograms: list[str],
+def _output_csv(unmapped_histograms: Iterable[str],
                 location_map: dict[str, str]) -> None:
   for histogram in sorted(unmapped_histograms):
     parts = location_map[histogram].split(':')
@@ -490,8 +491,9 @@ def _output_csv(unmapped_histograms: list[str],
     print('%s,%s,%s,%s' %
           (filename, line_number, histogram, _hash_histogram_name(histogram)))
 
-def _output_log(unmapped_histograms: list[str], location_map: dict[str, str],
-                verbose: bool) -> None:
+
+def _output_log(unmapped_histograms: Iterable[str],
+                location_map: dict[str, str], verbose: bool) -> None:
   if not unmapped_histograms:
     logging.info('Success!  No unmapped histograms found.')
     return

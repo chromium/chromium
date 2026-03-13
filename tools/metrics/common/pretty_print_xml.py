@@ -15,8 +15,8 @@ import textwrap
 import collections
 
 from abc import abstractmethod
-from typing import (Any, Iterable, Mapping, Sequence, Protocol, List, Tuple,
-                    Optional, OrderedDict)
+from typing import (Any, Iterable, Iterator, Mapping, Sequence, Protocol, List,
+                    Tuple, Optional, OrderedDict, cast)
 from xml.dom import minidom
 
 import xml.etree.ElementTree as ET
@@ -132,7 +132,7 @@ class _CommentsTree:
   def __lt__(self, other: '_CommentsTree') -> bool:
     return self.GetSortKey() < other.GetSortKey()
 
-  def __iter__(self) -> Iterable[ET.Element]:
+  def __iter__(self) -> Iterator[ET.Element]:
     """Returns iterator over the values in the comments tree in the preorder
     traversal.
     """
@@ -233,7 +233,7 @@ def SplitParagraphs(text):
 
 def _NodeTextStartsWith(node: ET.Element, text: str) -> bool:
   """Returns whether the given node's text starts with the given text."""
-  return node.text and node.text.strip().lower().startswith(text.lower())
+  return bool(node.text and node.text.strip().lower().startswith(text.lower()))
 
 
 def _IsIFTTTBlockStart(node: ET.Element) -> bool:
@@ -275,7 +275,7 @@ def _CalculateIFTTTCommentsLevels(
     """
   levels = {}
   id_generator = itertools.count()
-  curr_id = (next(id_generator), )
+  curr_id: LevelIDsType = (next(id_generator), )
   for node in _IterNodes(root):
     if _IsIFTTTBlockStart(node):
       curr_id = curr_id + (next(id_generator), )
@@ -325,7 +325,7 @@ def _CreateCommentsTree(
 
 def _SortSubnodesByLevelIds(
     parent_node: ET.Element,
-    subnodes_map: OrderedDict[ET.Element, SortKey],
+    subnodes_map: Mapping[ET.Element, SortKey],
     level_ids: Mapping[ET.Element, LevelIDsType],
 ) -> Iterable[ET.Element]:
   """Sorts the subnodes of the given parent node by the level ids in the IFTTT
@@ -418,7 +418,8 @@ class XmlStyle(object):
         subtags[subtag] = (index, key_function)
 
       # Map from the subnode to its sort key.
-      subnodes_map: OrderedDict[ET.Element, SortKey] = collections.OrderedDict()
+      subnodes_map: OrderedDict[ET.Element,
+                                Optional[SortKey]] = collections.OrderedDict()
       # List of nodes whose sort key has not been found yet (their sort_key
       # will be set when the first suitable node is found).
       pending_nodes: List[ET.Element] = []
@@ -448,7 +449,9 @@ class XmlStyle(object):
         subnodes_map[pending_node] = (_DEFAULT_END_NODE_PRIORITY, -1)
 
       # Sort the subnode list.
-      subnodes = _SortSubnodesByLevelIds(node, subnodes_map, level_ids)
+      # After the above loops, all keys in subnodes_map are non-None.
+      subnodes = _SortSubnodesByLevelIds(
+          node, cast(Mapping[ET.Element, SortKey], subnodes_map), level_ids)
 
       # Remove the existing nodes
       for child in list(node):

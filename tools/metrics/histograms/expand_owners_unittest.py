@@ -4,7 +4,7 @@
 
 import unittest
 
-import mock
+import mock  # type: ignore
 import os
 import shutil
 import tempfile
