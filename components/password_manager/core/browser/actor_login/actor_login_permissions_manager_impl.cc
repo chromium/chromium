@@ -17,10 +17,9 @@
 namespace actor_login {
 
 namespace {
-void MergePermissions(
+base::flat_set<password_manager::ActorLoginPermission> MergePermissions(
     const base::flat_set<password_manager::ActorLoginPermission>&
         password_permissions,
-    ActorLoginPermissionsManager::GetAllPermissionsResult callback,
     std::vector<FederatedPermission> federated_permissions) {
   std::vector<password_manager::ActorLoginPermission> merged_permissions(
       password_permissions.begin(), password_permissions.end());
@@ -56,9 +55,8 @@ void MergePermissions(
   }
 
   // TODO(crbug.com/486089293): Clean permission username conflicts.
-  std::move(callback).Run(
-      base::flat_set<password_manager::ActorLoginPermission>(
-          std::move(merged_permissions)));
+  return base::flat_set<password_manager::ActorLoginPermission>(
+      std::move(merged_permissions));
 }
 }  // namespace
 
@@ -100,9 +98,13 @@ void ActorLoginPermissionsManagerImpl::GetAllPermissions(
   base::flat_set<password_manager::ActorLoginPermission>
       saved_passwords_permissions =
           presenter_.GetActorLoginPermissions(sync_service);
+  // The service is constructed via a factory that returns a nullptr for
+  // incognito and guest profiles. The settings page is not accessible for those
+  // profiles, so we can assert that the service is valid.
+  CHECK(actor_login_permission_service_);
   actor_login_permission_service_->ListAllPermissions(
-      base::BindOnce(&MergePermissions, std::move(saved_passwords_permissions),
-                     std::move(callback)));
+      base::BindOnce(&MergePermissions, std::move(saved_passwords_permissions))
+          .Then(std::move(callback)));
 }
 
 void ActorLoginPermissionsManagerImpl::OnSavedPasswordsChanged(
