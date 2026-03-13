@@ -40,7 +40,7 @@ class InputStateModelTest : public testing::Test {
         static_cast<int>(
             contextual_search::SearchContentSharingSettingsValue::kEnabled));
     input_state_model_ = std::make_unique<InputStateModel>(
-        session_handle_, config_, /*is_off_the_record=*/false);
+        session_handle_, config_, active_url_, /*is_off_the_record=*/false);
     input_state_model_->SetPrefService(&pref_service_);
   }
 
@@ -50,6 +50,7 @@ class InputStateModelTest : public testing::Test {
   MockContextualSearchSessionHandle session_handle_;
   std::unique_ptr<MockContextualSearchContextController> mock_controller_;
   omnibox::SearchboxConfig config_;
+  GURL active_url_;
   InputState state_;
   const std::vector<const contextual_search::FileInfo*> empty_file_info_list_;
 };
@@ -79,7 +80,7 @@ TEST_F(InputStateModelTest,
       omnibox::InputType::INPUT_TYPE_LENS_FILE);
 
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config, /*is_off_the_record=*/false);
+      session_handle_, config, active_url_, /*is_off_the_record=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   EXPECT_THAT(state.allowed_input_types,
@@ -116,7 +117,7 @@ TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
 
   // Initialize Model.
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config, /*is_off_the_record=*/false);
+      session_handle_, config, active_url_, /*is_off_the_record=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   // Verify Initialization Logic.
@@ -125,6 +126,50 @@ TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
 
   // Verify: Even though Regular is active, Pro should remain enabled.
   EXPECT_TRUE(state.disabled_models.empty());
+}
+
+TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
+  omnibox::SearchboxConfig config;
+
+  auto* regular_config = config.add_model_configs();
+  regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  auto* reg_param = regular_config->add_aim_url_params();
+  reg_param->set_param_key("abc");
+  reg_param->set_param_value("1");
+
+  auto* pro_config = config.add_model_configs();
+  pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  pro_config->mutable_rule()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  auto* pro_param = pro_config->add_aim_url_params();
+  pro_param->set_param_key("xyz");
+  pro_param->set_param_value("1");
+
+  GURL regular_url("https://example.com/?abc=1");
+  auto state_model_regular = std::make_unique<InputStateModel>(
+      session_handle_, config, regular_url, /*is_off_the_record=*/false);
+
+  EXPECT_EQ(state_model_regular->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  GURL pro_url("https://example.com/?xyz=1");
+  auto state_model_pro = std::make_unique<InputStateModel>(
+      session_handle_, config, pro_url, /*is_off_the_record=*/false);
+
+  EXPECT_EQ(state_model_pro->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+
+  GURL unknown_url("https://example.com/?qwe=1");
+  auto state_model_unknown = std::make_unique<InputStateModel>(
+      session_handle_, config, unknown_url, /*is_off_the_record=*/false);
+
+  // Fallback to the default model which is the first one in the list.
+  EXPECT_EQ(state_model_unknown->get_state_for_testing().active_model,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
 }
 
 TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
@@ -160,7 +205,7 @@ TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
 
   // 3. Initialize the model.
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config, /*is_off_the_record=*/false);
+      session_handle_, config, active_url_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   const auto& state = input_state_model_->get_state_for_testing();
@@ -199,7 +244,7 @@ TEST_F(InputStateModelTest, ModelWithAllowAllToolsIsNotDisabled) {
   config.add_tool_configs()->set_tool(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config, /*is_off_the_record=*/false);
+      session_handle_, config, active_url_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // Select Deep Search tool.
@@ -239,7 +284,7 @@ TEST_F(InputStateModelTest, ModelWithAllowAllInputsIsNotDisabled) {
       omnibox::InputType::INPUT_TYPE_LENS_FILE);
 
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config, /*is_off_the_record=*/false);
+      session_handle_, config, active_url_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // Simulate adding a file.
@@ -433,7 +478,7 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
 
   // Recreate the model with the new config.
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config_, /*is_off_the_record=*/false);
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // No tool or model added.
@@ -549,7 +594,7 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   config_.mutable_rule_set()->set_max_total_inputs(2);
   // Recreate the model with the new config.
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config_, /*is_off_the_record=*/false);
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
@@ -637,7 +682,7 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithAllowAllInputs) {
 
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config_, /*is_off_the_record=*/false);
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
@@ -675,7 +720,7 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithSpecificInputs) {
 
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config_, /*is_off_the_record=*/false);
+      session_handle_, config_, active_url_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
@@ -752,7 +797,7 @@ TEST_F(InputStateModelTest, FiltersImageGenInIncognito) {
 
   // Initialize with is_off_the_record = true.
   input_state_model_ = std::make_unique<InputStateModel>(
-      session_handle_, config, /*is_off_the_record=*/true);
+      session_handle_, config, active_url_, /*is_off_the_record=*/true);
   const auto& state = input_state_model_->get_state_for_testing();
 
   // Verify that IMAGE_GEN is filtered out but DEEP_SEARCH remains.
@@ -769,7 +814,7 @@ TEST_F(InputStateModelTest,
   omnibox::SearchboxConfig config;
 
   auto local_model = std::make_unique<InputStateModel>(
-      *local_session, config, /*is_off_the_record=*/false);
+      *local_session, config, GURL(), /*is_off_the_record=*/false);
 
   local_session.reset();  // Destroy session.
 
@@ -791,7 +836,7 @@ TEST_F(InputStateModelTest,
       omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
 
   auto model_with_image = std::make_unique<InputStateModel>(
-      session_handle_, config, /*is_off_the_record=*/false);
+      session_handle_, config, active_url_, /*is_off_the_record=*/false);
   model_with_image->SetPrefService(&prefs);
 
   const auto& state = model_with_image->get_state_for_testing();

@@ -18,6 +18,7 @@
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 
+class GURL;
 class PrefService;
 namespace contextual_search {
 
@@ -38,6 +39,7 @@ class InputStateModel {
   explicit InputStateModel(
       contextual_search::ContextualSearchSessionHandle& session_handle,
       const SearchboxConfig& config,
+      const GURL& active_url,
       bool is_off_the_record);
   InputStateModel(
       const InputStateModel& other,

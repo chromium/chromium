@@ -11,13 +11,16 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/contextual_input.h"
 #include "components/prefs/pref_service.h"
+#include "net/base/url_util.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/rule_set.pb.h"
+#include "url/gurl.h"
 
 namespace contextual_search {
 
@@ -94,11 +97,49 @@ void MaybePopulateBrowserTabInputTypeRule(omnibox::SearchboxConfig* config) {
   }
 }
 
+std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
+    const GURL& active_url,
+    const std::vector<omnibox::ModelConfig>& model_configs,
+    const std::vector<omnibox::ModelMode>& allowed_models) {
+  if (!active_url.is_valid() || !active_url.has_query()) {
+    return std::nullopt;
+  }
+
+  std::optional<omnibox::ModelMode> active_model = std::nullopt;
+
+  for (const auto& model_config : model_configs) {
+    if (!std::ranges::contains(allowed_models, model_config.model())) {
+      continue;
+    }
+    if (model_config.aim_url_params().size() == 0) {
+      continue;
+    }
+    bool all_params_match = true;
+    for (const auto& url_param : model_config.aim_url_params()) {
+      std::string value;
+      bool found =
+          net::GetValueForKeyInQuery(active_url, url_param.param_key(), &value);
+      if (!found || value != url_param.param_value()) {
+        all_params_match = false;
+        break;
+      }
+    }
+    if (all_params_match) {
+      DCHECK(!active_model.has_value())
+          << "Multiple models matched URL parameters";
+      active_model = model_config.model();
+    }
+  }
+
+  return active_model;
+}
+
 }  // namespace
 
 InputStateModel::InputStateModel(
     contextual_search::ContextualSearchSessionHandle& session_handle,
     const SearchboxConfig& config,
+    const GURL& active_url,
     bool is_off_the_record)
     : session_handle_(session_handle.AsWeakPtr()),
       is_off_the_record_(is_off_the_record) {
@@ -179,8 +220,16 @@ InputStateModel::InputStateModel(
   }
 
   state_.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
-  // the initial model should be the first allowed model.
+  // the initial model should be the first allowed model, but can be
+  // overridden by parameters in the active web contents URL.
   state_.active_model = state_.GetDefaultModel();
+
+  if (auto parsed_model = GetActiveModelFromUrl(
+          active_url, state_.model_configs, state_.allowed_models);
+      parsed_model.has_value()) {
+    state_.active_model = *parsed_model;
+  }
+
   state_.image_gen_upload_active = false;
 
   updateDisabledState();

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -795,6 +795,42 @@ suite('NewTabPageComposeboxTest', () => {
     await microtasksFinished();
     assertDeepEquals((testProxy.element as any).inputState_, inputState);
   });
+
+  test('setDefaultModel uses activeModel from backend', async () => {
+    createComposeboxElement(testProxy);
+
+    const inputState = Object.assign({}, mockInputState, {
+      allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
+      activeModel: ModelMode.kGeminiPro,
+      modelConfigs: [
+        {
+          model: ModelMode.kGeminiRegular,
+          aimUrlParams: [],
+          menuLabel: 'Regular',
+          hintText: 'Hint Regular',
+        },
+        {
+          model: ModelMode.kGeminiPro,
+          aimUrlParams: [{paramKey: 'xyz', paramValue: '1'}],
+          menuLabel: 'Pro',
+          hintText: 'Hint Pro',
+        },
+      ],
+      modelSectionConfig: null,
+    });
+
+    testProxy.searchboxCallbackRouterRemote.onInputStateChanged(inputState);
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    testProxy.element.setDefaultModel();
+
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('setActiveModelMode'), 1);
+    const arg = testProxy.searchboxHandler.getArgs('setActiveModelMode')[0];
+    assertEquals(arg, ModelMode.kGeminiPro);
+  });
+
 
   test('recent tab chip click records user action', async () => {
     loadTimeData.overrideValues({composeboxSource: 'NewTabPage'});
