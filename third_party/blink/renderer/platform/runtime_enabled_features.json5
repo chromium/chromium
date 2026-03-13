@@ -1797,7 +1797,7 @@
     },
     {
       name: "CSSSupportsAtRuleFunction",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSSupportsForImportRules",
