@@ -1821,7 +1821,13 @@ WASAPIAudioInputStream::SetCommunicationsCategoryAndMaybeRawCaptureMode(
     // Processing Object (APO), driver, and hardware.
     // See https://crbug.com/1257662 for details on why we avoid using raw
     // capture mode on devices with more than eight input channels.
-    if (channels > 0 && channels <= media::kMaxConcurrentChannels) {
+    // While we support >8 channels for general audio processing (see
+    // `kMaxConcurrentChannels`), raw capture mode is intentionally capped at 8
+    // to preserve the previous behavior. Once we have fully integrated higher
+    // channel counts, we can reconsider upgrading this value to be inline with
+    // `kMaxConcurrentChannels`.
+    constexpr int kMaxRawCaptureChannels = 8;
+    if (channels > 0 && channels <= kMaxRawCaptureChannels) {
       audio_props.Options = AUDCLNT_STREAMOPTIONS_RAW;
     }
     // Use AUDCLNT_STREAMOPTIONS_NONE instead of AUDCLNT_STREAMOPTIONS_RAW if
