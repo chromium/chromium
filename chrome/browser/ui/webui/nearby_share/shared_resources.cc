@@ -6,12 +6,12 @@
 
 #include <string>
 
+#include "ash/constants/url_constants.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_resource_getter.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
@@ -150,10 +150,10 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
   data_source->AddLocalizedStrings(kLocalizedStrings);
 
   data_source->AddString("nearbyShareLearnMoreLink",
-                         chrome::kNearbyShareLearnMoreURL);
+                         ash::external_urls::kNearbyShareLearnMoreURL);
 
   data_source->AddString("nearbyShareManageContactsUrl",
-                         chrome::kNearbyShareManageContactsURL);
+                         ash::external_urls::kNearbyShareManageContactsURL);
 
   if (features::IsNameEnabled()) {
     static constexpr webui::LocalizedString kLocalizedPlaceholderStringPairs[] =

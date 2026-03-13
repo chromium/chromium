@@ -98,6 +98,13 @@ constexpr char kStringsJsPath[] = "strings.js";
 
 constexpr char kTerminaCreditsPath[] = "about_os_credits.html";
 
+// Source for chrome://os-credits. On some devices, this will be compressed.
+// Check both.
+constexpr char kChromeOSCreditsPath[] =
+    "/opt/google/chrome/resources/about_os_credits.html";
+constexpr char kChromeOSCreditsCompressedPath[] =
+    "/opt/google/chrome/resources/about_os_credits.html.gz";
+
 // Loads bundled terms of service contents (Eula, OEM Eula, Play Store Terms).
 // The online version of terms is fetched in OOBE screen javascript. This is
 // intentional because chrome://terms runs in a privileged webui context and
@@ -129,15 +136,15 @@ class ChromeOSTermsHandler
 
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    if (path_ == chrome::kOemEulaURLPath) {
+    if (path_ == ash::kChromeUITermsOemEulaURLPath) {
       // Load local OEM EULA from the disk.
       base::ThreadPool::PostTaskAndReply(
           FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&ChromeOSTermsHandler::LoadOemEulaFileAsync, this),
           base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
-    } else if (path_ == chrome::kArcTermsURLPath) {
+    } else if (path_ == ash::kChromeUITermsArcTermsURLPath) {
       LOG(WARNING) << "Could not load offline Play Store ToS.";
-    } else if (path_ == chrome::kArcPrivacyPolicyURLPath) {
+    } else if (path_ == ash::kChromeUITermsArcPrivacyPolicyURLPath) {
       LOG(WARNING) << "Could not load offline Play Store privacy policy.";
     } else {
       NOTREACHED();
@@ -230,10 +237,10 @@ class ChromeOSCreditsHandler
   // ResponseOnUIThread.
   void LoadCreditsFileAsync() {
     if (prefix_.empty()) {
-      prefix_ = base::FilePath(chrome::kChromeOSCreditsPath).DirName();
+      prefix_ = base::FilePath(kChromeOSCreditsPath).DirName();
     }
     base::FilePath credits =
-        prefix_.Append(base::FilePath(chrome::kChromeOSCreditsPath).BaseName());
+        prefix_.Append(base::FilePath(kChromeOSCreditsPath).BaseName());
     if (base::ReadFileToString(credits, &contents_)) {
       // Decompressed present; return.
       return;
@@ -241,7 +248,7 @@ class ChromeOSCreditsHandler
 
     // Decompressed not present; load compressed.
     base::FilePath compressed_credits = prefix_.Append(
-        base::FilePath(chrome::kChromeOSCreditsCompressedPath).BaseName());
+        base::FilePath(kChromeOSCreditsCompressedPath).BaseName());
     std::string compressed;
     if (!base::ReadFileToString(compressed_credits, &compressed)) {
       // File with credits not found, ResponseOnUIThread will load credits

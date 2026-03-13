@@ -37,6 +37,10 @@ inline constexpr char16_t kApnSettingsLearnMoreUrl[] =
 inline constexpr char16_t kAppParentalControlsLearnMoreUrl[] =
     u"https://support.google.com/chromebook?p=local_app_controls";
 
+// Help center URL for ARC ADB sideloading.
+inline constexpr char16_t kArcAdbSideloadingLearnMoreURL[] =
+    u"https://support.google.com/chromebook?p=develop_android_apps";
+
 // The URL for the "Learn more" link in the External storage preferences
 // settings.
 inline constexpr char16_t kArcExternalStorageLearnMoreURL[] =
@@ -175,13 +179,21 @@ inline constexpr char kLinuxExportImportHelpURL[] =
 inline constexpr char kLobsterLearnMoreURL[] =
     "https://support.google.com/chromebook?p=dugong2";
 
+// The URL for the "Learn more" link in the connected devices.
+inline constexpr char kMultiDeviceLearnMoreURL[] =
+    "https://support.google.com/chromebook/?p=multi_device";
+
 // The URL for the "Learn more" link for natural scrolling on ChromeOS.
 inline constexpr char kNaturalScrollHelpURL[] =
     "https://support.google.com/chromebook?p=simple_scrolling";
 
-// The URL for the "Learn more" link in the connected devices.
-inline constexpr char kMultiDeviceLearnMoreURL[] =
-    "https://support.google.com/chromebook/?p=multi_device";
+// The URL for the "Learn more" link for nearby share.
+inline constexpr char16_t kNearbyShareLearnMoreURL[] =
+    u"https://support.google.com/chromebook?p=nearby_share";
+
+// The URL for contacts management in Nearby Share feature.
+inline constexpr char16_t kNearbyShareManageContactsURL[] =
+    u"https://contacts.google.com";
 
 // Palette help link for Chrome.
 inline constexpr char kPaletteHelpURL[] =

@@ -36,6 +36,11 @@
 
 namespace {
 
+constexpr char kChromeOSCreditsPath[] =
+    "/opt/google/chrome/resources/about_os_credits.html";
+constexpr char kChromeOSCreditsCompressedPath[] =
+    "/opt/google/chrome/resources/about_os_credits.html.gz";
+
 class TestDataReceiver {
  public:
   TestDataReceiver() = default;
@@ -151,13 +156,14 @@ TEST_F(ChromeOSTermsTest, NoData) {
   ScopedBrowserLocale browser_locale("en-CA");
 
   TestDataReceiver terms_data_receiver;
-  StartRequest(chrome::kArcTermsURLPath, &terms_data_receiver);
+  StartRequest(ash::kChromeUITermsArcTermsURLPath, &terms_data_receiver);
 
   EXPECT_FALSE(terms_data_receiver.data_received());
   EXPECT_EQ("", terms_data_receiver.data());
 
   TestDataReceiver privacy_policy_data_receiver;
-  StartRequest(chrome::kArcPrivacyPolicyURLPath, &privacy_policy_data_receiver);
+  StartRequest(ash::kChromeUITermsArcPrivacyPolicyURLPath,
+               &privacy_policy_data_receiver);
 
   EXPECT_FALSE(privacy_policy_data_receiver.data_received());
   EXPECT_EQ("", privacy_policy_data_receiver.data());
@@ -182,10 +188,9 @@ class ChromeOSCreditsTest : public testing::Test {
   }
 
   bool CreateHtmlCredits() {
-    return base::WriteFile(
-        resources_dir_.GetPath().Append(
-            base::FilePath(chrome::kChromeOSCreditsPath).BaseName()),
-        kTestHtml);
+    return base::WriteFile(resources_dir_.GetPath().Append(
+                               base::FilePath(kChromeOSCreditsPath).BaseName()),
+                           kTestHtml);
   }
 
   bool CreateCompressedHtmlCredits() {
@@ -195,7 +200,7 @@ class ChromeOSCreditsTest : public testing::Test {
     }
     return base::WriteFile(
         resources_dir_.GetPath().Append(
-            base::FilePath(chrome::kChromeOSCreditsCompressedPath).BaseName()),
+            base::FilePath(kChromeOSCreditsCompressedPath).BaseName()),
         compressed);
   }
 

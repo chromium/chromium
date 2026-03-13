@@ -69,6 +69,11 @@ inline constexpr char kChromeUICryptohomeHost[] = "cryptohome";
 inline constexpr char kChromeUIDeviceEmulatorHost[] = "device-emulator";
 inline constexpr char kChromeUIDlpInternalsHost[] = "dlp-internals";
 inline constexpr char kChromeUIDriveInternalsHost[] = "drive-internals";
+
+// The URL for the help center article about redeeming Chromebook offers.
+inline constexpr char kChromeUIEchoLearnMoreURL[] =
+    "chrome://help-app/help/sub/3399709/id/2703646";
+
 inline constexpr char kChromeUIEmojiPickerHost[] = "emoji-picker";
 inline constexpr char kChromeUIEmojiPickerURL[] = "chrome://emoji-picker/";
 inline constexpr char kChromeUIEnterpriseReportingHost[] =
@@ -163,6 +168,17 @@ inline constexpr char kChromeUISmbCredentialsURL[] =
 inline constexpr char kChromeUISmbShareHost[] = "smb-share-dialog";
 inline constexpr char kChromeUISmbShareURL[] = "chrome://smb-share-dialog/";
 inline constexpr char kChromeUISysInternalsHost[] = "sys-internals";
+
+// The URL path to offline OEM EULA, under chrome://terms.
+inline constexpr char kChromeUITermsOemEulaURLPath[] = "oem";
+
+// The URL path to offline ARC++ Terms of Service under chrome://terms.
+inline constexpr char kChromeUITermsArcTermsURLPath[] = "arc/terms";
+
+// The URL path to offline ARC++ Privacy Policy under chrome://terms.
+inline constexpr char kChromeUITermsArcPrivacyPolicyURLPath[] =
+    "arc/privacy_policy";
+
 inline constexpr char kChromeUIUntrustedCroshHost[] = "crosh";
 inline constexpr char kChromeUIUntrustedCroshURL[] =
     "chrome-untrusted://crosh/";
