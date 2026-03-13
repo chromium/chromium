@@ -303,7 +303,8 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
   // a SiteInstanceGroup with nothing else in it.
   EXPECT_TRUE(data->current_frame_host()->GetLastCommittedURL().SchemeIs(
       url::kDataScheme));
-  EXPECT_FALSE(data_instance->GetSiteURL().SchemeIs(url::kDataScheme));
+  EXPECT_FALSE(
+      data_instance->GetSecurityPrincipal().SchemeIs(url::kDataScheme));
   EXPECT_TRUE(data_instance->GetSecurityPrincipal().IsSandboxed());
 
   RenderProcessHost* main_process = main_instance->GetProcess();

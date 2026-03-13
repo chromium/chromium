@@ -36,6 +36,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/models/menu_model.h"
@@ -119,7 +120,7 @@ content::WebUIController* GetWebUIController(
 }
 
 bool IsShowingErrorPage(content::WebContents* web_contents) {
-  return web_contents->GetSiteInstance()->GetSiteURL().SchemeIs(
+  return web_contents->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
       content::kChromeErrorScheme);
 }
 

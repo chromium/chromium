@@ -10,6 +10,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -95,8 +96,9 @@ bool ChromeContentBrowserClientWebUiPart::OverrideWebPreferencesAfterNavigation(
   }
 
   // Extensions are handled by ChromeContentBrowserClientExtensionsPart.
-  const GURL& site_url = main_frame_site.GetSiteURL();
-  if (site_url.SchemeIs(extensions::kExtensionScheme)) {
+  const content::SecurityPrincipal& security_principal =
+      main_frame_site.GetSecurityPrincipal();
+  if (security_principal.SchemeIs(extensions::kExtensionScheme)) {
     return false;
   }
 

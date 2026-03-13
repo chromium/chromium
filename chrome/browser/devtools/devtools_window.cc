@@ -84,6 +84,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -2147,12 +2148,13 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
     return;
   }
 
-  content::SiteInstance* site_instance =
-      inspected_web_contents->GetPrimaryMainFrame()->GetSiteInstance();
-  const GURL& site_url = site_instance->GetSiteURL();
-  if (site_url.SchemeIs(extensions::kExtensionScheme) ||
-      site_url.SchemeIs(content::kChromeDevToolsScheme) ||
-      site_url.SchemeIs(content::kChromeUIScheme)) {
+  const content::SecurityPrincipal& security_principal =
+      inspected_web_contents->GetPrimaryMainFrame()
+          ->GetSiteInstance()
+          ->GetSecurityPrincipal();
+  if (security_principal.SchemeIs(extensions::kExtensionScheme) ||
+      security_principal.SchemeIs(content::kChromeDevToolsScheme) ||
+      security_principal.SchemeIs(content::kChromeUIScheme)) {
     return;
   }
 

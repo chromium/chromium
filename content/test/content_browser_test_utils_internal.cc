@@ -425,7 +425,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
     // UnguessableToken. Make these deterministic for testing by using the
     // abbreviated letter for the site in the nonce. For example,
     // "data:nonce_A".
-    if (site_instance->GetSiteURL().SchemeIs(url::kDataScheme)) {
+    if (site_instance->GetSecurityPrincipal().SchemeIs(url::kDataScheme)) {
       description =
           base::StringPrintf("data:nonce_%s", legend_entry.first.c_str());
     }

@@ -455,6 +455,10 @@ const StoragePartitionConfig& SiteInfo::GetStoragePartitionConfig() const {
   return storage_partition_config_;
 }
 
+bool SiteInfo::SchemeIs(std::string_view scheme) const {
+  return site_url_.SchemeIs(scheme);
+}
+
 SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
     const IsolationContext& isolation_context) const {
   SiteInfo non_oac_site_info(*this);

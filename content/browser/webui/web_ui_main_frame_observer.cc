@@ -208,8 +208,6 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
 
   web_ui_->SetUpMojoInterfaceBroker();
 
-  GURL site_url =
-      web_ui_->GetRenderFrameHost()->GetSiteInstance()->GetSiteURL();
   GetContentClient()->browser()->LogWebUIUsage(web_ui_);
   MaybeEnableWebUIJavaScriptErrorReporting(navigation_handle);
 }

@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
@@ -307,9 +308,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
             newtab->GetController().GetLastCommittedEntry()->GetPageType());
   EXPECT_EQ(extension_url,
             newtab->GetPrimaryMainFrame()->GetLastCommittedURL());
-  EXPECT_FALSE(
-      newtab->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL().SchemeIs(
-          extensions::kExtensionScheme));
+  EXPECT_FALSE(newtab->GetPrimaryMainFrame()
+                   ->GetSiteInstance()
+                   ->GetSecurityPrincipal()
+                   .SchemeIs(extensions::kExtensionScheme));
 }
 
 // Test that navigating to an extension URL is allowed on chrome://.

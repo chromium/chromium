@@ -102,6 +102,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -1266,10 +1267,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   content::SiteInstance* extensions_instance =
       devtools_extension_devtools_page_rfh->GetSiteInstance();
 
-  EXPECT_TRUE(
-      devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
-  EXPECT_TRUE(
-      extensions_instance->GetSiteURL().SchemeIs(extensions::kExtensionScheme));
+  EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
+      content::kChromeDevToolsScheme));
+  EXPECT_TRUE(extensions_instance->GetSecurityPrincipal().SchemeIs(
+      extensions::kExtensionScheme));
 
   EXPECT_NE(devtools_instance, extensions_instance);
   EXPECT_EQ(extensions_instance,
@@ -1398,8 +1399,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       main_devtools_rfh->GetSiteInstance();
   content::SiteInstance* extensions_instance =
       devtools_extension_devtools_page_rfh->GetSiteInstance();
-  EXPECT_TRUE(
-      devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
+  EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
+      content::kChromeDevToolsScheme));
   EXPECT_NE(devtools_instance, extensions_instance);
   EXPECT_EQ(extensions_instance,
             devtools_extension_devtools_page_rfh->GetSiteInstance());
@@ -1481,8 +1482,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   content::SiteInstance* extensions_instance =
       devtools_extension_devtools_page_rfh->GetSiteInstance();
 
-  EXPECT_TRUE(
-      devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
+  EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
+      content::kChromeDevToolsScheme));
   EXPECT_NE(devtools_instance, extensions_instance);
   EXPECT_EQ(web_url.GetHost(),
             http_iframe_rfh->GetSiteInstance()->GetSiteURL().GetHost());
@@ -1555,8 +1556,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       main_devtools_rfh->GetSiteInstance();
   content::SiteInstance* extensions_instance =
       devtools_extension_devtools_page_rfh->GetSiteInstance();
-  EXPECT_TRUE(
-      devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
+  EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
+      content::kChromeDevToolsScheme));
   EXPECT_NE(devtools_instance, extensions_instance);
   EXPECT_EQ(extensions_instance,
             devtools_extension_panel_rfh->GetSiteInstance());
@@ -1646,8 +1647,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
       devtools_extension_a_devtools_rfh->GetSiteInstance();
   content::SiteInstance* extension_b_instance =
       devtools_extension_b_devtools_rfh->GetSiteInstance();
-  EXPECT_TRUE(
-      devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
+  EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
+      content::kChromeDevToolsScheme));
   EXPECT_NE(devtools_instance, extension_a_instance);
   EXPECT_NE(devtools_instance, extension_b_instance);
   EXPECT_NE(extension_a_instance, extension_b_instance);
@@ -1708,8 +1709,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
       main_devtools_rfh->GetSiteInstance();
   content::SiteInstance* extensions_instance =
       devtools_extension_devtools_page_rfh->GetSiteInstance();
-  EXPECT_TRUE(
-      devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
+  EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
+      content::kChromeDevToolsScheme));
   EXPECT_EQ(extensions_instance,
             devtools_extension_panel_rfh->GetSiteInstance());
   EXPECT_EQ(extensions_instance,
@@ -1753,8 +1754,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
   EXPECT_EQ(devtools_url, devtools_iframe_rfh->GetLastCommittedURL());
   content::SiteInstance* devtools_instance =
       main_devtools_rfh->GetSiteInstance();
-  EXPECT_TRUE(
-      devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
+  EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
+      content::kChromeDevToolsScheme));
   EXPECT_EQ(devtools_instance, devtools_iframe_rfh->GetSiteInstance());
 
   std::string message =

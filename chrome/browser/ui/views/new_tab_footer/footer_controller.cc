@@ -18,6 +18,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
@@ -177,7 +178,7 @@ bool NewTabFooterController::ContentsViewFooterCotroller::
   if (owner_->skip_error_page_check_for_testing_) {
     return false;
   }
-  return web_contents()->GetSiteInstance()->GetSiteURL().SchemeIs(
+  return web_contents()->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
       content::kChromeErrorScheme);
 }
 

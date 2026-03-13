@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/service_worker_version_base_info.h"
 #include "content/public/common/buildflags.h"
 #include "media/mojo/buildflags.h"
@@ -322,10 +323,12 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   chrome::internal::PopulateChromeWebUIFrameBinders(map, render_frame_host);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
-  if (!site.SchemeIs(extensions::kExtensionScheme))
+  if (!render_frame_host->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+          extensions::kExtensionScheme)) {
     return;
+  }
 
+  const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
   content::BrowserContext* browser_context =
       render_frame_host->GetProcess()->GetBrowserContext();
   auto* extension = extensions::ExtensionRegistry::Get(browser_context)

@@ -72,6 +72,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -218,15 +219,15 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
       content::SiteInstance::CreateForURL(context, isolated_url);
   EXPECT_TRUE(site_instance->RequiresDedicatedProcess());
   // Verify the isolated origin does not receive an NTP site URL scheme.
-  EXPECT_FALSE(
-      site_instance->GetSiteURL().SchemeIs(chrome::kChromeSearchScheme));
+  EXPECT_FALSE(site_instance->GetSecurityPrincipal().SchemeIs(
+      chrome::kChromeSearchScheme));
 
   // The site URL for the NTP URL should resolve to a chrome-search:// URL via
   // GetEffectiveURL(), even if the NTP URL matches an isolated origin.
   scoped_refptr<content::SiteInstance> ntp_site_instance =
       content::SiteInstance::CreateForURL(context, ntp_url);
-  EXPECT_TRUE(
-      ntp_site_instance->GetSiteURL().SchemeIs(chrome::kChromeSearchScheme));
+  EXPECT_TRUE(ntp_site_instance->GetSecurityPrincipal().SchemeIs(
+      chrome::kChromeSearchScheme));
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.

@@ -212,6 +212,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   bool IsSandboxed() const override;
   bool IsGuest() const override;
   const StoragePartitionConfig& GetStoragePartitionConfig() const override;
+  bool SchemeIs(std::string_view scheme) const override;
 
   // This function returns a new SiteInfo which is equivalent to the original,
   // except that its AgentClusterKey is made site-keyed if it had been created

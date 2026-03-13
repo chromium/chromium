@@ -829,7 +829,7 @@ bool ChromeContentBrowserClientExtensionsPart::
   // `extension` below, they are not unset when navigating a tab from an
   // extension page to a regular web page. We should clear extension settings in
   // this case.
-  if (!main_frame_site.GetSiteURL().SchemeIs(kExtensionScheme)) {
+  if (!main_frame_site.GetSecurityPrincipal().SchemeIs(kExtensionScheme)) {
     return false;
   }
 

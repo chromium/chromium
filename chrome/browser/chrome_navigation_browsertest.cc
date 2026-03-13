@@ -58,6 +58,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -865,10 +866,10 @@ IN_PROC_BROWSER_TEST_F(
   //    as the navigation initiator (and separate from the opener and the old
   //    popup SiteInstance).
   EXPECT_EQ(old_subframe_site_instance.get(), popup->GetSiteInstance());
-  EXPECT_NE(url::kAboutBlankURL,
-            popup->GetSiteInstance()->GetSiteURL().GetScheme());
-  EXPECT_NE(url::kDataScheme,
-            popup->GetSiteInstance()->GetSiteURL().GetScheme());
+  EXPECT_FALSE(popup->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+      url::kAboutBlankURL));
+  EXPECT_FALSE(popup->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+      url::kDataScheme));
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
@@ -1006,8 +1007,8 @@ IN_PROC_BROWSER_TEST_F(
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_EQ(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().GetScheme());
+    EXPECT_TRUE(popup->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+        url::kDataScheme));
 
     // Verify that full isolation results in a separate process for each
     // SiteInstance. Otherwise they share a process because none of the sites
@@ -1019,8 +1020,8 @@ IN_PROC_BROWSER_TEST_F(
   } else {
     EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
-    EXPECT_NE(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().GetScheme());
+    EXPECT_FALSE(popup->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
+        url::kDataScheme));
 
     EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
     EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
