@@ -132,7 +132,7 @@ public final class ViewEventSinkImpl implements ViewEventSink, ActivityStateObse
         if (mHasInputFocus != null && mHasInputFocus == hasInputFocus) return;
         mHasInputFocus = hasInputFocus;
 
-        if (mWebContents == null) {
+        if (mWebContents == null || mWebContents.isDestroyed()) {
             // CVC is on its way to destruction. The rest needs not running as all the states
             // will be discarded, or WebContentsUserData-based objects are not reachable
             // any more. Simply return here.
