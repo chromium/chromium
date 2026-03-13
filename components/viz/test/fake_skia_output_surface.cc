@@ -32,6 +32,7 @@
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/mock/GrMockBackendSurface.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
@@ -340,9 +341,9 @@ bool FakeSkiaOutputSurface::GetGrBackendTexture(
   GrMockTextureInfo mock_texture_info = GrMockTextureInfo(
       SkColorTypeToGrColorType(ToClosestSkColorType(image_context.format())),
       SkTextureCompressionType::kNone, ++next_id);
-  *backend_texture = GrBackendTexture(image_context.size().width(),
-                                      image_context.size().height(),
-                                      skgpu::Mipmapped::kNo, mock_texture_info);
+  *backend_texture = GrBackendTextures::MakeMock(
+      image_context.size().width(), image_context.size().height(),
+      skgpu::Mipmapped::kNo, mock_texture_info);
   return true;
 }
 
