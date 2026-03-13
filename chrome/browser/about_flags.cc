@@ -8951,8 +8951,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"prerender-activation-by-form-submission",
      flag_descriptions::kPrerenderActivationByFormSubmissionName,
-     flag_descriptions::kPrerenderActivationByFormSubmissiontDescription,
-     kOsAll,
+     flag_descriptions::kPrerenderActivationByFormSubmissionDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerenderActivationByFormSubmission)},
 
 #if BUILDFLAG(IS_CHROMEOS)

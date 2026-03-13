@@ -672,7 +672,7 @@ inline constexpr char kPrerenderUntilScriptDescription[] =
 
 inline constexpr char kPrerenderActivationByFormSubmissionName[] =
     "Prerender Activation By Form Submission";
-inline constexpr char kPrerenderActivationByFormSubmissiontDescription[] =
+inline constexpr char kPrerenderActivationByFormSubmissionDescription[] =
     "Allow Prerender activations by form submission.";
 
 inline constexpr char kBookmarkBarPrefetchName[] = "BookmarkBarPrefetch";
