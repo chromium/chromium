@@ -51,6 +51,8 @@ class MockBookmarkModelObserver : public BookmarkModelObserver {
 
   MOCK_METHOD(void, BookmarkNodeFaviconChanged, (const BookmarkNode*));
 
+  MOCK_METHOD(void, OnWillReorderBookmarkNode, (const BookmarkNode*));
+
   MOCK_METHOD(void, BookmarkNodeChildrenReordered, (const BookmarkNode*));
 
   MOCK_METHOD(void,
