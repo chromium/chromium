@@ -164,7 +164,7 @@ void PolicyOAuth2TokenFetcherImpl::StartFetchingRefreshToken() {
     failed_ = true;
     ForwardPolicyToken(
         std::string(),
-        GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+        GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
     return;
   }
 
@@ -209,7 +209,7 @@ void PolicyOAuth2TokenFetcherImpl::OnGetTokenSuccess(
   VLOG(1) << "OAuth2 access token (device management) fetching succeeded.";
   oauth2_access_token_ = token_response.access_token;
   ForwardPolicyToken(token_response.access_token,
-                     GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+                     GoogleServiceAuthError::AuthErrorNone());
 }
 
 void PolicyOAuth2TokenFetcherImpl::OnGetTokenFailure(
