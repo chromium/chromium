@@ -30,6 +30,7 @@ class QuickSettingsFooterPixelTest : public AshTestBase {
   }
 
   void TearDown() override {
+    footer_ = nullptr;
     AshTestBase::TearDown();
     chromeos::PowerManagerClient::Shutdown();
   }
@@ -48,14 +49,17 @@ class QuickSettingsFooterPixelTest : public AshTestBase {
         system_tray->bubble()->quick_settings_view()->footer_for_testing();
   }
 
-  void CloseBubble() { GetPrimaryUnifiedSystemTray()->CloseBubble(); }
+  void CloseBubble() {
+    footer_ = nullptr;
+    GetPrimaryUnifiedSystemTray()->CloseBubble();
+  }
 
  protected:
   QuickSettingsFooter* GetFooter() { return footer_; }
 
  private:
   // Owned by view hierarchy.
-  raw_ptr<QuickSettingsFooter, DanglingUntriaged> footer_ = nullptr;
+  raw_ptr<QuickSettingsFooter> footer_ = nullptr;
 };
 
 TEST_F(QuickSettingsFooterPixelTest, FooterShouldBeRenderedCorrectly) {
