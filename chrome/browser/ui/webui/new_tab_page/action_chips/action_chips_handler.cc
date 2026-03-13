@@ -120,9 +120,11 @@ ActionChipsHandler::ActionChipsHandler(
   content::WebContents* web_contents = web_ui_->GetWebContents();
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents);
-  // No need to call RemoveObserver later since TabStripModelObserver takes care
-  // of it in its destructor.
-  browser_window_interface->GetTabStripModel()->AddObserver(this);
+  if (browser_window_interface) {
+    // No need to call RemoveObserver later since TabStripModelObserver takes
+    // care of it in its destructor.
+    browser_window_interface->GetTabStripModel()->AddObserver(this);
+  }
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kNtpToolChipsVisible,
