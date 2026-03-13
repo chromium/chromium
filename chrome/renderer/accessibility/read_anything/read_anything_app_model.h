@@ -17,6 +17,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/common/read_anything/read_anything.mojom-shared.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -266,6 +267,32 @@ class ReadAnythingAppModel {
   }
   bool is_readability_next_distillation_method() const {
     return next_distillation_method() == DistillationMethod::kReadability;
+  }
+  bool is_readability_current_distillation_method() const {
+    return current_content_distillation_method_ ==
+           DistillationMethod::kReadability;
+  }
+  bool should_apply_accessibility_updates_for_readability() const {
+    if (!features::IsReadAnythingWithReadabilityEnabled() &&
+        !features::IsReadAnythingWithReadabilityAllowLinksEnabled()) {
+      return false;
+    }
+
+    if (is_readability_next_distillation_method() &&
+        distillation_state_ ==
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationInProgress) {
+      return true;
+    }
+
+    if (is_readability_current_distillation_method() &&
+        distillation_state_ ==
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationWithContent) {
+      return true;
+    }
+
+    return false;
   }
 
   read_anything::mojom::LetterSpacing letter_spacing() const {

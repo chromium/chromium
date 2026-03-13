@@ -596,8 +596,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
   model_.PrepareForAXTreeUpdates(tree_id);
-  if (IsReadabilityEnabled() && IsReadabilityWithLinksEnabled() &&
-      model_.should_extract_anchors_from_tree_for_readability()) {
+  if (model_.should_apply_accessibility_updates_for_readability()) {
     model_.ApplyAccessibilityUpdates(
         tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
         const_cast<std::vector<ui::AXEvent>&>(events));
@@ -607,6 +606,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     if (didProcessAnchors) {
       ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
     }
+
     return;
   }
 
