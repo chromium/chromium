@@ -6,7 +6,7 @@
 
 
 function copyTextData(text) {
-  var input = document.getElementById('copy_text');
+  const input = document.getElementById('copy_text');
   input.value = text;
   input.focus();
   input.select();

@@ -9,7 +9,7 @@ function appendTextarea() {
 }
 
 function run() {
-  var textIn = appendTextarea();
+  const textIn = appendTextarea();
 
   textIn.focus();
   textIn.value = 'foobar';
@@ -18,7 +18,7 @@ function run() {
   if (document.execCommand('copy'))
     return 'Succeeded to copy';
 
-  var textOut = appendTextarea();
+  const textOut = appendTextarea();
 
   textOut.focus();
   if (document.execCommand('paste'))

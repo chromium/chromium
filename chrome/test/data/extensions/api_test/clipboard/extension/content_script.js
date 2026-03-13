@@ -9,7 +9,7 @@ function appendTextarea() {
 }
 
 function run() {
-  var textIn = appendTextarea();
+  const textIn = appendTextarea();
 
   textIn.focus();
   textIn.value = 'foobar';
@@ -18,13 +18,13 @@ function run() {
   if (!document.execCommand('copy'))
     return 'Failed to copy';
 
-  var textOut = appendTextarea();
+  const textOut = appendTextarea();
 
   textOut.focus();
   if (!document.execCommand('paste'))
     return 'Failed to paste';
   if (textOut.value != 'foobar')
-    return 'Expected "foobar", got ' + textOut.value;
+    return `Expected 'foobar', got ${textOut.value}`;
 
   return '';
 }

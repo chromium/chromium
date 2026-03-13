@@ -4,7 +4,7 @@
 
 // Test clipboard extension api chrome.clipboard.onClipboardDataChanged event.
 
-var testSuccessCount = 0;
+let testSuccessCount = 0;
 
 function verifySetImageDataResult(expectedError) {
   if (expectedError)
@@ -14,13 +14,12 @@ function verifySetImageDataResult(expectedError) {
 
 function testSetImageDataClipboard(
     imageUrl, imageType, expectedError, additionalItems) {
-  var oReq = new XMLHttpRequest();
+  const oReq = new XMLHttpRequest();
   oReq.open('GET', imageUrl, true);
   oReq.responseType = 'arraybuffer';
 
   oReq.onload = function (oEvent) {
-    var arrayBuffer = oReq.response;
-    var binaryString = '';
+    const arrayBuffer = oReq.response;
 
     if (arrayBuffer) {
       if (additionalItems) {
@@ -43,61 +42,61 @@ function testSetImageDataClipboard(
 }
 
 function testSavePngImageToClipboard(baseUrl) {
-  testSetImageDataClipboard(baseUrl + '/icon1.png', 'png');
+  testSetImageDataClipboard(`${baseUrl}/icon1.png`, 'png');
 }
 
 function testSaveJpegImageToClipboard(baseUrl) {
-  testSetImageDataClipboard(baseUrl + '/test.jpg', 'jpeg');
+  testSetImageDataClipboard(`${baseUrl}/test.jpg`, 'jpeg');
 }
 
 function testSaveBadImageData(baseUrl) {
   testSetImageDataClipboard(
-      baseUrl + '/test_file.txt', 'jpeg', 'Image data decoding failed.');
+      `${baseUrl}/test_file.txt`, 'jpeg', 'Image data decoding failed.');
 }
 
 function testSavePngImageWithAdditionalDataToClipboard(baseUrl) {
-  var additional_items = [];
-  var text_item = {
+  const additionalItems = [];
+  const textItem = {
       type: 'textPlain',
       data: 'Hello, world'
   }
-  var html_item = {
+  const htmlItem = {
       type: 'textHtml',
       data: '<b>This is an html markup</b>'
   }
-  additional_items.push(text_item);
-  additional_items.push(html_item);
+  additionalItems.push(textItem);
+  additionalItems.push(htmlItem);
   testSetImageDataClipboard(
-      baseUrl + '/icon1.png', 'png', undefined, additional_items);
+      `${baseUrl}/icon1.png`, 'png', undefined, additionalItems);
 }
 
 function testSavePngImageWithAdditionalDataToClipboardDuplicateTypeItems(
     baseUrl) {
-  var additional_items = [];
-  var text_item1 = {
+  const additionalItems = [];
+  const textItem1 = {
       type: 'textPlain',
       data: 'Hello, world'
   }
-  var text_item2 = {
+  const textItem2 = {
       type: 'textPlain',
       data: 'Another text item'
   }
-  additional_items.push(text_item1);
-  additional_items.push(text_item2);
+  additionalItems.push(textItem1);
+  additionalItems.push(textItem2);
   testSetImageDataClipboard(
-      baseUrl + '/icon1.png', 'png',
+      `${baseUrl}/icon1.png`, 'png',
       'Unsupported additionalItems parameter data.',
-      additional_items);
+      additionalItems);
 }
 
 function bindTest(test, param) {
-  var result = test.bind(null, param);
+  const result = test.bind(null, param);
   result.generatedName = test.name;
   return result;
 }
 
 chrome.test.getConfig(function(config) {
-  var baseUrl = 'http://localhost:' + config.testServer.port + '/extensions';
+  const baseUrl = `http://localhost:${config.testServer.port}/extensions`;
   chrome.test.runTests([
     bindTest(testSavePngImageToClipboard, baseUrl),
     bindTest(testSaveJpegImageToClipboard, baseUrl),
