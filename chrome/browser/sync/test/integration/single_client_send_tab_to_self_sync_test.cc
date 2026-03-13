@@ -510,8 +510,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
                   .Wait());
 }
 
-// TODO(crbug.com/492352020): Re-enable on Windows AMR64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+// TODO(crbug.com/492401326, crbug.com/492352020): Flaky on multiple Windows
+// bots.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SendTextFragment DISABLED_SendTextFragment
 #else
 #define MAYBE_SendTextFragment SendTextFragment
