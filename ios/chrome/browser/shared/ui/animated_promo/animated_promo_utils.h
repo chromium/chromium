@@ -4,11 +4,6 @@
 
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 
-// Configures the animation with semantic colors.
-// Iterate over the list of semantic colors and set the color value for the
-// keypath `**COLOR_NAME.**.Color`.
-void ConfigureAnimationSemanticColors(id<LottieAnimation> animation);
-
 // Configures the animation with the given semantic color.
 // Sets the color value for the keypath `**key.**.Color`.
 void ConfigureAnimationSemanticColor(id<LottieAnimation> animation,
