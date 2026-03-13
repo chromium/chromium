@@ -1295,6 +1295,11 @@ const FeatureEntry::FeatureParam
         {kIOSExpandedSetupListVariationParam,
          kIOSExpandedSetupListVariationParamBackgroundCustomization}};
 
+const FeatureEntry::FeatureParam
+    IOSExpandedSetupListVariationParamAllExceptCPE[] = {
+        {kIOSExpandedSetupListVariationParam,
+         kIOSExpandedSetupListVariationParamAllExceptCPE}};
+
 const FeatureEntry::FeatureParam kIOSExpandedSetupListAll[] = {
     {kIOSExpandedSetupListVariationParam,
      kIOSExpandedSetupListVariationParamAll}};
@@ -1304,7 +1309,7 @@ const FeatureEntry::FeatureVariation kIOSExpandedSetupListVariations[] = {
     {"Home Background Customization",
      kIOSExpandedSetupListBackgroundCustomization, nullptr},
     {"Safari Data Import & Home Background Customization (without CPE)",
-     kIOSExpandedSetupListAll, nullptr},
+     IOSExpandedSetupListVariationParamAllExceptCPE, nullptr},
     {"Safari Data Import, Home Background Customization, CPE",
      kIOSExpandedSetupListAll, nullptr}};
 
