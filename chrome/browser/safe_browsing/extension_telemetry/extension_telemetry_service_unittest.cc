@@ -51,6 +51,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/switches.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -183,6 +184,10 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
 
   std::unique_ptr<ExtensionInfo> GetExtensionInfo(const Extension& extension) {
     return telemetry_service_->GetExtensionInfoForReport(extension);
+  }
+
+  bool HasActivityLogIngester() {
+    return telemetry_service_->activity_log_ingester_ != nullptr;
   }
 
   // Create telemetry service instance.
@@ -399,6 +404,48 @@ TEST_F(ExtensionTelemetryServiceTest, CheckEnableConditionsForEnterprise) {
       /*enabled_event_names=*/{},
       /*enabled_opt_in_events=*/{});
   EXPECT_FALSE(IsTelemetryServiceEnabledForEnterprise());
+}
+
+TEST_F(ExtensionTelemetryServiceTest, CheckDOMActivityLoggingState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kEnterpriseExtensionDOMActivityTelemetry);
+
+  // Start with enterprise disabled.
+  EXPECT_FALSE(HasActivityLogIngester());
+
+  // Enable overall enterprise policy.
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{enterprise_connectors::kExtensionTelemetryEvent, {"*"}}});
+  EXPECT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+
+  // Ingester shouldn't be active yet because the DOM pref is false by default.
+  EXPECT_FALSE(HasActivityLogIngester());
+
+  // Enable DOM activity logging pref.
+  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
+
+  // Now it should be created.
+  EXPECT_TRUE(HasActivityLogIngester());
+
+  // Disable the pref.
+  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, false);
+  EXPECT_FALSE(HasActivityLogIngester());
+
+  // Re-enable pref, but disable enterprise overall.
+  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
+  EXPECT_TRUE(HasActivityLogIngester());
+
+  enterprise_connectors::test::SetOnSecurityEventReporting(
+      /*prefs=*/prefs(),
+      /*enabled=*/false,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{});
+  EXPECT_FALSE(HasActivityLogIngester());
 }
 
 TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {

@@ -30,6 +30,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/activity_log_ingester.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal_processor.h"
@@ -70,6 +71,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/path_util.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/switches.h"
@@ -471,6 +473,11 @@ ExtensionTelemetryService::ExtensionTelemetryService(
       prefs::kSafeBrowsingEnhanced,
       base::BindRepeating(&ExtensionTelemetryService::OnESBPrefChanged,
                           base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kExtensionDOMActivityLoggingEnabled,
+      base::BindRepeating(
+          &ExtensionTelemetryService::OnExtensionDOMActivityLoggingPrefChanged,
+          base::Unretained(this)));
 
   // Set initial enable/disable state for ESB.
   SetEnabledForESB(IsEnhancedProtectionEnabled(*pref_service_));
@@ -488,6 +495,8 @@ ExtensionTelemetryService::ExtensionTelemetryService(
     SetEnabledForEnterprise(
         GetExtensionTelemetryEventRouter(profile_)->IsPolicyEnabled());
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
+    UpdateDOMActivityLoggingState();
 }
 
 void ExtensionTelemetryService::RecordSignalType(
@@ -517,6 +526,10 @@ void ExtensionTelemetryService::OnEnterprisePolicyChanged() {
 #else
   SetEnabledForEnterprise(false);
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+}
+
+void ExtensionTelemetryService::OnExtensionDOMActivityLoggingPrefChanged() {
+  UpdateDOMActivityLoggingState();
 }
 
 // Telemetry features for ESB include:
@@ -647,6 +660,7 @@ void ExtensionTelemetryService::SetEnabledForEnterprise(bool enable) {
     enterprise_signal_processors_.clear();
     StopOffstoreFileDataCollection();
   }
+  UpdateDOMActivityLoggingState();
 }
 
 bool ExtensionTelemetryService::enabled() const {
@@ -670,6 +684,7 @@ void ExtensionTelemetryService::Shutdown() {
   enterprise_timer_.Stop();
   pref_change_registrar_.RemoveAll();
   StopOffstoreFileDataCollection();
+  activity_log_ingester_.reset();
 }
 
 bool ExtensionTelemetryService::SignalDataPresent() const {
@@ -1773,6 +1788,21 @@ void ExtensionTelemetryService::OnOffstoreFileDataCollected(
   // Remove context and repeat.
   offstore_extension_file_data_contexts_.erase(context);
   CollectOffstoreFileData();
+}
+
+void ExtensionTelemetryService::UpdateDOMActivityLoggingState() {
+  bool dom_telemetry_allowed =
+      enterprise_enabled_ &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kEnterpriseExtensionDOMActivityTelemetry) &&
+      pref_service_->GetBoolean(prefs::kExtensionDOMActivityLoggingEnabled);
+
+  if (dom_telemetry_allowed && !activity_log_ingester_) {
+    activity_log_ingester_ =
+        std::make_unique<ActivityLogIngester>(profile_, this);
+  } else if (!dom_telemetry_allowed && activity_log_ingester_) {
+    activity_log_ingester_.reset();
+  }
 }
 
 void ExtensionTelemetryService::StopOffstoreFileDataCollection() {

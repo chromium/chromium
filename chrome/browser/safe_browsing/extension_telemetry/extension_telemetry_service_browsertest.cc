@@ -18,6 +18,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
@@ -68,6 +69,9 @@ using RemoteHostContactedInfo =
     ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo;
 using RemoteHostInfo =
     ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo_RemoteHostInfo;
+using DOMAccessInfo = ExtensionTelemetryReportRequest_SignalInfo_DOMAccessInfo;
+using ScriptInjectionInfo =
+    ExtensionTelemetryReportRequest_SignalInfo_ScriptInjectionInfo;
 using TestRule = extensions::declarative_net_request::TestRule;
 using TestHeaderInfo = extensions::declarative_net_request::TestHeaderInfo;
 
@@ -78,7 +82,8 @@ class ExtensionTelemetryServiceBrowserTest
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {kExtensionTelemetrySearchHijackingSignal,
-         extensions_features::kIncludeJSCallStackInExtensionApiRequest},
+         extensions_features::kIncludeJSCallStackInExtensionApiRequest,
+         extensions_features::kEnterpriseExtensionDOMActivityTelemetry},
         /*disabled_features=*/{});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
     test_extension_dir_ =
@@ -1026,6 +1031,144 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   const auto& signal = telemetry_report_pb->search_hijacking_signal();
   EXPECT_EQ(signal.omnibox_search_count(), 10);
   EXPECT_EQ(signal.serp_landing_count(), 3);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       DetectsAndReportsDOMAccessSignal) {
+  // Enable DOM activity logging pref.
+  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "DOM Access Extension",
+        "version": "0.1",
+        "manifest_version": 3,
+        "content_scripts": [
+          {
+            "matches": ["<all_urls>"],
+            "js": ["content_script.js"],
+            "run_at": "document_start"
+          }
+        ]
+      })";
+  static constexpr char kContentScript[] =
+      R"(
+        console.log(document.cookie);
+        chrome.test.notifyPass();
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+
+  extensions::ResultCatcher result_catcher;
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to a page to trigger the content script.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+
+  // Generate telemetry report and verify.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb =
+      GetTelemetryReportForEnterprise();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+
+  // Retrieve the report corresponding to the test extension.
+  int report_index = -1;
+  for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
+    if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
+      report_index = i;
+    }
+  }
+  ASSERT_NE(report_index, -1);
+
+  const auto& extension_report = telemetry_report_pb->reports(report_index);
+  bool found_dom_access_signal = false;
+  for (const auto& signal : extension_report.signals()) {
+    if (signal.has_dom_access_info()) {
+      const auto& dom_access_info = signal.dom_access_info();
+      for (const auto& dom_access : dom_access_info.dom_accesses()) {
+        if (dom_access.api_name() == "Document.cookie") {
+          found_dom_access_signal = true;
+          break;
+        }
+      }
+    }
+  }
+  EXPECT_TRUE(found_dom_access_signal);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       DetectsAndReportsScriptInjectionSignal) {
+  // Enable DOM activity logging pref.
+  prefs()->SetBoolean(prefs::kExtensionDOMActivityLoggingEnabled, true);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "Script Injection Extension",
+        "version": "0.1",
+        "manifest_version": 3,
+        "permissions": ["scripting"],
+        "host_permissions": ["<all_urls>"],
+        "background": { "service_worker": "background.js" }
+      })";
+  static constexpr char kBackground[] =
+      R"(
+        chrome.test.runTests([
+          async function injectScript() {
+            const tabs = await chrome.tabs.query({active: true, currentWindow: true});
+            await chrome.scripting.executeScript({
+              target: {tabId: tabs[0].id},
+              func: () => { console.log('injected'); }
+            });
+            chrome.test.succeed();
+          }
+        ]);
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  // Navigate to a page first so there's a target for injection.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("example.com", "/empty.html")));
+
+  extensions::ResultCatcher result_catcher;
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  ASSERT_TRUE(IsTelemetryServiceEnabledForEnterprise());
+
+  // Generate telemetry report and verify.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb =
+      GetTelemetryReportForEnterprise();
+  ASSERT_NE(telemetry_report_pb, nullptr);
+
+  int report_index = -1;
+  for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
+    if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
+      report_index = i;
+    }
+  }
+  ASSERT_NE(report_index, -1);
+
+  const auto& extension_report = telemetry_report_pb->reports(report_index);
+  bool found_script_injection_signal = false;
+  for (const auto& signal : extension_report.signals()) {
+    if (signal.has_script_injection_info()) {
+      found_script_injection_signal = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_script_injection_signal);
 }
 
 }  // namespace safe_browsing

@@ -54,6 +54,7 @@ class ExtensionTelemetryReportResponse;
 class ExtensionTelemetryUploader;
 class SafeBrowsingTokenFetcher;
 class SearchHijackingDetector;
+class ActivityLogIngester;
 
 // This class processes extension signals and reports telemetry for a given
 // profile (regular profile only). It is used exclusively on the UI thread.
@@ -116,7 +117,7 @@ class ExtensionTelemetryService : public KeyedService {
   bool enabled() const;
 
   // Accepts extension telemetry signals for processing.
-  void AddSignal(std::unique_ptr<ExtensionSignal> signal);
+  virtual void AddSignal(std::unique_ptr<ExtensionSignal> signal);
 
   // Intercepts omnibox search events for processing.
   void OnOmniboxSearch(const AutocompleteMatch& match);
@@ -162,6 +163,10 @@ class ExtensionTelemetryService : public KeyedService {
   // Called when the policy that affects enterprise telemetry reporting is
   // changed.
   void OnEnterprisePolicyChanged();
+
+  // Called when the pref that affects extension DOM activity logging is
+  // changed.
+  void OnExtensionDOMActivityLoggingPrefChanged();
 
   // Helper method to add and process an extension signal. Shared by both ESB
   // and enterprise reporting.
@@ -288,6 +293,10 @@ class ExtensionTelemetryService : public KeyedService {
   // Stops and clears any offstore file data collection objects/contexts.
   void StopOffstoreFileDataCollection();
 
+  // Updates the state of the extension DOM activity logging based on the
+  // enterprise policy and feature flag.
+  void UpdateDOMActivityLoggingState();
+
   // Stores offstore extension file data retrieved from PrefService.
   struct OffstoreExtensionFileData {
     OffstoreExtensionFileData();
@@ -399,6 +408,9 @@ class ExtensionTelemetryService : public KeyedService {
 
   // Generates a potential search hijacking signal.
   std::unique_ptr<SearchHijackingDetector> search_hijacking_detector_;
+
+  // Ingests extension activity log events and creates telemetry signals.
+  std::unique_ptr<ActivityLogIngester> activity_log_ingester_;
 
   // Enterprise-specific reporting variables:
   // Keeps track of the state of the service for enterprise telemetry reporting.
