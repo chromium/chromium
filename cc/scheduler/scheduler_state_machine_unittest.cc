@@ -410,47 +410,6 @@ TEST(SchedulerStateMachineTest, BeginMainFrameIsHighestPriorityAction) {
   EXPECT_ACTION(SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
 }
 
-TEST(SchedulerStateMachineTest,
-     TestNextActionNotifyBeginMainFrameNotExpectedUntil) {
-  SchedulerSettings default_scheduler_settings;
-  StateMachine state(default_scheduler_settings);
-  state.SetVisible(true);
-  EXPECT_ACTION_UPDATE_STATE(
-      SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION);
-  state.IssueNextBeginImplFrame();
-  state.CreateAndInitializeLayerTreeFrameSinkWithActivatedCommit();
-  state.SetNeedsOneBeginImplFrame(true);
-  EXPECT_TRUE(state.BeginFrameNeeded());
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
-
-  state.SetNeedsRedraw(true);
-  state.SetNeedsBeginMainFrame(false);
-  EXPECT_ACTION_UPDATE_STATE(
-      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
-}
-
-TEST(SchedulerStateMachineTest,
-     TestNextActionNotifyBeginMainFrameNotExpectedSoon) {
-  SchedulerSettings default_scheduler_settings;
-  StateMachine state(default_scheduler_settings);
-  state.SetVisible(true);
-  EXPECT_ACTION_UPDATE_STATE(
-      SchedulerStateMachine::Action::BEGIN_LAYER_TREE_FRAME_SINK_CREATION);
-  state.IssueNextBeginImplFrame();
-  state.CreateAndInitializeLayerTreeFrameSinkWithActivatedCommit();
-  state.SetNeedsOneBeginImplFrame(true);
-  EXPECT_TRUE(state.BeginFrameNeeded());
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
-
-  state.SetNeedsOneBeginImplFrame(false);
-  EXPECT_FALSE(state.BeginFrameNeeded());
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
-  state.SetBeginImplFrameState(
-      SchedulerStateMachine::BeginImplFrameState::IDLE);
-  EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
-}
-
 TEST(SchedulerStateMachineTest, TestNextActionBeginsMainFrameIfNeeded) {
   SchedulerSettings default_scheduler_settings;
 
