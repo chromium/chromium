@@ -410,7 +410,7 @@ class CORE_EXPORT ElementRareDataVector final
   DisplayAdElementMonitor* GetDisplayAdElementMonitor() const;
   std::pair<std::reference_wrapper<DisplayAdElementMonitor>,
             ElementRareDataVector*>
-  EnsureDisplayAdElementMonitor(Element*);
+  EnsureDisplayAdElementMonitor(Element*, AdProvenance);
 
   void SetDidAttachInternals() { flags_.did_attach_internals = true; }
   bool DidAttachInternals() const { return flags_.did_attach_internals; }

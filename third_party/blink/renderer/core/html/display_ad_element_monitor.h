@@ -12,7 +12,7 @@ namespace blink {
 
 // Tracks a specific ad `Element` and reports its location and updates
 // (including its removal and re-insertion) to the `PageTimingMetricsSender`.
-class CORE_EXPORT DisplayAdElementMonitor
+class CORE_EXPORT DisplayAdElementMonitor final
     : public GarbageCollected<DisplayAdElementMonitor>,
       public LocalFrameView::LifecycleNotificationObserver,
       public ElementRareDataField {
@@ -23,7 +23,8 @@ class CORE_EXPORT DisplayAdElementMonitor
     kInvisible,
   };
 
-  explicit DisplayAdElementMonitor(Element* element);
+  explicit DisplayAdElementMonitor(Element* element,
+                                   AdProvenance ad_provenance);
 
   // Start receiving LifecycleNotificationObserver notifications if the element
   // is eligible for ad monitoring. No-op if notifications are already active.
@@ -49,6 +50,8 @@ class CORE_EXPORT DisplayAdElementMonitor
 
  private:
   Member<Element> element_;
+
+  AdProvenance ad_provenance_;
 
   bool started_ = false;
 

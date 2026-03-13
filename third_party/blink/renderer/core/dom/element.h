@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -1763,7 +1764,7 @@ class CORE_EXPORT Element : public ContainerNode {
   // `SetIsAdRelated()` should not be called on it directly.
 
   // Marks this element as being ad-related.
-  void SetIsAdRelated();
+  void SetIsAdRelated(AdProvenance ad_provenance);
 
   // Returns true if the element is considered ad-related.
   virtual bool IsAdRelated() const;

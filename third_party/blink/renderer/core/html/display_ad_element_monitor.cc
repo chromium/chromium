@@ -49,8 +49,9 @@ bool ShouldMonitorElement(Element* element) {
 
 }  // namespace
 
-DisplayAdElementMonitor::DisplayAdElementMonitor(Element* element)
-    : element_(element) {
+DisplayAdElementMonitor::DisplayAdElementMonitor(Element* element,
+                                                 AdProvenance ad_provenance)
+    : element_(element), ad_provenance_(std::move(ad_provenance)) {
   DCHECK(element_);
   EnsureStarted();
 }

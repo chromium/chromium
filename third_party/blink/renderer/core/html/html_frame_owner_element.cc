@@ -894,8 +894,20 @@ void HTMLFrameOwnerElement::DidSetAdStatus() {
   }
 
   if (IsAdRelated()) {
-    display_ad_element_monitor_ =
-        MakeGarbageCollected<DisplayAdElementMonitor>(this);
+    AdProvenance ad_provenance = NoProvenance{};
+
+    // Try to extract ad provenance from the LocalFrame's CreationAdScript,
+    // keeping the default `NoProvenance` if unavailable (crbug.com/421202278).
+    if (auto* content_local_frame =
+            DynamicTo<LocalFrame>(content_frame_.Get())) {
+      if (std::optional<AdScriptIdentifier> creation_ad_script =
+              content_local_frame->CreationAdScript()) {
+        ad_provenance = creation_ad_script->id;
+      }
+    }
+
+    display_ad_element_monitor_ = MakeGarbageCollected<DisplayAdElementMonitor>(
+        this, std::move(ad_provenance));
   }
 }
 

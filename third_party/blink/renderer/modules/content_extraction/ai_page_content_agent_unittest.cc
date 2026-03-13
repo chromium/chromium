@@ -943,7 +943,7 @@ TEST_F(AIPageContentAgentTest, ImageIsAdRelated) {
 
   auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
   To<HTMLImageElement>(document.getElementById(AtomicString("ads")))
-      ->SetIsAdRelated();
+      ->SetIsAdRelated(AdProvenance{});
 
   GetAIPageContentWithActionableElements();
 

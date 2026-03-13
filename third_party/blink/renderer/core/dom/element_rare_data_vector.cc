@@ -700,9 +700,11 @@ DisplayAdElementMonitor* ElementRareDataVector::GetDisplayAdElementMonitor()
 
 std::pair<std::reference_wrapper<DisplayAdElementMonitor>,
           ElementRareDataVector*>
-ElementRareDataVector::EnsureDisplayAdElementMonitor(Element* element) {
-  return EnsureField<DisplayAdElementMonitor>(FieldId::kDisplayAdElementMonitor,
-                                              element);
+ElementRareDataVector::EnsureDisplayAdElementMonitor(
+    Element* element,
+    AdProvenance ad_provenance) {
+  return EnsureField<DisplayAdElementMonitor>(
+      FieldId::kDisplayAdElementMonitor, element, std::move(ad_provenance));
 }
 
 ElementRareDataVector* ElementRareDataVector::SetFocusgroupLastFocused(

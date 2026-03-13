@@ -8846,10 +8846,11 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
   return activated;
 }
 
-void Element::SetIsAdRelated() {
+void Element::SetIsAdRelated(AdProvenance ad_provenance) {
   DCHECK(!IsA<HTMLFrameOwnerElement>(this));
 
-  UnpackAndRefresh(EnsureRareData().EnsureDisplayAdElementMonitor(this));
+  UnpackAndRefresh(EnsureRareData().EnsureDisplayAdElementMonitor(
+      this, std::move(ad_provenance)));
 
   probe::UpdateAdRelatedState(*this, /*is_ad_related=*/true);
 }
