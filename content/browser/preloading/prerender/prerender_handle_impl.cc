@@ -182,6 +182,10 @@ int32_t PrerenderHandleImpl::GetHandleId() const {
   return handle_id_;
 }
 
+PrerenderHostId PrerenderHandleImpl::GetPrerenderHostId() const {
+  return prerender_host_id_;
+}
+
 const GURL& PrerenderHandleImpl::GetInitialPrerenderingUrl() const {
   return prerendering_url_;
 }

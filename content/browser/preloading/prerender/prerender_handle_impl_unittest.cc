@@ -123,5 +123,18 @@ TEST_F(PrerenderHandleImplTest, CallbackCalledOnFailure) {
   EXPECT_TRUE(error_called);
 }
 
+TEST_F(PrerenderHandleImplTest, GetPrerenderHostId) {
+  const GURL kPrerenderingUrl("https://example.com/next");
+  const PrerenderHostId prerender_host_id = registry().CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl));
+  ASSERT_TRUE(prerender_host_id);
+
+  auto handle = std::make_unique<PrerenderHandleImpl>(
+      registry().GetWeakPtr(), prerender_host_id, kPrerenderingUrl,
+      std::nullopt);
+
+  EXPECT_EQ(handle->GetPrerenderHostId(), prerender_host_id);
+}
+
 }  // namespace
 }  // namespace content

@@ -15,7 +15,12 @@ SearchPrewarmProgressService::SearchPrewarmProgressService() = default;
 SearchPrewarmProgressService::~SearchPrewarmProgressService() = default;
 
 bool SearchPrewarmProgressService::HasOnGoingSearchPrewarm() const {
-  return ongoing_prewarms_ > 0;
+  return !ongoing_prewarms_.empty();
+}
+
+bool SearchPrewarmProgressService::IsOnGoingSearchPrewarm(
+    content::PrerenderHostId host_id) const {
+  return ongoing_prewarms_.contains(host_id);
 }
 
 void SearchPrewarmProgressService::AddSearchPrewarmFinishedCallback(
@@ -24,14 +29,16 @@ void SearchPrewarmProgressService::AddSearchPrewarmFinishedCallback(
   on_finished_callbacks_.push_back(std::move(callback));
 }
 
-void SearchPrewarmProgressService::OnSearchPrewarmStarted() {
-  ongoing_prewarms_++;
+void SearchPrewarmProgressService::OnSearchPrewarmStarted(
+    content::PrerenderHostId host_id) {
+  ongoing_prewarms_.insert(host_id);
 }
 
-void SearchPrewarmProgressService::OnSearchPrewarmFinished() {
-  CHECK_GT(ongoing_prewarms_, 0);
-  ongoing_prewarms_--;
-  if (ongoing_prewarms_) {
+void SearchPrewarmProgressService::OnSearchPrewarmFinished(
+    content::PrerenderHostId host_id) {
+  CHECK(IsOnGoingSearchPrewarm(host_id));
+  ongoing_prewarms_.erase(host_id);
+  if (HasOnGoingSearchPrewarm()) {
     return;
   }
   // Copy the callbacks just in case the keyed service is

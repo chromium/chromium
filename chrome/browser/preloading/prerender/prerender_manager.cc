@@ -294,7 +294,8 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
     if (service) {
-      service->OnSearchPrewarmStarted();
+      service->OnSearchPrewarmStarted(
+          search_prewarm_handle_->GetPrerenderHostId());
       is_search_prewarm_ongoing_ = true;
       search_prewarm_handle_->AddOnResponseHeadersReceivedCallback(
           base::BindOnce(&PrerenderManager::NotifySearchPrewarmFinished,
@@ -312,7 +313,8 @@ void PrerenderManager::NotifySearchPrewarmFinished() {
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
   if (service) {
-    service->OnSearchPrewarmFinished();
+    service->OnSearchPrewarmFinished(
+        search_prewarm_handle_->GetPrerenderHostId());
   }
 }
 

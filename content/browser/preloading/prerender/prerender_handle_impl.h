@@ -31,6 +31,7 @@ class CONTENT_EXPORT PrerenderHandleImpl final
 
   // PrerenderHandle:
   int32_t GetHandleId() const override;
+  PrerenderHostId GetPrerenderHostId() const override;
   const GURL& GetInitialPrerenderingUrl() const override;
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint()
       const override;

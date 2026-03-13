@@ -127,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(DSEPrewarmNavigationThrottleBrowserTest,
             throttle->WillStartRequest().action());
 
   // Simulate a prewarm starting.
-  service->OnSearchPrewarmStarted();
+  content::PrerenderHostId dummy_host_id(1);
+  service->OnSearchPrewarmStarted(dummy_host_id);
   EXPECT_TRUE(service->HasOnGoingSearchPrewarm());
 
   // Now, the throttle should return DEFER.
@@ -138,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(DSEPrewarmNavigationThrottleBrowserTest,
 
   // Simulate prewarm finishing. This should trigger the callback to Resume()
   // the throttle.
-  service->OnSearchPrewarmFinished();
+  service->OnSearchPrewarmFinished(dummy_host_id);
   deferred_throttle->WaitForResume();
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
 }
