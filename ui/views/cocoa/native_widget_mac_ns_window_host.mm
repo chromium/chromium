@@ -10,6 +10,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -65,6 +66,9 @@ using remote_cocoa::mojom::WindowVisibilityState;
 namespace views {
 
 namespace {
+
+BASE_FEATURE(kAlwaysMoveWindowsToOriginalSpaces,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool g_move_windows_to_original_spaces_upon_restoration = false;
 
@@ -516,7 +520,8 @@ void NativeWidgetMacNSWindowHost::InitWindow(
       window_params->state_restoration_data->appkit_restoration_data =
           state_restoration_data_;
       window_params->state_restoration_data->restore_space =
-          g_move_windows_to_original_spaces_upon_restoration;
+          g_move_windows_to_original_spaces_upon_restoration ||
+          base::FeatureList::IsEnabled(kAlwaysMoveWindowsToOriginalSpaces);
     }
 
     GetNSWindowMojo()->InitWindow(std::move(window_params));
