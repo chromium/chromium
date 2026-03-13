@@ -170,6 +170,8 @@ public class ExtensionsMenuMediatorTest {
         // onReady runnable is called.
         assertTrue(mActionModels.isEmpty());
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, true);
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, false);
         verify(mOnReadyRunnable).run();
     }
 
@@ -371,6 +373,8 @@ public class ExtensionsMenuMediatorTest {
         // Verify zero state is shown.
         assertEquals(0, mActionModels.size());
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.IS_ZERO_STATE, true);
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, false);
     }
 
     /**

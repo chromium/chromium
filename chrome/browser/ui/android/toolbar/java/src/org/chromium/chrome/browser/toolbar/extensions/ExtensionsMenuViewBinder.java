@@ -26,6 +26,11 @@ public class ExtensionsMenuViewBinder {
             view.findViewById(R.id.extensions_menu_discover_extensions_button)
                     .setOnClickListener(
                             model.get(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER));
+            View zeroStateDiscoverButton = view.findViewById(R.id.btn_open_store);
+            if (zeroStateDiscoverButton != null) {
+                zeroStateDiscoverButton.setOnClickListener(
+                        model.get(ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER));
+            }
         } else if (key == ExtensionsMenuProperties.IS_ZERO_STATE) {
             boolean isZeroState = model.get(ExtensionsMenuProperties.IS_ZERO_STATE);
             View listView = view.findViewById(R.id.extensions_menu_items);

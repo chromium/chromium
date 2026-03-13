@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector
+    tools:ignore="UnusedResources,VectorRaster"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:viewportWidth="234"
+    android:viewportHeight="110"
+    android:width="200dp"
+    android:height="94dp">
+    <path
+        android:pathData="M125.97 18.001
+                    C123.205 18.0012 121.822 18.0012 120.564 18.3242
+                    C118.745 18.7913 117.089 19.7476 115.776 21.0889
+                    C114.867 22.0167 114.175 23.214 112.792 25.6084
+                    L108.579 32.9043
+                    C108.316 33.361 108.078 33.7751 107.862 34.1533
+                    C106.986 33.6133 106.03 33.2055 105.024 32.9473
+                    C103.766 32.6245 102.382 32.6248 99.6174 32.625
+                    H91.1935
+                    C88.4284 32.6252 87.0452 32.6262 85.7873 32.9492
+                    C83.9687 33.4163 82.312 34.3724 80.9982 35.7139
+                    C80.0897 36.6417 79.3984 37.8392 78.0158 40.2334
+                    L73.8029 47.5293
+                    C72.4201 49.9239 71.7285 51.1213 71.3791 52.3721
+                    C70.874 54.1805 70.8733 56.093 71.3781 57.9014
+                    C71.7273 59.1522 72.4194 60.3496 73.8019 62.7442
+                    L86.5842 84.8838
+                    C87.9666 87.2783 88.658 88.4755 89.5666 89.4033
+                    C90.8802 90.7447 92.5361 91.7011 94.3547 92.168
+                    C95.6126 92.4909 96.9958 92.4905 99.7609 92.4902
+                    H108.186
+                    C110.951 92.49 112.334 92.489 113.592 92.166
+                    C115.41 91.6989 117.066 90.7428 118.38 89.4014
+                    C119.289 88.4735 119.981 87.2764 121.363 84.8819
+                    L125.576 77.5859
+                    C125.84 77.1288 126.078 76.7145 126.294 76.3359
+                    C127.17 76.8759 128.126 77.2848 129.132 77.543
+                    C130.39 77.8658 131.773 77.8664 134.537 77.8662
+                    L142.962 77.8652
+                    C145.727 77.865 147.11 77.865 148.368 77.542
+                    C150.187 77.0749 151.844 76.1188 153.157 74.7774
+                    C154.066 73.8494 154.757 72.6515 156.14 70.2568
+                    L160.353 62.9609
+                    C161.735 60.5664 162.427 59.369 162.777 58.1182
+                    C163.282 56.3097 163.281 54.3973 162.777 52.5889
+                    C162.427 51.3381 161.736 50.1405 160.354 47.7461
+                    L147.571 25.6065
+                    C146.189 23.212 145.498 22.0147 144.589 21.0869
+                    C143.275 19.7456 141.62 18.7891 139.801 18.3223
+                    C138.543 17.9994 137.16 17.9998 134.395 18
+                    L125.97 18.001 Z">
+        <aapt:attr
+            name="android:fillColor">
+            <gradient
+                android:startX="141.655"
+                android:startY="28.5"
+                android:endX="92.6555"
+                android:endY="81.4999"
+                android:startColor="@color/empty_state_extensions_gradient_start"
+                android:endColor="@color/empty_state_extensions_gradient_end"
+                android:tileMode="clamp" />
+        </aapt:attr>
+    </path>
+    <group>
+        <path
+            android:pathData="M102 73 C101.167 73 100.45 72.7167 99.85 72.15
+                        C99.2833 71.55 99 70.8333 99 70 V61.2
+                        C100.467 61.0333 101.717 60.4667 102.75 59.5
+                        C103.817 58.5 104.35 57.2833 104.35 55.85
+                        C104.35 54.4167 103.817 53.2167 102.75 52.25
+                        C101.717 51.25 100.467 50.6667 99 50.5 V41.7
+                        C99 40.8667 99.2833 40.1667 99.85 39.6
+                        C100.45 39 101.167 38.7 102 38.7 H110.85
+                        C111.217 37.4 111.867 36.3 112.8 35.4
+                        C113.767 34.4667 114.917 34 116.25 34
+                        C117.583 34 118.717 34.4667 119.65 35.4
+                        C120.617 36.3 121.283 37.4 121.65 38.7 H130.3
+                        C131.133 38.7 131.833 39 132.4 39.6
+                        C133 40.1667 133.3 40.8667 133.3 41.7 V50.35
+                        C134.6 50.7167 135.683 51.4167 136.55 52.45
+                        C137.417 53.45 137.85 54.6167 137.85 55.95
+                        C137.85 57.2167 137.4 58.3333 136.5 59.3
+                        C135.633 60.2333 134.567 60.8667 133.3 61.2 V70
+                        C133.3 70.8333 133 71.55 132.4 72.15
+                        C131.833 72.7167 131.133 73 130.3 73 H102 Z
+                        M102 70 H130.3 V41.7 H102 V48.2
+                        C103.6 48.8 104.883 49.8 105.85 51.2
+                        C106.85 52.6 107.35 54.15 107.35 55.85
+                        C107.35 57.55 106.85 59.1 105.85 60.5
+                        C104.883 61.9 103.6 62.9 102 63.5 V70 Z"
+            android:fillColor="@color/empty_state_extensions_primary" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="141"
+        android:pivotY="39.2773">
+        <path
+            android:pathData="M141 39.2773 H159.5535 V94.9377 H141 V39.2773 Z"
+            android:fillColor="@color/empty_state_extensions_bg" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="146.102"
+        android:pivotY="48.1133">
+        <path
+            android:pathData="M146.102 48.1133 H157.2341 V50.89632 H146.102
+                        V48.1133 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="152.596"
+        android:pivotY="59.3633">
+        <path
+            android:pathData="M152.596 59.3633 H163.7281 V62.14632 H152.596
+                        V59.3633 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="159.09"
+        android:pivotY="70.6094">
+        <path
+            android:pathData="M159.09 70.6094 H170.2221 V73.39242 H159.09
+                        V70.6094 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="165.583"
+        android:pivotY="81.8555">
+        <path
+            android:pathData="M165.583 81.8555 H176.7151 V84.63852 H165.583
+                        V81.8555 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="149.349"
+        android:pivotY="53.7383">
+        <path
+            android:pathData="M149.349 53.7383 H154.915 V56.52132 H149.349
+                        V53.7383 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="142.855"
+        android:pivotY="42.4922">
+        <path
+            android:pathData="M142.855 42.4922 H148.421 V45.27522 H142.855
+                        V42.4922 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="155.843"
+        android:pivotY="64.9844">
+        <path
+            android:pathData="M155.843 64.9844 H161.409 V67.76742 H155.843
+                        V64.9844 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="-30"
+        android:pivotX="162.336"
+        android:pivotY="76.2344">
+        <path
+            android:pathData="M162.336 76.2344 H167.902 V79.01742 H162.336
+                        V76.2344 Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <group
+        android:rotation="35.0195"
+        android:pivotX="94.7906"
+        android:pivotY="17.4765">
+        <path
+            android:pathData="M103.2906 17.4765 A8.5 5 0 0 1 86.2906 17.4765
+                        A8.5 5 0 0 1 103.2906 17.4765 Z"
+            android:fillColor="@color/empty_state_extensions_bg" />
+    </group>
+    <group
+        android:rotation="35.0195"
+        android:pivotX="87.8296"
+        android:pivotY="12.5977">
+        <path
+            android:pathData="M87.8296 12.5977 H104.8296 V54.5977 H87.8296
+                        V12.5977 Z"
+            android:fillColor="@color/empty_state_extensions_bg" />
+    </group>
+    <group
+        android:rotation="35.0195"
+        android:pivotX="96.564"
+        android:pivotY="18.75">
+        <path
+            android:pathData="M96.564 18.75 H102.8813 V60.7257 H96.564 V18.75
+                        Z"
+            android:fillColor="@color/empty_state_extensions_stroke" />
+    </group>
+    <path
+        android:pathData="M99.3379 14.7578
+                    C102.001 17.3113 103.084 20.4529 101.752 22.3541
+                    C100.419 24.2552 97.0967 24.3099 93.7876 22.6787
+                    L99.3379 14.7578 Z"
+        android:fillColor="@color/empty_state_extensions_stroke" />
+    <path
+        android:pathData="M63.2287 62.5184 L63.7277 46.9942 L77.65 56.7497
+                    L63.2287 62.5184 Z"
+        android:fillColor="@color/empty_state_extensions_bg" />
+    <path
+        android:pathData="M63.2285 62.5204 L63.459 55.3555 L69.8843 59.8578
+                    L63.2285 62.5204 Z"
+        android:fillColor="@color/empty_state_extensions_stroke" />
+    <path
+        android:pathData="M73.5578 47.7762
+                    C69.7133 45.0823 65.3121 44.7317 63.7274 46.9932
+                    L77.6497 56.7488
+                    C79.2343 54.4873 77.4023 50.4701 73.5578 47.7762 Z"
+        android:fillColor="@color/empty_state_extensions_bg" />
+    <path
+        android:pathData="M67.9902 55.7145
+                    C66.2172 54.472 64.1873 54.3104 63.4565 55.3533
+                    L69.8774 59.8526
+                    C70.6082 58.8096 69.7633 56.9569 67.9902 55.7145 Z"
+        android:fillColor="@color/empty_state_extensions_stroke" />
+    <path
+        android:pathData="M70.0185 44.4297
+                    C72.5066 44.9725 76.9405 47.7145 78.7392 51.3119"
+        android:strokeColor="@color/empty_state_extensions_stroke"
+        android:strokeWidth="3"
+        android:strokeLineCap="round" />
+</vector>

@@ -196,6 +196,7 @@ android_resources("java_resources") {
     "java/res/drawable/chrome_extension.xml",
     "java/res/drawable/chrome_extension_off.xml",
     "java/res/drawable/chrome_extension_on.xml",
+    "java/res/drawable/extensions_zero_state.xml",
     "java/res/drawable/ic_close.xml",
     "java/res/drawable/ic_more_vert.xml",
     "java/res/drawable/ic_settings.xml",
@@ -208,6 +209,8 @@ android_resources("java_resources") {
     "java/res/layout/extensions_menu_footer.xml",
     "java/res/layout/extensions_menu_header.xml",
     "java/res/layout/extensions_menu_item.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/integers.xml",
   ]

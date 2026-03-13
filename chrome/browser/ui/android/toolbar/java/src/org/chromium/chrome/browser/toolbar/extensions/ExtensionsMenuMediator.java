@@ -123,7 +123,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         // to fetch and update the UI correctly, as their effects differ on the site permissions
         // page and they will need to have different JNI observers.
         if (isMainPageVisible()) {
-            updateSiteSettingsToggle();
             updateMenuEntries();
             return;
         }
@@ -251,6 +250,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void updateZeroState() {
         boolean isZeroState = mActionModels.size() == 0;
         mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
+        // If we are in zero state, hide the site settings toggle to keep the empty state clean.
+        if (isZeroState) {
+            mMenuPropertyModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, false);
+        } else {
+            updateSiteSettingsToggle();
+        }
     }
 
     /** Updates the site settings toggle. */

@@ -25,7 +25,7 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-       <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
+    <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
         android:id="@+id/extensions_menu_site_settings_toggle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -51,34 +51,72 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minWidth="320dp"
-        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_site_settings_toggle"
+        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:layout_marginTop="8dp"
         android:visibility="gone" />
 
-    <TextView
+    <LinearLayout
         android:id="@+id/extensions_menu_zero_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/extensions_menu_zero_state_header"
+        android:minWidth="320dp"
+        android:orientation="vertical"
         android:gravity="center"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:padding="24dp"
         app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header_divider"
-        app:layout_constraintBottom_toTopOf="@+id/extensions_menu_footer_divider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="94dp"
+            app:srcCompat="@drawable/extensions_zero_state"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/extensions_menu_zero_state_header"
+            android:textAppearance="@style/TextAppearance.Headline2"  />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/extensions_menu_zero_state_desc"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/btn_open_store"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:text="@string/open_web_store_button_text"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            app:cornerRadius="20dp" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/extensions_menu_content_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="extensions_menu_items,extensions_menu_zero_state" />
 
     <View
         android:id="@+id/extensions_menu_footer_divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_items"
+        app:layout_constraintTop_toBottomOf="@+id/extensions_menu_content_barrier"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:background="?android:attr/listDivider"
