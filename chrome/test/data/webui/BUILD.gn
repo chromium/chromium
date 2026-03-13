@@ -6,6 +6,7 @@ import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/include_js_tests.gni")
 import("//components/compose/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -40,6 +41,8 @@ source_set("browser_tests") {
     "//components/webui/chrome_urls/",
     "//ui/compositor",
   ]
+
+  data = []
 
   if (!is_android) {
     sources += [
@@ -318,6 +321,12 @@ source_set("browser_tests") {
     sources += [
       "unexportable_keys_internals/unexportable_keys_internals_browsertest.cc",
     ]
+  }
+
+  if (!enable_extensions_core && enable_guest_view) {
+    sources += [ "guest_view_shared/slim_webview_browsertest.cc" ]
+
+    data += [ "//chrome/test/data/" ]
   }
 }
 
@@ -849,6 +858,11 @@ generate_grd("build_grd") {
     deps += [ "unexportable_keys_internals:build_grdp" ]
     grdp_files +=
         [ "$target_gen_dir/unexportable_keys_internals/resources.grdp" ]
+  }
+
+  if (!enable_extensions_core && enable_guest_view) {
+    deps += [ "guest_view_shared:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/guest_view_shared/resources.grdp" ]
   }
 
   manifest_files =

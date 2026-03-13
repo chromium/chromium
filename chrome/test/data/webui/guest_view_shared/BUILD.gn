@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/guest_view/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("../build_webui_tests.gni")
+
+assert(!enable_extensions_core && enable_guest_view)
+
+build_webui_tests("build") {
+  cc_test_files = [ "slim_webview_browsertest.cc" ]
+
+  files = [ "slim_webview_test.ts" ]
+
+  ts_deps = [
+    "//chrome/browser/resources/guest_view_shared:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  ts_path_mappings = [
+    "//glic/shared/guest_view/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/guest_view_shared/tsc/*",
+            target_gen_dir),
+    "//glic/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+  ]
+}
