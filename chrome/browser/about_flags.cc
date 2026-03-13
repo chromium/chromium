@@ -12799,6 +12799,59 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillAiBasedAmountExtractionIgnoreSeenTermsForTesting)},
 
+    {"autofill-ai-always-trigger-server-model",
+     flag_descriptions::kAutofillAiAlwaysTriggerServerModelName,
+     flag_descriptions::kAutofillAiAlwaysTriggerServerModelDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiAlwaysTriggerServerModel)},
+
+    {"autofill-ai-available-by-default",
+     flag_descriptions::kAutofillAiAvailableByDefaultName,
+     flag_descriptions::kAutofillAiAvailableByDefaultDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiAvailableByDefault)},
+
+    {"autofill-ai-create-entity-data-manager",
+     flag_descriptions::kAutofillAiCreateEntityDataManagerName,
+     flag_descriptions::kAutofillAiCreateEntityDataManagerDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiCreateEntityDataManager)},
+
+    {"autofill-ai-dedupe-entities",
+     flag_descriptions::kAutofillAiDedupeEntitiesName,
+     flag_descriptions::kAutofillAiDedupeEntitiesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiDedupeEntities)},
+
+    {"autofill-ai-reauth-required",
+     flag_descriptions::kAutofillAiReauthRequiredName,
+     flag_descriptions::kAutofillAiReauthRequiredDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiReauthRequired)},
+
+    {"autofill-ai-server-model", flag_descriptions::kAutofillAiServerModelName,
+     flag_descriptions::kAutofillAiServerModelDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiServerModel)},
+
+    {"autofill-ai-wallet-flight-reservation",
+     flag_descriptions::kAutofillAiWalletFlightReservationName,
+     flag_descriptions::kAutofillAiWalletFlightReservationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiWalletFlightReservation)},
+
+    {"autofill-ai-wallet-private-passes",
+     flag_descriptions::kAutofillAiWalletPrivatePassesName,
+     flag_descriptions::kAutofillAiWalletPrivatePassesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWalletPrivatePasses)},
+
+    {"autofill-ai-wallet-vehicle-registration",
+     flag_descriptions::kAutofillAiWalletVehicleRegistrationName,
+     flag_descriptions::kAutofillAiWalletVehicleRegistrationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiWalletVehicleRegistration)},
+
+    {"autofill-ai-with-data-schema",
+     flag_descriptions::kAutofillAiWithDataSchemaName,
+     flag_descriptions::kAutofillAiWithDataSchemaDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWithDataSchema)},
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"updater-ui", flag_descriptions::kUpdaterUIName,
      flag_descriptions::kUpdaterUIDescription, kOsLinux | kOsMac | kOsWin,

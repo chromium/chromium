@@ -715,6 +715,16 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-ai-always-trigger-server-model",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "autofill-ai-available-by-default",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-ai-based-amount-extraction-ignore-seen-terms-for-testing",
     "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 155
@@ -725,8 +735,33 @@
     "expiry_milestone": 160
   },
   {
+    "name": "autofill-ai-dedupe-entities",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-ai-reauth-required",
     "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "autofill-ai-server-model",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "autofill-ai-wallet-flight-reservation",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "autofill-ai-wallet-private-passes",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "autofill-ai-wallet-vehicle-registration",
+    "owners": [ "brunobraga@google.com", "tchudakov@google.com" ],
     "expiry_milestone": 160
   },
   {

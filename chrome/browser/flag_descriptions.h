@@ -779,6 +779,63 @@ inline constexpr char
         "for testing purposes, regardless of the actual stored user "
         "preference.";
 
+inline constexpr char kAutofillAiAlwaysTriggerServerModelName[] =
+    "Autofill AI always trigger server model";
+inline constexpr char kAutofillAiAlwaysTriggerServerModelDescription[] =
+    "Queries the server model for every form encountered, ignoring server-side "
+    "instructions. Intended for testing only.";
+
+inline constexpr char kAutofillAiAvailableByDefaultName[] =
+    "Autofill AI available by default";
+inline constexpr char kAutofillAiAvailableByDefaultDescription[] =
+    "Makes Autofill AI available by default, with the enable toggle "
+    "controlling online model runs and logging.";
+
+inline constexpr char kAutofillAiCreateEntityDataManagerName[] =
+    "Autofill AI create entity data manager";
+inline constexpr char kAutofillAiCreateEntityDataManagerDescription[] =
+    "Ensures the EntityDataManager for Autofill AI is created regardless of "
+    "other feature states. Useful for data cleanup.";
+
+inline constexpr char kAutofillAiDedupeEntitiesName[] =
+    "Autofill AI dedupe entities";
+inline constexpr char kAutofillAiDedupeEntitiesDescription[] =
+    "Enables periodic deduplication of Autofill AI entities.";
+
+inline constexpr char kAutofillAiReauthRequiredName[] =
+    "Autofill AI re-authentication required";
+inline constexpr char kAutofillAiReauthRequiredDescription[] =
+    "Requires re-authentication when filling or viewing sensitive fields with "
+    "Autofill AI.";
+
+inline constexpr char kAutofillAiServerModelName[] = "Autofill AI server model";
+inline constexpr char kAutofillAiServerModelDescription[] =
+    "Allows the client to trigger the server model for Autofill AI type "
+    "predictions.";
+
+inline constexpr char kAutofillAiWalletFlightReservationName[] =
+    "Autofill AI Google Wallet flight reservations";
+inline constexpr char kAutofillAiWalletFlightReservationDescription[] =
+    "Enables Autofill AI support for flight reservation entities from Google "
+    "Wallet.";
+
+inline constexpr char kAutofillAiWalletPrivatePassesName[] =
+    "Autofill AI Google Wallet private passes";
+inline constexpr char kAutofillAiWalletPrivatePassesDescription[] =
+    "Enables Autofill AI support for private passes from Google Wallet.";
+
+inline constexpr char kAutofillAiWalletVehicleRegistrationName[] =
+    "Autofill AI Google Wallet vehicle registration";
+inline constexpr char kAutofillAiWalletVehicleRegistrationDescription[] =
+    "Enables Autofill AI support for vehicle registration entities from Google "
+    "Wallet.";
+
+inline constexpr char kAutofillAiWithDataSchemaName[] =
+    "Autofill AI with data schema";
+inline constexpr char kAutofillAiWithDataSchemaDescription[] =
+    "Enables the second iteration of Autofill AI, which uses a more advanced "
+    "data schema.";
+
 inline constexpr char kAutofillEnableAmountExtractionName[] =
     "Enable checkout amount extraction.";
 inline constexpr char kAutofillEnableAmountExtractionDescription[] =
