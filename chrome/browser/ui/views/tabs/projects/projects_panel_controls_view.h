@@ -43,6 +43,11 @@ class ProjectsPanelControlsView : public views::View,
   // state changes.
   void UpdateTooltipText();
 
+  // Sets the opacity of any buttons in this view.
+  void SetButtonOpacity(float opacity);
+
+  views::LabelButton* projects_button_for_testing() { return projects_button_; }
+
  private:
   void OnCloseButtonPressed();
 

@@ -13,6 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -32,7 +33,10 @@
 #include "ui/actions/actions.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
@@ -238,4 +242,45 @@ TEST_F(ProjectsPanelViewRTLTest, ClipRectInRTL) {
 
   // In RTL, we expect the clip rect to extend to the left to allow the shadow.
   EXPECT_LT(clip_rect.x(), 0);
+}
+
+TEST_F(ProjectsPanelViewTest, CloseButtonFadeWhenExpandingOnMac) {
+  CreateView();
+  auto* controls_view = projects_panel_view()->controls_view_for_testing();
+  auto* projects_button = controls_view->projects_button_for_testing();
+  gfx::SlideAnimation animation(projects_panel_view());
+
+#if BUILDFLAG(IS_MAC)
+  // At 0.5 or less, opacity should be 0.
+  animation.Reset(0.0);
+  projects_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(0.0f, projects_button->layer()->opacity());
+
+  animation.Reset(0.5);
+  projects_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(0.0f, projects_button->layer()->opacity());
+
+  // At 0.75, opacity should be 0.5.
+  animation.Reset(0.75);
+  projects_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(0.5f, projects_button->layer()->opacity());
+
+  // At 1.0, opacity should be 1.0.
+  animation.Reset(1.0);
+  projects_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+#else
+  // On other platforms, it should always be 1.0.
+  animation.Reset(0.0);
+  projects_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+
+  animation.Reset(0.5);
+  projects_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+
+  animation.Reset(1.0);
+  projects_panel_view()->AnimationProgressed(&animation);
+  EXPECT_FLOAT_EQ(1.0f, projects_button->layer()->opacity());
+#endif
 }
