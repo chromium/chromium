@@ -35,9 +35,10 @@ public class JustNowProvider {
      * @return Whether the given {@code item} should be shown in the Just Now section.
      */
     public boolean isJustNowItem(OfflineItem item) {
+        if (mItems.contains(item.id)) return true;
         boolean shouldBeJustNowItem = isRecentOrInProgressDownload(item);
         if (shouldBeJustNowItem) mItems.add(item.id);
-        return mItems.contains(item.id);
+        return shouldBeJustNowItem;
     }
 
     private boolean isRecentOrInProgressDownload(OfflineItem item) {
