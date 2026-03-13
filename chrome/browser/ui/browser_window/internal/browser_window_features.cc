@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/tabs/split_view_iph_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/tab_strip_model_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_iph_controller.h"
@@ -338,8 +339,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   tab_strip_model_ = browser->GetTabStripModel();
 
-  tab_strip_service_feature_ =
-      std::make_unique<TabStripServiceMojoHandler>(browser, tab_strip_model_);
+  tab_strip_service_feature_ = std::make_unique<TabStripServiceMojoHandler>(
+      std::make_unique<tabs_api::tab_strip_model::TabStripModelInjector>(
+          browser, tab_strip_model_));
 
   memory_saver_bubble_controller_ =
       std::make_unique<memory_saver::MemorySaverBubbleController>(browser);

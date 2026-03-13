@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/translation_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
@@ -21,6 +22,8 @@ namespace events {
 class TabStripEventRecorder;
 }  // namespace events
 
+class PlatformAdaptersProvider;
+
 // To prevent re-entrancy, we use a session recorder to queue up all events
 // received during a subroutine. Once subroutine completes, we notify all
 // clients of the observed events before returning the result of the method
@@ -28,11 +31,8 @@ class TabStripEventRecorder;
 // strip api mojo handler for more details.
 class TabStripServiceImpl : public TabStripService {
  public:
-  TabStripServiceImpl(BrowserWindowInterface* browser,
-                      TabStripModel* tab_strip_model);
   TabStripServiceImpl(
-      std::unique_ptr<BrowserAdapter> browser_adapter,
-      std::unique_ptr<TabStripModelAdapter> tab_strip_model_adapter);
+      std::unique_ptr<PlatformAdaptersProvider> adapters_provider);
   TabStripServiceImpl(const TabStripServiceImpl&) = delete;
   TabStripServiceImpl operator=(const TabStripServiceImpl&&) = delete;
   ~TabStripServiceImpl() override;
@@ -92,12 +92,15 @@ class TabStripServiceImpl : public TabStripService {
   };
 
  private:
+  TabStripModelAdapter& tab_strip_model_adapter();
+  TranslationAdapter& translation_adapter();
+  BrowserAdapter& browser_adapter();
+
   void BroadcastEvents(
       const std::vector<tabs_api::events::Event>& events) const;
 
-  std::unique_ptr<tabs_api::BrowserAdapter> browser_adapter_;
-  std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter_;
-  std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
+  std::unique_ptr<PlatformAdaptersProvider> adapters_provider_;
+  std::unique_ptr<events::TabStripEventRecorder> recorder_;
 
   std::unique_ptr<SessionController> session_controller_;
   base::ObserverList<observation::TabStripApiBatchedObserver> observers_;

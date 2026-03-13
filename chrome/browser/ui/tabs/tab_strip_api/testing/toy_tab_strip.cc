@@ -15,13 +15,13 @@ ToyTabStrip::ToyTabStrip()
   GetNextId();
 }
 
-ToyTab ToyTabStrip::GetToyTabFor(tabs::TabHandle handle) const {
+std::optional<ToyTab> ToyTabStrip::GetToyTabFor(tabs::TabHandle handle) const {
   for (auto& tab : root_.tabs) {
     if (tab.tab_handle == handle) {
       return tab;
     }
   }
-  NOTREACHED() << "unknown handle passed in";
+  return std::nullopt;
 }
 
 void ToyTabStrip::AddTab(ToyTab tab) {

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_TAB_STRIP_MODEL_ADAPTER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_TAB_STRIP_MODEL_ADAPTER_H_
 
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -13,9 +12,9 @@
 
 namespace tabs_api {
 
-namespace converters {
+namespace types {
 struct TabStates;
-}  // namespace converters
+}  // namespace types
 
 struct InsertionParams {
   std::optional<int> index;
@@ -30,14 +29,8 @@ class TabStripModelAdapter {
  public:
   virtual ~TabStripModelAdapter() {}
 
-  virtual void AddModelObserver(TabStripModelObserver* observer) = 0;
-  virtual void RemoveModelObserver(TabStripModelObserver* observer) = 0;
-  virtual void AddCollectionObserver(
-      tabs::TabCollectionObserver* collection_observer) = 0;
-  virtual void RemoveCollectionObserver(
-      tabs::TabCollectionObserver* collection_observer) = 0;
   virtual std::vector<tabs::TabHandle> GetTabs() const = 0;
-  virtual converters::TabStates GetTabStates(tabs::TabHandle) const = 0;
+  virtual types::TabStates GetTabStates(tabs::TabHandle) const = 0;
   virtual const ui::ColorProvider& GetColorProvider() const = 0;
   virtual void CloseTab(size_t tab_index) = 0;
   virtual std::optional<int> GetIndexForHandle(

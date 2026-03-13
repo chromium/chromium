@@ -6,18 +6,24 @@ source_set("testing") {
   testonly = true
 
   sources = [
+    "injector.cc",
+    "injector.h",
     "toy_tab_strip.cc",
     "toy_tab_strip.h",
     "toy_tab_strip_browser_adapter.cc",
     "toy_tab_strip_browser_adapter.h",
+    "toy_tab_strip_event_bridge.cc",
+    "toy_tab_strip_event_bridge.h",
     "toy_tab_strip_model_adapter.cc",
     "toy_tab_strip_model_adapter.h",
+    "toy_tab_strip_translation_adapter.cc",
+    "toy_tab_strip_translation_adapter.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
-    "//chrome/browser/ui/tabs/tab_strip_api/converters",
+    "//chrome/browser/ui/tabs/tab_strip_api/types",
     "//url",
   ]
 }

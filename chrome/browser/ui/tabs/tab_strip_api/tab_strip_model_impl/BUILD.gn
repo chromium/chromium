@@ -1,0 +1,73 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This target contains all the tab strip model specific implementation.
+source_set("tab_strip_model_impl") {
+  sources = [
+    "browser_adapter_impl.cc",
+    "browser_adapter_impl.h",
+    "tab_strip_model_adapter_impl.cc",
+    "tab_strip_model_adapter_impl.h",
+    "tab_strip_model_event_bridge.cc",
+    "tab_strip_model_event_bridge.h",
+    "tab_strip_model_injector.cc",
+    "tab_strip_model_injector.h",
+  ]
+
+  # Remove this once tab_ui_helper.cc is modularized.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "converters",
+    "tree_builder",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/browser/ui/tabs/tab_strip_api/adapters",
+    "//chrome/browser/ui/tabs/tab_strip_api/types",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tab_strip_model_adapter_impl_unittest.cc" ]
+
+  deps = [
+    ":tab_strip_model_impl",
+    "converters",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "tab_strip_service_impl_browsertest.cc" ]
+
+  deps = [
+    ":tab_strip_model_impl",
+    "converters:browser_tests",
+    "tree_builder:browser_tests",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/tabs/tab_strip_api",
+    "//chrome/browser/ui/tabs/tab_strip_api:impl",
+    "//chrome/browser/ui/tabs/tab_strip_api/observation",
+    "//chrome/test:test_support",
+    "//components/browser_apis/tab_strip:mojom_experiment",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

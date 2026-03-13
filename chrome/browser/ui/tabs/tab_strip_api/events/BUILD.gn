@@ -5,8 +5,7 @@
 source_set("events") {
   sources = [
     "event.h",
-    "event_transformation.cc",
-    "event_transformation.h",
+    "event_observer.h",
     "tab_strip_event_recorder.cc",
     "tab_strip_event_recorder.h",
   ]
@@ -15,7 +14,6 @@ source_set("events") {
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/tabs/tab_strip_api/adapters",
-    "//chrome/browser/ui/tabs/tab_strip_api/converters",
     "//components/browser_apis/tab_strip:mojom",
     "//components/browser_apis/tab_strip/types",
   ]

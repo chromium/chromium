@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/tab_states.h"
 #include "ui/color/color_provider.h"
 
 namespace tabs_api::testing {
@@ -21,15 +22,8 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
 
   std::string GetWindowId() const override { return "1"; }
 
-  void AddModelObserver(TabStripModelObserver* observer) override;
-  void RemoveModelObserver(TabStripModelObserver* observer) override;
-  void AddCollectionObserver(
-      tabs::TabCollectionObserver* collection_observer) override;
-  void RemoveCollectionObserver(
-      tabs::TabCollectionObserver* collection_observer) override;
   std::vector<tabs::TabHandle> GetTabs() const override;
-  tabs_api::converters::TabStates GetTabStates(
-      tabs::TabHandle handle) const override;
+  types::TabStates GetTabStates(tabs::TabHandle handle) const override;
   const ui::ColorProvider& GetColorProvider() const override;
   void CloseTab(size_t tab_index) override;
   std::optional<int> GetIndexForHandle(

@@ -6,26 +6,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter_impl.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/platform_adapters_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/event_broadcaster.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_impl.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 TabStripServiceMojoHandler::TabStripServiceMojoHandler(
-    BrowserWindowInterface* browser,
-    TabStripModel* tab_strip_model)
-    : TabStripServiceMojoHandler(
-          std::make_unique<tabs_api::TabStripServiceImpl>(browser,
-                                                          tab_strip_model),
-          std::make_unique<tabs_api::TabStripModelAdapterImpl>(
-              tab_strip_model,
-              base::NumberToString(browser->GetSessionID().id()))) {}
-
-TabStripServiceMojoHandler::TabStripServiceMojoHandler(
-    std::unique_ptr<tabs_api::TabStripService> service,
-    std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter)
-    : tab_strip_service_(std::move(service)) {
+    std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider)
+    : tab_strip_service_(std::make_unique<tabs_api::TabStripServiceImpl>(
+          std::move(provider))) {
   tab_strip_service_->AddObserver(this);
 }
 

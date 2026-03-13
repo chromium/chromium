@@ -8,32 +8,22 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/types/tab_states.h"
 
 namespace tabs_api::testing {
 
 ToyTabStripModelAdapter::ToyTabStripModelAdapter(ToyTabStrip* tab_strip)
     : tab_strip_(tab_strip) {}
 
-void ToyTabStripModelAdapter::AddModelObserver(
-    TabStripModelObserver* observer) {}
-void ToyTabStripModelAdapter::RemoveModelObserver(
-    TabStripModelObserver* observer) {}
-void ToyTabStripModelAdapter::AddCollectionObserver(
-    tabs::TabCollectionObserver* collection_observer) {}
-
-void ToyTabStripModelAdapter::RemoveCollectionObserver(
-    tabs::TabCollectionObserver* collection_observer) {}
-
 std::vector<tabs::TabHandle> ToyTabStripModelAdapter::GetTabs() const {
   return tab_strip_->GetTabs();
 }
 
-tabs_api::converters::TabStates ToyTabStripModelAdapter::GetTabStates(
+tabs_api::types::TabStates ToyTabStripModelAdapter::GetTabStates(
     tabs::TabHandle handle) const {
   return {
-      .is_active = tab_strip_->GetToyTabFor(handle).active,
-      .is_selected = tab_strip_->GetToyTabFor(handle).selected,
+      .is_active = tab_strip_->GetToyTabFor(handle)->active,
+      .is_selected = tab_strip_->GetToyTabFor(handle)->selected,
   };
 }
 

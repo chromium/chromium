@@ -11,9 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/event.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "components/tabs/public/tab_collection.h"
-#include "components/tabs/public/tab_collection_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/events/event_observer.h"
 
 namespace tabs_api::events {
 
@@ -24,14 +22,13 @@ namespace tabs_api::events {
 // then replay them at a specific time.
 //
 // The notification mechanism is a simple |RepeatingCallback|.
-class TabStripEventRecorder : public TabStripModelObserver,
-                              public tabs::TabCollectionObserver {
+class TabStripEventRecorder : public EventObserver {
  public:
   using EventNotificationCallback =
       base::RepeatingCallback<void(const std::vector<Event>&)>;
 
-  TabStripEventRecorder(const TabStripModelAdapter* tab_strip_model_adapter,
-                        EventNotificationCallback event_notification_callback);
+  explicit TabStripEventRecorder(
+      EventNotificationCallback event_notification_callback);
   TabStripEventRecorder(const TabStripEventRecorder&) = delete;
   TabStripEventRecorder& operator=(const TabStripEventRecorder&) = delete;
   ~TabStripEventRecorder() override;
@@ -45,29 +42,9 @@ class TabStripEventRecorder : public TabStripModelObserver,
   // Whether or not the recorder has recorded events.
   bool HasRecordedEvents() const;
 
-  ///////////////////////////////////////////////////////////////////////////
-  // Integration points with external services.
-
-  // TabStripModelObserver overrides
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      int index,
-                      TabChangeType change_type) override;
-  void OnTabGroupChanged(const TabGroupChange& change) override;
-
-  // tabs::TabCollectionObserver
-  void OnChildrenAdded(const tabs::TabCollection::Position& position,
-                       const tabs::TabCollectionNodes& handles,
-                       bool insert_from_detached) override;
-
-  void OnChildrenRemoved(const tabs::TabCollection::Position& position,
-                         const tabs::TabCollectionNodes& handles) override;
-
-  void OnChildMoved(const tabs::TabCollection::Position& to_position,
-                    const NodeData& node_data) override;
+  // EventObserver:
+  void OnEvent(Event event) override;
+  void OnEvents(std::vector<Event> event) override;
 
  protected:
   // Consumes the event.
@@ -84,7 +61,6 @@ class TabStripEventRecorder : public TabStripModelObserver,
   Mode mode_ = Mode::kPassthrough;
   // Recorded events.
   std::queue<Event> recorded_;
-  raw_ptr<const TabStripModelAdapter> tab_strip_model_adapter_;
   EventNotificationCallback event_notification_callback_;
 };
 

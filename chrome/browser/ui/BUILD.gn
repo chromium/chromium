@@ -4831,7 +4831,8 @@ static_library("ui") {
       "//chrome/browser/ui/side_search",
       "//chrome/browser/ui/tabs/projects:impl",
       "//chrome/browser/ui/tabs/tab_strip_api",
-      "//chrome/browser/ui/tabs/tab_strip_api/converters",
+      "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
+      "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
@@ -4932,7 +4933,8 @@ static_library("ui") {
     # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
     allow_circular_includes_from += [
       # Remove this circular dependency once tab_ui_helpers are modularized.
-      "//chrome/browser/ui/tabs/tab_strip_api/converters",
+      "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
+      "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
 
       "//chrome/browser/ui/qrcode_generator:impl",
       "//chrome/browser/ui/send_tab_to_self:impl",

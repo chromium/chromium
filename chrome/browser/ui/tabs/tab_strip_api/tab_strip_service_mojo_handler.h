@@ -20,8 +20,11 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class BrowserWindowInterface;
-class TabStripModel;
+namespace tabs_api {
+
+class PlatformAdaptersProvider;
+
+}  // namespace tabs_api
 
 // TODO (crbug.com/409086859). See bug for dd.
 // tabs_api::mojom::TabStripController is an experimental TabStrip Api between
@@ -35,14 +38,11 @@ class TabStripServiceMojoHandler
     : public tabs_api::observation::TabStripApiBatchedObserver,
       public tabs_api::mojom::TabStripService,
       public tabs_api::mojom::TabStripExperimentService,
-      public TabStripModelObserver,
       public TabStripServiceFeature {
  public:
-  TabStripServiceMojoHandler(BrowserWindowInterface* browser,
-                             TabStripModel* tab_strip_model);
-  TabStripServiceMojoHandler(
-      std::unique_ptr<tabs_api::TabStripService> service,
-      std::unique_ptr<tabs_api::TabStripModelAdapter> tab_strip_model_adapter);
+  // The provider must outlive the handler.
+  explicit TabStripServiceMojoHandler(
+      std::unique_ptr<tabs_api::PlatformAdaptersProvider> provider);
   TabStripServiceMojoHandler(const TabStripServiceMojoHandler&&) = delete;
   TabStripServiceMojoHandler& operator=(const TabStripServiceMojoHandler&) =
       delete;

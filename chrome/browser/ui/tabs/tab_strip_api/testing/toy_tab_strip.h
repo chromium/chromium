@@ -42,7 +42,7 @@ class ToyTabStrip {
   ToyTabStrip& operator=(const ToyTabStrip&) = delete;
   ~ToyTabStrip() = default;
 
-  ToyTab GetToyTabFor(tabs::TabHandle handle) const;
+  std::optional<ToyTab> GetToyTabFor(tabs::TabHandle handle) const;
 
   void AddTab(ToyTab tab);
   std::vector<tabs::TabHandle> GetTabs();

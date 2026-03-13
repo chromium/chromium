@@ -17,7 +17,7 @@ class TestableRecorder : public TabStripEventRecorder {
   // init'ing with nullptr is not correct, but we need to redesign the event
   // transformation code to make this more easy to test.
   explicit TestableRecorder(EventNotificationCallback notification)
-      : TabStripEventRecorder(nullptr, std::move(notification)) {}
+      : TabStripEventRecorder(std::move(notification)) {}
   void Handle(Event event) { TabStripEventRecorder::Handle(std::move(event)); }
 };
 

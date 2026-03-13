@@ -1,0 +1,14 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Component specific representation of tab ideas. This differs from the
+# the types defined in //components/browser_apis/tab_strip/types in that
+# these types are meant for models integrating with the tab strip
+# service. That is, the types defined here are more "internal."
+#
+# If the types need to be accessible to clients, please define them in
+# //compnoents/browser_apis/tab_strip/types.
+source_set("types") {
+  sources = [ "tab_states.h" ]
+}
