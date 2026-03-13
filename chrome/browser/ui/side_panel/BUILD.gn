@@ -4,6 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
+# Contains side panel infrastructure code for all platforms.
+# Platform-specific code is conditionally compiled in.
 source_set("side_panel") {
   sources = [
     "side_panel_content_proxy.cc",
@@ -50,12 +52,38 @@ source_set("side_panel") {
     sources += [
       "android/side_panel_native_view_android.cc",
       "android/side_panel_native_view_android.h",
+      "android/side_panel_ui_android.cc",
+      "android/side_panel_ui_android.h",
+    ]
+
+    deps += [
+      ":jni_headers",
+      "//base",
+      "//third_party/jni_zero",
+      "//ui/base",
     ]
   }
 }
 
-# Android can't depend on anything that needs ui/views.
-if (!is_android) {
+# Platform-specific targets that don't fit in the "side_panel" target above.
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+
+  android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidBridge.java" ]
+
+    deps = [
+      "//build/android:build_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/side_panel/SidePanelUIAndroidBridge.java" ]
+  }
+} else {
   source_set("side_panel_views_dependent") {
     sources = [
       "side_panel_action_callback.cc",
@@ -87,5 +115,24 @@ if (!is_android) {
 
     allow_circular_includes_from =
         [ "//chrome/browser/ui/views/side_panel:side_panel" ]
+  }
+}
+
+# Contains C++ unit tests for side panel infrastructure on all platforms.
+# Platform-specific tests are conditionally compiled in.
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_android) {
+    sources += [ "android/side_panel_ui_android_unittest.cc" ]
+
+    deps += [
+      ":side_panel",
+      "//base",
+      "//chrome/browser/ui/side_panel/test:native_unit_test_support_jni",
+      "//testing/gtest",
+    ]
   }
 }
