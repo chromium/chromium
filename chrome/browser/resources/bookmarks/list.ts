@@ -21,7 +21,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {deselectItems, selectAll, selectItem, updateAnchor} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
-import {MenuSource} from './constants.js';
+import {MenuSource, ROOT_NODE_ID} from './constants.js';
 import type {BookmarksItemElement} from './item.js';
 import {getCss} from './list.css.js';
 import {getHtml} from './list.html.js';
@@ -143,6 +143,13 @@ export class BookmarksListElement extends BookmarksListElementBase {
   }
 
   override onStateChanged(state: BookmarksPageState) {
+    // The tree may be ill-formed, temporarily during updates. In that case,
+    // ignore the update.
+    const children = state.nodes?.[ROOT_NODE_ID]?.children;
+    if (!children || children.length === 0) {
+      return;
+    }
+
     this.displayedIds_ = getDisplayedList(state);
     this.searchTerm_ = state.search.term;
     this.selectedFolder_ = state.selectedFolder;

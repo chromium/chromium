@@ -87,8 +87,6 @@ export const ROOT_NODE_ID: string = '0';
 export const ACCOUNT_HEADING_NODE_ID: string = 'account_heading';
 export const LOCAL_HEADING_NODE_ID: string = 'local_heading';
 
-export const BOOKMARKS_BAR_ID: string = '1';
-
 export const OPEN_CONFIRMATION_LIMIT: number = 15;
 
 // Maximum allowed length for a bookmark URL and title.
