@@ -75,7 +75,7 @@ String EventListenerBreakpointKey(const String& event_name,
                                   const String& target_name) {
   if (target_name.empty() || target_name == "*")
     return StrCat({event_name, "$$*"});
-  return StrCat({event_name, "$$", target_name.LowerASCII()});
+  return StrCat({event_name, "$$", target_name.ToAsciiLower()});
 }
 }  // namespace
 

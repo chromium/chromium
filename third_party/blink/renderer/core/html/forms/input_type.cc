@@ -175,7 +175,7 @@ const AtomicString& InputType::NormalizeTypeName(
   if (type_name.empty())
     return input_type_names::kText;
 
-  AtomicString type_name_lower = type_name.LowerASCII();
+  AtomicString type_name_lower = type_name.ToAsciiLower();
 
 #define NORMALIZE_INPUT_TYPE(input_type, class_name)   \
   if (type_name_lower == input_type_names::input_type) \

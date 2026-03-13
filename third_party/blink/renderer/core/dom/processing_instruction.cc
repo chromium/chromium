@@ -187,7 +187,7 @@ void ProcessingInstruction::ProcessAttributesIfNeeded() {
 
 AtomicString ProcessingInstruction::LowercaseIfNeeded(
     const AtomicString& name) const {
-  return GetDocument().IsHTMLDocument() ? name.LowerASCII() : name;
+  return GetDocument().IsHTMLDocument() ? name.ToAsciiLower() : name;
 }
 
 bool ProcessingInstruction::ValidateAttributeName(

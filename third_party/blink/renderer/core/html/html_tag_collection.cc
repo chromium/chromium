@@ -30,7 +30,7 @@ namespace blink {
 HTMLTagCollection::HTMLTagCollection(ContainerNode& root_node,
                                      const AtomicString& qualified_name)
     : TagCollection(root_node, kHTMLTagCollectionType, qualified_name),
-      lowered_qualified_name_(qualified_name.LowerASCII()) {
+      lowered_qualified_name_(qualified_name.ToAsciiLower()) {
   DCHECK(IsA<HTMLDocument>(root_node.GetDocument()));
 }
 

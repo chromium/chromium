@@ -125,7 +125,7 @@ String ColorInputType::SanitizeValue(const String& proposed_value) const {
       // it opaque). Convert to sRGB and serialize as #rrggbb.
       return Color::FromRGBA32(color.MakeOpaque().Rgb())
           .SerializeAsCanvasColor()
-          .LowerASCII();
+          .ToAsciiLower();
     }
     return kFallbackColorValue;
   }
@@ -133,7 +133,7 @@ String ColorInputType::SanitizeValue(const String& proposed_value) const {
   if (!IsValidColorString(proposed_value)) {
     return kFallbackColorValue;
   }
-  return proposed_value.LowerASCII();
+  return proposed_value.ToAsciiLower();
 }
 
 Color ColorInputType::ValueAsColor() const {

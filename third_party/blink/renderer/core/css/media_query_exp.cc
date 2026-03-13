@@ -512,7 +512,7 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     return std::nullopt;
   }
 
-  DCHECK_EQ(media_feature, media_feature.LowerASCII())
+  DCHECK_EQ(media_feature, media_feature.ToAsciiLower())
       << "Under the assumption that custom properties in style() container "
          "queries are currently the only case sensitive features";
 

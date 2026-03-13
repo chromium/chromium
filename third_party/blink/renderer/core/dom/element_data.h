@@ -68,7 +68,7 @@ class ElementData : public GarbageCollected<ElementData> {
     if (class_names.ContainsNoAsciiUpper()) {
       return SetClass(class_names);
     }
-    return SetClass(class_names.LowerASCII());
+    return SetClass(class_names.ToAsciiLower());
   }
   const SpaceSplitString& ClassNames() const { return class_names_; }
 

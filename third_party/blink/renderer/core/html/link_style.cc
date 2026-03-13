@@ -342,7 +342,7 @@ void LinkStyle::Process(LinkLoadParameters::Reason reason) {
       owner_->TypeValue().DeprecatedLower(),
       owner_->AsValue().DeprecatedLower(), owner_->Media().DeprecatedLower(),
       owner_->nonce(), owner_->IntegrityValue(),
-      owner_->FetchPriorityHintValue().LowerASCII(),
+      owner_->FetchPriorityHintValue().ToAsciiLower(),
       owner_->GetReferrerPolicy(),
       owner_->GetNonEmptyURLAttribute(html_names::kHrefAttr),
       owner_->FastGetAttribute(html_names::kImagesrcsetAttr),

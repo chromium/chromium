@@ -73,7 +73,8 @@ Patch* Patch::Prepare(ContainerNode* scope, const AtomicString& target) {
       continue;
     }
 
-    AtomicString current_target(processing_instruction->target().LowerASCII());
+    AtomicString current_target(
+        processing_instruction->target().ToAsciiLower());
     DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
     DEFINE_STATIC_LOCAL(AtomicString, kStart, ("start"));
     DEFINE_STATIC_LOCAL(AtomicString, kEnd, ("end"));

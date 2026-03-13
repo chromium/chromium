@@ -134,7 +134,7 @@ Node* DOMPatchSupport::PatchNode(Node* node,
     old_list.push_back(CreateDigest(child, nullptr));
 
   // Compose the new list.
-  String markup_copy = markup.LowerASCII();
+  String markup_copy = markup.ToAsciiLower();
   HeapVector<Member<Digest>> new_list;
   for (Node* child = parent_node->firstChild(); child != node;
        child = child->nextSibling())

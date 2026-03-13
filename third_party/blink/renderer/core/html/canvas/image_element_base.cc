@@ -23,7 +23,7 @@ Image::ImageDecodingMode ImageElementBase::ParseImageDecodingMode(
   if (async_attr_value.IsNull())
     return Image::kUnspecifiedDecode;
 
-  const auto& value = async_attr_value.LowerASCII();
+  const auto& value = async_attr_value.ToAsciiLower();
   if (value == "async")
     return Image::kAsyncDecode;
   if (value == "sync")

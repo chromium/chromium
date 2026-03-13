@@ -116,7 +116,7 @@ bool WebElement::HasHTMLTagName(const WebString& tag_name) const {
   const auto* html_element =
       blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
   return html_element &&
-         html_element->localName() == String(tag_name).LowerASCII();
+         html_element->localName() == String(tag_name).ToAsciiLower();
 }
 
 bool WebElement::HasAttribute(const WebString& attr_name) const {

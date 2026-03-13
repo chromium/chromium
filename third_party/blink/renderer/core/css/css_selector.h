@@ -925,7 +925,7 @@ inline void CSSSelector::SetValue(const AtomicString& value,
     return;
   }
   data_.rare_data_->matching_value_ =
-      match_lower_case ? value.LowerASCII() : value;
+      match_lower_case ? value.ToAsciiLower() : value;
   data_.rare_data_->serializing_value_ = value;
 }
 

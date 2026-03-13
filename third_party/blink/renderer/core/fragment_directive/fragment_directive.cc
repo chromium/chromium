@@ -177,7 +177,7 @@ void FragmentDirective::ParseDirectives(const StringView& fragment_directive) {
       if (value.empty() ||
           (RuntimeEnabledFeatures::
                ScrollToTextFragmentUniqueFragmentsEnabled() &&
-           !text_directives.insert(value.LowerASCII()).is_new_entry)) {
+           !text_directives.insert(value.ToAsciiLower()).is_new_entry)) {
         continue;
       }
 

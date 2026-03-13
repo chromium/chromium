@@ -1276,7 +1276,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
   AtomicString element_name;
   const bool has_q_name = ConsumeName(stream, element_name, namespace_prefix);
   if (context_->IsHTMLDocument()) {
-    element_name = element_name.LowerASCII();
+    element_name = element_name.ToAsciiLower();
   }
 
   // A tag name is not valid following a pseudo-element. This can happen for
@@ -1499,7 +1499,7 @@ bool CSSSelectorParser::ConsumeAttribute(CSSParserTokenStream& stream) {
   stream.ConsumeWhitespace();
 
   if (context_->IsHTMLDocument()) {
-    attribute_name = attribute_name.LowerASCII();
+    attribute_name = attribute_name.ToAsciiLower();
   }
 
   AtomicString namespace_uri = DetermineNamespace(namespace_prefix);

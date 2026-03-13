@@ -96,7 +96,7 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   unsigned key_begin, key_end;
   unsigned value_begin, value_end;
 
-  const String buffer = feature_string.LowerASCII();
+  const String buffer = feature_string.ToAsciiLower();
   const unsigned length = buffer.length();
   for (unsigned i = 0; i < length;) {
     // skip to first non-separator (start of key name), but don't skip

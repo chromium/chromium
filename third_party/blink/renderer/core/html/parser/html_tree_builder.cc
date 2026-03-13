@@ -574,7 +574,7 @@ void MapLoweredLocalNameToName(PrefixedNameToQualifiedNameMap* map,
   for (size_t i = 0; i < names.size(); ++i) {
     const QualifiedName& name = *names[i];
     const AtomicString& local_name = name.LocalName();
-    AtomicString lowered_local_name = local_name.LowerASCII();
+    AtomicString lowered_local_name = local_name.ToAsciiLower();
     if (lowered_local_name != local_name)
       map->insert(lowered_local_name, name);
   }

@@ -163,7 +163,7 @@ bool AnchorElementUtils::HasRel(uint32_t link_relations, uint32_t relation) {
 uint32_t AnchorElementUtils::ParseRelAttribute(const AtomicString& value,
                                                Document& document) {
   uint32_t link_relations = 0;
-  SpaceSplitString new_link_relations(value.LowerASCII());
+  SpaceSplitString new_link_relations(value.ToAsciiLower());
   // FIXME: Add link relations as they are implemented
   if (new_link_relations.Contains(AtomicString("noreferrer"))) {
     link_relations |= kRelationNoReferrer;

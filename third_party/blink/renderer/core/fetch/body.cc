@@ -301,7 +301,7 @@ ScriptPromise<FormData> Body::formData(ScriptState* script_state,
   };
   const ParsedContentType parsed_type_with_parameters(ContentType());
   const String parsed_type =
-      parsed_type_with_parameters.MimeType().LowerASCII();
+      parsed_type_with_parameters.MimeType().ToAsciiLower();
   if (parsed_type == "multipart/form-data") {
     const String boundary =
         parsed_type_with_parameters.ParameterValueForName("boundary");

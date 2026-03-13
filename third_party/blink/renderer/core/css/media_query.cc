@@ -79,7 +79,7 @@ MediaQuery* MediaQuery::CreateNotAll() {
 MediaQuery::MediaQuery(RestrictorType restrictor,
                        String media_type,
                        const ConditionalExpNode* exp_node)
-    : media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
+    : media_type_(AttemptStaticStringCreation(media_type.ToAsciiLower())),
       exp_node_(exp_node),
       restrictor_(restrictor) {}
 

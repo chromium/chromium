@@ -559,7 +559,7 @@ CSSSelectorList* CSSParserImpl::ParsePageSelector(
   if (!pseudo.IsNull()) {
     CSSSelector selector;
     selector.SetMatch(CSSSelector::kPagePseudoClass);
-    selector.UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
+    selector.UpdatePseudoPage(pseudo.ToAsciiLower(), context.GetDocument());
     if (selector.GetPseudoType() == CSSSelector::kPseudoUnknown) {
       return nullptr;
     }

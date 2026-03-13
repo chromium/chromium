@@ -65,7 +65,7 @@ String FetchHeaderList::ExtractMIMEType() const {
     return String();
   }
   // 3. Return MIMEType, byte lowercased.
-  return mime_type.LowerASCII();
+  return mime_type.ToAsciiLower();
 }
 
 size_t FetchHeaderList::size() const {
@@ -167,7 +167,7 @@ Vector<FetchHeaderList::Header> FetchHeaderList::SortAndCombine() const {
   // 4. Return |headers|."
   Vector<FetchHeaderList::Header> ret;
   for (auto it = header_list_.cbegin(); it != header_list_.cend();) {
-    String header_name = it->first.LowerASCII();
+    String header_name = it->first.ToAsciiLower();
     if (header_name == "set-cookie") {
       auto set_cookie_end = header_list_.upper_bound(header_name);
       for (; it != set_cookie_end; it++) {

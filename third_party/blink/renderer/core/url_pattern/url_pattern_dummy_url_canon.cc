@@ -136,7 +136,7 @@ base::expected<String, String> CanonicalizeProtocolInternal(
       // If we do this with a single letter it looks to KURL like a Windows
       // file path and is turned into a file URL. Canonicalizing 'a' should
       // not return 'file'.
-      return base::ok(input.LowerASCII());
+      return base::ok(input.ToAsciiLower());
     } else {
       return base::ok(dummy_url.Protocol());
     }

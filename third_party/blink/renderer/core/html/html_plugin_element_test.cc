@@ -112,7 +112,7 @@ TEST_P(HTMLPlugInElementTest, RemovePlugin) {
   auto* plugin = To<HTMLPlugInElement>(
       GetDocument().getElementById(AtomicString("test_plugin")));
   ASSERT_TRUE(plugin);
-  EXPECT_EQ(container_type, plugin->tagName().LowerASCII());
+  EXPECT_EQ(container_type, plugin->tagName().ToAsciiLower());
 
   UpdateAllLifecyclePhasesForTest();
   plugin->UpdatePlugin();

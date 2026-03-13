@@ -418,7 +418,7 @@ bool IsRootEditableElementWithCounting(const Element& element) {
   }
   auto user_modify = style->UsedUserModify();
   AtomicString ce_value =
-      element.FastGetAttribute(html_names::kContenteditableAttr).LowerASCII();
+      element.FastGetAttribute(html_names::kContenteditableAttr).ToAsciiLower();
   if (ce_value.IsNull() || ce_value == keywords::kFalse) {
     if (user_modify == EUserModify::kReadWritePlaintextOnly) {
       UseCounter::Count(doc, WebFeature::kPlainTextEditingEffective);
@@ -3775,7 +3775,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     AtomicString lowercase_id;
     if (GetDocument().InQuirksMode() &&
         !params.new_value.ContainsNoAsciiUpper()) {
-      lowercase_id = params.new_value.LowerASCII();
+      lowercase_id = params.new_value.ToAsciiLower();
     }
     const AtomicString& new_id = lowercase_id ? lowercase_id : params.new_value;
     if (new_id != GetElementData()->IdForStyleResolution()) {
@@ -4030,7 +4030,7 @@ bool Element::IsExcludedAttribute(
       qname.LocalName().ContainsNoAsciiUpper()) {
     return false;
   }
-  const QualifiedName lower_local_qname(qname.LocalName().LowerASCII());
+  const QualifiedName lower_local_qname(qname.LocalName().ToAsciiLower());
   return lower_local_qname.IsDefinedName();
 }
 
@@ -4146,7 +4146,7 @@ AtomicString Element::LocalNameForSelectorMatching() const {
   if (IsHTMLElement() || !IsA<HTMLDocument>(GetDocument())) {
     return localName();
   }
-  return localName().LowerASCII();
+  return localName().ToAsciiLower();
 }
 
 const AtomicString& Element::LocateNamespacePrefix(
@@ -13180,7 +13180,7 @@ Attr* Element::setAttributeNode(Attr* attr_node,
   }
 
   if (!IsHTMLElement() && IsA<HTMLDocument>(attr_node->GetDocument()) &&
-      attr_node->name() != attr_node->name().LowerASCII()) {
+      attr_node->name() != attr_node->name().ToAsciiLower()) {
     UseCounter::Count(
         GetDocument(),
         WebFeature::

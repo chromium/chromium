@@ -237,7 +237,7 @@ void HTMLDialogElement::RequestCloseInternal(const String& return_value,
 
 ClosedByState HTMLDialogElement::ClosedBy() const {
   auto attribute_value =
-      FastGetAttribute(html_names::kClosedbyAttr).LowerASCII();
+      FastGetAttribute(html_names::kClosedbyAttr).ToAsciiLower();
   if (attribute_value == keywords::kAny) {
     return ClosedByState::kAny;
   } else if (attribute_value == keywords::kNone) {

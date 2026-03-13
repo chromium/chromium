@@ -104,7 +104,7 @@ bool ValidatePseudoElement(String& pseudo, ExceptionState& exception_state) {
         sb.Append(pseudo);
         pseudo = sb.ToString();
       }
-      pseudo = pseudo.LowerASCII();
+      pseudo = pseudo.ToAsciiLower();
       return true;
   }
 }

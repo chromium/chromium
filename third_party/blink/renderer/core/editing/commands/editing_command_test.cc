@@ -65,7 +65,7 @@ TEST_F(EditingCommandTest, CreateCommandFromStringCaseFolding) {
   Editor& dummy_editor = GetDocument().GetFrame()->GetEditor();
   for (const auto& entry : kCommandNameEntries) {
     const EditorCommand lower_name_command =
-        dummy_editor.CreateCommand(String(entry.name).LowerASCII());
+        dummy_editor.CreateCommand(String(entry.name).ToAsciiLower());
     EXPECT_EQ(static_cast<int>(entry.type), lower_name_command.IdForHistogram())
         << entry.name;
     const EditorCommand upper_name_command =

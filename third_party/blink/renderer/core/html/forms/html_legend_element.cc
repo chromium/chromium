@@ -59,7 +59,7 @@ LayoutObject* HTMLLegendElement::CreateLayoutObject(
   // CollectStyleForPresentationAttribute()|.
   bool should_count;
   const AtomicString& align_value =
-      FastGetAttribute(html_names::kAlignAttr).LowerASCII();
+      FastGetAttribute(html_names::kAlignAttr).ToAsciiLower();
   switch (style.GetTextAlign()) {
     case ETextAlign::kLeft:
       should_count = align_value != "left";

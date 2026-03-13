@@ -230,7 +230,7 @@ bool HTMLFormControlElement::IsAutocompleteEmailUrlOrPassword() const {
       FastGetAttribute(html_names::kAutocompleteAttr);
   if (autocomplete.IsNull())
     return false;
-  return values.Contains(autocomplete.LowerASCII());
+  return values.Contains(autocomplete.ToAsciiLower());
 }
 
 const AtomicString& HTMLFormControlElement::autocapitalize() const {
@@ -401,7 +401,7 @@ HTMLFormControlElement::popoverTargetElement() {
   // The default action is "toggle".
   PopoverTriggerAction action = PopoverTriggerAction::kToggle;
   auto action_value =
-      getAttribute(html_names::kPopovertargetactionAttr).LowerASCII();
+      getAttribute(html_names::kPopovertargetactionAttr).ToAsciiLower();
   if (action_value == "show") {
     action = PopoverTriggerAction::kShow;
   } else if (action_value == "hide") {

@@ -95,7 +95,7 @@ void HTMLTrackElement::ParseAttribute(
     // the text track must update accordingly...
   } else if (name == html_names::kKindAttr) {
     std::optional<V8TextTrackKind> kind;
-    AtomicString lower_case_value = params.new_value.LowerASCII();
+    AtomicString lower_case_value = params.new_value.ToAsciiLower();
     // 'missing value default' ("subtitles")
     if (lower_case_value.IsNull()) {
       // 'missing value default' ("subtitles")

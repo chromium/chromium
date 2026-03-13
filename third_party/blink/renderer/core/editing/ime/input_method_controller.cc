@@ -114,7 +114,7 @@ AtomicString GetInputModeAttribute(Element* element) {
 
   // TODO(dtapuska): We may wish to restrict this to a yet to be proposed
   // <contenteditable> or <richtext> element Mozilla discussed at TPAC 2016.
-  return element->FastGetAttribute(html_names::kInputmodeAttr).LowerASCII();
+  return element->FastGetAttribute(html_names::kInputmodeAttr).ToAsciiLower();
 }
 
 AtomicString GetEnterKeyHintAttribute(Element* element) {
@@ -135,7 +135,8 @@ AtomicString GetEnterKeyHintAttribute(Element* element) {
   if (!query_attribute)
     return AtomicString();
 
-  return element->FastGetAttribute(html_names::kEnterkeyhintAttr).LowerASCII();
+  return element->FastGetAttribute(html_names::kEnterkeyhintAttr)
+      .ToAsciiLower();
 }
 
 AtomicString GetVirtualKeyboardPolicyAttribute(Element* element) {
@@ -150,7 +151,7 @@ AtomicString GetVirtualKeyboardPolicyAttribute(Element* element) {
   if (virtual_keyboard_policy_value.IsNull())
     return AtomicString();
 
-  return virtual_keyboard_policy_value.LowerASCII();
+  return virtual_keyboard_policy_value.ToAsciiLower();
 }
 
 constexpr int kInvalidDeletionLength = -1;

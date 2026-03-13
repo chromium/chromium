@@ -46,7 +46,7 @@ ClassCollection::ClassCollection(ContainerNode& root_node,
                      kClassCollectionType,
                      kDoesNotOverrideItemAfter),
       class_names_(MakeGarbageCollected<SpaceSplitStringWrapper>(
-          GetDocument().InQuirksMode() ? class_names.LowerASCII()
+          GetDocument().InQuirksMode() ? class_names.ToAsciiLower()
                                        : class_names)) {}
 
 ClassCollection::ClassCollection(ContainerNode& root_node,

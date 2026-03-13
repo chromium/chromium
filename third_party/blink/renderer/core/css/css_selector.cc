@@ -923,7 +923,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
                                    bool has_arguments,
                                    CSSParserMode mode) {
   DCHECK(Match() == kPseudoClass || Match() == kPseudoElement);
-  AtomicString lower_value = value.LowerASCII();
+  AtomicString lower_value = value.ToAsciiLower();
   PseudoType pseudo_type = CSSSelectorParser::ParsePseudoType(
       lower_value, has_arguments, context.GetDocument());
   SetPseudoType(pseudo_type);

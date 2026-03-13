@@ -335,7 +335,7 @@ String Blob::NormalizeType(const String& type) {
   if (!IsValidBlobType(type)) {
     return g_empty_string;
   }
-  return type.LowerASCII();
+  return type.ToAsciiLower();
 }
 
 }  // namespace blink

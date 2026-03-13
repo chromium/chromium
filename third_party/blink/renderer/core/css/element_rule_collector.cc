@@ -924,7 +924,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       const AtomicString& lower_name =
           (lower_attrs_in_default_ns &&
            attributes[attr_idx].NamespaceURI() == g_null_atom)
-              ? attribute_name.LowerASCII()
+              ? attribute_name.ToAsciiLower()
               : attribute_name;
 
       for (const auto bundle : match_request.RuleSetsWithAttrRules()) {
@@ -954,7 +954,7 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
         !input_type.IsNull()) {
       for (const auto bundle : match_request.RuleSetsWithInputRules()) {
         if (CollectMatchingRulesForList<stop_at_first_match>(
-                bundle.rule_set->InputRules(input_type.LowerASCII()),
+                bundle.rule_set->InputRules(input_type.ToAsciiLower()),
                 match_request, bundle.rule_set, bundle.style_sheet_index,
                 checker, context) &&
             stop_at_first_match) {

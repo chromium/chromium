@@ -368,7 +368,7 @@ String TrustedTypePolicyFactory::getPropertyType(
     const String& propertyName,
     const String& elementNS) const {
   return getTrustedTypeName(FindEntryInAttributeTypeVector(
-      GetPropertyTypeVector(), tagName.LowerASCII(), propertyName, elementNS,
+      GetPropertyTypeVector(), tagName.ToAsciiLower(), propertyName, elementNS,
       String()));
 }
 
@@ -378,8 +378,8 @@ String TrustedTypePolicyFactory::getAttributeType(
     const String& tagNS,
     const String& attributeNS) const {
   return getTrustedTypeName(FindEntryInAttributeTypeVector(
-      GetAttributeTypeVector(), tagName.LowerASCII(),
-      attributeName.LowerASCII(), tagNS, attributeNS));
+      GetAttributeTypeVector(), tagName.ToAsciiLower(),
+      attributeName.ToAsciiLower(), tagNS, attributeNS));
 }
 
 ScriptObject TrustedTypePolicyFactory::getTypeMapping(

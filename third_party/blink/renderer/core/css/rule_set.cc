@@ -715,7 +715,7 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
                  selector.TagQName().NamespaceURI() == g_star_atom;
         });
       }
-      AddToBucket(values.attr_value.LowerASCII(), input_rules_, rule_data);
+      AddToBucket(values.attr_value.ToAsciiLower(), input_rules_, rule_data);
       return;
     }
 
@@ -1685,7 +1685,7 @@ bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
     // Building the tree failed, so always check.
     return false;
   }
-  return !it->value->AnyMatch(value.LowerASCII().Utf8());
+  return !it->value->AnyMatch(value.ToAsciiLower().Utf8());
 }
 
 void RuleSet::CreateSubstringMatchers(
@@ -1723,7 +1723,7 @@ void RuleSet::CreateSubstringMatchers(
         }
       }
 
-      std::string pattern = values.attr_value.LowerASCII().Utf8();
+      std::string pattern = values.attr_value.ToAsciiLower().Utf8();
 
       // SubstringSetMatcher doesn't like duplicates, and since we only
       // use the tree for true/false information anyway, we can remove them.

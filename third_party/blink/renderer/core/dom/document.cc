@@ -1282,7 +1282,7 @@ bool Document::IsInOutermostMainFrame() const {
 }
 
 AtomicString Document::ConvertLocalName(const AtomicString& name) {
-  return IsA<HTMLDocument>(this) ? name.LowerASCII() : name;
+  return IsA<HTMLDocument>(this) ? name.ToAsciiLower() : name;
 }
 
 // Just creates an element with specified qualified name without any
@@ -8361,7 +8361,7 @@ void Document::SupportsReducedMotionMetaChanged() {
     if (EqualIgnoringAsciiCase(meta_element.GetName(),
                                "supports-reduced-motion")) {
       SpaceSplitString split_content(
-          AtomicString(meta_element.Content().GetString().LowerASCII()));
+          AtomicString(meta_element.Content().GetString().ToAsciiLower()));
       if (split_content.Contains(AtomicString("reduce"))) {
         supports_reduced_motion = true;
       }

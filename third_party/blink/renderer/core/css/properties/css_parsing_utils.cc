@@ -9367,11 +9367,11 @@ bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString& name,
                                             const CSSParserContext& context) {
   if (context.Mode() == kUASheetMode) {
     // Names in UA sheet should be already in lower case.
-    DCHECK_EQ(name, name.LowerASCII());
+    DCHECK_EQ(name, name.ToAsciiLower());
     return false;
   }
   return CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
-      name.LowerASCII());
+      name.ToAsciiLower());
 }
 
 CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenStream& stream,
@@ -9387,7 +9387,7 @@ CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenStream& stream,
 
   AtomicString name(name_token.Value().ToString());
   if (ShouldLowerCaseCounterStyleNameOnParse(name, context)) {
-    name = name.LowerASCII();
+    name = name.ToAsciiLower();
   }
   return MakeGarbageCollected<CSSCustomIdentValue>(name);
 }
@@ -9415,7 +9415,7 @@ AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenStream& stream,
 
   AtomicString name(name_token.Value().ToString());
   if (ShouldLowerCaseCounterStyleNameOnParse(name, context)) {
-    name = name.LowerASCII();
+    name = name.ToAsciiLower();
   }
   stream.ConsumeIncludingWhitespace();
   return name;

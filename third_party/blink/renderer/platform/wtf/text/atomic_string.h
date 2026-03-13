@@ -250,8 +250,6 @@ class WTF_EXPORT AtomicString {
   static AtomicString ToAsciiLower(AtomicString source);
   AtomicString ToAsciiLower() const;
   AtomicString ToAsciiUpper() const;
-  // LowerASCII() is deprecated. Use ToAsciiLower() instead.
-  inline AtomicString LowerASCII() const { return ToAsciiLower(); }
 
 #ifdef __OBJC__
   operator NSString*() const { return string_; }

@@ -294,7 +294,7 @@ void HTMLGeolocationElement::UpdateText() {
   uint16_t message_id = GetTranslatedMessageID(
       is_precise_location() ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION
                             : IDS_PERMISSION_REQUEST_GEOLOCATION,
-      ComputeInheritedLanguage().LowerASCII());
+      ComputeInheritedLanguage().ToAsciiLower());
   CHECK(message_id);
   permission_text_span()->setInnerText(GetLocale().QueryString(message_id));
 }

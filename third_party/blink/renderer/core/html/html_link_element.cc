@@ -186,7 +186,7 @@ void HTMLLinkElement::ParseAttribute(
       icon_sizes_[i] = web_icon_sizes[i];
     Process();
   } else if (name == html_names::kMediaAttr) {
-    media_ = value.LowerASCII();
+    media_ = value.ToAsciiLower();
     HandleExpectMediaChanges();
     // We can respond to attribute mutations as usual, per the above code, but
     // the link fetch & processing model must not be re-invoked for idempotent

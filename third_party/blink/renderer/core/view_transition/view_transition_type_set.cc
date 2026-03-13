@@ -45,7 +45,7 @@ class ViewTransitionTypeIterationSource
 };
 
 bool ViewTransitionTypeSet::IsValidType(const String& value) {
-  String lower = value.LowerASCII();
+  String lower = value.ToAsciiLower();
   return lower != "none" && !lower.starts_with("-ua-");
 }
 

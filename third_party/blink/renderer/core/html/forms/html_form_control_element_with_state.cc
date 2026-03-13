@@ -164,7 +164,7 @@ String HTMLFormControlElementWithState::IDLExposedAutofillValue() const {
 
   // 2. Let tokens be the result of splitting the attribute's value on ASCII
   // whitespace.
-  SpaceSplitString tokens(value.LowerASCII());
+  SpaceSplitString tokens(value.ToAsciiLower());
 
   // 3. If tokens is empty, then jump to the step labeled default.
   if (tokens.size() == 0)

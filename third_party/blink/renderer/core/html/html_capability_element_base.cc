@@ -516,7 +516,7 @@ void HTMLCapabilityElementBase::UpdateAppearance() {
   UpdateIcon(permission_count == 1 ? permission_name
                                    : PermissionName::VIDEO_CAPTURE);
 
-  AtomicString language_string = ComputeInheritedLanguage().LowerASCII();
+  AtomicString language_string = ComputeInheritedLanguage().ToAsciiLower();
 
   uint16_t untranslated_message_id =
       permission_count == 1

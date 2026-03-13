@@ -1143,7 +1143,7 @@ function main(metadata) {
       // that case.
       css_text.Append("@charset \"");
       css_text.Append(charset.IsValid()
-                          ? charset.GetName().GetString().LowerASCII()
+                          ? charset.GetName().GetString().ToAsciiLower()
                           : "utf-8");
       css_text.Append("\";\n\n");
 

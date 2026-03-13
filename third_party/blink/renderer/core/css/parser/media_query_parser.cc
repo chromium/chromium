@@ -319,7 +319,7 @@ AtomicString MediaQueryParser::ConsumeAllowedName(
   }
   AtomicString name = stream.Peek().Value().ToAtomicString();
   if (!feature_set.IsCaseSensitive(name)) {
-    name = name.LowerASCII();
+    name = name.ToAsciiLower();
   }
   if (!feature_set.IsAllowed(name)) {
     return g_null_atom;

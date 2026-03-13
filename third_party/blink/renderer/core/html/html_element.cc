@@ -356,7 +356,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
                                               value);
     }
   } else if (name == html_names::kContenteditableAttr) {
-    AtomicString lower_value = value.LowerASCII();
+    AtomicString lower_value = value.ToAsciiLower();
     if (lower_value.empty() || lower_value == keywords::kTrue) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWebkitUserModify, CSSValueID::kReadWrite);
@@ -1140,7 +1140,7 @@ bool HTMLElement::HasCustomFocusLogic() const {
 
 ContentEditableType HTMLElement::contentEditableNormalized() const {
   AtomicString value =
-      FastGetAttribute(html_names::kContenteditableAttr).LowerASCII();
+      FastGetAttribute(html_names::kContenteditableAttr).ToAsciiLower();
 
   if (value.IsNull())
     return ContentEditableType::kInherit;
@@ -1172,7 +1172,7 @@ String HTMLElement::contentEditable() const {
 
 void HTMLElement::setContentEditable(const String& enabled,
                                      ExceptionState& exception_state) {
-  String lower_value = enabled.LowerASCII();
+  String lower_value = enabled.ToAsciiLower();
   if (lower_value == keywords::kTrue) {
     setAttribute(html_names::kContenteditableAttr, keywords::kTrue);
   } else if (lower_value == keywords::kFalse) {
@@ -1243,7 +1243,7 @@ void HTMLElement::setHidden(
 namespace {
 
 PopoverValueType GetPopoverTypeFromAttributeValue(const AtomicString& value) {
-  AtomicString lower_value = value.LowerASCII();
+  AtomicString lower_value = value.ToAsciiLower();
   if (lower_value == keywords::kAuto || (!value.IsNull() && value.empty())) {
     return PopoverValueType::kAuto;
   } else if (lower_value == keywords::kHint) {
@@ -2822,7 +2822,7 @@ AtomicString HTMLElement::command() const {
     case CommandEventType::kCustom:
       return action;
     default: {
-      const AtomicString& lower_action = action.LowerASCII();
+      const AtomicString& lower_action = action.ToAsciiLower();
       DCHECK_EQ(GetCommandEventType(lower_action, GetExecutionContext()), type);
       return lower_action;
     }

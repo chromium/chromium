@@ -42,7 +42,7 @@ Vector<AtomicString>& CustomElement::EmbedderCustomElementNames() {
 }
 
 void CustomElement::AddEmbedderCustomElementName(const AtomicString& name) {
-  DCHECK_EQ(name, name.LowerASCII());
+  DCHECK(name.ContainsNoAsciiUpper());
   DCHECK(Document::IsValidName(name)) << name;
   DCHECK(!IsKnownBuiltinTagName(name)) << name;
   DCHECK(!IsValidName(name, false)) << name;
@@ -55,7 +55,7 @@ void CustomElement::AddEmbedderCustomElementName(const AtomicString& name) {
 void CustomElement::AddEmbedderCustomElementNameForTesting(
     const AtomicString& name,
     ExceptionState& exception_state) {
-  if (name != name.LowerASCII() || !Document::IsValidName(name) ||
+  if (!name.ContainsNoAsciiUpper() || !Document::IsValidName(name) ||
       IsKnownBuiltinTagName(name) || IsValidName(name, false)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Name cannot be used");

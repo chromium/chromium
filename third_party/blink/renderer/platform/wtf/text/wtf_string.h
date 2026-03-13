@@ -497,7 +497,7 @@ class WTF_EXPORT String {
   // for U+212A is 'k'.
   // This function is rarely used to implement web platform features. See
   // crbug.com/627682.
-  // This function is deprecated. We should use LowerASCII() or CaseMap.
+  // This function is deprecated. We should use ToAsciiLower() or CaseMap.
   [[nodiscard]] String DeprecatedLower() const;
 
   // Returns a lowercase version of the string.
@@ -506,9 +506,6 @@ class WTF_EXPORT String {
   // Returns a uppercase version of the string.
   // This function converts ASCII characters only.
   [[nodiscard]] String ToAsciiUpper() const;
-
-  // LowerASCII() is deprecated. Use ToAsciiLower() instead.
-  inline String LowerASCII() const { return ToAsciiLower(); }
 
   // Returns the length of the string after stripping white spaces.
   // This is equivalent (minus the allocation overhead) of doing:
