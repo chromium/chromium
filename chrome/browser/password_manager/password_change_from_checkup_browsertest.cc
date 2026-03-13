@@ -93,6 +93,9 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
   delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
                                     web_contents->GetWeakPtr());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate->HasActorTaskSubscriptionForTesting(); }));
+
   EXPECT_TRUE(delegate->HasActorTaskSubscriptionForTesting());
   // Simulate the actor starting and then finishing a task.
   actor::TaskId task_id =
@@ -125,6 +128,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
   delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
                                     original_web_contents->GetWeakPtr());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate->HasActorTaskSubscriptionForTesting(); }));
 
   content::WebContents* new_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

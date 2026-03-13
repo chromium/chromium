@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filling_submission_helper.h"
+#include "url/gurl.h"
 
 class ChangePasswordFormWaiter;
 
@@ -52,6 +53,8 @@ class PasswordChangeFromCheckupDelegate {
 #endif
 
  private:
+  void OnPromptReady(GURL credential_url, std::string prompt);
+
   glic::GlicKeyedService* GetGlicService();
 
   void OnActorTaskStateChanged(actor::TaskId task_id,

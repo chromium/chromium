@@ -4,10 +4,20 @@
 
 #include "chrome/browser/password_manager/password_change/password_change_from_checkup_delegate.h"
 
+#include <string>
 #include <string_view>
 
-#include "base/strings/strcat.h"
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/json/json_reader.h"
+#include "base/path_service.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -32,14 +42,52 @@
 
 namespace {
 
-std::string GetPromptToReachForm(std::string_view domain,
-                                 std::string_view username) {
+std::string GetFallbackPromptToReachForm(std::string_view domain,
+                                         std::string_view username) {
   return base::StrCat(
       {"I want to change my password for ", domain,
        ". Please help me complete the password change flow starting from "
        "this current page. You can login using ",
        username,
        ". The task is finished when the change password form is visible."});
+}
+
+std::string GetReachChangeFormPrompt(const std::string& domain,
+                                     const std::string& username) {
+  base::FilePath source_root;
+  if (!base::PathService::Get(base::DIR_CURRENT, &source_root)) {
+    return std::string();
+  }
+
+  base::FilePath json_file_path = source_root.AppendASCII("internal")
+                                      .AppendASCII("password_manager")
+                                      .AppendASCII("apc_prompts.json");
+
+  std::string json_data;
+  if (!base::ReadFileToString(json_file_path, &json_data)) {
+    return std::string();
+  }
+
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_RFC);
+
+  if (!parsed_json.has_value() || !parsed_json->is_dict()) {
+    return std::string();
+  }
+
+  const std::string* system_prompt =
+      parsed_json->GetDict().FindStringByDottedPath(
+          "prompts.reach_change_password_form.system_prompt");
+
+  if (!system_prompt) {
+    return std::string();
+  }
+
+  std::string final_prompt = *system_prompt;
+  base::ReplaceSubstringsAfterOffset(&final_prompt, 0, "{url_spec}", domain);
+  base::ReplaceSubstringsAfterOffset(&final_prompt, 0, "{username}", username);
+
+  return final_prompt;
 }
 
 std::u16string GeneratePassword(
@@ -73,24 +121,44 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   }
   originator_ = std::move(web_contents);
 
+  // TODO(crbug.com/485620841): Handle non-web URLs for Android passwords.
+  const GURL& credential_url = credential.GetURL();
+  std::string site_domain(credential_url.host());
+  username_ = credential.username;
+  current_password_ = credential.password;
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&GetReachChangeFormPrompt, std::move(site_domain),
+                     base::UTF16ToUTF8(username_)),
+      base::BindOnce(&PasswordChangeFromCheckupDelegate::OnPromptReady,
+                     weak_ptr_factory_.GetWeakPtr(), credential_url));
+}
+
+void PasswordChangeFromCheckupDelegate::OnPromptReady(GURL credential_url,
+                                                      std::string prompt) {
+  if (prompt.empty()) {
+    std::string site_domain(credential_url.host());
+    prompt =
+        GetFallbackPromptToReachForm(site_domain, base::UTF16ToUTF8(username_));
+  }
+
+  if (prompt.empty() || !originator_) {
+    return;
+  }
+
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(originator_.get());
   if (!tab_interface) {
     return;
   }
 
-  glic::GlicKeyedService* glic_service = GetGlicService();
+  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(
+      Profile::FromBrowserContext(originator_->GetBrowserContext()));
   if (!glic_service) {
     return;
   }
 
-  // TODO(crbug.com/485620841): Handle non-web URLs for Android passwords.
-  const GURL& credential_url = credential.GetURL();
-  std::string site_domain(credential_url.host());
-
-  // TODO(crbug.com/485620841): Replace with internal prompt.
-  std::string prompt =
-      GetPromptToReachForm(site_domain, base::UTF16ToUTF8(credential.username));
   content::OpenURLParams open_url_params(
       credential_url.GetWithEmptyPath(), content::Referrer(),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -128,8 +196,6 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   actor::ActorKeyedService* actor_service = actor::ActorKeyedService::Get(
       Profile::FromBrowserContext(new_contents->GetBrowserContext()));
   if (actor_service) {
-    username_ = credential.username;
-    current_password_ = credential.password;
     actuation_web_contents_ = new_contents->GetWeakPtr();
     actor_task_state_subscription_ =
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
@@ -149,6 +215,10 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
 void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
     actor::TaskId task_id,
     actor::ActorTask::State state) {
+  if (!actuation_web_contents_) {
+    return;
+  }
+
   if (!actor_task_id_ && state == actor::ActorTask::State::kCreated) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
