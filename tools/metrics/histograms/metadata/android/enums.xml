@@ -738,6 +738,8 @@ chromium-metrics-reviews@google.com.
   <int value="179" label="WebSettingsCompat.setMaxPrerenders"/>
   <int value="180" label="WebSettingsCompat.setMaxPrefetches"/>
   <int value="181" label="WebSettingsCompat.setPrefetchTtlSeconds"/>
+  <int value="182" label="BackForwardCacheSettings.getKeepForwardEntries"/>
+  <int value="183" label="BackForwardCacheSettings.setKeepForwardEntries"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

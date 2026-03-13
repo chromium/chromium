@@ -212,6 +212,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateBackForwardCacheEnabledLocked(env, obj);
   UpdateBackForwardCacheSettingsTimeoutLocked(env, obj);
   UpdateBackForwardCacheSettingsMaxPagesInCacheLocked(env, obj);
+  UpdateBackForwardCacheSettingsKeepForwardEntriesLocked(env, obj);
   UpdateGeolocationEnabledLocked(env, obj);
 }
 
@@ -542,6 +543,22 @@ void AwSettings::UpdateBackForwardCacheSettingsMaxPagesInCacheLocked(
     }
   }
   back_forward_cache_max_pages_in_cache_ = max_pages_in_cache;
+}
+
+void AwSettings::UpdateBackForwardCacheSettingsKeepForwardEntriesLocked(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj) {
+  bool keep_forward_entries =
+      Java_AwSettings_getBackForwardCacheSettingsKeepForwardEntries(env, obj);
+  if (web_contents()) {
+    if (keep_forward_entries != back_forward_cache_keep_forward_entries_) {
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .SetEmbedderSuppliedCacheForwardEntriesAllowed(keep_forward_entries);
+    }
+  }
+  back_forward_cache_keep_forward_entries_ = keep_forward_entries;
 }
 
 void AwSettings::UpdateGeolocationEnabledLocked(JNIEnv* env,

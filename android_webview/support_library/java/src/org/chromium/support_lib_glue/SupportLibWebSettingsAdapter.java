@@ -596,6 +596,16 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
+    public void setBackForwardCacheSettingsKeepForwardEntries(boolean keepForwardEntries) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_SET_KEEP_FORWARD_ENTRIES")) {
+            recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_SET_KEEP_FORWARD_ENTRIES);
+            mAwSettings.setBackForwardCacheKeepForwardEntries(keepForwardEntries);
+        }
+    }
+
+    @Override
     public long getBackForwardCacheSettingsTimeout() {
         try (TraceEvent ignored =
                 TraceEvent.scoped(
@@ -612,6 +622,16 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                         "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE")) {
             recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_MAX_PAGES_IN_CACHE);
             return mAwSettings.getBackForwardCacheSettingsMaxPagesInCache();
+        }
+    }
+
+    @Override
+    public boolean getBackForwardCacheSettingsKeepForwardEntries() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped(
+                        "WebView.APICall.AndroidX.BACK_FORWARD_CACHE_SETTINGS_GET_KEEP_FORWARD_ENTRIES")) {
+            recordApiCall(ApiCall.BACK_FORWARD_CACHE_SETTINGS_GET_KEEP_FORWARD_ENTRIES);
+            return mAwSettings.getBackForwardCacheSettingsKeepForwardEntries();
         }
     }
 }
