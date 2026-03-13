@@ -125,7 +125,15 @@ class MessageStreamLookupImplTest : public testing::Test,
     message_stream_lookup_->AddObserver(this);
   }
 
+  void TearDown() override {
+    message_stream_ = nullptr;
+    message_stream_lookup_.reset();
+    device_ = nullptr;
+    adapter_.reset();
+  }
+
   void DeviceConnectedStateChanged(bool is_now_connected) {
+    message_stream_ = nullptr;
     adapter_->NotifyDeviceConnectedStateChanged(
         /*device=*/device_,
         /*is_now_connected=*/is_now_connected);
@@ -135,7 +143,15 @@ class MessageStreamLookupImplTest : public testing::Test,
 
   void DeviceAdded() { adapter_->NotifyDeviceAdded(/*device=*/device_); }
 
-  void DeviceRemoved() { adapter_->NotifyDeviceRemoved(/*device=*/device_); }
+  void DeviceRemoved() {
+    message_stream_ = nullptr;
+    adapter_->NotifyDeviceRemoved(/*device=*/device_);
+  }
+
+  void MockDeviceRemoved() {
+    device_ = nullptr;
+    adapter_->RemoveMockDevice(kTestDeviceAddress);
+  }
 
   void EmptyDeviceRemoved() {
     adapter_->NotifyDeviceRemoved(/*device=*/nullptr);
@@ -148,6 +164,7 @@ class MessageStreamLookupImplTest : public testing::Test,
   }
 
   void DevicePairedChanged(bool new_paired_status) {
+    message_stream_ = nullptr;
     adapter_->NotifyDevicePairedChanged(
         /*device=*/device_,
         /*new_paired_status=*/new_paired_status);
@@ -204,9 +221,9 @@ class MessageStreamLookupImplTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  raw_ptr<MessageStream, DanglingUntriaged> message_stream_ = nullptr;
+  raw_ptr<MessageStream> message_stream_ = nullptr;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
-  raw_ptr<MessageStreamFakeBluetoothDevice, DanglingUntriaged> device_;
+  raw_ptr<MessageStreamFakeBluetoothDevice> device_;
   std::unique_ptr<MessageStreamLookup> message_stream_lookup_;
 };
 
@@ -626,7 +643,7 @@ TEST_F(MessageStreamLookupImplTest,
 
   // Simulate the device being removed from adapter immediately following
   // pairing.
-  adapter_->RemoveMockDevice(kTestDeviceAddress);
+  MockDeviceRemoved();
 
   // Expect the retries to not crash.
   UnsuccessfulAttemptCreateMessageStream(/*num_unsuccessful_attempts=*/5);
