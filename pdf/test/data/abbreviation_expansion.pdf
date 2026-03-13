@@ -1,0 +1,140 @@
+%PDF-1.7
+% ò¤ô
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /StructTreeRoot 6 0 R
+  /Lang (en-US)
+  /MarkInfo <<
+    /Type /MarkInfo
+    /Marked true
+  >>
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Contents 5 0 R
+  /Parent 2 0 R
+  /MediaBox [0 0 612 792]
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /StructParents 0
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Times-Roman
+>>
+endobj
+5 0 obj <<
+  /Length 186
+>>
+stream
+/P <</MCID 0 >>BDC
+BT
+/F1 12 Tf
+20 50 Td
+(A file in ) Tj
+ET
+EMC
+/Span <</MCID 1 >>BDC
+BT
+/F1 12 Tf
+80 50 Td
+(PDF) Tj
+ET
+EMC
+/P <</MCID 2 >>BDC
+BT
+/F1 12 Tf
+105 50 Td
+( format.) Tj
+ET
+EMC
+endstream
+endobj
+6 0 obj <<
+  /Type /StructTreeRoot
+  /K 7 0 R
+  /ParentTree 8 0 R
+  /ParentTreeNextKey 1
+>>
+endobj
+7 0 obj <<
+  /Type /StructElem
+  /S /Document
+  /Lang (en-US)
+  /P 6 0 R
+  /K [9 0 R 10 0 R 11 0 R]
+>>
+endobj
+8 0 obj <<
+  /Type /ParentTree
+  /Nums [0 [9 0 R 10 0 R 11 0 R]]
+>>
+endobj
+9 0 obj <<
+  /Type /StructElem
+  /S /P
+  /P 7 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 0
+  >>
+>>
+endobj
+10 0 obj <<
+  /Type /StructElem
+  /S /Span
+  /E (Portable Document Format)
+  /P 7 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 1
+  >>
+>>
+endobj
+11 0 obj <<
+  /Type /StructElem
+  /S /P
+  /P 7 0 R
+  /K <<
+    /Type /MCR
+    /Pg 3 0 R
+    /MCID 2
+  >>
+>>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000015 00000 n 
+0000000165 00000 n 
+0000000228 00000 n 
+0000000399 00000 n 
+0000000477 00000 n 
+0000000716 00000 n 
+0000000815 00000 n 
+0000000925 00000 n 
+0000001000 00000 n 
+0000001114 00000 n 
+0000001264 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 12
+>>
+startxref
+1379
+%%EOF

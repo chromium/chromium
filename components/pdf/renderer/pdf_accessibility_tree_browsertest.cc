@@ -941,6 +941,66 @@ TEST_F(PdfAccessibilityTreeTest, StructureTree) {
   EXPECT_EQ(ax::mojom::Role::kImage, link_node->GetRole());
 }
 
+TEST_F(PdfAccessibilityTreeTest, StructureTreeAbbreviationExpansion) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
+  CreatePdfAccessibilityTree();
+
+  text_runs_ = {kFirstRunMultiLine, kSecondRunMultiLine, kThirdRunMultiLine,
+                kFourthRunMultiLine};
+  chars_.insert_range(chars_.end(), kDummyCharsData);
+
+  auto doc_structure_root =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  doc_structure_root->type = chrome_pdf::PdfTagType::kDocument;
+
+  auto page_structure =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  page_structure->type = chrome_pdf::PdfTagType::kPart;
+
+  // Text element with abbreviation_expansion.
+  auto span = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  span->type = chrome_pdf::PdfTagType::kP;
+  span->associated_text_runs_if_available.push_back(text_runs_.data());
+  span->abbreviation_expansion = "Portable Document Format";
+
+  page_structure->children.push_back(std::move(span));
+  doc_structure_root->children.push_back(std::move(page_structure));
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = true;
+  doc_info->structure_tree_root = std::move(doc_structure_root);
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  // abbreviation_expansion maps to kDescription.
+  const ui::AXNode* span_node = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, span_node);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, span_node->GetRole());
+  EXPECT_EQ(
+      "Portable Document Format",
+      span_node->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+}
+
 TEST_F(PdfAccessibilityTreeTest, DocumentLanguageOnRootNode) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);

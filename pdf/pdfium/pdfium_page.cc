@@ -709,6 +709,10 @@ std::unique_ptr<AccessibilityStructureElement> PDFiumPage::GetStructureSubtree(
   tree_node->language = base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
       base::BindRepeating(&FPDF_StructElement_GetLang, element),
       /*check_expected_size=*/true));
+  tree_node->abbreviation_expansion =
+      base::UTF16ToUTF8(CallPDFiumWideStringBufferApi(
+          base::BindRepeating(&FPDF_StructElement_GetExpansion, element),
+          /*check_expected_size=*/true));
 
   AssociateMarkedContentWithStructureElement(element, tree_node.get());
 

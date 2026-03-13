@@ -245,6 +245,32 @@ TEST_P(AccessibilityTest, AccessibilityStructureTreeWithImages) {
             AccessibilityStructureElementToString(*doc_structure));
 }
 
+TEST_P(AccessibilityTest, AccessibilityStructureTreeWithExpansion) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(features::kPdfTags);
+
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("abbreviation_expansion.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  std::unique_ptr<AccessibilityStructureElement> doc_structure =
+      engine->GetStructureTree();
+  ASSERT_TRUE(doc_structure);
+
+  static constexpr char kExpectedStructureTree[] =
+      R"(/S /Document /Lang (en-US)
+++/S /Part
+++++/S /Document /Lang (en-US)
+++++++/S /P AssociatedTextRunLens={ 10 }
+++++++/S /Span /E (Portable Document Format) AssociatedTextRunLens={ 11 }
+++++++/S /P)";
+
+  EXPECT_EQ(kExpectedStructureTree,
+            AccessibilityStructureElementToString(*doc_structure));
+}
+
 TEST_P(AccessibilityTest, AccessibilityStructureTreeWithMultipleMCIDs) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(features::kPdfTags);
