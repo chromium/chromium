@@ -15,9 +15,6 @@ enum class LaunchResult { kSuccess, kFailed, kFailedDirectoryNotShared };
 
 using LaunchCallback = base::OnceCallback<void(LaunchResult)>;
 
-// TODO(crbug.com/477191550): Remove this alias.
-using State = LaunchResult;
-
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_RESULT_TYPE_H_

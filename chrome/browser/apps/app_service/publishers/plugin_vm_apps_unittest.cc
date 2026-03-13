@@ -231,7 +231,7 @@ TEST_F(PluginVmAppsTest, LaunchAppWithIntent_FailedDirectoryNotShared) {
       std::unique_ptr<WindowInfo>(), result.GetCallback());
 
   ASSERT_TRUE(result.IsReady());
-  ASSERT_EQ(apps::State::kFailedDirectoryNotShared, result.Get());
+  ASSERT_EQ(apps::LaunchResult::kFailedDirectoryNotShared, result.Get());
 }
 
 }  // namespace apps

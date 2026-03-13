@@ -124,11 +124,11 @@ apps::LaunchResult ConvertPluginVmResultToLaunchResult(
     plugin_vm::LaunchPluginVmAppResult plugin_vm_result) {
   switch (plugin_vm_result) {
     case plugin_vm::LaunchPluginVmAppResult::SUCCESS:
-      return apps::LaunchResult(apps::State::kSuccess);
+      return apps::LaunchResult::kSuccess;
     case plugin_vm::LaunchPluginVmAppResult::FAILED_DIRECTORY_NOT_SHARED:
-      return apps::LaunchResult(apps::State::kFailedDirectoryNotShared);
+      return apps::LaunchResult::kFailedDirectoryNotShared;
     case plugin_vm::LaunchPluginVmAppResult::FAILED:
-      return apps::LaunchResult(apps::State::kFailed);
+      return apps::LaunchResult::kFailed;
   }
 }
 
@@ -250,7 +250,7 @@ void PluginVmApps::LaunchAppWithParams(AppLaunchParams&& params,
   Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
 
   // TODO(crbug.com/40787924): Add launch return value.
-  std::move(callback).Run(LaunchResult());
+  std::move(callback).Run(LaunchResult::kFailed);
 }
 
 void PluginVmApps::SetPermission(const std::string& app_id,

@@ -140,7 +140,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
     LOG(ERROR) << "Unable to open settings for this profile, url "
                << gurl.spec();
     if (callback) {
-      std::move(callback).Run(apps::LaunchResult(apps::State::kFailed));
+      std::move(callback).Run(apps::LaunchResult::kFailed);
     }
     return;
   }
@@ -167,7 +167,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
     if (web_contents && web_contents->GetURL() == gurl) {
       browser->window()->Show();
       if (callback) {
-        std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
+        std::move(callback).Run(apps::LaunchResult::kSuccess);
       }
       return;
     }
@@ -177,7 +177,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
     params.user_gesture = true;
     Navigate(&params);
     if (callback) {
-      std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
+      std::move(callback).Run(apps::LaunchResult::kSuccess);
     }
     return;
   }
@@ -211,7 +211,7 @@ void SettingsWindowManager::ShowChromePageForProfile(
   legacy_settings_title_updater_->Add(window);
 
   if (callback) {
-    std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
+    std::move(callback).Run(apps::LaunchResult::kSuccess);
   }
 }
 

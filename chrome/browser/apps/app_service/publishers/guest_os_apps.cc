@@ -101,7 +101,7 @@ void GuestOSApps::LaunchAppWithParams(AppLaunchParams&& params,
     Launch(params.app_id, event_flags, params.launch_source,
            std::make_unique<WindowInfo>(params.display_id));
     // TODO(crbug.com/40787924): Add launch return value.
-    std::move(callback).Run(LaunchResult());
+    std::move(callback).Run(LaunchResult::kFailed);
   }
 }
 

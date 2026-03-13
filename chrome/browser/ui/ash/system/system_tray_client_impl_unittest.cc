@@ -39,7 +39,7 @@ class TestSettingsWindowManager : public chrome::SettingsWindowManager {
                                 apps::LaunchCallback callback) override {
     last_url_ = gurl;
     if (callback) {
-      std::move(callback).Run(apps::LaunchResult(apps::State::kSuccess));
+      std::move(callback).Run(apps::LaunchResult::kSuccess);
     }
   }
 

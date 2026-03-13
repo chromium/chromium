@@ -349,7 +349,7 @@ void ExtensionAppsChromeOs::LaunchAppWithArgumentsCallback(
     bool should_open) {
   // Exit early, while notifying, in case `Don't open` was chosen.
   if (!should_open) {
-    std::move(callback).Run(LaunchResult(State::kFailed));
+    std::move(callback).Run(LaunchResult::kFailed);
     return;
   }
 
@@ -368,7 +368,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
   // `extension` is required.
   const auto* extension = MaybeGetExtension(app_id);
   if (!extension) {
-    std::move(callback).Run(LaunchResult(State::kFailed));
+    std::move(callback).Run(LaunchResult::kFailed);
     return;
   }
 
@@ -379,7 +379,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     // This vector cannot be empty because this is reached after explicitly
     // opening one or more files.
     if (base_names.empty()) {
-      std::move(callback).Run(LaunchResult(State::kFailed));
+      std::move(callback).Run(LaunchResult::kFailed);
       return;
     }
 

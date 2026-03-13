@@ -105,7 +105,7 @@ void RemoteApps::LaunchAppWithParams(AppLaunchParams&& params,
   Launch(params.app_id, ui::EF_NONE, LaunchSource::kUnknown, nullptr);
 
   // TODO(crbug.com/40787924): Add launch return value.
-  std::move(callback).Run(LaunchResult());
+  std::move(callback).Run(LaunchResult::kFailed);
 }
 
 void RemoteApps::GetMenuModel(const std::string& app_id,

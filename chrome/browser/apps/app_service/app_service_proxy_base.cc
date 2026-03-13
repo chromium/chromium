@@ -341,12 +341,12 @@ void AppServiceProxyBase::LaunchAppWithIntent(const std::string& app_id,
                                             const AppUpdate& update) mutable {
     auto* publisher = GetPublisher(update.AppType());
     if (!publisher) {
-      std::move(callback).Run(LaunchResult(State::kFailed));
+      std::move(callback).Run(LaunchResult::kFailed);
       return;
     }
 
     if (MaybeShowLaunchPreventionDialog(update)) {
-      std::move(callback).Run(LaunchResult(State::kFailed));
+      std::move(callback).Run(LaunchResult::kFailed);
       return;
     }
 
@@ -385,7 +385,7 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
   auto app_type = app_registry_cache_.GetAppType(params.app_id);
   auto* publisher = GetPublisher(app_type);
   if (!publisher) {
-    std::move(callback).Run(LaunchResult());
+    std::move(callback).Run(LaunchResult::kFailed);
     return;
   }
 
@@ -393,7 +393,7 @@ void AppServiceProxyBase::LaunchAppWithParams(AppLaunchParams&& params,
       params.app_id,
       [this, &params, &callback, &publisher](const apps::AppUpdate& update) {
         if (MaybeShowLaunchPreventionDialog(update)) {
-          std::move(callback).Run(LaunchResult());
+          std::move(callback).Run(LaunchResult::kFailed);
           return;
         }
         auto launch_source = params.launch_source;

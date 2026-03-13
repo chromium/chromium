@@ -719,7 +719,7 @@ TEST_F(ArcAppsPublisherTest,
       /*window_info=*/nullptr, result.GetCallback());
 
   ASSERT_TRUE(result.IsReady());
-  ASSERT_EQ(apps::State::kSuccess, result.Get());
+  ASSERT_EQ(apps::LaunchResult::kSuccess, result.Get());
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -749,7 +749,7 @@ TEST_F(ArcAppsPublisherTest,
       /*window_info=*/nullptr, result.GetCallback());
 
   ASSERT_TRUE(result.IsReady());
-  ASSERT_EQ(apps::State::kFailed, result.Get());
+  ASSERT_EQ(apps::LaunchResult::kFailed, result.Get());
 }
 
 TEST_F(
@@ -784,7 +784,7 @@ TEST_F(
       /*window_info=*/nullptr, result.GetCallback());
 
   ASSERT_TRUE(result.IsReady());
-  ASSERT_EQ(apps::State::kSuccess, result.Get());
+  ASSERT_EQ(apps::LaunchResult::kSuccess, result.Get());
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -820,7 +820,7 @@ TEST_F(ArcAppsPublisherTest,
       /*window_info=*/nullptr, result.GetCallback());
 
   ASSERT_TRUE(result.IsReady());
-  ASSERT_EQ(apps::State::kSuccess, result.Get());
+  ASSERT_EQ(apps::LaunchResult::kSuccess, result.Get());
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];

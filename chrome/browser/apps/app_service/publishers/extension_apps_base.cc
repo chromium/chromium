@@ -221,7 +221,7 @@ void ExtensionAppsBase::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   LaunchImpl(std::move(params));
 
   // TODO(crbug.com/40787924): Add launch return value.
-  std::move(callback).Run(LaunchResult());
+  std::move(callback).Run(LaunchResult::kFailed);
 }
 
 const extensions::Extension* ExtensionAppsBase::MaybeGetExtension(

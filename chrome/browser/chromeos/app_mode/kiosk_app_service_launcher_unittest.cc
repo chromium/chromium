@@ -60,7 +60,7 @@ class FakePublisher final : public apps::AppPublisher {
                            apps::LaunchCallback callback) override {
     if (params.app_id == kTestAppId &&
         params.launch_source == apps::LaunchSource::kFromKiosk) {
-      std::move(callback).Run(apps::LaunchResult());
+      std::move(callback).Run(apps::LaunchResult::kFailed);
     }
   }
 
