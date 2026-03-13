@@ -31,9 +31,11 @@ class DSEPrewarmNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle:
   // TODO(crbug.com/485414743): Add WillRedirectRequest handling.
   ThrottleCheckResult WillStartRequest() override;
+  ThrottleCheckResult WillRedirectRequest() override;
   const char* GetNameForLogging() override;
 
  private:
+  ThrottleCheckResult CheckNoRaceWithDSEPrewarm();
   void OnSearchPrewarmFinished();
 
   GURL dse_url_;

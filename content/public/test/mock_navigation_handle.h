@@ -68,6 +68,9 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsPrerenderedPageActivation() const override {
     return is_prerendered_page_activation_;
   }
+  PrerenderHostId GetPrerenderHostId() const override {
+    return PrerenderHostId();
+  }
   bool IsInFencedFrameTree() const override { return is_in_fenced_frame_tree_; }
   bool IsGuestViewMainFrame() const override {
     return GetNavigatingFrameType() == FrameType::kGuestMainFrame;

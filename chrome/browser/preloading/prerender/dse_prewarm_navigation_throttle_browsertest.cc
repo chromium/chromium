@@ -125,6 +125,8 @@ IN_PROC_BROWSER_TEST_F(DSEPrewarmNavigationThrottleBrowserTest,
       std::make_unique<DSEPrewarmNavigationThrottleForTesting>(registry);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle->WillRedirectRequest().action());
 
   // Simulate a prewarm starting.
   content::PrerenderHostId dummy_host_id(1);
@@ -136,6 +138,8 @@ IN_PROC_BROWSER_TEST_F(DSEPrewarmNavigationThrottleBrowserTest,
       std::make_unique<DSEPrewarmNavigationThrottleForTesting>(registry);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             deferred_throttle->WillStartRequest().action());
+  EXPECT_EQ(content::NavigationThrottle::DEFER,
+            deferred_throttle->WillRedirectRequest().action());
 
   // Simulate prewarm finishing. This should trigger the callback to Resume()
   // the throttle.

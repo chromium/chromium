@@ -55,6 +55,16 @@ DSEPrewarmNavigationThrottle::~DSEPrewarmNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 DSEPrewarmNavigationThrottle::WillStartRequest() {
+  return CheckNoRaceWithDSEPrewarm();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+DSEPrewarmNavigationThrottle::WillRedirectRequest() {
+  return CheckNoRaceWithDSEPrewarm();
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+DSEPrewarmNavigationThrottle::CheckNoRaceWithDSEPrewarm() {
   auto* web_contents = navigation_handle()->GetWebContents();
   CHECK(web_contents);
 
@@ -63,15 +73,21 @@ DSEPrewarmNavigationThrottle::WillStartRequest() {
     return PROCEED;
   }
 
-  // For DSEPrewarm navigation itself, `WillStartReqest` is called before
-  // SearchPrewarmProgressServiceFactory tracks the prewarm page so it will
-  // not be blocked.
-  // TODO(crbug.com/485414743): Add check logic to verify the on-going
-  // navigation is not the prewarm page.
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
-  if (service && service->HasOnGoingSearchPrewarm()) {
+  if (!service) {
+    return PROCEED;
+  }
+
+  content::PrerenderHostId host_id = navigation_handle()->GetPrerenderHostId();
+  if (host_id && service->IsOnGoingSearchPrewarm(host_id)) {
+    // If this navigation itself is an ongoing prewarm, we shouldn't throttle
+    // it.
+    return PROCEED;
+  }
+
+  if (service->HasOnGoingSearchPrewarm()) {
     service->AddSearchPrewarmFinishedCallback(
         base::BindOnce(&DSEPrewarmNavigationThrottle::OnSearchPrewarmFinished,
                        weak_factory_.GetWeakPtr()));
