@@ -27,7 +27,7 @@ import type {Vertex} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import {ScreenshotBitmapBrowserProxyImpl} from './screenshot_bitmap_browser_proxy.js';
 import {renderScreenshot} from './screenshot_utils.js';
-import type {CursorData} from './selection_overlay_base_element.js';
+import type {CursorData} from './selection_overlay_base.js';
 import {CursorType, focusShimmerOnRegion, type GestureEvent, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
 

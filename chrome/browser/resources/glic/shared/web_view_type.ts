@@ -6,12 +6,12 @@
 // extensions are enabled, or a SlimWebviewElement when they are not.
 
 // <if expr="not enable_extensions_core">
-import '/shared/guest_view/slim_web_view.js';
+import '/shared/guest_view/slim_webview.js';
 
 // </if>
 // Importing a type doesn't have a runtime effect, because these imports are
 // removed at compile time. We add this import just to satisfy the type checker.
-import type {SlimWebviewElement} from '/shared/guest_view/slim_web_view.js';
+import type {SlimWebviewElement} from '/shared/guest_view/slim_webview.js';
 
 export type WebViewType = chrome.webviewTag.WebView|SlimWebviewElement;
 

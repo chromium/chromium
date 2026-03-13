@@ -166,6 +166,7 @@ def CheckNoNewPolymer(input_api, output_api):
     'chrome/browser/resources/ash/',
     'chrome/browser/resources/certificate_manager/',
     'chrome/browser/resources/chromeos/',
+    'chrome/browser/resources/lens/overlay/',
     'chrome/browser/resources/password_manager/',
     'chrome/browser/resources/settings/',
   ]

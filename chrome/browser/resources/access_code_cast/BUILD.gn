@@ -12,8 +12,8 @@ build_webui("build") {
   static_files = [ "index.html" ]
 
   ts_files = [
-    "access_code_cast.html.ts",
-    "access_code_cast.ts",
+    "access_code_cast_app.html.ts",
+    "access_code_cast_app.ts",
     "browser_proxy.ts",
     "error_message/error_message.html.ts",
     "error_message/error_message.ts",
@@ -22,7 +22,7 @@ build_webui("build") {
   ]
 
   css_files = [
-    "access_code_cast.css",
+    "access_code_cast_app.css",
     "error_message/error_message.css",
     "passcode_input/passcode_input.css",
   ]

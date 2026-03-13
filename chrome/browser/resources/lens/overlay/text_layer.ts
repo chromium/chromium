@@ -23,7 +23,7 @@ import {SemanticEvent, UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction, recordLensOverlaySemanticEvent} from './metrics_utils.js';
 import type {SelectedRegionContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
-import type {CursorData} from './selection_overlay_base_element.js';
+import type {CursorData} from './selection_overlay_base.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
 import type {BackgroundImageData, Line, Paragraph, Text, TranslatedLine, TranslatedParagraph, Word} from './text.mojom-webui.js';

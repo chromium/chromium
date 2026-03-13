@@ -19,10 +19,10 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './access_code_cast.css.js';
-import {getHtml} from './access_code_cast.html.js';
 import type {PageCallbackRouter} from './access_code_cast.mojom-webui.js';
 import {AddSinkResultCode, CastDiscoveryMethod} from './access_code_cast.mojom-webui.js';
+import {getCss} from './access_code_cast_app.css.js';
+import {getHtml} from './access_code_cast_app.html.js';
 import {BrowserProxy, DialogCloseReason} from './browser_proxy.js';
 import type {ErrorMessageElement} from './error_message/error_message.js';
 import type {PasscodeInputElement} from './passcode_input/passcode_input.js';
@@ -252,22 +252,23 @@ export class AccessCodeCastAppElement extends AccessCodeCastAppElementBase {
     const durationAsDate = new Date(duration * 1000);
     // ECMAscript epoch starts at 1970.
     if (durationAsDate.getUTCFullYear() - ECMASCRIPT_EPOCH_START_YEAR > 0) {
-      return this.makeFootnote('managedFootnoteYears',
+      return this.makeFootnote(
+          'managedFootnoteYears',
           durationAsDate.getUTCFullYear() - ECMASCRIPT_EPOCH_START_YEAR);
-    // Months are zero indexed.
+      // Months are zero indexed.
     } else if (durationAsDate.getUTCMonth() > 0) {
-      return this.makeFootnote('managedFootnoteMonths',
-          durationAsDate.getUTCMonth());
-    // Dates start at 1.
+      return this.makeFootnote(
+          'managedFootnoteMonths', durationAsDate.getUTCMonth());
+      // Dates start at 1.
     } else if (durationAsDate.getUTCDate() - 1 > 0) {
-      return this.makeFootnote('managedFootnoteDays',
-          durationAsDate.getUTCDate() - 1);
-    // Hours start at 0.
+      return this.makeFootnote(
+          'managedFootnoteDays', durationAsDate.getUTCDate() - 1);
+      // Hours start at 0.
     } else if (durationAsDate.getUTCHours() > 0) {
-      return this.makeFootnote('managedFootnoteHours',
-          durationAsDate.getUTCHours());
-    // The given duration is either minutes, seconds, or a negative time. These
-    // are not valid so we should not show the managed footnote.
+      return this.makeFootnote(
+          'managedFootnoteHours', durationAsDate.getUTCHours());
+      // The given duration is either minutes, seconds, or a negative time.
+      // These are not valid so we should not show the managed footnote.
     }
 
     this.rememberDevices = false;

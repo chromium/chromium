@@ -11,14 +11,14 @@ build_webui("build") {
   grd_prefix = "guest_view_shared"
   grd_resource_path_prefix = "shared/guest_view"
 
-  css_files = [ "slim_web_view.css" ]
+  css_files = [ "slim_webview.css" ]
 
   ts_files = [
     "event_dispatcher.ts",
     "request_throttlers.ts",
-    "slim_web_view.ts",
-    "slim_web_view.html.ts",
-    "slim_web_view_browser_proxy.ts",
+    "slim_webview.ts",
+    "slim_webview.html.ts",
+    "slim_webview_browser_proxy.ts",
   ]
 
   ts_definitions =

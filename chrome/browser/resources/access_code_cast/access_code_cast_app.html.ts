@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {AccessCodeCastAppElement} from './access_code_cast.js';
+import type {AccessCodeCastAppElement} from './access_code_cast_app.js';
 
 export function getHtml(this: AccessCodeCastAppElement) {
   // clang-format off

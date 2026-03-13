@@ -5,7 +5,7 @@
 import {assert, assertNonNull} from '//resources/js/assert.js';
 import type {DictionaryValue} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
-import {BrowserProxyImpl} from './slim_web_view_browser_proxy.js';
+import {BrowserProxyImpl} from './slim_webview_browser_proxy.js';
 
 export class EventDict {
   constructor(private data: DictionaryValue) {}

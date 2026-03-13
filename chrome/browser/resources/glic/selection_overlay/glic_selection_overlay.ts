@@ -16,7 +16,7 @@ import type {OverlayBorderGlowElement} from '/lens/overlay_border_glow.js';
 import type {OverlayShimmerCanvasElement} from '/lens/overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from '/lens/post_selection_renderer.js';
 import type {RegionSelectionElement} from '/lens/region_selection.js';
-import {SelectionOverlayBaseLitElement} from '/lens/selection_overlay_base_lit_element.js';
+import {SelectionOverlayBaseLitElement} from '/lens/selection_overlay_base_lit.js';
 import {DragFeature, GestureState} from '/lens/selection_utils.js';
 
 import {getCss} from './glic_selection_overlay.css.js';

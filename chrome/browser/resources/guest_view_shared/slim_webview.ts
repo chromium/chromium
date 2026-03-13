@@ -10,9 +10,9 @@ import type {DictionaryValue} from '//resources/mojo/mojo/public/mojom/base/valu
 import {EventDispatcher} from './event_dispatcher.js';
 import type {EventDict, EventMap} from './event_dispatcher.js';
 import type {OnBeforeSendHeadersParams} from './request_throttlers.js';
-import {getCss} from './slim_web_view.css.js';
-import {getHtml} from './slim_web_view.html.js';
-import {BrowserProxyImpl, PermissionResponseAction} from './slim_web_view_browser_proxy.js';
+import {getCss} from './slim_webview.css.js';
+import {getHtml} from './slim_webview.html.js';
+import {BrowserProxyImpl, PermissionResponseAction} from './slim_webview_browser_proxy.js';
 
 const GUEST_INSTANCE_ID_PENDING: number = 0;
 
@@ -266,7 +266,6 @@ export class SlimWebviewElement extends CrLitElement {
   static get is() {
     // This is a restricted custom element name that is allowed-listed in
     // slim_web_view_bindings.cc.
-    // TODO(crbug.com/487332297): Rename class to WebviewElement.
     return 'webview';
   }
 
