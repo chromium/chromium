@@ -1173,8 +1173,8 @@ crbug.com/1507152 [ Debug Linux ] virtual/threaded/external/wpt/long-animation-f
 crbug.com/1507152 [ Debug Mac13 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
 crbug.com/1507152 [ Debug Win11-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
 crbug.com/1507152 [ Release ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-source-location-redirect.html [ Slow ]
-crbug.com/1462683 external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Slow ]
-crbug.com/1462683 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Slow ]
+crbug.com/1462683 external/wpt/long-animation-frame/loaf-iframe-self.html [ Slow ]
+crbug.com/1462683 virtual/threaded/external/wpt/long-animation-frame/loaf-iframe-self.html [ Slow ]
 
 # Slow because of multiple rounds of polling using the RemoteContext/executor framework.
 crbug.com/1517319 external/wpt/speculation-rules/prerender/prerender-while-prerender.html [ Slow ]
