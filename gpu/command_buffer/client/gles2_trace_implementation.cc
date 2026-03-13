@@ -23,8 +23,8 @@ bool GLES2TraceImplementation::CanCopySharedImageToGLTextureViaTextureCopy(
 
 gpu::SyncToken
 GLES2TraceImplementation::CopySharedImageToGLTextureViaTextureCopy(
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
+    const gfx::Size& src_size,
+    const gfx::Rect& src_rect,
     ClientSharedImage* source_shared_image,
     const gpu::SyncToken& source_sync_token,
     uint32_t target,
@@ -36,7 +36,7 @@ GLES2TraceImplementation::CopySharedImageToGLTextureViaTextureCopy(
     SkAlphaType dst_alpha_type,
     GrSurfaceOrigin dst_origin) {
   return gl_->CopySharedImageToGLTextureViaTextureCopy(
-      coded_size, visible_rect, source_shared_image, source_sync_token, target,
+      src_size, src_rect, source_shared_image, source_sync_token, target,
       texture, internal_format, format, type, level, dst_alpha_type,
       dst_origin);
 }

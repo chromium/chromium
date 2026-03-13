@@ -55,8 +55,8 @@ class GLES2Interface : public InterfaceBase {
   // Copies the contents of |source_shared_image| to |texture| of the current
   // context.
   virtual gpu::SyncToken CopySharedImageToGLTextureViaTextureCopy(
-      const gfx::Size& coded_size,
-      const gfx::Rect& visible_rect,
+      const gfx::Size& src_size,
+      const gfx::Rect& src_rect,
       ClientSharedImage* source_shared_image,
       const gpu::SyncToken& source_sync_token,
       uint32_t target,

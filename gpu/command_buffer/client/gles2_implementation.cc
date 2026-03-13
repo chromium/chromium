@@ -409,8 +409,8 @@ bool GLES2Implementation::CanCopySharedImageToGLTextureViaTextureCopy(
 }
 
 gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
+    const gfx::Size& src_size,
+    const gfx::Rect& src_rect,
     ClientSharedImage* source_shared_image,
     const gpu::SyncToken& source_sync_token,
     uint32_t target,
@@ -433,25 +433,24 @@ gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
       source_shared_image->alpha_type() == kPremul_SkAlphaType;
 
   const bool do_flip_y = source_shared_image->surface_origin() != dst_origin;
-  if (visible_rect != gfx::Rect(coded_size)) {
+  if (src_rect != gfx::Rect(src_size)) {
     // Must reallocate the destination texture and copy only a sub-portion.
 
     // There should always be enough data in the source texture to
     // cover this copy.
-    GPU_CLIENT_DCHECK(visible_rect.width() <= coded_size.width());
-    GPU_CLIENT_DCHECK(visible_rect.height() <= coded_size.height());
+    GPU_CLIENT_DCHECK(src_rect.width() <= src_size.width());
+    GPU_CLIENT_DCHECK(src_rect.height() <= src_size.height());
 
     BindAndTexImage2D(this, target, texture, internal_format, format, type,
-                      level, visible_rect.size());
-    // TODO(crbug.com/378688985): `visible_rect` is always in top-left
+                      level, src_rect.size());
+    // TODO(crbug.com/378688985): `src_rect` is always in top-left
     // coordinate space, but CopySubTextureCHROMIUM requires it to be in texture
     // space, so this is incorrect if `source_shared_image` origin is bottom
     // left.
     CopySubTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
-                           level, 0, 0, visible_rect.x(), visible_rect.y(),
-                           visible_rect.width(), visible_rect.height(),
-                           do_flip_y, do_premultiply_alpha,
-                           do_unpremultiply_alpha);
+                           level, 0, 0, src_rect.x(), src_rect.y(),
+                           src_rect.width(), src_rect.height(), do_flip_y,
+                           do_premultiply_alpha, do_unpremultiply_alpha);
 
   } else {
     CopyTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
