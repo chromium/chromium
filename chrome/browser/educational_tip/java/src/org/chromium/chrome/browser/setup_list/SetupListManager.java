@@ -419,7 +419,7 @@ public class SetupListManager
 
         Integer moduleType = mKeyToModuleMap.get(key);
         if (moduleType != null) {
-            setModuleCompleted(moduleType, /* silent= */ true);
+            setModuleCompleted(moduleType, /* silent= */ false);
         }
     }
 
@@ -576,6 +576,7 @@ public class SetupListManager
     }
 
     /** Returns whether a module is awaiting its completion animation. */
+    @VisibleForTesting
     public boolean isModuleAwaitingCompletionAnimation(@ModuleType int moduleType) {
         return mModulesAwaitingCompletionAnimation.contains(moduleType);
     }
@@ -589,6 +590,7 @@ public class SetupListManager
      * Called when the completion animation for a module has finished. This moves the module from
      * the active section to the completed section.
      */
+    @VisibleForTesting
     public void onCompletionAnimationFinished(@ModuleType int moduleType) {
         if (mModulesAwaitingCompletionAnimation.remove(moduleType)) {
             reconcileState();
