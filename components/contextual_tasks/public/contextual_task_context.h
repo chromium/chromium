@@ -27,7 +27,8 @@ enum class ContextualTaskContextSource {
   kFaviconService,
   kHistoryService,
   kTabStrip,
-  kPendingContextDecorator,
+  kUploadedContextDecorator,
+  kSubmittedContextDecorator,
 };
 
 class ContextualTask;
@@ -68,7 +69,8 @@ struct UrlAttachmentDecoratorData {
   };
   TabStripData tab_strip_data;
 
-  // Filled in by ContextualTaskContextSource::kPendingContextDecorator.
+  // Filled in by ContextualTaskContextSource::kUploadedContextDecorator and
+  // ContextualTaskContextSource::kSubmittedContextDecorator.
   struct ContextualSearchContextData {
     std::u16string title;
     // From SessionTabHelper.

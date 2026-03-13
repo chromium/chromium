@@ -484,7 +484,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -576,7 +576,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -672,7 +672,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -771,7 +771,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -830,7 +830,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -927,7 +927,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -1029,7 +1029,7 @@ TEST_F(
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -1206,7 +1206,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, AddTabContext_Delayed) {
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -1316,7 +1316,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, DeleteContext_Delayed) {
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -1839,7 +1839,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](
@@ -2559,7 +2559,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ClearFiles_Delayed) {
       GetContextForTask(
           task_id,
           testing::Contains(contextual_tasks::ContextualTaskContextSource::
-                                kPendingContextDecorator),
+                                kSubmittedContextDecorator),
           testing::NotNull(), testing::_))
       .WillOnce(
           [&context](

@@ -12,7 +12,7 @@ include_rules = [
   "+services/network/public/cpp/shared_url_loader_factory.h",
   "+third_party/re2",
 
-  # For pending_context_decorator_unittest.cc.
+  # For uploaded_context_decorator_unittest.cc.
   "+components/lens/contextual_input.h",
   "+components/lens/proto/server/lens_overlay_response.pb.h",
 ]

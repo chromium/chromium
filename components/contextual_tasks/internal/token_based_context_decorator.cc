@@ -1,12 +1,16 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/contextual_tasks/internal/pending_context_decorator.h"
+#include "components/contextual_tasks/internal/token_based_context_decorator.h"
+
+#include <memory>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -15,10 +19,7 @@
 
 namespace contextual_tasks {
 
-PendingContextDecorator::PendingContextDecorator() = default;
-PendingContextDecorator::~PendingContextDecorator() = default;
-
-void PendingContextDecorator::DecorateContext(
+void TokenBasedContextDecorator::DecorateContext(
     std::unique_ptr<ContextualTaskContext> context,
     ContextDecorationParams* params,
     base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
@@ -39,9 +40,18 @@ void PendingContextDecorator::DecorateContext(
     return;
   }
 
-  auto tokens = handle->GetUploadedContextTokens();
-  auto submitted_tokens = handle->GetSubmittedContextTokens();
-  tokens.insert(tokens.end(), submitted_tokens.begin(), submitted_tokens.end());
+  auto tokens = GetTokensToDecorate(handle);
+
+  DecorateContextWithTokens(std::move(context), controller, tokens,
+                            std::move(context_callback));
+}
+
+void TokenBasedContextDecorator::DecorateContextWithTokens(
+    std::unique_ptr<ContextualTaskContext> context,
+    contextual_search::ContextualSearchContextController* controller,
+    const std::vector<base::UnguessableToken>& tokens,
+    base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+        context_callback) {
   for (const auto& token : tokens) {
     const auto* file_info = controller->GetFileInfo(token);
     if (!file_info || !file_info->tab_url.has_value()) {
@@ -63,6 +73,24 @@ void PendingContextDecorator::DecorateContext(
     if (file_info->tab_session_id.has_value()) {
       decorator_data.contextual_search_context_data.tab_session_id =
           file_info->tab_session_id.value();
+    }
+
+    bool is_duplicate = false;
+    // This loop is O(N^2), but the number of attachments is expected to be
+    // small, and using a set would make it harder to control which attachment
+    // fields to use for deduplication.
+    for (const auto& existing_attachment : context->GetUrlAttachments()) {
+      if (existing_attachment.GetURL() == attachment.GetURL() &&
+          existing_attachment.GetTitle() == attachment.GetTitle() &&
+          existing_attachment.GetTabSessionId() ==
+              attachment.GetTabSessionId()) {
+        is_duplicate = true;
+        break;
+      }
+    }
+
+    if (is_duplicate) {
+      continue;
     }
 
     // Extend the UrlAttachments with this new entry.

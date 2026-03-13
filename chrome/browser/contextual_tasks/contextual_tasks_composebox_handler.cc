@@ -322,18 +322,15 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
         session_handle->AsWeakPtr();
   }
 
-  // TODO(crbug.com/468453630): The context needs to actually be populated
-  // with tab data from the server-managed context list.
   contextual_tasks_service->GetContextForTask(
       *task_id,
-      {contextual_tasks::ContextualTaskContextSource::kPendingContextDecorator},
+      {contextual_tasks::ContextualTaskContextSource::
+           kSubmittedContextDecorator},
       std::move(context_decoration_params),
       base::BindOnce(&ContextualTasksComposeboxHandler::OnContextRetrieved,
                      weak_factory_.GetWeakPtr(), query, active_tab_handle,
                      /*task_id=*/task_id,
-                     has_visual_selection
-                         ? overlay_token
-                         : std::nullopt));
+                     has_visual_selection ? overlay_token : std::nullopt));
 }
 
 contextual_tasks::ContextualTasksService*

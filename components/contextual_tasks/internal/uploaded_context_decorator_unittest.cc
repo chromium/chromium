@@ -1,0 +1,249 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/contextual_tasks/internal/uploaded_context_decorator.h"
+
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
+#include "base/uuid.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
+#include "components/contextual_tasks/public/context_decoration_params.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/lens/contextual_input.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/sessions/core/session_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace contextual_tasks {
+
+class UploadedContextDecoratorTest : public testing::Test {
+ public:
+  UploadedContextDecoratorTest() {
+    contextual_search::ContextualSearchService::RegisterProfilePrefs(
+        pref_service_.registry());
+  }
+  ~UploadedContextDecoratorTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
+};
+
+TEST_F(UploadedContextDecoratorTest, Construction) {
+  // Verifies that the decorator can be constructed and called with a null
+  // `ContextDecorationParams`, and that it calls the callback with the original
+  // context.
+  UploadedContextDecorator decorator;
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  auto context = std::make_unique<ContextualTaskContext>(task);
+  auto* context_ptr = context.get();
+
+  base::RunLoop run_loop;
+  decorator.DecorateContext(
+      std::move(context), nullptr,
+      base::BindOnce(
+          [](ContextualTaskContext* expected_context,
+             base::OnceClosure quit_closure,
+             std::unique_ptr<ContextualTaskContext> context) {
+            EXPECT_EQ(context.get(), expected_context);
+            std::move(quit_closure).Run();
+          },
+          context_ptr, run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(UploadedContextDecoratorTest, DecorateWithContextualSearchData) {
+  // Set up the Contextual Search service and a mock controller.
+  contextual_search::ContextualSearchService service(
+      nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
+  auto* mock_controller_ptr = mock_controller.get();
+  auto session_handle =
+      service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
+
+  // Add a tab context to the session, which will produce a token.
+  session_handle->CreateContextToken();
+
+  // Move the token to the submitted state.
+  session_handle->CreateClientToAimRequest(
+      std::make_unique<contextual_search::ContextualSearchContextController::
+                           CreateClientToAimRequestInfo>());
+
+  // Add a second tab context that will remain in the uploaded state.
+  base::UnguessableToken token2 = session_handle->CreateContextToken();
+
+  // Mock the controller to return valid file info for the token.
+  // Note: Since this is UploadedContextDecorator, it should only fetch token2.
+  contextual_search::FileInfo file_info2;
+  file_info2.tab_url = GURL("https://example2.com/");
+  file_info2.tab_title = "Test Title 2";
+  file_info2.tab_session_id = SessionID::FromSerializedValue(456);
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(token2))
+      .WillOnce(testing::Return(&file_info2));
+
+  // Set up the decoration params with the session handle.
+  ContextDecorationParams params;
+  params.contextual_search_session_handle = session_handle->AsWeakPtr();
+
+  // Decorate the context.
+  UploadedContextDecorator decorator;
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  // Run the decoration and verify the context is updated as expected.
+  base::RunLoop run_loop;
+  decorator.DecorateContext(
+      std::move(context), &params,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<ContextualTaskContext> context) {
+            ASSERT_EQ(1u, context->GetUrlAttachments().size());
+            auto& attachment = context->GetMutableUrlAttachmentsForTesting()[0];
+            EXPECT_EQ("https://example2.com/", attachment.GetURL());
+            EXPECT_EQ(u"Test Title 2", attachment.GetTitle());
+            EXPECT_EQ(SessionID::FromSerializedValue(456),
+                      attachment.GetTabSessionId());
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(UploadedContextDecoratorTest, DecorateWithNullSessionHandle) {
+  // Set up decoration params with a null session handle.
+  ContextDecorationParams params;
+
+  // Decorate the context.
+  UploadedContextDecorator decorator;
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  // Run the decoration and verify that no attachments are added.
+  base::RunLoop run_loop;
+  decorator.DecorateContext(
+      std::move(context), &params,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<ContextualTaskContext> context) {
+            EXPECT_TRUE(context->GetUrlAttachments().empty());
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(UploadedContextDecoratorTest, DecorateWithNoContextTokens) {
+  // Set up a session handle with no context tokens.
+  contextual_search::ContextualSearchService service(
+      nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
+  auto session_handle =
+      service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
+
+  // Set up decoration params with the session handle.
+  ContextDecorationParams params;
+  params.contextual_search_session_handle = session_handle->AsWeakPtr();
+
+  // Decorate the context.
+  UploadedContextDecorator decorator;
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  // Run the decoration and verify that no attachments are added.
+  base::RunLoop run_loop;
+  decorator.DecorateContext(
+      std::move(context), &params,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<ContextualTaskContext> context) {
+            EXPECT_TRUE(context->GetUrlAttachments().empty());
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(UploadedContextDecoratorTest, DecorateWithIncompleteData) {
+  // Set up the service and session handle.
+  contextual_search::ContextualSearchService service(
+      nullptr, nullptr, nullptr, nullptr, version_info::Channel::UNKNOWN, "");
+  auto mock_controller = std::make_unique<
+      contextual_search::MockContextualSearchContextController>();
+  auto* mock_controller_ptr = mock_controller.get();
+  auto session_handle =
+      service.CreateSessionForTesting(std::move(mock_controller), nullptr);
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
+
+  // Add three tokens: one valid, one with no URL, and one that will have a
+  // null FileInfo.
+  base::UnguessableToken valid_token = session_handle->CreateContextToken();
+
+  base::UnguessableToken no_url_token = session_handle->CreateContextToken();
+
+  base::UnguessableToken null_file_info_token =
+      session_handle->CreateContextToken();
+
+  // Mock the controller to return appropriate data for each token.
+  contextual_search::FileInfo valid_file_info;
+  valid_file_info.tab_url = GURL("https://example.com/");
+  valid_file_info.tab_title = "Test Title";
+  valid_file_info.tab_session_id = SessionID::FromSerializedValue(123);
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(valid_token))
+      .WillOnce(testing::Return(&valid_file_info));
+
+  contextual_search::FileInfo no_url_file_info;
+  no_url_file_info.tab_title = "No URL Title";
+  no_url_file_info.tab_session_id = SessionID::FromSerializedValue(124);
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(no_url_token))
+      .WillOnce(testing::Return(&no_url_file_info));
+
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(null_file_info_token))
+      .WillOnce(testing::Return(nullptr));
+
+  // Set up the decoration params.
+  ContextDecorationParams params;
+  params.contextual_search_session_handle = session_handle->AsWeakPtr();
+
+  // Decorate the context.
+  UploadedContextDecorator decorator;
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  // Run the decoration and verify that only the single valid attachment was
+  // created.
+  base::RunLoop run_loop;
+  decorator.DecorateContext(
+      std::move(context), &params,
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<ContextualTaskContext> context) {
+            ASSERT_EQ(1u, context->GetUrlAttachments().size());
+            auto& attachment = context->GetMutableUrlAttachmentsForTesting()[0];
+            EXPECT_EQ("https://example.com/", attachment.GetURL());
+            EXPECT_EQ(u"Test Title", attachment.GetTitle());
+            EXPECT_EQ(SessionID::FromSerializedValue(123),
+                      attachment.GetTabSessionId());
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+}  // namespace contextual_tasks

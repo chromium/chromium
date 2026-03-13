@@ -25,8 +25,12 @@ source_set("internal") {
     "gemini_thread_sync_bridge.h",
     "history_context_decorator.cc",
     "history_context_decorator.h",
-    "pending_context_decorator.cc",
-    "pending_context_decorator.h",
+    "submitted_context_decorator.cc",
+    "submitted_context_decorator.h",
+    "token_based_context_decorator.cc",
+    "token_based_context_decorator.h",
+    "uploaded_context_decorator.cc",
+    "uploaded_context_decorator.h",
   ]
 
   deps = [
@@ -63,7 +67,8 @@ source_set("unit_tests") {
     "favicon_context_decorator_unittest.cc",
     "gemini_thread_sync_bridge_unittest.cc",
     "history_context_decorator_unittest.cc",
-    "pending_context_decorator_unittest.cc",
+    "submitted_context_decorator_unittest.cc",
+    "uploaded_context_decorator_unittest.cc",
   ]
 
   deps = [
