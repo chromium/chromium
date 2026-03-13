@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"
-#include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -124,12 +123,6 @@ class TabStripGlicButton : public TabStripNudgeButton,
   void OnBrowserWindowDidBecomeActive(BrowserWindowInterface* bwi);
   void OnBrowserWindowDidBecomeInactive(BrowserWindowInterface* bwi);
   void UpdateInkdropHoverColor(bool is_frame_active);
-
-  // TODO(crbug.com/485257764): Remove once TabStripGlicButton inherits from
-  // GlicButton<T>
-  bool GetVisible() override;
-  float GetWidthFactor() const override;
-  ui::PropertyHandler* GetPropertyHandler() override;
 
  private:
   // views::LabelButton:

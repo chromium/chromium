@@ -12,12 +12,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/glic/glic_base_shim.h"
-#include "chrome/browser/ui/views/glic/glic_button_interface.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_id.h"
-#include "ui/color/color_variant.h"
+#include "chrome/browser/ui/views/glic/glic_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_class_properties.h"
 
@@ -27,10 +22,6 @@ namespace glic {
 
 inline constexpr int kActorNudgeLabelMargin = 6;
 inline constexpr int kSplitLeftEdgeRadius = 2;
-
-// Rounded edge radius for Gemini Button when split with actor task icon.
-inline constexpr int kSplitButtonRoundedRadius = 10;
-// Flag edge radius for Gemini Button when split with actor task icon.
 inline constexpr int kSplitRightEdgeRadius = 10;
 
 // Defines how the button calculates its width during animation.
@@ -60,7 +51,7 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
 
     // The task icon will only ever be shown with the GlicButton, so can always
     // set the corner radii for split button styling.
-    SetLeftRightCornerRadii(kSplitLeftEdgeRadius, GetSplitRoundedEdgeRadius());
+    SetLeftRightCornerRadii(kSplitLeftEdgeRadius, kSplitRightEdgeRadius);
     SetInkdropHoverColorId(kColorTabBackgroundInactiveHoverFrameActive);
 
     UpdateColors();
@@ -190,17 +181,19 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
     return bounds;
   }
 
-  float GetWidthFactor() const override { return width_factor_; }
-  void SetWidthFactor(float factor) {
-    width_factor_ = factor;
-    this->PreferredSizeChanged();
-  }
+  float GetWidthFactor() const { return width_factor_; }
 
  protected:
   // views::LabelButton:
-  void SetText(std::u16string_view text) override { T::SetText(text); }
-
-  virtual int GetSplitRoundedEdgeRadius() { return kSplitButtonRoundedRadius; }
+  void SetText(std::u16string_view text) override {
+    if constexpr (std::is_same_v<T, ToolbarButton>) {
+      // SetText is private in ToolbarButton and prefers to use SetHighlight.
+      std::u16string highlight_text(text);
+      this->SetHighlight(highlight_text, std::nullopt);
+    } else {
+      T::SetText(text);
+    }
+  }
 
   void SetForegroundFrameActiveColorId(ui::ColorId new_color_id) override {
     GlicBaseShim<T>::SetForegroundFrameActiveColorId(new_color_id);
@@ -251,6 +244,7 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
   base::CallbackListSubscription window_did_become_inactive_subscription_;
 
   float width_factor_ = 0;
+  bool is_showing_nudge_ = false;
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };

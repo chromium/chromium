@@ -45,12 +45,7 @@ class GlicNudgeController {
   GlicNudgeController& operator=(const GlicNudgeController& other) = delete;
   virtual ~GlicNudgeController();
 
-  void SetTabStripDelegate(GlicNudgeDelegate* delegate) {
-    tab_strip_delegate_ = delegate;
-  }
-  void SetToolbarDelegate(GlicNudgeDelegate* delegate) {
-    toolbar_delegate_ = delegate;
-  }
+  void SetDelegate(GlicNudgeDelegate* delegate) { delegate_ = delegate; }
 
   // Updates the `nudge_label` for `web_contents`, if the WebContents is active.
   // The nudge will be removed from `web_contents` if `nudge_label` is empty.
@@ -77,13 +72,10 @@ class GlicNudgeController {
   // the tab.
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
 
-  GlicNudgeDelegate* GetActiveDelegate();
-
   // The BrowserWindowInterface that owns `this`.
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
-  raw_ptr<GlicNudgeDelegate> tab_strip_delegate_ = nullptr;
-  raw_ptr<GlicNudgeDelegate> toolbar_delegate_ = nullptr;
+  raw_ptr<GlicNudgeDelegate> delegate_ = nullptr;
 
   // The suggested prompt associated with the nudge label.
   std::optional<std::string> prompt_suggestion_;

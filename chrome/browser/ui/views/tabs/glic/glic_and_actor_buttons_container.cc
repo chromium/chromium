@@ -65,6 +65,12 @@ void GlicAndActorButtonsContainer::Layout(PassKey) {
   ink_drop_container_view_->SetBoundsRect(bounds);
 }
 
+glic::TabStripGlicButton* GlicAndActorButtonsContainer::InsertGlicButton(
+    glic::TabStripGlicButton* glic_button) {
+  // Insert after ink drop container.
+  return AddChildViewAt(glic_button, 1ul);
+}
+
 void GlicAndActorButtonsContainer::SetHighlighted(bool highlighted) {
   if (!GetWidget() || GetWidget()->IsClosed()) {
     return;

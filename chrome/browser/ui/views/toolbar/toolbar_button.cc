@@ -138,6 +138,7 @@ void ToolbarButton::SetHighlight(const std::u16string& highlight_text,
     ClearHighlight();
     return;
   }
+
   highlight_color_animation_.Show(highlight_color);
   SetText(highlight_text);
 }
@@ -200,14 +201,9 @@ void ToolbarButton::UpdateColorsAndInsets() {
     const auto* cp = GetColorProvider();
     if (cp) {
       if (default_background_color_id_ != kChromeColorsStart) {
-        int left_corner_radius = GetCornerRadiusFor(Edge::kLeft);
-        int right_corner_radius = GetCornerRadiusFor(Edge::kRight);
-
         SetBackground(views::CreateBackgroundFromPainter(
-            views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
-                cp->GetColor(default_background_color_id_),
-                gfx::RoundedCornersF(left_corner_radius, right_corner_radius,
-                                     right_corner_radius, left_corner_radius),
+            views::Painter::CreateSolidRoundRectPainter(
+                cp->GetColor(default_background_color_id_), highlight_radius,
                 paint_insets)));
       }
       label()->SetBackgroundColor(cp->GetColor(kColorToolbar));

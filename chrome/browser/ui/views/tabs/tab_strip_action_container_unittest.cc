@@ -306,8 +306,7 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  glic_nudge_controller_->SetTabStripDelegate(
-      tab_strip_action_container_.get());
+  glic_nudge_controller_->SetDelegate(tab_strip_action_container_.get());
 
   ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
 

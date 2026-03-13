@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
-#include "chrome/browser/ui/tabs/glic_nudge_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -54,15 +53,13 @@ void GlicNudgeController::UpdateNudgeLabel(
     return;
   }
 
-  GlicNudgeDelegate* delegate = GetActiveDelegate();
-
   if (activity &&
       (activity == tabs::GlicNudgeActivity::
                        kNudgeIgnoredOpenedContextualTasksSidePanel ||
        activity == tabs::GlicNudgeActivity::
                        kNudgeIgnoredOmniboxContextMenuInteraction) &&
-      delegate && delegate->GetIsShowingGlicNudge()) {
-    delegate->OnHideGlicNudgeUI();
+      delegate_ && delegate_->GetIsShowingGlicNudge()) {
+    delegate_->OnHideGlicNudgeUI();
     OnNudgeActivity(*activity);
     return;
   }
@@ -71,11 +68,11 @@ void GlicNudgeController::UpdateNudgeLabel(
   PrefService* const pref_service =
       browser_window_interface_->GetProfile()->GetPrefs();
   if (pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
-    if (delegate) {
-      if (nudge_label.empty() && delegate->GetIsShowingGlicNudge()) {
-        delegate->OnHideGlicNudgeUI();
+    if (delegate_) {
+      if (nudge_label.empty() && delegate_->GetIsShowingGlicNudge()) {
+        delegate_->OnHideGlicNudgeUI();
       } else {
-        delegate->OnTriggerGlicNudgeUI(nudge_label);
+        delegate_->OnTriggerGlicNudgeUI(nudge_label);
       }
     }
   }
@@ -131,20 +128,10 @@ void GlicNudgeController::SetNudgeActivityCallbackForTesting() {
 
 void GlicNudgeController::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
-  GlicNudgeDelegate* delegate = GetActiveDelegate();
-  if (delegate && delegate->GetIsShowingGlicNudge()) {
-    delegate->OnHideGlicNudgeUI();
+  if (delegate_ && delegate_->GetIsShowingGlicNudge()) {
+    delegate_->OnHideGlicNudgeUI();
     OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
   }
-}
-
-GlicNudgeDelegate* GlicNudgeController::GetActiveDelegate() {
-  auto* vertical_tab_strip_state_controller =
-      tabs::VerticalTabStripStateController::From(browser_window_interface_);
-
-  return vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs()
-             ? toolbar_delegate_
-             : tab_strip_delegate_;
 }
 
 }  // namespace tabs

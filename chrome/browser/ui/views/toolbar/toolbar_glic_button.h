@@ -7,7 +7,6 @@
 
 #include "chrome/browser/ui/views/glic/glic_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_glic_constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class BrowserFrameView;
@@ -40,20 +39,11 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   void SetForegroundFrameInactiveColorId(ui::ColorId new_color_id) override;
   void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id) override;
   void SetBackgroundFrameInactiveColorId(ui::ColorId new_color_id) override;
-  void ResetSplitButtonCornerStyling() override;
-  void SetLeftRightCornerRadii(int left, int right) override;
-  float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
-  int GetSplitRoundedEdgeRadius() override;
   ui::ColorId GetBackgroundColor();
 
  private:
   void UpdateBackground();
   void UpdateInkDrop();
-
-  std::optional<int> left_corner_radius_;
-  std::optional<int> right_corner_radius_;
-
-  int split_rounded_edge_radius_ = kDefaultSplitButtonRoundedCornerRadius;
 };
 }  // namespace glic
 
