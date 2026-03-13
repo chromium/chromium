@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Account, JsNetErrorCode, NewScreencastPreconditionMojoType, PendingScreencast} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
+import type {Account, JsNetErrorCode, NewScreencastPrecondition, PendingScreencast} from './ash/webui/projector_app/public/mojom/projector_types.mojom-webui.js';
 
 /**
  * Structure for XHR response.
@@ -29,8 +29,7 @@ export interface Video {
  * chrome.
  */
 export interface ClientDelegate {
-  getNewScreencastPreconditionState():
-      Promise<NewScreencastPreconditionMojoType>;
+  getNewScreencastPreconditionState(): Promise<NewScreencastPrecondition>;
 
   shouldDownloadSoda(): Promise<boolean>;
 
@@ -67,8 +66,7 @@ export interface ClientDelegate {
 export interface AppApi {
   setClientDelegate(delegate: ClientDelegate): void;
 
-  onNewScreencastPreconditionChanged(state: NewScreencastPreconditionMojoType):
-      void;
+  onNewScreencastPreconditionChanged(state: NewScreencastPrecondition): void;
 
   onSodaInstallProgressUpdated(progress: number): void;
 

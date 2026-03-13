@@ -17,6 +17,7 @@ mojo_files = [
 
 ts_files = [
   "launch.ts",
+  "untrusted_app_comm_factory.ts",
   "untrusted_projector_browser_proxy.ts",
 ]
 
@@ -46,7 +47,11 @@ webui_ts_library("build_ts") {
   composite = true
   definitions = [ "$target_gen_dir/preprocessed/app_api.d.ts" ]
 
-  deps = [ "//ui/webui/resources/mojo:build_ts" ]
+  deps = [
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
   extra_deps = [
     ":copy_mojo_ts",
     ":copy_ts",
@@ -70,6 +75,7 @@ generate_grd("ts_grdp") {
   deps = [ ":build_ts" ]
   input_files = [
     "launch.js",
+    "untrusted_app_comm_factory.js",
     "untrusted_projector_browser_proxy.js",
   ]
   input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
@@ -79,7 +85,6 @@ generate_grd("build_untrusted_grd") {
   input_files = [
     "index.html",
     "sandboxed_load_time_data.js",
-    "untrusted_app_comm_factory.js",
     "assets/icon_16.png",
     "assets/icon_32.png",
     "assets/icon_48.png",
