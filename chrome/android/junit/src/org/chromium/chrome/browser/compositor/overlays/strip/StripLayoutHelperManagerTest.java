@@ -1420,6 +1420,33 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
+    @Config(sdk = 30)
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testGlicButtonUnfocusedOpacity() {
+        var appHeaderState =
+                new AppHeaderState(new Rect(), new Rect(), /* isInDesktopWindow= */ true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        initializeTest();
+        assertNotNull("Glic button should be created.", mStripLayoutHelperManager.getGlicButton());
+
+        // Focused state
+        mStripLayoutHelperManager.onTopResumedActivityChanged(true);
+        assertEquals(
+                "Glic button opacity should be 1.0 when focused in desktop windowing mode.",
+                1.0f,
+                mStripLayoutHelperManager.getGlicButton().getOpacity(),
+                MathUtils.EPSILON);
+
+        // Unfocused state
+        mStripLayoutHelperManager.onTopResumedActivityChanged(false);
+        assertEquals(
+                "Glic button opacity should be 0.65 when unfocused in desktop windowing mode.",
+                0.65f,
+                mStripLayoutHelperManager.getGlicButton().getOpacity(),
+                MathUtils.EPSILON);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testIncognitoSwitcherDisabled() {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);

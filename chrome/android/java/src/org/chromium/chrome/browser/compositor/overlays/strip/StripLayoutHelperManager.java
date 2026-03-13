@@ -203,6 +203,7 @@ public class StripLayoutHelperManager
     private static final float GLIC_BUTTON_BACKGROUND_HEIGHT_DP = 28.f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.30f;
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.20f;
+    private static final float GLIC_BUTTON_UNFOCUSED_OPACITY = 0.65f;
     private static final float GLIC_BUTTON_CLICK_SLOP_DP =
             (BUTTON_DESIRED_TOUCH_TARGET_SIZE - GLIC_BUTTON_BACKGROUND_WIDTH_DP) / 2;
     private static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
@@ -276,7 +277,8 @@ public class StripLayoutHelperManager
 
     /**
      * Whether the current activity is the top resumed activity. This is only relevant for use in
-     * the desktop windowing mode, to determine the tab strip background color.
+     * the desktop windowing mode, to determine the tab strip background color and the Glic button
+     * opacity.
      */
     private boolean mIsTopResumedActivity;
 
@@ -805,6 +807,8 @@ public class StripLayoutHelperManager
                 Color.TRANSPARENT,
                 Color.TRANSPARENT);
 
+        updateGlicButtonOpacity();
+
         mGlicButton.setAccessibilityDescription(
                 context.getString(R.string.glic_tab_strip_button_tooltip),
                 /* incognitoDescription= */ "");
@@ -1014,6 +1018,12 @@ public class StripLayoutHelperManager
             }
             mGlicButton.setDrawX(leftSideAnchor);
         }
+    }
+
+    private void updateGlicButtonOpacity() {
+        if (mGlicButton == null) return;
+        boolean isUnfocusedInDw = isAppInDesktopWindow() && !mIsTopResumedActivity;
+        mGlicButton.setOpacity(isUnfocusedInDw ? GLIC_BUTTON_UNFOCUSED_OPACITY : 1.0f);
     }
 
     private void handleModelSelectorButtonClick() {
@@ -1422,6 +1432,9 @@ public class StripLayoutHelperManager
         // TODO (crbug/328055199): Check if losing focus to a non-Chrome task.
         if (!mIsHeaderCustomizationSupported) return;
         mIsTopResumedActivity = isTopResumedActivity;
+
+        updateGlicButtonOpacity();
+
         mUpdateHost.requestUpdate();
     }
 
@@ -1891,6 +1904,8 @@ public class StripLayoutHelperManager
 
         mDesktopWindowStateManager.updateForegroundColor(getBackgroundColor());
         updateHorizontalPaddings(newState.getLeftPadding(), newState.getRightPadding());
+
+        updateGlicButtonOpacity();
     }
 
     /**
@@ -2117,6 +2132,10 @@ public class StripLayoutHelperManager
 
     ViewStub getTabHoverCardViewStubForTesting() {
         return mTabHoverCardViewStub;
+    }
+
+    boolean isAppHeaderCustomizationSupportedForTesting() {
+        return mIsHeaderCustomizationSupported;
     }
 
     public @Nullable TabStripDragHandler getTabStripDragHandlerForTesting() {
