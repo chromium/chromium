@@ -55,9 +55,10 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @After
     public void tearDown() {
-        ChromeSharedPreferences.getInstance().removeKeySync(CURRENT_AUTHORITATIVE_STORE_KEY_1);
-        ChromeSharedPreferences.getInstance().removeKeySync(SHADOW_WRITTEN_STORE_KEY_1);
-        ChromeSharedPreferences.getInstance().removeKeySync(SHADOW_WRITTEN_STORE_KEY_2);
+        ChromeSharedPreferences.getInstance()
+                .removeKeysWithPrefix(TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE);
+        ChromeSharedPreferences.getInstance()
+                .removeKeysWithPrefix(TAB_PERSISTENCE_SHADOW_WRITTEN_STORE);
     }
 
     @Test
@@ -213,18 +214,27 @@ public class PersistentStoreMigrationManagerImplUnitTest {
         assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
 
         // Shadow store caught up status should be reset.
-        assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_1, StoreType.INVALID));
     }
 
     @Test
     public void testOnShadowStoreRazed() {
         mManager.onShadowStoreCreated(StoreType.TAB_STATE_STORE);
         mManager.onShadowStoreCaughtUp();
-        assertTrue(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
+        assertEquals(
+                StoreType.TAB_STATE_STORE,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_1, StoreType.INVALID));
 
         mManager.onShadowStoreRazed();
 
-        assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_1, StoreType.INVALID));
         assertFalse(mManager.isShadowStoreCaughtUp());
     }
 
@@ -238,34 +248,61 @@ public class PersistentStoreMigrationManagerImplUnitTest {
         mManager.onShadowStoreCreated(StoreType.TAB_STATE_STORE);
         mManager.onShadowStoreCaughtUp();
 
-        assertTrue(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
-        assertTrue(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_2));
-        assertTrue(
-                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_2));
+        assertEquals(
+                StoreType.TAB_STATE_STORE,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_1, StoreType.INVALID));
+        assertEquals(
+                StoreType.LEGACY,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_2, StoreType.INVALID));
+        assertEquals(
+                StoreType.TAB_STATE_STORE,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_2, StoreType.INVALID));
 
         mManager.onAllStoresRazed();
 
-        assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
-        assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_2));
-        assertFalse(
-                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_2));
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_1, StoreType.INVALID));
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_2, StoreType.INVALID));
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_2, StoreType.INVALID));
     }
 
     @Test
     public void testOnWindowCleared() {
+        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
         mManager.onShadowStoreCreated(StoreType.LEGACY);
         mManager.onShadowStoreCaughtUp();
 
-        assertTrue(
-                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
-        assertTrue(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
+        assertEquals(
+                StoreType.TAB_STATE_STORE,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.INVALID));
+        assertEquals(
+                StoreType.LEGACY,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_1, StoreType.INVALID));
 
         mManager.onWindowCleared();
-        assertFalse(
-                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
-        assertFalse(ChromeSharedPreferences.getInstance().contains(SHADOW_WRITTEN_STORE_KEY_1));
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.INVALID));
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SHADOW_WRITTEN_STORE_KEY_1, StoreType.INVALID));
     }
 
     @Test
@@ -357,7 +394,7 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testShouldRazeShadowStoreForWindow() {
-        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
+        assertFalse(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
 
         mManager.onShadowStoreCreated(StoreType.TAB_STATE_STORE);
         mManager.onShadowStoreCaughtUp();
@@ -372,20 +409,29 @@ public class PersistentStoreMigrationManagerImplUnitTest {
         ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
         ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        mManager.onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
 
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
 
-        // Perform a rollback.
+        // Start a rollback. Begin Shadowing.
         ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
         ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(false);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
 
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.LEGACY, mManager.getShadowStoreType());
+
+        // Verify that the shadow store should be razed.
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
+
+        mManager.onShadowStoreCreated(StoreType.LEGACY);
+        mManager.onShadowStoreCaughtUp();
+
+        // Complete Rollback.
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
-
-        // 3. Verify that the shadow store should be razed.
-        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
     }
 
     @Test
@@ -395,8 +441,6 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
         mManager.onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
 
-        assertTrue(
-                ChromeSharedPreferences.getInstance().contains(CURRENT_AUTHORITATIVE_STORE_KEY_1));
         assertEquals(
                 StoreType.TAB_STATE_STORE,
                 ChromeSharedPreferences.getInstance()
@@ -405,7 +449,7 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testShouldRazeStoreForWindow_Authoritative() {
-        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ true));
+        assertFalse(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ true));
 
         mManager.onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
         assertFalse(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ true));
@@ -424,8 +468,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     @Test
     public void testDefaultStore_AuthoritativeReadsEnabled() {
         ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
-        assertEquals(StoreType.LEGACY, mManager.getShadowStoreType());
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
         assertFalse(mManager.isShadowStoreCaughtUp());
     }
 
@@ -433,8 +477,138 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     public void testDefaultStore_FullMigration() {
         ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
         ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
+        assertFalse(mManager.isShadowStoreCaughtUp());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
+    public void testDefaultAfterClear_TabStateStorageDisabled() {
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
+
+        mManager.onWindowCleared();
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.INVALID));
+
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
+        assertFalse(mManager.isShadowStoreCaughtUp());
+    }
+
+    @Test
+    public void testDefaultAfterClear_TabStateStorageEnabled() {
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
+
+        mManager.onWindowCleared();
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.INVALID));
+
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
+        assertFalse(mManager.isShadowStoreCaughtUp());
+    }
+
+    @Test
+    public void testDefaultAfterClear_AuthoritativeReadsEnabled() {
+        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
+
+        mManager.onWindowCleared();
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.LEGACY, mManager.getShadowStoreType());
+        assertFalse(mManager.isShadowStoreCaughtUp());
+    }
+
+    @Test
+    public void testDefaultAfterClear_FullMigration() {
+        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
+
+        mManager.onWindowCleared();
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
         assertFalse(mManager.isShadowStoreCaughtUp());
+    }
+
+    @Test
+    public void testGetAuthoritativeStoreType_UnknownWithLegacyDefault() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.UNKNOWN);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+    }
+
+    @Test
+    public void testGetAuthoritativeStoreType_UnknownWithTabStateStoreDefault() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.UNKNOWN);
+        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        // With flag true, fallback should be TAB_STATE_STORE.
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
+    }
+
+    @Test
+    public void testIsShadowStoreCaughtUp_Unknown() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(SHADOW_WRITTEN_STORE_KEY_1, StoreType.UNKNOWN);
+        assertFalse(mManager.isShadowStoreCaughtUp());
+    }
+
+    @Test
+    public void testShouldRazeStoreForWindow_UnknownAuthoritative() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.UNKNOWN);
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ true));
+    }
+
+    @Test
+    public void testShouldRazeStoreForWindow_UnknownShadow() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(SHADOW_WRITTEN_STORE_KEY_1, StoreType.UNKNOWN);
+        assertTrue(mManager.shouldRazeStoreForWindow(/* isAuthoritative= */ false));
+    }
+
+    @Test
+    public void testGetShadowStoreType_UnknownShadow() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.LEGACY);
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(SHADOW_WRITTEN_STORE_KEY_1, StoreType.UNKNOWN);
+        // Should be treated as not having a valid shadow store caught up.
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
+        assertFalse(mManager.isShadowStoreCaughtUp());
+    }
+
+    @Test
+    public void testMarkAllKeysUnknownForPrefix_DoesNotAffectOtherPrefixes() {
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
+        mManager.onAllStoresRazed();
+        assertEquals(
+                StoreType.UNKNOWN,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.INVALID));
     }
 }

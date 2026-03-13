@@ -23,6 +23,7 @@ public interface PersistentStoreMigrationManager {
         StoreType.INVALID,
         StoreType.LEGACY,
         StoreType.TAB_STATE_STORE,
+        StoreType.UNKNOWN,
     })
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
@@ -33,6 +34,8 @@ public interface PersistentStoreMigrationManager {
         int LEGACY = 1;
         // An SQLITE-backed implementation of TabPersistentStore.
         int TAB_STATE_STORE = 2;
+        // Represents a window which needs to be cleaned or is of an unknown type.
+        int UNKNOWN = 3;
     }
 
     /** Returns the {@link StoreType} that is considered the authoritative source of truth. */
@@ -64,9 +67,6 @@ public interface PersistentStoreMigrationManager {
      * @param type The type of store that was initialized.
      */
     void onAuthoritativeStoreInitialized(@StoreType int type);
-
-    /** Used to handle existing unmarked windows with an authoritative legacy store. */
-    void maybeHandleUnmarkedLegacyStore();
 
     /** Whether the shadow store is caught up. */
     boolean isShadowStoreCaughtUp();
