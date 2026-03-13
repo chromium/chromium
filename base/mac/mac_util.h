@@ -6,7 +6,7 @@
 #define BASE_MAC_MAC_UTIL_H_
 
 #include <AvailabilityMacros.h>
-#import <CoreGraphics/CoreGraphics.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <stdint.h>
 
 #include <string>
