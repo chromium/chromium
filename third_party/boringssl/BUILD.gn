@@ -128,10 +128,12 @@ if (is_msan) {
   nasm_assemble("boringssl_asm") {
     visibility = [ ":*" ]
     sources = rebase_path(bcm_sources_nasm + crypto_sources_nasm, ".", "src")
+    include_dirs = [ "src/gen" ]
   }
   nasm_assemble("test_support_asm") {
     visibility = [ ":*" ]
     sources = rebase_path(test_support_sources_nasm, ".", "src")
+    include_dirs = [ "src/gen" ]
   }
 } else {
   # All other targets use GAS-compatible assembler. BoringSSL's assembly files
