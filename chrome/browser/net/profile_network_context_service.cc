@@ -1145,9 +1145,6 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   out->mitigations_enabled_for_3pcd =
       cookie_settings.MitigationsEnabledFor3pcd();
 
-  out->tracking_protection_enabled_for_3pcd = base::FeatureList::IsEnabled(
-      content_settings::features::kTrackingProtection3pcd);
-
   return out;
 }
 

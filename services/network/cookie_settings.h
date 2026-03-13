@@ -89,10 +89,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     mitigations_enabled_for_3pcd_ = enable;
   }
 
-  void set_tracking_protection_enabled_for_3pcd(bool enable) {
-    tracking_protection_enabled_for_3pcd_ = enable;
-  }
-
   void set_tpcd_metadata_manager(tpcd::metadata::Manager* manager) {
     tpcd_metadata_manager_ = manager;
   }
@@ -232,8 +228,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   bool block_third_party_cookies_ =
       net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
   bool mitigations_enabled_for_3pcd_ = false;
-  // This bool makes sure the correct cookie exclusion reasons are used.
-  bool tracking_protection_enabled_for_3pcd_ = false;
+
   std::set<std::string, std::less<>> secure_origin_cookies_allowed_schemes_;
   std::set<std::string, std::less<>> matching_scheme_cookies_allowed_schemes_;
   std::set<std::string, std::less<>> third_party_cookies_allowed_schemes_;

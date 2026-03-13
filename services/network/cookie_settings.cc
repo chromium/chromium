@@ -394,8 +394,7 @@ bool CookieSettings::ShouldBlockThirdPartyCookies(
     return modifier_decision.value();
   }
   return block_third_party_cookies_ ||
-         net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-         tracking_protection_enabled_for_3pcd_;
+         net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
 }
 
 bool CookieSettings::IsThirdPartyPhaseoutEnabled(
@@ -403,8 +402,7 @@ bool CookieSettings::IsThirdPartyPhaseoutEnabled(
     net::CookieSettingOverrides overrides) const {
   switch (GetModifierMode(top_frame_origin, overrides)) {
     case ModifierMode::kUndefined:
-      return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
-             tracking_protection_enabled_for_3pcd_;
+      return net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
     case ModifierMode::kPhaseout:
       return true;
     case ModifierMode::kAllow:

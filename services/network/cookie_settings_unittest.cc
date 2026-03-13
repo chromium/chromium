@@ -120,8 +120,6 @@ enum GrantSource {
 enum BlockSource {
   // 3PCD is not enabled. But the test case can still block 3pc.
   kNoneBlocked,
-  // Tracking protection enabled by default.
-  kTrackingProtectionEnabledFor3pcd,
   // Third-party cookie blocking is enabled through a flag.
   kForceThirdPartyCookieBlockingFlagEnabled,
 
@@ -199,14 +197,8 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
            BlockSource::kForceThirdPartyCookieBlockingFlagEnabled;
   }
 
-  bool IsTrackingProtectionEnabledFor3pcd() const {
-    return std::get<TestVariables::kBlockSource>(GetParam()) ==
-           BlockSource::kTrackingProtectionEnabledFor3pcd;
-  }
-
   bool IsTPCDEnabled() const {
-    return IsForceThirdPartyCookieBlockingFlagEnabled() ||
-           IsTrackingProtectionEnabledFor3pcd();
+    return IsForceThirdPartyCookieBlockingFlagEnabled();
   }
 
   bool IsStorageAccessGrantEligibleViaAPI() const {
@@ -1388,9 +1380,6 @@ TEST_P(CookieSettingsTestP, IsPrivacyModeEnabled) {
 TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteNoneCookie) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   std::unique_ptr<net::CanonicalCookie> cookie =
       MakeCanonicalSameSiteNoneCookie("name", kURL);
@@ -1462,9 +1451,6 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteNoneCookie) {
 TEST_P(CookieSettingsTestP, IsCookieAccessible_SameSiteLaxCookie) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   std::unique_ptr<net::CanonicalCookie> cookie =
       MakeCanonicalCookie("name", kURL);
@@ -1534,9 +1520,6 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_PartitionedCookies) {
   CookieSettings settings;
   net::CookieInclusionStatus status;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   std::unique_ptr<net::CanonicalCookie> partitioned_cookie =
       MakeCanonicalCookie(
@@ -1615,9 +1598,6 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_NoneExemptionReason) {
   CookieSettings settings;
   net::CookieInclusionStatus status;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   std::unique_ptr<net::CanonicalCookie> partitioned_cookie =
       MakeCanonicalSameSiteNoneCookie(
@@ -1681,9 +1661,6 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SitesInFirstPartySets) {
   net::SchemefulSite primary((GURL(kRwsOwnerURL)));
 
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   std::unique_ptr<net::CanonicalCookie> cookie =
       MakeCanonicalSameSiteNoneCookie("name", kRwsMemberURL);
@@ -1723,9 +1700,6 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_SitesInFirstPartySets) {
 TEST_P(CookieSettingsTestP, AnnotateAndMoveUserBlockedCookies_CrossSiteEmbed) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}},
@@ -1982,9 +1956,6 @@ TEST_P(CookieSettingsTestP,
        AnnotateAndMoveUserBlockedCookies_SameSiteEmbed_FirstPartyContext) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("third_party", kURL), {}},
@@ -2063,9 +2034,6 @@ TEST_P(CookieSettingsTestP,
        AnnotateAndMoveUserBlockedCookies_SameSiteEmbed_ThirdPartyContext) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("cookie", kDomainURL), {}},
@@ -2197,9 +2165,6 @@ TEST_P(CookieSettingsTestP,
        AnnotateAndMoveUserBlockedCookies_SitesInFirstPartySet) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie("third_party_but_member",
@@ -2224,8 +2189,7 @@ TEST_P(CookieSettingsTestP,
           net::MatchesCookieWithName("third_party_but_member"),
           MatchesCookieAccessResult(
               net::HasExactlyExclusionReasonsForTesting(
-                  IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                          IsTrackingProtectionEnabledFor3pcd()
+                  IsForceThirdPartyCookieBlockingFlagEnabled()
                       ? net::CookieInclusionStatus::ExclusionReasonBitset{
                                     net::CookieInclusionStatus::
                                         ExclusionReason::EXCLUDE_THIRD_PARTY_PHASEOUT,
@@ -2244,9 +2208,6 @@ TEST_P(
     AnnotateAndMoveUserBlockedCookies_SitesInFirstPartySet_FirstPartyURLBlocked) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
-  if (IsTrackingProtectionEnabledFor3pcd()) {
-    settings.set_tracking_protection_enabled_for_3pcd(true);
-  }
   settings.set_content_settings(
       ContentSettingsType::COOKIES,
       {CreateSetting(kRwsOwnerURL, kRwsOwnerURL, CONTENT_SETTING_BLOCK)});
@@ -2276,8 +2237,7 @@ TEST_P(
           net::MatchesCookieWithName("third_party_but_member"),
           MatchesCookieAccessResult(
               net::HasExactlyExclusionReasonsForTesting(
-                  IsForceThirdPartyCookieBlockingFlagEnabled() ||
-                          IsTrackingProtectionEnabledFor3pcd()
+                  IsForceThirdPartyCookieBlockingFlagEnabled()
                       ?
                             net::CookieInclusionStatus::
                                 ExclusionReasonBitset{
@@ -3090,6 +3050,8 @@ class CookieSettingsForceEnableOverrideTest
           CookieSettingsForceEnableOverrideTestData> {
  public:
   CookieSettingsForceEnableOverrideTest() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kForceThirdPartyCookieBlocking);
     for (const auto& val : GetParam().settings_types) {
       settings_.set_content_settings(
           val, {CreateSetting(kOtherURL, kURL, CONTENT_SETTING_ALLOW)});
@@ -3108,6 +3070,7 @@ class CookieSettingsForceEnableOverrideTest
   }
 
   CookieSettings settings_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3140,7 +3103,6 @@ INSTANTIATE_TEST_SUITE_P(
          }}));
 
 TEST_P(CookieSettingsForceEnableOverrideTest, IsCookieAccessible) {
-  settings_.set_tracking_protection_enabled_for_3pcd(true);
   std::unique_ptr<net::CanonicalCookie> cookie =
       MakeCanonicalSameSiteNoneCookie(kCookieName, kOtherURL);
 
@@ -3158,7 +3120,6 @@ TEST_P(CookieSettingsForceEnableOverrideTest, IsCookieAccessible) {
 
 TEST_P(CookieSettingsForceEnableOverrideTest,
        AnnotateAndMoveUserBlockedCookies) {
-  settings_.set_tracking_protection_enabled_for_3pcd(true);
 
   net::CookieAccessResultList maybe_included_cookies = {
       {*MakeCanonicalSameSiteNoneCookie(kCookieName, kOtherURL)}};
