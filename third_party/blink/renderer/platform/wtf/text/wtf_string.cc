@@ -126,9 +126,12 @@ void String::Truncate(size_type length) {
     impl_ = impl_->Truncate(length);
 }
 
-void String::Remove(size_type start, size_type length_to_remove) {
-  if (impl_)
-    impl_ = impl_->Remove(start, length_to_remove);
+String& String::erase(size_type pos, size_type len) {
+  CHECK_LE(pos, length());
+  if (impl_) {
+    impl_ = impl_->Remove(pos, len);
+  }
+  return *this;
 }
 
 String String::Substring(size_type pos, size_type len) const {

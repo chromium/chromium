@@ -133,7 +133,7 @@ String TextDecoder::Decode(base::span<const uint8_t> input,
     if (s[0] == 0xFEFF) {
       const AtomicString& name = encoding_.GetName();
       if ((name == "UTF-8" || name == "UTF-16LE" || name == "UTF-16BE")) {
-        s.Remove(0);
+        s.erase(0, 1);
       }
     }
   }

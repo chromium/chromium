@@ -217,6 +217,14 @@ class WTF_EXPORT String {
 
   // [string.modifiers] ---------------------------------------------
 
+  // Removes `len` code units starting at `pos` from this string.
+  // If `pos` is greater than the string length, it crashes.
+  // If `len` exceeds the length from `pos` to the end of the string, the
+  // part from `pos` to the end is removed.
+  //
+  // This function returns a reference to `this` string.
+  String& erase(size_type pos, size_type len = npos);
+
   String& replace(size_type index,
                   size_type length_to_replace,
                   const StringView& replacement) {
@@ -261,8 +269,9 @@ class WTF_EXPORT String {
     }
   }
 
+  // Truncates the string to the given length. This function does nothing if
+  // `length` is greater than the string length.
   void Truncate(size_type length);
-  void Remove(size_type start, size_type length = 1);
 
   // [string.operations] --------------------------------------------
 

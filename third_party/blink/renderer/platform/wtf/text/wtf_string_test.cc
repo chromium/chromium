@@ -155,6 +155,29 @@ TEST(StringTest, NumberToStringECMAScriptRegularNumbers) {
   TestNumberToStringECMAScript(kPhi, "1.618033988749895");
 }
 
+TEST(StringTest, erase) {
+  String str8("abcde");
+  str8.erase(0, 1);
+  EXPECT_EQ("bcde", str8);
+  str8.erase(1, 2);
+  EXPECT_EQ("be", str8);
+  str8.erase(1);
+  EXPECT_EQ("b", str8);
+  str8.erase(0, 10);
+  EXPECT_EQ("", str8);
+  EXPECT_DEATH_IF_SUPPORTED(str8.erase(1), "");
+  String str16(u"abcde");
+  str16.erase(0, 1);
+  EXPECT_EQ(u"bcde", str16);
+  str16.erase(1, 2);
+  EXPECT_EQ(u"be", str16);
+  str16.erase(1);
+  EXPECT_EQ(u"b", str16);
+  str16.erase(0, 10);
+  EXPECT_EQ(u"", str16);
+  EXPECT_DEATH_IF_SUPPORTED(str16.erase(1), "");
+}
+
 TEST(StringTest, ReplaceWithLiteral) {
   // Cases for 8Bit source.
   String test_string = "1224";
