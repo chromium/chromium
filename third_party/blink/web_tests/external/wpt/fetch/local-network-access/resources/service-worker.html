@@ -10,23 +10,32 @@
 <script>
 "use strict";
 
-// Set permissions, then attempts to run an action from a service worker. Possible
-// actions (which are set in the 'method' url parameter):
+// Set permissions (optionally), then attempts to run an action from a service
+// worker. Possible actions (which are set in the 'method' url parameter):
 //
 //   * fetch
+//   * navigate
 //   * websocket
 //   * webtransport
 //
 // Permission setting is documented in the sourceResolveOptions() function in
 // support.sub.js.
+//
+// If 'method' = 'navigate', takes in an ID for window client identification
 Promise.resolve().then(async () => {
     const window_url = new URL(window.location.href);
     let permission_name = getPermissionName(window_url);
     let permission_value = getPermissionValue(window_url);
-    test_driver.set_test_context(opener);
-    await test_driver.set_permission({ name: permission_name }, permission_value);
+    if (permission_name != '') {
+      test_driver.set_test_context(opener);
+      await test_driver.set_permission({ name: permission_name }, permission_value);
+    }
 
     let method = window_url.searchParams.get('method');
+    let id = "";
+    if (window_url.searchParams.has('id')) {
+      id = window_url.searchParams.get('id');
+    }
 
     await navigator.serviceWorker.register('service-worker.js');
     const registration = await navigator.serviceWorker.ready;
@@ -59,9 +68,11 @@ Promise.resolve().then(async () => {
       case 'webtransport':
         targetUrl = webtransport_url('custom-response.py?:status=204');
         break;
+      case 'navigate':
+        targetUrl = resolveUrl("openee.html", Server.HTTPS_LOOPBACK);
     }
 
-    registration.active.postMessage({url: targetUrl.toString(), method: method},
+    registration.active.postMessage({url: targetUrl.toString(), method: method, id: id},
         [channel.port2]);
 });
 </script>

@@ -42,6 +42,35 @@ async function doWebSocket(url, port) {
   };
 }
 
+async function doNavigate(url, id, port) {
+  try {
+    let targetClient = null;
+    const clients = await self.clients.matchAll(
+        {type: 'window', includeUncontrolled: true});
+    for (const c of clients) {
+      const client_url = new URL(c.url);
+      if (client_url.searchParams.get('id') == id) {
+        targetClient = c;
+        break;
+      }
+    }
+
+    if (targetClient) {
+      try {
+        targetClient.navigate(url);
+        // No postmessage for navigation; service worker does not tell us if
+        // navigation succeeds or fails.
+      } catch (e) {
+        port.postMessage(`failure navigate ${e}`);
+      }
+    } else {
+      port.postMessage('no client');
+    }
+  } catch (e) {
+    port.postMessage(`failure finding client${e}`);
+  }
+}
+
 async function handleMessage(e) {
   const port = e.ports[0];
   switch (e.data.method) {
@@ -54,6 +83,8 @@ async function handleMessage(e) {
     case 'webtransport':
       doWebTransport(e.data.url, port);
       break;
+    case 'navigate':
+      doNavigate(e.data.url, e.data.id, port);
   }
 };
 
