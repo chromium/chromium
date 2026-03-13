@@ -31,7 +31,9 @@ class AccountChooserRadioButtonRow : public views::FlexLayoutView {
   METADATA_HEADER(AccountChooserRadioButtonRow, views::FlexLayoutView)
  public:
   AccountChooserRadioButtonRow(AccountChooserRadioButtonDelegate* delegate,
-                               const AccountInfo& account);
+                               const AccountInfo& account,
+                               int pos_in_set,
+                               int set_size);
   AccountChooserRadioButtonRow(const AccountChooserRadioButtonRow&) = delete;
   AccountChooserRadioButtonRow& operator=(const AccountChooserRadioButtonRow&) =
       delete;
