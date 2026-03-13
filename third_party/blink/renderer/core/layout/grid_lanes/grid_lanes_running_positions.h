@@ -49,6 +49,7 @@ class CORE_EXPORT GridLanesRunningPositions {
             Vector<TrackOpening>(
                 /*size=*/1,
                 TrackOpening{LayoutUnit(), LayoutUnit::Max()})),
+        track_data_(track_collection.EndLineOfImplicitGrid()),
         auto_placement_cursor_(style.IsReverseGridLanesTrackDirection()
                                    ? track_collection.EndLineOfImplicitGrid()
                                    : 0),
@@ -137,6 +138,50 @@ class CORE_EXPORT GridLanesRunningPositions {
       GridItemData& grid_lanes_item,
       const GridLayoutTrackCollection& track_collection);
 
+  // Per-track data combining sizing and baseline information.
+  struct TrackData {
+    DISALLOW_NEW();
+
+    // Track size in the grid axis.
+    LayoutUnit size;
+
+    // Baseline tracking for grid-lanes layout on the stacking axis:
+    // - `first_item_stacking_position`: Position of the first item in this
+    //   track, used to decide whether this is the first item for baseline
+    //   calculation
+    // - `last_item_stacking_position`: Position of the last item in this track,
+    //   used to decide whether this is the last item for baseline calculation
+    // - `first_baseline`: The first baseline value for this track
+    // - `last_baseline`: The last baseline value for this track
+    std::optional<LayoutUnit> first_item_stacking_position;
+    std::optional<LayoutUnit> last_item_stacking_position;
+    std::optional<LayoutUnit> first_baseline;
+    std::optional<LayoutUnit> last_baseline;
+  };
+
+  wtf_size_t TrackCount() const { return track_data_.size(); }
+
+  const TrackData& GetTrackDataAt(wtf_size_t index) const {
+    DCHECK_LT(index, track_data_.size());
+    return track_data_[index];
+  }
+
+  void SetFirstBaseline(wtf_size_t track_index,
+                        LayoutUnit stacking_position,
+                        LayoutUnit baseline) {
+    DCHECK_LT(track_index, track_data_.size());
+    track_data_[track_index].first_item_stacking_position = stacking_position;
+    track_data_[track_index].first_baseline = baseline;
+  }
+
+  void SetLastBaseline(wtf_size_t track_index,
+                       LayoutUnit stacking_position,
+                       LayoutUnit baseline) {
+    DCHECK_LT(track_index, track_data_.size());
+    track_data_[track_index].last_item_stacking_position = stacking_position;
+    track_data_[track_index].last_baseline = baseline;
+  }
+
  private:
   friend class GridLanesLayoutAlgorithmTest;
 
@@ -191,8 +236,7 @@ class CORE_EXPORT GridLanesRunningPositions {
     auto_placement_cursor_ = cursor;
   }
 
-  // Populate `track_collection_sizes_` with the size of each track in
-  // `track_collection`.
+  // Populate track sizes in `track_data_` from `track_collection`.
   void CalculateAndCacheTrackSizes(
       const GridLayoutTrackCollection& track_collection);
 
@@ -253,9 +297,8 @@ class CORE_EXPORT GridLanesRunningPositions {
   // (LayoutUnit::Max()).
   Vector<Vector<TrackOpening>> track_collection_openings_;
 
-  // The index of `track_collection_sizes_` corresponds to the track number, and
-  // each element represents the size of the track at that index.
-  Vector<LayoutUnit> track_collection_sizes_;
+  // Per-track data (sizes and baselines), indexed by track line number.
+  Vector<TrackData> track_data_;
 
   wtf_size_t auto_placement_cursor_;
   LayoutUnit tie_threshold_;

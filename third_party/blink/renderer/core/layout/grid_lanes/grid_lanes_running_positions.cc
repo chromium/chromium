@@ -224,10 +224,10 @@ LayoutUnit GridLanesRunningPositions::CalculateUsedTrackSize(
     const GridSpan& span) const {
   LayoutUnit used_track_size;
   const auto end_line = span.EndLine();
-  CHECK_LE(end_line, track_collection_sizes_.size());
+  CHECK_LE(end_line, track_data_.size());
   for (wtf_size_t start_line = span.StartLine(); start_line < end_line;
        ++start_line) {
-    used_track_size += track_collection_sizes_[start_line];
+    used_track_size += track_data_[start_line].size;
   }
   return used_track_size;
 }
@@ -459,22 +459,20 @@ void GridLanesRunningPositions::CalculateAndCacheTrackSizes(
     const GridLayoutTrackCollection& track_collection) {
   Vector<LayoutUnit> line_positions =
       LayoutGrid::ComputeExpandedPositions(track_collection);
-  track_collection_sizes_.resize(track_collection.EndLineOfImplicitGrid());
   // The number of lines should be one more than the number of tracks.
-  CHECK_EQ(line_positions.size(), track_collection_sizes_.size() + 1);
+  CHECK_EQ(line_positions.size(), TrackCount() + 1);
 
-  const auto track_collection_size = track_collection_sizes_.size();
   const auto track_collection_gutter_size = track_collection.GutterSize();
 
   // `line_positions` contains the offset of each line; the space between the
   // adjacent lines is equivalent to the size of the tracks.
-  for (wtf_size_t i = 0; i < track_collection_size; ++i) {
+  for (wtf_size_t i = 0; i < TrackCount(); ++i) {
     LayoutUnit track_size = line_positions[i + 1] - line_positions[i];
     // There is no gutter after the last track.
-    if (i < track_collection_size - 1) {
+    if (i < TrackCount() - 1) {
       track_size -= track_collection_gutter_size;
     }
-    track_collection_sizes_[i] = track_size;
+    track_data_[i].size = track_size;
   }
 }
 

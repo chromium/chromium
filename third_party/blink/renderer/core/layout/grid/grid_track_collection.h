@@ -359,18 +359,6 @@ struct CORE_EXPORT GridSet {
   LayoutUnit fit_content_limit;
   LayoutUnit item_incurred_increase;
 
-  // Baseline tracking for grid-lanes layout on the stacking axis:
-  // - first_item_stacking_position: Position of the first item in this set,
-  //   used to decide whether this is the first item for baseline calculation
-  // - last_item_stacking_position: Position of the last item in this set,
-  //   used to decide whether this is the last item for baseline calculation
-  // - grid_lanes_first_baseline: The first baseline value for this set
-  // - grid_lanes_last_baseline: The last baseline value for this set
-  std::optional<LayoutUnit> first_item_stacking_position;
-  std::optional<LayoutUnit> grid_lanes_first_baseline;
-  std::optional<LayoutUnit> last_item_stacking_position;
-  std::optional<LayoutUnit> grid_lanes_last_baseline;
-
   bool is_infinitely_growable : 1;
 };
 

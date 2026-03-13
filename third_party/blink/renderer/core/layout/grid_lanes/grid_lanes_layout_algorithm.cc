@@ -336,7 +336,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   std::optional<GridBaselineAccumulator> grid_baseline_accumulator;
   BaselineAccumulator* baseline_accumulator;
   if (is_for_columns) {
-    stacking_baseline_accumulator.emplace(&track_collection);
+    stacking_baseline_accumulator.emplace(running_positions,
+                                          grid_axis_direction);
     baseline_accumulator = &stacking_baseline_accumulator.value();
   } else {
     grid_baseline_accumulator.emplace(style.GetFontBaseline());
@@ -1390,7 +1391,8 @@ void GridLanesLayoutAlgorithm::ComputeBaselineAlignment(
   std::optional<GridBaselineAccumulator> grid_baseline_accumulator;
   BaselineAccumulator* baseline_accumulator;
   if (is_for_columns) {
-    stacking_baseline_accumulator.emplace(&track_collection);
+    stacking_baseline_accumulator.emplace(running_positions,
+                                          grid_axis_direction);
     baseline_accumulator = &stacking_baseline_accumulator.value();
   } else {
     grid_baseline_accumulator.emplace(style.GetFontBaseline());
