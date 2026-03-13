@@ -69,6 +69,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "RecordReplay";
     case ToastId::kAutoSignIn:
       return "AutoSignIn";
+    case ToastId::kMultistepFilterSuggestion:
+      return "MultistepFilterSuggestion";
   }
 
   NOTREACHED();

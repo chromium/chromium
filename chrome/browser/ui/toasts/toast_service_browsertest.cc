@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/data_sharing/public/features.h"
+#include "components/multistep_filter/core/features.h"
 #include "components/plus_addresses/core/common/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
@@ -47,7 +48,8 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          {safe_browsing::kEsbAsASyncedSetting, {}},
          {data_sharing::features::kDataSharingFeature, {}},
          {toast_features::kTranslateToast, {}},
-         {features::kGlicActorUi, {{features::kGlicActorUiToastName, "true"}}}},
+         {features::kGlicActorUi, {{features::kGlicActorUiToastName, "true"}}},
+         {multistep_filter::kMultistepFilter, {}}},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }

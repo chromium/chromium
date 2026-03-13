@@ -19269,6 +19269,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TRANSLATE_TOAST_UNDO_BUTTON" desc="Button on a toast notification that allows users to undo the translation.">
         Undo
       </message>
+      <!-- TODO(crbug.com/491207553): Finalize UX strings for Multistep Filter and make them translateable. -->
+      <message name="IDS_MULTISTEP_FILTER_SUGGESTION_TITLE" desc="Title to show on the toast for Multistep Filter suggestions." translateable="false">
+        Recall info from previous tabs?
+      </message>
+      <message name="IDS_MULTISTEP_FILTER_SUGGESTION_APPLY_BUTTON" desc="Text for the apply button on the Multistep Filter suggestion toast." translateable="false">
+        Apply Info
+      </message>
       <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when a link is successfully copied.">
         Link copied
       </message>
