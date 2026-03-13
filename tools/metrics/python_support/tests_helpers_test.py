@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import patch, mock_open
@@ -34,7 +35,7 @@ class TestableScriptUtilTest(unittest.TestCase):
     self.assertEqual(script.file_path, script_path)
     self.assertEqual(
         script.cmd,
-        ["vpython3", str(script_path), "--flag1", "value1"])
+        [sys.executable, str(script_path), "--flag1", "value1"])
 
 
 class TestScanningTest(unittest.TestCase):
