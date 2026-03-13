@@ -49,10 +49,10 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
   // cache isn't as heavily relied on for performance with subgrid as it is in
   // grid. However, we still need to include it in the signature for common
   // call sites with grid.
-  GridItems ConstructGridItems(const GridLineResolver& line_resolver,
-                               bool* must_invalidate_placement_cache,
-                               HeapVector<Member<LayoutBox>>* opt_oof_children,
-                               bool* opt_has_nested_subgrid = nullptr) const;
+  GridItems* ConstructGridItems(const GridLineResolver& line_resolver,
+                                bool* must_invalidate_placement_cache,
+                                HeapVector<Member<LayoutBox>>* opt_oof_children,
+                                bool* opt_has_nested_subgrid = nullptr) const;
 
   void AppendSubgriddedItems(GridItems* grid_items) const;
 

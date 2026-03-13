@@ -66,7 +66,7 @@ const LayoutResult* GridLayoutAlgorithm::Layout() {
 const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
-  GridItems grid_items;
+  GridItems* grid_items = nullptr;
   LayoutUnit intrinsic_block_size;
   const GridLayoutSubtree* layout_subtree = nullptr;
   HeapVector<Member<LayoutBox>> oof_children;
@@ -141,19 +141,19 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
         column_gaps_segment_ranges_start_indices =
             Vector<wtf_size_t>(total_column_track_count - 1, 0);
       }
-      PlaceGridItems(grid_items, *layout_subtree, &row_break_between,
+      PlaceGridItems(*grid_items, *layout_subtree, &row_break_between,
                      &grid_items_placement_data, &full_gap_geometry,
                      &track_idx_to_set_idx);
     }
 
     PlaceGridItemsForFragmentation(
-        grid_items, *layout_subtree, row_break_between, full_gap_geometry,
+        *grid_items, *layout_subtree, row_break_between, full_gap_geometry,
         &track_idx_to_set_idx, &column_gaps_segment_ranges_start_indices,
         &grid_items_placement_data, &row_offset_adjustments,
         &intrinsic_block_size, &offset_in_stitched_container,
         &cumulative_gap_offset_adjustment, &first_unprocessed_row_gap_idx);
   } else {
-    PlaceGridItems(grid_items, *layout_subtree, &row_break_between);
+    PlaceGridItems(*grid_items, *layout_subtree, &row_break_between);
   }
 
   const auto& node = Node();
@@ -237,16 +237,16 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   // Store grid layout data for use in computed style and devtools.
   container_builder_.SetGridLayoutData(layout_data);
 
-  SetReadingFlowNodes(grid_items);
+  SetReadingFlowNodes(*grid_items);
 
   if (constraint_space.HasBlockFragmentation()) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridBreakTokenData>(
-            std::move(grid_items), std::move(layout_subtree),
-            intrinsic_block_size, offset_in_stitched_container,
-            grid_items_placement_data, row_offset_adjustments,
-            row_break_between, oof_children, full_gap_geometry,
-            track_idx_to_set_idx, column_gaps_segment_ranges_start_indices,
+            grid_items, std::move(layout_subtree), intrinsic_block_size,
+            offset_in_stitched_container, grid_items_placement_data,
+            row_offset_adjustments, row_break_between, oof_children,
+            full_gap_geometry, track_idx_to_set_idx,
+            column_gaps_segment_ranges_start_indices,
             cumulative_gap_offset_adjustment, first_unprocessed_row_gap_idx));
   }
 
@@ -334,14 +334,13 @@ LayoutUnit GridLayoutAlgorithm::ComputeSubgridIntrinsicBlockSize(
 }
 
 const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
-    GridItems* grid_items,
+    GridItems** grid_items,
     LayoutUnit* intrinsic_block_size,
     HeapVector<Member<LayoutBox>>* oof_children) {
-  DCHECK(grid_items);
+  DCHECK(grid_items && !*grid_items);
   DCHECK(intrinsic_block_size);
   DCHECK(oof_children);
 
-  DCHECK(grid_items->IsEmpty());
   DCHECK_NE(grid_available_size_.inline_size, kIndefiniteSize);
 
   const auto& node = Node();
@@ -387,13 +386,13 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
              "on the cached line resolver; it must produce the same placement.";
 
       GridTrackSizingAlgorithm::CacheGridItemsProperties(layout_data->Columns(),
-                                                         grid_items);
+                                                         *grid_items);
       GridTrackSizingAlgorithm::CacheGridItemsProperties(layout_data->Rows(),
-                                                         grid_items);
+                                                         *grid_items);
     }
 
     *intrinsic_block_size =
-        CalculateIntrinsicBlockSize(*grid_items, *layout_data);
+        CalculateIntrinsicBlockSize(**grid_items, *layout_data);
     return layout_subtree;
   }
 
@@ -491,7 +490,7 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
   // Calculate final alignment baselines of the entire grid sizing tree.
   CompleteFinalBaselineAlignment(&grid_sizing_tree);
 
-  *grid_items = std::move(grid_sizing_tree.GetGridItems());
+  *grid_items = &grid_sizing_tree.GetGridItems();
   return MakeGarbageCollected<GridLayoutSubtree>(
       grid_sizing_tree.FinalizeTree());
 }
@@ -830,7 +829,7 @@ void GridLayoutAlgorithm::BuildSizingCollection(
     GridLayoutData& layout_data,
     SizingConstraint sizing_constraint,
     bool needs_intrinsic_track_size,
-    GridItems* opt_virtual_items) const {
+    GridItems** opt_virtual_items) const {
   wtf_size_t start_offset = 0;
   if (Node().HasCachedPlacementData()) {
     start_offset = Node().CachedPlacementData().StartOffset(track_direction);

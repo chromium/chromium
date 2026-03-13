@@ -17,7 +17,7 @@ void GridSizingTree::AddToPreorderTraversal(const BlockNode& grid_node) {
 }
 
 void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
-                                       GridItems&& grid_items,
+                                       GridItems* grid_items,
                                        GridLayoutData* layout_data) {
   DCHECK(grid_node.IsGrid());
 
@@ -29,7 +29,7 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
   auto child_subgrid_index = grid_node_index + 1;
   auto& tree_node = At(grid_node_index);
 
-  for (wtf_size_t current_item_index = 0; const auto& grid_item : grid_items) {
+  for (wtf_size_t current_item_index = 0; const auto& grid_item : *grid_items) {
     // If this grid item is a subgrid, we need to add its subtree size to this
     // grid's subtree size and move to the next `child_subgrid_index`.
     if (grid_item.IsSubgrid()) {
@@ -59,7 +59,7 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
                                             subgridded_item_indices);
   }
 
-  tree_node.grid_items = std::move(grid_items);
+  tree_node.grid_items = grid_items;
   tree_node.layout_data = layout_data;
   tree_node.writing_mode = grid_node.Style().GetWritingMode();
 }
@@ -107,7 +107,7 @@ SubgriddedItemData GridSizingTree::LookupSubgriddedItemData(
 
   const auto& subgrid_tree_node = At(parent_grid_index);
   return SubgriddedItemData(
-      subgrid_tree_node.grid_items.At(item_index_in_parent),
+      subgrid_tree_node.grid_items->At(item_index_in_parent),
       subgrid_tree_node.layout_data, subgrid_tree_node.writing_mode);
 }
 

@@ -392,9 +392,7 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   std::optional<VirtualItemContributions> contribution_sizes;
 };
 
-class CORE_EXPORT GridItems {
-  DISALLOW_NEW();
-
+class CORE_EXPORT GridItems : public GarbageCollected<GridItems> {
  public:
   using GridItemDataVector = HeapVector<Member<GridItemData>, 16>;
 
@@ -462,14 +460,11 @@ class CORE_EXPORT GridItems {
   };
 
   GridItems() = default;
-  GridItems(GridItems&&) = default;
-  GridItems& operator=(GridItems&&) = default;
 
-  GridItems(const GridItems& other);
-
-  GridItems& operator=(const GridItems& other) {
-    return *this = GridItems(other);
-  }
+  GridItems(const GridItems&) = delete;
+  GridItems& operator=(const GridItems&) = delete;
+  GridItems(GridItems&&) = delete;
+  GridItems& operator=(GridItems&&) = delete;
 
   Iterator<false> begin() { return {&item_data_, 0}; }
   Iterator<false> end() { return {&item_data_, first_subgridded_item_index_}; }

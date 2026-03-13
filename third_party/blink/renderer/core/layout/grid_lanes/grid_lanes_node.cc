@@ -106,7 +106,7 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
 
 // TODO(almaher): Do something with `opt_has_nested_subgrid` and make sure that
 // subgridded items are incorporated here.
-GridItems GridLanesNode::ConstructGridItems(
+GridItems* GridLanesNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
     bool* must_invalidate_placement_cache,
     HeapVector<Member<LayoutBox>>* opt_oof_children,
@@ -115,7 +115,7 @@ GridItems GridLanesNode::ConstructGridItems(
   const GridTrackSizingDirection grid_axis_direction =
       style.GridLanesTrackSizingDirection();
 
-  GridItems grid_lanes_items;
+  GridItems* grid_lanes_items = MakeGarbageCollected<GridItems>();
   {
     bool should_sort_grid_lanes_items_by_order_property = false;
     const int initial_order = ComputedStyleInitialValues::InitialOrder();
@@ -137,12 +137,12 @@ GridItems GridLanesNode::ConstructGridItems(
           child.Style().Order() != initial_order;
 
       AdjustGridItemSpan(*grid_lanes_item, line_resolver, grid_axis_direction);
-      grid_lanes_items.Append(grid_lanes_item);
+      grid_lanes_items->Append(grid_lanes_item);
     }
 
     // Sort items by order property if needed.
     if (should_sort_grid_lanes_items_by_order_property) {
-      grid_lanes_items.SortByOrderProperty();
+      grid_lanes_items->SortByOrderProperty();
     }
   }
   return grid_lanes_items;

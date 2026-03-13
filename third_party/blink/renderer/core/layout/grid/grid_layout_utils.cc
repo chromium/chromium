@@ -685,7 +685,7 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   const auto constraint_space = algorithm.GetConstraintSpace();
   const auto writing_mode = constraint_space.GetWritingMode();
 
-  GridItems grid_items;
+  GridItems* grid_items = MakeGarbageCollected<GridItems>();
   GridLayoutData* layout_data = MakeGarbageCollected<GridLayoutData>();
   bool has_nested_subgrid = false;
 
@@ -701,18 +701,18 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   const bool has_standalone_rows = subgrid_area.rows.IsIndefinite();
 
   if (has_standalone_columns) {
-    algorithm.BuildSizingCollection(kForColumns, line_resolver, grid_items,
+    algorithm.BuildSizingCollection(kForColumns, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
   if (has_standalone_rows) {
-    algorithm.BuildSizingCollection(kForRows, line_resolver, grid_items,
+    algorithm.BuildSizingCollection(kForRows, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
 
   if (!has_nested_subgrid) {
-    sizing_tree->SetSizingNodeData(node, std::move(grid_items), layout_data);
+    sizing_tree->SetSizingNodeData(node, grid_items, layout_data);
     return;
   }
 
@@ -735,7 +735,7 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
 
   // `AppendSubgriddedItems` rely on the cached placement data of a subgrid to
   // construct its grid items, so we need to build their subtrees beforehand.
-  for (auto& grid_item : grid_items) {
+  for (auto& grid_item : *grid_items) {
     if (!grid_item.IsSubgrid()) {
       continue;
     }
@@ -779,24 +779,24 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     grid_item.ResetPlacementIndices();
   }
 
-  node.AppendSubgriddedItems(&grid_items);
+  node.AppendSubgriddedItems(grid_items);
 
   // We need to recreate the track builder collections to ensure track coverage
   // for subgridded items; it would be ideal to have them accounted for already,
   // but we might need the track collections to compute a subgrid's automatic
   // repetitions, so we do this process twice to avoid a cyclic dependency.
   if (has_standalone_columns) {
-    algorithm.BuildSizingCollection(kForColumns, line_resolver, grid_items,
+    algorithm.BuildSizingCollection(kForColumns, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
   if (has_standalone_rows) {
-    algorithm.BuildSizingCollection(kForRows, line_resolver, grid_items,
+    algorithm.BuildSizingCollection(kForRows, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
                                     needs_intrinsic_track_size);
   }
 
-  sizing_tree->SetSizingNodeData(node, std::move(grid_items), layout_data);
+  sizing_tree->SetSizingNodeData(node, grid_items, layout_data);
 }
 
 // TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.

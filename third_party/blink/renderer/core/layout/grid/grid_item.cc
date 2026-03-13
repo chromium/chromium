@@ -454,14 +454,6 @@ LayoutUnit GridItemData::CalculateAvailableSize(
   return available_size.MightBeSaturated() ? LayoutUnit() : available_size;
 }
 
-GridItems::GridItems(const GridItems& other)
-    : first_subgridded_item_index_(other.first_subgridded_item_index_) {
-  item_data_.ReserveInitialCapacity(other.item_data_.size());
-  for (const auto& grid_item : other.item_data_) {
-    item_data_.emplace_back(MakeGarbageCollected<GridItemData>(*grid_item));
-  }
-}
-
 void GridItems::Append(GridItems* other) {
   item_data_.reserve(item_data_.size() + other->item_data_.size());
   for (auto& grid_item : other->item_data_)

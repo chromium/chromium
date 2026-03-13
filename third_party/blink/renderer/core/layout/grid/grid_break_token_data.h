@@ -29,7 +29,7 @@ struct GridItemPlacementData {
 
 struct GridBreakTokenData final : BreakTokenAlgorithmData {
   GridBreakTokenData(
-      GridItems&& grid_items,
+      GridItems* grid_items,
       const GridLayoutSubtree* grid_layout_subtree,
       LayoutUnit intrinsic_block_size,
       LayoutUnit offset_in_stitched_container,
@@ -43,7 +43,7 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
       LayoutUnit cumulative_gap_offset_adjustment,
       wtf_size_t first_unprocessed_row_gap_idx)
       : BreakTokenAlgorithmData(kGridData),
-        grid_items(std::move(grid_items)),
+        grid_items(grid_items),
         grid_layout_subtree(grid_layout_subtree),
         intrinsic_block_size(intrinsic_block_size),
         offset_in_stitched_container(offset_in_stitched_container),
@@ -66,7 +66,7 @@ struct GridBreakTokenData final : BreakTokenAlgorithmData {
     BreakTokenAlgorithmData::Trace(visitor);
   }
 
-  GridItems grid_items;
+  Member<GridItems> grid_items;
   Member<const GridLayoutSubtree> grid_layout_subtree;
   LayoutUnit intrinsic_block_size;
 

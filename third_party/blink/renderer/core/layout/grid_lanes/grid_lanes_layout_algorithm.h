@@ -65,7 +65,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridLayoutData& layout_data,
       SizingConstraint sizing_constraint = SizingConstraint::kLayout,
       bool needs_intrinsic_track_size = false,
-      GridItems* opt_virtual_items = nullptr) const;
+      GridItems** opt_virtual_items = nullptr) const;
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
@@ -148,7 +148,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const SizingConstraint sizing_constraint,
       const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
       const bool should_apply_inline_size_containment,
-      GridItems& grid_lanes_items,
+      GridItems** grid_lanes_items,
       bool& needs_intrinsic_track_size,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
 
@@ -187,12 +187,12 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // repeat definition, which requires adjustments to virtual item creation and
   // track sizing per
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat.
-  GridItems BuildVirtualGridLanesItems(const GridLineResolver& line_resolver,
-                                       const GridItems& grid_lanes_items,
-                                       const bool needs_intrinsic_track_size,
-                                       SizingConstraint sizing_constraint,
-                                       const wtf_size_t auto_repetition_count,
-                                       wtf_size_t& start_offset) const;
+  GridItems* BuildVirtualGridLanesItems(const GridLineResolver& line_resolver,
+                                        const GridItems& grid_lanes_items,
+                                        const bool needs_intrinsic_track_size,
+                                        SizingConstraint sizing_constraint,
+                                        const wtf_size_t auto_repetition_count,
+                                        wtf_size_t& start_offset) const;
 
   // Computes the block-axis contribution of a virtual grid-lanes item for track
   // sizing. Also computes a baseline shim for the item and sets `baseline_shim`

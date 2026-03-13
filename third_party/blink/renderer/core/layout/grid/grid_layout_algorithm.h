@@ -64,7 +64,7 @@ class CORE_EXPORT GridLayoutAlgorithm
       GridLayoutData& layout_data,
       SizingConstraint sizing_constraint = SizingConstraint::kLayout,
       bool needs_intrinsic_track_size = false,
-      GridItems* opt_virtual_items = nullptr) const;
+      GridItems** opt_virtual_items = nullptr) const;
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
@@ -87,7 +87,7 @@ class CORE_EXPORT GridLayoutAlgorithm
   const LayoutResult* LayoutInternal();
 
   const GridLayoutSubtree* ComputeGridGeometry(
-      GridItems* grid_items,
+      GridItems** grid_items,
       LayoutUnit* intrinsic_block_size,
       HeapVector<Member<LayoutBox>>* oof_children);
 
