@@ -775,6 +775,10 @@ function BakeDonuts(numDonuts: number) {
 ```
 
 ### Pre-Mojo alternative: chrome.send()/WebUIMessageHandler
+**chrome.send()/WebUIMessageHandler are deprecated and new pages must use
+[Mojo](#mojo). Legacy pages are exempt, but there should not be new usages
+of chrome.send().**
+
 Most Chrome WebUIs were added before the introduction of Mojo, and use the
 older style WebUIMessageHandler + chrome.send() pattern. The following sections
 detail the methods in WebUIMessageHandler and the corresponding communication
