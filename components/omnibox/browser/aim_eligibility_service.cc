@@ -950,6 +950,8 @@ GURL AimEligibilityService::GetRequestUrl(
   replacements.SetQueryStr(kRequestQuery);
   GURL url = base_gurl.ReplaceComponents(replacements);
 
+  url = net::AppendQueryParameter(url, "udm", "50");
+
   if (base::FeatureList::IsEnabled(omnibox::kAimUrlInterceptPassthrough) &&
       !omnibox::kAimUrlInterceptionParams.Get().empty()) {
     url = net::AppendQueryParameter(url, "url_intercept_params",
