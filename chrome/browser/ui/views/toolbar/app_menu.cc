@@ -418,6 +418,10 @@ void AddSignedInChipToProfileMenuItem(
               views::Builder<views::Label>()
                   .SetText(GetSigninStatusChipString(profile))
                   .CopyAddressTo(&profile_chip_label)
+                  .SetAutoColorReadabilityEnabled(false)
+                  .SetEnabledColor(item->IsSelected()
+                                       ? ui::kColorMenuItemForegroundSelected
+                                       : ui::kColorMenuItemForeground)
                   .SetBackground(views::CreateRoundedRectBackground(
                       item->IsSelected()
                           ? ui::kColorAppMenuProfileRowChipHovered
@@ -441,13 +445,16 @@ void AddSignedInChipToProfileMenuItem(
           .Build();
   profile_menu_subscription_list.push_back(
       item->AddSelectedChangedCallback(base::BindRepeating(
-          [](MenuItemView* menu_item_view, View* child_view,
+          [](MenuItemView* menu_item_view, views::Label* chip_label,
              int corner_radius) {
-            child_view->SetBackground(views::CreateRoundedRectBackground(
-                menu_item_view->IsSelected()
-                    ? ui::kColorAppMenuProfileRowChipHovered
-                    : ui::kColorAppMenuProfileRowChipBackground,
+            const bool selected = menu_item_view->IsSelected();
+            chip_label->SetBackground(views::CreateRoundedRectBackground(
+                selected ? ui::kColorAppMenuProfileRowChipHovered
+                         : ui::kColorAppMenuProfileRowChipBackground,
                 corner_radius));
+            chip_label->SetEnabledColor(
+                selected ? ui::kColorMenuItemForegroundSelected
+                         : ui::kColorMenuItemForeground);
           },
           item, profile_chip_label, profile_chip_corner_radii)));
   item->AddChildView(std::move(profile_chip));
