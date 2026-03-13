@@ -83,47 +83,54 @@ const ClipboardSequenceNumberToken& ClipboardIOS::GetSequenceNumber(
   return clipboard_sequence_.token;
 }
 
+void ClipboardIOS::GetAllAvailableFormats(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
+  DCHECK(CalledOnValidThread());
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
+
+  NSArray* types = GetPasteboard().pasteboardTypes;
+  base::flat_set<ClipboardFormatType> formats;
+  for (NSString* type in types) {
+    formats.insert(
+        ClipboardFormatType::Deserialize(base::SysNSStringToUTF8(type)));
+  }
+  std::move(callback).Run(std::move(formats));
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardIOS::GetStandardFormats(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     GetStandardFormatsCallback callback) const {
-  std::vector<std::u16string> types;
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypePlainText16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeHtml16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeSvg16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeRtf16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeUriList16);
-  }
-  std::move(callback).Run(std::move(types));
-}
+  auto get_standard_formats =
+      [](GetStandardFormatsCallback callback,
+         base::flat_set<ClipboardFormatType> available_formats) {
+        std::vector<std::u16string> types;
+        if (available_formats.contains(ClipboardFormatType::PlainTextType())) {
+          types.push_back(kMimeTypePlainText16);
+        }
+        if (available_formats.contains(ClipboardFormatType::HtmlType())) {
+          types.push_back(kMimeTypeHtml16);
+        }
+        if (available_formats.contains(ClipboardFormatType::SvgType())) {
+          types.push_back(kMimeTypeSvg16);
+        }
+        if (available_formats.contains(ClipboardFormatType::RtfType())) {
+          types.push_back(kMimeTypeRtf16);
+        }
+        if (available_formats.contains(ClipboardFormatType::FilenamesType())) {
+          types.push_back(kMimeTypeUriList16);
+        }
+        std::move(callback).Run(std::move(types));
+      };
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-bool ClipboardIOS::IsFormatAvailable(
-    const ClipboardFormatType& format,
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
-  return [GetPasteboard() containsPasteboardTypes:@[ format.ToNSString() ]
-                                        inItemSet:nil];
+  GetAllAvailableFormats(
+      buffer, data_dst,
+      base::BindOnce(get_standard_formats, std::move(callback)));
 }
 
 void ClipboardIOS::Clear(ClipboardBuffer buffer) {

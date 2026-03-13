@@ -145,45 +145,45 @@ void TouchSelectionControllerClientAura::OnScrollCompleted() {
 }
 
 bool TouchSelectionControllerClientAura::HandleContextMenu(
-    const ContextMenuParams& params) {
-  if ((params.source_type == ui::mojom::MenuSourceType::kLongPress ||
-       params.source_type == ui::mojom::MenuSourceType::kLongTap) &&
-      params.is_editable && params.selection_text.empty() &&
-      IsQuickMenuAvailable()) {
-    quick_menu_requested_ = true;
-    UpdateQuickMenu();
-    return true;
-  }
-
-  if (::features::IsTouchTextEditingRedesignEnabled() &&
-      params.source_type == ui::mojom::MenuSourceType::kTouch &&
-      params.is_editable && params.selection_text.empty()) {
-    if (IsQuickMenuAvailable()) {
-      // The selection controller might have been reset between the last
-      // selection bound update and the current context menu event (e.g. if
-      // handles were hidden because the mouse moved). In this case, re-notify
-      // the selection controller of the most recently used selection bounds and
-      // show the handles and menu at these bounds.
-      if (rwhva_->selection_controller()->active_status() ==
-          ui::TouchSelectionController::ActiveStatus::kInactive) {
-        rwhva_->selection_controller()->OnSelectionBoundsChanged(
-            manager_selection_start_, manager_selection_end_);
+    const ContextMenuParams& params,
+    bool can_paste) {
+  if (params.is_editable && params.selection_text.empty() &&
+      (params.source_type == ui::mojom::MenuSourceType::kLongPress ||
+       params.source_type == ui::mojom::MenuSourceType::kLongTap ||
+       (::features::IsTouchTextEditingRedesignEnabled() &&
+        params.source_type == ui::mojom::MenuSourceType::kTouch))) {
+    if (IsQuickMenuAvailable(can_paste)) {
+      if (::features::IsTouchTextEditingRedesignEnabled() &&
+          params.source_type == ui::mojom::MenuSourceType::kTouch) {
+        if (rwhva_->selection_controller()->active_status() ==
+            ui::TouchSelectionController::ActiveStatus::kInactive) {
+          rwhva_->selection_controller()->OnSelectionBoundsChanged(
+              manager_selection_start_, manager_selection_end_);
+        }
+        quick_menu_requested_ = !quick_menu_requested_;
+      } else {
+        quick_menu_requested_ = true;
       }
-      quick_menu_requested_ = !quick_menu_requested_;
+      UpdateQuickMenu();
+      return true;
     } else {
-      rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
-      quick_menu_requested_ = false;
+      if (::features::IsTouchTextEditingRedesignEnabled() &&
+          params.source_type == ui::mojom::MenuSourceType::kTouch) {
+        rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
+        quick_menu_requested_ = false;
+        UpdateQuickMenu();
+        return true;
+      }
     }
-    UpdateQuickMenu();
-    return true;
   }
 
   const bool from_touch =
       params.source_type == ui::mojom::MenuSourceType::kLongPress ||
       params.source_type == ui::mojom::MenuSourceType::kLongTap ||
       params.source_type == ui::mojom::MenuSourceType::kTouch;
-  if (from_touch && !params.selection_text.empty())
+  if (from_touch && !params.selection_text.empty()) {
     return true;
+  }
 
   rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
   return false;
@@ -267,45 +267,74 @@ void TouchSelectionControllerClientAura::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-bool TouchSelectionControllerClientAura::IsQuickMenuAvailable() const {
+bool TouchSelectionControllerClientAura::IsQuickMenuAvailable(
+    bool can_paste) const {
   return ui::TouchSelectionMenuRunner::GetInstance() &&
          ui::TouchSelectionMenuRunner::GetInstance()->IsMenuAvailable(
-             active_menu_client_);
+             active_menu_client_, can_paste);
 }
 
 void TouchSelectionControllerClientAura::ShowQuickMenu() {
-  if (!ui::TouchSelectionMenuRunner::GetInstance())
-    return;
-
-  // Don't show the menu if the selection bounds are zero, since this usually
-  // means that touch selection is not active or that there is no cursor or
-  // selection.
-  if (::features::IsTouchTextEditingRedesignEnabled() &&
-      rwhva_->selection_controller()->GetRectBetweenBounds() == gfx::RectF()) {
+  if (!ui::TouchSelectionMenuRunner::GetInstance()) {
     return;
   }
 
-  gfx::Rect anchor_rect = gfx::ToRoundedRect(
-      rwhva_->selection_controller()->GetVisibleRectBetweenBounds());
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
+  ui::Clipboard::GetForCurrentThread()->GetAllAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
+      base::BindOnce(
+          [](base::WeakPtr<TouchSelectionControllerClientAura> weak_this,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            if (!weak_this) {
+              return;
+            }
+            bool can_paste =
+                formats.contains(ui::ClipboardFormatType::PlainTextType());
 
-  // Clip the anchor rect to the rwhva bounds and only show the menu if there is
-  // at least some (possibly zero-area) overlap. We use `InclusiveIntersect`
-  // rather than checking `IsEmpty` here, since we might want to show the menu
-  // even if the anchor rect is empty (e.g. zero-width caret).
-  if (!anchor_rect.InclusiveIntersect(rwhva_->GetNativeView()->bounds())) {
-    return;
-  }
+            if (!weak_this->ShouldShowQuickMenu(can_paste)) {
+              return;
+            }
 
-  gfx::SizeF max_handle_size =
-      rwhva_->selection_controller()->GetStartHandleRect().size();
-  max_handle_size.SetToMax(
-      rwhva_->selection_controller()->GetEndHandleRect().size());
+            // Don't show the menu if the selection bounds are zero, since this
+            // usually means that touch selection is not active or that there
+            // is no cursor or selection.
+            if (::features::IsTouchTextEditingRedesignEnabled() &&
+                weak_this->rwhva_->selection_controller()
+                        ->GetRectBetweenBounds() == gfx::RectF()) {
+              return;
+            }
 
-  ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
-      active_menu_client_->GetWeakPtr(),
-      rwhva_->ConvertRectToScreen(anchor_rect),
-      gfx::ToRoundedSize(max_handle_size),
-      rwhva_->GetNativeView()->GetToplevelWindow());
+            gfx::Rect anchor_rect =
+                gfx::ToRoundedRect(weak_this->rwhva_->selection_controller()
+                                       ->GetVisibleRectBetweenBounds());
+
+            // Clip the anchor rect to the rwhva bounds and only show the menu
+            // if there is at least some (possibly zero-area) overlap. We use
+            // `InclusiveIntersect` rather than checking `IsEmpty` here, since
+            // we might want to show the menu even if the anchor rect is empty
+            // (e.g. zero-width caret).
+            if (!anchor_rect.InclusiveIntersect(
+                    weak_this->rwhva_->GetNativeView()->bounds())) {
+              return;
+            }
+
+            gfx::SizeF max_handle_size =
+                weak_this->rwhva_->selection_controller()
+                    ->GetStartHandleRect()
+                    .size();
+            max_handle_size.SetToMax(weak_this->rwhva_->selection_controller()
+                                         ->GetEndHandleRect()
+                                         .size());
+
+            ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
+                weak_this->active_menu_client_->GetWeakPtr(),
+                weak_this->rwhva_->ConvertRectToScreen(anchor_rect),
+                gfx::ToRoundedSize(max_handle_size),
+                weak_this->rwhva_->GetNativeView()->GetToplevelWindow(),
+                can_paste);
+          },
+          menu_request_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchSelectionControllerClientAura::UpdateQuickMenu() {
@@ -315,17 +344,21 @@ void TouchSelectionControllerClientAura::UpdateQuickMenu() {
 
   // Hide the quick menu if there is any. This should happen even if the menu
   // should be shown again, in order to update its location or content.
-  if (menu_is_showing)
+  if (menu_is_showing) {
     ui::TouchSelectionMenuRunner::GetInstance()->CloseMenu();
-  else
+  } else {
     quick_menu_timer_.Stop();
+  }
 
-  // Start timer to show quick menu if necessary.
-  if (ShouldShowQuickMenu()) {
-    if (show_quick_menu_immediately_for_test_)
+  // Invalidate any in-flight OpenMenu async clipboard callbacks.
+  menu_request_weak_ptr_factory_.InvalidateWeakPtrs();
+
+  if (ShouldShowQuickMenu(/*can_paste=*/true)) {
+    if (show_quick_menu_immediately_for_test_) {
       ShowQuickMenu();
-    else
+    } else {
       quick_menu_timer_.Reset();
+    }
   }
 }
 
@@ -502,7 +535,8 @@ TouchSelectionControllerClientAura::InternalClient::CreateDrawable() {
 void TouchSelectionControllerClientAura::InternalClient::DidScroll() {}
 
 bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
-    int command_id) const {
+    int command_id,
+    bool can_paste) const {
   bool editable = rwhva_->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;
   bool readable = rwhva_->GetTextInputType() != ui::TEXT_INPUT_TYPE_PASSWORD;
   bool has_selection = !rwhva_->GetSelectedText().empty();
@@ -512,12 +546,7 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       return readable && has_selection;
     case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste): {
-      ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-          ui::EndpointType::kDefault, {.notify_if_restricted = false});
-      return editable &&
-             ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-                 ui::ClipboardFormatType::PlainTextType(),
-                 ui::ClipboardBuffer::kCopyPaste, &data_dst);
+      return editable && can_paste;
     }
     case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll): {
       gfx::Range text_range;
@@ -589,9 +618,9 @@ void TouchSelectionControllerClientAura::RunContextMenu() {
   rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
 }
 
-bool TouchSelectionControllerClientAura::ShouldShowQuickMenu() {
+bool TouchSelectionControllerClientAura::ShouldShowQuickMenu(bool can_paste) {
   return quick_menu_requested_ && !touch_down_ && !scroll_in_progress_ &&
-         !handle_drag_in_progress_ && IsQuickMenuAvailable();
+         !handle_drag_in_progress_ && IsQuickMenuAvailable(can_paste);
 }
 
 std::u16string TouchSelectionControllerClientAura::GetSelectedText() {

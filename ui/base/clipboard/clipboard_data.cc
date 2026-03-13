@@ -205,7 +205,7 @@ std::string ClipboardData::GetDataTransferCustomData() const {
 
 void ClipboardData::SetCustomData(const ClipboardFormatType& format,
                                   std::string_view data) {
-  custom_data_[format] = data;
+  custom_data_[format] = std::string(data);
   format_ |= static_cast<int>(ClipboardInternalFormat::kCustom);
 }
 

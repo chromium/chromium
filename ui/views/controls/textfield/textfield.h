@@ -15,6 +15,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,7 @@
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
@@ -683,6 +685,11 @@ class VIEWS_EXPORT Textfield : public View,
   // Utility function to prepare the context menu.
   void UpdateContextMenu();
 
+  void ShowContextMenuForViewImplComplete(
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type,
+      base::flat_set<ui::ClipboardFormatType> available_formats);
+
   // Returns true if the current text input type allows access by the IME.
   bool ImeEditingAllowed() const;
 
@@ -956,6 +963,10 @@ class VIEWS_EXPORT Textfield : public View,
   bool is_background_enabled_ = true;
 
   bool is_processing_focus_ = false;
+
+  // Whether the clipboard contains text. This cache is only updated
+  // before a menu is shown, so it should only be used by menu delegates.
+  bool clipboard_contains_text_for_menu_ = true;
 
   // Holds the subscription object for the enabled changed callback.
   base::CallbackListSubscription enabled_changed_subscription_ =

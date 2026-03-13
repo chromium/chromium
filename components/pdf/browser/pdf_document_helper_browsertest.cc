@@ -228,9 +228,11 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, SelectionChanged) {
 // When selecting something, only the copy command id should be enabled.
 IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, IsCommandIdEnabledCopyEnabled) {
   EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kCut)));
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut),
+      /*can_paste=*/true));
   EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy)));
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy),
+      /*can_paste=*/true));
 
   constexpr gfx::PointF kLeft(1.0f, 1.0f);
   constexpr gfx::PointF kRight(5.0f, 5.0f);
@@ -239,16 +241,19 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, IsCommandIdEnabledCopyEnabled) {
   SelectionChanged(kLeft, kLeftHeight, kRight, kRightHeight);
 
   EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kCut)));
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCut),
+      /*can_paste=*/true));
 
 #if BUILDFLAG(IS_MAC)
   // Since macOS does not support Touch Selection Editing, the copy command is
   // not enabled.
   EXPECT_FALSE(pdf_document_helper()->IsCommandIdEnabled(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy)));
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy),
+      /*can_paste=*/true));
 #else
   EXPECT_TRUE(pdf_document_helper()->IsCommandIdEnabled(
-      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy)));
+      std::to_underlying(ui::TouchEditable::MenuCommands::kCopy),
+      /*can_paste=*/true));
 #endif  // BUILDFLAG(IS_MAC)
 }
 
@@ -266,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, ExecuteCommandCopy) {
 IN_PROC_BROWSER_TEST_P(PDFDocumentHelperTest, DefaultImplementation) {
   EXPECT_FALSE(pdf_document_helper()->SupportsAnimation());
   EXPECT_FALSE(pdf_document_helper()->CreateDrawable());
-  EXPECT_FALSE(pdf_document_helper()->ShouldShowQuickMenu());
+  EXPECT_FALSE(pdf_document_helper()->ShouldShowQuickMenu(/*can_paste=*/true));
   EXPECT_TRUE(pdf_document_helper()->GetSelectedText().empty());
 }
 

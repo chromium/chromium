@@ -360,57 +360,77 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
   DCHECK_EQ(0u, data_callbacks_.size());
   const ui::DataTransferEndpoint data_dst(endpoint_type);
 
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
-                             ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
-    auto utf8_callback = base::BindRepeating(&ReadTextFromClipboard,
-                                             std::string(kUTF8), data_dst);
-    delegate_->OnOffer(std::string(ui::kMimeTypeUtf8PlainText));
-    data_callbacks_.emplace(std::string(ui::kMimeTypeUtf8PlainText),
-                            utf8_callback);
-    delegate_->OnOffer(std::string(ui::kMimeTypeLinuxUtf8String));
-    data_callbacks_.emplace(std::string(ui::kMimeTypeLinuxUtf8String),
-                            utf8_callback);
-    delegate_->OnOffer(std::string(kTextMimeTypeUtf16));
-    data_callbacks_.emplace(
-        std::string(kTextMimeTypeUtf16),
-        base::BindOnce(&ReadTextFromClipboard, std::string(kUTF16), data_dst));
-  }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::HtmlType(),
-                             ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
-    delegate_->OnOffer(std::string(ui::kMimeTypeUtf8Html));
-    data_callbacks_.emplace(
-        std::string(ui::kMimeTypeUtf8Html),
-        base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF8), data_dst));
-    delegate_->OnOffer(std::string(kTextHtmlMimeTypeUtf16));
-    data_callbacks_.emplace(
-        std::string(kTextHtmlMimeTypeUtf16),
-        base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF16), data_dst));
-    delegate_->OnOffer(std::string(ui::kMimeTypeHtml));
-    data_callbacks_.emplace(
-        std::string(ui::kMimeTypeHtml),
-        base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF8), data_dst));
-  }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::RtfType(),
-                             ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
-    delegate_->OnOffer(std::string(ui::kMimeTypeRtf));
-    data_callbacks_.emplace(std::string(ui::kMimeTypeRtf),
-                            base::BindOnce(&ReadRTFFromClipboard, data_dst));
-  }
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::BitmapType(),
-                             ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
-    delegate_->OnOffer(std::string(ui::kMimeTypePng));
-    data_callbacks_.emplace(std::string(ui::kMimeTypePng),
-                            base::BindOnce(&ReadPNGFromClipboard, data_dst));
-  }
-
-  if (data.IsFormatAvailable(ui::ClipboardFormatType::FilenamesType(),
-                             ui::ClipboardBuffer::kCopyPaste, &data_dst)) {
-    delegate_->OnOffer(std::string(ui::kMimeTypeUriList));
-    data_callbacks_.emplace(
-        std::string(ui::kMimeTypeUriList),
-        base::BindOnce(&ReadFilenamesFromClipboard, endpoint_type,
-                       delegate_->GetSecurityDelegate(), data_dst));
-  }
+  data.GetAllAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
+      base::BindOnce(
+          [](base::WeakPtr<DataOffer> data_offer,
+             DataExchangeDelegate* data_exchange_delegate,
+             const ui::DataTransferEndpoint& data_dst,
+             ui::EndpointType endpoint_type,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            if (!data_offer) {
+              return;
+            }
+            if (formats.contains(ui::ClipboardFormatType::PlainTextType())) {
+              auto utf8_callback = base::BindRepeating(
+                  &ReadTextFromClipboard, std::string(kUTF8), data_dst);
+              data_offer->delegate_->OnOffer(
+                  std::string(ui::kMimeTypeUtf8PlainText));
+              data_offer->data_callbacks_.emplace(
+                  std::string(ui::kMimeTypeUtf8PlainText), utf8_callback);
+              data_offer->delegate_->OnOffer(
+                  std::string(ui::kMimeTypeLinuxUtf8String));
+              data_offer->data_callbacks_.emplace(
+                  std::string(ui::kMimeTypeLinuxUtf8String), utf8_callback);
+              data_offer->delegate_->OnOffer(std::string(kTextMimeTypeUtf16));
+              data_offer->data_callbacks_.emplace(
+                  std::string(kTextMimeTypeUtf16),
+                  base::BindOnce(&ReadTextFromClipboard, std::string(kUTF16),
+                                 data_dst));
+            }
+            if (formats.contains(ui::ClipboardFormatType::HtmlType())) {
+              data_offer->delegate_->OnOffer(
+                  std::string(ui::kMimeTypeUtf8Html));
+              data_offer->data_callbacks_.emplace(
+                  std::string(ui::kMimeTypeUtf8Html),
+                  base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF8),
+                                 data_dst));
+              data_offer->delegate_->OnOffer(
+                  std::string(kTextHtmlMimeTypeUtf16));
+              data_offer->data_callbacks_.emplace(
+                  std::string(kTextHtmlMimeTypeUtf16),
+                  base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF16),
+                                 data_dst));
+              data_offer->delegate_->OnOffer(std::string(ui::kMimeTypeHtml));
+              data_offer->data_callbacks_.emplace(
+                  std::string(ui::kMimeTypeHtml),
+                  base::BindOnce(&ReadHTMLFromClipboard, std::string(kUTF8),
+                                 data_dst));
+            }
+            if (formats.contains(ui::ClipboardFormatType::RtfType())) {
+              data_offer->delegate_->OnOffer(std::string(ui::kMimeTypeRtf));
+              data_offer->data_callbacks_.emplace(
+                  std::string(ui::kMimeTypeRtf),
+                  base::BindOnce(&ReadRTFFromClipboard, data_dst));
+            }
+            if (formats.contains(ui::ClipboardFormatType::BitmapType()) ||
+                formats.contains(ui::ClipboardFormatType::PngType())) {
+              data_offer->delegate_->OnOffer(std::string(ui::kMimeTypePng));
+              data_offer->data_callbacks_.emplace(
+                  std::string(ui::kMimeTypePng),
+                  base::BindOnce(&ReadPNGFromClipboard, data_dst));
+            }
+            if (formats.contains(ui::ClipboardFormatType::FilenamesType())) {
+              data_offer->delegate_->OnOffer(std::string(ui::kMimeTypeUriList));
+              data_offer->data_callbacks_.emplace(
+                  std::string(ui::kMimeTypeUriList),
+                  base::BindOnce(&ReadFilenamesFromClipboard, endpoint_type,
+                                 data_offer->delegate_->GetSecurityDelegate(),
+                                 data_dst));
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), data_exchange_delegate, data_dst,
+          endpoint_type));
 }
 
 void DataOffer::OnDataReady(const std::string& mime_type,

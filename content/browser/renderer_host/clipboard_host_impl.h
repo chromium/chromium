@@ -199,6 +199,12 @@ class CONTENT_EXPORT ClipboardHostImpl
                             ReadAvailableTypesCallback callback,
                             std::vector<std::u16string> types);
 
+  void OnGetAllAvailableFormatsForReadAvailableTypes(
+      ui::ClipboardBuffer clipboard_buffer,
+      std::optional<ui::DataTransferEndpoint> data_dst,
+      ReadAvailableTypesCallback callback,
+      base::flat_set<ui::ClipboardFormatType> formats);
+
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);

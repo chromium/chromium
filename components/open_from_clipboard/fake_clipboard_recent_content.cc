@@ -4,6 +4,8 @@
 
 #include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 
+#include <utility>
+
 FakeClipboardRecentContent::FakeClipboardRecentContent()
     : content_age_(base::TimeDelta::Max()), suppress_content_(false) {}
 
@@ -40,6 +42,11 @@ bool FakeClipboardRecentContent::HasRecentImageFromClipboard() {
   return clipboard_image_content_.has_value();
 }
 
+void FakeClipboardRecentContent::HasRecentImageFromClipboard(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(HasRecentImageFromClipboard());
+}
+
 void FakeClipboardRecentContent::HasRecentContentFromClipboard(
     std::set<ClipboardContentType> types,
     HasDataCallback callback) {
@@ -66,6 +73,7 @@ void FakeClipboardRecentContent::HasRecentContentFromClipboard(
   std::move(callback).Run(matching_types);
 }
 
+#if BUILDFLAG(IS_IOS)
 std::optional<std::set<ClipboardContentType>>
 FakeClipboardRecentContent::GetCachedClipboardContentTypes() {
   std::set<ClipboardContentType> clipboard_content_types;
@@ -81,6 +89,7 @@ FakeClipboardRecentContent::GetCachedClipboardContentTypes() {
 
   return clipboard_content_types;
 }
+#endif
 
 void FakeClipboardRecentContent::GetRecentURLFromClipboard(
     GetRecentURLCallback callback) {

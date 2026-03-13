@@ -110,11 +110,13 @@ class BookmarkUIOperationsHelperTest : public testing::Test {
     return helper_.get();
   }
 
+#if !BUILDFLAG(IS_MAC)
   bool CanPasteFromClipboardSync(internal::BookmarkUIOperationsHelper* helper) {
     base::test::TestFuture<bool> future;
     helper->CanPasteFromClipboard(future.GetCallback());
     return future.Get();
   }
+#endif  // !BUILDFLAG(IS_MAC)
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -214,11 +216,17 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, DropBookmarksFromAnotherProfile) {
   EXPECT_EQ(folder->children()[1].get(), folder_child_node);
 }
 
+#if !BUILDFLAG(IS_MAC)
+bool ClipboardContainsBookmarksSync() {
+  base::test::TestFuture<bool> future;
+  bookmarks::BookmarkNodeData::ClipboardContainsBookmarks(future.GetCallback());
+  return future.Get();
+}
+
 // `BookmarkNodeData` has a different implementation on Mac. It doesn't use
 // `TestClipboard` if it is set. Given the clipboard is a shared resource,
 // testing on Mac will be flaky. Refactoring is required to be able to test
 // copy/paste to clipboard on Mac.
-#if !BUILDFLAG(IS_MAC)
 TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
   BookmarkModel* model = this->model();
   const std::u16string url_text = u"http://www.google.com/";
@@ -231,7 +239,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromURL) {
   }
 
   // Now we shouldn't be able to paste from the clipboard.
-  EXPECT_FALSE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
+  EXPECT_FALSE(ClipboardContainsBookmarksSync());
 
   internal::BookmarkUIOperationsHelper* helper = this->CreateHelper(new_folder);
   EXPECT_FALSE(this->CanPasteFromClipboardSync(helper));
@@ -468,7 +476,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
 
   // Now we shouldn't be able to paste from the clipboard.
   EXPECT_FALSE(this->CanPasteFromClipboardSync(helper));
-  EXPECT_FALSE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
+  EXPECT_FALSE(ClipboardContainsBookmarksSync());
 
   // Write empty bookmark node to the clipboard.
   std::string url = "http://www.google.com/";
@@ -484,7 +492,7 @@ TYPED_TEST(BookmarkUIOperationsHelperTest, PasteBookmarkFromEmptyBookmarkNode) {
 
   // Now we should be able to paste from the clipboard.
   EXPECT_TRUE(this->CanPasteFromClipboardSync(helper));
-  EXPECT_TRUE(bookmarks::BookmarkNodeData::ClipboardContainsBookmarks());
+  EXPECT_TRUE(ClipboardContainsBookmarksSync());
 
   // Load from the pickle data first; the bookmark node data is empty at this
   // point, fall back to loading from Clipboard::BookmarkData. Otherwise, the

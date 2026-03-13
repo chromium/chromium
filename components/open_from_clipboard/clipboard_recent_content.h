@@ -37,6 +37,7 @@ class ClipboardRecentContent {
   // Sets the global instance of ClipboardRecentContent singleton.
   static void SetInstance(std::unique_ptr<ClipboardRecentContent> new_instance);
 
+#if BUILDFLAG(IS_IOS)
   // Returns current clipboard content type(s) if it is recent enough and has
   // not been suppressed. This value will be nullopt during the brief period
   // when the clipboard is updating its cache. More succintly, this value will
@@ -53,6 +54,7 @@ class ClipboardRecentContent {
   // response with the results.
   virtual std::optional<std::set<ClipboardContentType>>
   GetCachedClipboardContentTypes() = 0;
+#endif
 
   /*
    On iOS, iOS 14 introduces new clipboard APIs that are async. The asynchronous

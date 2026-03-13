@@ -167,7 +167,8 @@ TouchSelectionControllerClientChildFrame::CreateDrawable() {
 }
 
 bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
-    int command_id) const {
+    int command_id,
+    bool can_paste) const {
   bool editable = rwhv_->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;
   bool readable = rwhv_->GetTextInputType() != ui::TEXT_INPUT_TYPE_PASSWORD;
   bool has_selection = !rwhv_->GetSelectedText().empty();
@@ -177,12 +178,7 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
     case std::to_underlying(ui::TouchEditable::MenuCommands::kCopy):
       return readable && has_selection;
     case std::to_underlying(ui::TouchEditable::MenuCommands::kPaste): {
-      ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-          ui::EndpointType::kDefault, {.notify_if_restricted = false});
-      return editable &&
-             ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-                 ui::ClipboardFormatType::PlainTextType(),
-                 ui::ClipboardBuffer::kCopyPaste, &data_dst);
+      return editable && can_paste;
     }
     case std::to_underlying(ui::TouchEditable::MenuCommands::kSelectAll): {
       gfx::Range text_range;
@@ -259,7 +255,8 @@ void TouchSelectionControllerClientChildFrame::RunContextMenu() {
       ->HideAndDisallowShowingAutomatically();
 }
 
-bool TouchSelectionControllerClientChildFrame::ShouldShowQuickMenu() {
+bool TouchSelectionControllerClientChildFrame::ShouldShowQuickMenu(
+    bool can_paste) {
   return true;
 }
 

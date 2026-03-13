@@ -83,9 +83,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
   void GetStandardFormats(ClipboardBuffer buffer,
                           const std::optional<DataTransferEndpoint>& data_dst,
                           GetStandardFormatsCallback callback) const override;
-  bool IsFormatAvailable(const ClipboardFormatType& format,
-                         ClipboardBuffer buffer,
-                         const DataTransferEndpoint* data_dst) const override;
+  void GetAllAvailableFormats(
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+      const override;
   void Clear(ClipboardBuffer buffer) override;
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const std::optional<DataTransferEndpoint>& data_dst,

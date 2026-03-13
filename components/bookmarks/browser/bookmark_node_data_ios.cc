@@ -9,7 +9,8 @@
 namespace bookmarks {
 
 // static
-bool BookmarkNodeData::ClipboardContainsBookmarks() {
+void BookmarkNodeData::ClipboardContainsBookmarks(
+    base::OnceCallback<void(bool)> callback) {
   NOTREACHED();
 }
 

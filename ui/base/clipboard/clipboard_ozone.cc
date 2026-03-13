@@ -483,19 +483,25 @@ const ClipboardSequenceNumberToken& ClipboardOzone::GetSequenceNumber(
   return async_clipboard_ozone_->GetSequenceNumber(buffer);
 }
 
-bool ClipboardOzone::IsFormatAvailable(
-    const ClipboardFormatType& format,
+void ClipboardOzone::GetAllAvailableFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
   DCHECK(CalledOnValidThread());
 
   if (!IsReadAllowed(async_clipboard_ozone_->ReadSourceAndWait(buffer),
-                     data_dst, base::span<uint8_t>())) {
-    return false;
+                     base::OptionalToPtr(data_dst), base::span<uint8_t>())) {
+    std::move(callback).Run({});
+    return;
   }
 
   auto available_types = async_clipboard_ozone_->RequestMimeTypes(buffer);
-  return std::ranges::contains(available_types, format.GetName());
+  base::flat_set<ClipboardFormatType> formats;
+  for (const auto& mime_type : available_types) {
+    formats.insert(ClipboardFormatType::CustomPlatformType(mime_type));
+  }
+  std::move(callback).Run(std::move(formats));
 }
 
 void ClipboardOzone::Clear(ClipboardBuffer buffer) {

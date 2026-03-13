@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
@@ -197,18 +198,25 @@ void BookmarkUIOperationsHelper::CopyOrCutToClipboard(
 void BookmarkUIOperationsHelper::CanPasteFromClipboard(
     base::OnceCallback<void(bool)> callback) const {
   if (!target_parent() || target_parent()->IsManaged()) {
-    std::move(callback).Run(false);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
     return;
   }
-  if (BookmarkNodeData::ClipboardContainsBookmarks()) {
-    std::move(callback).Run(true);
-    return;
-  }
-  GetUrlFromClipboard(
-      /*notify_if_restricted=*/false,
-      base::BindOnce([](base::OnceCallback<void(bool)> callback,
-                        GURL url) { std::move(callback).Run(url.is_valid()); },
-                     std::move(callback)));
+  BookmarkNodeData::ClipboardContainsBookmarks(base::BindOnce(
+      [](base::OnceCallback<void(bool)> callback, bool contains_bookmarks) {
+        if (contains_bookmarks) {
+          std::move(callback).Run(true);
+          return;
+        }
+        GetUrlFromClipboard(
+            /*notify_if_restricted=*/false,
+            base::BindOnce(
+                [](base::OnceCallback<void(bool)> callback, GURL url) {
+                  std::move(callback).Run(url.is_valid());
+                },
+                std::move(callback)));
+      },
+      std::move(callback)));
 }
 
 void BookmarkUIOperationsHelper::PasteFromClipboard(

@@ -22,7 +22,8 @@ class TouchSelectionMenuChromeOS : public views::TouchSelectionMenuViews {
   TouchSelectionMenuChromeOS(views::TouchSelectionMenuRunnerViews* owner,
                              base::WeakPtr<ui::TouchSelectionMenuClient> client,
                              aura::Window* context,
-                             arc::mojom::TextSelectionActionPtr action);
+                             arc::mojom::TextSelectionActionPtr action,
+                             bool can_paste);
 
   TouchSelectionMenuChromeOS(const TouchSelectionMenuChromeOS&) = delete;
   TouchSelectionMenuChromeOS& operator=(const TouchSelectionMenuChromeOS&) =

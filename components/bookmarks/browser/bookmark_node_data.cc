@@ -274,12 +274,19 @@ BookmarkNodeData::~BookmarkNodeData() {}
 
 #if !BUILDFLAG(IS_APPLE)
 // static
-bool BookmarkNodeData::ClipboardContainsBookmarks() {
+void BookmarkNodeData::ClipboardContainsBookmarks(
+    base::OnceCallback<void(bool)> callback) {
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-      ui::ClipboardFormatType::BookmarkEntriesType(),
-      ui::ClipboardBuffer::kCopyPaste, &data_dst);
+  ui::Clipboard::GetForCurrentThread()->GetAllAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            std::move(callback).Run(formats.contains(
+                ui::ClipboardFormatType::BookmarkEntriesType()));
+          },
+          std::move(callback)));
 }
 #endif
 

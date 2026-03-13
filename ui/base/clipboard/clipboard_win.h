@@ -54,9 +54,11 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   void GetStandardFormats(ClipboardBuffer buffer,
                           const std::optional<DataTransferEndpoint>& data_dst,
                           GetStandardFormatsCallback callback) const override;
-  bool IsFormatAvailable(const ClipboardFormatType& format,
-                         ClipboardBuffer buffer,
-                         const DataTransferEndpoint* data_dst) const override;
+  void GetAllAvailableFormats(
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+      const override;
   void Clear(ClipboardBuffer buffer) override;
   void ReadText(ClipboardBuffer buffer,
                 const std::optional<DataTransferEndpoint>& data_dst,
@@ -139,10 +141,10 @@ class ClipboardWin : public Clipboard, public ClipboardChangeNotifier {
   static std::vector<std::u16string> GetStandardFormatsInternal(
       ClipboardBuffer buffer,
       const std::optional<DataTransferEndpoint>& data_dst);
-  static bool IsFormatAvailableInternal(
-      const ClipboardFormatType& format,
+  static base::flat_set<ClipboardFormatType> GetAllAvailableFormatsInternal(
       ClipboardBuffer buffer,
-      const std::optional<DataTransferEndpoint>& data_dst);
+      const std::optional<DataTransferEndpoint>& data_dst,
+      HWND owner_window);
   struct ReadHTMLResult {
     std::u16string markup;
     std::string src_url;

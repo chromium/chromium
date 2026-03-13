@@ -38,24 +38,6 @@ void OnGetRecentImageFromClipboard(
   std::move(callback).Run(gfx::Image::CreateFrom1xPNGBytes(png_data));
 }
 
-bool HasRecentURLFromClipboard() {
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  return clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
-                                      ui::ClipboardBuffer::kCopyPaste,
-                                      &data_dst);
-}
-
-bool HasRecentTextFromClipboard() {
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
-      ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  return clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
-                                      ui::ClipboardBuffer::kCopyPaste,
-                                      &data_dst);
-}
-
 }  // namespace
 
 ClipboardRecentContentGeneric::ClipboardRecentContentGeneric() = default;
@@ -144,8 +126,10 @@ void ClipboardRecentContentGeneric::GetRecentTextFromClipboard(
 
 void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
     GetRecentImageCallback callback) {
-  if (GetClipboardContentAge() > MaximumAgeOfClipboard())
+  if (GetClipboardContentAge() > MaximumAgeOfClipboard()) {
+    std::move(callback).Run(std::nullopt);
     return;
+  }
 
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
@@ -154,67 +138,67 @@ void ClipboardRecentContentGeneric::GetRecentImageFromClipboard(
       base::BindOnce(&OnGetRecentImageFromClipboard, std::move(callback)));
 }
 
-std::optional<std::set<ClipboardContentType>>
-ClipboardRecentContentGeneric::GetCachedClipboardContentTypes() {
+void ClipboardRecentContentGeneric::HasRecentImageFromClipboard(
+    base::OnceCallback<void(bool)> callback) {
   if (GetClipboardContentAge() > MaximumAgeOfClipboard()) {
-    return std::nullopt;
+    std::move(callback).Run(false);
+    return;
   }
-
-  std::set<ClipboardContentType> clipboard_content_types;
-
-  if (HasRecentURLFromClipboard()) {
-    clipboard_content_types.insert(ClipboardContentType::URL);
-  }
-  if (HasRecentTextFromClipboard()) {
-    clipboard_content_types.insert(ClipboardContentType::Text);
-  }
-  if (HasRecentImageFromClipboard()) {
-    clipboard_content_types.insert(ClipboardContentType::Image);
-  }
-
-  return clipboard_content_types;
-}
-
-bool ClipboardRecentContentGeneric::HasRecentImageFromClipboard() {
-  if (GetClipboardContentAge() > MaximumAgeOfClipboard())
-    return false;
 
   ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
       ui::EndpointType::kDefault, {.notify_if_restricted = false});
-  return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-      ui::ClipboardFormatType::PngType(), ui::ClipboardBuffer::kCopyPaste,
-      &data_dst);
+  ui::Clipboard::GetForCurrentThread()->GetAllAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            std::move(callback).Run(
+                formats.contains(ui::ClipboardFormatType::PngType()));
+          },
+          std::move(callback)));
 }
 
 void ClipboardRecentContentGeneric::HasRecentContentFromClipboard(
     std::set<ClipboardContentType> types,
     HasDataCallback callback) {
-  std::set<ClipboardContentType> matching_types;
   if (GetClipboardContentAge() > MaximumAgeOfClipboard()) {
-    std::move(callback).Run(matching_types);
+    std::move(callback).Run({});
     return;
   }
 
-  for (ClipboardContentType type : types) {
-    switch (type) {
-      case ClipboardContentType::URL:
-        if (HasRecentURLFromClipboard()) {
-          matching_types.insert(ClipboardContentType::URL);
-        }
-        break;
-      case ClipboardContentType::Text:
-        if (HasRecentTextFromClipboard()) {
-          matching_types.insert(ClipboardContentType::Text);
-        }
-        break;
-      case ClipboardContentType::Image:
-        if (HasRecentImageFromClipboard()) {
-          matching_types.insert(ClipboardContentType::Image);
-        }
-        break;
-    }
-  }
-  std::move(callback).Run(matching_types);
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
+  clipboard->GetAllAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
+      base::BindOnce(
+          [](std::set<ClipboardContentType> types, HasDataCallback callback,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            std::set<ClipboardContentType> matching_types;
+            for (ClipboardContentType type : types) {
+              switch (type) {
+                case ClipboardContentType::URL:
+                  if (formats.contains(ui::ClipboardFormatType::UrlType())) {
+                    matching_types.insert(ClipboardContentType::URL);
+                  }
+                  break;
+                case ClipboardContentType::Text:
+                  if (formats.contains(
+                          ui::ClipboardFormatType::PlainTextType())) {
+                    matching_types.insert(ClipboardContentType::Text);
+                  }
+                  break;
+                case ClipboardContentType::Image:
+                  if (formats.contains(ui::ClipboardFormatType::PngType()) ||
+                      formats.contains(ui::ClipboardFormatType::BitmapType())) {
+                    matching_types.insert(ClipboardContentType::Image);
+                  }
+                  break;
+              }
+            }
+            std::move(callback).Run(matching_types);
+          },
+          std::move(types), std::move(callback)));
 }
 
 base::TimeDelta ClipboardRecentContentGeneric::GetClipboardContentAge() const {

@@ -860,8 +860,7 @@ void TextfieldTest::VerifyTextfieldContextMenuContents(
   EXPECT_EQ(textfield_has_selection, menu->IsEnabledAt(menu_index++ /* CUT */));
   EXPECT_EQ(textfield_has_selection,
             menu->IsEnabledAt(menu_index++ /* COPY */));
-  EXPECT_NE(GetClipboardText(ui::ClipboardBuffer::kCopyPaste).empty(),
-            menu->IsEnabledAt(menu_index++ /* PASTE */));
+  EXPECT_TRUE(menu->IsEnabledAt(menu_index++ /* PASTE */));
   EXPECT_EQ(textfield_has_selection,
             menu->IsEnabledAt(menu_index++ /* DELETE */));
   EXPECT_TRUE(menu->IsEnabledAt(menu_index++ /* Separator */));

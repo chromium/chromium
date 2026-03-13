@@ -199,32 +199,37 @@ const ClipboardSequenceNumberToken& ClipboardMac::GetSequenceNumber(
   return clipboard_sequence_.token;
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-bool ClipboardMac::IsFormatAvailable(
-    const ClipboardFormatType& format,
+void ClipboardMac::GetAllAvailableFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   // https://crbug.com/1016740#c21: The pasteboard types array may end up going
   // away; make a copy.
   NSArray* types = [GetPasteboard().types copy];
+  base::flat_set<ClipboardFormatType> formats;
+  for (NSString* type in types) {
+    formats.insert(
+        ClipboardFormatType::Deserialize(base::SysNSStringToUTF8(type)));
+  }
 
   // Safari only places RTF on the pasteboard, never HTML. We can convert RTF
   // to HTML, so the presence of either indicates success when looking for HTML.
-  if (format == ClipboardFormatType::HtmlType()) {
-    return [types containsObject:NSPasteboardTypeHTML] ||
-           [types containsObject:NSPasteboardTypeRTF];
+  if ([types containsObject:NSPasteboardTypeHTML] ||
+      [types containsObject:NSPasteboardTypeRTF]) {
+    formats.insert(ClipboardFormatType::HtmlType());
   }
   // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
-  if (format == ClipboardFormatType::PngType() ||
-      format == ClipboardFormatType::BitmapType()) {
-    return [types containsObject:NSPasteboardTypePNG] ||
-           [types containsObject:NSPasteboardTypeTIFF];
+  if ([types containsObject:NSPasteboardTypePNG] ||
+      [types containsObject:NSPasteboardTypeTIFF]) {
+    formats.insert(ClipboardFormatType::PngType());
+    formats.insert(ClipboardFormatType::BitmapType());
   }
-  return [types containsObject:format.ToNSString()];
+
+  std::move(callback).Run(std::move(formats));
 }
 
 bool ClipboardMac::IsMarkedByOriginatorAsConfidential() const {
@@ -255,35 +260,42 @@ void ClipboardMac::GetStandardFormats(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     GetStandardFormatsCallback callback) const {
-  std::vector<std::u16string> types;
-  NSPasteboard* pb = GetPasteboard();
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypePlainText16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeHtml16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeSvg16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeRtf16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeUriList16);
-  } else if (pb && [NSImage canInitWithPasteboard:pb]) {
-    // Finder Cmd+C places both file and icon onto the clipboard
-    // (http://crbug.com/553686), so ignore images if we have detected files.
-    // This means that if an image is present with file content, we will always
-    // ignore the image, but this matches observable Safari behavior.
-    types.push_back(kMimeTypePng16);
-  }
-  std::move(callback).Run(std::move(types));
+  GetAllAvailableFormats(
+      buffer, data_dst,
+      base::BindOnce(
+          [](ClipboardBuffer buffer,
+             const std::optional<DataTransferEndpoint>& data_dst,
+             GetStandardFormatsCallback callback,
+             base::flat_set<ClipboardFormatType> available_formats) {
+            std::vector<std::u16string> types;
+            NSPasteboard* pb = GetPasteboard();
+            if (available_formats.contains(
+                    ClipboardFormatType::PlainTextType())) {
+              types.push_back(kMimeTypePlainText16);
+            }
+            if (available_formats.contains(ClipboardFormatType::HtmlType())) {
+              types.push_back(kMimeTypeHtml16);
+            }
+            if (available_formats.contains(ClipboardFormatType::SvgType())) {
+              types.push_back(kMimeTypeSvg16);
+            }
+            if (available_formats.contains(ClipboardFormatType::RtfType())) {
+              types.push_back(kMimeTypeRtf16);
+            }
+            if (available_formats.contains(
+                    ClipboardFormatType::FilenamesType())) {
+              types.push_back(kMimeTypeUriList16);
+            } else if (pb && [NSImage canInitWithPasteboard:pb]) {
+              // Finder Cmd+C places both file and icon onto the clipboard
+              // (http://crbug.com/553686), so ignore images if we have detected
+              // files. This means that if an image is present with file
+              // content, we will always ignore the image, but this matches
+              // observable Safari behavior.
+              types.push_back(kMimeTypePng16);
+            }
+            std::move(callback).Run(std::move(types));
+          },
+          buffer, data_dst, std::move(callback)));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

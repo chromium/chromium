@@ -330,37 +330,111 @@ const ClipboardSequenceNumberToken& ClipboardWin::GetSequenceNumber(
   return clipboard_sequence_.token;
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-bool ClipboardWin::IsFormatAvailable(
-    const ClipboardFormatType& format,
+void ClipboardWin::GetAllAvailableFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  return IsFormatAvailableInternal(format, buffer,
-                                   base::OptionalFromPtr(data_dst));
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
+  ReadAsync(base::BindOnce(&ClipboardWin::GetAllAvailableFormatsInternal,
+                           buffer, data_dst),
+            std::move(callback));
 }
 
 // static
-// |data_dst| is not used, but is kept as it may be used in the future.
-bool ClipboardWin::IsFormatAvailableInternal(
-    const ClipboardFormatType& format,
+base::flat_set<ClipboardFormatType>
+ClipboardWin::GetAllAvailableFormatsInternal(
     ClipboardBuffer buffer,
-    const std::optional<DataTransferEndpoint>& data_dst) {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    HWND owner_window) {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  if (format == ClipboardFormatType::FilenameType())
-    return ReadFilenamesAvailable();
-  // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
-  if (format == ClipboardFormatType::PngType() ||
-      format == ClipboardFormatType::BitmapType()) {
-    return ::IsClipboardFormatAvailable(
-               ClipboardFormatType::PngType().ToFormatEtc().cfFormat) !=
-               FALSE ||
-           ::IsClipboardFormatAvailable(
-               ClipboardFormatType::BitmapType().ToFormatEtc().cfFormat) !=
-               FALSE;
+  base::flat_set<ClipboardFormatType> types;
+
+  // Acquire the clipboard to safely enumerate formats.
+  ScopedClipboard clipboard;
+  if (!clipboard.Acquire(owner_window)) {
+    return types;
   }
 
-  return ::IsClipboardFormatAvailable(format.ToFormatEtc().cfFormat) != FALSE;
+  // 1. Enumerate all formats to capture custom formats.
+  // Dynamically registered formats on Windows are in the range 0xC000 - 0xFFFF.
+  UINT cf_format = 0;
+  while ((cf_format = ::EnumClipboardFormats(cf_format)) != 0) {
+    if (cf_format >= 0xC000) {
+      wchar_t format_name[256];
+      int len = ::GetClipboardFormatNameW(cf_format, format_name,
+                                          std::size(format_name));
+      if (len > 0) {
+        std::string name_utf8 =
+            base::WideToUTF8(std::wstring_view(format_name, len));
+        types.insert(ClipboardFormatType::CustomPlatformType(name_utf8));
+      }
+    }
+  }
+
+  // 2. Explicitly map known standard/semantic formats.
+  // This guarantees that Chromium's semantic fallbacks (e.g. Images, Filenames)
+  // are accurately populated regardless of exact string names or OS versions.
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::PlainTextType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::PlainTextType());
+  }
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::PlainTextAType());
+  }
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::HtmlType());
+  }
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::SvgType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::SvgType());
+  }
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::RtfType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::RtfType());
+  }
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::UrlType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::UrlType());
+  }
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::UrlAType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::UrlAType());
+  }
+
+  // Images: Chrome retrieves an image from the clipboard as either a bitmap
+  // or PNG.
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::PngType().ToFormatEtc().cfFormat) ||
+      ::IsClipboardFormatAvailable(
+          ClipboardFormatType::BitmapType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::PngType());
+    types.insert(ClipboardFormatType::BitmapType());
+  }
+
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::WebKitSmartPasteType().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::WebKitSmartPasteType());
+  }
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::WebCustomFormatMap().ToFormatEtc().cfFormat)) {
+    types.insert(ClipboardFormatType::WebCustomFormatMap());
+  }
+  if (::IsClipboardFormatAvailable(ClipboardFormatType::DataTransferCustomType()
+                                       .ToFormatEtc()
+                                       .cfFormat)) {
+    types.insert(ClipboardFormatType::DataTransferCustomType());
+  }
+
+  // Filenames: Chrome retrieves files from several potential Windows drop
+  // formats.
+  if (ReadFilenamesAvailable()) {
+    types.insert(ClipboardFormatType::FilenameType());
+    types.insert(ClipboardFormatType::FilenamesType());
+  }
+
+  return types;
 }
 
 void ClipboardWin::Clear(ClipboardBuffer buffer) {
@@ -545,8 +619,10 @@ std::vector<std::u16string> ClipboardWin::ReadAvailableTypesInternal(
 
   // Read the custom type only if it's present on the clipboard.
   // See crbug.com/1477344 for details.
-  if (!IsFormatAvailableInternal(ClipboardFormatType::DataTransferCustomType(),
-                                 buffer, data_dst)) {
+  if (!::IsClipboardFormatAvailable(
+          ClipboardFormatType::DataTransferCustomType()
+              .ToFormatEtc()
+              .cfFormat)) {
     return types;
   }
   // Acquire the clipboard to read DataTransferCustomType types.

@@ -312,7 +312,8 @@ void PDFDocumentHelper::OnManagerWillDestroy(
   touch_selection_controller_client_manager_ = nullptr;
 }
 
-bool PDFDocumentHelper::IsCommandIdEnabled(int command_id) const {
+bool PDFDocumentHelper::IsCommandIdEnabled(int command_id,
+                                           bool can_paste) const {
   // TODO(wjmaclean|dsinclair): Make PDFium send readability information in the
   // selection changed message?
   bool readable = true;
@@ -379,7 +380,7 @@ void PDFDocumentHelper::RunContextMenu() {
   touch_selection_controller->HideAndDisallowShowingAutomatically();
 }
 
-bool PDFDocumentHelper::ShouldShowQuickMenu() {
+bool PDFDocumentHelper::ShouldShowQuickMenu(bool can_paste) {
   return false;
 }
 

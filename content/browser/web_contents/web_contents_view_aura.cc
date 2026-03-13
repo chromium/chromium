@@ -1124,14 +1124,71 @@ void WebContentsViewAura::ShowContextMenu(RenderFrameHost& render_frame_host,
                                           const ContextMenuParams& params) {
   TouchSelectionControllerClientAura* selection_controller_client =
       GetSelectionControllerClient();
-  if (selection_controller_client &&
-      selection_controller_client->HandleContextMenu(params)) {
-    return;
+  if (selection_controller_client) {
+    bool is_touch =
+        params.source_type == ui::mojom::MenuSourceType::kLongPress ||
+        params.source_type == ui::mojom::MenuSourceType::kLongTap ||
+        params.source_type == ui::mojom::MenuSourceType::kTouch;
+
+    // Only query the clipboard asynchronously if we are actually evaluating a
+    // touch quick menu.
+    if (is_touch && params.is_editable && params.selection_text.empty()) {
+      ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+          ui::EndpointType::kDefault, {.notify_if_restricted = false});
+      ui::Clipboard::GetForCurrentThread()->GetAllAvailableFormats(
+          ui::ClipboardBuffer::kCopyPaste, data_dst,
+          base::BindOnce(
+              [](base::WeakPtr<WebContentsViewAura> weak_this,
+                 const GlobalRenderFrameHostId& rfh_id,
+                 const ContextMenuParams& params,
+                 base::flat_set<ui::ClipboardFormatType> formats) {
+                if (!weak_this) {
+                  return;
+                }
+                bool can_paste =
+                    formats.contains(ui::ClipboardFormatType::PlainTextType());
+                TouchSelectionControllerClientAura*
+                    selection_controller_client =
+                        weak_this->GetSelectionControllerClient();
+
+                if (selection_controller_client &&
+                    selection_controller_client->HandleContextMenu(params,
+                                                                   can_paste)) {
+                  return;
+                }
+                weak_this->OnContextMenuHandled(rfh_id, params,
+                                                /*handled=*/false);
+              },
+              weak_ptr_factory_.GetWeakPtr(), render_frame_host.GetGlobalId(),
+              params));
+      return;
+    }
+
+    // Synchronous fallback for all other context menu requests (e.g. mouse
+    // clicks, keyboard menu button, or touch events on non-empty selections).
+    if (selection_controller_client &&
+        selection_controller_client->HandleContextMenu(params,
+                                                       /*can_paste=*/false)) {
+      return;
+    }
   }
 
   if (delegate_) {
     delegate_->ShowContextMenu(render_frame_host, params);
-    // WARNING: we may have been deleted during the call to ShowContextMenu().
+  }
+}
+
+void WebContentsViewAura::OnContextMenuHandled(
+    const GlobalRenderFrameHostId& rfh_id,
+    const ContextMenuParams& params,
+    bool handled) {
+  if (handled) {
+    return;
+  }
+
+  RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id);
+  if (rfh && delegate_) {
+    delegate_->ShowContextMenu(*rfh, params);
   }
 }
 

@@ -169,6 +169,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
     src_ = std::move(src);
   }
 
+  const std::map<ClipboardFormatType, std::string>& custom_data() const {
+    return custom_data_;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   std::optional<base::Time> commit_time() const { return commit_time_; }
   void set_commit_time(std::optional<base::Time> commit_time) {

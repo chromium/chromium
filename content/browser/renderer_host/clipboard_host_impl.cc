@@ -136,15 +136,27 @@ void ClipboardHostImpl::ReadAvailableTypes(
     return;
   }
 
+  clipboard->GetAllAvailableFormats(
+      clipboard_buffer, data_endpoint,
+      base::BindOnce(
+          &ClipboardHostImpl::OnGetAllAvailableFormatsForReadAvailableTypes,
+          weak_ptr_factory_.GetWeakPtr(), clipboard_buffer, data_endpoint,
+          std::move(callback)));
+}
+
+void ClipboardHostImpl::OnGetAllAvailableFormatsForReadAvailableTypes(
+    ui::ClipboardBuffer clipboard_buffer,
+    std::optional<ui::DataTransferEndpoint> data_dst,
+    ReadAvailableTypesCallback callback,
+    base::flat_set<ui::ClipboardFormatType> formats) {
   // ReadAvailableTypes() returns 'text/uri-list' if either files are
   // provided, or if it was set as a custom web type. If it is set because
   // files are available, do not include other types such as text/plain which
   // contain the full path on some platforms (http://crbug.com/1214108). But
   // do not exclude other types when it is set as a custom web type
   // (http://crbug.com/1241671).
-  bool file_type_only = clipboard->IsFormatAvailable(
-      ui::ClipboardFormatType::FilenamesType(), clipboard_buffer,
-      base::OptionalToPtr(data_endpoint));
+  bool file_type_only =
+      formats.contains(ui::ClipboardFormatType::FilenamesType());
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS FilesApp must include the custom 'fs/sources', etc data for
@@ -160,8 +172,9 @@ void ClipboardHostImpl::ReadAvailableTypes(
     return;
   }
 
+  auto* clipboard = ui::Clipboard::GetForCurrentThread();
   clipboard->ReadAvailableTypes(
-      clipboard_buffer, data_endpoint,
+      clipboard_buffer, data_dst,
       base::BindOnce(&ClipboardHostImpl::OnReadAvailableTypes,
                      weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
                      std::move(callback)));
@@ -178,40 +191,41 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
                                           ui::ClipboardBuffer clipboard_buffer,
                                           IsFormatAvailableCallback callback) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  bool result = false;
   auto data_endpoint = CreateDataEndpoint();
-  switch (format) {
-    case blink::mojom::ClipboardFormat::kPlaintext:
-      result = clipboard->IsFormatAvailable(
-          ui::ClipboardFormatType::PlainTextType(), clipboard_buffer,
-          base::OptionalToPtr(data_endpoint));
+  clipboard->GetAllAvailableFormats(
+      clipboard_buffer, data_endpoint,
+      base::BindOnce(
+          [](blink::mojom::ClipboardFormat format,
+             IsFormatAvailableCallback callback,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            bool result = false;
+            switch (format) {
+              case blink::mojom::ClipboardFormat::kPlaintext:
+                result =
+                    formats.contains(ui::ClipboardFormatType::PlainTextType());
 #if BUILDFLAG(IS_WIN)
-      result |= clipboard->IsFormatAvailable(
-          ui::ClipboardFormatType::PlainTextAType(), clipboard_buffer,
-          base::OptionalToPtr(data_endpoint));
+                result |=
+                    formats.contains(ui::ClipboardFormatType::PlainTextAType());
 #endif
-      break;
-    case blink::mojom::ClipboardFormat::kHtml:
-      result = clipboard->IsFormatAvailable(ui::ClipboardFormatType::HtmlType(),
-                                            clipboard_buffer,
-                                            base::OptionalToPtr(data_endpoint));
-      break;
-    case blink::mojom::ClipboardFormat::kSmartPaste:
-      result = clipboard->IsFormatAvailable(
-          ui::ClipboardFormatType::WebKitSmartPasteType(), clipboard_buffer,
-          base::OptionalToPtr(data_endpoint));
-      break;
-    case blink::mojom::ClipboardFormat::kBookmark:
+                break;
+              case blink::mojom::ClipboardFormat::kHtml:
+                result = formats.contains(ui::ClipboardFormatType::HtmlType());
+                break;
+              case blink::mojom::ClipboardFormat::kSmartPaste:
+                result = formats.contains(
+                    ui::ClipboardFormatType::WebKitSmartPasteType());
+                break;
+              case blink::mojom::ClipboardFormat::kBookmark:
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-      result = clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
-                                            clipboard_buffer,
-                                            base::OptionalToPtr(data_endpoint));
+                result = formats.contains(ui::ClipboardFormatType::UrlType());
 #else
-      result = false;
+                result = false;
 #endif
-      break;
-  }
-  std::move(callback).Run(result);
+                break;
+            }
+            std::move(callback).Run(result);
+          },
+          format, std::move(callback)));
 }
 
 void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
@@ -1011,28 +1025,34 @@ void ClipboardHostImpl::ExtractText(
     std::optional<ui::DataTransferEndpoint> data_dst,
     base::OnceCallback<void(std::u16string)> callback) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
-                                   clipboard_buffer,
-                                   base::OptionalToPtr(data_dst))) {
-    clipboard->ReadText(clipboard_buffer, data_dst, std::move(callback));
-    return;
-  }
+  clipboard->GetAllAvailableFormats(
+      clipboard_buffer, data_dst,
+      base::BindOnce(
+          [](ui::Clipboard* clipboard, ui::ClipboardBuffer clipboard_buffer,
+             std::optional<ui::DataTransferEndpoint> data_dst,
+             base::OnceCallback<void(std::u16string)> callback,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            if (formats.contains(ui::ClipboardFormatType::PlainTextType())) {
+              clipboard->ReadText(clipboard_buffer, data_dst,
+                                  std::move(callback));
+              return;
+            }
 #if BUILDFLAG(IS_WIN)
-  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextAType(),
-                                   clipboard_buffer,
-                                   base::OptionalToPtr(data_dst))) {
-    clipboard->ReadAsciiText(
-        clipboard_buffer, data_dst,
-        base::BindOnce(
-            [](base::OnceCallback<void(std::u16string)> callback,
-               std::string ascii) {
-              std::move(callback).Run(base::ASCIIToUTF16(ascii));
-            },
-            std::move(callback)));
-    return;
-  }
+            if (formats.contains(ui::ClipboardFormatType::PlainTextAType())) {
+              clipboard->ReadAsciiText(
+                  clipboard_buffer, data_dst,
+                  base::BindOnce(
+                      [](base::OnceCallback<void(std::u16string)> callback,
+                         std::string ascii) {
+                        std::move(callback).Run(base::ASCIIToUTF16(ascii));
+                      },
+                      std::move(callback)));
+              return;
+            }
 #endif
-  std::move(callback).Run(std::u16string());
+            std::move(callback).Run(std::u16string());
+          },
+          clipboard, clipboard_buffer, data_dst, std::move(callback)));
 }
 
 void ClipboardHostImpl::RegisterClipboardListener(

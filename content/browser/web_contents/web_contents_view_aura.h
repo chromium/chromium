@@ -197,6 +197,10 @@ class CONTENT_EXPORT WebContentsViewAura
   ui::TouchSelectionController* GetSelectionController() const;
   TouchSelectionControllerClientAura* GetSelectionControllerClient() const;
 
+  void OnContextMenuHandled(const GlobalRenderFrameHostId& rfh_id,
+                            const ContextMenuParams& params,
+                            bool handled);
+
   // Returns GetNativeView unless overridden for testing.
   gfx::NativeView GetRenderWidgetHostViewParent() const;
 

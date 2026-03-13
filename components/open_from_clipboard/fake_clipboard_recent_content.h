@@ -29,8 +29,11 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
 
   // ClipboardRecentContent implementation.
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
+  void HasRecentImageFromClipboard(base::OnceCallback<void(bool)> callback);
+#if BUILDFLAG(IS_IOS)
   std::optional<std::set<ClipboardContentType>> GetCachedClipboardContentTypes()
       override;
+#endif
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
                                      HasDataCallback callback) override;
   void GetRecentURLFromClipboard(GetRecentURLCallback callback) override;

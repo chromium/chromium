@@ -770,16 +770,16 @@ void OmniboxViewViews::ShowContextMenuForViewImpl(
   GetClipboardText(
       /*notify_if_restricted=*/false,
       base::BindOnce(&OmniboxViewViews::ShowContextMenuForViewImplComplete,
-                     weak_factory_.GetWeakPtr(), source, point, source_type));
+                     weak_factory_.GetWeakPtr(), point, source_type));
 }
 
 void OmniboxViewViews::ShowContextMenuForViewImplComplete(
-    views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type,
     std::u16string text) {
-  clipboard_text_ = text;
-  Textfield::ShowContextMenuForViewImpl(source, point, source_type);
+  clipboard_text_for_menu_ = std::move(text);
+  // `source` is not used in `Textfield::ShowContextMenuForViewImpl()`.
+  Textfield::ShowContextMenuForViewImpl(/*source=*/nullptr, point, source_type);
 }
 
 void OmniboxViewViews::OnInputMethodChanged() {
@@ -1389,18 +1389,17 @@ std::u16string OmniboxViewViews::GetLabelForCommandId(int command_id) const {
   )
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
 
-  const std::u16string clipboard_text = clipboard_text_;
-
-  if (clipboard_text.empty()) {
+  if (clipboard_text_for_menu_.empty()) {
     return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
   }
 
   constexpr size_t kMaxSelectionTextLength = 50;
   std::u16string selection_text = gfx::TruncateString(
-      clipboard_text, kMaxSelectionTextLength, gfx::WORD_BREAK);
+      clipboard_text_for_menu_, kMaxSelectionTextLength, gfx::WORD_BREAK);
 
   AutocompleteMatch match;
-  controller()->edit_model()->ClassifyString(clipboard_text, &match, nullptr);
+  controller()->edit_model()->ClassifyString(clipboard_text_for_menu_, &match,
+                                             nullptr);
   if (AutocompleteMatch::IsSearchType(match.type)) {
     return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
   }
@@ -1814,7 +1813,7 @@ void OmniboxViewViews::OnBlur() {
 bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
   if (command_id ==
       std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
-    return !GetReadOnly() && CanGetClipboardText();
+    return !GetReadOnly() && !clipboard_text_for_menu_.empty();
   }
   if (command_id == IDC_PASTE_AND_GO) {
     if (GetReadOnly()) {
@@ -1844,7 +1843,7 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
     // know if there are valid values on the clipboard to enable paste-and-go
     // with confidence.
     if (ui::PasteMightBlockWithPrivacyAlert()) {
-      if (CanGetClipboardText()) {
+      if (!clipboard_text_for_menu_.empty()) {
         constexpr char16_t kSomeValidText[] = u"validtext";
         return controller()->edit_model()->CanPasteAndGo(kSomeValidText);
       } else {
@@ -1853,7 +1852,7 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
     }
 #endif
 
-    return controller()->edit_model()->CanPasteAndGo(clipboard_text_);
+    return controller()->edit_model()->CanPasteAndGo(clipboard_text_for_menu_);
   }
 
   // These menu items are only shown when they are valid.
@@ -1913,9 +1912,9 @@ bool OmniboxViewViews::IsTextEditCommandEnabled(
   switch (command) {
     case ui::TextEditCommand::MOVE_UP:
     case ui::TextEditCommand::MOVE_DOWN:
-      return !GetReadOnly();
+    // Assume the clipboard contains text like the Textfield parent class.
     case ui::TextEditCommand::PASTE:
-      return !GetReadOnly() && CanGetClipboardText();
+      return !GetReadOnly();
     default:
       return Textfield::IsTextEditCommandEnabled(command);
   }

@@ -18,8 +18,10 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
@@ -177,11 +179,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       const std::optional<DataTransferEndpoint>& data_dst,
       GetStandardFormatsCallback callback) const = 0;
 
-  // Tests whether the clipboard contains a certain format.
-  virtual bool IsFormatAvailable(
-      const ClipboardFormatType& format,
+  virtual void GetAllAvailableFormats(
       ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const = 0;
+      const std::optional<DataTransferEndpoint>& data_dst,
+      base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+      const = 0;
 
   // Returns whether the clipboard has data that is marked by its originator as
   // confidential. This is available for opt-in checking by the user of this API
@@ -475,6 +477,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   static base::Lock& ClipboardMapLock();
 
   base::ObserverList<ClipboardWriteObserver> write_observers_;
+
+  base::WeakPtrFactory<Clipboard> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

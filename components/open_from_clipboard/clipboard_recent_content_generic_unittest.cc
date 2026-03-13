@@ -216,7 +216,11 @@ TEST_F(ClipboardRecentContentGenericTest, SuppressClipboardContent) {
     recent_content.GetRecentTextFromClipboard(future.GetCallback());
     EXPECT_TRUE(future.Take().has_value());
   }
-  EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
+  {
+    base::test::TestFuture<bool> future;
+    recent_content.HasRecentImageFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
 
   // After suppressing it, it shouldn't be suggested.
   recent_content.SuppressClipboardContent();
@@ -240,7 +244,11 @@ TEST_F(ClipboardRecentContentGenericTest, SuppressClipboardContent) {
     recent_content.GetRecentTextFromClipboard(future.GetCallback());
     EXPECT_TRUE(future.Take().has_value());
   }
-  EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
+  {
+    base::test::TestFuture<bool> future;
+    recent_content.HasRecentImageFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
 }
 
 TEST_F(ClipboardRecentContentGenericTest, GetRecentTextFromClipboard) {
@@ -263,7 +271,11 @@ TEST_F(ClipboardRecentContentGenericTest, GetRecentTextFromClipboard) {
     recent_content.GetRecentURLFromClipboard(future.GetCallback());
     EXPECT_FALSE(future.Take().has_value());
   }
-  EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
+  {
+    base::test::TestFuture<bool> future;
+    recent_content.HasRecentImageFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
 }
 
 TEST_F(ClipboardRecentContentGenericTest, ClearClipboardContent) {
@@ -303,10 +315,18 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
   base::Time now = base::Time::Now();
   SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
 
-  EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
+  {
+    base::test::TestFuture<bool> future;
+    recent_content.HasRecentImageFromClipboard(future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
   test_clipboard_->WriteBitmap(bitmap);
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
-  EXPECT_TRUE(recent_content.HasRecentImageFromClipboard());
+  {
+    base::test::TestFuture<bool> future;
+    recent_content.HasRecentImageFromClipboard(future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
   {
     base::test::TestFuture<std::optional<GURL>> future;
     recent_content.GetRecentURLFromClipboard(future.GetCallback());

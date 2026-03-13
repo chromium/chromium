@@ -25,7 +25,8 @@ TestRenderViewContextMenu::TestRenderViewContextMenu(
     content::ContextMenuParams params)
     : RenderViewContextMenu(render_frame_host,
                             params,
-                            /*is_paste_enabled=*/false) {}
+                            /*is_paste_enabled=*/false,
+                            /*is_paste_and_match_style_enabled=*/false) {}
 
 TestRenderViewContextMenu::~TestRenderViewContextMenu() = default;
 

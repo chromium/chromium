@@ -16,6 +16,8 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -597,7 +599,12 @@ bool TouchSelectionControllerImpl::ShouldShowHandleFor(
   return client_bounds.Contains(BoundToRect(bound));
 }
 
-bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id) const {
+bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id,
+                                                      bool can_paste) const {
+  if (command_id ==
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
+    return can_paste && client_view_->IsCommandIdEnabled(command_id);
+  }
   return client_view_->IsCommandIdEnabled(command_id);
 }
 
@@ -613,7 +620,7 @@ void TouchSelectionControllerImpl::RunContextMenu() {
   client_view_->OpenContextMenu(anchor);
 }
 
-bool TouchSelectionControllerImpl::ShouldShowQuickMenu() {
+bool TouchSelectionControllerImpl::ShouldShowQuickMenu(bool can_paste) {
   return false;
 }
 
@@ -662,23 +669,41 @@ void TouchSelectionControllerImpl::QuickMenuTimerFired() {
     return;
   }
 
-  gfx::Rect menu_anchor = GetQuickMenuAnchorRect();
-  if (menu_anchor == gfx::Rect()) {
-    return;
-  }
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+      ui::EndpointType::kDefault, {.notify_if_restricted = false});
+  ui::Clipboard::GetForCurrentThread()->GetAllAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
+      base::BindOnce(
+          [](base::WeakPtr<TouchSelectionControllerImpl> weak_this,
+             base::flat_set<ui::ClipboardFormatType> formats) {
+            if (!weak_this) {
+              return;
+            }
 
-  gfx::Size handle_image_size;
-  if (selection_handle_1_widget_->IsClosed() ||
-      selection_handle_2_widget_->IsClosed() ||
-      cursor_handle_widget_->IsClosed()) {
-    return;
-  }
-  handle_image_size = cursor_handle_widget_->IsVisible()
-                          ? GetCursorHandle()->GetHandleImageSize()
-                          : GetSelectionHandle1()->GetHandleImageSize();
+            bool can_paste =
+                formats.contains(ui::ClipboardFormatType::PlainTextType());
 
-  menu_runner->OpenMenu(GetWeakPtr(), menu_anchor, handle_image_size,
-                        client_view_->GetNativeView());
+            gfx::Rect menu_anchor = weak_this->GetQuickMenuAnchorRect();
+            if (menu_anchor == gfx::Rect()) {
+              return;
+            }
+
+            gfx::Size handle_image_size;
+            if (weak_this->selection_handle_1_widget_->IsClosed() ||
+                weak_this->selection_handle_2_widget_->IsClosed() ||
+                weak_this->cursor_handle_widget_->IsClosed()) {
+              return;
+            }
+            handle_image_size =
+                weak_this->cursor_handle_widget_->IsVisible()
+                    ? weak_this->GetCursorHandle()->GetHandleImageSize()
+                    : weak_this->GetSelectionHandle1()->GetHandleImageSize();
+
+            ui::TouchSelectionMenuRunner::GetInstance()->OpenMenu(
+                weak_this, menu_anchor, handle_image_size,
+                weak_this->client_view_->GetNativeView(), can_paste);
+          },
+          menu_request_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchSelectionControllerImpl::StartQuickMenuTimer() {
@@ -699,6 +724,7 @@ void TouchSelectionControllerImpl::UpdateQuickMenu() {
 }
 
 void TouchSelectionControllerImpl::HideQuickMenu() {
+  menu_request_weak_ptr_factory_.InvalidateWeakPtrs();
   auto* menu_runner = ui::TouchSelectionMenuRunner::GetInstance();
   if (menu_runner && menu_runner->IsRunning()) {
     menu_runner->CloseMenu();

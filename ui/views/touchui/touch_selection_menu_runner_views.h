@@ -6,6 +6,7 @@
 #define UI_VIEWS_TOUCHUI_TOUCH_SELECTION_MENU_RUNNER_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
@@ -56,13 +57,14 @@ class VIEWS_EXPORT TouchSelectionMenuRunnerViews
                 const gfx::Size& handle_image_size);
 
   // ui::TouchSelectionMenuRunner:
-  bool IsMenuAvailable(
-      const ui::TouchSelectionMenuClient* client) const override;
+  bool IsMenuAvailable(const ui::TouchSelectionMenuClient* client,
+                       bool can_paste) const override;
   void CloseMenu() override;
   void OpenMenu(base::WeakPtr<ui::TouchSelectionMenuClient> client,
                 const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size,
-                aura::Window* context) override;
+                aura::Window* context,
+                bool can_paste) override;
   bool IsRunning() const override;
 
  private:

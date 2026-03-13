@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/file_info.h"
 
@@ -21,6 +22,14 @@ class DataTransferEndpoint;
 namespace clipboard_test_util {
 
 // Helper functions to read from the clipboard synchronously for use in tests.
+base::flat_set<ClipboardFormatType> GetAllAvailableFormats(
+    Clipboard* clipboard,
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst);
+bool IsFormatAvailable(Clipboard* clipboard,
+                       const ClipboardFormatType& format,
+                       ClipboardBuffer buffer,
+                       const DataTransferEndpoint* data_dst);
 std::vector<std::u16string> ReadAvailableTypes(
     Clipboard* clipboard,
     ClipboardBuffer buffer,

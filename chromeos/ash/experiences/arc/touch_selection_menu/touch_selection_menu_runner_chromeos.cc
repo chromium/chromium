@@ -17,8 +17,11 @@
 #include "chromeos/ash/experiences/arc/touch_selection_menu/touch_selection_menu_chromeos.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/window.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 TouchSelectionMenuRunnerChromeOS::TouchSelectionMenuRunnerChromeOS() = default;
 
@@ -29,6 +32,7 @@ void TouchSelectionMenuRunnerChromeOS::OpenMenuWithTextSelectionAction(
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
     std::unique_ptr<aura::WindowTracker> tracker,
+    bool can_paste,
     std::vector<arc::mojom::TextSelectionActionPtr> actions) {
   if (tracker->windows().empty()) {
     return;
@@ -37,7 +41,8 @@ void TouchSelectionMenuRunnerChromeOS::OpenMenuWithTextSelectionAction(
   if (!client) {
     return;
   }
-  if (!client->ShouldShowQuickMenu()) {
+
+  if (!client->ShouldShowQuickMenu(can_paste)) {
     return;
   }
 
@@ -53,7 +58,7 @@ void TouchSelectionMenuRunnerChromeOS::OpenMenuWithTextSelectionAction(
 
   // The menu manages its own lifetime and deletes itself when closed.
   TouchSelectionMenuChromeOS* menu = new TouchSelectionMenuChromeOS(
-      this, client, tracker->Pop(), std::move(top_action));
+      this, client, tracker->Pop(), std::move(top_action), can_paste);
   ShowMenu(menu, anchor_rect, handle_image_size);
 }
 
@@ -61,7 +66,8 @@ bool TouchSelectionMenuRunnerChromeOS::RequestTextSelection(
     base::WeakPtr<ui::TouchSelectionMenuClient> client,
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
-    aura::Window* context) {
+    aura::Window* context,
+    bool can_paste) {
   DCHECK(client);
   const std::string converted_text =
       base::UTF16ToUTF8(client->GetSelectedText());
@@ -107,28 +113,36 @@ bool TouchSelectionMenuRunnerChromeOS::RequestTextSelection(
           screen->GetDisplayNearestWindow(context).device_scale_factor()),
       base::BindOnce(
           &TouchSelectionMenuRunnerChromeOS::OpenMenuWithTextSelectionAction,
-          weak_ptr_factory_.GetWeakPtr(), client, anchor_rect,
-          handle_image_size, std::move(tracker)));
+          menu_request_weak_ptr_factory_.GetWeakPtr(), client, anchor_rect,
+          handle_image_size, std::move(tracker), can_paste));
   return true;
+}
+
+void TouchSelectionMenuRunnerChromeOS::CloseMenu() {
+  menu_request_weak_ptr_factory_.InvalidateWeakPtrs();
+  views::TouchSelectionMenuRunnerViews::CloseMenu();
 }
 
 void TouchSelectionMenuRunnerChromeOS::OpenMenu(
     base::WeakPtr<ui::TouchSelectionMenuClient> client,
     const gfx::Rect& anchor_rect,
     const gfx::Size& handle_image_size,
-    aura::Window* context) {
-  views::TouchSelectionMenuRunnerViews::CloseMenu();
+    aura::Window* context,
+    bool can_paste) {
+  CloseMenu();
 
-  // If there are no commands to show in the menu finish right away. Also if
-  // classification is possible delegate creating/showing a new menu.
-  if (!views::TouchSelectionMenuRunnerViews::IsMenuAvailable(client.get()) ||
-      RequestTextSelection(client, anchor_rect, handle_image_size, context)) {
+  // If there are no commands to show in the menu finish right away.
+  // Also if classification is possible delegate creating/showing a
+  // new menu.
+  if (!IsMenuAvailable(client.get(), can_paste) ||
+      RequestTextSelection(client, anchor_rect, handle_image_size, context,
+                           can_paste)) {
     return;
   }
 
   // The menu manages its own lifetime and deletes itself when closed.
   TouchSelectionMenuChromeOS* menu =
       new TouchSelectionMenuChromeOS(this, client, context,
-                                     /*action=*/nullptr);
+                                     /*action=*/nullptr, can_paste);
   ShowMenu(menu, anchor_rect, handle_image_size);
 }

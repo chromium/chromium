@@ -18,6 +18,23 @@
 
 namespace ui::clipboard_test_util {
 
+base::flat_set<ClipboardFormatType> GetAllAvailableFormats(
+    Clipboard* clipboard,
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) {
+  base::test::TestFuture<base::flat_set<ClipboardFormatType>> future;
+  clipboard->GetAllAvailableFormats(buffer, base::OptionalFromPtr(data_dst),
+                                    future.GetCallback());
+  return future.Take();
+}
+
+bool IsFormatAvailable(Clipboard* clipboard,
+                       const ClipboardFormatType& format,
+                       ClipboardBuffer buffer,
+                       const DataTransferEndpoint* data_dst) {
+  return GetAllAvailableFormats(clipboard, buffer, data_dst).contains(format);
+}
+
 std::vector<std::u16string> ReadAvailableTypes(
     Clipboard* clipboard,
     ClipboardBuffer buffer,

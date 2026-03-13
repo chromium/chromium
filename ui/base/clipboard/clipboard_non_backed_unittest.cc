@@ -36,8 +36,9 @@ namespace {
 
 std::vector<std::string> UTF8Types(std::vector<std::u16string> types) {
   std::vector<std::string> result;
-  for (const std::u16string& type : types)
+  for (const std::u16string& type : types) {
     result.push_back(base::UTF16ToUTF8(type));
+  }
   return result;
 }
 
@@ -142,8 +143,9 @@ TEST_F(ClipboardNonBackedTest, PlainText) {
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
                 clipboard(), ClipboardBuffer::kCopyPaste,
                 /*data_dst=*/nullptr)));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::PlainTextType(),
+      ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
   // Validate reading back the text.
@@ -165,17 +167,20 @@ TEST_F(ClipboardNonBackedTest, BookmarkURL) {
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
                 clipboard(), ClipboardBuffer::kCopyPaste,
                 /*data_dst=*/nullptr)));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::PlainTextType(),
+      ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
-                                             ClipboardBuffer::kCopyPaste,
-                                             /*data_dst=*/nullptr));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::PlainTextType(), ClipboardBuffer::kCopyPaste,
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::UrlType(), ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
-  EXPECT_FALSE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::PlainTextType(),
+      ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+  EXPECT_FALSE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::FilenamesType(),
+      ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
   // Validate reading back the bookmark.
@@ -200,11 +205,12 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
                 clipboard(), ClipboardBuffer::kCopyPaste,
                 /*data_dst=*/nullptr)));
-  EXPECT_FALSE(clipboard()->IsFormatAvailable(ClipboardFormatType::UrlType(),
-                                              ClipboardBuffer::kCopyPaste,
-                                              /*data_dst=*/nullptr));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
+  EXPECT_FALSE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::UrlType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::FilenamesType(),
+      ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 
   // Filenames data uses mime type 'text/uri-list', but clients can also set
@@ -223,8 +229,9 @@ TEST_F(ClipboardNonBackedTest, TextURIList) {
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
                 clipboard(), ClipboardBuffer::kCopyPaste,
                 /*data_dst=*/nullptr)));
-  EXPECT_FALSE(clipboard()->IsFormatAvailable(
-      ClipboardFormatType::FilenamesType(), ClipboardBuffer::kCopyPaste,
+  EXPECT_FALSE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::FilenamesType(),
+      ClipboardBuffer::kCopyPaste,
       /*data_dst=*/nullptr));
 }
 
@@ -239,9 +246,9 @@ TEST_F(ClipboardNonBackedTest, ImageEncoding) {
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
                 clipboard(), ClipboardBuffer::kCopyPaste,
                 /*data_dst=*/nullptr)));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
-                                             ClipboardBuffer::kCopyPaste,
-                                             /*data_dst=*/nullptr));
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::PngType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
 
   // Asynchronously read out the image as a PNG. It should be the encoded
   // version of the bitmap we wrote above.
@@ -273,9 +280,9 @@ TEST_F(ClipboardNonBackedTest, EncodeImageOnce) {
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
                 clipboard(), ClipboardBuffer::kCopyPaste,
                 /*data_dst=*/nullptr)));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
-                                             ClipboardBuffer::kCopyPaste,
-                                             /*data_dst=*/nullptr));
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::PngType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
 
   std::vector<std::vector<uint8_t>> pngs;
   base::RunLoop loop;
@@ -332,9 +339,9 @@ TEST_F(ClipboardNonBackedTest, EncodeMultipleImages) {
             UTF8Types(clipboard_test_util::ReadAvailableTypes(
                 clipboard(), ClipboardBuffer::kCopyPaste,
                 /*data_dst=*/nullptr)));
-  EXPECT_TRUE(clipboard()->IsFormatAvailable(ClipboardFormatType::PngType(),
-                                             ClipboardBuffer::kCopyPaste,
-                                             /*data_dst=*/nullptr));
+  EXPECT_TRUE(ui::clipboard_test_util::IsFormatAvailable(
+      clipboard(), ClipboardFormatType::PngType(), ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr));
 
   std::vector<std::vector<uint8_t>> pngs;
   base::RunLoop loop;

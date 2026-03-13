@@ -117,7 +117,8 @@ class RenderViewContextMenu
 
   RenderViewContextMenu(content::RenderFrameHost& render_frame_host,
                         const content::ContextMenuParams& params,
-                        bool is_paste_enabled);
+                        bool is_paste_enabled,
+                        bool is_paste_and_match_style_enabled);
 
   RenderViewContextMenu(const RenderViewContextMenu&) = delete;
   RenderViewContextMenu& operator=(const RenderViewContextMenu&) = delete;
@@ -567,6 +568,9 @@ class RenderViewContextMenu
 
   // Whether the "Paste" menu item should be enabled.
   const bool is_paste_enabled_;
+
+  // Whether the "Paste and Match Style" menu item should be enabled.
+  const bool is_paste_and_match_style_enabled_;
 
   // Fenced frame can disable its untrusted network in exchange for access to
   // unpartitioned cross-site data. To prevent cross-site data from leaking out

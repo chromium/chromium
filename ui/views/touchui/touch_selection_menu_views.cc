@@ -64,10 +64,12 @@ constexpr int kButtonMinHeight = 40;
 TouchSelectionMenuViews::TouchSelectionMenuViews(
     TouchSelectionMenuRunnerViews* owner,
     base::WeakPtr<ui::TouchSelectionMenuClient> client,
-    aura::Window* context)
+    aura::Window* context,
+    bool can_paste)
     : BubbleDialogDelegateView(nullptr, BubbleBorder::BOTTOM_CENTER),
       owner_(owner),
-      client_(client) {
+      client_(client),
+      can_paste_(can_paste) {
   DCHECK(owner_);
   DCHECK(client_);
 
@@ -120,11 +122,12 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
 }
 
 bool TouchSelectionMenuViews::IsMenuAvailable(
-    const ui::TouchSelectionMenuClient* client) {
+    const ui::TouchSelectionMenuClient* client,
+    bool can_paste) {
   DCHECK(client);
 
-  const auto is_enabled = [client](MenuCommand command) {
-    return client->IsCommandIdEnabled(command.command_id);
+  const auto is_enabled = [client, can_paste](MenuCommand command) {
+    return client->IsCommandIdEnabled(command.command_id, can_paste);
   };
   bool is_available = std::ranges::any_of(kMenuCommands, is_enabled);
   is_available |= ::features::IsTouchTextEditingRedesignEnabled() &&
@@ -148,7 +151,7 @@ TouchSelectionMenuViews::~TouchSelectionMenuViews() = default;
 void TouchSelectionMenuViews::CreateButtons() {
   DCHECK(client_);
   for (const auto& command : kMenuCommands) {
-    if (!client_->IsCommandIdEnabled(command.command_id)) {
+    if (!client_->IsCommandIdEnabled(command.command_id, can_paste_)) {
       continue;
     }
     CreateButton(
@@ -160,7 +163,7 @@ void TouchSelectionMenuViews::CreateButtons() {
 
   if (::features::IsTouchTextEditingRedesignEnabled()) {
     for (const auto& command : kMenuSelectCommands) {
-      if (!client_->IsCommandIdEnabled(command.command_id)) {
+      if (!client_->IsCommandIdEnabled(command.command_id, can_paste_)) {
         continue;
       }
       CreateButton(

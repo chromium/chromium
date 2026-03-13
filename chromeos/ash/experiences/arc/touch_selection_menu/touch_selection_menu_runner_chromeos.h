@@ -39,6 +39,7 @@ class TouchSelectionMenuRunnerChromeOS
       const gfx::Rect& anchor_rect,
       const gfx::Size& handle_image_size,
       std::unique_ptr<aura::WindowTracker> tracker,
+      bool can_paste,
       std::vector<arc::mojom::TextSelectionActionPtr> actions);
 
   // Tries to establish connection with ARC to perform text classification. True
@@ -46,16 +47,20 @@ class TouchSelectionMenuRunnerChromeOS
   bool RequestTextSelection(base::WeakPtr<ui::TouchSelectionMenuClient> client,
                             const gfx::Rect& anchor_rect,
                             const gfx::Size& handle_image_size,
-                            aura::Window* context);
+                            aura::Window* context,
+                            bool can_paste);
 
   // views::TouchSelectionMenuRunnerViews.
+  void CloseMenu() override;
   void OpenMenu(base::WeakPtr<ui::TouchSelectionMenuClient> client,
                 const gfx::Rect& anchor_rect,
                 const gfx::Size& handle_image_size,
-                aura::Window* context) override;
+                aura::Window* context,
+                bool can_paste) override;
 
-  base::WeakPtrFactory<TouchSelectionMenuRunnerChromeOS> weak_ptr_factory_{
-      this};
+  // Factory used for cancelling in-flight OpenMenu requests.
+  base::WeakPtrFactory<TouchSelectionMenuRunnerChromeOS>
+      menu_request_weak_ptr_factory_{this};
 };
 
 #endif  // CHROMEOS_ASH_EXPERIENCES_ARC_TOUCH_SELECTION_MENU_TOUCH_SELECTION_MENU_RUNNER_CHROMEOS_H_

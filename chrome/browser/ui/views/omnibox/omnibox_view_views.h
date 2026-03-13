@@ -160,10 +160,6 @@ class OmniboxViewViews
       views::View* source,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
-  void ShowContextMenuForViewImplComplete(views::View* source,
-                                          const gfx::Point& point,
-                                          ui::mojom::MenuSourceType source_type,
-                                          std::u16string text);
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   std::u16string GetLabelForCommandId(int command_id) const override;
@@ -296,6 +292,10 @@ class OmniboxViewViews
   bool ShouldShowPlaceholderText() const override;
 
   void UpdateAccessibleValue() override;
+
+  void ShowContextMenuForViewImplComplete(const gfx::Point& point,
+                                          ui::mojom::MenuSourceType source_type,
+                                          std::u16string text);
 
   // ash::input_method::InputMethodManager::CandidateWindowObserver:
 #if BUILDFLAG(IS_CHROMEOS)
@@ -468,8 +468,9 @@ class OmniboxViewViews
   // "cats are liquid search suggestion".
   std::u16string friendly_suggestion_text_;
 
-  // Cached clipboard text for paste-and-go.
-  std::u16string clipboard_text_;
+  // Cached clipboard text for menu paste state. This cache is only updated
+  // before a menu is shown, so it should only be used by menu delegates.
+  std::u16string clipboard_text_for_menu_;
 
   // The number of added labelling characters before editable text begins.
   // For example,  "Google https://google.com location from history",

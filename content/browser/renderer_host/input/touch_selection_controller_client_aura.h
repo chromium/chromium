@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
@@ -59,7 +60,8 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   // better not to send context menu request from the renderer in this case and
   // instead decide in the client about showing the quick menu in response to
   // selection events. (http://crbug.com/548245)
-  virtual bool HandleContextMenu(const ContextMenuParams& params);
+  virtual bool HandleContextMenu(const ContextMenuParams& params,
+                                 bool can_paste);
 
   virtual void UpdateClientSelectionBounds(const gfx::SelectionBound& start,
                                            const gfx::SelectionBound& end);
@@ -87,7 +89,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   class EnvEventObserver;
   class EnvPreTargetHandler;
 
-  bool IsQuickMenuAvailable() const;
+  bool IsQuickMenuAvailable(bool can_paste) const;
   void ShowQuickMenu();
   void UpdateQuickMenu();
   void ShowMagnifier();
@@ -107,10 +109,10 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
   void DidScroll() override;
 
   // ui::TouchSelectionMenuClient:
-  bool IsCommandIdEnabled(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id, bool can_paste) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;
-  bool ShouldShowQuickMenu() override;
+  bool ShouldShowQuickMenu(bool can_paste) override;
   std::u16string GetSelectedText() override;
 
   // Not owned, non-null for the lifetime of this object.
@@ -159,6 +161,10 @@ class CONTENT_EXPORT TouchSelectionControllerClientAura
 
   // Magnifier which is shown when touch dragging to adjust the selection.
   std::unique_ptr<ui::TouchSelectionMagnifierAura> touch_selection_magnifier_;
+
+  // Factory used for cancelling in-flight OpenMenu requests.
+  base::WeakPtrFactory<TouchSelectionControllerClientAura>
+      menu_request_weak_ptr_factory_{this};
 };
 
 }  // namespace content

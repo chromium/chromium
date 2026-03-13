@@ -14,8 +14,12 @@ RenderViewContextMenuMacRemoteCocoa::RenderViewContextMenuMacRemoteCocoa(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params,
     bool is_paste_enabled,
+    bool is_paste_and_match_style_enabled,
     content::RenderWidgetHostView* parent_view)
-    : RenderViewContextMenuMac(render_frame_host, params, is_paste_enabled),
+    : RenderViewContextMenuMac(render_frame_host,
+                               params,
+                               is_paste_enabled,
+                               is_paste_and_match_style_enabled),
       target_view_id_(parent_view->GetNSViewId()),
       target_view_bounds_(parent_view->GetViewBounds()) {}
 

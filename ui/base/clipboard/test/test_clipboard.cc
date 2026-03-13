@@ -73,30 +73,42 @@ const ClipboardSequenceNumberToken& TestClipboard::GetSequenceNumber(
   return GetStore(buffer).sequence_number;
 }
 
-bool TestClipboard::IsFormatAvailable(
-    const ClipboardFormatType& format,
+void TestClipboard::GetAllAvailableFormats(
     ClipboardBuffer buffer,
-    const ui::DataTransferEndpoint* data_dst) const {
-  if (!IsReadAllowed(GetStore(buffer).data_src, data_dst)) {
-    return false;
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
+  base::flat_set<ClipboardFormatType> formats;
+  const DataStore& store = GetStore(buffer);
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run(std::move(formats));
+    return;
   }
+
+  for (const auto& entry : store.data) {
+    formats.insert(entry.first);
+  }
+
+  if (!store.filenames.empty()) {
+    formats.insert(ClipboardFormatType::FilenamesType());
+  }
+
+  // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
+  if (store.data.contains(ClipboardFormatType::PngType()) ||
+      store.data.contains(ClipboardFormatType::BitmapType())) {
+    formats.insert(ClipboardFormatType::PngType());
+    formats.insert(ClipboardFormatType::BitmapType());
+  }
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The linux clipboard treats the presence of text on the clipboard
   // as the url format being available.
-  if (format == ClipboardFormatType::UrlType())
-    return IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                             data_dst);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  const DataStore& store = GetStore(buffer);
-  if (format == ClipboardFormatType::FilenamesType())
-    return !store.filenames.empty();
-  // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
-  if (format == ClipboardFormatType::PngType() ||
-      format == ClipboardFormatType::BitmapType()) {
-    return store.data.contains(ClipboardFormatType::PngType()) ||
-           store.data.contains(ClipboardFormatType::BitmapType());
+  if (formats.contains(ClipboardFormatType::PlainTextType())) {
+    formats.insert(ClipboardFormatType::UrlType());
   }
-  return store.data.contains(format);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  std::move(callback).Run(std::move(formats));
 }
 
 void TestClipboard::Clear(ClipboardBuffer buffer) {
@@ -107,45 +119,42 @@ void TestClipboard::GetStandardFormats(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     GetStandardFormatsCallback callback) const {
-  std::vector<std::u16string> types;
-  const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
-    std::move(callback).Run(std::move(types));
-    return;
-  }
+  auto get_standard_formats =
+      [](const DataStore* store, GetStandardFormatsCallback callback,
+         base::flat_set<ClipboardFormatType> available_formats) {
+        std::vector<std::u16string> types;
+        if (available_formats.contains(ClipboardFormatType::PlainTextType())) {
+          types.push_back(kMimeTypePlainText16);
+        }
+        if (available_formats.contains(ClipboardFormatType::HtmlType())) {
+          types.push_back(kMimeTypeHtml16);
+        }
+        if (available_formats.contains(ClipboardFormatType::SvgType())) {
+          types.push_back(kMimeTypeSvg16);
+        }
+        if (available_formats.contains(ClipboardFormatType::RtfType())) {
+          types.push_back(kMimeTypeRtf16);
+        }
+        if (available_formats.contains(ClipboardFormatType::BitmapType()) ||
+            available_formats.contains(ClipboardFormatType::PngType())) {
+          types.push_back(kMimeTypePng16);
+        }
+        if (available_formats.contains(ClipboardFormatType::FilenamesType())) {
+          types.push_back(kMimeTypeUriList16);
+        }
 
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypePlainText16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeHtml16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeSvg16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeRtf16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::PngType(), buffer,
-                        base::OptionalToPtr(data_dst)) ||
-      IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypePng16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeUriList16);
-  }
+        auto it =
+            store->data.find(ClipboardFormatType::DataTransferCustomType());
+        if (it != store->data.end()) {
+          ReadCustomDataTypes(base::as_bytes(base::span(it->second)), &types);
+        }
 
-  auto it = store.data.find(ClipboardFormatType::DataTransferCustomType());
-  if (it != store.data.end())
-    ReadCustomDataTypes(base::as_bytes(base::span(it->second)), &types);
+        std::move(callback).Run(std::move(types));
+      };
 
-  std::move(callback).Run(std::move(types));
+  GetAllAvailableFormats(buffer, data_dst,
+                         base::BindOnce(get_standard_formats, &GetStore(buffer),
+                                        std::move(callback)));
 }
 
 void TestClipboard::ReadAvailableTypes(

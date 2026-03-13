@@ -527,54 +527,62 @@ bool IsReadAllowedAndAvailableFormat(
 }
 }  // namespace
 
-bool ClipboardNonBacked::IsFormatAvailable(
-    const ClipboardFormatType& format,
+void ClipboardNonBacked::GetAllAvailableFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
   DCHECK(CalledOnValidThread());
   DCHECK(IsSupportedClipboardBuffer(buffer));
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
+  base::flat_set<ClipboardFormatType> formats;
+  const DataTransferEndpoint* data_dst_ptr = base::OptionalToPtr(data_dst);
 
-  if (format == ClipboardFormatType::PlainTextType() ||
-      format == ClipboardFormatType::UrlType()) {
-    return IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst,
-                                           ClipboardInternalFormat::kText);
+  if (IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst_ptr,
+                                      ClipboardInternalFormat::kText)) {
+    formats.insert(ClipboardFormatType::PlainTextType());
+    formats.insert(ClipboardFormatType::UrlType());
   }
 
-  if (format == ClipboardFormatType::HtmlType()) {
-    return IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst,
-                                           ClipboardInternalFormat::kHtml);
+  if (IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst_ptr,
+                                      ClipboardInternalFormat::kHtml)) {
+    formats.insert(ClipboardFormatType::HtmlType());
   }
 
-  if (format == ClipboardFormatType::SvgType()) {
-    return IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst,
-                                           ClipboardInternalFormat::kSvg);
+  if (IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst_ptr,
+                                      ClipboardInternalFormat::kSvg)) {
+    formats.insert(ClipboardFormatType::SvgType());
   }
 
-  if (format == ClipboardFormatType::RtfType()) {
-    return IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst,
-                                           ClipboardInternalFormat::kRtf);
+  if (IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst_ptr,
+                                      ClipboardInternalFormat::kRtf)) {
+    formats.insert(ClipboardFormatType::RtfType());
   }
 
-  if (format == ClipboardFormatType::PngType() ||
-      format == ClipboardFormatType::BitmapType()) {
-    return IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst,
-                                           ClipboardInternalFormat::kPng);
+  if (IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst_ptr,
+                                      ClipboardInternalFormat::kPng)) {
+    formats.insert(ClipboardFormatType::PngType());
+    formats.insert(ClipboardFormatType::BitmapType());
   }
 
-  if (format == ClipboardFormatType::WebKitSmartPasteType()) {
-    return IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst,
-                                           ClipboardInternalFormat::kWeb);
+  if (IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst_ptr,
+                                      ClipboardInternalFormat::kWeb)) {
+    formats.insert(ClipboardFormatType::WebKitSmartPasteType());
   }
 
-  if (format == ClipboardFormatType::FilenamesType()) {
-    return IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst,
-                                           ClipboardInternalFormat::kFilenames);
+  if (IsReadAllowedAndAvailableFormat(clipboard_internal, data_dst_ptr,
+                                      ClipboardInternalFormat::kFilenames)) {
+    formats.insert(ClipboardFormatType::FilenamesType());
   }
 
-  const ClipboardData* data = clipboard_internal.GetData();
-  return data && data->HasCustomDataFormat(format);
+  if (const ClipboardData* data = clipboard_internal.GetData()) {
+    for (const auto& entry : data->custom_data()) {
+      formats.insert(entry.first);
+    }
+  }
+
+  std::move(callback).Run(std::move(formats));
 }
 
 void ClipboardNonBacked::Clear(ClipboardBuffer buffer) {
@@ -587,32 +595,34 @@ void ClipboardNonBacked::GetStandardFormats(
     ClipboardBuffer buffer,
     const std::optional<DataTransferEndpoint>& data_dst,
     GetStandardFormatsCallback callback) const {
-  std::vector<std::u16string> types;
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypePlainText16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeHtml16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeSvg16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeRtf16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypePng16);
-  }
-  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
-    types.push_back(kMimeTypeUriList16);
-  }
-  std::move(callback).Run(std::move(types));
+  auto get_standard_formats =
+      [](GetStandardFormatsCallback callback,
+         base::flat_set<ClipboardFormatType> available_formats) {
+        std::vector<std::u16string> types;
+        if (available_formats.contains(ClipboardFormatType::PlainTextType())) {
+          types.push_back(kMimeTypePlainText16);
+        }
+        if (available_formats.contains(ClipboardFormatType::HtmlType())) {
+          types.push_back(kMimeTypeHtml16);
+        }
+        if (available_formats.contains(ClipboardFormatType::SvgType())) {
+          types.push_back(kMimeTypeSvg16);
+        }
+        if (available_formats.contains(ClipboardFormatType::RtfType())) {
+          types.push_back(kMimeTypeRtf16);
+        }
+        if (available_formats.contains(ClipboardFormatType::BitmapType())) {
+          types.push_back(kMimeTypePng16);
+        }
+        if (available_formats.contains(ClipboardFormatType::FilenamesType())) {
+          types.push_back(kMimeTypeUriList16);
+        }
+        std::move(callback).Run(std::move(types));
+      };
+
+  GetAllAvailableFormats(
+      buffer, data_dst,
+      base::BindOnce(get_standard_formats, std::move(callback)));
 }
 
 void ClipboardNonBacked::ReadAvailableTypes(

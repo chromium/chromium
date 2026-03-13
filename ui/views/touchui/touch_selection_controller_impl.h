@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point.h"
@@ -73,10 +74,10 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   bool ShouldShowHandleFor(const gfx::SelectionBound& bound) const;
 
   // ui::TouchSelectionMenuClient:
-  bool IsCommandIdEnabled(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id, bool can_paste) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;
-  bool ShouldShowQuickMenu() override;
+  bool ShouldShowQuickMenu(bool can_paste) override;
   std::u16string GetSelectedText() override;
 
   // WidgetObserver:
@@ -174,6 +175,10 @@ class VIEWS_EXPORT TouchSelectionControllerImpl
   // selection dragging state changes, then the handles need to be updated on
   // the next selection change notification.
   bool is_client_selection_dragging_ = false;
+
+  // Factory used for cancelling in-flight OpenMenu requests.
+  base::WeakPtrFactory<TouchSelectionControllerImpl>
+      menu_request_weak_ptr_factory_{this};
 };
 
 }  // namespace views

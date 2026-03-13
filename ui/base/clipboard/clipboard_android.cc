@@ -129,6 +129,8 @@ class ClipboardMap {
   base::Time GetLastModifiedTime() const;
   void ClearLastModifiedTime();
   bool HasFormat(const ClipboardFormatType& format);
+  base::flat_set<ClipboardFormatType> GetAllAvailableFormats(
+      ClipboardBuffer buffer);
   void OnPrimaryClipboardChanged();
   void OnPrimaryClipTimestampInvalidated(base::Time timestamp);
   void Set(const ClipboardFormatType& format, std::string_view data);
@@ -285,6 +287,51 @@ bool ClipboardMap::HasFormat(const ClipboardFormatType& format) {
 
   // Android unsupported format types, check local only.
   return map_.contains(format);
+}
+
+base::flat_set<ClipboardFormatType> ClipboardMap::GetAllAvailableFormats(
+    ClipboardBuffer buffer) {
+  base::AutoLock lock(lock_);
+  base::flat_set<ClipboardFormatType> formats;
+  if (map_state_ == MapState::kUpToDate) {
+    for (const auto& entry : map_) {
+      formats.insert(entry.first);
+    }
+    // Images can be read if either bitmap or PNG types are available.
+    if (map_.contains(ClipboardFormatType::PngType()) ||
+        map_.contains(ClipboardFormatType::BitmapType())) {
+      formats.insert(ClipboardFormatType::PngType());
+      formats.insert(ClipboardFormatType::BitmapType());
+    }
+    if (!filenames_.empty()) {
+      formats.insert(ClipboardFormatType::FilenamesType());
+    }
+    return formats;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  if (Java_Clipboard_hasCoercedText(env, clipboard_manager_)) {
+    formats.insert(ClipboardFormatType::PlainTextType());
+  }
+  if (Java_Clipboard_hasHTMLOrStyledText(env, clipboard_manager_)) {
+    formats.insert(ClipboardFormatType::HtmlType());
+  }
+  if (Java_Clipboard_hasUrl(env, clipboard_manager_)) {
+    formats.insert(ClipboardFormatType::UrlType());
+  }
+  if (Java_Clipboard_hasImage(env, clipboard_manager_)) {
+    formats.insert(ClipboardFormatType::PngType());
+    formats.insert(ClipboardFormatType::BitmapType());
+  }
+  if (Java_Clipboard_hasFilenames(env, clipboard_manager_)) {
+    formats.insert(ClipboardFormatType::FilenamesType());
+  }
+
+  for (const auto& entry : map_) {
+    formats.insert(entry.first);
+  }
+
+  return formats;
 }
 
 void ClipboardMap::OnPrimaryClipboardChanged() {
@@ -572,15 +619,14 @@ const ClipboardSequenceNumberToken& ClipboardAndroid::GetSequenceNumber(
   return GetClipboardMap().GetSequenceNumber();
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-bool ClipboardAndroid::IsFormatAvailable(
-    const ClipboardFormatType& format,
+void ClipboardAndroid::GetAllAvailableFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback)
+    const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return GetClipboardMap().HasFormat(format);
+  std::move(callback).Run(GetClipboardMap().GetAllAvailableFormats(buffer));
 }
 
 void ClipboardAndroid::Clear(ClipboardBuffer buffer) {
@@ -595,36 +641,28 @@ void ClipboardAndroid::GetStandardFormats(
     const std::optional<DataTransferEndpoint>& data_dst,
     GetStandardFormatsCallback callback) const {
   std::vector<std::u16string> types;
-  // would be nice to ask the ClipboardMap to enumerate the types it supports,
-  // rather than hardcode the list here.
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
+  auto available_formats = GetClipboardMap().GetAllAvailableFormats(buffer);
+  if (available_formats.contains(ClipboardFormatType::PlainTextType())) {
     types.push_back(kMimeTypePlainText16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
+  if (available_formats.contains(ClipboardFormatType::HtmlType())) {
     types.push_back(kMimeTypeHtml16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
+  if (available_formats.contains(ClipboardFormatType::SvgType())) {
     types.push_back(kMimeTypeSvg16);
   }
   // We can read images from either the Android clipboard or the local map.
-  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer,
-                        base::OptionalToPtr(data_dst)) ||
-      IsFormatAvailable(ClipboardFormatType::PngType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
+  if (available_formats.contains(ClipboardFormatType::BitmapType()) ||
+      available_formats.contains(ClipboardFormatType::PngType())) {
     types.push_back(kMimeTypeImageUri16);
     types.push_back(kMimeTypePng16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
+  if (available_formats.contains(ClipboardFormatType::FilenamesType())) {
     types.push_back(kMimeTypeUriList16);
   }
   // these formats aren't supported by the ClipboardMap currently, but might
   // be one day?
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer,
-                        base::OptionalToPtr(data_dst))) {
+  if (available_formats.contains(ClipboardFormatType::RtfType())) {
     types.push_back(kMimeTypeRtf16);
   }
   std::move(callback).Run(std::move(types));

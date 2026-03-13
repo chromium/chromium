@@ -117,7 +117,8 @@ struct BookmarkNodeData {
 
   ~BookmarkNodeData();
 
-  static bool ClipboardContainsBookmarks();
+  static void ClipboardContainsBookmarks(
+      base::OnceCallback<void(bool)> callback);
 
   // Reads bookmarks from the given vector.
   // Returns true if the operation succeeds, which also implies that this

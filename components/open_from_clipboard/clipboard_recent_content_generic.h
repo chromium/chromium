@@ -29,11 +29,9 @@ class ClipboardRecentContentGeneric : public ClipboardRecentContent {
 
   // Return if system's clipboard contains an image that will not trigger a
   // system notification that the clipboard has been accessed.
-  bool HasRecentImageFromClipboard();
+  void HasRecentImageFromClipboard(base::OnceCallback<void(bool)> callback);
 
   // ClipboardRecentContent implementation.
-  std::optional<std::set<ClipboardContentType>> GetCachedClipboardContentTypes()
-      override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
                                      HasDataCallback callback) override;

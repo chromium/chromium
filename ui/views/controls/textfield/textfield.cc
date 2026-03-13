@@ -1259,6 +1259,21 @@ void Textfield::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
+  ui::DataTransferEndpoint data_dst = ui::DataTransferEndpoint(
+      ui::EndpointType::kDefault,
+      {.notify_if_restricted = show_rejection_ui_if_any_});
+  ui::Clipboard::GetForCurrentThread()->GetAllAvailableFormats(
+      ui::ClipboardBuffer::kCopyPaste, data_dst,
+      base::BindOnce(&Textfield::ShowContextMenuForViewImplComplete,
+                     weak_ptr_factory_.GetWeakPtr(), point, source_type));
+}
+
+void Textfield::ShowContextMenuForViewImplComplete(
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type,
+    base::flat_set<ui::ClipboardFormatType> available_formats) {
+  clipboard_contains_text_for_menu_ =
+      available_formats.contains(ui::ClipboardFormatType::PlainTextType());
   UpdateContextMenu();
   context_menu_runner_->RunMenuAt(GetWidget(), nullptr,
                                   gfx::Rect(point, gfx::Size()),
@@ -1579,6 +1594,13 @@ bool Textfield::IsCommandIdEnabled(int command_id) const {
   if (text_services_context_menu_ &&
       text_services_context_menu_->SupportsCommand(command_id)) {
     return text_services_context_menu_->IsCommandIdEnabled(command_id);
+  }
+
+  // This method is called for menus. For shortcuts, IsTextEditCommandEnabled()
+  // is called instead.
+  if (command_id ==
+      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
+    return !GetReadOnly() && clipboard_contains_text_for_menu_;
   }
 
   return IsTextEditCommandEnabled(
@@ -2005,15 +2027,11 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
     case ui::TextEditCommand::COPY:
       return readable && HasSelection();
     case ui::TextEditCommand::PASTE: {
-      if (!editable) {
-        return false;
-      }
-      ui::DataTransferEndpoint data_dst(
-          ui::EndpointType::kDefault,
-          {.notify_if_restricted = show_rejection_ui_if_any_});
-      return ui::Clipboard::GetForCurrentThread()->IsFormatAvailable(
-          ui::ClipboardFormatType::PlainTextType(),
-          ui::ClipboardBuffer::kCopyPaste, &data_dst);
+      // Assume the clipboard contains text. The consequence of this is paste
+      // shortcuts like Ctrl+V will be consumed by this Textfield even if the
+      // clipboard doesn't contain text, and the event will not be propagated to
+      // parent views.
+      return editable;
     }
     case ui::TextEditCommand::SELECT_ALL:
       return !GetText().empty() &&
@@ -2694,7 +2712,7 @@ void Textfield::PasteSelectionClipboard(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(!GetReadOnly());
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kSelection, /* data_dst = */ std::nullopt,
+      ui::ClipboardBuffer::kSelection, /*data_dst=*/std::nullopt,
       base::BindOnce(&Textfield::OnTextReadForPasteSelectionClipboard,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
