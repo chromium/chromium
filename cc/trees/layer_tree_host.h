@@ -696,12 +696,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   // Used externally by blink for setting the PropertyTrees when
   // UseLayerLists() is true.
-  PropertyTrees* property_trees() {
-    return &thread_unsafe_commit_state().property_trees;
-  }
-  const PropertyTrees* property_trees() const {
-    return &thread_unsafe_commit_state().property_trees;
-  }
+  PropertyTrees* property_trees() { return &property_trees_; }
+  const PropertyTrees* property_trees() const { return &property_trees_; }
   MutatorHost* mutator_host() {
     return thread_unsafe_commit_state().mutator_host;
   }
@@ -1090,6 +1086,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   std::unique_ptr<RenderingStatsInstrumentation>
       rendering_stats_instrumentation_;
 
+  PropertyTrees property_trees_;
   std::unique_ptr<CommitState> pending_commit_state_;
   ThreadUnsafeCommitState thread_unsafe_commit_state_;
 

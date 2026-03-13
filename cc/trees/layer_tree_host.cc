@@ -151,7 +151,7 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       scheduling_client_(params.scheduling_client),
       rendering_stats_instrumentation_(RenderingStatsInstrumentation::Create()),
       pending_commit_state_(std::make_unique<CommitState>()),
-      thread_unsafe_commit_state_(params.mutator_host, *this),
+      thread_unsafe_commit_state_(params.mutator_host),
       settings_(*params.settings),
       id_(s_layer_tree_host_sequence_number.GetNext() + 1),
       task_graph_runner_(params.task_graph_runner),
@@ -464,6 +464,7 @@ std::unique_ptr<CommitState> LayerTreeHost::ActivateCommitState() {
   // Snapshot PropertyTrees change tracking state prior to resetting it.
   property_trees()->GetChangeState(
       pending_commit_state()->property_trees_change_state);
+  pending_commit_state()->property_trees = *property_trees();
   property_trees()->ResetAllChangeTracking();
 
   auto active_commit_state = std::move(pending_commit_state_);
@@ -1907,6 +1908,7 @@ void LayerTreeHost::SetElementIdsForTesting() {
 
 void LayerTreeHost::BuildPropertyTreesForTesting() {
   PropertyTreeBuilder::BuildPropertyTrees(this);
+  pending_commit_state()->property_trees = *property_trees();
 }
 
 bool LayerTreeHost::IsElementInPropertyTrees(ElementId element_id,
@@ -2058,7 +2060,7 @@ LayerListReverseConstIterator LayerTreeHost::rend() const {
 
 void LayerTreeHost::SetPropertyTreesForTesting(
     const PropertyTrees* property_trees) {
-  thread_unsafe_commit_state().property_trees = *property_trees;
+  property_trees_ = *property_trees;
 }
 
 void LayerTreeHost::SetNeedsDisplayOnAllLayers() {

@@ -240,6 +240,8 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 
+  layer_tree_host_->WillBeginImplCommit();
+
   // Commit immediately.
   DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
   DebugScopedSetImplThread impl(task_runner_provider_);
@@ -1165,7 +1167,6 @@ void SingleThreadProxy::DoPainting() {
   layer_tree_host_->UpdateLayers();
   update_layers_requested_ = false;
 
-  layer_tree_host_->WillBeginImplCommit();
   std::unique_ptr<BeginMainFrameMetrics> begin_main_frame_metrics =
       layer_tree_host_->TakeBeginMainFrameMetrics();
   host_impl_->ReadyToCommit(/*scroll_and_viewport_changes_synced=*/true,

@@ -3619,7 +3619,7 @@ class PreventRecreatingTilingDuringScroll : public LayerTreeHostScrollTest {
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
-  void WillCommit(const CommitState&) override {
+  void DidUpdateLayers() override {
     TransformTree& transform_tree =
         layer_tree_host()->property_trees()->transform_tree_mutable();
 

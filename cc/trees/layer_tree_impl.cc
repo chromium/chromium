@@ -159,7 +159,6 @@ LayerTreeImpl::LayerTreeImpl(
       created_begin_frame_args_(begin_frame_args),
       source_frame_number_(-1),
       hud_layer_(nullptr),
-      property_trees_(host_impl),
       background_color_(SkColors::kTransparent),
       page_scale_factor_(page_scale_factor),
       min_page_scale_factor_(0),
@@ -667,6 +666,9 @@ void LayerTreeImpl::SetPropertyTrees(const PropertyTrees& property_trees,
                                     change_state.changed_transform_nodes);
   }
 
+  // TODO(crbug.com/492151880): This could use std::move semantics when
+  // populating the pending tree, but the assignment operator for PropertyTrees
+  // is full of non-standard behaviors.
   property_trees_ = property_trees;
 
   property_trees_.ApplyChangedNodes(change_state.changed_effect_nodes,
@@ -746,7 +748,7 @@ void LayerTreeImpl::PullPropertiesFrom(
     // Layer::PushPropertiesTo).
     // TODO(pdr): Enforce this comment with DCHECKS and a lifecycle state.
     property_trees()->scroll_tree_mutable().PushScrollUpdatesFromMainThread(
-        unsafe_state.property_trees, this,
+        commit_state.property_trees, this,
         settings().commit_fractional_scroll_deltas);
 
     // The scope should end (when the DiscardableImageMapUpdater will update
@@ -772,7 +774,7 @@ void LayerTreeImpl::PullPropertiesFrom(
   TRACE_EVENT0("cc", "LayerTreeHost::AnimationHost::PushProperties");
   DCHECK(mutator_host());
   unsafe_state.mutator_host->PushPropertiesTo(mutator_host(),
-                                              unsafe_state.property_trees);
+                                              commit_state.property_trees);
 
   // Make sure that property tree based changes are moved to layers
   // and draw properties are invalidated.
@@ -791,7 +793,7 @@ void LayerTreeImpl::PullPropertyTreesFrom(
   // thread property trees or by moving it onto the layers.
   bool preserve_change_tracking = false;
   if (unsafe_state.root_layer && IsActiveTree() && property_trees_.changed()) {
-    if (unsafe_state.property_trees.sequence_number() ==
+    if (commit_state.property_trees.sequence_number() ==
         property_trees_.sequence_number()) {
       preserve_change_tracking = true;
     } else {
@@ -799,7 +801,7 @@ void LayerTreeImpl::PullPropertyTreesFrom(
     }
   }
 
-  SetPropertyTrees(unsafe_state.property_trees,
+  SetPropertyTrees(commit_state.property_trees,
                    commit_state.property_trees_change_state,
                    preserve_change_tracking);
 }

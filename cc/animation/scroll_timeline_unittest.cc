@@ -93,10 +93,7 @@ class ScrollTimelineTest : public ::testing::Test,
                            public ProtectedSequenceSynchronizer {
  public:
   ScrollTimelineTest()
-      : property_trees_(*this),
-        scroller_id_(1),
-        container_size_(100, 100),
-        content_size_(500, 500) {
+      : scroller_id_(1), container_size_(100, 100), content_size_(500, 500) {
     // For simplicity we make the property_tree main thread; this avoids the
     // need to deal with the synced scroll offset code.
     property_trees_.set_is_main_thread(true);
@@ -157,8 +154,8 @@ TEST_F(ScrollTimelineTest, BasicCurrentTimeCalculations) {
 // had a few crashes caused by assuming that the id would be available in the
 // active tree before the activation happened; see http://crbug.com/853231
 TEST_F(ScrollTimelineTest, ActiveTimeIsSetOnlyAfterPromotion) {
-  PropertyTrees pending_tree(*this);
-  PropertyTrees active_tree(*this);
+  PropertyTrees pending_tree;
+  PropertyTrees active_tree;
 
   pending_tree.set_is_active(false);
   active_tree.set_is_active(true);

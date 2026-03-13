@@ -4724,6 +4724,7 @@
       "synthetic_gestures",
       "transitions",
       "view-transition",
+      "wpt_internal/html/canvas/drawElementImage/invalidation-during-onpaint.html",
       "wpt_internal/html/script-execution",
       "wpt_internal/scheduler/integration_tests",
       "wpt_internal/view-transition",

@@ -254,7 +254,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 
   host_ = cc::LayerTreeHost::CreateSingleThreaded(this, std::move(params));
   if (uses_layer_lists_) {
-    property_trees_.emplace(*host_);
+    property_trees_.emplace();
   }
 
   const base::WeakPtr<cc::CompositorDelegateForInput>& compositor_delegate =

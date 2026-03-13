@@ -316,7 +316,7 @@ gfx::Size LayerTreeHostImplTestBase::DipSizeToPixelSize(const gfx::Size& size) {
 
 void LayerTreeHostImplTestBase::PushScrollOffsetsToPendingTree(
     const base::flat_map<ElementId, gfx::PointF>& offsets) {
-  PropertyTrees property_trees(*host_impl_);
+  PropertyTrees property_trees;
   auto& scroll_tree =
       host_impl_->active_tree()->property_trees()->scroll_tree_mutable();
   if (auto* layer = InnerViewportScrollLayer()) {

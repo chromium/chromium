@@ -1484,7 +1484,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
                                   uint8_t dirty_flag,
                                   const CommitState& commit_state,
                                   const ThreadUnsafeCommitState& unsafe_state) {
-  const PropertyTrees& property_trees = unsafe_state.property_trees;
+  const PropertyTrees& property_trees = commit_state.property_trees;
 
   if (dirty_flag & kChangedPropertyTreeIndex) {
     layer->SetTransformTreeIndex(transform_tree_index(property_trees));

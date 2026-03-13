@@ -135,6 +135,8 @@ struct CC_EXPORT CommitState {
   BeginMainFrameTraceId trace_id{0};
   EventMetrics::List event_metrics;
 
+  PropertyTrees property_trees;
+
   // Latency information for work done in ProxyMain::BeginMainFrame. The
   // unique_ptr is allocated in RequestMainFrameUpdate, and passed to Blink's
   // LocalFrameView that fills in the fields. This object adds the timing for
@@ -167,6 +169,8 @@ struct CC_EXPORT CommitState {
   std::vector<std::unique_ptr<SwapPromise>> swap_promises;
   std::vector<UIResourceRequest> ui_resource_request_queue;
   base::flat_map<UIResourceId, gfx::Size> ui_resource_sizes;
+  // TODO(crbug.com/492147921): This shouldn't be tracked separately from
+  // property_trees.
   PropertyTreesChangeState property_trees_change_state;
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
   RAW_PTR_EXCLUSION base::flat_set<Layer*> layers_that_should_push_properties;
@@ -188,8 +192,7 @@ struct CC_EXPORT CommitState {
 };
 
 struct CC_EXPORT ThreadUnsafeCommitState {
-  ThreadUnsafeCommitState(MutatorHost* mh,
-                          const ProtectedSequenceSynchronizer& synchronizer);
+  explicit ThreadUnsafeCommitState(MutatorHost* mh);
   ~ThreadUnsafeCommitState();
 
   // TODO(szager/vmpstr): These methods are to support range-based 'for' loops,
@@ -201,7 +204,6 @@ struct CC_EXPORT ThreadUnsafeCommitState {
   LayerListConstIterator end() const { return LayerListConstIterator(nullptr); }
 
   raw_ptr<MutatorHost> mutator_host;
-  PropertyTrees property_trees;
   scoped_refptr<Layer> root_layer;
   size_t num_layers = 0;
 };

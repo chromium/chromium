@@ -76,8 +76,7 @@ float TestLayer::invert() const {
 
 TestHostClient::TestHostClient(ThreadInstance thread_instance)
     : host_(AnimationHost::CreateForTesting(thread_instance)),
-      mutators_need_commit_(false),
-      property_trees_(*this) {
+      mutators_need_commit_(false) {
   host_->SetMutatorHostClient(this);
 }
 

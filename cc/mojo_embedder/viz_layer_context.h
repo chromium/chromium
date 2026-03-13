@@ -92,7 +92,7 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
   // to handle context loss and recreation of the layer context.
   bool needs_full_sync_ = true;
 
-  PropertyTrees last_committed_property_trees_{*host_impl_};
+  PropertyTrees last_committed_property_trees_;
 
   base::WeakPtrFactory<VizLayerContext> weak_factory_{this};
 };

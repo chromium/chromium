@@ -27,16 +27,8 @@
 namespace cc {
 namespace {
 
-class FakeProtectedSequenceSynchronizer : public ProtectedSequenceSynchronizer {
- public:
-  bool IsOwnerThread() const override { return true; }
-  bool InProtectedSequence() const override { return false; }
-  void WaitForProtectedSequenceCompletion() const override {}
-};
-
 TEST(PropertyTreeTest, ComputeTransformRoot) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
@@ -58,8 +50,7 @@ TEST(PropertyTreeTest, ComputeTransformRoot) {
 }
 
 TEST(PropertyTreeTest, SetNeedsUpdate) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.id = tree.Insert(contents_root, 0);
@@ -73,8 +64,7 @@ TEST(PropertyTreeTest, SetNeedsUpdate) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformChild) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
@@ -116,8 +106,7 @@ TEST(PropertyTreeTest, ComputeTransformChild) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformSibling) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
@@ -160,8 +149,7 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
   // transform, we cannot use screen space transforms to compute change of
   // basis
   // transforms between these nodes.
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
@@ -203,8 +191,7 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
 // overscroll nodes scroll_offset and that the clip node has an outset based on
 // the overscroll distance.
 TEST(PropertyTreeTest, UndoOverscroll) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
 
   ViewportPropertyIds viewport_property_ids;
   ClipTree& clip_tree = property_trees.clip_tree_mutable();
@@ -273,8 +260,7 @@ TEST(PropertyTreeTest, UndoOverscroll) {
 
 TEST(PropertyTreeTest,
      ElasticOverscrollInnerViewportRespectsPageScaleAndPivot) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
 
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   ScrollTree& scroll_tree = property_trees.scroll_tree_mutable();
@@ -357,8 +343,7 @@ TEST(PropertyTreeTest,
 // already scrolled. On Android, this verifies the stretch anchor point; on
 // other platforms, it verifies the translation accumulation.
 TEST(PropertyTreeTest, ElasticOverscrollWithScrollOffset) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
 
   ViewportPropertyIds viewport_property_ids;
   ClipTree& clip_tree = property_trees.clip_tree_mutable();
@@ -427,8 +412,7 @@ TEST(PropertyTreeTest, ElasticOverscrollWithScrollOffset) {
 }
 
 TEST(PropertyTreeTest, TransformsWithFlattening) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   EffectTree& effect_tree = property_trees.effect_tree_mutable();
 
@@ -503,8 +487,7 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
 }
 
 TEST(PropertyTreeTest, MultiplicationOrder) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.local.Translate(2, 2);
@@ -536,8 +519,7 @@ TEST(PropertyTreeTest, MultiplicationOrder) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformWithUninvertibleTransform) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.id = tree.Insert(contents_root, 0);
@@ -565,8 +547,7 @@ TEST(PropertyTreeTest, ComputeTransformWithUninvertibleTransform) {
 }
 
 TEST(PropertyTreeTest, ComputeTransformToTargetWithZeroSurfaceContentsScale) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
   contents_root.id = tree.Insert(contents_root, 0);
@@ -621,8 +602,7 @@ TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
   // This tests that flattening is performed correctly when
   // destination and its ancestors are flat, but there are 3d transforms
   // and flattening between the source and destination.
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
 
   int parent = tree.Insert(TransformNode(), 0);
@@ -651,8 +631,7 @@ TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
 TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
   // This tests that screen space opacity is updated for the subtree when
   // opacity of a node changes.
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   EffectTree& tree = property_trees.effect_tree_mutable();
 
   int parent = tree.Insert(EffectNode(), 0);
@@ -673,8 +652,7 @@ TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
 TEST(PropertyTreeTest, SingularTransformSnapTest) {
   // This tests that to_target transform is not snapped when it has a singular
   // transform.
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
   EffectTree& effect_tree = property_trees.effect_tree_mutable();
 
@@ -722,8 +700,7 @@ TEST(PropertyTreeTest, SingularTransformSnapTest) {
 TEST(EffectTreeTest, CopyOutputRequestsAreTransformed) {
   using viz::CopyOutputRequest;
 
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
 
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
@@ -820,8 +797,7 @@ TEST(EffectTreeTest, CopyOutputRequestsAreTransformed) {
 TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
   using viz::CopyOutputRequest;
 
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
 
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   TransformNode contents_root;
@@ -853,8 +829,7 @@ TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
 // scroll offset is near zero that can naively lead to a negative offset being
 // returned which is not desirable.
 TEST(ScrollTreeTest, GetScrollOffsetForScrollTimelineNegativeOffset) {
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   ScrollTree& scroll_tree = property_trees.scroll_tree_mutable();
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
 
@@ -886,8 +861,7 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   const bool use_fractional_deltas = false;
 
   // Set up main property trees.
-  FakeProtectedSequenceSynchronizer synchronizer;
-  PropertyTrees property_trees(synchronizer);
+  PropertyTrees property_trees;
   ScrollTree& main_scroll_tree = property_trees.scroll_tree_mutable();
   TransformTree& transform_tree = property_trees.transform_tree_mutable();
   ElementId element_id(5);

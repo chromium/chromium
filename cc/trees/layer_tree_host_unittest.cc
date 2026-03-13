@@ -10200,6 +10200,166 @@ class LayerTreeHostTestWithHelper : public LayerTreeHostTest {
   FakeContentLayerClient client_;
 };
 
+class LayerTreeHostTestCommitPropertySnapshot : public LayerTreeHostTest {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostTest::InitializeSettings(settings);
+    settings->use_layer_lists = true;
+  }
+
+  void BeginTest() override {
+    TransformTree& tree =
+        layer_tree_host()->property_trees()->transform_tree_mutable();
+    node_id_ = tree.Insert(TransformNode(), kRootPropertyNodeId);
+    TransformNode* node = tree.Node(node_id_);
+    node->local = gfx::Transform::MakeScale(2.f);
+    node->origin = gfx::Point3F(3, 4, 5);
+    node->needs_local_transform_update = true;
+    node->SetTransformChanged(DamageReason::kUntracked);
+    tree.set_needs_update(true);
+    layer_tree_host()->property_trees()->set_changed(true);
+
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void WillCommit(const CommitState& commit_state) override {
+    // Property trees are snapshotted just prior to this, so there should be
+    // both main thread and CommitState versions of the node.
+    TransformTree& main_tree =
+        layer_tree_host()->property_trees()->transform_tree_mutable();
+    TransformNode* main_node = main_tree.Node(node_id_);
+    const TransformTree& commit_tree =
+        commit_state.property_trees.transform_tree();
+    const TransformNode* commit_node = commit_tree.Node(node_id_);
+
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 0u:
+        // draw_property_utils::UpdatePropertyTrees should have cleared this.
+        EXPECT_FALSE(main_tree.needs_update());
+
+        // Change tracking should have been reset on main property trees.
+        EXPECT_FALSE(layer_tree_host()->property_trees()->changed());
+        EXPECT_FALSE(main_node->transform_changed());
+
+        // draw_property_utils::UpdatePropertyTrees should have cleared this
+        // prior to the snapshot.
+        EXPECT_FALSE(commit_tree.needs_update());
+
+        // Change tracking on CommitState property trees should be intact.
+        EXPECT_TRUE(commit_state.property_trees.changed());
+        EXPECT_TRUE(commit_node->transform_changed());
+
+        // Modifications to the main property trees should not affect
+        // CommitState.
+        main_node->local = gfx::Transform::MakeScale(3.f);
+        main_node->origin = gfx::Point3F(6, 7, 8);
+        main_node->needs_local_transform_update = true;
+        main_node->SetTransformChanged(DamageReason::kUntracked);
+        main_tree.set_needs_update(true);
+        layer_tree_host()->property_trees()->set_changed(true);
+        EXPECT_EQ(commit_node->local, gfx::Transform::MakeScale(2.f));
+        EXPECT_EQ(commit_node->origin, gfx::Point3F(3, 4, 5));
+        break;
+      case 1u:
+        // Change tracking should have been reset on main property trees.
+        EXPECT_FALSE(layer_tree_host()->property_trees()->changed());
+        EXPECT_FALSE(main_node->transform_changed());
+
+        // Commit PropertyTrees *have* been changed.
+        EXPECT_TRUE(commit_state.property_trees.changed());
+        EXPECT_TRUE(commit_node->transform_changed());
+
+        // Modifications from prior commits should persist.
+        EXPECT_EQ(main_node->local, gfx::Transform::MakeScale(3.f));
+        EXPECT_EQ(main_node->origin, gfx::Point3F(6, 7, 8));
+        EXPECT_EQ(commit_node->local, gfx::Transform::MakeScale(3.f));
+        EXPECT_EQ(commit_node->origin, gfx::Point3F(6, 7, 8));
+        break;
+      case 2u:
+        // Change tracking should have been reset on main property trees.
+        EXPECT_FALSE(layer_tree_host()->property_trees()->changed());
+        EXPECT_FALSE(main_node->transform_changed());
+
+        // No changes since last commit.
+        EXPECT_FALSE(commit_state.property_trees.changed());
+        EXPECT_FALSE(commit_node->transform_changed());
+
+        // Modifications from prior commits should persist.
+        EXPECT_EQ(main_node->local, gfx::Transform::MakeScale(3.f));
+        EXPECT_EQ(main_node->origin, gfx::Point3F(6, 7, 8));
+        EXPECT_EQ(commit_node->local, gfx::Transform::MakeScale(3.f));
+        EXPECT_EQ(commit_node->origin, gfx::Point3F(6, 7, 8));
+        break;
+      default:
+        ASSERT_TRUE(false);
+    }
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    const TransformTree& tree =
+        host_impl->sync_tree()->property_trees()->transform_tree();
+    const TransformNode* node = tree.Node(node_id_);
+    switch (commit_count_++) {
+      case 0u:
+        // Modifications to main property trees after WillCommit should not show
+        // up in pending tree.
+        EXPECT_EQ(node->local, gfx::Transform::MakeScale(2.f));
+        EXPECT_EQ(node->origin, gfx::Point3F(3, 4, 5));
+        PostSetNeedsCommitToMainThread();
+        break;
+      case 1u:
+        // Modifications to main property trees should appear now.
+        EXPECT_EQ(node->local, gfx::Transform::MakeScale(3.f));
+        EXPECT_EQ(node->origin, gfx::Point3F(6, 7, 8));
+        PostSetNeedsCommitToMainThread();
+        break;
+      case 2u:
+        EXPECT_EQ(node->local, gfx::Transform::MakeScale(3.f));
+        EXPECT_EQ(node->origin, gfx::Point3F(6, 7, 8));
+        break;
+      default:
+        ASSERT_TRUE(false);
+    }
+  }
+
+  void DidCommit() override {
+    // Modifications to main property trees after WillCommit should persist.
+    TransformTree& tree =
+        layer_tree_host()->property_trees()->transform_tree_mutable();
+    TransformNode* node = tree.Node(node_id_);
+    EXPECT_EQ(node->local, gfx::Transform::MakeScale(3.f));
+    EXPECT_EQ(node->origin, gfx::Point3F(6, 7, 8));
+
+    // Change tracking should be up-to-date
+    switch (layer_tree_host()->SourceFrameNumber()) {
+      case 1u:
+        EXPECT_TRUE(layer_tree_host()->property_trees()->changed());
+        EXPECT_TRUE(tree.needs_update());
+        EXPECT_TRUE(node->transform_changed());
+        break;
+      case 2u:
+        EXPECT_FALSE(layer_tree_host()->property_trees()->changed());
+        EXPECT_FALSE(tree.needs_update());
+        EXPECT_FALSE(node->transform_changed());
+        break;
+      case 3u:
+        EXPECT_FALSE(layer_tree_host()->property_trees()->changed());
+        EXPECT_FALSE(tree.needs_update());
+        EXPECT_FALSE(node->transform_changed());
+        EndTest();
+        break;
+      default:
+        ASSERT_TRUE(false);
+    }
+  }
+
+ private:
+  int node_id_ = kInvalidPropertyNodeId;
+  unsigned commit_count_ = 0u;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestCommitPropertySnapshot);
+
 class LayerTreeHostTestHideLayerAndSubtree
     : public LayerTreeHostTestWithHelper {
  public:

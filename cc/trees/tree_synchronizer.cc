@@ -101,7 +101,7 @@ void PushLayerList(OwnedLayerImplList& old_layers,
 
 #if DCHECK_IS_ON()
     // Every layer should have valid property tree indices
-    AssertValidPropertyTreeIndices(layer, unsafe_state.property_trees);
+    AssertValidPropertyTreeIndices(layer, commit_state.property_trees);
     // Every layer_impl should either have valid property tree indices already
     // or the corresponding layer should push them onto layer_impl.
     DCHECK(LayerHasValidPropertyTreeIndices(layer_impl.get()) ||

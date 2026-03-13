@@ -929,7 +929,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest, ActivateTreeScrollingNodeDisappeared) {
 
   // Create the pending tree containing only the root layer.
   CreatePendingTree();
-  PropertyTrees pending_property_trees(*host_impl_);
+  PropertyTrees pending_property_trees;
   pending_property_trees.set_sequence_number(
       host_impl_->active_tree()->property_trees()->sequence_number() + 1);
   host_impl_->pending_tree()->SetPropertyTrees(pending_property_trees);

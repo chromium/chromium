@@ -127,6 +127,7 @@ LayerImpl* FakeLayerTreeHost::CommitToTree(LayerTreeImpl* tree) {
   PropertyTreesChangeState change_state;
   property_trees()->GetChangeState(change_state);
   std::swap(change_state, pending_commit_state()->property_trees_change_state);
+  pending_commit_state()->property_trees = *property_trees();
   host_impl_->FinishCommit(*pending_commit_state(),
                            thread_unsafe_commit_state());
   std::swap(change_state, pending_commit_state()->property_trees_change_state);
