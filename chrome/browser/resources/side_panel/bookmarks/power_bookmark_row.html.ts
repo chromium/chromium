@@ -38,7 +38,7 @@ ${this.shouldExpand_() ? html`
     </power-bookmark-row-item>
   </cr-expand-button>
   ${this.toggleExpand ? html`
-    ${this.sortedChildren.map(item => html`
+    ${this.bookmark.children!.map(item => html`
       <power-bookmark-row
           id="bookmark-${item.id}"
           .bookmark="${item}"

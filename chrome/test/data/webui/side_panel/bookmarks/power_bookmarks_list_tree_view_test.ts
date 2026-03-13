@@ -294,7 +294,7 @@ suite('TreeView', () => {
 
   test('SortsNestedBookmarksLists', async () => {
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setAllBookmarks(nestedBookmarks);
+    bookmarksApi.setAllBookmarks(structuredClone(nestedBookmarks));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
     powerBookmarksList = await initializeUi(bookmarksApi);
 
@@ -568,5 +568,44 @@ suite('TreeView', () => {
 
     assertEquals(
         1, metrics.count('PowerBookmarks.SidePanel.BookmarksShown', 5));
+  });
+
+
+  test('UpdatesChildrenAfterMove', async () => {
+    bookmarksApi = new TestBookmarksApiProxy();
+    bookmarksApi.setAllBookmarks(structuredClone(nestedBookmarks));
+    BookmarksApiProxyImpl.setInstance(bookmarksApi);
+    powerBookmarksList = await initializeUi(bookmarksApi);
+
+    const folder5 = getPowerBookmarksRowElement(powerBookmarksList, '5')!;
+    const folder6 = getPowerBookmarksRowElement(powerBookmarksList, '6')!;
+    assertTrue(!!folder5, 'Folder 5 should exist');
+    assertTrue(!!folder6, 'Folder 6 should exist');
+
+    // Expand Folder 5 and Folder 6 to reveal their children.
+    folder5.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
+    folder6.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
+    await flushTasks();
+
+    assertTrue(
+        !!getPowerBookmarksRowElement(folder5, '22'),
+        'Bookmark 22 should initially be in folder 5');
+
+    assertFalse(
+        !!getPowerBookmarksRowElement(folder6, '22'),
+        'Bookmark 22 should NOT initially be in folder 6');
+
+    bookmarksApi.callbackRouterRemote.onBookmarkNodeMoved(
+        /*oldParentId=*/ '5', /*oldIndex=*/ 2, /*newParentId=*/ '6',
+        /*newIndex=*/ 0);
+    await flushTasks();
+
+    assertFalse(
+        !!getPowerBookmarksRowElement(folder5, '22'),
+        'Bookmark 22 should be removed from folder 5 after move');
+
+    assertTrue(
+        !!getPowerBookmarksRowElement(folder6, '22'),
+        'Bookmark 22 should be visible in folder 6 after move');
   });
 });
