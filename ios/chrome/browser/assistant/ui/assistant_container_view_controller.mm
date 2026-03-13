@@ -285,6 +285,21 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
 
 #pragma mark - Properties
 
+- (void)setDelegate:(id<AssistantContainerDelegate>)delegate {
+  if (_delegate == delegate) {
+    return;
+  }
+  _delegate = delegate;
+
+  if (_heightConstraint &&
+      [_delegate respondsToSelector:@selector(assistantContainer:
+                                        didUpdateExpandPercentage:)]) {
+    CGFloat percentage =
+        [self expandPercentageForHeight:_heightConstraint.constant];
+    [_delegate assistantContainer:self didUpdateExpandPercentage:percentage];
+  }
+}
+
 - (void)setDetents:(std::vector<AssistantContainerDetent>)detents {
   CHECK(!detents.empty());
   _detents = std::move(detents);
