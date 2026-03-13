@@ -175,8 +175,7 @@ Connection::~Connection() {
     return;
   }
 
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError,
-                            "The connection is destroyed.");
+  AbortTransactionsAndClose("The connection is destroyed.");
 }
 
 bool Connection::IsConnected() const {
@@ -271,25 +270,12 @@ void Connection::RemoveTransaction(int64_t id) {
   }
 }
 
-void Connection::AbortTransactionAndTearDownOnError(
-    Transaction* transaction,
-    const DatabaseError& error) {
-  TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "txn.id",
-               transaction->id());
-  Status status = transaction->Abort(error);
-  if (!status.ok()) {
-    bucket_context_handle_->OnDatabaseError(database_.get(), status, {});
-  }
-}
-
 void Connection::CloseAndReportForceClose(const std::string& message) {
   if (!IsConnected()) {
     return;
   }
 
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError,
-                            message)
-      ->OnForcedClose();
+  AbortTransactionsAndClose(message)->OnForcedClose();
 }
 
 void Connection::RenameObjectStore(int64_t transaction_id,
@@ -694,9 +680,10 @@ void Connection::Abort(int64_t transaction_id) {
     return;
   }
 
-  AbortTransactionAndTearDownOnError(
-      transaction, DatabaseError(blink::mojom::IDBException::kAbortError,
-                                 "Transaction aborted by user."));
+  TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
+               transaction->id());
+  transaction->Abort(DatabaseError(blink::mojom::IDBException::kAbortError,
+                                   "Transaction aborted by user."));
 }
 
 void Connection::DidBecomeInactive() {
@@ -789,7 +776,6 @@ Connection::GetTransactionAndVerifyState(
 }
 
 std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
-    CloseErrorHandling error_handling,
     const std::string& message) {
   if (!IsConnected()) {
     return {};
@@ -800,15 +786,7 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   // Finish up any transaction, in case there were any running.
   DatabaseError error(blink::mojom::IDBException::kUnknownError,
                       "Connection is closing because of: " + message);
-  Status status;
-  switch (error_handling) {
-    case CloseErrorHandling::kReturnOnFirstError:
-      status = AbortAllTransactions(error);
-      break;
-    case CloseErrorHandling::kAbortAllReturnLastError:
-      status = AbortAllTransactionsAndIgnoreErrors(error);
-      break;
-  }
+  AbortAllTransactions(error);
 
   std::unique_ptr<DatabaseCallbacks> callbacks = std::move(callbacks_);
   std::move(on_close_).Run(*this);
@@ -817,39 +795,14 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   }
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
-  if (!status.ok()) {
-    bucket_context_handle_->OnDatabaseError(database_.get(), status, {});
-  }
   bucket_context_handle_.Release();
   return callbacks;
 }
 
-Status Connection::AbortAllTransactionsAndIgnoreErrors(
-    const DatabaseError& error) {
-  Status last_error;
-  for (const auto& pair : transactions_) {
-    auto& transaction = pair.second;
-    if (transaction->state() != Transaction::FINISHED) {
-      TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
-                   transaction->id());
-      Status status = transaction->Abort(error);
-      if (!status.ok()) {
-        last_error = status;
-      }
-    }
-  }
-  return last_error;
-}
-
-Status Connection::AbortAllTransactions(const DatabaseError& error) {
+void Connection::AbortAllTransactions(const DatabaseError& error) {
   for (auto& [_, transaction] : transactions_) {
-    if (transaction->state() != Transaction::FINISHED) {
-      TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
-                   transaction->id());
-      IDB_RETURN_IF_ERROR(transaction->Abort(error));
-    }
+    transaction->Abort(error);
   }
-  return Status::OK();
 }
 
 bool Connection::IsHoldingLocks(

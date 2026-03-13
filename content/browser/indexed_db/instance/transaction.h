@@ -85,11 +85,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
     return !is_commit_pending_ && state_ != COMMITTING && state_ != FINISHED;
   }
 
-  // This transaction is ultimately backed by a LevelDBScope. Aborting a
-  // transaction rolls back the LevelDBScopes, which (if LevelDBScopes is in
-  // single-sequence mode) can fail. This returns the result of that rollback,
-  // if applicable.
-  Status Abort(const DatabaseError& error);
+  void Abort(const DatabaseError& error);
 
   // Called by the scopes lock manager when this transaction is unblocked.
   void Start();

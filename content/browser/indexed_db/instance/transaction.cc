@@ -215,9 +215,9 @@ void Transaction::ScheduleTask(blink::mojom::IDBTaskType type,
   }
 }
 
-Status Transaction::Abort(const DatabaseError& error) {
+void Transaction::Abort(const DatabaseError& error) {
   if (state_ == FINISHED) {
-    return Status::OK();
+    return;
   }
 
   base::UmaHistogramEnumeration("WebCore.IndexedDB.TransactionAbortReason",
@@ -244,7 +244,6 @@ Status Transaction::Abort(const DatabaseError& error) {
 
   bucket_context_->QueueRunTasks();
   bucket_context_.Release();
-  return Status::OK();
 }
 
 bool Transaction::IsTaskQueueEmpty() const {
@@ -648,9 +647,10 @@ Status Transaction::DoSetIndexKeys(int64_t object_store_id,
                    BackingStoreTransaction()->KeyExistsInObjectStore(
                        object_store_id, primary_key));
   if (!found_record) {
-    return Abort(
-        DatabaseError(blink::mojom::IDBException::kUnknownError,
-                      "Internal error setting index keys for object store."));
+    Abort(DatabaseError(blink::mojom::IDBException::kUnknownError,
+                        "Internal error setting index keys for object store."));
+    // TODO(crbug.com/489361938): this should probably be a corruption status.
+    return Status::OK();
   }
 
   std::vector<std::unique_ptr<IndexWriter>> index_writers;
@@ -665,13 +665,17 @@ Status Transaction::DoSetIndexKeys(int64_t object_store_id,
       this, object_store_metadata, primary_key, false, std::move(keys_vec),
       &index_writers, &error_message, &obeys_constraints);
   if (!backing_store_success) {
-    return Abort(DatabaseError(blink::mojom::IDBException::kUnknownError,
-                               "Internal error: backing store error updating "
-                               "index keys."));
+    Abort(DatabaseError(blink::mojom::IDBException::kUnknownError,
+                        "Internal error: backing store error updating "
+                        "index keys."));
+    // TODO(crbug.com/489361938): this should probably be a corruption status.
+    return Status::OK();
   }
   if (!obeys_constraints) {
-    return Abort(DatabaseError(blink::mojom::IDBException::kConstraintError,
-                               error_message));
+    Abort(DatabaseError(blink::mojom::IDBException::kConstraintError,
+                        error_message));
+    // TODO(crbug.com/489361938): this should probably be a corruption status.
+    return Status::OK();
   }
 
   for (const auto& writer : index_writers) {
@@ -740,8 +744,7 @@ void Transaction::OnQuotaCheckDone(bool allowed) {
   if (allowed) {
     SetCommitFlag();
   } else {
-    connection()->AbortTransactionAndTearDownOnError(
-        this, DatabaseError(blink::mojom::IDBException::kQuotaError));
+    Abort(DatabaseError(blink::mojom::IDBException::kQuotaError));
   }
 }
 
@@ -800,13 +803,9 @@ void Transaction::BlobWriteComplete(base::TimeTicks start_time, Status result) {
             bucket_context_->GetHistogramSuffix());
 
   if (!result.ok()) {
-    Status status = Abort(
-        DatabaseError(blink::mojom::IDBException::kDataError,
-                      base::ASCIIToUTF16(absl::StrFormat(
-                          "Failed to write blobs (%s)", result.ToString()))));
-    if (!status.ok()) {
-      bucket_context_->OnDatabaseError(database_.get(), status, {});
-    }
+    Abort(DatabaseError(blink::mojom::IDBException::kDataError,
+                        base::ASCIIToUTF16(absl::StrFormat(
+                            "Failed to write blobs (%s)", result.ToString()))));
     return;
   }
 
@@ -854,7 +853,8 @@ Status Transaction::DoPendingCommit() {
   // properly handled.
   if (num_errors_sent_ != num_errors_handled_) {
     is_commit_pending_ = false;
-    return Abort(DatabaseError(blink::mojom::IDBException::kUnknownError));
+    Abort(DatabaseError(blink::mojom::IDBException::kUnknownError));
+    return Status::OK();
   }
 
   SetState(COMMITTING);
@@ -1208,12 +1208,8 @@ void Transaction::TimeoutFired() {
   }
 
   if (++timeout_strikes_ >= kMaxTimeoutStrikes) {
-    Status result =
-        Abort(DatabaseError(blink::mojom::IDBException::kTimeoutError,
-                            u"Transaction timed out due to inactivity."));
-    if (!result.ok()) {
-      bucket_context_->OnDatabaseError(database_.get(), result, {});
-    }
+    Abort(DatabaseError(blink::mojom::IDBException::kTimeoutError,
+                        u"Transaction timed out due to inactivity."));
     ResetTimeoutTimer();
   }
 }

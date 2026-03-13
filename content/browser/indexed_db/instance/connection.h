@@ -109,8 +109,6 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // TODO(dmurph): Change that so this doesn't need to ignore unknown ids.
   void RemoveTransaction(int64_t id);
 
-  void AbortTransactionAndTearDownOnError(Transaction* transaction,
-                                          const DatabaseError& error);
   void CloseAndReportForceClose(const std::string& message);
 
   int scheduling_priority() const { return scheduling_priority_; }
@@ -209,23 +207,11 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
   // Gets the transaction, returning null if it doesn't exist.
   Transaction* GetTransaction(int64_t id) const;
 
-  enum class CloseErrorHandling {
-    // Returns from the function on the first encounter with an error.
-    kReturnOnFirstError,
-    // Continues to call Abort() on all transactions despite any errors.
-    // The last error encountered is returned.
-    kAbortAllReturnLastError,
-  };
-
   // The return value is `callbacks_`, passing ownership.
   std::unique_ptr<DatabaseCallbacks> AbortTransactionsAndClose(
-      CloseErrorHandling error_handling,
       const std::string& message);
 
-  // Returns the last error that occurred, if there is any.
-  Status AbortAllTransactionsAndIgnoreErrors(const DatabaseError& error);
-
-  Status AbortAllTransactions(const DatabaseError& error);
+  void AbortAllTransactions(const DatabaseError& error);
 
   BucketContext* bucket_context() {
     return bucket_context_handle_.bucket_context();
