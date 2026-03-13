@@ -1056,15 +1056,6 @@ void DawnSharedContext::OnError(wgpu::ErrorType error_type,
   DumpWithoutCrashingOnError(error_type,
                              static_cast<std::string_view>(message));
 
-#if !DCHECK_IS_ON()
-  // Do not provoke context loss on validation failures for non-DCHECK builds.
-  // We want to capture the above dump on validation errors, but not necessarily
-  // restart the GPU process unless we also have a device loss.
-  if (error_type == wgpu::ErrorType::Validation) {
-    return;
-  }
-#endif
-
   error::ContextLostReason reason = error::kUnknown;
   switch (error_type) {
     case wgpu::ErrorType::OutOfMemory:
