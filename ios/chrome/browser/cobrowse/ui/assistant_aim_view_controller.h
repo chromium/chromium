@@ -30,6 +30,9 @@
 - (void)addInputViewController:
     (ComposeboxInputPlateViewController*)inputViewController;
 
+// Adjusts the UI based on the percentage open of the container.
+- (void)adjustForContainerOpenPercentage:(CGFloat)percentage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_UI_ASSISTANT_AIM_VIEW_CONTROLLER_H_

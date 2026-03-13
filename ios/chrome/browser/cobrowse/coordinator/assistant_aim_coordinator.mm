@@ -121,4 +121,18 @@
   }
 }
 
+#pragma mark - AssistantContainerDelegate
+
+- (void)assistantContainer:(AssistantContainerViewController*)container
+    didUpdateExpandPercentage:(CGFloat)percentage {
+  [_viewController adjustForContainerOpenPercentage:percentage];
+}
+
+- (void)assistantContainer:(AssistantContainerViewController*)container
+    animateAlongsideTransitionToPercentage:(CGFloat)percentage {
+  // NOTE: This API is already called in a animation block so no need to
+  // animate.
+  [_viewController adjustForContainerOpenPercentage:percentage];
+}
+
 @end
