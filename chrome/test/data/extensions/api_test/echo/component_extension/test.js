@@ -8,11 +8,11 @@ chrome.test.runTests([
     // /chrome/browser/chromeos/extensions/echo_private/echo_private_apitest.cc
     chrome.echoPrivate.getRegistrationCode('COUPON_CODE',
         chrome.test.callbackPass(function(result) {
-          chrome.test.assertTrue(result == "COUPON_CODE");
+          chrome.test.assertTrue(result == 'COUPON_CODE');
     }));
     chrome.echoPrivate.getRegistrationCode('GROUP_CODE',
         chrome.test.callbackPass(function(result) {
-          chrome.test.assertTrue(result == "GROUP_CODE");
+          chrome.test.assertTrue(result == 'GROUP_CODE');
     }));
     chrome.echoPrivate.getRegistrationCode('INVALID_CODE',
         chrome.test.callbackPass(function(result) {
