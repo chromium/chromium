@@ -33,15 +33,6 @@ BwgService::BwgService(ProfileIOS* profile,
   identity_manager_->AddObserver(this);
   pref_service_ = pref_service;
 
-  // For managed accounts, we err on the side of caution and only show Gemini
-  // entrypoints when we know whether they are eligible. Otherwise, we're OK
-  // with having the entrypoint maybe disappear at a later time (actual Gemini
-  // requests to ineligible accounts will fail regardless).
-  if (auth_service_ &&
-      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin)) {
-    is_disabled_by_gemini_policy_ = true;
-  }
-
   if (IsAskGeminiChipEnabled()) {
     optimization_guide_ = optimization_guide;
     optimization_guide_->RegisterOptimizationTypes(
@@ -76,9 +67,20 @@ bool BwgService::IsProfileEligibleForGemini() {
       identity_manager_
               ->GetErrorStateOfRefreshTokenForAccount(account_info.account_id)
               .state() == GoogleServiceAuthError::NONE;
-  const bool is_eligible = can_use_model_execution && allowed_by_enterprise &&
-                           !is_disabled_by_gemini_policy_.value_or(false) &&
-                           authenticated && !profile_->IsOffTheRecord();
+
+  // For managed accounts, we err on the side of caution and only show Gemini
+  // entrypoints when we know whether they are eligible. Otherwise, we're OK
+  // with having the entrypoint maybe disappear at a later time (actual Gemini
+  // requests to ineligible accounts will fail regardless).
+  const bool is_managed_account =
+      auth_service_ &&
+      auth_service_->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
+  const bool is_eligible =
+      can_use_model_execution && allowed_by_enterprise &&
+      !is_disabled_by_gemini_policy_.value_or(is_managed_account) &&
+      authenticated && !profile_->IsOffTheRecord();
+  // We ignore the gemini workspace log until we actually get the response to
+  // `is_disabled_by_gemini_policy_`.
   const gemini::IneligibilityReasons ineligibility_reasons =
       gemini::IneligibilityReasons()
           .set_workspace(is_disabled_by_gemini_policy_.value_or(false))
