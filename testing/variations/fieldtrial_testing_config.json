@@ -10690,7 +10690,9 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AnnotatedPageContentWithMediaData",
-                        "HeadlessLiveCaption"
+                        "HeadlessCaptionEarlyStart",
+                        "HeadlessLiveCaption",
+                        "MediaTrasncriptsFlagInPageMetadata"
                     ]
                 }
             ]
