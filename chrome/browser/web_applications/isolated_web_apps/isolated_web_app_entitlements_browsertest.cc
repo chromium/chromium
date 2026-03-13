@@ -434,8 +434,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppEntitlementsBrowserTest,
   content::WebContentsConsoleObserver console_observer(
       content::WebContents::FromRenderFrameHost(frame));
   console_observer.SetPattern(
-      "IWA entitlement violation: feature 'direct-sockets' is not granted to "
-      "IWA *");
+      "IWA entitlement violation: feature 'direct-sockets' is not granted "
+      "to " +
+      url_info.origin().GetURL().spec() + ".");
 
   EXPECT_TRUE(content::ExecJs(frame, "location.reload();"));
 

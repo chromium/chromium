@@ -20,15 +20,60 @@
 #include "components/webapps/isolated_web_apps/url_loading/url_loader_factory.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/site_isolation_mode.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace web_app {
+
+namespace {
+
+// The purpose of this is to defer logging violations to after the navigation
+// (so that post-navigation console cleaning won't hide the message).
+class DeferredEntitlementViolationLogger
+    : public content::NavigationHandleUserData<
+          DeferredEntitlementViolationLogger>,
+      public content::WebContentsObserver {
+ public:
+  ~DeferredEntitlementViolationLogger() override = default;
+
+  void DidFinishNavigation(content::NavigationHandle* handle) override {
+    if (GetForNavigationHandle(*handle) != this) {
+      return;
+    }
+    if (handle->HasCommitted() && !handle->IsErrorPage()) {
+      for (const auto& feature : violations_) {
+        handle->GetRenderFrameHost()->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kWarning,
+            "IWA entitlement violation: feature '" + feature +
+                "' is not granted to " + handle->GetURL().spec() + ".");
+      }
+    }
+  }
+
+ private:
+  friend class content::NavigationHandleUserData<
+      DeferredEntitlementViolationLogger>;
+
+  DeferredEntitlementViolationLogger(content::NavigationHandle& handle,
+                                     std::vector<std::string> violations)
+      : content::WebContentsObserver(handle.GetWebContents()),
+        violations_(std::move(violations)) {}
+
+  const std::vector<std::string> violations_;
+
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+};
+
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(DeferredEntitlementViolationLogger);
+
+}  // namespace
 
 // static
 void IsolatedWebAppThrottle::MaybeCreateAndAdd(
@@ -125,14 +170,15 @@ bool IsolatedWebAppThrottle::NeedsManifestFetch(
 
 void IsolatedWebAppThrottle::LogEntitlementViolations(
     const IwaOrigin& iwa_origin) {
-  for (const std::string& feature :
-       IwaPermissionsPolicyCacheFactory::GetForProfile(profile())
-           ->GetViolations(iwa_origin)) {
-    navigation_handle()->GetRenderFrameHost()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kWarning,
-        "IWA entitlement violation: feature '" + feature +
-            "' is not granted to IWA " + iwa_origin.web_bundle_id().id() + ".");
+  std::vector<std::string> violations =
+      IwaPermissionsPolicyCacheFactory::GetForProfile(profile())->GetViolations(
+          iwa_origin);
+  if (violations.empty() || !navigation_handle()->IsInPrimaryMainFrame()) {
+    return;
   }
+
+  DeferredEntitlementViolationLogger::CreateForNavigationHandle(
+      *navigation_handle(), std::move(violations));
 }
 
 void IsolatedWebAppThrottle::OnCachePopulated(bool success) {
