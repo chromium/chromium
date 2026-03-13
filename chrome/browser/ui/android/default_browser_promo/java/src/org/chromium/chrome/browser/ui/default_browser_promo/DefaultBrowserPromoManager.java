@@ -10,9 +10,8 @@ import android.app.role.RoleManager;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 import org.chromium.ui.base.WindowAndroid;
@@ -60,18 +59,31 @@ public class DefaultBrowserPromoManager {
         mWindowAndroid.showCancelableIntent(
                 intent,
                 (resultCode, data) -> {
-                    DefaultBrowserPromoMetrics.recordOutcome(
-                            currentState,
-                            mStateProvider.getCurrentDefaultBrowserState(),
-                            mImpressionCounter.getPromoCount());
-
-                    @DefaultBrowserState
-                    int newState = mStateProvider.getCurrentDefaultBrowserState();
-                    // Source (e.g. App Menu) specific metric.
-                    if (mSource != null) {
-                        DefaultBrowserPromoMetrics.recordOutcome(newState, mSource);
-                    }
+                    // After shown the Role Manager dialog, the default browser state may change,
+                    // We need to fetch the default browser info again to make sure the state is
+                    // updated before recording the outcome.
+                    DefaultBrowserPromoUtils.getInstance()
+                            .fetchDefaultBrowserInfo(
+                                    result -> {
+                                        recordOutcome(currentState);
+                                    });
                 },
                 null);
+    }
+
+    /**
+     * Records the outcome of a default browser promo interaction by comparing the browser's default
+     * state before and after the user responded to the promo. Logs both general outcome metrics.
+     *
+     * @param oldState The {@link DefaultBrowserState} captured before the promo was shown.
+     */
+    private void recordOutcome(int oldState) {
+        @DefaultBrowserState int newState = mStateProvider.getCurrentDefaultBrowserState();
+        DefaultBrowserPromoMetrics.recordOutcome(
+                oldState, newState, mImpressionCounter.getPromoCount());
+        // Source (e.g. App Menu) specific metric.
+        if (mSource != null) {
+            DefaultBrowserPromoMetrics.recordOutcome(newState, mSource);
+        }
     }
 }

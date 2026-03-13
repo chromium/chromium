@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -46,11 +48,21 @@ public class DefaultBrowserPromoManagerTest {
     @Mock Intent mIntent;
     @Mock DefaultBrowserPromoImpressionCounter mImpressionCounter;
     @Mock DefaultBrowserStateProvider mStateProvider;
+    @Mock DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
 
     @Before
     public void setup() {
         doReturn(mRoleManager).when(mActivity).getSystemService(Context.ROLE_SERVICE);
         doReturn(mIntent).when(mRoleManager).createRequestRoleIntent(RoleManager.ROLE_BROWSER);
+        DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
+        // When fetchDefaultBrowserInfo is called, immediately invoke the callback.
+        doAnswer(
+                        invocation -> {
+                            invocation.getArgument(0, Callback.class).onResult(null);
+                            return null;
+                        })
+                .when(mMockDefaultBrowserPromoUtils)
+                .fetchDefaultBrowserInfo(any());
     }
 
     @Test
