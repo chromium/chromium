@@ -330,8 +330,8 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_DEFAULT_BROWSER_PICTURE_IN_PICTURE_TITLE_TEXT" desc="Title for the default browser picture in picture promo. [iOS only]">
         Set Chrome as default
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_PIP_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement for when the default browser picture in picture promo starts. [iOS only]" is_accessibility_with_no_ui="true">
-        Picture in picture video instructions of how to set Chrome as default
+      <message name="IDS_IOS_DEFAULT_BROWSER_PIP_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement for the default browser fullscreen video instructions. [iOS only]" is_accessibility_with_no_ui="true">
+        Full screen video of how to set Chrome as default
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TAILORED_ALL_TABS_DESCRIPTION" desc="Description of the 'All your tabs' default browser promotion modal. [iOS only]">
         Set Chrome as default to sync your tabs, passwords, and payment info on all your devices
