@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/accessibility_annotator/core/data_models/entity_converter.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
 
 namespace accessibility_annotator {
@@ -37,9 +38,21 @@ void DirectServerEntityProvider::RemoveObserver(
 void DirectServerEntityProvider::GetEntities(
     EntityTypeEnumSet types,
     base::OnceCallback<void(std::vector<Entity>)> callback) {
-  // TODO(crbug.com/486769736) - Implement this to read from db.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::vector<Entity>()));
+  auto* bridge = backend_->accessibility_annotation_sync_bridge();
+  if (!bridge) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::vector<Entity> entities;
+  for (const auto& specifics : bridge->GetAllAnnotations()) {
+    std::optional<Entity> entity = CreateEntityFromSpecifics(specifics);
+    if (entity.has_value() && types.Has(entity->GetType())) {
+      entities.push_back(std::move(*entity));
+    }
+  }
+
+  std::move(callback).Run(std::move(entities));
 }
 
 void DirectServerEntityProvider::OnAccessibilityAnnotationSyncBridgeLoaded() {
