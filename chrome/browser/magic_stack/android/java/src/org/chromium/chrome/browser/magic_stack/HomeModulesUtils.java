@@ -27,6 +27,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -49,6 +50,9 @@ import java.util.Objects;
 /** Utility class for the magic stack. */
 @NullMarked
 public class HomeModulesUtils {
+
+    private static final String TAG = "XplatSyncedSetup";
+
     static final long INVALID_TIMESTAMP = -1;
     static final int INVALID_FRESHNESS_SCORE = -1;
     static final int INVALID_IMPRESSION_COUNT_BEFORE_INTERACTION = 0;
@@ -331,6 +335,15 @@ public class HomeModulesUtils {
             // Default value should not be read since we already checked that the key was set.
             boolean value =
                     sharedPreferencesManager.readBoolean(javaKey, /* defaultValue= */ false);
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+                Log.i(
+                        TAG,
+                        "HomeModulesUtils:updateBooleanUserPrefs - setting "
+                                + cKey
+                                + " to "
+                                + value);
+            }
             UserPrefs.get(profile).setBoolean(cKey, value);
         }
     }

@@ -73,6 +73,7 @@ import java.util.function.Supplier;
 /** Unit tests for {@link NtpCardsMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)
+@DisableFeatures(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
 public class NtpCardsMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

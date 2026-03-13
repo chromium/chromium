@@ -14,6 +14,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -36,6 +37,9 @@ import org.chromium.components.prefs.PrefService;
 @NullMarked
 public class AddressBarPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener {
+
+    private static final String TAG = "XplatSyncedSetup";
+
     private static final int HIGHLIGHT_ANIMATION_DELAY_MS = 3000;
     private static final int HIGHLIGHT_ANIMATION_DURATION_MS = 1000;
 
@@ -72,6 +76,19 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
             // Set the local pref service value first, since this is the source of truth.
             localPrefService.setBoolean(
                     Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, isToolbarAtBottom(sharedPref));
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+                Log.i(
+                        TAG,
+                        "AddressBarPreference:setToolbarPositionAndSource - localPrefService was"
+                                + " non-null, set omnibox position");
+            }
+        } else if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+            Log.i(
+                    TAG,
+                    "AddressBarPreference:setToolbarPositionAndSource - localPrefService was null,"
+                            + " so omnibox position was not written");
         }
         sharedPreferencesManager.writeInt(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, sharedPref);
     }

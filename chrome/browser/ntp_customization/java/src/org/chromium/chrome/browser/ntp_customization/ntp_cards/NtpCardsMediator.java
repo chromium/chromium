@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.internal.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
@@ -47,6 +48,8 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class NtpCardsMediator {
+
+    private static final String TAG = "XplatSyncedSetup";
 
     // LINT.IfChange(HomeModuleTypes)
     public static final Map<Integer, String> MODULE_TYPE_TO_USER_PREFS_KEY =
@@ -166,10 +169,28 @@ public class NtpCardsMediator {
 
     @VisibleForTesting
     void updateUserPrefs() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) return;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.HOME_MODULE_PREF_REFACTOR)) {
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+                Log.i(
+                        TAG,
+                        "NtpCardsMediator:updateUserPrefs - HomeModulePrefRefactor was off, return"
+                                + " early");
+            }
+            return;
+        }
 
         @Nullable Profile profile = mProfileSupplier.get();
-        if (profile == null) return; // Return if profile not ready yet
+        if (profile == null) {
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)) {
+                Log.i(
+                        TAG,
+                        "NtpCardsMediatorupdateUserPrefs - profile supplier gave null profile,"
+                                + " return early");
+            }
+            return; // Return if profile not ready yet
+        }
 
         updateBooleanUserPrefs(
                 ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED,
