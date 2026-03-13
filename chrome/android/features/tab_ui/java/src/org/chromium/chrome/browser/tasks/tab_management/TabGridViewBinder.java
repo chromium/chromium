@@ -239,6 +239,11 @@ class TabGridViewBinder {
         } else if (TabProperties.SHOW_THUMBNAIL_SPINNER == propertyKey) {
             ((TabGridView) view)
                     .setThumbnailSpinnerVisibility(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
+            updateColor(
+                    view,
+                    model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED),
+                    model.get(TabProperties.TAB_GROUP_CARD_COLOR));
         } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
             setNullableClickListener(model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
