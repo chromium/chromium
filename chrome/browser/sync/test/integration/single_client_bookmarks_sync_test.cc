@@ -3714,6 +3714,73 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(model->account_bookmark_bar_node()->children(),
               ElementsAre(IsFolder(kTestTitle)));
 }
+
+class SingleClientBookmarksExplicitSigninForBookmarksSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SingleClientBookmarksExplicitSigninForBookmarksSyncTest()
+      : SyncTest(SINGLE_CLIENT) {
+    if (content::IsPreTest()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+    } else {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          {{syncer::kExplicitSigninForBookmarks.name,
+            GetParam() ? "true" : "false"}});
+    }
+  }
+
+  // The value doesn't matter, since the tests use SetupSyncWithMode(..) to
+  // explicitly pick Sync-the-feature or Sync-the-transport.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
+                       PRE_BookmarksEnabledDefaultValue) {
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
+                       BookmarksEnabledDefaultValue) {
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // If `kExplicitSigninForBookmarks` is enabled, syncing bookmarks is turned
+  // off. If it is not, then bookmarks should be on by default with
+  // `kReplaceSyncPromosWithSignInPromos` enabled. See
+  // `SyncPrefs::IsTypeSelectedByDefaultInTransportMode()`.
+  EXPECT_NE(GetParam(),
+            GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+                syncer::UserSelectableType::kBookmarks));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
+                       BookmarksEnabledAfterSignIn) {
+  // When the user signs in after the flags were enabled, bookmarks should
+  // always be available. See
+  // `PrimaryAccountManager::SetExplicitBrowserSigninPrefs()`.
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
+    testing::Bool());
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

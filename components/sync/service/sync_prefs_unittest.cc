@@ -754,6 +754,41 @@ TEST_F(SyncPrefsTest, ExtensionsDisabledWithExplicitSigninFlag) {
   EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
       UserSelectableType::kExtensions));
 }
+
+TEST_F(SyncPrefsTest, BookmarksEnabledWithExplicitBrowserPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
+
+  SigninPrefs(pref_service_).SetBookmarksExplicitBrowserSignin(gaia_id_, true);
+
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
+}
+
+TEST_F(SyncPrefsTest, BookmarksEnabledWithoutExplicitSigninFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      {{syncer::kExplicitSigninForBookmarks.name, "false"}});
+
+  EXPECT_TRUE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
+}
+
+TEST_F(SyncPrefsTest, BookmarksDisabledWithExplicitSigninFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+
+  EXPECT_FALSE(sync_prefs_->GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 enum BooleanPrefState { PREF_FALSE, PREF_TRUE, PREF_UNSET };

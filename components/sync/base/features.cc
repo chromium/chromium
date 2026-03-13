@@ -89,6 +89,11 @@ BASE_FEATURE_PARAM(bool,
                    &kReplaceSyncPromosWithSignInPromos,
                    "explicit_signin_for_extensions",
                    false);
+BASE_FEATURE_PARAM(bool,
+                   kExplicitSigninForBookmarks,
+                   &kReplaceSyncPromosWithSignInPromos,
+                   "explicit_signin_for_bookmarks",
+                   false);
 
 BASE_FEATURE(kEnableAwaitSyncServiceStartup, base::FEATURE_DISABLED_BY_DEFAULT);
 

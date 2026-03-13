@@ -1034,84 +1034,6 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefNewUser) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-// Test that the bookmarks explicit signin pref is set if the feature flag is
-// enabled and the user signs in through the bookmarks bubble.
-TEST_F(PrimaryAccountManagerTest, ExplicitSigninBookmarksPref) {
-  base::test::ScopedFeatureList feature{
-      switches::kSyncEnableBookmarksInTransportMode};
-
-  CreatePrimaryAccountManager();
-  GaiaId gaia_id("account_id");
-  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
-
-  ASSERT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-  // Simulate an explicit signin through the bookmark bubble. This should count
-  // as a bookmark explicit sign in.
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  signin::ConsentLevel::kSignin,
-                                  signin_metrics::AccessPoint::kBookmarkBubble);
-
-  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Clearing signin.
-  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
-
-  // Now sign in with a different user through a non-bookmarks access point.
-  // The pref should not record a bookmark explicit sign in for them.
-  GaiaId other_gaia_id("other_account_id");
-  CoreAccountId other_account_id =
-      AddToAccountTracker(other_gaia_id, "user2@gmail.com");
-
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(other_account_id),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-  EXPECT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(other_gaia_id));
-
-  // Quickly verify that the pref is still true for `gaia_id` even if that user
-  // signs in again with a non-bookmarks access point.
-  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-#endif
-}
-
-// Test that the bookmarks explicit signin pref should not be set if the user
-// performs an explicit signin through a non-bookmarks access point.
-TEST_F(PrimaryAccountManagerTest,
-       ExplicitSigninBookmarksPref_NonBookmarksAccessPoint) {
-  base::test::ScopedFeatureList feature{
-      switches::kSyncEnableBookmarksInTransportMode};
-
-  CreatePrimaryAccountManager();
-  GaiaId gaia_id("account_id");
-  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
-
-  ASSERT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-  // Sign in through the Chrome Signin Intercept bubble. This shouldn't count
-  // as a bookmark explicit sign in.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-  EXPECT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-}
-
 // Test that the user cannot perform an explicit signin for bookmarks if the
 // feature flag is disabled.
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninBookmarksPref_FlagNotEnabled) {
@@ -1134,42 +1056,6 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninBookmarksPref_FlagNotEnabled) {
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-TEST_F(PrimaryAccountManagerTest,
-       ExplicitSigninBookmarksPref_ResetWhenSyncTurnedOn) {
-  base::test::ScopedFeatureList feature{
-      switches::kSyncEnableBookmarksInTransportMode};
-
-  CreatePrimaryAccountManager();
-  GaiaId gaia_id("account_id");
-  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
-
-  ASSERT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-  // Simulate an explicit signin through the bookmark bubble. This should count
-  // as a bookmark explicit sign in.
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  signin::ConsentLevel::kSignin,
-                                  signin_metrics::AccessPoint::kBookmarkBubble);
-
-  ASSERT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-  // Turn on sync from any access point. This should disable account storage for
-  // bookmarks again.
-  manager_->SetPrimaryAccountInfo(
-      account_tracker()->GetAccountInfo(account_id),
-      signin::ConsentLevel::kSync,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
-
-  EXPECT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled",
-      /*sample=*/true, /*expected_bucket_count=*/1);
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Test that the bookmarks explicit signin pref is preserved across restarts if
 // the feature flag is still enabled, but is reset to its default value (false)
@@ -1340,13 +1226,19 @@ TEST_F(PrimaryAccountManagerTest,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-class PrimaryAccountManagerWithExplicitSigninForExtensionsTest
+class PrimaryAccountManagerWithExplicitSigninForExtensionsAndBookmarksTest
     : public PrimaryAccountManagerTest {
  public:
-  PrimaryAccountManagerWithExplicitSigninForExtensionsTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        syncer::kReplaceSyncPromosWithSignInPromos,
-        {{syncer::kExplicitSigninForExtensions.name, "true"}});
+  PrimaryAccountManagerWithExplicitSigninForExtensionsAndBookmarksTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{switches::kSyncEnableBookmarksInTransportMode,
+                               {}},
+                              {syncer::kReplaceSyncPromosWithSignInPromos,
+                               {{syncer::kExplicitSigninForExtensions.name,
+                                 "true"},
+                                {syncer::kExplicitSigninForBookmarks.name,
+                                 "true"}}}},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -1356,7 +1248,7 @@ class PrimaryAccountManagerWithExplicitSigninForExtensionsTest
 // Test that the extensions explicit signin pref is set if
 // switches::IsExtensionsExplicitBrowserSigninEnabled() and
 // `kExplicitSigninForExtensions` are enabled when the user signs in.
-TEST_F(PrimaryAccountManagerWithExplicitSigninForExtensionsTest,
+TEST_F(PrimaryAccountManagerWithExplicitSigninForExtensionsAndBookmarksTest,
        ExplicitSigninExtensionPrefForAnyAccessPoint) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
@@ -1430,15 +1322,60 @@ TEST_F(PrimaryAccountManagerWithExplicitSigninForExtensionsTest,
       "Signin.Extensions.ExplicitSigninFromAnyAccessPoint",
       /*sample=*/false, /*expected_count=*/1);
 }
+
+TEST_F(PrimaryAccountManagerWithExplicitSigninForExtensionsAndBookmarksTest,
+       ExplicitSigninBookmarkPrefForBookmarkBubbleAccessPoint) {
+  CreatePrimaryAccountManager();
+  GaiaId gaia_id("account_id");
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  ASSERT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  // Simulate an explicit signin through the bookmark bubble.
+  // This should count as a bookmark explicit sign in.
+  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
+                                  signin::ConsentLevel::kSignin,
+                                  signin_metrics::AccessPoint::kBookmarkBubble);
+
+  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+}
+
+// Test that the bookmark explicit signin pref is set if
+// `kExplicitSigninForBookmarks` is enabled when the user signs in.
+TEST_F(PrimaryAccountManagerWithExplicitSigninForExtensionsAndBookmarksTest,
+       ExplicitSigninBookmarkPrefForAnyAccessPoint) {
+  CreatePrimaryAccountManager();
+  GaiaId gaia_id("account_id");
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  ASSERT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  // Simulate an explicit signin through a non-bookmark access point.
+  // This should count as a bookmark explicit sign in.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+
+  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+}
 #endif
 
-class PrimaryAccountManagerWithoutExplicitSigninForExtensionsTest
+class PrimaryAccountManagerWithoutExplicitSigninForExtensionsAndBookmarksTest
     : public PrimaryAccountManagerTest {
  public:
-  PrimaryAccountManagerWithoutExplicitSigninForExtensionsTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        syncer::kReplaceSyncPromosWithSignInPromos,
-        {{syncer::kExplicitSigninForExtensions.name, "false"}});
+  PrimaryAccountManagerWithoutExplicitSigninForExtensionsAndBookmarksTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{switches::kSyncEnableBookmarksInTransportMode,
+                               {}},
+                              {syncer::kReplaceSyncPromosWithSignInPromos,
+                               {{syncer::kExplicitSigninForExtensions.name,
+                                 "false"},
+                                {syncer::kExplicitSigninForBookmarks.name,
+                                 "false"}}}},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -1449,7 +1386,7 @@ class PrimaryAccountManagerWithoutExplicitSigninForExtensionsTest
 // `switches::IsExtensionsExplicitBrowserSigninEnabled()` is enabled and the
 // user signs in through the extension install bubble.
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsTest,
+TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsAndBookmarksTest,
        ExplicitSigninExtensionPref) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
@@ -1531,7 +1468,7 @@ TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsTest,
 // param `kExplicitSigninForExtensions` enabled, we would expect the pref to be
 // set anyway (see PrimaryAccountManagerTest,
 // ExplicitSigninExtensionPrefForAnyAccessPoint).
-TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsTest,
+TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsAndBookmarksTest,
        ExplicitSigninExtensionPref_NonExtensionAccessPoint) {
   CreatePrimaryAccountManager();
   GaiaId gaia_id("account_id");
@@ -1550,3 +1487,109 @@ TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsTest,
   EXPECT_FALSE(
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
 }
+
+// Test that the bookmarks explicit signin pref is set if the feature flag is
+// enabled and the user signs in through the bookmarks bubble.
+TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsAndBookmarksTest,
+       ExplicitSigninBookmarksPref) {
+  CreatePrimaryAccountManager();
+  GaiaId gaia_id("account_id");
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  ASSERT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  // Simulate an explicit signin through the bookmark bubble. This should count
+  // as a bookmark explicit sign in.
+  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
+                                  signin::ConsentLevel::kSignin,
+                                  signin_metrics::AccessPoint::kBookmarkBubble);
+
+  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Clearing signin.
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
+
+  // Now sign in with a different user through a non-bookmarks access point.
+  // The pref should not record a bookmark explicit sign in for them.
+  GaiaId other_gaia_id("other_account_id");
+  CoreAccountId other_account_id =
+      AddToAccountTracker(other_gaia_id, "user2@gmail.com");
+
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(other_account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(other_gaia_id));
+
+  // Quickly verify that the pref is still true for `gaia_id` even if that user
+  // signs in again with a non-bookmarks access point.
+  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+
+  EXPECT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+#endif
+}
+
+// Test that the bookmarks explicit signin pref should not be set if the user
+// performs an explicit signin through a non-bookmarks access point.
+TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsAndBookmarksTest,
+       ExplicitSigninBookmarksPref_NonBookmarksAccessPoint) {
+  CreatePrimaryAccountManager();
+  GaiaId gaia_id("account_id");
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  ASSERT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  // Sign in through the Chrome Signin Intercept bubble. This shouldn't count
+  // as a bookmark explicit sign in.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(PrimaryAccountManagerWithoutExplicitSigninForExtensionsAndBookmarksTest,
+       ExplicitSigninBookmarksPref_ResetWhenSyncTurnedOn) {
+  CreatePrimaryAccountManager();
+  GaiaId gaia_id("account_id");
+  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
+
+  ASSERT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  // Simulate an explicit signin through the bookmark bubble. This should count
+  // as a bookmark explicit sign in.
+  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
+                                  signin::ConsentLevel::kSignin,
+                                  signin_metrics::AccessPoint::kBookmarkBubble);
+
+  ASSERT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+
+  // Turn on sync from any access point. This should disable account storage for
+  // bookmarks again.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSync,
+      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+
+  EXPECT_FALSE(
+      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.Bookmarks.SyncTurnedOnWithAccountStorageEnabled",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

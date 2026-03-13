@@ -792,10 +792,14 @@ void PrimaryAccountManager::SetExplicitBrowserSigninPrefs(
               .SetExtensionsExplicitBrowserSignin(current_gaia_id, true);
         }
       }
-      if (access_point == signin_metrics::AccessPoint::kBookmarkBubble &&
-          base::FeatureList::IsEnabled(
-              switches::kSyncEnableBookmarksInTransportMode)) {
-        // Record an explicit signin for bookmarks for this account only.
+      if (base::FeatureList::IsEnabled(
+              switches::kSyncEnableBookmarksInTransportMode) &&
+          (access_point == signin_metrics::AccessPoint::kBookmarkBubble ||
+           syncer::kExplicitSigninForBookmarks.Get())) {
+        // Record an explicit signin for bookmarks for this account only. This
+        // should happen for every new sign in if `kExplicitSigninForBookmarks`
+        // is enabled, as this pref will be used to determine whether users are
+        // eligible for account storage or not.
         SigninPrefs(*client_->GetPrefs())
             .SetBookmarksExplicitBrowserSignin(current_gaia_id, true);
       }
