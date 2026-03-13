@@ -18,13 +18,34 @@ namespace {
 const int kMaxUploadScreenshotWidth = 4096;
 const int kMaxUploadScreenshotHeight = 2160;
 
+void CopyFromSurface(
+    content::RenderWidgetHostView* render_widget_host_view,
+    const gfx::Rect& src_rect,
+    const gfx::Size& output_size,
+    base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback) {
+  if (!render_widget_host_view ||
+      !render_widget_host_view->IsSurfaceAvailableForCopy() ||
+      src_rect.IsEmpty() || output_size.IsEmpty()) {
+    std::move(callback).Run(
+        base::unexpected(content::CopyFromSurfaceError::kUnknown));
+    return;
+  }
+
+  render_widget_host_view->CopyFromSurface(
+      src_rect, output_size, base::TimeDelta(), std::move(callback));
+}
+
 }  // anonymous namespace
 
 // static
 std::unique_ptr<ScreenshotTaker> ScreenshotTaker::ScreenshotTaker::Start(
     content::RenderWidgetHostView* render_widget_host_view) {
-  return base::WrapUnique<ScreenshotTaker>(
-      new ScreenshotTaker(render_widget_host_view));
+  gfx::Size view_size = render_widget_host_view
+                            ? render_widget_host_view->GetViewBounds().size()
+                            : gfx::Size();
+  auto screenshot_taker = base::WrapUnique<ScreenshotTaker>(new ScreenshotTaker(
+      base::BindOnce(&CopyFromSurface, render_widget_host_view), view_size));
+  return screenshot_taker;
 }
 
 ScreenshotTaker::~ScreenshotTaker() = default;
@@ -37,27 +58,15 @@ void ScreenshotTaker::SetCallback(Callback callback) {
 }
 
 ScreenshotTaker::ScreenshotTaker(
-    content::RenderWidgetHostView* render_widget_host_view) {
-  if (!render_widget_host_view ||
-      !render_widget_host_view->IsSurfaceAvailableForCopy()) {
-    OnGotScreenshot(base::unexpected(content::CopyFromSurfaceError::kUnknown));
-    return;
-  }
-
-  // Note: this is the size in pixels on-screen, not the size in DIPs.
-  gfx::Size source_size = render_widget_host_view->GetViewBounds().size();
-  if (source_size.IsEmpty()) {
-    OnGotScreenshot(base::unexpected(content::CopyFromSurfaceError::kUnknown));
-    return;
-  }
-
+    CopyFromSurfaceCallback copy_from_surface_callback,
+    gfx::Size view_size) {
   gfx::Size target_size = ComputeTargetSize(
-      source_size,
+      view_size,
       gfx::Size(kMaxUploadScreenshotWidth, kMaxUploadScreenshotHeight));
-  render_widget_host_view->CopyFromSurface(
-      gfx::Rect(source_size), target_size, base::TimeDelta(),
-      base::BindOnce(&ScreenshotTaker::OnGotScreenshot,
-                     weak_ptr_factory_.GetWeakPtr()));
+  std::move(copy_from_surface_callback)
+      .Run(gfx::Rect(view_size), target_size,
+           base::BindOnce(&ScreenshotTaker::OnGotScreenshot,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 // static

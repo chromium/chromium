@@ -24,6 +24,12 @@ namespace feedback {
 // send as part of CSD ping.
 class ScreenshotTaker {
  public:
+  typedef base::OnceCallback<void(
+      const gfx::Rect& src_rect,
+      const gfx::Size& output_size,
+      base::OnceCallback<void(const content::CopyFromSurfaceResult&)> callback)>
+      CopyFromSurfaceCallback;
+
   // Callback with screenshot.
   typedef base::OnceCallback<void(const SkBitmap&)> Callback;
 
@@ -40,8 +46,12 @@ class ScreenshotTaker {
  private:
   friend class FeedbackScreenshotTakerTest;
 
-  explicit ScreenshotTaker(
-      content::RenderWidgetHostView* render_widget_host_view);
+  // Constructs a ScreenshotTaker.
+  // `copy_from_surface_callback` is the callback that should be called to take
+  // a screenshot. `view_size` is the size of RenderWidgetHostView in pixels on
+  // screen (not DIP).
+  ScreenshotTaker(CopyFromSurfaceCallback copy_from_surface_callback,
+                  gfx::Size view_size);
 
   static gfx::Size ComputeTargetSize(gfx::Size source_size, gfx::Size max_size);
 
