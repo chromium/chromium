@@ -41,13 +41,20 @@ class IOSPromoController {
  private:
   void OnPromoTriggered(desktop_to_mobile_promos::PromoType promo_type);
 
+  void MaybeShowTabGroupsPromo();
+
+  void ShowIOSPromo(desktop_to_mobile_promos::PromoType promo_type);
+
   bool IsUserEligibleForPromo(desktop_to_mobile_promos::PromoType promo_type);
 
   const raw_ptr<Browser> browser_;
 
   base::CallbackListSubscription promo_trigger_subscription_;
+  base::CallbackListSubscription tab_group_editor_hidden_subscription_;
 
   ui::ScopedUnownedUserData<IOSPromoController> scoped_unowned_user_data_;
+
+  base::WeakPtrFactory<IOSPromoController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_DESKTOP_TO_MOBILE_PROMOS_IOS_PROMO_CONTROLLER_H_

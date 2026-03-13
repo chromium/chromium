@@ -78,10 +78,28 @@ const syncer::DeviceInfo* IOSPromoTriggerService::GetIOSDeviceToRemind() {
   return preferred_device;
 }
 
+void IOSPromoTriggerService::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kTabGroups)) {
+    if (selection.active_tab_changed() && selection.new_tab &&
+        selection.new_tab->GetGroup().has_value()) {
+      // Trigger the Tab Groups promo if a user consults a tab within a group.
+      NotifyPromoShouldBeShown(desktop_to_mobile_promos::PromoType::kTabGroups);
+    }
+  }
+}
+
 void IOSPromoTriggerService::OnTabGroupChanged(const TabGroupChange& change) {
   if (MobilePromoOnDesktopTypeEnabled(
           MobilePromoOnDesktopPromoType::kTabGroups)) {
-    NotifyPromoShouldBeShown(desktop_to_mobile_promos::PromoType::kTabGroups);
+    if (change.type == TabGroupChange::kCreated ||
+        change.type == TabGroupChange::kVisualsChanged) {
+      // Trigger the Tab Groups promo if a user creates or edits a tab group.
+      NotifyPromoShouldBeShown(desktop_to_mobile_promos::PromoType::kTabGroups);
+    }
   }
 }
 

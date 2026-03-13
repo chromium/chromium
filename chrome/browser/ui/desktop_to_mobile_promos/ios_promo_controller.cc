@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,12 +17,15 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promos_utils.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_device_info/device_info.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 using desktop_to_mobile_promos::PromoType;
@@ -105,6 +109,42 @@ void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
   if (!CanShowIOSPromo(promo_type)) {
     return;
   }
+
+  if (promo_type == PromoType::kTabGroups) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&IOSPromoController::MaybeShowTabGroupsPromo,
+                                  weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  ShowIOSPromo(promo_type);
+}
+
+void IOSPromoController::MaybeShowTabGroupsPromo() {
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  ui::ElementContext context = views::ElementTrackerViews::GetContextForView(
+      BrowserView::GetBrowserViewForBrowser(browser_));
+
+  if (tracker->IsElementVisible(
+          TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId, context)) {
+    if (tab_group_editor_hidden_subscription_) {
+      return;
+    }
+    tab_group_editor_hidden_subscription_ = tracker->AddElementHiddenCallback(
+        TabGroupEditorBubbleView::kTabGroupEditorBubbleViewId, context,
+        base::BindRepeating(
+            [](IOSPromoController* controller, ui::TrackedElement*) {
+              controller->ShowIOSPromo(PromoType::kTabGroups);
+            },
+            base::Unretained(this)));
+    return;
+  }
+
+  ShowIOSPromo(PromoType::kTabGroups);
+}
+
+void IOSPromoController::ShowIOSPromo(PromoType promo_type) {
+  tab_group_editor_hidden_subscription_ = {};
 
   auto* user_education_interface =
       BrowserUserEducationInterface::From(browser_);
