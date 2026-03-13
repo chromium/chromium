@@ -114,11 +114,11 @@ found in the LICENSE file.
             android:visibility="gone" />
 
         <ViewStub
-            android:id="@+id/bottom_controls_stub"
+            android:id="@+id/tab_group_ui_container_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="start|bottom"
-            android:inflatedId="@+id/bottom_controls"
+            android:inflatedId="@+id/tab_group_ui_container"
             android:layout="@layout/bottom_control_container" />
 
         <ViewStub

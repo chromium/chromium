@@ -130,7 +130,7 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
         verifyTabStripFaviconCount(cta, 2);
     }
@@ -155,12 +155,12 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
                     RecyclerView stripRecyclerView =
                             bottomToolbar.findViewById(R.id.tab_list_recycler_view);
                     recyclerViewReference.set(stripRecyclerView);
@@ -188,12 +188,12 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
                     RecyclerView stripRecyclerView =
                             bottomToolbar.findViewById(R.id.tab_list_recycler_view);
                     recyclerViewReference.set(stripRecyclerView);
@@ -220,12 +220,12 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
                     RecyclerView stripRecyclerView =
                             bottomToolbar.findViewById(R.id.tab_list_recycler_view);
 
@@ -239,7 +239,7 @@ public class TabGroupUiTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
                     RecyclerView stripRecyclerView =
                             bottomToolbar.findViewById(R.id.tab_list_recycler_view);
 
@@ -270,11 +270,11 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
                     RecyclerView stripRecyclerView =
                             bottomToolbar.findViewById(R.id.tab_list_recycler_view);
                     recyclerViewReference.set(stripRecyclerView);
@@ -326,11 +326,11 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
                     RecyclerView stripRecyclerView =
                             bottomToolbar.findViewById(R.id.tab_list_recycler_view);
                     recyclerViewReference.set(stripRecyclerView);
@@ -375,11 +375,11 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.tab_group_ui_container);
                     RecyclerView stripRecyclerView =
                             bottomToolbar.findViewById(R.id.tab_list_recycler_view);
                     recyclerViewReference.set(stripRecyclerView);
@@ -420,7 +420,7 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
 
         // The strip should be hidden when omnibox is focused.
@@ -428,7 +428,7 @@ public class TabGroupUiTest {
         onView(
                         allOf(
                                 withId(R.id.tab_list_recycler_view),
-                                isDescendantOfA(withId(R.id.bottom_controls))))
+                                isDescendantOfA(withId(R.id.tab_group_ui_container))))
                 .check(matches(withEffectiveVisibility(INVISIBLE)));
     }
 
@@ -463,7 +463,7 @@ public class TabGroupUiTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
 
         BottomControlsCoordinator coordinator =

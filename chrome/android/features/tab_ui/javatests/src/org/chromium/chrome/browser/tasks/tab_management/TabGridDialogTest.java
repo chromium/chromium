@@ -2083,12 +2083,12 @@ public class TabGridDialogTest {
         waitForVisibleView(
                 allOf(
                         withId(R.id.tab_list_recycler_view),
-                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isDescendantOfA(withId(R.id.tab_group_ui_container)),
                         isCompletelyDisplayed()));
         onViewWaiting(
                         allOf(
                                 withId(R.id.toolbar_show_group_dialog_button),
-                                isDescendantOfA(withId(R.id.bottom_controls))))
+                                isDescendantOfA(withId(R.id.tab_group_ui_container))))
                 .perform(click());
     }
 
@@ -2370,7 +2370,7 @@ public class TabGridDialogTest {
                 IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                         == bottomContainer.getImportantForAccessibility());
         if (isPhone()) {
-            View bottomControls = cta.findViewById(R.id.bottom_controls);
+            View bottomControls = cta.findViewById(R.id.tab_group_ui_container);
             assertEquals(
                     isDialogFullyVisible,
                     IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS

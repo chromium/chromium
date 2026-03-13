@@ -2251,7 +2251,8 @@ public class ToolbarManager
 
     /** Enable the bottom controls. */
     public void enableBottomControls() {
-        View root = ((ViewStub) mActivity.findViewById(R.id.bottom_controls_stub)).inflate();
+        View tabGroupUiContainer =
+                ((ViewStub) mActivity.findViewById(R.id.tab_group_ui_container_stub)).inflate();
         assert mTabGroupUiOneshotSupplier == null;
         assert mUndoBarThrottle != null;
         assert mLayoutManager != null;
@@ -2269,7 +2270,7 @@ public class ToolbarManager
                         mActivityTabProvider,
                         mTabModelSelector,
                         mActivity,
-                        root.findViewById(R.id.bottom_container_slot),
+                        tabGroupUiContainer.findViewById(R.id.bottom_container_slot),
                         mBrowserControlsSizer,
                         mScrimManager,
                         mOmniboxFocusStateSupplier,
@@ -2296,7 +2297,7 @@ public class ToolbarManager
                         mControlsVisibilityDelegate,
                         mFullscreenManager,
                         mEdgeToEdgeControllerSupplier,
-                        (ScrollingBottomViewResourceFrameLayout) root,
+                        (ScrollingBottomViewResourceFrameLayout) tabGroupUiContainer,
                         LayerType.TABSTRIP_TOOLBAR,
                         tabGroupUiBottomControlsContentDelegateSupplier,
                         mTabObscuringHandler,
