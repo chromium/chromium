@@ -116,7 +116,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEB_STORAGE_DELETE_BROWSING_DATA,
                 Features.SPECULATIVE_LOADING_CONFIG,
                 Features.SAVE_STATE,
-                Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE,
                 Features.PROVIDER_WEAKLY_REF_WEBVIEW,
                 Features.PAYMENT_REQUEST,
                 Features.WEBVIEW_BUILDER,
@@ -130,17 +129,12 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.CUSTOM_REQUEST_HEADERS,
                 Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_V2,
-                Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
                 Features.ADD_QUIC_HINTS_V1,
-                Features.ON_NAVIGATION_COMPLETED_NON_COMMITTED,
-                Features.COMMITTED_NAVIGATION_GET_PAGE_NON_NULL,
-                Features.WEB_VIEW_NAVIGATION_LISTENER_V2,
                 Features.WEBVIEW_BUILDER_V2,
                 Features.BACK_FORWARD_CACHE_SETTINGS_V3,
-                Features.PAGE_GET_URL,
                 Features.JS_INJECTION_IN_FRAME_AND_WORLD,
-                Features.NAVIGATION_GET_WEB_RESOURCE_ERROR,
                 Features.BACK_FORWARD_CACHE_SETTINGS_V4 + Features.DEV_SUFFIX,
+                Features.WEB_VIEW_NAVIGATION_LISTENER,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
