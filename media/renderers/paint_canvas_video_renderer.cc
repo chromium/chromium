@@ -728,7 +728,7 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
 
 // Checks support before attempting a service-side copy of a SharedImage to a
 // GL texture via Skia.
-bool CanCopySharedImageToGLTextureViaSkia(VideoPixelFormat video_frame_format,
+bool CanCopySharedImageToGLTextureViaSkia(bool is_opaque,
                                           uint32_t shared_image_target,
                                           unsigned int dst_target,
                                           unsigned int dst_internal_format,
@@ -744,13 +744,15 @@ bool CanCopySharedImageToGLTextureViaSkia(VideoPixelFormat video_frame_format,
   return false;
 #else
   bool si_usable_by_gles2_interface = shared_image_target != 0;
-  // Since skia always produces premultiply alpha outputs,
-  // trying direct uploading path when video format is opaque or premultiply
-  // alpha been requested.
+  // Since skia always produces premultiply alpha outputs, trying direct
+  // uploading path when the source is opaque or premultiply alpha been
+  // requested.
   // TODO(crbug.com/40159723): Figure out whether premultiply options here are
   // accurate.
-  bool is_premul = media::IsOpaque(video_frame_format) ||
-                   dst_alpha_type == kPremul_SkAlphaType;
+  // TODO(crbug.com/343011436): Remove the `is_opaque` param by querying the
+  // SharedImage's format directly after verifying that this doesn't change
+  // behavior for any existing callers.
+  bool is_premul = is_opaque || dst_alpha_type == kPremul_SkAlphaType;
   bool supports_one_copy_format = ValidFormatForDirectUploading(
       static_cast<GLenum>(dst_internal_format), dst_type);
   // dst texture mipLevel must be 0.
@@ -774,8 +776,9 @@ bool CanCopyVideoFrameDirectlyToGLTexture(gpu::gles2::GLES2Interface* gl,
 
   return gl->CanCopySharedImageToGLTextureViaTextureCopy(shared_image.get()) ||
          CanCopySharedImageToGLTextureViaSkia(
-             video_frame->format(), shared_image->GetTextureTarget(), target,
-             internal_format, type, level, dst_alpha_type);
+             media::IsOpaque(video_frame->format()),
+             shared_image->GetTextureTarget(), target, internal_format, type,
+             level, dst_alpha_type);
 }
 
 void CopyVideoFrameDirectlyToGLTexture(
@@ -806,8 +809,9 @@ void CopyVideoFrameDirectlyToGLTexture(
     destination_gl->ShallowFlushCHROMIUM();
   } else {
     CHECK(CanCopySharedImageToGLTextureViaSkia(
-        video_frame->format(), shared_image->GetTextureTarget(), target,
-        internal_format, type, level, dst_alpha_type));
+        media::IsOpaque(video_frame->format()),
+        shared_image->GetTextureTarget(), target, internal_format, type, level,
+        dst_alpha_type));
     // Do a service-side copy from the SharedImage to the destination texture
     // via Skia wrapping the destination texture in an SkSurface. Note that
     // this relies on the service-side GL implementation using a Ganesh/GL
