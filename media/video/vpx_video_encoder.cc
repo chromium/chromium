@@ -258,29 +258,29 @@ std::string LogVpxErrorMessage(vpx_codec_ctx_t* context,
 // pixel format. If no conversion is needed returns nullopt.
 std::optional<VideoPixelFormat> GetConversionFormat(VideoCodecProfile profile,
                                                     VideoPixelFormat format,
-                                                    bool needs_resize) {
+                                                    bool needs_copy) {
   switch (profile) {
     case VP8PROFILE_ANY:
     case VP9PROFILE_PROFILE0:
       if ((format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_I420) ||
-          needs_resize) {
+          needs_copy) {
         return PIXEL_FORMAT_I420;
       }
       break;
     case VP9PROFILE_PROFILE1:
-      if (format != PIXEL_FORMAT_I444 || needs_resize) {
+      if (format != PIXEL_FORMAT_I444 || needs_copy) {
         return PIXEL_FORMAT_I444;
       }
       break;
     case VP9PROFILE_PROFILE2:
-      if (format != PIXEL_FORMAT_YUV420P10 || needs_resize) {
+      if (format != PIXEL_FORMAT_YUV420P10 || needs_copy) {
         // VideoFrameConverter doesn't support 10bit yet, so output I420 then
         // convert to I010.
         return PIXEL_FORMAT_I420;
       }
       break;
     case VP9PROFILE_PROFILE3:
-      if (format != PIXEL_FORMAT_YUV444P10 || needs_resize) {
+      if (format != PIXEL_FORMAT_YUV444P10 || needs_copy) {
         // VideoFrameConverter doesn't support 10bit yet, so output I444 then
         // convert to I410.
         return PIXEL_FORMAT_I444;
@@ -596,12 +596,22 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
+  bool requires_copy = frame->visible_rect().size() != options_.frame_size ||
+                       (IsYuvPlanar(frame->format()) &&
+                        VideoFrame::NumPlanes(frame->format()) >= 3 &&
+                        frame->stride(VideoFrame::Plane::kU) !=
+                            frame->stride(VideoFrame::Plane::kV));
+
   // Format conversion or resizing may be necessary to get the frame into the
   // form needed by libvpx for encoding.
   if (auto conversion_format =
-          GetConversionFormat(profile_, frame->format(),
-                              /*needs_resize=*/frame->visible_rect().size() !=
-                                  options_.frame_size)) {
+          GetConversionFormat(profile_, frame->format(), requires_copy)) {
+    // In cases where we need to
+    // - enlarge the frame
+    // - change the pixel format
+    // - change the aspect ratio or
+    // - use matching U and V strides
+    // we are forced to convert and rescale manually.
     auto temp_frame = frame_pool_.CreateFrame(
         *conversion_format, options_.frame_size, gfx::Rect(options_.frame_size),
         options_.frame_size, frame->timestamp());
