@@ -214,6 +214,7 @@
   if (_tabGridState.tabGridVisible) {
     return;
   }
+  [self updateButtonsForCurrentTabGridPage];
   self.currentWebStateList = _incognitoWebStateList;
 }
 
@@ -221,6 +222,7 @@
   if (_tabGridState.tabGridVisible) {
     return;
   }
+  [self updateButtonsForCurrentTabGridPage];
   self.currentWebStateList = _regularWebStateList;
 }
 
@@ -374,9 +376,14 @@
   TabGridPage page = _currentPage == TabGridPageTabGroups
                          ? _tabGridState.originPage
                          : _currentPage;
-  BOOL enableButtons = IsAddNewTabAllowedByPolicy(
-      _prefService, page == TabGridPageIncognitoTabs);
-  if (page == TabGridPageIncognitoTabs) {
+  BOOL isIncognitoPage = page == TabGridPageIncognitoTabs;
+  BOOL enableButtons =
+      IsAddNewTabAllowedByPolicy(_prefService, isIncognitoPage);
+  BOOL isIncognitoContentVisible =
+      (!_tabGridState.tabGridVisible &&
+       _incognitoState.incognitoContentVisible) ||
+      (_tabGridState.tabGridVisible && isIncognitoPage);
+  if (isIncognitoContentVisible) {
     enableButtons = enableButtons && !_incognitoState.authenticationRequired;
     if (IsIOSSoftLockEnabled()) {
       // TODO(crbug.com/484000564): Hide background if authentication is
