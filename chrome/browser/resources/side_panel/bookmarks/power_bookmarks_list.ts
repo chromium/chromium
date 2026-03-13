@@ -535,6 +535,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.updatedElementIds_ = [bookmark.parentId];
     this.set(`trackedProductInfos_.${bookmark.id}`, null);
     this.availableProductInfos_.delete(bookmark.id);
+    if (this.selectedBookmarks_[bookmark.id]) {
+      this.set(`selectedBookmarks_.${bookmark.id}`, false);
+    }
 
     // If the parent folder is visible, notify to ensure its displayed
     // child count is updated.
@@ -1052,8 +1055,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
     const selectedEntries = Object.entries(this.selectedBookmarks_)
                                 .filter(([_id, selected]) => selected);
     const selectedIds = selectedEntries.map(([id, _selected]) => id);
-    return selectedIds.map(
-        (id) => this.bookmarksService_.findBookmarkWithId(id)!);
+    return selectedIds
+        .map((id) => this.bookmarksService_.findBookmarkWithId(id)!)
+        .filter(b => !!b);
   }
 
   private getSelectedBookmarksLength_(): number {
