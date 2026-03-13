@@ -377,6 +377,7 @@ class EnclaveManager : public EnclaveManagerInterface {
       std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys,
       std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
           user_action_trigger);
+  bool IsStoringKeysFromOutOfContextRetrievalEnabled();
 
   // Slowly compute a PIN claim for the given PIN for submission to the enclave.
   static std::unique_ptr<device::enclave::ClaimedPIN> MakeClaimedPINSlowly(
@@ -532,6 +533,8 @@ class EnclaveManager : public EnclaveManagerInterface {
   void TemporarilyCachePendingOpportunisticKeys(
       const GaiaId& gaia_id,
       std::vector<trusted_vault::TrustedVaultKeyAndVersion> keys);
+
+  void RemoveGaiaIdsFromLocalState(base::flat_set<GaiaId> gaia_ids_to_remove);
 
   const base::FilePath file_path_;
   const raw_ptr<signin::IdentityManager> identity_manager_;

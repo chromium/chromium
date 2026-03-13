@@ -135,6 +135,7 @@ struct EnclaveManager::StoreKeysArgs {
 
 struct EnclaveManager::PendingAction {
   EnclaveManager::Callback callback;
+  base::flat_set<GaiaId> gaia_ids_to_remove;
   bool want_registration = false;
   bool renew_pin = false;
   std::unique_ptr<StoreKeysArgs> store_keys_args;
@@ -1592,6 +1593,16 @@ class EnclaveManager::StateMachine {
 
   void DoNextAction() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!action_->gaia_ids_to_remove.empty()) {
+      for (const auto& gaia_id : action_->gaia_ids_to_remove) {
+        local_state_.mutable_users()->erase(gaia_id.ToString());
+      }
+      manager_->WriteState(&local_state_);
+      success_ = true;
+      state_ = State::kStop;
+      return;
+    }
 
     if (action_->opportunistic_store_keys_args) {
       state_ = State::kStoringOpportunisticallyRetrievedKey;
@@ -3914,6 +3925,14 @@ void EnclaveManager::TemporarilyCachePendingOpportunisticKeys(
       base::Seconds(ttl_seconds));
 }
 
+bool EnclaveManager::IsStoringKeysFromOutOfContextRetrievalEnabled() {
+  return base::FeatureList::IsEnabled(
+             device::kWebAuthnOpportunisticRetrieval) &&
+         base::FeatureList::IsEnabled(
+             device::
+                 kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange);
+}
+
 void EnclaveManager::StoreKeys(
     const GaiaId& gaia_id,
     std::vector<TrustedVaultKeyAndVersion> keys,
@@ -3925,7 +3944,7 @@ void EnclaveManager::StoreKeys(
         "PasswordManager.UserActionTriggerThatRetrievedPasskeySecret",
         user_action_trigger.value());
   }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
+  if (IsStoringKeysFromOutOfContextRetrievalEnabled()) {
     if (store_keys_lock_depth_) {
       webauthn::metrics::RecordGPMRecoveryEvent(
           webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
@@ -4260,7 +4279,15 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
 
   // If a state machine is running, there must be a current user.
   CHECK(!state_machine_ || user_);
+  // In the old implementation `need_to_stop` is always `true` (but this is
+  // being fixed by enabling the flag
+  // `kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange`).
   bool need_to_stop = true;
+  if (base::FeatureList::IsEnabled(
+          device::
+              kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange)) {
+    need_to_stop = false;
+  }
 
   CoreAccountInfo primary_account_info =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -4291,11 +4318,14 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
     pending_keys_.reset();
   }
 
-  user_verifying_key_.reset();
-  identity_key_.reset();
+  if (need_to_stop) {
+    user_verifying_key_.reset();
+    identity_key_.reset();
+  }
 
   const signin::AccountsInCookieJarInfo in_jar =
       identity_manager_->GetAccountsInCookieJar();
+  base::flat_set<GaiaId> to_remove;
   if (in_jar.AreAccountsFresh()) {
     // If the user has signed out of any non-primary accounts, erase their
     // enclave state.
@@ -4305,55 +4335,50 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
             GetGaiaIDs(in_jar.GetSignedOutAccounts()));
     const base::flat_set<GaiaId> gaia_ids_in_state =
         GetGaiaIDs(local_state_->users());
-    base::flat_set<GaiaId> to_remove =
-        base::STLSetDifference<base::flat_set<GaiaId>>(gaia_ids_in_state,
-                                                       gaia_ids_in_cookie_jar);
+    to_remove = base::STLSetDifference<base::flat_set<GaiaId>>(
+        gaia_ids_in_state, gaia_ids_in_cookie_jar);
     if (primary_account_info_) {
       to_remove.erase(primary_account_info_->gaia);
     }
-    // A `StateMachine` can also mutate the enclave state. Thus if we're about
-    // to mutate it ourselves, confirm that any `StateMachine` is about to be
-    // stopped and thus cannot overwrite these changes.
-    CHECK(need_to_stop);
-    for (const auto& gaia_id : to_remove) {
-      CHECK(local_state_->mutable_users()->erase(gaia_id.ToString()));
+    if (!base::FeatureList::IsEnabled(
+            device::
+                kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange)) {
+      // The old behavior assumes that `need_to_stop` is always `true` and
+      // always updates local state and writes it to disk (even if `to_remove`
+      // is empty).
+      //
+      // A `StateMachine` can also mutate the enclave state. Thus if we're
+      // about to mutate it ourselves, confirm that any `StateMachine` is
+      // about to be stopped and thus cannot overwrite these changes.
+      CHECK(need_to_stop);
+      for (const auto& gaia_id : to_remove) {
+        CHECK(local_state_->mutable_users()->erase(gaia_id.ToString()));
+      }
+      WriteState(local_state_.get());
     }
-    WriteState(local_state_.get());
   }
 
   if (need_to_stop && !is_post_load) {
-    // The code below, which stops state machine and cancels all actions, might
-    // have a race condition with the logic of storing opportunistically
-    // retrieved key (which leads to discarding the key). This happens in a
-    // following scenario:
-    //
-    // 1) The Chrome profile is not signed-in, but a passkey secret has been
-    // opportunistically retrieved and cached (e.g., because a user signed-in to
-    // GMail).
-    //
-    // 2) Afterwards the user signs-in to Chrome profile. In this case Enclave
-    // Manager is being notified by Identity Manager and executes
-    // `HandleIdentityChange` (which leads to triggering `StoreKeys` for storing
-    // the cached secret).
-    //
-    // 3) Shortly after sign-in the user is being offered to turn-on Sync. If
-    // the user turns-on Sync - Idnetity Manager notifies Enclave Manager again
-    // (and `HandleIdentityChange` is being executed again). This time the calls
-    // of `CancelAllActions()` and `Stopped()` will result in the interruption
-    // of the flow started by `StoreKeys` (and the keys will be discarded).
-    //
-    // The race condition happens if the step (3) happens within a short time
-    // frame after the step (2) - which is true in practice.
-    //
-    // TODO(crbug.com/486805528): Fix the described race condition.
     CancelAllActions();
     Stopped();
+  }
+
+  if (base::FeatureList::IsEnabled(
+          device::
+              kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange)) {
+    // In the new implementation we update local state only if `to_remove` is
+    // not empty.
+    if (!to_remove.empty()) {
+      // Scheduling a state machine operation, which will update the local state
+      // and will write it to disk.
+      RemoveGaiaIdsFromLocalState(std::move(to_remove));
+    }
   }
 
   // Now, as the the logic of handling identity change has finished, we can try
   // to store the cached opportunistically retrieved key (if the new primary
   // account matches).
-  if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval) &&
+  if (IsStoringKeysFromOutOfContextRetrievalEnabled() &&
       primary_account_info_ && !primary_account_info_->IsEmpty() &&
       opportunistic_pending_keys_ &&
       opportunistic_pending_keys_->gaia_id == primary_account_info_->gaia) {
@@ -4371,6 +4396,15 @@ void EnclaveManager::HandleIdentityChange(bool is_post_load) {
                 kStoreKeysFromOpportunisticFlowCachedKeysStoringAfterSignIn);
   }
   ConsiderPinRenewal();
+}
+
+void EnclaveManager::RemoveGaiaIdsFromLocalState(
+    base::flat_set<GaiaId> gaia_ids_to_remove) {
+  auto action = std::make_unique<PendingAction>();
+  action->gaia_ids_to_remove = std::move(gaia_ids_to_remove);
+  action->callback = base::DoNothing();
+  pending_actions_.emplace_back(std::move(action));
+  Act();
 }
 
 void EnclaveManager::Stopped() {

@@ -202,6 +202,10 @@ BASE_FEATURE_PARAM(int,
                    "cached_key_ttl",
                    kDefaultOpportunisticRetrievalTimeToKeepCachedKeySeconds);
 
+// Enabled by default in M148. Remove in or after M152.
+BASE_FEATURE(kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enabled by default in M143. Remove in or after M146.
 BASE_FEATURE(kWebAuthenticationWindowsHints, base::FEATURE_ENABLED_BY_DEFAULT);
 

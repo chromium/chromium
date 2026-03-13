@@ -514,7 +514,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
                        {trusted_vault::TrustedVaultKeyAndVersion(
                            std::move(key), last_key_version)},
                        std::nullopt);
-    if (base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval)) {
+    if (manager->IsStoringKeysFromOutOfContextRetrievalEnabled()) {
       histogram_tester.ExpectBucketCount(
           "WebAuthentication.GPM.RecoveryEvent",
           webauthn::metrics::WebAuthenticationGPMRecoveryEvent::
@@ -742,6 +742,14 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
   // Remove all accounts from the cookie jar. The primary account should be
   // retained.
   identity_test_env_.SetCookieAccounts({});
+  if (base::FeatureList::IsEnabled(
+          device::
+              kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange)) {
+    // Removal of accounts from cookie jar leads to scheduling enclave manager's
+    // state machine operation for updating the local state. So we need to wait
+    // for completion of that operation.
+    base::test::RunUntil([this]() { return manager_.is_idle(); });
+  }
   EXPECT_THAT(GaiaAccountsInState(), testing::UnorderedElementsAre(gaia2));
 
   // When the primary account changes, the second account should be dropped
@@ -752,6 +760,14 @@ TEST_F(EnclaveManagerTest, PrimaryUserChange) {
       identity_test_env_.identity_manager()
           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia.ToString();
+  if (base::FeatureList::IsEnabled(
+          device::
+              kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange)) {
+    // Changing accounts leads to scheduling enclave manager's state machine
+    // operation for updating the local state. So we need to wait for completion
+    // of that operation.
+    base::test::RunUntil([this]() { return manager_.is_idle(); });
+  }
   EXPECT_THAT(GaiaAccountsInState(), testing::UnorderedElementsAre(gaia3));
 }
 
@@ -783,6 +799,67 @@ TEST_F(EnclaveManagerTest, PrimaryUserChangeDiscardsActions) {
   ASSERT_FALSE(register_future1.Get());
   EXPECT_TRUE(register_future2.Wait());
   ASSERT_FALSE(register_future2.Get());
+}
+
+TEST_F(EnclaveManagerTest, CookieJarChangeDoesNotDiscardActions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange);
+
+  security_domain_service_->pretend_there_are_members();
+  const CoreAccountInfo account =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
+
+  // Simulating the presence of multiple accounts in the cookie jar.
+  identity_test_env_.MakePrimaryAccountAvailable("test2@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  identity_test_env_.MakePrimaryAccountAvailable("test3@gmail.com",
+                                                 signin::ConsentLevel::kSignin);
+  identity_test_env_.MakePrimaryAccountAvailable(account.email,
+                                                 signin::ConsentLevel::kSync);
+
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
+
+  // Updating the cookie jar.
+  identity_test_env_.SetCookieAccounts({});
+  base::test::RunUntil([this]() { return manager_.is_idle(); });
+  EXPECT_EQ(manager_.local_state_for_testing().mutable_users()->size(), 1u);
+
+  EXPECT_TRUE(register_future.Wait());
+  ASSERT_TRUE(register_future.Get());
+}
+
+TEST_F(EnclaveManagerTest,
+       PrimaryUserRemainsTheSame_SyncConsentChanges_DoesNotDiscardActions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange);
+
+  security_domain_service_->pretend_there_are_members();
+  const CoreAccountInfo account =
+      identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
+
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
+
+  identity_test_env_.MakePrimaryAccountAvailable(account.email,
+                                                 signin::ConsentLevel::kSync);
+  // Since the primary account remains the same, the on-going actions will not
+  // be cancelled.
+  ASSERT_FALSE(manager_.is_idle());
+  EXPECT_TRUE(register_future.Wait());
+  ASSERT_TRUE(register_future.Get());
 }
 
 TEST_F(EnclaveManagerTest, AddWithExistingPIN) {
@@ -2198,9 +2275,16 @@ TEST_F(EnclaveManagerTest, CheckGpmPinAvailabilityWhenPinIsNotAvailable) {
 }
 
 class OpportunisticKeyRetrievalEnclaveManagerTest : public EnclaveManagerTest {
+ public:
+  OpportunisticKeyRetrievalEnclaveManagerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnOpportunisticRetrieval,
+         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnOpportunisticRetrieval};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -2249,6 +2333,7 @@ TEST_F(OpportunisticKeyRetrievalEnclaveManagerTest,
       identity_test_env_.identity_manager()->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
   identity_test_env_.SetCookieAccounts({});
+  base::test::RunUntil([this]() { return manager_.is_idle(); });
   EXPECT_THAT(GaiaAccountsInState(),
               testing::UnorderedElementsAre(account_2.gaia.ToString()));
 
@@ -2276,11 +2361,12 @@ TEST_F(OpportunisticKeyRetrievalEnclaveManagerTest,
   // opportunistically retrieved key.
   identity_test_env_.MakePrimaryAccountAvailable(account_1.email,
                                                  signin::ConsentLevel::kSignin);
-  // Another call to `identity_test_env_.SetCookieAccounts(...)` or to
-  // `identity_test_env_.MakePrimaryAccountAvailable(...)` will notify
-  // `EnclaveManager::HandleIdentityChange` again, which will interfere with the
-  // logic of storing the opportunistically retrieved key (race condition).
-  // TODO(crbug.com/486805528): Add the aforementioned calls to this test.
+  // Another call to `identity_test_env_.MakePrimaryAccountAvailable(...)`
+  // with the same account shouldn't interrupt the logic of storing
+  // opportunistically retrieved key.
+  identity_test_env_.MakePrimaryAccountAvailable(account_1.email,
+                                                 signin::ConsentLevel::kSync);
+  base::test::RunUntil([this]() { return manager_.is_idle(); });
   EXPECT_THAT(GaiaAccountsInState(),
               testing::UnorderedElementsAre(account_1.gaia.ToString()));
 
@@ -2320,9 +2406,16 @@ class EnclaveManagerMockTimeTest : public EnclaveManagerTest {
 
 class OpportunisticKeyRetrievalEnclaveManagerMockTimeTest
     : public EnclaveManagerMockTimeTest {
+ public:
+  OpportunisticKeyRetrievalEnclaveManagerMockTimeTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnOpportunisticRetrieval,
+         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnOpportunisticRetrieval};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -2705,9 +2798,16 @@ TEST_F(EnclaveUVTest, UserVerifyingKeyUseExisting) {
 }
 
 class OpportunisticKeyRetrievalEnclaveUVTest : public EnclaveUVTest {
+ public:
+  OpportunisticKeyRetrievalEnclaveUVTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnOpportunisticRetrieval,
+         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kWebAuthnOpportunisticRetrieval};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(OpportunisticKeyRetrievalEnclaveUVTest, OpportunisticStoreKeys) {
