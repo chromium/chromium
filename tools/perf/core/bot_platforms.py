@@ -410,9 +410,10 @@ def _views_perftests(estimated_runtime: int = 7):
 
 @_register('web_tests_cuj')
 def _web_tests_cuj(estimated_runtime: int = 10):
-  return ExecutableConfig('web_tests_cuj',
-                          path='../../tools/perf/web_tests_cuj.py',
-                          estimated_runtime=estimated_runtime)
+  return CrossbenchConfig('web_tests_cuj',
+                          'speedometer_3.1',
+                          estimated_runtime=estimated_runtime,
+                          flags=('--web-tests-cuj', '--debug'))
 
 # Speedometer:
 @_register('speedometer2.0.crossbench')
@@ -739,7 +740,8 @@ def CreateLegacySchedule() -> set[_PerfPlatform]:
 
   _CROSSBENCH_ANDROID_AL_BRYA = frozenset([
       _speedometer3_crossbench(flags=('--fileserver', '--debug')),
-      _motionmark1_3_crossbench(flags=('--fileserver', '--debug')),
+      # _motionmark1_3_crossbench(flags=('--fileserver', '--debug')),
+      _web_tests_cuj(),
   ])
 
   _CROSSBENCH_ANDROID_AL = frozenset([
@@ -972,9 +974,6 @@ def CreateLegacySchedule() -> set[_PerfPlatform]:
       _TelemetryConfig('jetstream2'),
       _TelemetryConfig('speedometer2'),
   ])
-  _ANDROID_AL_BRYA_EXECUTABLE_CONFIGS = frozenset([
-      _web_tests_cuj(),
-  ])
   _ANDROID_AL_BENCHMARK_CONFIGS = PerfSuite([
       _TelemetryConfig('rendering.mobile'),
   ])
@@ -1103,7 +1102,7 @@ def CreateLegacySchedule() -> set[_PerfPlatform]:
       'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
       'SSD, 4GB RAM.',
       _WIN_10_LOW_END_BENCHMARK_CONFIGS,
-      # TODO(crbug.com/40218037): Increase the count back to 46 when issue fixed.
+      # TODO(crbug.com/40218037): Increase the count back to 46.
       40,
       'win',
       pinpoint_only=True)
@@ -1188,8 +1187,8 @@ def CreateLegacySchedule() -> set[_PerfPlatform]:
       num_shards=4,
       benchmark_configs=_ANDROID_AL_BRYA_BENCHMARK_CONFIGS,
       platform_os='android',
-      executables=_ANDROID_AL_BRYA_EXECUTABLE_CONFIGS,
-      crossbench=_CROSSBENCH_ANDROID_AL)
+      executables=None,
+      crossbench=_CROSSBENCH_ANDROID_AL_BRYA)
   all_platforms.add(new_platform)
   new_platform = _PerfPlatform(name='android-corsola-steelix-8gb-perf',
                                description='Corsola SKU steelix_MT8186_8GB',
@@ -1373,7 +1372,6 @@ def CreateLegacySchedule() -> set[_PerfPlatform]:
 
   # Silence unused variable warnings:
   del _CROSSBENCH_MOTIONMARK_SPEEDOMETER
-  del _CROSSBENCH_ANDROID_AL_BRYA
   del _WIN_ARM64_BENCHMARK_CONFIGS
   return all_platforms
 
@@ -1738,7 +1736,9 @@ def LoadScheduleFile(file_path: pathlib.Path,
                      configs: dict[str, list[BenchmarkConfig]]):
   name = file_path.stem
   factory = _BENCHMARKS_CONFIG_FACTORIES[name]
-  is_telemetry = (factory == _TelemetryConfig)  # pylint: disable=comparison-with-callable)
+  # pylint: disable=comparison-with-callable)
+  is_telemetry = (factory == _TelemetryConfig)
+  # pylint: enable=comparison-with-callable)
   reader = ReadCSV(file_path)
   fieldnames = reader.fieldnames
   assert fieldnames, 'Missing field names'

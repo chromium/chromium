@@ -2,14 +2,16 @@
     "0": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
     "1": {
         "benchmarks": {
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -26,22 +28,26 @@
         "benchmarks": {}
     },
     "3": {
-        "executables": {
+        "crossbench": {
             "web_tests_cuj": {
-                "path": "../../tools/perf/web_tests_cuj.py"
+                "crossbench_name": "speedometer_3.1",
+                "arguments": [
+                    "--web-tests-cuj",
+                    "--debug"
+                ]
             }
         },
         "benchmarks": {}
     },
     "extra_infos": {
         "num_stories": 4,
-        "predicted_min_shard_time": 10.0,
+        "predicted_min_shard_time": 10,
         "predicted_min_shard_index": 3,
         "predicted_max_shard_time": 71.0,
         "predicted_max_shard_index": 0,
         "shard #0": 71.0,
         "shard #1": 32.0,
         "shard #2": 60,
-        "shard #3": 10.0
+        "shard #3": 10
     }
 }

@@ -6,9 +6,5 @@
     {
         "duration": "32.0",
         "name": "speedometer2/Speedometer2"
-    },
-    {
-        "duration": "10.0",
-        "name": "web_tests_cuj/_gtest_"
     }
 ]
