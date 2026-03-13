@@ -290,12 +290,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchWithUrlBrowserTest,
   params.launch_source = apps::LaunchSource::kFromOtherApp;
   params.url = GetStartUrl();
   bool is_called = false;
-  LaunchSystemWebAppAsync(
-      browser()->profile(), GetAppType(), params, nullptr,
-      base::BindLambdaForTesting(
-          [&is_called](apps::LaunchResult&& callback_result) {
-            is_called = true;
-          }));
+  LaunchSystemWebAppAsync(browser()->profile(), GetAppType(), params, nullptr,
+                          base::BindLambdaForTesting(
+                              [&is_called](apps::LaunchResult callback_result) {
+                                is_called = true;
+                              }));
   navigation_observer.Wait();
   EXPECT_TRUE(is_called);
 }

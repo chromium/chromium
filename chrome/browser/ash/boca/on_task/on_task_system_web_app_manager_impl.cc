@@ -89,15 +89,15 @@ void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              base::WeakPtr<OnTaskSystemWebAppManagerImpl> instance,
-             apps::LaunchResult&& launch_result) {
+             apps::LaunchResult launch_result) {
             if (instance) {
               const SessionID active_window_id =
                   instance->GetActiveSystemWebAppWindowID();
               instance->PrepareSystemWebAppWindowForOnTask(
                   active_window_id, /*close_bundle_content=*/true);
             }
-            std::move(callback).Run(launch_result.state ==
-                                    apps::LaunchResult::State::kSuccess);
+            std::move(callback).Run(launch_result ==
+                                    apps::LaunchResult::kSuccess);
           },
           std::move(callback), weak_ptr_factory_.GetWeakPtr()));
 }

@@ -59,12 +59,11 @@
 namespace file_manager::file_tasks {
 
 extensions::api::file_manager_private::TaskResult
-ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
-                                TaskType task_type) {
+ConvertLaunchResultToTaskResult(apps::LaunchResult result, TaskType task_type) {
   // TODO(benwells): return the correct code here, depending
   // on how the app will be opened in multiprofile.
   namespace fmp = extensions::api::file_manager_private;
-  switch (result.state) {
+  switch (result) {
     case apps::State::kSuccess:
       if (task_type == TASK_TYPE_WEB_APP) {
         return fmp::TaskResult::kOpened;
@@ -373,7 +372,7 @@ void ExecuteAppServiceTask(
       /*window_info=*/nullptr,
       base::BindOnce(
           [](FileTaskFinishedCallback done, TaskType task_type,
-             apps::LaunchResult&& result) {
+             apps::LaunchResult result) {
             std::move(done).Run(
                 ConvertLaunchResultToTaskResult(result, task_type), "");
           },

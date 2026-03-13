@@ -410,8 +410,7 @@ class AppServiceProxyBase : public KeyedService,
                                          const std::string& app_id,
                                          UninstallSource uninstall_source);
 
-  virtual void OnLaunched(LaunchCallback callback,
-                          LaunchResult&& launch_result);
+  virtual void OnLaunched(LaunchCallback callback, LaunchResult launch_result);
 
   virtual bool ShouldExcludeBrowserTabApps(bool exclude_browser_tab_apps,
                                            WindowMode window_mode);

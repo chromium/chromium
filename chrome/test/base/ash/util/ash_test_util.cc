@@ -71,7 +71,7 @@ webapps::AppId CreateSystemWebAppImpl(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
       std::move(params),
       base::BindLambdaForTesting(
-          [&](apps::LaunchResult&& result) { launch_wait.Quit(); }));
+          [&](apps::LaunchResult result) { launch_wait.Quit(); }));
   launch_wait.Run();
   return app_id;
 }

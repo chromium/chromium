@@ -133,7 +133,7 @@ void KioskAppServiceLauncher::OnInstanceUpdate(
   // When running with Lacros the visibility update often arrives before the
   // launch update, so trigger the launch update first.
   // This will be a no-op if the launch update already arrived.
-  OnAppLaunched(apps::LaunchResult(apps::LaunchResult::State::kSuccess));
+  OnAppLaunched(apps::LaunchResult(apps::LaunchResult::kSuccess));
 
   instance_registry_observation_.Reset();
   if (!app_visible_callback_.is_null()) {
@@ -159,7 +159,7 @@ void KioskAppServiceLauncher::LaunchAppInternal() {
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void KioskAppServiceLauncher::OnAppLaunched(apps::LaunchResult&& result) {
+void KioskAppServiceLauncher::OnAppLaunched(apps::LaunchResult result) {
   // App window is not active at this moment. We need to close splash screen
   // after app window is activated which will be handled in subclasses.
   if (!app_launched_callback_.is_null()) {

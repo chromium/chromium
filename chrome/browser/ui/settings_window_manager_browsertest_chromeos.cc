@@ -196,16 +196,16 @@ IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettings) {
   EXPECT_EQ(ash::kChromeUIOSSettingsHost, web_contents->GetURL().GetHost());
 
   // Showing an OS sub-page reuses the OS settings window.
-  base::RunLoop run_loop;
+  base::test::TestFuture<apps::LaunchResult> result;
   settings_manager_->ShowChromePageForProfile(
       browser()->profile(),
       chromeos::settings::GetOSSettingsUrl(
           chromeos::settings::mojom::kBluetoothDevicesSubpagePath),
-      display::kInvalidDisplayId,
-      base::BindOnce([](apps::LaunchResult&& result) {
-        EXPECT_EQ(apps::State::kSuccess, result.state);
-      }).Then(run_loop.QuitClosure()));
-  run_loop.Run();
+      display::kInvalidDisplayId, result.GetCallback());
+
+  ASSERT_TRUE(result.Wait());
+  EXPECT_EQ(apps::LaunchResult::kSuccess, result.Get());
+
   EXPECT_EQ(1u, GetNumberOfSettingsWindows());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 

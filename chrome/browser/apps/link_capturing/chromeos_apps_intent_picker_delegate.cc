@@ -206,7 +206,7 @@ void ChromeOsAppsIntentPickerDelegate::LaunchApp(
                       /*prefer_container=*/true),
         url, LaunchSource::kFromLink,
         std::make_unique<WindowInfo>(display::kDefaultDisplayId),
-        base::IgnoreArgs<LaunchResult&&>(std::move(callback)));
+        base::IgnoreArgs<LaunchResult>(std::move(callback)));
     CloseOrGoBack(web_contents);
   }
 }

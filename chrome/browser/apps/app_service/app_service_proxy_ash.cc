@@ -629,8 +629,8 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
 }
 
 void AppServiceProxyAsh::OnLaunched(LaunchCallback callback,
-                                    LaunchResult&& launch_result) {
-  std::move(callback).Run(std::move(launch_result));
+                                    LaunchResult launch_result) {
+  std::move(callback).Run(launch_result);
 }
 
 bool AppServiceProxyAsh::ShouldExcludeBrowserTabApps(

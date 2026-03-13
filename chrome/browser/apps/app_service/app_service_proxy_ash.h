@@ -257,8 +257,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   // apps::AppServiceProxyBase overrides:
   bool MaybeShowLaunchPreventionDialog(const apps::AppUpdate& update) override;
-  void OnLaunched(LaunchCallback callback,
-                  LaunchResult&& launch_result) override;
+  void OnLaunched(LaunchCallback callback, LaunchResult launch_result) override;
 
   // Loads the icon for the app block dialog or the app pause dialog.
   void LoadIconForDialog(const apps::AppUpdate& update,

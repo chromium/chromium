@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(AppEventsObserverBrowserTest, ReportLaunchedApp) {
       apps::AppLaunchParams(
           app_id, apps::LaunchContainer::kLaunchContainerWindow,
           WindowOpenDisposition::CURRENT_TAB, apps::LaunchSource::kFromTest),
-      base::IgnoreArgs<apps::LaunchResult&&>(run_loop.QuitClosure()));
+      base::IgnoreArgs<apps::LaunchResult>(run_loop.QuitClosure()));
   run_loop.Run();
 
   const auto [priority, record] = missive_observer.GetNextEnqueuedRecord();

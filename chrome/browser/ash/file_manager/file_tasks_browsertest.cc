@@ -1654,16 +1654,14 @@ class FakeWebAppPublisher : public apps::AppPublisher {
                            apps::WindowInfoPtr window_info,
                            apps::LaunchCallback callback) override {
     if (fail_launch_) {
-      std::move(callback).Run(
-          apps::LaunchResult(apps::LaunchResult::State::kFailed));
+      std::move(callback).Run(apps::LaunchResult(apps::LaunchResult::kFailed));
       return;
     }
     launches_.push_back({
         .app_id = app_id,
         .intent_url = (intent && intent->url) ? intent->url->spec() : "",
     });
-    std::move(callback).Run(
-        apps::LaunchResult(apps::LaunchResult::State::kSuccess));
+    std::move(callback).Run(apps::LaunchResult(apps::LaunchResult::kSuccess));
   }
 
   void LaunchAppWithParams(apps::AppLaunchParams&& params,

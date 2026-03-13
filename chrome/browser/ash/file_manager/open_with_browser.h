@@ -24,7 +24,7 @@ class FileSystemURL;
 namespace file_manager::util {
 
 using LaunchAppCallback =
-    base::OnceCallback<void(std::optional<apps::LaunchResult::State>)>;
+    base::OnceCallback<void(std::optional<apps::LaunchResult>)>;
 
 // Opens the file specified by `file_path` with the browser for `profile`. In
 // the event the `file_path` refers to a hosted document AND the document has an

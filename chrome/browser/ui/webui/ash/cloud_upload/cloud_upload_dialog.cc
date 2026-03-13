@@ -279,10 +279,10 @@ void OpenFileFromODFS(
                     [](Profile* profile,
                        base::OnceCallback<void(OfficeOneDriveOpenErrors)>
                            callback,
-                       apps::LaunchResult&& launch_result) {
+                       apps::LaunchResult launch_result) {
                       OfficeOneDriveOpenErrors open;
-                      switch (launch_result.state) {
-                        case apps::LaunchResult::State::kSuccess:
+                      switch (launch_result) {
+                        case apps::LaunchResult::kSuccess:
                           open = OfficeOneDriveOpenErrors::kSuccess;
                           break;
                         default:

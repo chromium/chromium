@@ -15,8 +15,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -713,16 +713,13 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  std::optional<apps::State> result;
+  base::test::TestFuture<apps::LaunchResult> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
-      /*window_info=*/nullptr,
-      base::BindLambdaForTesting(
-          [&result](apps::LaunchResult&& callback_result) {
-            result = callback_result.state;
-          }));
+      /*window_info=*/nullptr, result.GetCallback());
 
-  ASSERT_EQ(apps::State::kSuccess, result.value_or(apps::State::kFailed));
+  ASSERT_TRUE(result.IsReady());
+  ASSERT_EQ(apps::State::kSuccess, result.Get());
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -746,16 +743,13 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  std::optional<apps::State> result;
+  base::test::TestFuture<apps::LaunchResult> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
-      /*window_info=*/nullptr,
-      base::BindLambdaForTesting(
-          [&result](apps::LaunchResult&& callback_result) {
-            result = callback_result.state;
-          }));
+      /*window_info=*/nullptr, result.GetCallback());
 
-  ASSERT_EQ(apps::State::kFailed, result.value_or(apps::State::kSuccess));
+  ASSERT_TRUE(result.IsReady());
+  ASSERT_EQ(apps::State::kFailed, result.Get());
 }
 
 TEST_F(
@@ -784,16 +778,13 @@ TEST_F(
                                                  fake_apps[0]->activity);
   arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  std::optional<apps::State> result;
+  base::test::TestFuture<apps::LaunchResult> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
-      /*window_info=*/nullptr,
-      base::BindLambdaForTesting(
-          [&result](apps::LaunchResult&& callback_result) {
-            result = callback_result.state;
-          }));
+      /*window_info=*/nullptr, result.GetCallback());
 
-  ASSERT_EQ(apps::State::kSuccess, result.value_or(apps::State::kFailed));
+  ASSERT_TRUE(result.IsReady());
+  ASSERT_EQ(apps::State::kSuccess, result.Get());
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];
@@ -823,16 +814,13 @@ TEST_F(ArcAppsPublisherTest,
                                                  fake_apps[0]->activity);
   arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
 
-  std::optional<apps::State> result;
+  base::test::TestFuture<apps::LaunchResult> result;
   app_service_proxy()->LaunchAppWithIntent(
       app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
-      /*window_info=*/nullptr,
-      base::BindLambdaForTesting(
-          [&result](apps::LaunchResult&& callback_result) {
-            result = callback_result.state;
-          }));
+      /*window_info=*/nullptr, result.GetCallback());
 
-  ASSERT_EQ(apps::State::kSuccess, result.value_or(apps::State::kFailed));
+  ASSERT_TRUE(result.IsReady());
+  ASSERT_EQ(apps::State::kSuccess, result.Get());
 
   ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
   auto& url_request = file_system_instance()->handledUrlRequests()[0];

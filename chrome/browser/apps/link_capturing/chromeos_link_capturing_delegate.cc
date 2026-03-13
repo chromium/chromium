@@ -123,9 +123,9 @@ void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
     return;
   }
 
-  proxy->LaunchAppWithUrl(
-      app_id, event_flags, url, launch_source, std::move(window_info),
-      base::IgnoreArgs<LaunchResult&&>(std::move(callback)));
+  proxy->LaunchAppWithUrl(app_id, event_flags, url, launch_source,
+                          std::move(window_info),
+                          base::IgnoreArgs<LaunchResult>(std::move(callback)));
 
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));

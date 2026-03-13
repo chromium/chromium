@@ -8,19 +8,8 @@
 
 namespace apps {
 
-LaunchResult::LaunchResult() = default;
-LaunchResult::~LaunchResult() = default;
-
-LaunchResult::LaunchResult(LaunchResult&& other) = default;
-
-LaunchResult::LaunchResult(LaunchResult::State state) : state(state) {}
-
 LaunchResult ConvertBoolToLaunchResult(bool success) {
-  return success ? LaunchResult(State::kSuccess) : LaunchResult(State::kFailed);
-}
-
-bool ConvertLaunchResultToBool(const LaunchResult& result) {
-  return result.state == State::kSuccess;
+  return success ? LaunchResult::kSuccess : LaunchResult::kFailed;
 }
 
 }  // namespace apps

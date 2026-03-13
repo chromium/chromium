@@ -138,16 +138,10 @@ void WebApps::LaunchAppWithIntent(const std::string& app_id,
 void WebApps::LaunchAppWithParams(apps::AppLaunchParams&& params,
                                   apps::LaunchCallback callback) {
   publisher_helper().LaunchAppWithParams(
-      std::move(params),
-      base::BindOnce(
-          [](apps::LaunchCallback callback,
-             content::WebContents* web_contents) {
-            apps::LaunchResult::State result =
-                web_contents ? apps::LaunchResult::State::kSuccess
-                             : apps::LaunchResult::State::kFailed;
-            std::move(callback).Run(apps::LaunchResult(result));
-          },
-          std::move(callback)));
+      std::move(params), base::BindOnce([](content::WebContents* web_contents) {
+                           return web_contents ? apps::LaunchResult::kSuccess
+                                               : apps::LaunchResult::kFailed;
+                         }).Then(std::move(callback)));
 }
 
 void WebApps::SetPermission(const std::string& app_id,

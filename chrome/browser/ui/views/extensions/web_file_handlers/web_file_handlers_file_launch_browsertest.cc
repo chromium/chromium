@@ -14,7 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
@@ -56,15 +56,6 @@ base::FilePath WriteFile(const base::FilePath& directory,
 
 class WebFileHandlersFileLaunchBrowserTest
     : public extensions::ExtensionBrowserTest {
- public:
-  // Verify that the launch result matches expectations.
-  void VerifyLaunchResult(base::RepeatingClosure quit_closure,
-                          apps::LaunchResult::State expected,
-                          apps::LaunchResult&& launch_result) {
-    ASSERT_EQ(expected, launch_result.state);
-    std::move(quit_closure).Run();
-  }
-
  protected:
   // Install the file path as an extension that's installed by default.
   const extensions::Extension* WriteToDirAndLoadDefaultInstalledExtension(
@@ -152,19 +143,17 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Launch.
-    base::RunLoop run_loop;
-    LaunchAppWithIntent(
-        std::move(intent), extension.id(),
-        base::BindOnce(
-            &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-            base::Unretained(this), run_loop.QuitClosure(),
-            apps::LaunchResult::State::kSuccess));
+    base::test::TestFuture<apps::LaunchResult> result;
+    LaunchAppWithIntent(std::move(intent), extension.id(),
+                        result.GetCallback());
 
     extensions::ResultCatcher catcher;
     auto* widget = waiter.WaitIfNeededAndGet();
     widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
     ASSERT_TRUE(catcher.GetNextResult());
-    run_loop.Run();
+
+    ASSERT_TRUE(result.Wait());
+    EXPECT_EQ(apps::LaunchResult::kSuccess, result.Get());
   }
 
   // Launch the extension and cancel the dialog.
@@ -175,17 +164,15 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Launch and verify result.
-    base::RunLoop run_loop;
-    LaunchAppWithIntent(
-        std::move(intent), extension.id(),
-        base::BindOnce(
-            &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-            base::Unretained(this), run_loop.QuitClosure(),
-            apps::LaunchResult::State::kFailed));
+    base::test::TestFuture<apps::LaunchResult> result;
+    LaunchAppWithIntent(std::move(intent), extension.id(),
+                        result.GetCallback());
 
     auto* widget = waiter.WaitIfNeededAndGet();
     widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
-    run_loop.Run();
+
+    ASSERT_TRUE(result.Wait());
+    EXPECT_EQ(apps::LaunchResult::kFailed, result.Get());
   }
 
   // Launch the extension and cancel the dialog.
@@ -196,18 +183,16 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Launch and verify result.
-    base::RunLoop run_loop;
-    LaunchAppWithIntent(
-        std::move(intent), extension.id(),
-        base::BindOnce(
-            &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-            base::Unretained(this), run_loop.QuitClosure(),
-            apps::LaunchResult::State::kFailed));
+    base::test::TestFuture<apps::LaunchResult> result;
+    LaunchAppWithIntent(std::move(intent), extension.id(),
+                        result.GetCallback());
 
     auto* widget = waiter.WaitIfNeededAndGet();
 
     widget->Close();
-    run_loop.Run();
+
+    ASSERT_TRUE(result.Wait());
+    EXPECT_EQ(apps::LaunchResult::kFailed, result.Get());
   }
 
   // Launch the extension and cancel the dialog.
@@ -225,20 +210,18 @@ class WebFileHandlersFileLaunchBrowserTest
     // Run the first time.
     {
       // Launch and verify result.
-      base::RunLoop run_loop;
-      LaunchAppWithIntent(
-          std::move(intent), extension.id(),
-          base::BindOnce(
-              &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-              base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::kSuccess));
+      base::test::TestFuture<apps::LaunchResult> result;
+      LaunchAppWithIntent(std::move(intent), extension.id(),
+                          result.GetCallback());
 
       // Open the window.
       extensions::ResultCatcher catcher;
       auto* widget = waiter.WaitIfNeededAndGet();
       widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
       ASSERT_TRUE(catcher.GetNextResult());
-      run_loop.Run();
+
+      ASSERT_TRUE(result.Wait());
+      EXPECT_EQ(apps::LaunchResult::kSuccess, result.Get());
     }
 
     // Reopen the window, bypassing the dialog.
@@ -249,16 +232,14 @@ class WebFileHandlersFileLaunchBrowserTest
       extensions::ResultCatcher second_catcher;
 
       // Launch and verify result.
-      base::RunLoop run_loop;
-      LaunchAppWithIntent(
-          std::move(second_intent), extension.id(),
-          base::BindOnce(
-              &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-              base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::kSuccess));
+      base::test::TestFuture<apps::LaunchResult> result;
+      LaunchAppWithIntent(std::move(second_intent), extension.id(),
+                          result.GetCallback());
 
       ASSERT_TRUE(second_catcher.GetNextResult());
-      run_loop.Run();
+
+      ASSERT_TRUE(result.Wait());
+      EXPECT_EQ(apps::LaunchResult::kSuccess, result.Get());
     }
   }
 
@@ -277,19 +258,17 @@ class WebFileHandlersFileLaunchBrowserTest
     // Launch for the first time.
     {
       // Launch and verify result.
-      base::RunLoop run_loop;
-      LaunchAppWithIntent(
-          std::move(intent), extension.id(),
-          base::BindOnce(
-              &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-              base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::kFailed));
+      base::test::TestFuture<apps::LaunchResult> result;
+      LaunchAppWithIntent(std::move(intent), extension.id(),
+                          result.GetCallback());
 
       auto* widget = waiter.WaitIfNeededAndGet();
 
       // "Don't Open" the window.
       widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
-      run_loop.Run();
+
+      ASSERT_TRUE(result.Wait());
+      EXPECT_EQ(apps::LaunchResult::kFailed, result.Get());
     }
 
     // Run a second time.
@@ -301,14 +280,12 @@ class WebFileHandlersFileLaunchBrowserTest
       extensions::ResultCatcher second_catcher;
 
       // Launch and verify result.
-      base::RunLoop run_loop;
-      LaunchAppWithIntent(
-          std::move(second_intent), extension.id(),
-          base::BindOnce(
-              &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-              base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::kFailed));
-      run_loop.Run();
+      base::test::TestFuture<apps::LaunchResult> result;
+      LaunchAppWithIntent(std::move(second_intent), extension.id(),
+                          result.GetCallback());
+
+      ASSERT_TRUE(result.Wait());
+      EXPECT_EQ(apps::LaunchResult::kFailed, result.Get());
     }
   }
 
@@ -327,18 +304,16 @@ class WebFileHandlersFileLaunchBrowserTest
     // Launch for the first time.
     {
       // Launch and verify result.
-      base::RunLoop run_loop;
-      LaunchAppWithIntent(
-          std::move(intent), extension.id(),
-          base::BindOnce(
-              &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-              base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::kFailed));
+      base::test::TestFuture<apps::LaunchResult> result;
+      LaunchAppWithIntent(std::move(intent), extension.id(),
+                          result.GetCallback());
 
       // Don't open the file.
       auto* widget = waiter.WaitIfNeededAndGet();
       widget->Close();
-      run_loop.Run();
+
+      ASSERT_TRUE(result.Wait());
+      EXPECT_EQ(apps::LaunchResult::kFailed, result.Get());
     }
 
     // Launch for the second time.
@@ -354,19 +329,17 @@ class WebFileHandlersFileLaunchBrowserTest
           "WebFileHandlersFileLaunchDialogView");
 
       // Launch and verify result.
-      base::RunLoop run_loop;
-      LaunchAppWithIntent(
-          std::move(second_intent), extension.id(),
-          base::BindOnce(
-              &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-              base::Unretained(this), run_loop.QuitClosure(),
-              apps::LaunchResult::State::kFailed));
+      base::test::TestFuture<apps::LaunchResult> result;
+      LaunchAppWithIntent(std::move(second_intent), extension.id(),
+                          result.GetCallback());
 
       // A widget should be available, indicating that close isn't remembered.
       auto* second_widget = second_waiter.WaitIfNeededAndGet();
       ASSERT_TRUE(second_widget);
       second_widget->Close();
-      run_loop.Run();
+
+      ASSERT_TRUE(result.Wait());
+      EXPECT_EQ(apps::LaunchResult::kFailed, result.Get());
     }
   }
 
@@ -631,25 +604,24 @@ IN_PROC_BROWSER_TEST_F(WebFileHandlersFileLaunchBrowserTest,
           const base::flat_map<std::string, std::string>& files_to_open) {
         auto intent = CreateFilesToOpen(*extension, activity_name, mime_type,
                                         files_to_open);
-        base::RunLoop run_loop;
+
         // Create waiter to verify if the permission dialog is displayed.
         views::NamedWidgetShownWaiter waiter(
             views::test::AnyWidgetTestPasskey{},
             "WebFileHandlersFileLaunchDialogView");
 
         // Open multiple files in single client mode and remember the selection.
-        LaunchAppWithIntent(
-            std::move(intent), extension->id(),
-            base::BindOnce(
-                &WebFileHandlersFileLaunchBrowserTest::VerifyLaunchResult,
-                base::Unretained(this), run_loop.QuitClosure(),
-                apps::LaunchResult::State::kSuccess));
+        base::test::TestFuture<apps::LaunchResult> result;
+        LaunchAppWithIntent(std::move(intent), extension->id(),
+                            result.GetCallback());
 
         auto* widget = waiter.WaitIfNeededAndGet();
         extensions::ResultCatcher catcher;
         widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
         ASSERT_TRUE(catcher.GetNextResult());
-        run_loop.Run();
+
+        ASSERT_TRUE(result.Wait());
+        EXPECT_EQ(apps::LaunchResult::kSuccess, result.Get());
       };
 
   struct {

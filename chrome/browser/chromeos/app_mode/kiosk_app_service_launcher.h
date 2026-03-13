@@ -70,7 +70,7 @@ class KioskAppServiceLauncher :
  private:
   void LaunchAppInternal();
 
-  void OnAppLaunched(apps::LaunchResult&& result);
+  void OnAppLaunched(apps::LaunchResult result);
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;

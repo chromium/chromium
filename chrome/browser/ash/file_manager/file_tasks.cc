@@ -354,15 +354,13 @@ void OpenFilesWithBrowser(Profile* profile,
                           const std::string& action_id,
                           FileTaskFinishedCallback done) {
   const auto track_opens = base::BarrierCallback<
-      std::optional<apps::LaunchResult::State>>(
+      std::optional<apps::LaunchResult>>(
       file_urls.size(),
       base::BindOnce(
           [](FileTaskFinishedCallback done,
-             const std::vector<std::optional<apps::LaunchResult::State>>&
-                 opens) {
+             const std::vector<std::optional<apps::LaunchResult>>& opens) {
             const int num_opened = std::ranges::count_if(opens, [](auto& o) {
-              return o.has_value() &&
-                     o.value() == apps::LaunchResult::State::kSuccess;
+              return o.has_value() && o.value() == apps::LaunchResult::kSuccess;
             });
 
             if (num_opened > 0) {
@@ -380,7 +378,7 @@ void OpenFilesWithBrowser(Profile* profile,
     if (ash::FileSystemBackend::CanHandleURL(file_url)) {
       util::OpenFileWithAppOrBrowser(profile, file_url, action_id, track_opens);
     } else {
-      track_opens.Run({apps::LaunchResult::State::kFailed});
+      track_opens.Run({apps::LaunchResult::kFailed});
     }
   }
 }

@@ -11,27 +11,15 @@ namespace apps {
 // LaunchResult and LaunchCallback can be used in ChromeOS and other
 // desktop platforms. So this struct can't be moved to AppPublisher.
 
-struct LaunchResult {
-  LaunchResult();
-  ~LaunchResult();
+enum class LaunchResult { kSuccess, kFailed, kFailedDirectoryNotShared };
 
-  LaunchResult(LaunchResult&& launch_result);
-  LaunchResult& operator=(const LaunchResult& launch_result) = delete;
-  LaunchResult(const LaunchResult& launch_result) = delete;
+using LaunchCallback = base::OnceCallback<void(LaunchResult)>;
 
-  enum class State { kSuccess, kFailed, kFailedDirectoryNotShared };
-  explicit LaunchResult(LaunchResult::State state);
+// TODO(crbug.com/477191550): Remove this alias.
+using State = LaunchResult;
 
-  // Indicates whether the launch attempt was successful or not.
-  State state = LaunchResult::State::kFailed;
-};
-
-using LaunchCallback = base::OnceCallback<void(LaunchResult&&)>;
-using State = LaunchResult::State;
-
+// TODO(crbug.com/477191550): Remove this converter function.
 LaunchResult ConvertBoolToLaunchResult(bool success);
-
-bool ConvertLaunchResultToBool(const LaunchResult& result);
 
 }  // namespace apps
 
