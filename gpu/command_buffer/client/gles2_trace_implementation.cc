@@ -21,6 +21,26 @@ bool GLES2TraceImplementation::CanCopySharedImageToGLTextureViaTextureCopy(
   return gl_->CanCopySharedImageToGLTextureViaTextureCopy(shared_image);
 }
 
+gpu::SyncToken
+GLES2TraceImplementation::CopySharedImageToGLTextureViaTextureCopy(
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    ClientSharedImage* source_shared_image,
+    const gpu::SyncToken& source_sync_token,
+    uint32_t target,
+    uint32_t texture,
+    uint32_t internal_format,
+    uint32_t format,
+    uint32_t type,
+    int32_t level,
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
+  return gl_->CopySharedImageToGLTextureViaTextureCopy(
+      coded_size, visible_rect, source_shared_image, source_sync_token, target,
+      texture, internal_format, format, type, level, dst_alpha_type,
+      dst_origin);
+}
+
 // InterfaceBase implementation.
 void GLES2TraceImplementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
   gl_->GenSyncTokenCHROMIUM(sync_token);

@@ -14,6 +14,22 @@ bool GLES2Interface::CanCopySharedImageToGLTextureViaTextureCopy(
   return false;
 }
 
+gpu::SyncToken GLES2Interface::CopySharedImageToGLTextureViaTextureCopy(
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    ClientSharedImage* source_shared_image,
+    const gpu::SyncToken& source_sync_token,
+    uint32_t target,
+    uint32_t texture,
+    uint32_t internal_format,
+    uint32_t format,
+    uint32_t type,
+    int32_t level,
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
+  return gpu::SyncToken();
+}
+
 GLboolean GLES2Interface::DidGpuSwitch(gl::GpuPreference* active_gpu) {
   return GL_FALSE;
 }

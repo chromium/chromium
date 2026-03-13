@@ -57,9 +57,12 @@
 #include "gpu/command_buffer/common/id_allocator.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gl/gpu_preference.h"
 
 #if defined(GPU_CLIENT_DEBUG)
@@ -108,6 +111,19 @@ namespace gpu {
 namespace gles2 {
 
 namespace {
+
+void BindAndTexImage2D(gpu::gles2::GLES2Interface* gl,
+                       unsigned int target,
+                       unsigned int texture,
+                       unsigned int internal_format,
+                       unsigned int format,
+                       unsigned int type,
+                       int level,
+                       const gfx::Size& size) {
+  gl->BindTexture(target, texture);
+  gl->TexImage2D(target, level, internal_format, size.width(), size.height(), 0,
+                 format, type, nullptr);
+}
 
 void CopyRectToBuffer(const void* pixels,
                       uint32_t height,
@@ -390,6 +406,60 @@ bool GLES2Implementation::CanCopySharedImageToGLTextureViaTextureCopy(
   // texture for the shared image, which in turn requires that the shared image
   // be either single-plane or use external sampler and that it be usable by GL.
   return si_format_has_single_texture && si_usable_by_gles2_interface;
+}
+
+gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    ClientSharedImage* source_shared_image,
+    const gpu::SyncToken& source_sync_token,
+    uint32_t target,
+    uint32_t texture,
+    uint32_t internal_format,
+    uint32_t format,
+    uint32_t type,
+    int32_t level,
+    SkAlphaType dst_alpha_type,
+    GrSurfaceOrigin dst_origin) {
+  auto si_texture = source_shared_image->CreateGLTexture(this);
+  auto scoped_si_access =
+      si_texture->BeginAccess(source_sync_token, /*readonly=*/true);
+
+  const bool do_premultiply_alpha =
+      dst_alpha_type == kPremul_SkAlphaType &&
+      source_shared_image->alpha_type() == kUnpremul_SkAlphaType;
+  const bool do_unpremultiply_alpha =
+      dst_alpha_type == kUnpremul_SkAlphaType &&
+      source_shared_image->alpha_type() == kPremul_SkAlphaType;
+
+  const bool do_flip_y = source_shared_image->surface_origin() != dst_origin;
+  if (visible_rect != gfx::Rect(coded_size)) {
+    // Must reallocate the destination texture and copy only a sub-portion.
+
+    // There should always be enough data in the source texture to
+    // cover this copy.
+    GPU_CLIENT_DCHECK(visible_rect.width() <= coded_size.width());
+    GPU_CLIENT_DCHECK(visible_rect.height() <= coded_size.height());
+
+    BindAndTexImage2D(this, target, texture, internal_format, format, type,
+                      level, visible_rect.size());
+    // TODO(crbug.com/378688985): `visible_rect` is always in top-left
+    // coordinate space, but CopySubTextureCHROMIUM requires it to be in texture
+    // space, so this is incorrect if `source_shared_image` origin is bottom
+    // left.
+    CopySubTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
+                           level, 0, 0, visible_rect.x(), visible_rect.y(),
+                           visible_rect.width(), visible_rect.height(),
+                           do_flip_y, do_premultiply_alpha,
+                           do_unpremultiply_alpha);
+
+  } else {
+    CopyTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
+                        level, internal_format, type, do_flip_y,
+                        do_premultiply_alpha, do_unpremultiply_alpha);
+  }
+  return gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(scoped_si_access));
 }
 
 void GLES2Implementation::SendErrorMessage(std::string message, int32_t id) {

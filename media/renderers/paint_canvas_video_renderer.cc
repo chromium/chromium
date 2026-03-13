@@ -288,60 +288,6 @@ base::span<const T> CastConstSpan(base::span<const uint8_t> span) {
                                    span.size() / sizeof(T)));
 }
 
-gpu::SyncToken CopySharedImageToGLTextureViaTextureCopy(
-    gpu::gles2::GLES2Interface* gl,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    gpu::ClientSharedImage* source_shared_image,
-    const gpu::SyncToken& source_sync_token,
-    unsigned int target,
-    unsigned int texture,
-    unsigned int internal_format,
-    unsigned int format,
-    unsigned int type,
-    int level,
-    SkAlphaType dst_alpha_type,
-    GrSurfaceOrigin dst_origin) {
-  auto si_texture = source_shared_image->CreateGLTexture(gl);
-  auto scoped_si_access =
-      si_texture->BeginAccess(source_sync_token, /*readonly=*/true);
-
-  const bool do_premultiply_alpha =
-      dst_alpha_type == kPremul_SkAlphaType &&
-      source_shared_image->alpha_type() == kUnpremul_SkAlphaType;
-  const bool do_unpremultiply_alpha =
-      dst_alpha_type == kUnpremul_SkAlphaType &&
-      source_shared_image->alpha_type() == kPremul_SkAlphaType;
-
-  const bool do_flip_y = source_shared_image->surface_origin() != dst_origin;
-  if (visible_rect != gfx::Rect(coded_size)) {
-    // Must reallocate the destination texture and copy only a sub-portion.
-
-    // There should always be enough data in the source texture to
-    // cover this copy.
-    DCHECK_LE(visible_rect.width(), coded_size.width());
-    DCHECK_LE(visible_rect.height(), coded_size.height());
-
-    BindAndTexImage2D(gl, target, texture, internal_format, format, type, level,
-                      visible_rect.size());
-    // TODO(crbug.com/378688985): `visible_rect` is always in top-left
-    // coordinate space, but CopySubTextureCHROMIUM requires it to be in texture
-    // space, so this is incorrect if `source_shared_image` origin is bottom
-    // left.
-    gl->CopySubTextureCHROMIUM(scoped_si_access->texture_id(), 0, target,
-                               texture, level, 0, 0, visible_rect.x(),
-                               visible_rect.y(), visible_rect.width(),
-                               visible_rect.height(), do_flip_y,
-                               do_premultiply_alpha, do_unpremultiply_alpha);
-
-  } else {
-    gl->CopyTextureCHROMIUM(scoped_si_access->texture_id(), 0, target, texture,
-                            level, internal_format, type, do_flip_y,
-                            do_premultiply_alpha, do_unpremultiply_alpha);
-  }
-  return gpu::SharedImageTexture::ScopedAccess::EndAccess(
-      std::move(scoped_si_access));
-}
 
 // Update |video_frame|'s release sync token to reflect the work done in |ri|,
 // and ensure that |video_frame| be kept remain alive until |ri|'s commands have
@@ -853,8 +799,8 @@ void CopyVideoFrameDirectlyToGLTexture(
   std::unique_ptr<gpu::RasterScopedAccess> destination_access;
   if (destination_gl->CanCopySharedImageToGLTextureViaTextureCopy(
           shared_image.get())) {
-    CopySharedImageToGLTextureViaTextureCopy(
-        destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
+    destination_gl->CopySharedImageToGLTextureViaTextureCopy(
+        video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,
         internal_format, format, type, level, dst_alpha_type, dst_origin);
     destination_gl->ShallowFlushCHROMIUM();
@@ -1676,10 +1622,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
     // Wait for mailbox creation on canvas context before consuming it and
     // copying from it on the consumer context.
-    gpu::SyncToken dest_sync_token = CopySharedImageToGLTextureViaTextureCopy(
-        destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
-        rgb_shared_image.get(), sync_token, target, texture, internal_format,
-        format, type, level, dst_alpha_type, dst_origin);
+    gpu::SyncToken dest_sync_token =
+        destination_gl->CopySharedImageToGLTextureViaTextureCopy(
+            video_frame->coded_size(), video_frame->visible_rect(),
+            rgb_shared_image.get(), sync_token, target, texture,
+            internal_format, format, type, level, dst_alpha_type, dst_origin);
 
     // Update the `rgb_sync_token` to be waited upon based on gles tasks
     // performed earlier.
@@ -1775,8 +1722,8 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
-  rgb_sync_token = CopySharedImageToGLTextureViaTextureCopy(
-      destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
+  rgb_sync_token = destination_gl->CopySharedImageToGLTextureViaTextureCopy(
+      video_frame->coded_size(), video_frame->visible_rect(),
       rgb_shared_image.get(), post_conversion_sync_token, target, texture,
       internal_format, format, type, level, dst_alpha_type, dst_origin);
 

@@ -187,6 +187,10 @@ source_set("gles2_interface") {
     "gles2_interface_stub_impl_autogen.h",
   ]
   public_configs = [ "//third_party/khronos:khronos_headers" ]
+  public_deps = [
+    "//gpu/command_buffer/common",
+    "//skia",
+  ]
   deps = [
     ":interface_base",
     "//base",
