@@ -97,7 +97,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
 
   void OnLongPressTimer();
   tab_strip::mojom::TabPtr GetTabData(content::WebContents* contents,
-                                      const tabs::TabInterface* tab,
+                                      tabs::TabInterface* tab,
                                       int index);
   tab_strip::mojom::TabGroupVisualDataPtr GetTabGroupData(TabGroup* group);
   void HandleThumbnailUpdate(content::WebContents* tab,

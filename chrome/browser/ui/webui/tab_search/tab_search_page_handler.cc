@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
@@ -60,6 +62,7 @@
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -602,30 +605,32 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   tab_mojom_data->pinned = tab->IsPinned();
   tab_mojom_data->split = tab->IsSplit();
 
-  const tabs::TabData tab_data = tabs::TabData::FromTabInterface(tab);
-  tab_mojom_data->title = base::UTF16ToUTF8(tab_data.title);
-  const auto& last_committed_url = tab_data.last_committed_url;
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab);
+  CHECK(tab_ui_helper);
+  tab_mojom_data->title = base::UTF16ToUTF8(tab_ui_helper->GetTitle());
+  const auto& last_committed_url = tab_ui_helper->GetLastCommittedURL();
   // A visible URL is used when the a new tab is still loading.
   // If it is cancelled during loading the visible URL becomes empty.
   // We will display an empty URL as about:blank in Javascript.
   if (!last_committed_url.is_valid() || last_committed_url.is_empty()) {
-    tab_mojom_data->url = tab_data.should_display_url
-                              ? tab_data.visible_url
+    tab_mojom_data->url = tab_ui_helper->ShouldDisplayURL()
+                              ? tab_ui_helper->GetVisibleURL()
                               : GURL(url::kAboutBlankURL);
   } else {
     tab_mojom_data->url = last_committed_url;
   }
 
-  if (tab_data.favicon.IsEmpty()) {
+  const ui::ImageModel favicon = tab_ui_helper->GetFavicon();
+  if (favicon.IsEmpty()) {
     tab_mojom_data->is_default_favicon = true;
   } else {
     const ui::ColorProvider& provider =
         web_ui_->GetWebContents()->GetColorProvider();
     const gfx::ImageSkia default_favicon =
         favicon::GetDefaultFaviconModel().Rasterize(&provider);
-    gfx::ImageSkia raster_favicon = tab_data.favicon.Rasterize(&provider);
+    gfx::ImageSkia raster_favicon = favicon.Rasterize(&provider);
 
-    if (tab_data.should_themify_favicon) {
+    if (tab_ui_helper->ShouldThemifyFavicon()) {
       raster_favicon = ThemeFavicon(raster_favicon, provider);
     }
 
@@ -635,7 +640,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
         raster_favicon.BackedBySameObjectAs(default_favicon);
   }
 
-  tab_mojom_data->show_icon = tab_data.should_display_favicon;
+  tab_mojom_data->show_icon = tab_ui_helper->ShouldDisplayFavicon();
 
   // https://crbug.com/435697558: Use the max value of
   // GetLastInteractionTimeTicks and GetLastActiveTimeTicks to account for

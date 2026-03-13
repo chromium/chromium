@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
@@ -487,7 +488,7 @@ void TabStripPageHandler::OnLongPressTimer() {
 
 tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
     content::WebContents* contents,
-    const tabs::TabInterface* tab,
+    tabs::TabInterface* tab,
     int index) {
   DCHECK(index >= 0);
   auto tab_mojom_data = tab_strip::mojom::Tab::New();
@@ -503,30 +504,29 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
     tab_mojom_data->group_id = group_id.value().ToString();
   }
 
-  tabs::TabData tab_data =
-      tabs::TabData::FromTabInterface(const_cast<tabs::TabInterface*>(tab));
-  tab_mojom_data->pinned = tab_data.pinned;
-  tab_mojom_data->title = base::UTF16ToUTF8(tab_data.title);
-  tab_mojom_data->url = tab_data.visible_url;
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab);
+  tab_mojom_data->pinned = tab->IsPinned();
+  tab_mojom_data->title = base::UTF16ToUTF8(tab_ui_helper->GetTitle());
+  tab_mojom_data->url = tab_ui_helper->GetVisibleURL();
 
   const ui::ColorProvider& provider =
       web_ui_->GetWebContents()->GetColorProvider();
   const gfx::ImageSkia default_favicon =
       favicon::GetDefaultFaviconModel().Rasterize(&provider);
-  const gfx::ImageSkia raster_favicon = tab_data.favicon.Rasterize(&provider);
+  const ui::ImageModel favicon = tab_ui_helper->GetFavicon();
+  const gfx::ImageSkia raster_favicon = favicon.Rasterize(&provider);
 
-  if (!tab_data.favicon.IsEmpty()) {
+  if (!favicon.IsEmpty()) {
     // Themified icons only apply to a few select chrome URLs.
-    if (tab_data.should_themify_favicon) {
+    if (tab_ui_helper->ShouldThemifyFavicon()) {
       tab_mojom_data->favicon_url = GURL(
           webui::EncodePNGAndMakeDataURI(ThemeFavicon(raster_favicon, false),
                                          web_ui_->GetDeviceScaleFactor()));
       tab_mojom_data->active_favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
           ThemeFavicon(raster_favicon, true), web_ui_->GetDeviceScaleFactor()));
     } else {
-      tab_mojom_data->favicon_url = GURL(
-          webui::EncodePNGAndMakeDataURI(tab_data.favicon.Rasterize(&provider),
-                                         web_ui_->GetDeviceScaleFactor()));
+      tab_mojom_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
+          raster_favicon, web_ui_->GetDeviceScaleFactor()));
     }
 
     tab_mojom_data->is_default_favicon =
@@ -534,11 +534,11 @@ tab_strip::mojom::TabPtr TabStripPageHandler::GetTabData(
   } else {
     tab_mojom_data->is_default_favicon = true;
   }
-  tab_mojom_data->show_icon = tab_data.should_display_favicon;
-  tab_mojom_data->network_state = tab_data.network_state;
-  tab_mojom_data->should_hide_throbber = tab_data.should_hide_throbber;
-  tab_mojom_data->blocked = tab_data.blocked;
-  tab_mojom_data->crashed = tab_data.is_crashed;
+  tab_mojom_data->show_icon = tab_ui_helper->ShouldDisplayFavicon();
+  tab_mojom_data->network_state = tab_ui_helper->GetTabNetworkState();
+  tab_mojom_data->should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
+  tab_mojom_data->blocked = tab->IsBlocked();
+  tab_mojom_data->crashed = tab_ui_helper->IsCrashed();
   // TODO(johntlee): Add the rest of tabs::TabData
 
   tab_mojom_data->alert_states =
