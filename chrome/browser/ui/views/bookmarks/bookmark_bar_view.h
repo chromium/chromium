@@ -245,7 +245,6 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void RunContextMenuAt(std::vector<int64_t> node_ids,
                         const gfx::Point& point,
                         ui::mojom::MenuSourceType source_type,
-                        base::WeakPtr<views::Button> context_menu_source,
                         bool can_paste);
 
   // BookmarkContextMenuObserver:

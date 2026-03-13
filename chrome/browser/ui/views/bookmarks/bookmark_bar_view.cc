@@ -1533,6 +1533,10 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
     }
   }
 
+  if (context_menu_source) {
+    context_menu_highlight_ = context_menu_source->AddAnchorHighlight();
+  }
+
   std::vector<int64_t> node_ids;
   node_ids.reserve(nodes.size());
   for (const auto* node : nodes) {
@@ -1544,16 +1548,13 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
                                            parent_folder.get())
       .CanPasteFromClipboard(base::BindOnce(
           &BookmarkBarView::RunContextMenuAt, weak_ptr_factory_.GetWeakPtr(),
-          std::move(node_ids), point, source_type,
-          context_menu_source ? context_menu_source->GetWeakPtr() : nullptr));
+          std::move(node_ids), point, source_type));
 }
 
-void BookmarkBarView::RunContextMenuAt(
-    std::vector<int64_t> node_ids,
-    const gfx::Point& point,
-    ui::mojom::MenuSourceType source_type,
-    base::WeakPtr<views::Button> context_menu_source,
-    bool can_paste) {
+void BookmarkBarView::RunContextMenuAt(std::vector<int64_t> node_ids,
+                                       const gfx::Point& point,
+                                       ui::mojom::MenuSourceType source_type,
+                                       bool can_paste) {
   // |close_on_remove| only matters for nested menus. We're not nested at this
   // point, so this value has no effect.
   const bool close_on_remove = true;
@@ -1579,9 +1580,6 @@ void BookmarkBarView::RunContextMenuAt(
       close_on_remove, can_paste);
   context_menu_observation_.Observe(context_menu_.get());
   context_menu_->RunMenuAt(point, source_type);
-  if (context_menu_source) {
-    context_menu_highlight_ = context_menu_source->AddAnchorHighlight();
-  }
 }
 
 void BookmarkBarView::OnContextMenuClosed() {

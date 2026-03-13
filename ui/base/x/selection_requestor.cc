@@ -50,62 +50,70 @@ SelectionRequestor::SelectionRequestor(x11::Window x_window,
 
 SelectionRequestor::~SelectionRequestor() = default;
 
-bool SelectionRequestor::PerformBlockingConvertSelection(
+base::WeakPtr<SelectionRequestor> SelectionRequestor::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void SelectionRequestor::PerformConvertSelectionAsync(
     x11::Atom selection,
     x11::Atom target,
-    std::vector<uint8_t>* out_data,
-    x11::Atom* out_type) {
-  base::TimeTicks timeout =
-      base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
-  Request request(selection, target, timeout);
-  requests_.push_back(&request);
-  if (current_request_index_ == (requests_.size() - 1)) {
+    ConvertSelectionCallback callback) {
+  requests_.push_back(std::make_unique<Request>(
+      selection, target,
+      base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs),
+      std::move(callback)));
+  if (requests_.size() == 1) {
     ConvertSelectionForCurrentRequest();
   }
-  BlockTillSelectionNotifyForRequest(&request);
 
-  auto request_it = std::ranges::find(requests_, &request);
-  CHECK(request_it != requests_.end());
-  if (static_cast<int>(current_request_index_) >
-      request_it - requests_.begin()) {
-    --current_request_index_;
+  if (!abort_timer_.IsRunning()) {
+    abort_timer_.Start(FROM_HERE, base::Milliseconds(kRequestTimeoutMs), this,
+                       &SelectionRequestor::AbortStaleRequests);
   }
-  requests_.erase(request_it);
-
-  if (request.success) {
-    if (out_data) {
-      *out_data = CombineData(request.out_data);
-    }
-    if (out_type) {
-      *out_type = request.out_type;
-    }
-  }
-  return request.success;
 }
 
-void SelectionRequestor::PerformBlockingConvertSelectionWithParameter(
+void SelectionRequestor::RequestTypesAsync(
     x11::Atom selection,
-    x11::Atom target,
-    const std::vector<x11::Atom>& parameter) {
-  x11::Connection::Get()->SetArrayProperty(
-      x_window_, x11::GetAtom(kChromeSelection), x11::Atom::ATOM, parameter);
-  PerformBlockingConvertSelection(selection, target, nullptr, nullptr);
+    const std::vector<x11::Atom>& types,
+    base::OnceCallback<void(SelectionData)> callback) {
+  RequestTypesRecursive(selection,
+                        std::vector<x11::Atom>(types.rbegin(), types.rend()),
+                        std::move(callback));
 }
 
-SelectionData SelectionRequestor::RequestAndWaitForTypes(
+void SelectionRequestor::RequestTypesRecursive(
     x11::Atom selection,
-    const std::vector<x11::Atom>& types) {
-  for (const x11::Atom& item : types) {
-    std::vector<uint8_t> data;
-    x11::Atom type = x11::Atom::None;
-    if (PerformBlockingConvertSelection(selection, item, &data, &type) &&
-        type == item) {
-      return SelectionData(
-          type, base::MakeRefCounted<base::RefCountedBytes>(std::move(data)));
-    }
+    std::vector<x11::Atom> types,
+    base::OnceCallback<void(SelectionData)> callback) {
+  if (types.empty()) {
+    std::move(callback).Run(SelectionData());
+    return;
   }
 
-  return SelectionData();
+  x11::Atom target = types.back();
+  types.pop_back();
+
+  PerformConvertSelectionAsync(
+      selection, target,
+      base::BindOnce(&SelectionRequestor::OnRequestTypesAsyncResponse,
+                     GetWeakPtr(), selection, std::move(types),
+                     std::move(callback)));
+}
+
+void SelectionRequestor::OnRequestTypesAsyncResponse(
+    x11::Atom selection,
+    std::vector<x11::Atom> remaining_types,
+    base::OnceCallback<void(SelectionData)> callback,
+    bool success,
+    std::vector<uint8_t> data,
+    x11::Atom type) {
+  if (success && type != x11::Atom::None) {
+    std::move(callback).Run(SelectionData(
+        type, base::MakeRefCounted<base::RefCountedBytes>(std::move(data))));
+    return;
+  }
+  RequestTypesRecursive(selection, std::move(remaining_types),
+                        std::move(callback));
 }
 
 void SelectionRequestor::OnSelectionNotify(
@@ -143,7 +151,8 @@ void SelectionRequestor::OnSelectionNotify(
     request->timeout =
         base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
   } else {
-    CompleteRequest(current_request_index_, success);
+    // Note: `this` may be deleted after this call.
+    CompleteRequest(0, success);
   }
 }
 
@@ -165,12 +174,14 @@ void SelectionRequestor::OnPropertyEvent(
   bool success =
       ui::GetRawBytesOfProperty(x_window_, x_property_, &out_data, &out_type);
   if (!success) {
-    CompleteRequest(current_request_index_, false);
+    // Note: `this` may be deleted after this call.
+    CompleteRequest(0, false);
     return;
   }
 
   if (request->out_type != x11::Atom::None && request->out_type != out_type) {
-    CompleteRequest(current_request_index_, false);
+    // Note: `this` may be deleted after this call.
+    CompleteRequest(0, false);
     return;
   }
 
@@ -184,36 +195,69 @@ void SelectionRequestor::OnPropertyEvent(
       base::TimeTicks::Now() + base::Milliseconds(kRequestTimeoutMs);
 
   if (!out_data->size()) {
-    CompleteRequest(current_request_index_, true);
+    // Note: `this` may be deleted after this call.
+    CompleteRequest(0, true);
   }
 }
 
 void SelectionRequestor::AbortStaleRequests() {
   base::TimeTicks now = base::TimeTicks::Now();
-  for (size_t i = current_request_index_; i < requests_.size(); ++i) {
-    if (requests_[i]->timeout <= now) {
+  auto weak_this = GetWeakPtr();
+  // Iterate backwards. CompleteRequest() only erases from the front, so
+  // trailing items shifting left won't affect our backward scan.
+  for (int i = static_cast<int>(requests_.size()) - 1; i >= 0; --i) {
+    if (requests_[i]->timeout <= now && !requests_[i]->completed) {
       CompleteRequest(i, false);
+      if (!weak_this) {
+        return;
+      }
     }
+  }
+
+  if (!requests_.empty()) {
+    abort_timer_.Start(FROM_HERE, base::Milliseconds(kRequestTimeoutMs), this,
+                       &SelectionRequestor::AbortStaleRequests);
   }
 }
 
 void SelectionRequestor::CompleteRequest(size_t index, bool success) {
-  if (index >= requests_.size()) {
-    return;
-  }
+  CHECK_LT(index, requests_.size());
 
-  Request* request = requests_[index];
+  Request* request = requests_[index].get();
   if (request->completed) {
     return;
   }
+
+  // 1. Mark completed
   request->success = success;
   request->completed = true;
 
-  if (index == current_request_index_) {
-    while (GetCurrentRequest() && GetCurrentRequest()->completed) {
-      ++current_request_index_;
+  // 2. Extract data & callback
+  std::vector<uint8_t> out_data;
+  if (success) {
+    out_data = CombineData(request->out_data);
+  }
+  x11::Atom out_type = request->out_type;
+  auto callback = std::move(request->callback);
+
+  // 3. Update `requests_` queue
+  if (index == 0) {
+    size_t completed_count = 0;
+    while (completed_count < requests_.size() &&
+           requests_[completed_count]->completed) {
+      ++completed_count;
     }
+
+    if (completed_count > 0) {
+      requests_.erase(requests_.begin(), requests_.begin() + completed_count);
+    }
+
     ConvertSelectionForCurrentRequest();
+  }
+
+  // 4. Safely run the callback
+  if (callback) {
+    std::move(callback).Run(success, std::move(out_data), out_type);
   }
 }
 
@@ -227,44 +271,26 @@ void SelectionRequestor::ConvertSelectionForCurrentRequest() {
         .property = x_property_,
         .time = x11::Time::CurrentTime,
     });
+    x11::Connection::Get()->Flush();
   }
-}
-
-void SelectionRequestor::BlockTillSelectionNotifyForRequest(Request* request) {
-  auto* connection = x11::Connection::Get();
-  auto& events = connection->events();
-  size_t i = 0;
-  while (!request->completed && request->timeout > base::TimeTicks::Now()) {
-    connection->Flush();
-    connection->ReadResponses();
-    size_t events_size = events.size();
-    for (; i < events_size; ++i) {
-      auto& event = events[i];
-      if (helper_->DispatchEvent(event)) {
-        event = x11::Event();
-      }
-    }
-    DCHECK_EQ(events_size, events.size());
-  }
-  AbortStaleRequests();
 }
 
 SelectionRequestor::Request* SelectionRequestor::GetCurrentRequest() {
-  return current_request_index_ == requests_.size()
-             ? nullptr
-             : requests_[current_request_index_];
+  return requests_.empty() ? nullptr : requests_.front().get();
 }
 
 SelectionRequestor::Request::Request(x11::Atom selection,
                                      x11::Atom target,
-                                     base::TimeTicks timeout)
+                                     base::TimeTicks timeout,
+                                     ConvertSelectionCallback callback)
     : selection(selection),
       target(target),
       data_sent_incrementally(false),
       out_type(x11::Atom::None),
       success(false),
       timeout(timeout),
-      completed(false) {}
+      completed(false),
+      callback(std::move(callback)) {}
 
 SelectionRequestor::Request::~Request() = default;
 
