@@ -30,12 +30,18 @@ struct CookieManagerParams {
     array<content_settings.mojom.ContentSettingPatternSource>> content_settings;
 
   // Schemes that unconditionally allow cookies from secure origins.
+  // Note: ContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel()
+  // needs to be aware of the schemes set here in order to work correctly for
+  // embedded frames.
   array<string> secure_origin_cookies_allowed_schemes;
 
   // Schemes that unconditionally allow cookies from the same scheme.
   array<string> matching_scheme_cookies_allowed_schemes;
 
   // Schemes that unconditionally allow third party cookies.
+  // Note: ContentBrowserClient::ShouldTreatURLSchemeAsFirstPartyWhenTopLevel()
+  // needs to be aware of the schemes set here in order to work correctly for
+  // embedded frames.
   array<string> third_party_cookies_allowed_schemes;
 
   // Whether or not to allow cookies for file:// URLs. Can be overridden by
