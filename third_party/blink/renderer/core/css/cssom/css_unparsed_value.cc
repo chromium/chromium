@@ -155,11 +155,10 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   // to carry out its check. It would be nice to use that here, but WPTs
   // expect leading whitespace to be preserved, even though it's not possible
   // to create such declaration values normally.
-  CSSVariableData* variable_data =
-      CSSVariableData::Create(unparsed_string,
-                              /*is_animation_tainted=*/false,
-                              /*is_attr_tainted=*/false,
-                              /*needs_variable_resolution=*/false);
+  CSSVariableData* variable_data = CSSVariableData::Create(
+      unparsed_string,
+      /*is_animation_tainted=*/false,
+      /*is_attr_tainted=*/false, CSSVariableData::HasReferences(false));
 
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.

@@ -3639,7 +3639,7 @@ CSSVariableData* StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
   // TODO(andruud): Produce tokens directly from CSSValue.
   return CSSVariableData::Create(value.CssText(), is_animation_tainted,
                                  is_attr_tainted,
-                                 /* needs_variable_resolution */ false);
+                                 CSSVariableData::HasReferences(false));
 }
 
 namespace {

@@ -365,10 +365,11 @@ class CORE_EXPORT StyleCascade {
     // https://drafts.csswg.org/css-variables/#animation-tainted
     bool is_animation_tainted_ = false;
     // https://drafts.css-houdini.org/css-properties-values-api-1/#dependency-cycles
-    bool has_font_units_ = false;
-    bool has_root_font_units_ = false;
-    bool has_line_height_units_ = false;
-    bool has_dashed_functions_ = false;
+    // Note that kHasReferences should not be used here, even though we have
+    // space for it.
+    VariableDataFeatures features_
+        : kVariableDataFeatureBits =
+              static_cast<VariableDataFeatures>(VariableDataFeature::kNone);
     // Attr tainted intervals [start, end).
     Vector<std::pair<wtf_size_t, wtf_size_t>> attr_taint_ranges_;
   };
