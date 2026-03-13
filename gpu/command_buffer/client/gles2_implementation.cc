@@ -41,6 +41,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/buffer_tracker.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gpu_control.h"
@@ -374,6 +375,20 @@ GLboolean GLES2Implementation::DidGpuSwitch(gl::GpuPreference* active_gpu) {
   GLboolean result = gpu_switched_ ? GL_TRUE : GL_FALSE;
   gpu_switched_ = false;
   return result;
+}
+
+bool GLES2Implementation::CanCopySharedImageToGLTextureViaTextureCopy(
+    const viz::SharedImageFormat& si_format,
+    uint32_t texture_target) {
+  const bool si_format_has_single_texture =
+      si_format.is_single_plane() || si_format.PrefersExternalSampler();
+  const bool si_usable_by_gles2_interface = texture_target != 0;
+
+  // Copying the shared image to the destination texture via a direct
+  // texture-to-texture copy requires being able to obtain a client-side GL
+  // texture for the shared image, which in turn requires that the shared image
+  // be either single-plane or use external sampler and that it be usable by GL.
+  return si_format_has_single_texture && si_usable_by_gles2_interface;
 }
 
 void GLES2Implementation::SendErrorMessage(std::string message, int32_t id) {

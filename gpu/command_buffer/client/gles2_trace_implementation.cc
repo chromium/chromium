@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/client/gles2_trace_implementation.h"
+
+#include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 
 namespace gpu {
 namespace gles2 {
@@ -13,6 +15,13 @@ GLES2TraceImplementation::GLES2TraceImplementation(GLES2Interface* gl)
 }
 
 GLES2TraceImplementation::~GLES2TraceImplementation() = default;
+
+bool GLES2TraceImplementation::CanCopySharedImageToGLTextureViaTextureCopy(
+    const viz::SharedImageFormat& si_format,
+    uint32_t texture_target) {
+  return gl_->CanCopySharedImageToGLTextureViaTextureCopy(si_format,
+                                                          texture_target);
+}
 
 // InterfaceBase implementation.
 void GLES2TraceImplementation::GenSyncTokenCHROMIUM(GLbyte* sync_token) {

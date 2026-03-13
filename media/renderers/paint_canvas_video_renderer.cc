@@ -815,7 +815,8 @@ bool CanCopySharedImageToGLTextureViaSkia(VideoPixelFormat video_frame_format,
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-bool CanCopyVideoFrameDirectlyToGLTexture(scoped_refptr<VideoFrame> video_frame,
+bool CanCopyVideoFrameDirectlyToGLTexture(gpu::gles2::GLES2Interface* gl,
+                                          scoped_refptr<VideoFrame> video_frame,
                                           unsigned int target,
                                           unsigned int internal_format,
                                           unsigned int type,
@@ -825,9 +826,8 @@ bool CanCopyVideoFrameDirectlyToGLTexture(scoped_refptr<VideoFrame> video_frame,
   CHECK(video_frame->HasSharedImage());
   const auto shared_image = video_frame->shared_image();
 
-  return gpu::gles2::GLES2Interface::
-             CanCopySharedImageToGLTextureViaTextureCopy(
-                 shared_image->format(), shared_image->GetTextureTarget()) ||
+  return gl->CanCopySharedImageToGLTextureViaTextureCopy(
+             shared_image->format(), shared_image->GetTextureTarget()) ||
          CanCopySharedImageToGLTextureViaSkia(
              video_frame->format(), shared_image->GetTextureTarget(), target,
              internal_format, type, level, dst_alpha_type);
@@ -852,7 +852,7 @@ void CopyVideoFrameDirectlyToGLTexture(
 
   const auto shared_image = video_frame->shared_image();
   std::unique_ptr<gpu::RasterScopedAccess> destination_access;
-  if (gpu::gles2::GLES2Interface::CanCopySharedImageToGLTextureViaTextureCopy(
+  if (destination_gl->CanCopySharedImageToGLTextureViaTextureCopy(
           shared_image->format(), shared_image->GetTextureTarget())) {
     CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
@@ -1627,8 +1627,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
   const auto shared_image = video_frame->shared_image();
 
-  if (CanCopyVideoFrameDirectlyToGLTexture(video_frame, target, internal_format,
-                                           type, level, dst_alpha_type)) {
+  if (CanCopyVideoFrameDirectlyToGLTexture(destination_gl, video_frame, target,
+                                           internal_format, type, level,
+                                           dst_alpha_type)) {
     CopyVideoFrameDirectlyToGLTexture(
         raster_context_provider, destination_gl, video_frame, target, texture,
         internal_format, format, type, level, dst_alpha_type, dst_origin);

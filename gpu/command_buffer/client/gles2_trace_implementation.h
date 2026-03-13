@@ -26,6 +26,11 @@ class GLES2_IMPL_EXPORT GLES2TraceImplementation : public GLES2Interface {
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
   void ShallowFlushCHROMIUM() override;
 
+  // GLES2Interface implementation
+  bool CanCopySharedImageToGLTextureViaTextureCopy(
+      const viz::SharedImageFormat& si_format,
+      uint32_t texture_target) override;
+
   // Include the auto-generated part of this class. We split this because
   // it means we can easily edit the non-auto generated parts right here in
   // this file instead of having to edit some template or the code generator.

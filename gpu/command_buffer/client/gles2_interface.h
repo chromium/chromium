@@ -47,7 +47,7 @@ class GLES2Interface : public InterfaceBase {
 
   // Returns true if it's possible to do a copy of a SharedImage to a GL texture
   // via CopyTexture().
-  static bool CanCopySharedImageToGLTextureViaTextureCopy(
+  virtual bool CanCopySharedImageToGLTextureViaTextureCopy(
       const viz::SharedImageFormat& si_format,
       uint32_t texture_target);
 
