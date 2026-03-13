@@ -45,15 +45,6 @@ void ProjectsPanelStateController::SetProjectsVisible(bool visible) {
     return;
   }
 
-  if (visible) {
-    if (auto* interface =
-            BrowserUserEducationInterface::From(browser_window_)) {
-      interface->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHResumptionRailFeature,
-          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
-    }
-  }
-
   is_visible_ = visible;
   NotifyStateChanged();
 }
