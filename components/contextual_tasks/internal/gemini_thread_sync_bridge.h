@@ -76,6 +76,9 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
   // Returns all threads.
   virtual std::vector<Thread> GetThreads() const;
 
+  // Delete the thread.
+  void DeleteThread(const Thread& thread);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

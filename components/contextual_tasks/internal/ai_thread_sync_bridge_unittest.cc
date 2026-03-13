@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
+#include "components/sync/protocol/ai_thread_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,6 +18,11 @@
 namespace contextual_tasks {
 
 namespace {
+
+const char kInitServerId[] = "00000000-0000-0000-0000-00000000001";
+const char kInitConversationId[] = "init_conversation_id";
+const char kInitTitle[] = "init_title";
+const int64_t kInitLastTurnTimeUnixEpochMillis = 52;
 
 using testing::_;
 using testing::ReturnRef;
@@ -26,15 +32,62 @@ class AiThreadSyncBridgeTest : public testing::Test {
   void SetUp() override {
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics(_))
         .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
+    ON_CALL(mock_processor_, IsTrackingMetadata())
+        .WillByDefault(testing::Return(true));
     bridge_ = std::make_unique<AiThreadSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
-        syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest());
+        syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()));
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<AiThreadSyncBridge> bridge_;
+  std::unique_ptr<syncer::DataTypeStore> store_ =
+      syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
+};
+
+class AiThreadSyncBridgeTestWithInitSpecificsTest
+    : public AiThreadSyncBridgeTest {
+ public:
+  void SetUp() override {
+    AiThreadSyncBridgeTest::SetUp();
+    AddSpecifics(kInitServerId, kInitTitle, kInitConversationId,
+                 kInitLastTurnTimeUnixEpochMillis);
+  }
+
+  void AddSpecifics(const std::string& server_id,
+                    const std::string& title,
+                    const std::string& conversation_turn_id,
+                    int64_t last_turn_time) {
+    syncer::EntityChangeList add_changes;
+    syncer::EntityData entity_data;
+    entity_data.specifics.mutable_ai_thread()->set_server_id(server_id);
+    entity_data.specifics.mutable_ai_thread()->set_title(title);
+    entity_data.specifics.mutable_ai_thread()->set_conversation_turn_id(
+        conversation_turn_id);
+    entity_data.specifics.mutable_ai_thread()
+        ->set_last_turn_time_unix_epoch_millis(last_turn_time);
+
+    add_changes.push_back(
+        syncer::EntityChange::CreateAdd(server_id, std::move(entity_data)));
+
+    std::optional<syncer::ModelError> error =
+        bridge_->ApplyIncrementalSyncChanges(
+            bridge_->CreateMetadataChangeList(), std::move(add_changes));
+    EXPECT_FALSE(error);
+  }
+
+  void VerifyInitSpecifics() {
+    EXPECT_EQ(1u, bridge_->GetThreads().size());
+    EXPECT_EQ(kInitServerId, bridge_->GetThreads()[0].server_id);
+    EXPECT_EQ(kInitConversationId,
+              bridge_->GetThreads()[0].conversation_turn_id);
+    EXPECT_EQ(kInitTitle, bridge_->GetThreads()[0].title);
+    EXPECT_EQ(
+        kInitLastTurnTimeUnixEpochMillis,
+        bridge_->GetThreads()[0].last_turn_time.InMillisecondsSinceUnixEpoch());
+  }
 };
 
 TEST_F(AiThreadSyncBridgeTest, GetDataForCommit) {
@@ -227,6 +280,24 @@ TEST_F(AiThreadSyncBridgeTest, GetThreads) {
   EXPECT_EQ(
       threads[thread_2_index].last_turn_time.InMillisecondsFSinceUnixEpoch(),
       43);
+}
+
+TEST_F(AiThreadSyncBridgeTestWithInitSpecificsTest, RemoveThread) {
+  VerifyInitSpecifics();
+  AddSpecifics("00000000-0000-0000-0000-00000000002", "new_title",
+               "new_conversation_id", 999);
+  EXPECT_EQ(2u, bridge_->GetThreads().size());
+  int new_idx = bridge_->GetThreads()[0].server_id ==
+                        "00000000-0000-0000-0000-00000000002"
+                    ? 0
+                    : 1;
+  EXPECT_EQ("new_title", bridge_->GetThreads()[new_idx].title);
+  EXPECT_EQ("new_conversation_id",
+            bridge_->GetThreads()[new_idx].conversation_turn_id);
+  EXPECT_EQ(999, bridge_->GetThreads()[new_idx]
+                     .last_turn_time.InMillisecondsSinceUnixEpoch());
+  bridge_->DeleteThread(bridge_->GetThreads()[new_idx]);
+  EXPECT_EQ(1u, bridge_->GetThreads().size());
 }
 
 }  // namespace

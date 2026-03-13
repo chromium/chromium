@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -330,6 +331,19 @@ void ContextualTasksServiceImpl::RemoveThreadFromTask(
     const std::string& server_id) {
   auto it = tasks_.find(task_id);
   if (it != tasks_.end()) {
+    DCHECK(it->second.GetThread().has_value());
+    switch (type) {
+      case ThreadType::kAiMode:
+        ai_thread_sync_bridge_->DeleteThread(it->second.GetThread().value());
+        break;
+      case ThreadType::kGemini:
+        gemini_thread_sync_bridge_->DeleteThread(
+            it->second.GetThread().value());
+        break;
+      case ThreadType::kUnknown:
+      default:
+        NOTREACHED();
+    }
     it->second.RemoveThread(type, server_id);
     // If the task no longer has any thread, remove it.
     if (!it->second.GetThread()) {
