@@ -344,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   SimulateHoverTab(browser(), 0);
 
   auto* const hover_card = SimulateHoverTab(browser(), 1);
-  EXPECT_EQ(kTabTitle, hover_card->GetTitleTextForTesting());
-  EXPECT_EQ(kTabDomain, hover_card->GetDomainTextForTesting());
+  EXPECT_EQ(kTabTitle, hover_card->GetTitleViewForTesting()->GetText());
+  EXPECT_EQ(kTabDomain, hover_card->GetDomainViewForTesting()->GetText());
   EXPECT_EQ(tab_strip->tab_at(1), hover_card->GetAnchorView());
 }
 
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
   chrome::NewTab(browser());
   auto* const hover_card = SimulateHoverTab(browser(), 0);
 
-  EXPECT_TRUE(hover_card->GetDomainTextForTesting().empty());
+  EXPECT_TRUE(hover_card->GetDomainViewForTesting()->GetText().empty());
   EXPECT_EQ(1, GetHoverCardsSeenCount(browser()));
 }
 
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardBubbleViewInterstitialBrowserTest,
   auto* const hover_card = SimulateHoverTab(browser(), 0);
 
   EXPECT_EQ(base::UTF8ToUTF16(net::GetHostAndPort(url)),
-            hover_card->GetDomainTextForTesting());
+            hover_card->GetDomainViewForTesting()->GetText());
   EXPECT_EQ(1, GetHoverCardsSeenCount(browser()));
 }
 
@@ -775,12 +775,13 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   auto* const hover_card =
       tab_strip->hover_card_controller_for_testing()->hover_card_for_testing();
-  gfx::Size hover_card_size = hover_card->size();
+  gfx::Size hover_card_size = hover_card->GetTabCardViewForTesting()->size();
 
   int total_children_height = 0;
 
   // Verify that all children of the hovercard can fit within the hovercard
-  for (views::View* child : hover_card->children()) {
+  for (views::View* child :
+       hover_card->GetTabCardViewForTesting()->children()) {
     EXPECT_TRUE(child->GetVisible());
     gfx::Size child_size = child->size();
     EXPECT_GT(child_size.width(), 0);
@@ -792,9 +793,12 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
 
   // Verify that stacking the children within the hovercard takes up the entire
   // hover card space
-  total_children_height +=
-      hover_card->title_label_->GetProperty(views::kMarginsKey)->height() +
-      hover_card->domain_label_->GetProperty(views::kMarginsKey)->height();
+  total_children_height += hover_card->GetTitleViewForTesting()
+                               ->GetProperty(views::kMarginsKey)
+                               ->height() +
+                           hover_card->GetDomainViewForTesting()
+                               ->GetProperty(views::kMarginsKey)
+                               ->height();
   EXPECT_EQ(hover_card_size.height(), total_children_height);
 }
 
