@@ -1896,6 +1896,8 @@ static_library("browser") {
     "//chrome/browser/infobars",
     "//chrome/browser/language_detection",
     "//chrome/browser/language_detection:impl",
+    "//chrome/browser/metrics/critical_user_journeys",
+    "//chrome/browser/metrics/critical_user_journeys:impl",
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
