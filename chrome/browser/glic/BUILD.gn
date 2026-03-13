@@ -395,6 +395,7 @@ source_set("impl") {
     "//components/url_formatter",
     "//components/variations/service",
     "//components/webui/chrome_urls",
+    "//extensions/buildflags",
     "//third_party/metrics_proto",
     "//ui/base/interaction",
     "//ui/gfx",
@@ -451,6 +452,10 @@ source_set("impl") {
     if (!enable_extensions_core) {
       deps += [ "//chrome/browser/resources/guest_view_shared:resources" ]
     }
+  }
+
+  if (!enable_extensions_core) {
+    deps += [ "//components/guest_view/browser/slim_web_view" ]
   }
 
   if (is_mac) {
@@ -592,7 +597,10 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "service/glic_instance_coordinator_browsertest.cc" ]
+  sources = [
+    "host/new_glic_api_browsertest.cc",
+    "service/glic_instance_coordinator_browsertest.cc",
+  ]
   if (!is_android) {
     sources += [
       "actor/glic_actor_policy_checker_browsertest.cc",

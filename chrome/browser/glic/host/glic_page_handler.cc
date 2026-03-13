@@ -63,7 +63,6 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
-#include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -106,6 +105,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -120,12 +120,19 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#else
+#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/feedback/system_logs/chrome_system_logs_fetcher.h"
 #include "chrome/browser/glic/glic_hotkey.h"
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
+#include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -1489,6 +1496,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void SetAudioDucking(bool enabled,
                        SetAudioDuckingCallback callback) override {
+    // NEEDS_ANDROID_IMPL: AudioDucking not in android build.
+#if !BUILDFLAG(IS_ANDROID)
     content::RenderFrameHost* guest_frame = page_handler_->GetGuestMainFrame();
     if (!guest_frame) {
       std::move(callback).Run(false);
@@ -1498,6 +1507,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         AudioDucker::GetOrCreateForPage(guest_frame->GetPage());
     std::move(callback).Run(enabled ? audio_ducker->StartDuckingOtherAudio()
                                     : audio_ducker->StopDuckingOtherAudio());
+#else
+    std::move(callback).Run(false);
+#endif
   }
 
   void SetPanelDraggableAreas(
@@ -2548,7 +2560,8 @@ void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action) {
 }
 
 content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+  // Note: Eventually Glic will fully migrate to SlimWebView.
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::WebViewGuest* web_view_guest = nullptr;
   content::RenderFrameHost* webui_frame =
       webui_contents_->GetPrimaryMainFrame();
@@ -2566,8 +2579,23 @@ content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
       });
   return web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr;
 #else
-  // TODO(b/470059315): Important to implement in Android.
-  return nullptr;
+  guest_view::SlimWebViewGuest* slim_web_view_guest = nullptr;
+  content::RenderFrameHost* webui_frame =
+      webui_contents_->GetPrimaryMainFrame();
+  if (!webui_frame) {
+    return nullptr;
+  }
+  webui_frame->ForEachRenderFrameHostWithAction(
+      [&slim_web_view_guest](content::RenderFrameHost* rfh) {
+        auto* web_view = guest_view::SlimWebViewGuest::FromRenderFrameHost(rfh);
+        if (web_view && web_view->attached()) {
+          slim_web_view_guest = web_view;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return slim_web_view_guest ? slim_web_view_guest->GetGuestMainFrame()
+                             : nullptr;
 #endif
 }
 

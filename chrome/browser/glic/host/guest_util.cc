@@ -20,6 +20,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -37,6 +38,8 @@
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#else
+#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
 #endif
 
 namespace glic {
@@ -165,17 +168,15 @@ bool IsGlicWebUI(const content::WebContents* web_contents) {
 }
 
 bool OnGuestAdded(content::WebContents* guest_contents) {
-#if !BUILDFLAG(ENABLE_GUEST_VIEW) || !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  // NEEDS_MOBILE_ANDROID_IMPL: Guest view is not yet enabled on mobile android.
-  // Also, we're using extensions::WebViewGuest, which will need refactored
-  // when we have a guest_view that doesn't use extensions.
-  return false;
-#else
-  // Only handle the glic webview. Explicitly check the guest type here in case
-  // glic's web content happens to load a mime handler.
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extensions::WebViewGuest::FromWebContents(guest_contents)) {
     return false;
   }
+#else
+  if (!guest_view::SlimWebViewGuest::FromWebContents(guest_contents)) {
+    return false;
+  }
+#endif
 
   content::WebContents* top =
       guest_view::GuestViewBase::GetTopLevelWebContents(guest_contents);
@@ -205,7 +206,6 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
       "Glic.Host.WebView.AutoPlay",
       WebViewAutoPlayProgress::kWebContentsObserverRegistered);
   return true;
-#endif
 }
 
 }  // namespace glic
