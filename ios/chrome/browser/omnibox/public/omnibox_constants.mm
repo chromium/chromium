@@ -33,3 +33,6 @@ constexpr CGFloat kOmniboxEditOffset = kOmniboxLeadingImageViewEdgeOffset +
                                        kOmniboxTextFieldLeadingOffsetImage;
 
 const CGFloat kOmniboxPopupTopPadding = 8.0;
+
+const CGFloat kOmniboxTextViewMinVerticalInset = 8.0;
+const CGFloat kOmniboxTextViewMinVerticalInsetIPadComposebox = 8.0f;

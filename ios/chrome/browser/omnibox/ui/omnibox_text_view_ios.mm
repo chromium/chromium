@@ -17,10 +17,12 @@
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/animation_util.h"
 #import "ios/chrome/browser/shared/ui/util/dynamic_type_util.h"
@@ -44,9 +46,6 @@
 using enum OmniboxKeyboardAction;
 
 namespace {
-
-/// Minimum vertical inset, defaults from UITextView.
-const CGFloat kMinVerticalInset = 8.0;
 
 /// The placeholder leading padding.
 const CGFloat kPlaceholderLeadingPadding = 5.0;
@@ -1175,17 +1174,23 @@ const CGFloat kVerticalOffset = 1;
 }
 
 - (void)updateTextContainerInset {
+  BOOL isComposeboxIpad =
+      IsComposeboxIpadEnabled() &&
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE;
+  CGFloat minVerticalInset =
+      isComposeboxIpad ? kOmniboxTextViewMinVerticalInsetIPadComposebox
+                       : kOmniboxTextViewMinVerticalInset;
   if (self.minimumHeight <= 0) {
     // Reset to default values.
     self.textContainerInset =
-        UIEdgeInsetsMake(kMinVerticalInset, 0, kMinVerticalInset, 0);
-    _placeholderTopConstraint.constant = kMinVerticalInset;
+        UIEdgeInsetsMake(minVerticalInset, 0, minVerticalInset, 0);
+    _placeholderTopConstraint.constant = minVerticalInset;
     return;
   }
   CGFloat lineHeight = [self singleLineHeight];
   CGFloat minHeight = self.minimumHeight;
   CGFloat verticalPadding =
-      MAX(kMinVerticalInset * 2.0, (minHeight - lineHeight));
+      MAX(minVerticalInset * 2.0, (minHeight - lineHeight));
   // Distribute padding.
   CGFloat topPadding = verticalPadding / 2.0 + kVerticalOffset;
   CGFloat bottomPadding = verticalPadding - topPadding;

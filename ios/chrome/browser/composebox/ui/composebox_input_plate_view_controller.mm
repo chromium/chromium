@@ -46,6 +46,7 @@
 #import "ios/public/provider/chrome/browser/glow_effect/glow_effect_api.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/apple/url_conversions.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -419,7 +420,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   _editView = editView;
   _editView.translatesAutoresizingMaskIntoConstraints = NO;
-  _editView.minimumHeight = kOmniboxMinHeight;
+  _editView.minimumHeight =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+          ? kOmniboxIPadMinHeight
+          : kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
   [_omniboxContainer addSubview:_editView];
   [NSLayoutConstraint activateConstraints:@[
