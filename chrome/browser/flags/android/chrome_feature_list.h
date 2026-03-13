@@ -111,6 +111,8 @@ BASE_DECLARE_FEATURE(kCCTNavigationalPrefetch);
 BASE_DECLARE_FEATURE(kCCTNestedSecurityIcon);
 BASE_DECLARE_FEATURE(kCCTOpenInBrowserButtonIfAllowedByEmbedder);
 BASE_DECLARE_FEATURE(kCCTOpenInBrowserButtonIfEnabledByEmbedder);
+BASE_DECLARE_FEATURE(kCCTPageContentRequestAllowed);
+BASE_DECLARE_FEATURE(kCCTPageContentRequestEnabled);
 BASE_DECLARE_FEATURE(kCCTRealtimeEngagementEventsInBackground);
 BASE_DECLARE_FEATURE(kCCTReportParallelRequestStatus);
 BASE_DECLARE_FEATURE(kCCTReportPrerenderEvents);

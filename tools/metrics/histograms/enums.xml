@@ -8530,6 +8530,7 @@ from previous Chrome versions.
   <int value="-2013085118" label="ClearLoginDatabaseForUPMUsers:enabled"/>
   <int value="-2013071623" label="BacklightOcr:disabled"/>
   <int value="-2012990889" label="SpannableInlineAutocomplete:enabled"/>
+  <int value="-2012833273" label="CCTPageContentRequestEnabled:enabled"/>
   <int value="-2012779758" label="ReduceUserAgent:disabled"/>
   <int value="-2012449550" label="OmniboxMostVisitedTiles:enabled"/>
   <int value="-2012266745"
@@ -11812,6 +11813,7 @@ from previous Chrome versions.
   <int value="-907968198" label="MediaIndicatorsAndroid:enabled"/>
   <int value="-907481658" label="ArcMouseWheelSmoothScroll:enabled"/>
   <int value="-907234795" label="NewAudioRenderingMixingStrategy:disabled"/>
+  <int value="-906695076" label="CCTPageContentRequestAllowed:disabled"/>
   <int value="-906173229" label="AutofillEnableCardBenefitsSync:disabled"/>
   <int value="-905538983" label="SimplifyHttpsIndicator:disabled"/>
   <int value="-904337228" label="CameraMicPreview:enabled"/>
@@ -12135,6 +12137,7 @@ from previous Chrome versions.
   <int value="-793383355" label="StrictOriginIsolation:enabled"/>
   <int value="-792785226" label="TemporaryUnexpireFlagsM78:disabled"/>
   <int value="-792594495" label="PeripheralsLogging:disabled"/>
+  <int value="-792286758" label="CCTPageContentRequestAllowed:enabled"/>
   <int value="-792079435" label="EnableAppsGridGapFeature:disabled"/>
   <int value="-791916053" label="FriendlierErrorDialog:disabled"/>
   <int value="-791805332" label="GridTabSwitcherSurfaceColorUpdate:disabled"/>
@@ -18989,6 +18992,7 @@ from previous Chrome versions.
   <int value="1515472077" label="VirtualKeyboardRoundCorners:disabled"/>
   <int value="1515517391" label="TabGroupDeferRemoteNavigations:disabled"/>
   <int value="1515587927" label="FencedFramesM120FeaturesPart2:disabled"/>
+  <int value="1516643477" label="CCTPageContentRequestEnabled:disabled"/>
   <int value="1517243374" label="HeadlessCaptionEarlyStart:disabled"/>
   <int value="1517756684"
       label="account-storage-prefs-themes-search-engines:enabled"/>

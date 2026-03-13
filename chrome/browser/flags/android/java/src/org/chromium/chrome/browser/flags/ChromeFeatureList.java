@@ -341,6 +341,8 @@ public abstract class ChromeFeatureList {
             "CCTOpenInBrowserButtonIfAllowedByEmbedder";
     public static final String CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER =
             "CCTOpenInBrowserButtonIfEnabledByEmbedder";
+    public static final String CCT_PAGE_CONTENT_REQUEST_ALLOWED = "CCTPageContentRequestAllowed";
+    public static final String CCT_PAGE_CONTENT_REQUEST_ENABLED = "CCTPageContentRequestEnabled";
     public static final String CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND =
             "CCTRealtimeEngagementEventsInBackground";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
@@ -853,6 +855,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER, false);
     public static final CachedFlag sCctOpenInBrowserButtonIfEnabledByEmbedder =
             newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER, true);
+    public static final CachedFlag sCctPageContentRequestAllowed =
+            newCachedFlag(CCT_PAGE_CONTENT_REQUEST_ALLOWED, true);
+    public static final CachedFlag sCctPageContentRequestEnabled =
+            newCachedFlag(CCT_PAGE_CONTENT_REQUEST_ENABLED, false);
     public static final CachedFlag sCctRealtimeEngagementEventsInBackground =
             newCachedFlag(CCT_REALTIME_ENGAGEMENT_EVENTS_IN_BACKGROUND, true);
     public static final CachedFlag sCctResetTimeoutAllowed =
@@ -1198,6 +1204,8 @@ public abstract class ChromeFeatureList {
                     sCctNestedSecurityIcon,
                     sCctOpenInBrowserButtonIfAllowedByEmbedder,
                     sCctOpenInBrowserButtonIfEnabledByEmbedder,
+                    sCctPageContentRequestAllowed,
+                    sCctPageContentRequestEnabled,
                     sCctRealtimeEngagementEventsInBackground,
                     sCctResetTimeoutAllowed,
                     sCctResetTimeoutEnabled,
