@@ -529,4 +529,5 @@ Refer to README.md for content description and update process.
  <item id="indigo_alpha_generate" added_in_milestone="147" content_hash_code="045833be" os_list="windows,linux,chromeos" file_path="chrome/browser/indigo/indigo_alpha_rpc.cc" />
  <item id="indigo_alpha_status" added_in_milestone="147" content_hash_code="05424773" os_list="windows,linux,chromeos" file_path="chrome/browser/indigo/indigo_alpha_rpc.cc" />
  <item id="devtools_gca_service" added_in_milestone="147" content_hash_code="06699f6b" os_list="linux,windows,android,chromeos" file_path="chrome/browser/devtools/gca_service_handler.cc" />
+ <item id="gapis_token_downloader" added_in_milestone="148" content_hash_code="00d5b501" os_list="linux,windows,android,chromeos" file_path="components/gapis/token_downloader.cc" />
 </annotations>
