@@ -201,7 +201,18 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 
   // Verify chip is showing by checking that we didn't show the dialog widget
   // yet.
@@ -215,8 +226,14 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   // Simulate click on the omnibox chip.
   view()->OnPageActionClicked();
 
-  // After activation for sign-in (returning user), it should NOT show the
-  // dialog, but instead immediately trigger authentication (Verifying state).
+  // It should NOT have selected the account yet. It should have opened the
+  // anchored message.
+  EXPECT_FALSE(account_selected);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer.GetCurrentPageActionState().anchored_message_showing;
+  }));
+
+  view()->OnPageActionClicked();
   ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
 
   EXPECT_FALSE(view()->GetDialogWidget());
@@ -233,14 +250,16 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
 
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn);
 
-  // Initially, for sign-in, the anchored message should be showing.
-  EXPECT_TRUE(observer.GetCurrentPageActionState().anchored_message_showing);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  // Initially, for sign-in, the suggestion chip should be showing.
+  EXPECT_TRUE(observer.GetCurrentPageActionState().chip_showing);
 
   // We simulate it being collapsed.
-  controller->HideAnchoredMessage(kActionFederation);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !observer.GetCurrentPageActionState().anchored_message_showing;
-  }));
+  controller->HideSuggestionChip(kActionFederation);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !observer.GetCurrentPageActionState().chip_showing; }));
 
   bool account_selected = false;
   EXPECT_CALL(*delegate_, OnAccountSelected).WillOnce(InvokeWithoutArgs([&]() {
@@ -253,12 +272,21 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
   // It should NOT have selected the account yet.
   EXPECT_FALSE(account_selected);
 
-  // Instead, it should have re-shown the anchored message.
+  // Instead, it should have re-shown the suggestion chip.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  // Click on the suggestion chip.
+  view()->OnPageActionClicked();
+
+  // It should still NOT have selected the account yet. It should have opened
+  // the anchored message.
+  EXPECT_FALSE(account_selected);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return observer.GetCurrentPageActionState().anchored_message_showing;
   }));
 
-  // Click again, now it should select the account.
+  // Finally, click on the anchored message, now it should select the account.
   view()->OnPageActionClicked();
   ASSERT_TRUE(base::test::RunUntil([&]() { return account_selected; }));
 }

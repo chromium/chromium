@@ -116,21 +116,29 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
   hide_dialog_widget_after_idp_login_popup_ = false;
 
   if (is_returning) {
-    // For sign-in users with only one account logged in we show an anchored
-    // message. When that anchored message is selected, we immediately notify
+    // For sign-in users with only one account logged-in we show a chip. When
+    // the chip is selected, we open an anchored message for confirmation.
+    // When the anchored message is used for confirmation, we immediately notify
     // the delegate of the account selection without showing any further account
     // selection dialog (since there is a single account).
     // The anchored message gets hidden and collapsed automatically into a chip
     // if the user doesn't engage with it, so we re-open it in case it is
     // not showing.
+    if (!GetCurrentPageActionState().chip_showing &&
+        !GetCurrentPageActionState().anchored_message_showing) {
+      controller->Show(kActionFederation);
+      controller->ShowSuggestionChip(kActionFederation);
+      controller->ShowAnchoredMessage(kActionFederation);
+      return;
+    }
+
     if (!GetCurrentPageActionState().anchored_message_showing) {
       controller->ShowAnchoredMessage(kActionFederation);
       return;
     }
+
     // If the anchored message is still showing, we immediately trigger the
     // account selection.
-    controller->Hide(kActionFederation);
-    controller->HideAnchoredMessage(kActionFederation);
     state_ = State::VERIFYING;
     NotifyDelegateOfAccountSelection(*accounts_[0], *idp_list_[0]);
   } else {
@@ -1459,11 +1467,7 @@ bool FedCmAccountSelectionView::ShowPageAction(
   // determine the state of the page action when the user clicks on it.
   RegisterAsPageActionObserver(*controller);
   controller->Show(kActionFederation);
-  if (is_returning) {
-    controller->ShowAnchoredMessage(kActionFederation);
-  } else {
-    controller->ShowSuggestionChip(kActionFederation);
-  }
+  controller->ShowSuggestionChip(kActionFederation);
   return true;
 }
 
