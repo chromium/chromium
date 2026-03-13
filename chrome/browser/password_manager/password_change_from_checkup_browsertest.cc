@@ -164,3 +164,91 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return delegate->IsCleanedUpAfterTaskFinishedForTesting(); }));
 }
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
+                       FlowRequiresUserIntervention) {
+  Profile* profile = browser()->profile();
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+
+  content::WebContents* originator_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(originator_contents);
+
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+                                    originator_contents->GetWeakPtr());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate->HasActorTaskSubscriptionForTesting(); }));
+  // A new tab for the actutation is opened.
+  content::WebContents* actuation_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(originator_contents, actuation_contents);
+
+  actor::TaskId task_id =
+      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  int originator_index =
+      browser()->tab_strip_model()->GetIndexOfWebContents(originator_contents);
+  browser()->tab_strip_model()->ActivateTabAt(originator_index);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            originator_contents);
+
+  // Simulate an interruption state.
+  actor_service->NotifyTaskStateChanged(
+      task_id, actor::ActorTask::State::kPausedByActor);
+
+  // The delegate should have caught the interruption and force the actuation
+  // tab into focus.
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            actuation_contents);
+  EXPECT_EQ(delegate->GetActorTaskState(),
+            actor::ActorTask::State::kPausedByActor);
+
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
+                       AfterUserInterventionOriginatorFocused) {
+  Profile* profile = browser()->profile();
+  auto* actor_service =
+      actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
+
+  content::WebContents* originator_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto delegate = std::make_unique<PasswordChangeFromCheckupDelegate>();
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  delegate->StartPasswordChangeFlow(CreateCredentialUIEntry(url),
+                                    originator_contents->GetWeakPtr());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return delegate->HasActorTaskSubscriptionForTesting(); }));
+  actor::TaskId task_id =
+      actor_service->CreateTask(actor::NoEnterprisePolicyChecker());
+  content::WebContents* actuation_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int originator_index =
+      browser()->tab_strip_model()->GetIndexOfWebContents(originator_contents);
+  browser()->tab_strip_model()->ActivateTabAt(originator_index);
+  // Simulate an interruption state.
+  actor_service->NotifyTaskStateChanged(
+      task_id, actor::ActorTask::State::kPausedByActor);
+  // Verify actuation tab is focused due to the interruption.
+  ASSERT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            actuation_contents);
+
+  // Simulate the user resuming the task.
+  actor_service->NotifyTaskStateChanged(task_id,
+                                        actor::ActorTask::State::kActing);
+
+  // The delegate should have caught that the task was resumed and force the
+  // originator tab into focus.
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            originator_contents);
+  EXPECT_EQ(delegate->GetActorTaskState(), actor::ActorTask::State::kActing);
+
+  // Clean up.
+  actor_service->StopTask(task_id,
+                          actor::ActorTask::StoppedReason::kTaskComplete);
+}

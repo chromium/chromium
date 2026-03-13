@@ -26,6 +26,7 @@
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 // TODO(crbug.com/485620841): Make delegate not dependent on client and move
 // this back to /password_change.
@@ -103,6 +104,43 @@ std::u16string GeneratePassword(
       autofill::password_generation::PasswordGenerationType::kAutomatic,
       autofill::CalculateFormSignature(form.form_data),
       autofill::CalculateFieldSignatureForField(*iter), iter->max_length());
+}
+
+bool IsTaskInterrupted(actor::ActorTask::State new_state) {
+  return (new_state == actor::ActorTask::State::kWaitingOnUser ||
+          new_state == actor::ActorTask::State::kPausedByActor ||
+          new_state == actor::ActorTask::State::kPausedByUser);
+}
+
+bool IsTaskResumed(actor::ActorTask::State old_state,
+                   actor::ActorTask::State new_state) {
+  return IsTaskInterrupted(old_state) &&
+         new_state == actor::ActorTask::State::kActing;
+}
+
+void ActivateTabForWebContents(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab_interface) {
+    return;
+  }
+
+  BrowserWindowInterface* browser_window =
+      tab_interface->GetBrowserWindowInterface();
+  if (!browser_window) {
+    return;
+  }
+
+  TabStripModel* tab_strip = browser_window->GetTabStripModel();
+  int target_index = tab_strip->GetIndexOfWebContents(web_contents);
+
+  if (target_index != TabStripModel::kNoTab) {
+    tab_strip->ActivateTabAt(target_index);
+  }
 }
 
 }  // namespace
@@ -189,6 +227,9 @@ void PasswordChangeFromCheckupDelegate::OnPromptReady(GURL credential_url,
     return;
   }
 
+  // Invoking it in a new tab ensures that the settings page is not shared.
+  // It also expects that the actor uses the current tab instead of attempting
+  // to open a new one for completing the flow.
   glic_service->InvokeWithAutoSubmit(
       glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
       new_tab_interface, std::move(options));
@@ -201,6 +242,11 @@ void PasswordChangeFromCheckupDelegate::OnPromptReady(GURL credential_url,
         actor_service->AddTaskStateChangedCallback(base::BindRepeating(
             &PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged,
             base::Unretained(this)));
+
+    // TODO(crbug.com/485620841): Return focus to the settings tab right after
+    // invoking in the newly opened tab. Do this when the Invoke API fully wires
+    // up `additional_context`. Currently, if Invoke is called on a background
+    // tab, it will not start the flow unless the user goes to the tab.
   }
 }
 
@@ -214,12 +260,8 @@ glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
 
 void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
     actor::TaskId task_id,
-    actor::ActorTask::State state) {
-  if (!actuation_web_contents_) {
-    return;
-  }
-
-  if (!actor_task_id_ && state == actor::ActorTask::State::kCreated) {
+    actor::ActorTask::State new_state) {
+  if (!actor_task_id_ && new_state == actor::ActorTask::State::kCreated) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
             actuation_web_contents_->GetBrowserContext()));
@@ -240,13 +282,20 @@ void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
     return;
   }
 
-  // TODO(crbug.com/485620841): Handle interruption states.
-  if (state == actor::ActorTask::State::kFinished) {
-    actor_task_state_subscription_ = {};
-    if (!actuation_web_contents_) {
-      return;
-    }
+  if (IsTaskInterrupted(new_state)) {
+    // Focus the actuation tab when there is an interruption so the user can
+    // complete the flow.
+    ActivateTabForWebContents(actuation_web_contents_.get());
+  } else if (actor_state_.has_value() &&
+             IsTaskResumed(actor_state_.value(), new_state)) {
+    // Return focus to the original tab.
+    ActivateTabForWebContents(originator_.get());
+  }
 
+  // When the task reaches `kFinished` it is assumed that the change password
+  // form was found.
+  if (new_state == actor::ActorTask::State::kFinished) {
+    actor_task_state_subscription_ = {};
     auto* client = ChromePasswordManagerClient::FromWebContents(
         actuation_web_contents_.get());
     if (!client) {
@@ -260,6 +309,9 @@ void PasswordChangeFromCheckupDelegate::OnActorTaskStateChanged(
                                       weak_ptr_factory_.GetWeakPtr()))
                        .Build();
   }
+
+  // Set the new state.
+  actor_state_ = new_state;
 }
 
 void PasswordChangeFromCheckupDelegate::OnChangePasswordFormManagerFound(

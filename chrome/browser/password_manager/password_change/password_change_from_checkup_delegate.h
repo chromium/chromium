@@ -50,6 +50,10 @@ class PasswordChangeFromCheckupDelegate {
     return !submission_helper_;
   }
 
+  std::optional<actor::ActorTask::State> GetActorTaskState() const {
+    return actor_state_;
+  }
+
 #endif
 
  private:
@@ -76,6 +80,8 @@ class PasswordChangeFromCheckupDelegate {
 
   std::unique_ptr<ChangePasswordFormFillingSubmissionHelper> submission_helper_;
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
+
+  std::optional<actor::ActorTask::State> actor_state_ = std::nullopt;
 
   base::WeakPtrFactory<PasswordChangeFromCheckupDelegate> weak_ptr_factory_{
       this};
