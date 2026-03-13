@@ -518,6 +518,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           is_privacy_sandbox_restricted);
   html_source->AddBoolean("isPrivacySandboxRestrictedNoticeEnabled",
                           is_restricted_notice_enabled);
+  html_source->AddBoolean(
+      "isRelatedWebsiteSetsUiEnabled",
+      base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsUi));
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());

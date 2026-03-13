@@ -127,13 +127,15 @@
             </div>
           </div>
           <div slot="noSelectionCollapse">
-            <settings-toggle-button id="relatedWebsiteSetsToggle"
+            <template is="dom-if" if="[[isRelatedWebsiteSetsUiEnabled_]]">
+              <settings-toggle-button id="relatedWebsiteSetsToggle"
                 pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
                 label="$i18n{cookiePageRwsLabel}"
                 sub-label="$i18n{cookiePageRwsSubLabel}"
                 disabled="[[relatedWebsiteSetsToggleDisabled_(
-                              prefs.generated.third_party_cookie_blocking_setting.value)]]">
-            </settings-toggle-button>
+                  prefs.generated.third_party_cookie_blocking_setting.value)]]">
+              </settings-toggle-button>
+            </template>
           </div>
         </settings-collapse-radio-button>
       </settings-radio-group>

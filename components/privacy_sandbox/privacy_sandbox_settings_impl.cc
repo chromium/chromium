@@ -967,8 +967,9 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
 }
 
 bool PrivacySandboxSettingsImpl::AreRelatedWebsiteSetsEnabled() const {
-  return pref_service_->GetBoolean(
-      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
+  return base::FeatureList::IsEnabled(kRelatedWebsiteSetsUi) &&
+         pref_service_->GetBoolean(
+             prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
 }
 
 void PrivacySandboxSettingsImpl::SetOutBlockIsSiteSettingSpecificFromStatus(

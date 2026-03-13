@@ -87,11 +87,17 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         type: String,
         value: ContentSettingsTypes.COOKIES,
       },
+
+      isRelatedWebsiteSetsUiEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsUiEnabled'),
+      },
     };
   }
 
   declare searchTerm: string;
   declare private cookiesContentSettingType_: ContentSettingsTypes;
+  declare private isRelatedWebsiteSetsUiEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
