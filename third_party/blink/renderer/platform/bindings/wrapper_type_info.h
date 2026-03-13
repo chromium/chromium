@@ -88,6 +88,7 @@ enum class ScriptWrappableArrayTag : std::underlying_type_t<
   kObservableArrayExoticObjectTag,
   kV8ObservableArrayCSSStyleSheetTag,
   kV8ObservableArraySpeechRecognitionPhraseTag,
+  kV8ObservableArrayStringTag,
   // End of ObservableArrayExoticObject subclasses
   kLastTag,
 };

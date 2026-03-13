@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/Igalia/explainers/tree/main/spell-check-dictionary
+
+[
+    ImplementedAs=WindowSpellCheckCustomDictionary,
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=SpellCheckCustomDictionaryAPI
+] partial interface Window {
+  readonly attribute SpellCheckCustomDictionary spellCheckCustomDictionary;
+};

@@ -40,6 +40,11 @@ class WebTextCheckClient {
       ShouldForceRefreshTextCheckService should_force_refresh,
       std::unique_ptr<WebTextCheckingCompletion> completion_callback) {}
 
+  // Observing the change on SpellCheck custom dictionary.
+  virtual void SpellCheckCustomDictionaryChanged(
+      const std::vector<std::string>& words_added,
+      const std::vector<std::string>& words_removed) {}
+
  protected:
   virtual ~WebTextCheckClient() = default;
 };

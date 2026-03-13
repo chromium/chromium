@@ -84,6 +84,7 @@ component("modules") {
     "//third_party/blink/renderer/modules/crypto",
     "//third_party/blink/renderer/modules/csspaint",
     "//third_party/blink/renderer/modules/compression",
+    "//third_party/blink/renderer/modules/spell_check_custom_dictionary",
     "//third_party/blink/renderer/modules/delegated_ink",
     "//third_party/blink/renderer/modules/device_orientation",
     "//third_party/blink/renderer/modules/device_posture",

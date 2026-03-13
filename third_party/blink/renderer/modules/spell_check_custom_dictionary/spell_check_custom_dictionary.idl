@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/Igalia/explainers/tree/main/spell-check-dictionary
+
+[
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=SpellCheckCustomDictionaryAPI
+] interface SpellCheckCustomDictionary {
+    attribute ObservableArray<DOMString> words;
+    [CallWith=ScriptState] void addWords(sequence<DOMString> words);
+    [CallWith=ScriptState] void removeWords(sequence<DOMString> words);
+};

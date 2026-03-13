@@ -10201,6 +10201,13 @@ interface SpeechSynthesisVoice
     getter name
     getter voiceURI
     method constructor
+interface SpellCheckCustomDictionary
+    attribute @@toStringTag
+    getter words
+    method addWords
+    method constructor
+    method removeWords
+    setter words
 interface StaticRange : AbstractRange
     attribute @@toStringTag
     method constructor
@@ -13707,6 +13714,7 @@ namespace console
     getter sessionStorage
     getter sharedStorage
     getter speechSynthesis
+    getter spellCheckCustomDictionary
     getter status
     getter statusbar
     getter styleMedia

@@ -2914,6 +2914,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_utterance.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_voice.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_voice.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_spell_check_custom_dictionary.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_spell_check_custom_dictionary.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_stereo_panner_node.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_stereo_panner_node.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_storage.cc",

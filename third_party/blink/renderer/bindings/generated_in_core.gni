@@ -1890,6 +1890,8 @@ generated_namespace_sources_in_core = [
 generated_observable_array_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_string.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_string.h",
 ]
 
 generated_sync_iterator_sources_in_core = [

@@ -5288,6 +5288,12 @@
       name: "SpecialRulesForNestedH1Elements",
     },
     {
+      // API for accessing the Custom Dictionary for spell checking purpose.
+      // https://chromestatus.com/feature/6185007701557248
+      name: "SpellCheckCustomDictionaryAPI",
+      status: "test",
+    },
+    {
       name: "SplitTextNotCleanupDummySpans",
       status: "stable",
     },
