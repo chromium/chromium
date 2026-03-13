@@ -282,7 +282,7 @@ public class WebContentsAccessibilityE2ETest {
 
         String expectedDump =
 """
-WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES="ARTICLE,BLOCKQUOTE,BUTTON,CHECKBOX,COMBOBOX,CONTROL,FOCUSABLE,FRAME,GRAPHIC,H1,H2,H3,H4,H5,H6,HEADING,HEADING_SAME,LANDMARK,LINK,LIST,LIST_ITEM,LIVE,MAIN,MEDIA,PARAGRAPH,RADIO,RADIO_GROUP,SECTION,TABLE,TEXT_FIELD,TEXT_BOLD,TEXT_ITALIC,TEXT_UNDER,TREE,UNVISITED_LINK,VISITED_LINK,ROW,ROW,COLUMN,ROW_BOUNDS,COLUMN_BOUNDS,TABLE_BOUNDS"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
   TextView text:"Heading" heading actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="heading", roleDescription="heading 1"]
   TextView text:"Some text" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="paragraph"]
   Button text:"Click Me" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="button", clickableScore="300"]

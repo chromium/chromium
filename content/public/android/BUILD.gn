@@ -223,6 +223,7 @@ android_library("content_full_java") {
     "//ui/accessibility:accessibility_features_native_map_java",
     "//ui/accessibility:ax_base_java",
     "//ui/accessibility:ax_enums_mojo_java",
+    "//ui/accessibility/android:accessibility_node_info_compat_dumper_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
     "//ui/base/ime/mojom:mojom_java",

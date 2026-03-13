@@ -12,6 +12,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.chromium.base.Log;
+import org.chromium.ui.accessibility.AccessibilityNodeInfoCompatDumper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -208,7 +209,7 @@ public class AccessibilityTestService extends AccessibilityService {
 
         StringBuilder builder = new StringBuilder();
         builder.append(indent);
-        builder.append(AccessibilityNodeInfoDumper.toString(node));
+        builder.append(AccessibilityNodeInfoCompatDumper.toString(node));
         builder.append("\n");
 
         String childIndent = indent + "  ";

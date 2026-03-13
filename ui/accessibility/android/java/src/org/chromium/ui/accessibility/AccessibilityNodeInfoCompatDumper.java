@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.accessibility.testservice;
+package org.chromium.ui.accessibility;
 
 import static java.lang.String.CASE_INSENSITIVE_ORDER;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -18,19 +19,32 @@ import org.chromium.build.annotations.NullMarked;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO(crbug.com/484389668): Attempt to recombine this with AccessibilityNodeInfoUtils.
-/** Utility class for common actions involving AccessibilityNodeInfo objects. */
+/** Utility class for turning AccessibilityNodeInfoCompat objects into strings for debugging. */
 @NullMarked
-public final class AccessibilityNodeInfoDumper {
-    private AccessibilityNodeInfoDumper() {}
+public final class AccessibilityNodeInfoCompatDumper {
+    private AccessibilityNodeInfoCompatDumper() {}
 
     /**
-     * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
+     * Helper method to perform a custom toString on a given AccessibilityNodeInfo object. Screen
+     * size dependent attributes are excluded.
      *
      * @param node Object to create a toString for
      * @return String Custom toString result for the given object
      */
     public static String toString(AccessibilityNodeInfoCompat node) {
+        return toString(node, false);
+    }
+
+    /**
+     * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
+     *
+     * @param node Object to create a toString for
+     * @param includeScreenSizeDependentAttributes Whether to include screen size dependent
+     *     attributes
+     * @return String Custom toString result for the given object
+     */
+    public static String toString(
+            AccessibilityNodeInfoCompat node, boolean includeScreenSizeDependentAttributes) {
         if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
@@ -122,6 +136,9 @@ public final class AccessibilityNodeInfoDumper {
         if (node.isPassword()) {
             builder.append(" password");
         }
+        if (node.isScrollable() && includeScreenSizeDependentAttributes) {
+            builder.append(" scrollable");
+        }
         if (node.isSelected()) {
             builder.append(" selected");
         }
@@ -175,8 +192,37 @@ public final class AccessibilityNodeInfoDumper {
         }
 
         // Actions and Bundle extras - Always print.
-        builder.append(" actions:").append(toString(node.getActionList()));
-        builder.append(" bundle:").append(toString(node.getExtras()));
+        builder.append(" actions:")
+                .append(toString(node.getActionList(), includeScreenSizeDependentAttributes));
+        builder.append(" bundle:")
+                .append(toString(node.getExtras(), includeScreenSizeDependentAttributes));
+
+        // Add bounds when including screen size dependent attributes.
+        if (includeScreenSizeDependentAttributes) {
+            Rect output = new Rect();
+            node.getBoundsInScreen(output);
+            builder.append(" bounds:[")
+                    .append(output.left)
+                    .append(", ")
+                    .append(output.top)
+                    .append(" - ")
+                    .append(output.width())
+                    .append("x")
+                    .append(output.height())
+                    .append("]");
+
+            output = new Rect();
+            node.getBoundsInParent(output);
+            builder.append(" boundsInParent:[")
+                    .append(output.left)
+                    .append(", ")
+                    .append(output.top)
+                    .append(" - ")
+                    .append(output.width())
+                    .append("x")
+                    .append(output.height())
+                    .append("]");
+        }
 
         return builder.toString();
     }
@@ -227,13 +273,15 @@ public final class AccessibilityNodeInfoDumper {
     }
 
     private static String toString(
-            List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList) {
+            List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList,
+            boolean includeScreenSizeDependentAttributes) {
         actionList.sort((a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
 
         List<String> actionStrings = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (AccessibilityNodeInfoCompat.AccessibilityActionCompat action : actionList) {
+            // Five actions are set on all nodes, so ignore those when printing the tree.
             if (action.equals(
                             AccessibilityNodeInfoCompat.AccessibilityActionCompat
                                     .ACTION_NEXT_HTML_ELEMENT)
@@ -251,6 +299,48 @@ public final class AccessibilityNodeInfoDumper {
                                     .ACTION_LONG_CLICK)) {
                 continue;
             }
+
+            // When |includeScreenSizeDependentAttributes| is false, filter out screen-size
+            // dependent actions.
+            if (!includeScreenSizeDependentAttributes) {
+                // Scroll actions are dependent on screen size, so ignore them to reduce flakiness
+                if (action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_SCROLL_FORWARD)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_SCROLL_BACKWARD)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_SCROLL_DOWN)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_SCROLL_UP)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_SCROLL_RIGHT)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_SCROLL_LEFT)) {
+                    continue;
+                }
+                // Page actions are dependent on screen size, so ignore them to reduce flakiness.
+                if (action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_PAGE_UP)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_PAGE_DOWN)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_PAGE_LEFT)
+                        || action.equals(
+                                AccessibilityNodeInfoCompat.AccessibilityActionCompat
+                                        .ACTION_PAGE_RIGHT)) {
+                    continue;
+                }
+            }
+
             actionStrings.add(toString(action.getId()));
         }
         builder.append(TextUtils.join(", ", actionStrings)).append("]");
@@ -375,22 +465,24 @@ public final class AccessibilityNodeInfoDumper {
         }
     }
 
-    private static String toString(Bundle extras) {
+    private static String toString(Bundle extras, boolean includeScreenSizeDependentAttributes) {
         List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
         sortedKeySet.sort(CASE_INSENSITIVE_ORDER);
         List<String> bundleStrings = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         for (String key : sortedKeySet) {
-            // Ignore screen size dependent attributes.
-            if (key.equals("AccessibilityNodeInfo.unclippedTop")
-                    || key.equals("AccessibilityNodeInfo.unclippedBottom")
-                    || key.equals("AccessibilityNodeInfo.unclippedLeft")
-                    || key.equals("AccessibilityNodeInfo.unclippedRight")
-                    || key.equals("AccessibilityNodeInfo.unclippedWidth")
-                    || key.equals("AccessibilityNodeInfo.unclippedHeight")
-                    || key.equals("AccessibilityNodeInfo.offscreen")) {
-                continue;
+            // Ignore screen size dependent attributes if not requested.
+            if (!includeScreenSizeDependentAttributes) {
+                if (key.equals("AccessibilityNodeInfo.unclippedTop")
+                        || key.equals("AccessibilityNodeInfo.unclippedBottom")
+                        || key.equals("AccessibilityNodeInfo.unclippedLeft")
+                        || key.equals("AccessibilityNodeInfo.unclippedRight")
+                        || key.equals("AccessibilityNodeInfo.unclippedWidth")
+                        || key.equals("AccessibilityNodeInfo.unclippedHeight")
+                        || key.equals("AccessibilityNodeInfo.offscreen")) {
+                    continue;
+                }
             }
 
             Object value = extras.get(key);
@@ -398,7 +490,9 @@ public final class AccessibilityNodeInfoDumper {
                 continue;
             }
 
-            if (key.equals("AccessibilityNodeInfo.supportedElements")) {
+            // For the special case of the supported HTML elements, which prints the same for the
+            // rootWebArea on each test, assert consistency and suppress from results.
+            if (key.equals("ACTION_ARGUMENT_HTML_ELEMENT_STRING_VALUES")) {
                 continue;
             }
 

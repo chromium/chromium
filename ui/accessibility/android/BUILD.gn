@@ -15,15 +15,23 @@ android_aidl("accessibility_test_service_aidl") {
   ]
 }
 
+android_library("accessibility_node_info_compat_dumper_java") {
+  sources = [ "java/src/org/chromium/ui/accessibility/AccessibilityNodeInfoCompatDumper.java" ]
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_core_core_java",
+  ]
+}
+
 android_library("accessibility_test_service_java") {
   testonly = true
   sources = [
-    "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityNodeInfoDumper.java",
     "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestHelperService.java",
     "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestService.java",
   ]
   srcjar_deps = [ ":accessibility_test_service_aidl" ]
   deps = [
+    ":accessibility_node_info_compat_dumper_java",
     "//base:base_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

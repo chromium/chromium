@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.accessibility.AccessibilityNodeInfoCompatDumper;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -136,13 +137,13 @@ public class AccessibilityActionAndEventTracker {
      * Helper method to take an accessibility action and convert it to a string of useful
      * information for testing.
      *
-     * @param action            int action
-     * @param arguments         Bundle arguments
-     * @return                  String representation of the given action
+     * @param action int action
+     * @param arguments Bundle arguments
+     * @return String representation of the given action
      */
     private String actionToString(int action, @Nullable Bundle arguments) {
         StringBuilder builder = new StringBuilder();
-        builder.append(AccessibilityNodeInfoUtils.toString(action));
+        builder.append(AccessibilityNodeInfoCompatDumper.toString(action));
 
         // If we have non-null arguments, add them to our String for this action.
         if (arguments != null) {
