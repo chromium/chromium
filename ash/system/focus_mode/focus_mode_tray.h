@@ -10,7 +10,7 @@
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
 #include "ash/system/focus_mode/focus_mode_ending_moment_view.h"
 #include "ash/system/focus_mode/focus_mode_tasks_model.h"
-#include "ash/system/tray/tray_background_view.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -27,10 +27,10 @@ class TrayBubbleWrapper;
 // progress bar is displayed around the tray displaying how much time is left in
 // the focus session. The tray also controls a bubble that is shown when the
 // button is clicked.
-class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
+class ASH_EXPORT FocusModeTray : public ImagedTrayIcon,
                                  public FocusModeController::Observer,
                                  public FocusModeTasksModel::Observer {
-  METADATA_HEADER(FocusModeTray, TrayBackgroundView)
+  METADATA_HEADER(FocusModeTray, ImagedTrayIcon)
 
  public:
   explicit FocusModeTray(Shelf* shelf);
@@ -38,7 +38,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   FocusModeTray& operator=(const FocusModeTray&) = delete;
   ~FocusModeTray() override;
 
-  // TrayBackgroundView:
+  // ImagedTrayIcon:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   std::u16string GetAccessibleNameForBubble() override;
   void HandleLocaleChange() override {}
@@ -48,7 +48,6 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void CloseBubbleInternal() override;
   void ShowBubble() override;
   void UpdateTrayItemColor(bool is_active) override;
-  void OnThemeChanged() override;
   void OnAnimationEnded() override;
 
   // FocusModeController::Observer:
@@ -65,7 +64,6 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // views::View:
   void Layout(PassKey) override;
 
-  views::ImageView* image_view() { return image_view_; }
 
   // Triggers the tray bounce in animation. This is used during the ending
   // moment to notify the user that their session is over. When the animation
@@ -141,8 +139,6 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // This is used to track the current session snapshot, if any.
   std::optional<FocusModeSession::Snapshot> session_snapshot_;
 
-  // Image view of the focus mode lamp.
-  const raw_ptr<views::ImageView> image_view_;
 
   // The main content view of the bubble.
   raw_ptr<FocusModeCountdownView> countdown_view_ = nullptr;
