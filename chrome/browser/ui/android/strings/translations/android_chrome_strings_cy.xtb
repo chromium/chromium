@@ -213,6 +213,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1900260903084164610">Drwy barhau, rydych yn cytuno i'r <ph name="BEGIN_TOS_LINK" />Telerau Gwasanaeth<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Mae'r cyfeiriadau URL rydych yn ymweld â nhw wedi'u cadw i'ch Cyfrif Google</translation>
 <translation id="1910950723001426294">Mae'r rhestr o ddewisiadau rhannu ar gau.</translation>
+<translation id="1912367671208932516">Agor y ddewislen estyniadau</translation>
 <translation id="191726024256261717">Adolygu caniatadau</translation>
 <translation id="1917766536967060661">Byddwch yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, ac ni fydd <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) yn gallu rhyngweithio â chi ar draws gwasanaethau Google mwyach.</translation>
 <translation id="1919130412786645364">Caniatáu mewngofnodi i Chrome</translation>
@@ -853,6 +854,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 cyfrinair sydd wedi'i ddarganfod}zero{# cyfrinair sydd wedi'u darganfod}two{# gyfrinair sydd wedi'u darganfod}few{# chyfrinair sydd wedi'u darganfod}many{# chyfrinair mewn perygl}other{# cyfrinair sydd wedi'u darganfod}}</translation>
 <translation id="4641919525231168205">Ewch i'r dudalen nesaf</translation>
 <translation id="4642472735733036929">Olrhain prisiau wedi stopio</translation>
+<translation id="4643661539340338954">Hysbysiadau Chrome finds wedi'u troi ymlaen</translation>
 <translation id="4649493483932335039">Gweld tabiau diweddar</translation>
 <translation id="465657074423018424">Mae Pori'n Ddiogel yn eich amddiffyn rhag gwefannau twyllodrus. Os byddwch yn ei ddiffodd, byddwch yn ofalus wrth bori, yn enwedig cyn rhoi unrhyw gyfrineiriau.</translation>
 <translation id="4662373422909645029">Ni all llysenw gynnwys rhifau</translation>
@@ -1649,6 +1651,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7686086654630106285">Rhagor am hysbysebion a awgrymir gan wefan</translation>
 <translation id="7690596512217303514">Ni allai eich dyfais agor Chrome. I ddatrys y broblem, lawrlwythwch y diweddariad Chrome diweddaraf o'ch siop apiau.</translation>
 <translation id="7692761875510935111">Agor yn gyflym yn y porwr. I olygu'r llwybr byr hwn, cyffwrddwch a daliwch.</translation>
+<translation id="7695270712963178084">Mae Chrome yn dod o hyd i</translation>
 <translation id="7697383401610880082">Bachyn llusgo</translation>
 <translation id="7698359219371678927">Crëwch e-bost yn <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Taflen waelod gweithgaredd diweddar wedi'i hagor ar uchder llawn</translation>

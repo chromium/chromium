@@ -121,7 +121,6 @@
 <translation id="1071917609930274619">लगत एन्सिफरमेन्ट</translation>
 <translation id="1072700771426194907">USB यन्त्र फेला पारियो</translation>
 <translation id="107278043869924952">पासवर्डका साथै PIN प्रयोग गर्नुहोस्</translation>
-<translation id="107450319332239199">कुनै समस्या आयो। यसको साटो विन्डोहरू एक एक गरी खोल्नुहोस्।</translation>
 <translation id="1075920807995555452">तपाईंको <ph name="DEVICE_TYPE" /> मा तपाईंको इन्टरप्राइजले व्यवस्थापन गर्ने इन्भाइरोन्मेन्टमा टुल, एडिटर तथा IDE हरू रन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1076176485976385390">टेक्स्ट कर्सर प्रयोग गरी पृष्ठहरूमा नेभिगेट गर्नुहोस्</translation>
 <translation id="1076698951459398590">विषयवस्तुलाई सक्षम पार्नुहोस्</translation>
@@ -189,7 +188,6 @@
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
 <translation id="1122068467107743258">वर्क प्रोफाइल</translation>
 <translation id="1122198203221319518">&amp;उपकरणहरू</translation>
-<translation id="1122242684574577509">प्रमाणीकरण विफल भयो। तपाईँले प्रयोग गरिरहेको (<ph name="NETWORK_ID" /> ) Wi-Fi नेटवर्कका लागि लगइन पृष्ठमा भ्रमण गर्न क्लिक गर्नुहोस्।</translation>
 <translation id="1122587596907914265">अद्वितीय वालपेपरहरू बनाउनुहोस्</translation>
 <translation id="1122656823581975100">{NUM_SITES,plural, =1{एउटा पासवर्ड ह्याक वा चोरी भएको छ}other{{NUM_SITES} वटा पासवर्ड ह्याक वा चोरी भएको छ}}</translation>
 <translation id="1122913801042512795">तपाईंको खाताको साइन इनसम्बन्धी विवरणको म्याद सकिएको छ। कृपया साइन आउट गरी फेरि साइन इन गर्नुहोस्।</translation>
@@ -501,6 +499,7 @@
 <translation id="1327495825214193325">ADB डिबग प्रक्रिया सक्षम पार्न यो <ph name="DEVICE_TYPE" /> पुनः सुरु गर्नु पर्ने हुन्छ। यसलाई असक्षम पार्न यस डिभाइसका सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="1327527584824210101">आफ्नो पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="1327794256477341646">तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्ने सुविधाहरूले काम गर्ने छैनन्</translation>
+<translation id="1328041566565643371">भर्टिकल ट्याब स्ट्रिप रिसाइज ह्यान्डल (ड्र्याग गर्न मिल्ने)</translation>
 <translation id="1328364753167940710"><ph name="NUM_HR" /> घण्टामा</translation>
 <translation id="1328928545650070438">आँखीभौँ तलतिर सार्नुहोस्</translation>
 <translation id="1329466763986822896">यो हटस्पटको गोपनीयतामा सुधार ल्याउनुहोस्</translation>
@@ -508,7 +507,6 @@
 <translation id="1331977651797684645">यो म थिएँ।</translation>
 <translation id="1333489022424033687">तपाईंले आफ्नो यन्त्रमा अन्य साइटहरूले भण्डारण गरेको डेटा नहटाएसम्म <ph name="ORIGIN" /> का केही सुविधाहरूले काम नगर्न सक्छन्</translation>
 <translation id="1333965224356556482">साइटहरूलाई मेरो स्थानसम्बन्धी जानकारी हेर्ने अनुमति नदिनुहोस्</translation>
-<translation id="1335282218035876586">तपाईंको Chromebook मा सुरक्षा तथा सफ्टवेयरसम्बन्धी अपडेटहरू प्राप्त हुन छाडेको छ। उत्कृष्ट सुविधा प्राप्त गर्न आफ्नो Chromebook अपग्रेड गर्नुहोस्।</translation>
 <translation id="133535873114485416">रुचाइएको इनपुट</translation>
 <translation id="13356285923490863">नीति नाम</translation>
 <translation id="1335929031622236846">आफ्नो यन्त्र दर्ता गर्नुहोस्</translation>
@@ -521,6 +519,7 @@
 <translation id="13392265090583506">भिजिबिलिटी</translation>
 <translation id="1340527397989195812">फाइलहरु एप प्रयोग गरेर उपकरणबाट मिडिया ब्याकअप गर्नुहोस्।</translation>
 <translation id="1340839264183302272">समूह छाड्नुहोस्</translation>
+<translation id="1341002693404468853">आयोजक लुकाउनुहोस्</translation>
 <translation id="1341701348342335220">राम्रोसँग सम्पन्न गरियो!</translation>
 <translation id="1342886103232377846">ह्याक वा चोरी भएका पासवर्डहरू हेर्न Google पासवर्ड म्यानेजरमा जानुहोस्</translation>
 <translation id="1343920184519992513">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस् र आफूले चाहेका विशेष पेजहरू खोल्नुहोस्</translation>
@@ -547,7 +546,6 @@
 <translation id="1359923111303110318">तपाईंको यन्त्र Smart Lock प्रयोग गरी अनलक गर्न सकिन्छ। अनलक गर्न Enter थिच्नुहोस्।</translation>
 <translation id="1361164813881551742">म्यानुअल तरिकाले थप्नुहोस्</translation>
 <translation id="1361655923249334273">प्रयोग नगरिएको</translation>
-<translation id="1362829980946830670">तपाईं आफ्नो हालको सत्र चलिरहेका बेला यसअघिको सत्र सुचारु गर्न सक्नुहुन्छ।</translation>
 <translation id="1362865166188278099">मेकानिकल समस्या भयो। प्रिन्टर जाँच्नुहोस्</translation>
 <translation id="1363585519747660921">USB प्रिन्टरलाई कन्फिगर गर्नु पर्छ</translation>
 <translation id="136378536198524553">इनर्जी सेभर अन छ</translation>
@@ -862,9 +860,7 @@
 <translation id="1580772913177567930">आफ्ना एड्मिनसँग सम्पर्क गर्नुहोस्</translation>
 <translation id="1581962803218266616">फाइन्डरमा देखाउनुहोस्</translation>
 <translation id="1582955169539260415">[<ph name="FINGERPRINT_NAME" />] मेट्नुहोस्</translation>
-<translation id="1583082742220286248">सत्र सुचारु गरिँदै छ</translation>
 <translation id="1583127975413389276"><ph name="LANGUAGE" /> भाषा डिभाइसभित्रै प्रोसेस गरिन्छ र उक्त भाषा अफलाइन प्रयोग गर्न मिल्छ</translation>
-<translation id="1584990664401018068">तपाईँले प्रयोग गरिरहनुभएको ( <ph name="NETWORK_ID" /> ) Wi-Fi नेटवर्कको प्रमाणीकरण आवश्यक हुन सक्छ।</translation>
 <translation id="1587275751631642843">&amp;JavaScript कन्सोल</translation>
 <translation id="1587907146729660231">आफ्ना औँलाले पावर बटनमा छुनुहोस्</translation>
 <translation id="1588438908519853928">सामान्य</translation>
@@ -1552,7 +1548,6 @@
 <translation id="2040460856718599782">ओहो! तपाईं प्रमाणीकरण गर्न प्रयास गर्दा कुनै त्रुटि भयो। आफ्नो साइन इन प्रमाणहरू डबल जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2040822390690632244">अपडेटहरू, मद्दत, विकासकर्ता मोड</translation>
 <translation id="2040894699575719559">लोकेसन हेर्न रोक लगाइएको छ</translation>
-<translation id="2041246176170574368">तपाईं अब चाँडै नै आफ्नो Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त गर्न छाड्नु हुने छ। नयाँ Chromebook खरिद गर्दा $५० वा सोभन्दा बढी रकम बचत गर्नुहोस्।</translation>
 <translation id="2042279886444479655">सक्रिय प्रोफाइलहरू</translation>
 <translation id="2044014337866019681">कृपया तपाईं यो सत्र अनलक गर्न <ph name="ACCOUNT" /> पुष्टि गर्दै हुनुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="2044750031738659219">{0,plural, =1{अतिथि विन्डो बन्द गर्नुहोस्}other{अतिथि विन्डोहरू (# वटा विन्डो) बन्द गर्नुहोस्}}</translation>
@@ -2071,7 +2066,6 @@
 <translation id="239185270194776190">तपाईंको Gemini च्याट अर्को विन्डोमा छ। यसलाई सारेर यहाँ ल्याउन यो साइड प्यानलको जुनसुकै ठाउँमा क्लिक गर्नुहोस्।</translation>
 <translation id="2392369802118427583">सक्रिय</translation>
 <translation id="2393136602862631930">आफ्नो Chromebook मा <ph name="APP_NAME" /> सेटअप गर्नुहोस्</translation>
-<translation id="2393313392064891208">Google ChromeOS Flex का सर्तहरूमा भएको सामग्री</translation>
 <translation id="2393944685985256805"><ph name="MODULE_NAME" /> लुकाइएको छ</translation>
 <translation id="2395616325548404795">तपाईँको <ph name="DEVICE_TYPE" /> लाई सफलतापूर्वक इन्टरप्राइज व्यवस्थापनमा दर्ता गरिएको छ तर यसको सम्पत्ति र स्थान जानकारी पठाउन सकिएन। कृपया यस यन्त्रको तपाईँको प्रशासकीय कन्सोलबाट यो जानकारी म्यानुअल तरिकाले प्रविष्टि गर्नुहोस्।</translation>
 <translation id="2396593617786425274">हिस्ट्री सिंक गर्ने हो?</translation>
@@ -2090,7 +2084,6 @@
 <translation id="2408742686124047357">अर्को पटक Google लेन्स सजिलैसँग एक्सेस गर्न यसलाई आफ्नो टुलबारमा पिन गर्नुहोस्</translation>
 <translation id="2408762424059547338">यसले JavaScript अप्टिमाइजेसन अफ गरेर आक्रमणबाट तपाईंलाई अझ राम्रोसँग जोगाउँछ</translation>
 <translation id="2408955596600435184">आफ्नो PIN हाल्नुहोस्</translation>
-<translation id="2409268599591722235">जाऔँ</translation>
 <translation id="2409378541210421746">चयन गरेको भाषा बदल्नुहोस्</translation>
 <translation id="2409709393952490731">कुनै फोन वा ट्याब्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="2410079346590497630">बिल्डसम्बन्धी विवरण</translation>
@@ -2130,7 +2123,6 @@
 <translation id="2434449159125086437">प्रिन्टर सेटअप गर्न सकिएन। कृपया कन्फिगुरेसनको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2434758125294431199">तपाईंसँग कसले सेयर गर्न सक्छन् भन्ने कुरा चयन गर्नुहोस्</translation>
 <translation id="2434915728183570229">तपाईं अब आफ्नो फोनका एपहरू हेर्न सक्नुहुन्छ</translation>
-<translation id="2435137177546457207">Google Chrome र ChromeOS Flex का अतिरिक्त सर्तहरू</translation>
 <translation id="2435248616906486374">सञ्जाल डिस्कनेक्ट गरिएको छ</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="2436385001956947090">लिंक कपी गर्नुहोस्</translation>
@@ -2335,6 +2327,7 @@
 <translation id="2555855727505718984">फारामहरू भर्न सघाउन अटोफिलले यस डिभाइसमा यो जानकारी प्रयोग गर्न सक्ने छैन</translation>
 <translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">आफ्ना सबै बुकमार्कहरू यहाँ हेर्नुहोस्</translation>
+<translation id="2563924218974330506">तपाईं अब यहाँबाटै आफ्ना ट्याब समूहहरू व्यवस्थापन गर्न सक्नुहुन्छ। जुनसुकै बेला अनपिन गर्नुहोस्।</translation>
 <translation id="2564520396658920462">AppleScript मार्फत JavaScript कार्यान्वयन गर्ने सुविधा निष्क्रिय पारिएको छ। मेनु बारबाट यो सुविधा सक्रिय गर्न हेर्नुहोस्&gt; विकासकर्ता &gt; Apple Events बाट JavaScript लाई अनुमति दिनुहोस् नामक विकल्पमा जानुहोस् । थप जानकारीका लागि https://support.google.com/chrome/?p=applescript मा जानुहोस्</translation>
 <translation id="2564653188463346023">परिष्कृत हिज्जे जाँच</translation>
 <translation id="256481480019204378">Google खाताको ID</translation>
@@ -2730,7 +2723,6 @@
 <translation id="2825758591930162672">विषयको सार्वजनिक कुञ्जी</translation>
 <translation id="2826576843404243001">सुरक्षित कनेक्सन प्रयोग गर्न नमिल्ने साइटका हकमा उक्त साइटमा जानुअघि नै चेतावनी प्राप्त गर्नुहोस्। तपाईंले सुरक्षासम्बन्धी उन्नत सुविधा अन गर्नुभएको हुनाले तपाईं यो सेटिङ परिवर्तन गर्न सक्नुहुन्न।</translation>
 <translation id="2828375943530438449">साइन इन गर्ने पेजबाट अघिल्लो पेजमा फर्कनुहोस्</translation>
-<translation id="2828650939514476812">Wi-Fi नेटवर्कसँग कनेक्ट गर्नुहोस्</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> खाली गरिएको छ</translation>
 <translation id="2831430281393059038">डिभाइस प्रयोग गर्न मिल्ने हुनु पर्छ</translation>
 <translation id="2832124733806557606">तपाईंका बच्चा PIN प्रयोग गरेर यो डिभाइस अनलक गर्न वा यसमा साइन इन गर्न सक्छन्।</translation>
@@ -2908,7 +2900,6 @@
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> मा जानुहोस्</translation>
 <translation id="29488703364906173">आधुनिक वेबको लागि निर्मित एउटा छिटो, सरल, र सुरक्षित वेब ब्राउजर।</translation>
 <translation id="2950666755714083615">साइन अप गर्नुहोस्</translation>
-<translation id="2953210795988451570">तपाईं अब आफ्नो Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त गर्नु हुने छैन। यो Chromebook अपग्रेड गरी नयाँ Chromebook लिनुहोस्।</translation>
 <translation id="2953218713108551165"><ph name="SITE" /> का हकमा सूचना पठाउने अनुमति दिइएको छैन। तपाईंले अर्को पटक यो वेबसाइट खोल्दा तपाईंलाई फेरि सोधिने छ।</translation>
 <translation id="2954777802959138493">अपडेटरको स्थितिका बारेमा क्वेरी गर्न सकिएन।</translation>
 <translation id="2955048943983973430">सम्बन्धित Google सेवाहरू</translation>
@@ -3369,7 +3360,6 @@
 <translation id="3280237271814976245">यसको &amp;रूपमा बचत गर्नुहोस्...</translation>
 <translation id="3280243678470289153">Chrome मै रहनुहोस्</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> सँग कुनै ट्याब आदान प्रदान गर्दै</translation>
-<translation id="328265255303378234">यो सत्र सुचारु गर्न मिल्दैन</translation>
 <translation id="3283148363895519428">सेटअप गर्ने प्रक्रिया जारी राख्न आफ्नो फोनमा दिइएका निर्देशनहरू पालना गर्नुहोस्। तपाईंको फोन नजिकै छ र त्यसमा ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3284050785966252943">अटोफिल मेटाडेटाको प्रिभ्यू</translation>
 <translation id="3285322247471302225">नयाँ &amp;ट्याब</translation>
@@ -3774,7 +3764,6 @@
 <translation id="3562655211539199254">आफ्नो फोनको Chrome मा हालसालै खोलिएका ट्याबहरू हेर्नुहोस्</translation>
 <translation id="356268274299520831">साइटमा गई पासवर्ड परिवर्तन गर्नुहोस्</translation>
 <translation id="3563392617245068355">मुड</translation>
-<translation id="3564334271939054422">तपाईँले प्रयोग गरिरहनुभएको ( <ph name="NETWORK_ID" /> ) Wi-Fi नेटवर्कलाई तपाईँले यसको लगइन पृष्ठमा भ्रमण गर्न आवश्यक हुन सक्छ।</translation>
 <translation id="3564456410937306182">एड्याप्टिभ चार्जिङका बारेमा थप जान्नुहोस्।</translation>
 <translation id="3564659095423213915">यो फोल्डर यो डिभाइसमा मात्र सेभ गरिएको छ। तपाईंले यसलाई “<ph name="ACCOUNT_FOLDER" />” मा सेभ गर्नुभयो भने यो फोल्डर तपाईंको खातामा पनि सेभ गरिने छ।</translation>
 <translation id="3564848315152754834">USB सुरक्षा साँचो</translation>
@@ -4241,7 +4230,6 @@
 <translation id="3848547754896969219">&amp;इन्कोग्निटो विन्डोमा खोलियोस्</translation>
 <translation id="3848688783623004960">स्प्लिट भ्यूमा खोल्नुहोस्</translation>
 <translation id="3849517590329855428">सबै कोल्याप्स गर्नुहोस्</translation>
-<translation id="3850172593216628215">तपाईं अब आफ्नो Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त गर्नु हुने छैन। नयाँ Chromebook खरिद गर्दा $५० वा सोभन्दा बढी रकम बचत गर्नुहोस्।</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3850989673553106152">पासवर्ड परिवर्तन गरियो</translation>
 <translation id="3851428669031642514">असुरक्षित स्क्रिप्टहरू लोड गर्नुहोस्</translation>
@@ -4441,7 +4429,6 @@
 <translation id="3978732922947854545">Chrome ले PDF हरू अझ उत्कृष्ट बनाउँछ</translation>
 <translation id="3979093622823535817">मिटिङ <ph name="MEETING_TITLE" /> मा सामेल हुनुहोस्</translation>
 <translation id="3979395879372752341">नयाँ विस्तार थिपियो (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> लाई सक्षम बनाउनुहोस्</translation>
 <translation id="398095528354975981">यी ट्याबहरू लुकाउनुहोस्</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" /> सम्म नजिकैका यन्त्रहरूमा <ph name="DEVICE_NAME" /> का रूपमा देखिने...</translation>
 <translation id="3981760180856053153">अवैध बचत प्रकार प्रविष्ट भयो।</translation>
@@ -4566,7 +4553,6 @@
 <translation id="4061374428807229313">फोल्डरहरू सेयर गर्न Files एपमा रहेको कुनै फोल्डरमा दायाँ क्लिक गर्नुहोस्, त्यसपछि "Parallels Desktop सँग सेयर गर्नुहोस्" नामक विकल्प चयन गर्नुहोस्।</translation>
 <translation id="406213378265872299"> कस्टम पारिएका व्यवहारहरू</translation>
 <translation id="4062561150282203854">आफ्नो <ph name="DEVICE_TYPE" /> मा भएका एप, सेटिङ र अन्य कुराहरू सिंक गर्नुहोस्</translation>
-<translation id="4065876735068446555">तपाईँले प्रयोग गरिरहनु भएको सञ्जाल (<ph name="NETWORK_ID" />) लाई तपाईँले यसको लगइन पृष्ठ भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
 <translation id="4065910654823040256">दायाँ भ्यू बन्द गर्नुहोस्</translation>
 <translation id="4065931125325392744">यो एक्स्टेन्सनले चाँडै नै काम गर्न छाड्न सक्छ</translation>
 <translation id="4066207411788646768">आफ्नो नेटवर्कमा उपलब्ध प्रिन्टरहरू हेर्न आफ्नो इन्टरनेटको जाँच गर्नुहोस्</translation>
@@ -5616,6 +5602,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{एउटा पुस्तक चिन्ह मेटाइयो}other{{COUNT} वटा पुस्तक चिन्ह मेटाइए}}</translation>
 <translation id="481689174647911539">यो फाइल भाइरस वा मालवेयर हुन सक्छ।<ph name="LINE_BREAK" />तपाईं यो फाइल सुरक्षित छ कि छैन भन्ने कुरा जाँच्न यसलाई Google सुरक्षित ब्राउजिङमा पठाउन सक्नुहुन्छ। स्क्यान गर्न सामान्यतया केही सेकेन्ड लाग्छ।</translation>
 <translation id="4816900689218414104">फोन वा ट्याब्लेटमा पासकी सेट गर्नुहोस्</translation>
+<translation id="481852950686014162">आफूले Gemini र AI मोडमा छाडेकै ठाउँबाट सुरु गर्नुहोस्</translation>
 <translation id="4819323978093861656">{0,plural, =0{अहिले बन्द गरिँदै छन्।}=1{निम्न समयपछि बन्द गरिन्छन्: १ सेकेन्ड}other{निम्न समयपछि बन्द गरिन्छन्: # सेकेन्ड}}</translation>
 <translation id="4819818293886748542">सहायता टुलको लिंक प्राप्त गर्नुहोस्</translation>
 <translation id="4820236583224459650">सक्रिय टिकटको रूपमा सेट गर्नुहोस्</translation>
@@ -5720,7 +5707,6 @@
 <translation id="4878634973244289103">प्रतिक्रिया पठाउन सकिएन। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4878718769565915065">यो सुरक्षा साँचोमा फिंगरप्रिन्ट थप्न सकिएन</translation>
 <translation id="4879491255372875719">स्वचालित (डिफल्ट)</translation>
-<translation id="4880315242806573837">तपाईं अब चाँडै नै आफ्नो Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त गर्न छाड्नु हुने छ। यो Chromebook अपग्रेड गरी नयाँ Chromebook लिनुहोस्।</translation>
 <translation id="4880827082731008257">खोज इतिहास</translation>
 <translation id="4881685975363383806">मलाई फेरि स्मरण नगराइयोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
@@ -5820,6 +5806,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4951966678293618079">यो साइटका पासवर्ड कहिले पनि सेभ नगर्नुहोस्</translation>
+<translation id="4952580838083306838">आयोजक लुकाउनुहोस्</translation>
 <translation id="4953808748584563296">डिफल्ट सुन्तला रङ्गको अवतार</translation>
 <translation id="4954652437333037880">फाइल</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> का बारेमा सोध्नुहोस्</translation>
@@ -5893,6 +5880,7 @@
 <translation id="5006778209728626987">चट्याङ</translation>
 <translation id="5007392906805964215">समीक्षा गर्नुहोस्</translation>
 <translation id="50080882645628821">प्रोफाइल हटाउनुहोस्</translation>
+<translation id="5008587162781422067">ट्याब स्ट्रिपको चौडाइ अहिले <ph name="TAB_STRIP_PERCENT" /> छ, सामग्रीको क्षेत्रको चौडाइ अहिले <ph name="CONTENT_AREA_PERCENT" /> छ।</translation>
 <translation id="5008936837313706385">क्रियाकलापको नाम</translation>
 <translation id="5009463889040999939">प्रोफाइलको नाम बदलिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="5010886807652684893">भिजुअल भ्यू</translation>
@@ -6233,6 +6221,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> क्रयास भएको छ। एप पुन: चालू गर्नको लागि यस बेलुनलाई क्लिक गर्नुहोस्।</translation>
 <translation id="5247051749037287028">नाम प्रदर्शन गर्नुहोस् (ऐच्छिक)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> चयन गर्नुहोस्</translation>
+<translation id="5248934139541843042">आयोजक हेर्नुहोस्</translation>
 <translation id="5249624017678798539">डाउनलोड पूरा हुनुभन्दा अगाडि नै ब्राउजर क्र्यास भयो।</translation>
 <translation id="5249818097095743806">आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ले तपाईं समक्ष स्थानीय सामग्री प्रस्तुत गर्नका लागि तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्छ। तपाईंले <ph name="SETTINGS_LINK" /> मा गएर यसलाई परिवर्तन गर्न सक्नुहुन्छ।</translation>
@@ -6269,7 +6258,6 @@
 <translation id="5275352920323889391">कुकुर</translation>
 <translation id="527605719918376753">ट्याब म्युट गर्दै</translation>
 <translation id="527605982717517565"><ph name="HOST" /> मा सँधै जाभास्क्रिप्टको लागि अनुम</translation>
-<translation id="5276288422515364908">तपाईं <ph name="MONTH_AND_YEAR" /> पछि यो Chromebook मा सुरक्षा तथा सफ्टवेयरसम्बन्धी अपडेटहरू प्राप्त गर्न छाड्नु हुने छ। उत्कृष्ट सुविधा प्राप्त गर्न आफ्नो Chromebook अपग्रेड गर्नुहोस्।</translation>
 <translation id="5276357196618041410">तपाईंले लग इन गरेपछि मात्र कन्फिगुरेसन सेभ गर्न सकिन्छ</translation>
 <translation id="5277127016695466621">किनाराको प्यानल देखाउनुहोस्</translation>
 <translation id="5278823018825269962">स्ट्याटस Id</translation>
@@ -6833,7 +6821,6 @@
 <translation id="5671641761787789573">छविहरूमाथि रोक लगाइएको छ</translation>
 <translation id="567210741546439261">बुकमार्क तथा सूचीहरू</translation>
 <translation id="5672475067418064339">एड्रेस बारमा आफ्ना सबै सर्टकटहरूसँगै यो की प्रयोग गर्नुहोस्</translation>
-<translation id="5674059598547281505">यसअघिको सत्र सुचारु गर्ने हो?</translation>
 <translation id="567587836466137939">यो डिभाइसले <ph name="MONTH_AND_YEAR" /> सम्म मात्र सफ्टवेयर तथा सुरक्षासम्बन्धी अपडेटहरू स्वतः प्राप्त गर्ने छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="567740581294087470">तपाईं कस्तो खालको प्रतिक्रिया दिँदै हुनुहुन्छ?</translation>
 <translation id="5677503058916217575">पृष्ठ भाषा:</translation>
@@ -6842,7 +6829,6 @@
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> मा पठाइँदै छ</translation>
 <translation id="5678888125599911373">तपाईं आफूले Chrome प्रयोग गर्ने जुनसुकै डिभाइसमा हालसालै बन्द गरिएका ट्याबहरू पुनः खोल्न सक्नुहुन्छ</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" />मा तपाईंको डेटा पढ्नुहोस्</translation>
-<translation id="5679785611070310751">तपाईं <ph name="MONTH_AND_YEAR" /> पछि यो Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त गर्न छाड्नु हुने छ। नयाँ सुरक्षा तथा सफ्टवेयर प्राप्त गर्न आफ्नो Chromebook अपडेट गरिहाल्नुहोस्। अफरका सर्तहरू लागू हुन्छन्।</translation>
 <translation id="5680050361008726776">"<ph name="ESIM_PROFILE_NAME" />" हटाउने हो?</translation>
 <translation id="5681586175480958839">फाइल खोलिसकिएको छ</translation>
 <translation id="5684181005476681636">Wi-Fi सम्बन्धी विवरणहरू</translation>
@@ -6867,6 +6853,7 @@
 <translation id="5698878456427040674">चयन गरिएको खाता प्रयोग गर्न मिल्छ कि मिल्दैन भन्ने कुरा जाँच्नुहोस्।</translation>
 <translation id="5698900765010620315">न्यून कन्ट्रास्ट भएको अँध्यारो थिम</translation>
 <translation id="5699227710146832453">निम्न साइटबाट</translation>
+<translation id="5700024700429259844">तपाईं अब यहाँबाटै Gemini च्याट र AI मोडका थ्रेडहरू सुचारु गर्न सक्नुहुन्छ। जुनसुकै बेला अनपिन गर्नुहोस्।</translation>
 <translation id="570043786759263127">Google Play एप र सेवाहरू</translation>
 <translation id="5700761515355162635">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5700836101007545240">तपाईंका प्रशासकले जडान थप्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
@@ -6886,7 +6873,6 @@
 <translation id="5711983031544731014">अनलक गर्न सकिएन। आप्नो पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="5712153969432126546">साइटहरूले कहिलेकाहीँ कागजात, करार तथा फाराम जस्ता PDF फाइलहरू प्रकाशित गर्छन्</translation>
 <translation id="571222594670061844">साइटहरूले पहिचान सेवा प्रदायकहरूबाट प्राप्त साइन इन प्रम्प्टहरू देखाउन सक्छन्</translation>
-<translation id="5713033452812927234">तपाईंको यसअघिको डिभाइसमा खोलिएका विन्डो खोलिँदै छन्</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> मा कनेक्ट गरिएको छ</translation>
 <translation id="5714100381896040477">स्क्रिनको प्रयोग कम गर्नुहोस्</translation>
 <translation id="5719854774000914513">साइटहरूले HID यन्त्रमा कनेक्ट गर्ने अनुमति माग्न सक्छन्</translation>
@@ -7758,7 +7744,6 @@
 <translation id="6314819609899340042">तपाईंले सफलतापूर्वक यस <ph name="IDS_SHORT_PRODUCT_NAME" /> उपकरणमा डिबग सुविधाहरू सक्षम गर्नुभयो।</translation>
 <translation id="6315170314923504164">भ्वाइस</translation>
 <translation id="6315493146179903667">सबैलाई अगाडि ल्याउनुहोस्</translation>
-<translation id="6316432269411143858">Google ChromeOS का सर्तहरूमा भएको सामग्री</translation>
 <translation id="6318125393809743217">पोलिसी कन्फिगुरेसनका साथमा policies.json फाइल समावेश गर्नुहोस्।</translation>
 <translation id="6318944945640833942">प्रिन्टर पत्ता लगाउन सकिएन। कृपया प्रिन्टरको ठेगाना फेरि प्रविष्टि गर्नुहोस्।</translation>
 <translation id="6319278239690147683">सिंक गरिएका सबै डिभाइस र Google खाताबाट ब्राउजिङ डेटा मेटाउन <ph name="BEGIN_LINK" />सिंकसम्बन्धी सेटिङमा जानुहोस्<ph name="END_LINK" />।</translation>
@@ -8286,6 +8271,7 @@
 <translation id="6686878118106035853">कस्टम उन्नत सुरक्षाले सबै साइटहरूमा JavaScript अप्टिमाइजेसन अफ गर्छ</translation>
 <translation id="6687008241368170505">Google पासवर्ड म्यानेजरको PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> नदेखिने पार्नुहोस्</translation>
+<translation id="6689092196793298127">आयोजक</translation>
 <translation id="6689948774466767379">माउस की सुविधा</translation>
 <translation id="6690659332373509948">फाइललाई पदच्छेद गर्न सकिएन: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;अ</translation>
@@ -8308,7 +8294,6 @@
 <translation id="6707389671160270963">SSL सेवाग्राही प्रमाणपत्र</translation>
 <translation id="6707671917294473995">वेबसाइटहरूलाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> र अन्य १ ट्याब}other{<ph name="PAGE_TITLE" /> र अन्य # ट्याबहरू}}</translation>
-<translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> प्रयोग गरेर कनेक्ट गर्नुहोस्</translation>
 <translation id="6710172959248731469">Google का सेवाहरूसम्बन्धी सेटिङ</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6710394144992407503">मैले वेब पेजहरूमा टेक्स्ट टाइप गर्दा हिज्जेसम्बन्धी त्रुटिहरूको जाँच गर्नुहोस्</translation>
@@ -8345,7 +8330,6 @@
 <translation id="6729493062119577923">साझा ट्याब समूहमा गरिएका गतिविधि</translation>
 <translation id="6730744976532805323">तपाईंले ट्याबहरू बदल्दै गर्दा पनि हालको ट्याब Gemini सँग सेयर गर्छ</translation>
 <translation id="6731320427842222405">यसको लागि केही मिनेट लाग्न सक्छ।</translation>
-<translation id="6732956960067639542">बरु Chrome ब्राउजरको नयाँ सत्र खोल्नुहोस्।</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">ठेगाना</translation>
 <translation id="6737663862851963468">Kerberos को टिकट हटाउनुहोस्</translation>
@@ -8409,7 +8393,6 @@
 <translation id="6781658011335120230"><ph name="BEGIN_PARAGRAPH1" />एपसम्बन्धी डेटा सम्पर्क ठेगाना, म्यासेज र फोटो जस्ता डेटा र कुनै एपले (विकासकर्ताका सेटिङका आधारमा) सेभ गरेको कुनै पनि डेटा हुन सक्छ। डेटा ब्याकअप गर्दा तपाईंका बच्चाको Drive को भण्डारण कोटा प्रयोग हुने छैन।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तपाईं सेटिङमा गई यो सेवा अफ गर्न सक्नुहुन्छ।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Linux को ब्याकअप रद्द गरियो</translation>
-<translation id="6782067259631821405">PIN अवैध छ</translation>
 <translation id="6783036716881942511">यो डिभाइस बिर्सने हो?</translation>
 <translation id="6783667414610055871">Microsoft OneDrive का सेटिङ</translation>
 <translation id="6784523122863989144">प्रोफाइल प्रयोग गर्न मिल्ने हुनु पर्छ</translation>
@@ -8536,7 +8519,6 @@
 <translation id="6850286078059909152">पाठको रङ्ग</translation>
 <translation id="6850925512806464982">सबै जना तुरुन्तै यो ट्याब समूहको एक्सेस गुमाउने छन् र यो ट्याब समूह सबै डिभाइसबाट मेटाइने छ</translation>
 <translation id="6851497530878285708">एपलाई सक्षम पारियो</translation>
-<translation id="6852290167968069627">नेटवर्कसम्बन्धी समस्या आएकाले ChromeOS ले तपाईंको यसअघिको सत्र सुचारु गर्न सक्दैन। कनेक्सनमा समस्या नआएको नेटवर्कमा कनेक्ट गर्नुहोस् अनि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6852529053326738838">तपाईंको सङ्गठनलाई आफ्नो खाता योग्य छ कि छैन भन्ने कुरा सोध्नुहोस्। अन्यथा उक्त कुरा जान्न आफ्नो कार्यालयको इमेल ठेगाना प्रयोग गरेर दर्ता गर्नुहोस्।</translation>
 <translation id="6853029310037965825"><ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /> बाट इन्स्टल गरिएको <ph name="APP_TYPE" /></translation>
 <translation id="6853118789186721762">तपाईंको <ph name="DEVICE_TYPE" /> मा रिमाइन्डर पठाइएको छ</translation>
@@ -8548,7 +8530,6 @@
 <translation id="6856623341093082836">आफ्नो टचस्क्रिनको सटीकता सेटअप र समायोजन गर्नुहोस्</translation>
 <translation id="6857145580237920905">पावरवास गर्नुअघि eSIM प्रोफाइलहरू हटाउनुहोस्</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
-<translation id="6860097299815761905">प्रोक्सी सेटिङहरू...</translation>
 <translation id="68601584151169673">सेभ र सेयर गर्नुहोस्</translation>
 <translation id="6860427144121307915">ट्याबमा खोल्नुहोस्</translation>
 <translation id="6861179941841598556"><ph name="PROFILE_NAME" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
@@ -8818,7 +8799,6 @@
 <translation id="7039326228527141150"><ph name="VENDOR_NAME" /> बाट USB उपकरणहरूको पहुँच गर्नुहोस्</translation>
 <translation id="7039912931802252762">Microsoft स्मार्ट कार्ड लगअन</translation>
 <translation id="7039951224110875196">आफ्ना बच्चाको Google खाता बनाउनुहोस्</translation>
-<translation id="7039968672732182060">तपाईंको Chromebook मा सुरक्षासम्बन्धी अपडेटहरू प्राप्त हुन छाडेको छ। नयाँ सुरक्षा तथा सफ्टवेयर प्राप्त गर्न आफ्नो Chromebook अपडेट गरिहाल्नुहोस्। अफरका सर्तहरू लागू हुन्छन्।</translation>
 <translation id="7042116641003232070">यो साइटलाई तपाईंको डिभाइसमा डेटा सेभ गर्ने अनुमति दिइएको छ</translation>
 <translation id="7044124535091449260">साइटको पाहुँचबारे थप जान्नुहोस्‌</translation>
 <translation id="7044207729381622209">तपाईंलाई यी साइटहरूबाट साइन आउट गरिने छ। साथै, हाल कुनै ट्याबमा यीमध्ये कुनै साइट खोलिएको छ भने सो ट्याबबाट पनि साइन आउट गरिने छ</translation>
@@ -8953,7 +8933,6 @@
 <translation id="7144363643182336710">सूचनाहरू स्क्रिनमा पप-अप हुँदैनन्। तपाईं अझै पनि आफ्नो डिभाइसको स्क्रिनको पुछारको दायाँतिर रहेको Do Not Disturb को आइकनमा क्लिक गरेर सूचनाहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="7144856456372460176"><ph name="APP" /> इन्स्टल गर्नुहोस्...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
-<translation id="7145413760160421938">यसअघिको सत्र सुचारु गर्न मिल्दैन</translation>
 <translation id="7146882055510146554">Microsoft 365 ले Word, Excel र PowerPoint फाइलहरू सम्पादन गर्न OneDrive प्रयोग गर्छ। यी फाइलहरू Files एपको साइड नेभिगेसनमा लेबल राखिएको “Microsoft OneDrive” मा भेट्टाउन सकिन्छ। यसका लागि तपाईंले आफ्नो Microsoft खातामा साइन इन गर्नु पर्ने हुन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="7148426638542880639">साइटहरूले तपाईंले अपेक्षा गरेअनुसार काम नगर्न सक्छन्। तपाईं आफ्नो डिभाइसमा आफूले खोल्ने साइटहरूका बारेमा जानकारी सेभ गर्न चाहनुहुन्न भने यो विकल्प छनौट गर्नुहोस्।</translation>
 <translation id="7149839598364933473">यो डिभाइसमा <ph name="DEVICE_OS" /> चलाउनुहोस्।</translation>
@@ -9389,7 +9368,6 @@
 <translation id="744366959743242014">डेटा लोड हुँदै छ, यो प्रक्रिया पूरा हुन केही समय लाग्न सक्छ।</translation>
 <translation id="7443806024147773267">आफ्नो Google खातामा साइन इन हुने बित्तिकै आफ्ना पासवर्डमाथिको पहुँच प्राप्त गर्नुहोस्</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{कुकीहरू आज फेरि ब्लक गरिने छन्}=1{कुकीहरू भोलि फेरि ब्लक गरिने छन्}other{कुकीहरू अबको # दिनमा फेरि ब्लक गरिने छन्}}</translation>
-<translation id="7444983668544353857"><ph name="NETWORKDEVICE" /> लाई अक्षम बनाउनुहोस्</translation>
 <translation id="7446716846072322308">तपाईंले यसो गर्नुभयो भने <ph name="SITE_NAME" /> तथा सम्बन्धित साइटहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटिने छ</translation>
 <translation id="7448430327655618736">एपहरू स्वतः स्थापना गर्नुहोस्</translation>
 <translation id="7448664748118305024">तपाईंले सबै विन्डोहरू बन्द गर्दा साइटहरूले तपाईंको डिभाइसमा सेभ गरेका डेटा मेटाउनुहोस्</translation>
@@ -9602,6 +9580,7 @@
 <translation id="760197030861754408">जडान गर्न <ph name="LANDING_PAGE" /> मा जानुहोस्।</translation>
 <translation id="7602079150116086782">अन्य यन्त्रहरूका कुनै ट्याबहरू छैनन्</translation>
 <translation id="7602173054665172958">प्रिन्टको व्यवस्थापन</translation>
+<translation id="7602805861133750578">तपाईं अब ट्याब समूह, Gemini च्याट र AI मोडका थ्रेडहरू एकै ठाउँमा व्यवस्थापन गर्न सक्नुहुन्छ। जुनसुकै बेला अनपिन गर्नुहोस्।</translation>
 <translation id="7602868996817972616">Google लाई यो पेजका बारेमा प्रश्न सोध्नुहोस्</translation>
 <translation id="7603785829538808504">तल सूचीबद्ध गरिएका साइटका हकमा तपाईंका रोजाइअनुसारका सेटिङ लागू हुन्छन्</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{एउटा पासवर्ड इम्पोर्ट गरिएको छैन}other{{NUM_PASSWORDS} वटा पासवर्ड इम्पोर्ट गरिएका छैनन्}}</translation>
@@ -9745,7 +9724,6 @@
 यसमा इन्स्टल गरिएको सफ्टवेयर, फाइल, तपाईंको ब्राउजर र डिभाइसको अपरेटिङ सिस्टम र IP एड्रेससम्बन्धी जानकारी समावेश हुन सक्छन्।</translation>
 <translation id="7683834360226457448">कमजोर दृष्टि भएका मान्छेहरूका लागि बनाइएका डिस्प्ले टुलहरू</translation>
 <translation id="7684212569183643648">तपाईँको एडमिनद्वारा स्थापना गरियो</translation>
-<translation id="7684559058815332124">क्याप्टिभ पोर्टल लगइन पृष्ठ भ्रमण गर्नुहोस्</translation>
 <translation id="7684718995427157417">आफ्ना एपहरू बनाउन तथा परीक्षण गर्न Android Debug Bridge (ADB) सक्षम पार्नुहोस्। यस कारबाहीले Google ले प्रमाणीकरण नगरेका Android एपहरू इन्स्टल गर्ने अनुमति दिन्छ र यसलाई असक्षम पार्न फ्याक्ट्री रिसेट गर्नु पर्ने हुन्छ भन्ने कुरामा ध्यान दिनुहोस्।</translation>
 <translation id="7684803937028953000">तपाईंको सङ्गठनले यो फाइल डिभाइसमा डाउनलोड गर्न रोक लगाएको छ।</translation>
 <translation id="7684913007876670600">यो पेजको सरलीकृत भ्यू देखाउन साइड प्यानल खोल्नुहोस् र रिडिङ मोड चयन गर्नुहोस्</translation>
@@ -10166,7 +10144,6 @@
 <translation id="7973149423217802477">थम्ब्स डाउनले तपाईंलाई यो सुविधा मन पर्दैन भन्ने प्रतिक्रिया पेस गर्छ।</translation>
 <translation id="7973776233567882054">निम्नमध्ये कुन विकल्पले तपाईंको नेटवर्कको उत्कृष्ट तरिकाले वर्णन गर्छ?</translation>
 <translation id="797394244396603170">आफूले फाइल सेयर गर्न चाहेको यन्त्र चयन गर्नुहोस्</translation>
-<translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> प्रयोग गर्न पुनः प्रयास गर्नुहोस्</translation>
 <translation id="7974713334845253259">डिफल्ट रङ</translation>
 <translation id="7974936243149753750">ओभरस्क्यान</translation>
 <translation id="7975504106303186033">तपाईंले अनिवार्य रूपमा यो Chrome Education यन्त्र कुनै शैक्षिक खातामा दर्ता गर्नु पर्छ। नयाँ खाता बनाउन कृपया g.co/workspace/edusignup मा जानुहोस्।</translation>
@@ -10241,7 +10218,6 @@
 <translation id="8023801379949507775">एक्स्टेन्सनहरूलाई अहिले नै अपडेट गर्नुहोस्</translation>
 <translation id="8024161440284949905">यी ट्याबहरू प्रयोग गरी जारी राख्नुहोस्</translation>
 <translation id="8025151549289123443">लक स्क्रिन र साइन इन</translation>
-<translation id="8025291188699172126">अपडेटका बारेमा जानकारी</translation>
 <translation id="8026471514777758216">तपाईंका सबै डिभाइसहरू</translation>
 <translation id="8026700655446696031"><ph name="ADDRESS_SUMMARY" /> को घरको ठेगानासम्बन्धी थप विकल्पहरू</translation>
 <translation id="8026784703228858744">सिंक गर्ने सुविधाका सहायताले आफ्ना बुकमार्क र अन्य कुराहरू सेभ गर्नुहोस्</translation>
@@ -10300,6 +10276,7 @@
 <translation id="8054609631325628928">यी नम्बरहरू सेवा एक्टिभेट गर्ने प्रयोजनका लागि प्रयोग गर्न सकिन्छ</translation>
 <translation id="8054883179223321715">भिडियो हेर्ने सुविधा प्रदान गर्ने केही निश्चित साइटहरूका लागि उपलब्ध</translation>
 <translation id="8054921503121346576">युएसबी कुञ्जीपाट जडित</translation>
+<translation id="8055975688427973864">आयोजक बटन देखाउनुहोस्</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
 <translation id="8058986560951482265">चल्दै रोकिदै गर्ने</translation>
 <translation id="8059417245945632445">यन्त्रहरू &amp;निरीक्षण गर्नुहोस्</translation>
@@ -10855,7 +10832,6 @@
 <translation id="8431190899827883166">ट्याप देखाउनुहोस्</translation>
 <translation id="843173223122814223">AI प्रयोग गरी ब्याकग्राउन्ड बनाउनुहोस्</translation>
 <translation id="8431977087510901105">कर्सरसम्बन्धी सेटिङ रिसेट गरिएका छन्</translation>
-<translation id="8433186206711564395">नेटवर्क सम्बन्धी सेटिङहरू</translation>
 <translation id="8434109185104929038">पढ्नका लागि शान्त ठाउँ</translation>
 <translation id="8434837876193928924">ट्याब समूहसम्बन्धी विवरणहरू</translation>
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{यो ट्याबमा देखिएका समस्या समाधान गर्नुहोस्}other{यी ट्याबहरूमा देखिएका समस्या समाधान गर्नुहोस्}}</translation>
@@ -10903,7 +10879,6 @@
 <translation id="8464132254133862871">यो प्रयोगकर्ता खाता सेवाको लागि योग्य छैन।</translation>
 <translation id="8465252176946159372">मान्य छैन</translation>
 <translation id="8465444703385715657"><ph name="PLUGIN_NAME" /> सञ्चालन गर्नका लागि तपाईंको अनुमति चाहिन्छ</translation>
-<translation id="8466052016039127321">अघिल्लो सत्र सुचारु गर्न मिल्दैन</translation>
 <translation id="8467326454809944210">अर्को भाषा छनौट गर्नुहोस्</translation>
 <translation id="8468087214092422866">ब्लुटुथ डिभाइसहरू खोज्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> का सुरक्षित गरिएका पासवर्डहरू</translation>
@@ -11273,6 +11248,7 @@
 <translation id="871515167518607670">कुनै डिभाइस छनौट गर्नुहोस्। त्यसपछि पेज हेर्न उक्त डिभाइसमा Chrome खोल्नुहोस्।</translation>
 <translation id="8715480913140015283">पृष्ठभूमि ट्याबले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
 <translation id="8716050156658570300">साइटहरूले मोसन तथा लाइट सेन्सरहरू प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
+<translation id="8716067129332848360">आयोजक हेर्नुहोस्</translation>
 <translation id="8716931980467311658"><ph name="DEVICE_TYPE" /> बाट आफ्नो Linux फाइलका फोल्डरहरूमा रहेका सबै Linux एप र डेटा मेट्ने हो?</translation>
 <translation id="8717864919010420084">लिंक कपी गर्नुहोस्</translation>
 <translation id="8718994464069323380">टचस्क्रिन भेटियो</translation>
@@ -11728,6 +11704,7 @@
 <translation id="9013037634206938463">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> खाली ठाउँ आवश्यक पर्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="9014206344398081366">ChromeVox को ट्युटोरियल</translation>
 <translation id="9014674417732091912">सारेर रो <ph name="ROW_NUMBER" /> मा लगियो</translation>
+<translation id="9015849286924418538">ट्याबहरूलाई लेबल र रङअनुसार समूहमा विभाजन गरी सजिलै एक्सेस गर्न मिल्ने बनाउनुहोस्</translation>
 <translation id="901668144954885282">Google ड्राइभमा ब्याकअप गर्नुहोस्</translation>
 <translation id="9016827136585652292">प्राइभेसी स्क्रिन अन/अफ गर्ने की</translation>
 <translation id="90181708067259747">म्याद सकिने मिति: <ph name="CARD" /></translation>
@@ -11880,7 +11857,6 @@
 <translation id="9111102763498581341">अनलक गर्नुहोस्</translation>
 <translation id="9111305600911828693">इजाजतपत्र सेटअप गरिएको छैन</translation>
 <translation id="9111330022786356709">माउसमा बटनहरू हाल्नुहोस् वा पहिल्यै भएका बटनहरू पत्ता लगाउनुहोस्</translation>
-<translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111519254489533373">Safe Browsing सम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="9111668656364922873">तपाईंको नयाँ प्रोफाइलमा स्वागत छ</translation>
 <translation id="9112517757103905964">यो फाइलमा संवेदनशील सामग्री भएकाले तपाईंको सङ्गठनले यो फाइल मेटाउन सिफारिस गरेको छ</translation>
@@ -11911,7 +11887,6 @@
 <translation id="9126149354162942022">कर्सरको रङ</translation>
 <translation id="9128317794749765148">सेटअप सम्पन्न हुन सकेन</translation>
 <translation id="9128335130883257666"><ph name="INPUT_METHOD_NAME" /> को सेटिङ पृष्ठ खोल्नुहोस्</translation>
-<translation id="9128870381267983090">नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="9129562557082598582">सबै <ph name="CERT_GROUP" /> एक्स्पोर्ट गर्नुहोस्</translation>
 <translation id="9130015405878219958">अवैध मोड प्रविष्ट गरियो।</translation>
 <translation id="9130135798965366513"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ले जारी राख्ने प्रयोजनका लागि तपाईंको <ph name="FIELDS_STRING" /> यो साइटसँग सेयर गर्ने छ। यो साइटको <ph name="BEGIN_LINK1" />गोपनीयता नीति<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />सेवाका सर्तहरू<ph name="END_LINK2" /> हेर्नुहोस्।</translation>

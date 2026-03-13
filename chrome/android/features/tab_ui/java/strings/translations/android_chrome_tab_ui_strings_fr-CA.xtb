@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2371084566192454134">Onglets et groupes d'onglets</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Réduire le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduire le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduire le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
+<translation id="2476179388576975626">Incrustation d'image</translation>
 <translation id="2498435670446402865">Renommer groupe onglets</translation>
 <translation id="2536366509642644298">Les groupes d'onglets « <ph name="TAB_GROUP_NAME_1" /> » et « <ph name="TAB_GROUP_NAME_2" /> » ne sont plus accessibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduire <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduire le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduire le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>

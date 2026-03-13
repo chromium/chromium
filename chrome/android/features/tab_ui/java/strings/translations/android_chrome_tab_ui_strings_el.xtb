@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2371084566192454134">Καρτέλες και ομάδες καρτελών</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με την καρτέλα <ph name="TABS_COUNT_ONE" />.}other{Συμπτύξτε την ομάδα καρτελών <ph name="TITLE_OF_GROUP" /> με τις καρτέλες <ph name="TABS_COUNT_MANY" />.}}</translation>
+<translation id="2476179388576975626">Picture-in-picture</translation>
 <translation id="2498435670446402865">Μετονομ. ομάδας καρτελών</translation>
 <translation id="2536366509642644298">Οι ομάδες καρτελών <ph name="TAB_GROUP_NAME_1" /> και <ph name="TAB_GROUP_NAME_2" /> δεν διατίθενται πλέον</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>

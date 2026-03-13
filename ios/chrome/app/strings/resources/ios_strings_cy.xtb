@@ -636,6 +636,7 @@
 <translation id="3324193307694657476">Cyfeiriad 2</translation>
 <translation id="3328801116991980348">Gwybodaeth am y wefan</translation>
 <translation id="333229797575847124">Sut i alluogi'r nodwedd hon</translation>
+<translation id="334004756946755423">Eglurwch hyn i mi:</translation>
 <translation id="3344233834747405775">Enw deiliad cerdyn annilys</translation>
 <translation id="3344485292736684439">{count,plural, =1{Mae'r nod tudalen wedi'i gadw i "{title}" yn eich cyfrif, {email}}zero{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}two{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}few{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}many{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}other{Mae'r nodau tudalen wedi'u cadw i "{title}" yn eich cyfrif, {email}}}</translation>
 <translation id="334690320928261823">Tabiau Diweddar</translation>

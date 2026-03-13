@@ -609,6 +609,7 @@
 <translation id="1960664692890490165">Та Chrome-д худалдан авалт хийхдээ карт бус төлбөрийн хэрэгслийг сонголт болгон хараарай</translation>
 <translation id="196146181975453736">Илүү хурдан төлөхийн тулд нэг удаагийн аюулгүй байдлын шалгалтыг гүйцэтгэнэ үү</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Хавчуургууд</translation>
+<translation id="1966259577349514951">Одоо төлөх</translation>
 <translation id="1973335181906896915">Цувралын алдаа</translation>
 <translation id="1973785048533660168">Бичиг хэрэг болон захиргааны ажлын байрууд</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
@@ -1086,6 +1087,7 @@
 <translation id="2696385693639654606">Chrome Enterprise Core танд хөтчийн бодлого, апп, өргөтгөлийг үүлнээс удирдах боломжийг олгодог</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" />-с асуух</translation>
 <translation id="2699273987028089219">Дэд цэс боломжтой, нэмэлт сонголтууд руу шилжихийн тулд <ph name="SHORTCUT" />-г ашиглана уу.</translation>
+<translation id="2700335762333112350">Дараа төлөх</translation>
 <translation id="2701514975700770343">Нүүрээр нь доош харуулсан</translation>
 <translation id="2702592986366989640">Хямд үнэтэй сонголт</translation>
 <translation id="2702801445560668637">Унших жагсаалт</translation>
@@ -1368,6 +1370,7 @@
 <translation id="3156511682997763015">10 секунд урагшлуулах</translation>
 <translation id="3157931365184549694">Дахин сэргээх</translation>
 <translation id="3158539265159265653">Диск</translation>
+<translation id="3159556963589020896">Pro</translation>
 <translation id="3162070126914310576">Танай байгууллагын нэгж анх бүртгүүлэх хязгаартаа хүрсэн тул энэ төхөөрөмжийг яг одоо бүртгүүлэх боломжгүй. Тусламж авахаар администратортайгаа холбогдоно уу.</translation>
 <translation id="3162559335345991374">Таны ашиглаж буй Wi-Fi сүлжээ таныг нэвтрэх хуудаст орохыг шаардах магадлалтай.</translation>
 <translation id="316638481603975524">Веб аппликэйшнүүдийг суулгахыг хүсэх боломжтой</translation>

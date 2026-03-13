@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">عرض إحصاءات الصفحة</translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
 <translation id="1111673857033749125">ستظهر هنا الإشارات التي تم حفظها على أجهزتك الأخرى.</translation>
+<translation id="1123537484474186311">‫"<ph name="TAB_TITLE" />"، علامة تبويب في وضع "نافذة ضمن النافذة"</translation>
 <translation id="1126696498560056882">إدارة الحسابات على هذا الجهاز</translation>
 <translation id="1135018701024399762">يحافظ وضع التصفّح المتخفي على خصوصية تصفّحك لكي لا تظهر بيانات التصفّح للأشخاص الآخرين الذين يستخدمون جهازك</translation>
 <translation id="113752097246673894">‏يتيح لك تسجيل الدخول إلى Chrome بحساب <ph name="EMAIL" /> الوصول إلى الإشارات المرجعية وغيرها على جميع أجهزتك</translation>
@@ -318,6 +319,7 @@
 <translation id="2386938421315164605">إخفاء المواضيع وإظهارها</translation>
 <translation id="2390510615457643724">هل تريد تنزيل <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> مرة أخرى؟</translation>
 <translation id="2392369802118427583">تفعيل</translation>
+<translation id="2393980685134835044">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها في "وضع التصفّح المتخفي" تعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
 <translation id="2397175985681716533">‫"<ph name="TAB_TITLE" />"، علامة تبويب تسجّل وسائط في "وضع التصفّح المتخفي"</translation>
 <translation id="2410754283952462441">اختيار حساب</translation>
 <translation id="2411239243988279592">‫"<ph name="TAB_TITLE" />"، علامة تبويب تشغّل صوتًا وتم اختيارها</translation>
@@ -377,6 +379,7 @@
 <translation id="2604446170045642109">يمكنك إيقاف المظهر الداكن للمواقع الإلكترونية من الإعدادات.</translation>
 <translation id="2605017215201958293">يمكنك الاستماع إلى هذه الصفحة باستخدام الذكاء الاصطناعي</translation>
 <translation id="2607441479295509868">تم تسجيل الخروج. يمكنك تسجيل الدخول مرة أخرى لاستخدام الإشارات المرجعية وكلمات المرور وغيرها في حسابك.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{عنصر واحد}zero{‫# عنصر}two{عنصران}few{‫# عناصر}many{‫# عنصرًا}other{‫# عنصر}}</translation>
 <translation id="2620314865574742210">تلقّيت دعوة من "<ph name="NAME" />" للوصول إلى عنصر مشترَك.</translation>
 <translation id="2634393460268044753">‏يرسل هذا الإعداد إلى ميزة "التصفّح الآمن من Google" عناوين URL التي تزورها وعيّنة صغيرة من محتوى الصفحات وعمليات التنزيل ونشاط الإضافات ومعلومات النظام للتأكّد من أنّها ليست ضارة.</translation>
 <translation id="2643064289437760082">يمكنك في أي وقت حذف بيانات "قياس أداء الإعلانات" عن طريق حذف بيانات التصفّح.</translation>
@@ -529,6 +532,7 @@
 <translation id="3268048651973962414">للاطّلاع على نتائج البحث، عليك السحب للأعلى</translation>
 <translation id="3269093882174072735">تحميل الصورة</translation>
 <translation id="3280562213547448728">بحث صوتي</translation>
+<translation id="3282801380074962248">توسيع القسم</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{‫<ph name="TAB_GROUPS_PART" /> وعلامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}two{‫<ph name="TAB_GROUPS_PART" /> وعلامتَي تبويب (<ph name="TAB_COUNT_MANY" />)}few{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامات تبويب}many{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}other{‫<ph name="TAB_GROUPS_PART" /> و<ph name="TAB_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{‏تم حفظ كلمة مرور واحدة على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}zero{‏تم حفظ # كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}two{‏تم حفظ كلمتَي مرور على هذا الجهاز فقط. ولاستخدامهما على أجهزتك الأخرى، يجب حفظهما في حسابك على Google.}few{‏تم حفظ # كلمات مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}many{‏تم حفظ # كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}other{‏تم حفظ # كلمة مرور على هذا الجهاز فقط. ولاستخدامها على أجهزتك الأخرى، يجب حفظها في حسابك على Google.}}</translation>
 <translation id="3293181007446299124">يتم الحفاظ على خصوصية سجلّ التصفُّح في جهازك ويتم تأخير إرسال التقارير بهدف حماية هويتك.</translation>
@@ -660,6 +664,7 @@
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3863527519275151528">جارٍ معالجة الإشعار</translation>
 <translation id="3866863539038222107">فحص</translation>
+<translation id="3870538285500327859">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها في وضع "نافذة ضمن النافذة"</translation>
 <translation id="3870908470613821006">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع الأجهزة</translation>
 <translation id="3873174561423636563">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني. ويُرجى الاطّلاع على <ph name="BEGIN_LINK1" />بنود الخدمة<ph name="END_LINK1" /> لهذا الموقع الإلكتروني.</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
@@ -675,6 +680,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">آخر 4 أسابيع</translation>
 <translation id="393697183122708255">لا يتوفر بحث صوتي تم تمكينه</translation>
+<translation id="3943322906274039960">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة في وضع "نافذة ضمن النافذة"</translation>
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="395377504920307820">الاستخدام بدون حساب</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏سيحمِّل Chrome الصفحة عندما تصبح جاهزة}zero{‏لن يحمِّل Chrome أي صفحات عندما تصبح جاهزة}two{‏سيحمِّل Chrome الصفحتين عندما تصبح جاهزتين}few{‏سيحمِّل Chrome الصفحات عندما تصبح جاهزة}many{‏سيحمِّل Chrome الصفحات عندما تصبح جاهزة}other{‏سيحمِّل Chrome الصفحات عندما تصبح جاهزة}}</translation>
@@ -741,6 +747,7 @@
 <translation id="4214315110991671325">‏إذا سمحت بملفات تعريف الارتباط، قد يستخدمها Chrome للتحميل المُسبق.</translation>
 <translation id="421517251707893998">انقر على "تثبيت هذا الاختصار"</translation>
 <translation id="4216511743389425832">الاستماع إلى هذه الصفحة</translation>
+<translation id="4217657297368492684">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في "وضع التصفّح المتخفي" تعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
 <translation id="4225725533026049334">تتم متابعته حاليًا</translation>
 <translation id="4225895483398857530">اختصارات شريط الأدوات</translation>
 <translation id="4232376164796433044">كلمات المرور والملء التلقائي</translation>
@@ -754,6 +761,7 @@
 <translation id="4277529130885813215">استخدام جهاز آخر</translation>
 <translation id="427987768447457592">مجموعة علامات تبويب جديدة</translation>
 <translation id="4282440837784183472">‏يدير نطاق مؤسستك، <ph name="MANAGED_DOMAIN" />، الحساب الذي تسجِّل الدخول إليه وطريقة استخدام متصفِّح Chrome. ويمكن لمشرفك إعداد ميزات معيّنة أو حظرها.</translation>
+<translation id="4283234489712362947">‫"<ph name="TAB_TITLE" />"، علامة تبويب في "وضع التصفّح المتخفي" تعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
 <translation id="4285498937028063278">إزالة التثبيت</translation>
 <translation id="4285846616383034558">ملفات تعريف الارتباط وذاكرة التخزين المؤقّت والبيانات الأخرى للمواقع الإلكترونية</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />تفعيل قفل الشاشة في إعدادات Android<ph name="END_LINK" /></translation>
@@ -793,6 +801,7 @@
 <translation id="4408965460206576430">يحتوي هذا الملف على برامج ضارة أو برامج من موقع إلكتروني مريب.</translation>
 <translation id="4409014848144759297">‫<ph name="WEBSITE_TITLE" /> و<ph name="TAB_COUNT" /> علامة تبويب أخرى</translation>
 <translation id="441100617989818073">علامات التبويب والمجموعات غير المستخدَمة أو المكرّرة</translation>
+<translation id="4412123112245770507">تصغير القسم</translation>
 <translation id="4414179633735763985">تم حذف <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">‏إدارة حسابك على Google</translation>
 <translation id="4425140285732600465">تم تفعيل ميزة تتبُّع السعر. يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني.</translation>
@@ -1038,6 +1047,7 @@
 <translation id="5415871492522952905">سيظهر لك كلّ من سجلّ التصفّح وعلامات التبويب على جميع أجهزتك لتتمكّن من مواصلة التصفّح من حيث توقفت</translation>
 <translation id="542073632571549028">سيفقد حساب "<ph name="MEMBER_FULL_NAME" />" ‏(<ph name="EMAIL" />) على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"</translation>
 <translation id="5424588387303617268">يتوفر <ph name="GIGABYTES" /> غيغابايت</translation>
+<translation id="543271133149552180">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها في "وضع التصفّح المتخفي" مع علامات تبويب أخرى وتعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
 <translation id="5436928407363358055">يُرجى مزامنة علامات التبويب وسجلّ التصفّح مع حسابك لمواصلة التصفّح من حيث توقفت</translation>
 <translation id="5438292632479953702">تنزيل الملف مرة أخرى</translation>
 <translation id="5439191312780166229">‏ستتلقّى تحذيرات بشأن المواقع الإلكترونية الخطيرة، بما فيها المواقع الإلكترونية التي لم يتعرّف عليها محرك بحث Google، من خلال تحليل قدر أكبر من البيانات الواردة من المواقع الإلكترونية، مقارنةً بالحماية العادية. يمكنك اختيار تخطّي تحذيرات Chrome.</translation>
@@ -1051,6 +1061,7 @@
 <translation id="5471273988133666918">تعذَّر نقل علامة التبويب "<ph name="TAB_TITLE" />"</translation>
 <translation id="548278423535722844">فتح في تطبيق الخرائط</translation>
 <translation id="5489222148748465285">‏السماح لمتصفّح Chrome بمواصلة البحث؟</translation>
+<translation id="5490848366863949315">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها في وضع "نافذة ضمن النافذة" مع علامات تبويب أخرى</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
 <translation id="549660026907543296">الانضمام باسم "<ph name="MEMBER_FULL_NAME" />"</translation>
 <translation id="5517326820028369152">بطاقة الأنشطة الحديثة السفلية</translation>
@@ -1475,6 +1486,7 @@
 <translation id="7063106218165698546">خصِّص مجموعة علامات التبويب وانقر على "تم"</translation>
 <translation id="7071521146534760487">إدارة الحساب</translation>
 <translation id="707155805709242880">اختَر ما تريد مزامنته أدناه</translation>
+<translation id="7072949719501323344">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في "وضع التصفّح المتخفي" مع علامات تبويب أخرى وتعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
 <translation id="7077143737582773186">‏بطاقة SD</translation>
 <translation id="7078916049958741685">‏حذف بيانات Chrome من هذا الجهاز أيضًا</translation>
 <translation id="7080145768121641840">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة ومكتومة الصوت تم اختيارها</translation>
@@ -1859,6 +1871,7 @@
 <translation id="8512053371384421952">لن تصلك إشعارات أخرى من <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">أداة تحرير الصور</translation>
 <translation id="8533670235862049797">التصفُّح الآمن مفعّل</translation>
+<translation id="8538291624121505885">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في وضع "نافذة ضمن النافذة" مع علامات تبويب أخرى</translation>
 <translation id="8540136935098276800">‏يُرجى إدخال عنوان URL بتنسيق صحيح.</translation>
 <translation id="854522910157234410">فتح هذه الصفحة</translation>
 <translation id="8547466829003330976">‏مراجعة ملف PDF باستخدام الذكاء الاصطناعي</translation>
@@ -1973,6 +1986,7 @@
 <translation id="9050666287014529139">عبارة المرور</translation>
 <translation id="9055497320631373736">تمت إضافة الموقع الإلكتروني مرة أخرى إلى المواقع الإلكترونية المحتمَلة.</translation>
 <translation id="9057030985451135243">التعرّف على مجموعات علامات التبويب المشتركة</translation>
+<translation id="905722970894408436">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تم اختيارها في وضع "نافذة ضمن النافذة"</translation>
 <translation id="9063400323119781058">تم إلغاء الاشتراك</translation>
 <translation id="9063523880881406963">إيقاف طلب الموقع الإلكتروني لسطح المكتب</translation>
 <translation id="9065203028668620118">تعديل</translation>
@@ -2031,6 +2045,7 @@
 <translation id="930834144334005936">‏إعادة ضبط "<ph name="MODE_NAME" />" الحالي على "بحث Google"</translation>
 <translation id="938850635132480979">الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
+<translation id="94161319503679839">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة في "وضع التصفّح المتخفي" تعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="95817756606698420">‏يمكن لـ Chrome استخدام <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> للبحث في الصين. ويمكنك تغيير هذا في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>

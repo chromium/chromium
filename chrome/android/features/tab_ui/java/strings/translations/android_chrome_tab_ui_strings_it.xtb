@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2371084566192454134">Schede e gruppi di schede</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede <ph name="TITLE_OF_GROUP" /> contenente <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
+<translation id="2476179388576975626">Picture in picture</translation>
 <translation id="2498435670446402865">Rinomina gruppo di schede</translation>
 <translation id="2536366509642644298">I gruppi di schede "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" non sono più disponibili</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Comprimi <ph name="TABS_COUNT_ONE" /> scheda.}other{Comprimi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>

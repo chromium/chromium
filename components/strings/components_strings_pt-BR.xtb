@@ -754,6 +754,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2184405333245229118">{COUNT,plural, =1{1 endereço}one{# endereço}other{# endereços}}</translation>
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por vírgula</translation>
+<translation id="2190094353033916816">Esta política tem valores diferentes aplicados nos níveis de máquina e usuário. A política está funcionando conforme o esperado.</translation>
 <translation id="2191980191135734720">Use a impressão digital para desbloquear a tela na próxima etapa. Você também pode <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Considerações</translation>
 <translation id="2198183835992354675">Número de passageiro conhecido</translation>
@@ -3193,6 +3194,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6043357981274314628">Concluído.</translation>
 <translation id="6045164183059402045">Modelo de imposição</translation>
+<translation id="6046026831939367176"><ph name="URL" /> quer usar sua localização aproximada</translation>
 <translation id="6046892054959167494">Digite <ph name="SEARCH_AGGREGATOR_KEYWORD" /> para pesquisar ou perguntar ao <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Este conteúdo pode tentar enganar você para que instale um software ou revele informações pessoais. <ph name="BEGIN_LINK" />Mostrar mesmo assim<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelope B4</translation>
@@ -4993,6 +4995,7 @@ Mais detalhes:
 <translation id="8870700989640064057">Imprimir o arquivo confidencial?</translation>
 <translation id="8871485335898060555">Antiguidades e itens de colecionador</translation>
 <translation id="8871553383647848643">Personalizar a aparência do navegador</translation>
+<translation id="887350038812854047">Essa política tem o mesmo valor aplicado nos níveis de máquina e usuário. A política está funcionando conforme o esperado.</translation>
 <translation id="8874790741333031443">Permita o uso de cookies de terceiros temporariamente, o que diminui a proteção da navegação, mas os recursos do site têm mais chances de funcionar conforme o esperado.</translation>
 <translation id="8874824191258364635">Informe um número de cartão válido</translation>
 <translation id="8877780815363510165">Pesca</translation>

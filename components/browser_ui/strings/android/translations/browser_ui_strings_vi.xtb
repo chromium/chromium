@@ -268,6 +268,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3658847490588580244">Bảng dưới cùng của trình duyệt mặc định</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="3676777756440746804">Các trang web không được yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
+<translation id="3677897809642449131">Các trang web có thể yêu cầu sử dụng cảm biến chuyển động</translation>
 <translation id="3678318839615834650">Bảng thẻ trên trang Thẻ mới ở dưới cùng đã mở trên toàn màn hình</translation>
 <translation id="3697164069658504920">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị USB. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị USB.</translation>
 <translation id="3703430731944883733">Quản lý nguồn cấp dữ liệu của bạn</translation>
@@ -488,6 +489,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5922853908706496913">Đang chia sẻ màn hình của bạn</translation>
 <translation id="5922967540311291836">Chặn cookie của bên thứ ba:</translation>
 <translation id="5923512600150154850">Thao tác này sẽ xoá <ph name="DATASIZE" /> dữ liệu và cookie do các trang web lưu trữ.</translation>
+<translation id="5930707844513754220">Xem thêm danh sách thiết lập</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="5948139900367969951">Nhanh chóng truy cập thông tin quan trọng</translation>
 <translation id="5964247741333118902">Nội dung được nhúng</translation>
@@ -496,6 +498,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Bật nguồn cấp dữ liệu khám phá</translation>
 <translation id="6012967556075291653">Lối tắt đã ghim</translation>
+<translation id="6013003831291591200">Đã hoàn thành việc cần làm</translation>
 <translation id="6015775454662021376">Kiểm soát quyền truy cập của trang web này vào thiết bị của bạn</translation>
 <translation id="6022659036123304283">Tuỳ chỉnh Chrome theo cách của bạn</translation>
 <translation id="6040143037577758943">Đóng</translation>
@@ -745,6 +748,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8707904142362025782">Các trang web có thể yêu cầu sử dụng camera</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8715862698998036666">Kéo từ trên xuống và vuốt từ mép trái hoặc mép phải để thoát khỏi chế độ toàn màn hình.</translation>
+<translation id="8716050156658570300">Các trang web có thể yêu cầu sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="8719283222052720129">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tìm thiết bị Bluetooth. Khi bạn tắt tuỳ chọn này, các trang web không thể tìm thiết bị Bluetooth.</translation>
 <translation id="8725066075913043281">Thử lại</translation>

@@ -211,6 +211,7 @@
 <translation id="1323433172918577554">Показване на още</translation>
 <translation id="1329916999021038454">Изпращане на сигнал</translation>
 <translation id="1330449323196174374">Сгъване на левия край навътре</translation>
+<translation id="133173645041092770">Затваряне на уебсайта</translation>
 <translation id="1333745675627230582">Стартиране на играта с динозавъра в Chrome</translation>
 <translation id="1333989956347591814">Активността ви <ph name="BEGIN_EMPHASIS" />може да остане видима<ph name="END_EMPHASIS" /> за:
 <ph name="BEGIN_LIST" />
@@ -639,6 +640,7 @@
 <translation id="2027465737841872819">Пластмаса</translation>
 <translation id="2027707238798802149">Картата не е налице</translation>
 <translation id="2029735183873159415">Родословие и генеалогия</translation>
+<translation id="2031095660415483845">Търсете и попълвайте отвсякъде...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Проверете прокси сървъра и защитната стена<ph name="END_LINK" />.</translation>
 <translation id="2033900728810589426">Прекият път не може да е същият като ключовата дума за доставчика за търсене по подразбиране, дефинирана от <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Запазване въпреки това</translation>
@@ -940,12 +942,14 @@
 <translation id="2466004615675155314">Показване на информация от мрежата</translation>
 <translation id="2466682894498377850">Разделът е изпратен от устройството ви <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Спецификации на хардуера и статистически данни за устройството, като например историята на използване на процесора/RAM паметта</translation>
+<translation id="2467421459221956357">Да се използват ли сензорите?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Стартирайте мрежова диагностика<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Подредба от 1 до N</translation>
 <translation id="24699311393038040">Хартия (с покритие)</translation>
 <translation id="2471632709106952369">Таблици за сравнение</translation>
 <translation id="2473810985261856484">Правни услуги</translation>
 <translation id="2477607419416067650">Други данни в Google</translation>
+<translation id="247903268499247848">Използването на сензорите за движение и светлина не е разрешено</translation>
 <translation id="2479148705183875116">Към настройките</translation>
 <translation id="2479410451996844060">Невалиден URL адрес за търсене.</translation>
 <translation id="2480300195898055381">В профила ви в Google <ph name="USER_EMAIL" /></translation>
@@ -1070,6 +1074,7 @@
 <translation id="2674524144218093528">Домашни бояджийски и довършителни работи</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> групи раздели вече не са налице</translation>
 <translation id="2677748264148917807">Излизане</translation>
+<translation id="2679216653373462289">използва сензорите ви за движение и светлина</translation>
 <translation id="2679659833697380">Информацията ви се запазва на устройството ви</translation>
 <translation id="2683195745483370038">Намерени са други резултати</translation>
 <translation id="2686919536310834199">Изпращане на отзиви за функцията за помощ при писане.</translation>
@@ -1152,6 +1157,7 @@
 <translation id="2820957248982571256">Сканира се...</translation>
 <translation id="2824775600643448204">Лента за адреси и за търсене</translation>
 <translation id="2826760142808435982">Връзката е шифрована и удостоверена посредством <ph name="CIPHER" /> и използва <ph name="KX" /> като механизъм за обмен на ключове.</translation>
+<translation id="2828797285817981634">Засега използването на сензорите за движение е разрешено</translation>
 <translation id="2833637280516285136">Дискусионни радиопредавания</translation>
 <translation id="2835170189407361413">Изчистване на формуляра</translation>
 <translation id="2835907903001172712">Обща информация за браузърите.</translation>
@@ -1278,6 +1284,7 @@
 <translation id="3030331669969285614">Тези флагове предотвратяват или отменят промени, водещи до срив, и ще бъдат налице само за ограничен период от време.</translation>
 <translation id="3030542417256082866">Да се запази ли превозното средство?</translation>
 <translation id="3033200136993730761">Домашният ви адрес може да ви помага да изпълнявате различни задачи в услугите на Google, като например да получавате по-подходящи резултати от търсенето и упътвания в Google Карти. Можете да редактирате или изтриете адреса си <ph name="BEGIN_LINK" />в профила си в Google (<ph name="ACCOUNT" />)<ph name="END_LINK" />.</translation>
+<translation id="3033777742142108756">Засега използването на сензорите за движение и светлина е разрешено</translation>
 <translation id="3034526003882782781">Превъртането и промяната на мащаба са разрешени</translation>
 <translation id="3036894576201005614">Стоки за почистване на домакинството</translation>
 <translation id="3037177537145227281">Цената се проследява</translation>
@@ -2303,6 +2310,7 @@
 <translation id="4658638640878098064">Телбодиране горе вляво</translation>
 <translation id="4658801711339831733">Сканираният файл е запазен в Google Диск</translation>
 <translation id="4660592918803576381">Отваряне в Диск</translation>
+<translation id="4660780573807106293">Може да извежда запитвания за използване на сензорите ви за движение и светлина</translation>
 <translation id="4661556981531699496">Домашни любимци и животни</translation>
 <translation id="4661868874067696603">Търсене на още опции за купуване</translation>
 <translation id="4663373278480897665">Достъпът до камерата е разрешен</translation>
@@ -2760,6 +2768,7 @@
 <translation id="5371425731340848620">Актуализиране на картата</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> промени раздел</translation>
 <translation id="5374324662289354619">Понастоящем вътрешните страници за отстраняване на грешки са деактивирани.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> иска да използва сензорите ви за движение</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Часовникът ви е назад“, „Часовникът ви е напред“ или „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
 <translation id="5379618281582508161">Потвърдете самоличността си, за да получите тази парола на всичките си устройства</translation>
@@ -2809,6 +2818,7 @@
 <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">С цел по-бързо плащане запазете този код за проверка в Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Приложения на устройството</translation>
+<translation id="543656192084990644">Използването на сензорите за движение не е разрешено</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, беше <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
 <translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
@@ -3100,6 +3110,7 @@
 <translation id="5918847752193018339">Плащайте по-бързо, когато кодовете за проверка са запазени. <ph name="LINK_BEGIN" />Изтриване на запазени кодове за сигурност<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Включено</translation>
+<translation id="5921432337686792850">Може да извежда запитвания за използване на сензорите ви за движение</translation>
 <translation id="5921639886840618607">Картата да се запази ли в профила в Google?</translation>
 <translation id="5921952831792678223">Товарни пикапи</translation>
 <translation id="5923492272538889093">Искате ли да използвате отключването на устройството вместо код за проверка?</translation>
@@ -3168,6 +3179,7 @@
 <translation id="6028591542479806248">Управление на известията по имейл и на мобилно устройство</translation>
 <translation id="6028833024483927901">Световна кухня</translation>
 <translation id="603068602130820122">Двуточково телбодиране отдясно</translation>
+<translation id="6031824805267965302">използва сензорите ви за движение</translation>
 <translation id="6032524144326295339">Пощенска кутия 2</translation>
 <translation id="6032955021262906325">Подвързване отляво</translation>
 <translation id="6034000775414344507">светлосиво</translation>
@@ -3249,6 +3261,7 @@
 <translation id="6133984428121856852">Файловото разширение е празно или невалидно.</translation>
 <translation id="6139975341602920272">17 x 22 инча</translation>
 <translation id="6143097244789397208">Обогатена и виртуална реалност</translation>
+<translation id="614327212146763975">Използването на сензорите за движение и светлина е разрешено</translation>
 <translation id="6146055958333702838">Проверете всички кабели и рестартирайте маршрутизаторите, модемите или другите мрежови
 устройства, които може да използвате.</translation>
 <translation id="614940544461990577">Изпробвайте следното:</translation>
@@ -3629,6 +3642,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6734506549556896534">Симулационни игри</translation>
+<translation id="6735589846038045679">Плановете за плащане зависят от това дали отговаряте на условията. <ph name="BEGIN_BOLD" />Съдържанието от страницата за плащане се споделя с Google, за да предлагаме тези опции.<ph name="END_BOLD" /> За да скриете опциите за плащане по-късно, отворете <ph name="BEGIN_LINK" />настройките за плащане<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Печива</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6740851646645036700">Достигнахте моментното ограничение за помощ при писане. Опитайте отново по-късно.</translation>
@@ -3642,6 +3656,7 @@
 <translation id="6753434778807740853">Изтриване на записа <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Спестовни сметки</translation>
 <translation id="6757797048963528358">Устройството ви премина в спящ режим.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> иска да използва сензорите ви за движение и светлина</translation>
 <translation id="6766558780547452153">Готварство и рецепти</translation>
 <translation id="6770747695101757579">Хартия (памучна)</translation>
 <translation id="677257480647123231">Безопасност на децата в интернет</translation>
@@ -4405,6 +4420,7 @@
 <translation id="79338296614623784">Въведете валиден телефонен номер</translation>
 <translation id="7934414805353235750"><ph name="URL" /> иска да възпроизвежда защитено съдържание. Идентичността на устройството ви ще бъде удостоверена от Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">Използването на сензорите за движение е разрешено</translation>
 <translation id="7937163678541954811">Кодът за проверка на тази карта ще бъде шифрован и запазен на устройството ви с цел по-бързо плащане</translation>
 <translation id="7937554595067888181">Изтича на <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сертификатът на сървъра още не е валиден.</translation>
@@ -5032,6 +5048,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да прегледате историята си на сърфиране в Chrome</translation>
 <translation id="8987663052629670333">Услуги за отпечатване на снимки</translation>
 <translation id="8987927404178983737">Месец</translation>
+<translation id="8988966534058783995">Да се използват ли сензорите за движение?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> иска да знае кога това устройство се използва активно</translation>
 <translation id="8997023839087525404">Сървърът предостави сертификат, който не е разкрит публично чрез правило в Прозрачност на сертификатите. Това се изисква за някои сертификати с цел защита срещу хакери и за да е сигурно, че може да им се има доверие.</translation>

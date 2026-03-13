@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2371084566192454134">Thẻ và nhóm thẻ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Thu gọn nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
+<translation id="2476179388576975626">Hình trong hình</translation>
 <translation id="2498435670446402865">Đổi tên nhóm thẻ</translation>
 <translation id="2536366509642644298">Các nhóm thẻ "<ph name="TAB_GROUP_NAME_1" />" và "<ph name="TAB_GROUP_NAME_2" />" không còn hoạt động</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>

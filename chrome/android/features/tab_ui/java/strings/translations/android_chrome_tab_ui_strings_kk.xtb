@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2371084566192454134">Қойындылар мен қойындылар топтары</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> қойындылар тобын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> қойындылар тобын жию.}}</translation>
+<translation id="2476179388576975626">"Суреттегі сурет" режимі</translation>
 <translation id="2498435670446402865">Топ атауын өзгерту</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" және "<ph name="TAB_GROUP_NAME_2" />" қойындылар топтары енді қолжетімді емес.</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жию.}}</translation>

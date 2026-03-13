@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>
+<translation id="2476179388576975626">תמונה בתוך תמונה</translation>
 <translation id="2498435670446402865">שינוי שם קבוצת הכרטיסיות</translation>
 <translation id="2536366509642644298">קבוצות הכרטיסיות "<ph name="TAB_GROUP_NAME_1" />" ו"<ph name="TAB_GROUP_NAME_2" />" לא זמינות יותר</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{כיווץ כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />).}one{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}two{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}other{כיווץ של קבוצת הכרטיסיות עם <ph name="TABS_COUNT_MANY" /> כרטיסיות.}}</translation>

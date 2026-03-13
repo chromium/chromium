@@ -211,6 +211,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1323433172918577554">Show More</translation>
 <translation id="1329916999021038454">Send a report</translation>
 <translation id="1330449323196174374">Left gate fold</translation>
+<translation id="133173645041092770">Close website</translation>
 <translation id="1333745675627230582">Play Chrome Dino Game</translation>
 <translation id="1333989956347591814">Your activity <ph name="BEGIN_EMPHASIS" />might still be visible<ph name="END_EMPHASIS" /> to:
         <ph name="BEGIN_LIST" />
@@ -608,6 +609,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1960664692890490165">When you make purchases in Chrome, see non-card payment methods as an option</translation>
 <translation id="196146181975453736">Complete one-time security check to pay faster</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
+<translation id="1966259577349514951">Pay now</translation>
 <translation id="1973335181906896915">Serialisation error</translation>
 <translation id="1973785048533660168">Clerical and Administrative Jobs</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -638,6 +640,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2027465737841872819">Plastic</translation>
 <translation id="2027707238798802149">Card not available</translation>
 <translation id="2029735183873159415">Ancestry and genealogy</translation>
+<translation id="2031095660415483845">Search and fill from anywhere…</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Checking the proxy and the firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Shortcut can't be the same as the default search provider keyword defined by <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Save anyway</translation>
@@ -939,12 +942,14 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2466004615675155314">Show information from the web</translation>
 <translation id="2466682894498377850">Tab sent from your <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Device hardware specifications and statistics such as CPU/RAM utilisation history</translation>
+<translation id="2467421459221956357">Use sensors?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Running network diagnostics<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-to-N order</translation>
 <translation id="24699311393038040">Paper (coated)</translation>
 <translation id="2471632709106952369">Comparison tables</translation>
 <translation id="2473810985261856484">Legal services</translation>
 <translation id="2477607419416067650">Other Google data</translation>
+<translation id="247903268499247848">Motion and light sensors not allowed</translation>
 <translation id="2479148705183875116">Go to Settings</translation>
 <translation id="2479410451996844060">Invalid search URL.</translation>
 <translation id="2480300195898055381">In your Google Account, <ph name="USER_EMAIL" /></translation>
@@ -1069,6 +1074,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2674524144218093528">House Painting and Finishing</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> tab groups no longer available</translation>
 <translation id="2677748264148917807">Leave</translation>
+<translation id="2679216653373462289">Use your motion and light sensors</translation>
 <translation id="2679659833697380">Your info is saved to your device</translation>
 <translation id="2683195745483370038">Other results found</translation>
 <translation id="2686919536310834199">Send feedback for Help me write.</translation>
@@ -1081,6 +1087,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2696385693639654606">Chrome Enterprise Core lets you manage browser policies, apps and extensions from the cloud</translation>
 <translation id="2697248912349197812">Ask <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="2699273987028089219">Sub-menu available, use <ph name="SHORTCUT" /> to navigate to additional options.</translation>
+<translation id="2700335762333112350">Pay later</translation>
 <translation id="2701514975700770343">Face down</translation>
 <translation id="2702592986366989640">Low-priced option</translation>
 <translation id="2702801445560668637">Reading list</translation>
@@ -1150,6 +1157,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2820957248982571256">Scanning...</translation>
 <translation id="2824775600643448204">Address and search bar</translation>
 <translation id="2826760142808435982">The connection is encrypted and authenticated using <ph name="CIPHER" /> and uses <ph name="KX" /> as the key exchange mechanism.</translation>
+<translation id="2828797285817981634">Motion sensors allowed for now</translation>
 <translation id="2833637280516285136">Talk radio</translation>
 <translation id="2835170189407361413">Clear form</translation>
 <translation id="2835907903001172712">Browser overview</translation>
@@ -1276,6 +1284,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
 <translation id="3030542417256082866">Save vehicle?</translation>
 <translation id="3033200136993730761">Your home address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033777742142108756">Motion and light sensors allowed for now</translation>
 <translation id="3034526003882782781">Scroll and zoom allowed</translation>
 <translation id="3036894576201005614">Household Cleaning Supplies</translation>
 <translation id="3037177537145227281">Tracking price</translation>
@@ -1361,6 +1370,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3156511682997763015">Forward 10 seconds</translation>
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3158539265159265653">Disc</translation>
+<translation id="3159556963589020896">Pro</translation>
 <translation id="3162070126914310576">This device can't be enrolled at the moment because your organisation unit has reached its initial enrolment limit. Contact your administrator for assistance.</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
 <translation id="316638481603975524">Can ask to install web apps</translation>
@@ -2300,6 +2310,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4658638640878098064">Staple top left</translation>
 <translation id="4658801711339831733">Scan saved to Google Drive</translation>
 <translation id="4660592918803576381">Open in Drive</translation>
+<translation id="4660780573807106293">Can ask to use your motion and light sensors</translation>
 <translation id="4661556981531699496">Pets and animals</translation>
 <translation id="4661868874067696603">Search more buying options</translation>
 <translation id="4663373278480897665">Camera allowed</translation>
@@ -2757,6 +2768,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5371425731340848620">Update card</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> changed a tab</translation>
 <translation id="5374324662289354619">Internal debugging pages are currently disabled.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> wants to use your motion sensors</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Your clock is behind' or 'Your clock is ahead' or "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">To get this password on all your devices, verify that it's you</translation>
@@ -2806,6 +2818,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">For faster checkout, save this CVC in Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Apps on device</translation>
+<translation id="543656192084990644">Motion sensors not allowed</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, was <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447235695608032700">Allow <ph name="SITE" /> to use info they've saved about you</translation>
@@ -3097,6 +3110,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5918847752193018339">Check out faster when your CVCs are saved. <ph name="LINK_BEGIN" />Delete saved security codes<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">On</translation>
+<translation id="5921432337686792850">Can ask to use your motion sensors</translation>
 <translation id="5921639886840618607">Save card to Google Account?</translation>
 <translation id="5921952831792678223">Pickup trucks</translation>
 <translation id="5923492272538889093">Use device unlock instead of CVC?</translation>
@@ -3165,6 +3179,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6028591542479806248">Manage mobile and email notifications</translation>
 <translation id="6028833024483927901">World cuisine</translation>
 <translation id="603068602130820122">Dual staple right</translation>
+<translation id="6031824805267965302">Use your motion sensors</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Bind left</translation>
 <translation id="6034000775414344507">Light grey</translation>
@@ -3246,6 +3261,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6133984428121856852">File extension is empty or malformed.</translation>
 <translation id="6139975341602920272">17 in x 22 in</translation>
 <translation id="6143097244789397208">Augmented and virtual reality</translation>
+<translation id="614327212146763975">Motion and light sensors allowed</translation>
 <translation id="6146055958333702838">Check any cables and reboot any routers, modems or other network
     devices you may be using.</translation>
 <translation id="614940544461990577">Try:</translation>
@@ -3626,6 +3642,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6734506549556896534">Simulation games</translation>
+<translation id="6735589846038045679">Payment plans are subject to eligibility. <ph name="BEGIN_BOLD" />Content from the checkout page is shared with Google to offer these options.<ph name="END_BOLD" /> To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Baked Goods</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6740851646645036700">You've reached your writing help limit for now. Please try again later.</translation>
@@ -3639,6 +3656,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6753434778807740853">Delete entry <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Savings Accounts</translation>
 <translation id="6757797048963528358">Your device went to sleep.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> wants to use your motion and light sensors</translation>
 <translation id="6766558780547452153">Cooking and recipes</translation>
 <translation id="6770747695101757579">Paper (cotton)</translation>
 <translation id="677257480647123231">Child Internet safety</translation>
@@ -4402,6 +4420,7 @@ Additional details:
 <translation id="79338296614623784">Enter a valid phone number</translation>
 <translation id="7934414805353235750"><ph name="URL" /> wants to play protected content. Your device’s identity will be verified by Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">Motion sensors allowed</translation>
 <translation id="7937163678541954811">This card's CVC will be encrypted and saved to your device for faster checkout</translation>
 <translation id="7937554595067888181">Expires on <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Server's certificate is not yet valid.</translation>
@@ -5029,6 +5048,7 @@ Additional details:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to view your browsing history in Chrome</translation>
 <translation id="8987663052629670333">Photo Printing Services</translation>
 <translation id="8987927404178983737">Month</translation>
+<translation id="8988966534058783995">Use motion sensors?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> wants to know when you're actively using this device</translation>
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>

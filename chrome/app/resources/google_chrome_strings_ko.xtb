@@ -155,6 +155,7 @@
 <translation id="2586406160782125153">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="259935314519650377">다운로드한 설치 프로그램을 캐시할 수 없습니다. 오류(<ph name="UNPACK_CACHING_ERROR_CODE" />)가 발생했습니다.</translation>
 <translation id="2620436844016719705">시스템</translation>
+<translation id="263447411082773721">비밀번호, 북마크, 방문 기록을 모든 기기에서 완벽하게 동기화하세요. 기본 브라우저를 Chrome으로 업데이트하면 즐겨 사용하는 기능을 간편하게 이용할 수 있습니다. 빠른 액세스를 위해 Chrome이 작업 표시줄에 고정됩니다.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome에서는 브라우저가 가장 안전하게 설정되어 있는지 정기적으로 확인합니다. 검토가 필요한 사항이 있으면 알려 드리겠습니다.</translation>
 <translation id="2652691236519827073">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
@@ -233,6 +234,7 @@
 <translation id="3327226547491422998">나중에 Chrome에서 저장된 정보를 사용하여 양식을 자동 완성할지 묻습니다.</translation>
 <translation id="3352986031709923790">검색 영역의 오른쪽 상단: 오른쪽 <ph name="RIGHT" />%, 상단 <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome 도우미</translation>
+<translation id="3373752068427117404">일부 Chrome 기능 및 확장 프로그램에는 바로가기가 제공됩니다. 다시 사용 설정할 수 있습니다</translation>
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="3380249972812870825">Chrome의 Gemini를 열려면 <ph name="GLOBAL_HOTKEY" /> 키를 누르세요</translation>
 <translation id="3396977131400919238">설치 중 운영체제 오류가 발생했습니다. Chrome을 다시 다운로드하세요.</translation>
@@ -698,6 +700,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8064965390968184078">1. 아래의 <ph name="BUTTON_LABEL" /> 버튼을 클릭합니다.
 2. Windows 설정에서 <ph name="BUTTON_2" /> 버튼을 클릭합니다.
 3. 빠른 액세스를 위해 Windows 알림에서 <ph name="BUTTON_3" /> 버튼을 클릭하여 Chrome을 작업 표시줄에 고정합니다.</translation>
+<translation id="8074398340364918139">특정 Chrome 기능 또는 확장 프로그램을 검색하려면 주소 표시줄에 바로가기를 입력한 다음 선택한 키보드 키를 입력하세요</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="8086881907087796310">컴퓨터가 최소 하드웨어 요구사항을 충족하지 않으므로 설치에 실패했습니다.</translation>
 <translation id="8113883687556086139"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
@@ -706,6 +709,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8129812357326543296">Chrome 정보(&amp;G)</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8162006532256575008">계정 없이 Chrome 사용</translation>
+<translation id="8172231188687329735">이동 중에도 비밀번호를 저장하려면 Chrome 앱을 다운로드하세요</translation>
 <translation id="8177472873527554730">페이지의 콘텐츠를 찾을 수 없음</translation>
 <translation id="8221491193165283816">기본적으로 알림을 차단하는 중입니다. 이 사이트의 알림을 허용하려면 여기를 클릭하세요.</translation>
 <translation id="8253851811470049684">모든 앱에서 Chrome으로 링크를 열고 작업 표시줄에서 브라우저에 액세스할 수 있도록 유지합니다</translation>
@@ -733,6 +737,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 
 일부 북마크를 삭제할 때까지 계정에 새 북마크를 저장할 수 없습니다. 지금 로그아웃하면 저장되지 않은 북마크가 삭제됩니다.</translation>
 <translation id="8433638294851456451">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
+<translation id="8458117863387545390">휴대전화에 Chrome을 다운로드하세요</translation>
 <translation id="8496177819998570653">Google 비밀번호 관리자(&amp;A)</translation>
 <translation id="8498858610309223613">Chrome 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
 <translation id="8516431725144212809">Chrome에서 예측한 관심분야</translation>

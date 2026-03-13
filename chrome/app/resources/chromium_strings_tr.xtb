@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Bu 1 dakikalık ankete katılarak Gizli mod'u daha iyi hale getirmemize yardımcı olun.</translation>
 <translation id="1065672644894730302">Tercihleriniz okunamıyor. Bazı özellikler kullanılamayabilir. Tercihlerde yapılan değişiklikler kaydedilmeyecektir.</translation>
 <translation id="1083934481477628225">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı.</translation>
+<translation id="1090946077924227754">Belirli bir Chromium özelliğinde veya uzantısında arama yapmak için ilgili kısayolu adres çubuğuna yazdıktan sonra seçtiğiniz klavye tuşuna basın</translation>
 <translation id="1104942323762546749">Chromium, şifrelerinizi dışa aktarmak istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="112640046208448578">Nesneleri veya yerleri tanımlayın ve metni kopyalayın ya da çevirin. Görsel Arama'yı kullandığınızda sayfanın ekran görüntüsü sunucuya gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium varsayılan tarayıcınız</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Bu sekme etkin değilken Chromium'un hızlı çalışmaya devam etmesi için bellekte yer açıldı. Bu siteyi, etkin olmayan sitelerden her zaman hariç tutabilirsiniz.</translation>
 <translation id="1265577313130862557">Dosya tehlikeli olduğu için Chromium bu indirme işlemini engelledi</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ile Gmail veya YouTube gibi Google hizmetlerinde oturum açarken aynı hesapla Chromium'da otomatik olarak oturum açabilirsiniz</translation>
+<translation id="1287534462498555020">Telefonunuza Chromium'u indirin</translation>
 <translation id="1290883685122687410">Kurulum hatası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi oluşturun</translation>
 <translation id="132092532143527429">Chromium'da Gemini ile deneyin</translation>
@@ -377,6 +379,7 @@
 <translation id="5231355151045086930">Chromium oturumunu kapatın</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5254739261293693943">Bu video hakkında soru sorun</translation>
+<translation id="5276305953263010518">Hareket halindeyken şifreleri kaydetmek için Chromium uygulamasını indirin</translation>
 <translation id="5277894862589591112">Yaptığınız değişiklikleri uygulamak için Chromium'u yeniden başlatın</translation>
 <translation id="5286907366254680517">Algılandı</translation>
 <translation id="5289287148052354622">Chromium uygulamasını indirin</translation>
@@ -690,6 +693,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8522801943730206384">Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir</translation>
 <translation id="8548787790260785208">Chromium, şifrelerinizden birinin herkese açık veri ihlalinde yer aldığını tespit ederse uyarı alın</translation>
 <translation id="8555465886620020932">Hizmet hatası: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Bazı Chromium özellikleri ve uzantıları kısayollar içerir. Dilerseniz bunları tekrar etkinleştirebilirsiniz.</translation>
 <translation id="8556420416730706394">Daha kolay erişmek için yan panelin üst kısmındaki Sabitle düğmesini tıklayarak Görsel Arama'yı sabitleyebilirsiniz</translation>
 <translation id="856656450041460113">Arama dili listesi</translation>
 <translation id="8568283329061645092">Chromium, Google Hesabınızla oturum açtığınızda şifrelerinizi kontrol edebilir</translation>
@@ -725,6 +729,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8988036198400390003">Chromium profillerini yönetin</translation>
 <translation id="9019929317751753759">Chromium'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek aşağıdaki uzantıyı devre dışı bıraktık.</translation>
 <translation id="904366664621834601">Arşiv dosyası, kötü amaçlı yazılımın gizlenmiş olabileceği başka dosyalar içerdiği için Chromium bu indirme işlemini engelledi</translation>
+<translation id="9053882453960391422">Şifreleriniz, yer işaretleriniz ve geçmişinizi cihazlar arasında mükemmel şekilde senkronize edin. Varsayılan tarayıcınızı Chromium'a güncelleyerek sevdiğiniz ve bildiğiniz özelliklere kolayca erişin. Chromium, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="9062666675513499497">Diğer Google hizmetlerinde oturum açtığınızda Chromium'da oturum açın</translation>
 <translation id="9078733879136747090">Chromium otomatik olarak kapatıldı</translation>
 <translation id="9089354809943900324">Chromium sürümü eski</translation>

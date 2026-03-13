@@ -269,6 +269,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="3658847490588580244">Vaikebrauseri alumine leht</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sait domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näeb teie tegevusi grupis}other{<ph name="RWS_MEMBERS_COUNT" /> saiti domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näevad teie tegevusi grupis}}</translation>
 <translation id="3676777756440746804">Saidid on blokeeritud küsimast luba kasutada teie kohta salvestatud teavet</translation>
+<translation id="3677897809642449131">Saidid saavad küsida luba liikumisandurite kasutamiseks</translation>
 <translation id="3678318839615834650">Uue vahelehe kaartide alumine leht on avatud täiskõrguseni</translation>
 <translation id="3697164069658504920">Kui see on sisse lülitatud, võivad saidid küsida luba USB-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid USB-seadmeid kasutada.</translation>
 <translation id="3703430731944883733">Voo haldamine</translation>
@@ -746,6 +747,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:
 <translation id="8707904142362025782">Lubage saitidel küsida luba kaamera kasutamiseks</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8715862698998036666">Lohistage ülaosast ja pühkige vasakult või paremalt serva poole, et täisekraanilt väljuda.</translation>
+<translation id="8716050156658570300">Saidid saavad küsida luba liikumis- ja valgusandurite kasutamiseks</translation>
 <translation id="8719283222052720129">Lülitage <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" /> sisse luba rakendusele <ph name="APP_NAME" />.</translation>
 <translation id="8721719390026067591">Kui see on sisse lülitatud, võivad saidid küsida luba Bluetooth-seadmete otsimiseks. Kui see on välja lülitatud, ei saa saidid Bluetooth-seadmeid otsida.</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>

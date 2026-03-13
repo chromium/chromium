@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">لمساعدتنا في تحسين وضع التصفّح المتخفي، يُرجى تخصيص دقيقة واحدة للإجابة عن أسئلة هذا الاستطلاع.</translation>
 <translation id="1065672644894730302">لا يمكن قراءة إعداداتك المفضّلة. قد تكون بعض الميزات غير متاحة، ولن يتم حفظ التغييرات في الإعدادات المفضّلة.</translation>
 <translation id="1083934481477628225">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chromium.</translation>
+<translation id="1090946077924227754">‏للبحث عن ميزة أو إضافة محدّدة في Chromium، عليك كتابة اختصارها في شريط العناوين متبوعًا بمفتاح لوحة المفاتيح الذي تم اختياره</translation>
 <translation id="1104942323762546749">‏يرغب Chromium في تصدير كلمات المرور، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="112640046208448578">يمكنك التعرّف على الصور أو الأماكن ونسخ النصوص أو ترجمتها. وعند استخدام ميزة "البحث بالصور"، يتمّ إرسال لقطة شاشة للصفحة إلى الخادم. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">‏Chromium هو متصفحك التلقائي</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">‏عندما كانت علامة التبويب هذه غير نشطة، تم إخلاء مساحة في الذاكرة للحفاظ على سرعة Chromium. يمكنك اختيار أن يظل هذا الموقع الإلكتروني نشطًا دائمًا.</translation>
 <translation id="1265577313130862557">‏حَظَر Chromium عملية التنزيل هذه لأنّ الملف خطير.</translation>
 <translation id="126567311906253476">‏عند تسجيل الدخول إلى خدمات Google، مثل Gmail أو YouTube باستخدام <ph name="USER_EMAIL" />، يمكنك تسجيل الدخول تلقائيًا إلى Chromium باستخدام الحساب نفسه</translation>
+<translation id="1287534462498555020">‏تنزيل Chromium على هاتفك</translation>
 <translation id="1290883685122687410">حدث خطأ أثناء الإعداد: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">‏إعداد ملفك الشخصي الجديد على Chromium</translation>
 <translation id="132092532143527429">‏يمكنك تجربة "Gemini في Chromium"</translation>
@@ -380,6 +382,7 @@
 <translation id="5231355151045086930">‏الخروج من Chromium</translation>
 <translation id="5234764350956374838">إغلاق</translation>
 <translation id="5254739261293693943">طرح أسئلة حول هذا الفيديو</translation>
+<translation id="5276305953263010518">‏تنزيل تطبيق Chromium لحفظ كلمات المرور أثناء التنقل</translation>
 <translation id="5277894862589591112">‏لتطبيق التغييرات، يُرجى إعادة تشغيل Chromium</translation>
 <translation id="5286907366254680517">تمّ رصد اللغة</translation>
 <translation id="5289287148052354622">‏تنزيل تطبيق Chromium</translation>
@@ -693,6 +696,7 @@
 <translation id="8522801943730206384">‏لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="8548787790260785208">‏يمكنك تلقّي تحذير إذا رصد Chromium أنّ إحدى كلمات المرور الخاصة بك قد تم الكشف عنها للجميع بعد عملية اختراق للبيانات</translation>
 <translation id="8555465886620020932">حدث خطأ في الخدمة: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">‏تتوفّر اختصارات لبعض ميزات وإضافات Chromium. يمكنك اختيار إعادة تفعيلها.</translation>
 <translation id="8556420416730706394">يمكنك تثبيت ميزة "البحث بالصور" للوصول إليها بسهولة من خلال النقر على الزر "تثبيت" في أعلى اللوحة الجانبية</translation>
 <translation id="856656450041460113">البحث في قائمة اللغات</translation>
 <translation id="8568283329061645092">‏لا يستطيع Chromium التحقّق من كلمات المرور إلا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
@@ -728,6 +732,7 @@
 <translation id="8988036198400390003">‏إدارة الملفات الشخصية على Chromium</translation>
 <translation id="9019929317751753759">‏لجعل Chromium أكثر أمنًا، أوقفنا الإضافة التالية التي لم تُدرج في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> وربما تكون قد أضيفت بدون علمك.</translation>
 <translation id="904366664621834601">‏حَظَر Chromium عملية التنزيل هذه لأنّ ملف الأرشيف يتضمّن ملفات أخرى قد تخفي برامج ضارة</translation>
+<translation id="9053882453960391422">‏يمكنك الحفاظ على مزامنة كلمات المرور والإشارات المرجعية والسجلّ بشكل مثالي على جميع الأجهزة، وكذلك الوصول بسهولة إلى الميزات المألوفة والمفضَّلة لديك من خلال ضبط Chromium كمتصفِّحك التلقائي، وتثبيته في شريط المهام للوصول إليه بسرعة.</translation>
 <translation id="9062666675513499497">‏تسجيل الدخول إلى Chromium عند تسجيل الدخول إلى خدمات Google الأخرى</translation>
 <translation id="9078733879136747090">‏تم إغلاق Chromium تلقائيًا</translation>
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>

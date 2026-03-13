@@ -269,6 +269,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="3658847490588580244">Pantailaren behealdean ainguratutako orria, arakatzaile lehenetsiari buruzkoa</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> domeinuaren webgune taldeko <ph name="RWS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzake}other{<ph name="RWS_OWNER" /> domeinuaren webgune taldeko <ph name="RWS_MEMBERS_COUNT" /> webgunek taldean egiten dituzun jarduerak ikus ditzakete}}</translation>
 <translation id="3676777756440746804">Zuri buruz gordetako informazioa erabiltzeko baimena eskatzea debekatu zaie webguneei</translation>
+<translation id="3677897809642449131">Webguneek mugimendu-sentsoreak erabiltzeko baimena eska dezakete</translation>
 <translation id="3678318839615834650">Pantailaren behealdean ainguratutako orria, fitxa berriaren orriaren txartelak dituena, altuera osoan irekita dago</translation>
 <translation id="3697164069658504920">Aktibatuta dagoenean, webguneek USB bidezko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili USB bidezko gailurik.</translation>
 <translation id="3703430731944883733">Kudeatu zure jarioa</translation>
@@ -746,6 +747,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:
 <translation id="8707904142362025782">Webguneek zure kamera erabiltzeko baimena eska dezakete</translation>
 <translation id="8712637175834984815">Ados</translation>
 <translation id="8715862698998036666">Pantaila osoko ikuspegitik irteteko, arrastatu goitik eta pasatu hatza ezkerreko edo eskuineko ertzetik.</translation>
+<translation id="8716050156658570300">Webguneek mugimendu- eta argi-sentsoreak erabiltzeko baimena eska dezakete</translation>
 <translation id="8719283222052720129">Aktibatu <ph name="APP_NAME" /> aplikaziorako baimena <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Aktibatuta dagoenean, webguneek Bluetooth bidezko gailuak bilatzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute bilatu Bluetooth bidezko gailurik.</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>

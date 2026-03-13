@@ -213,6 +213,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="1900260903084164610">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_TOS_LINK" />Syarat Perkhidmatan<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL yang anda lawati disimpan pada Google Account anda</translation>
 <translation id="1910950723001426294">Senarai pilihan perkongsian ditutup.</translation>
+<translation id="1912367671208932516">Buka menu sambungan</translation>
 <translation id="191726024256261717">Semak kebenaran</translation>
 <translation id="1917766536967060661">Anda akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) tidak akan dapat berinteraksi dengan anda lagi merentas perkhidmatan Google.</translation>
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
@@ -852,6 +853,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 kata laluan yang terjejas}other{# kata laluan yang terjejas}}</translation>
 <translation id="4641919525231168205">Akses halaman seterusnya</translation>
 <translation id="4642472735733036929">Penjejakan harga dihentikan</translation>
+<translation id="4643661539340338954">Pemberitahuan penemuan Chrome dihidupkan</translation>
 <translation id="4649493483932335039">Lihat tab terbaharu</translation>
 <translation id="465657074423018424">Penyemakan Imbas Selamat melindungi anda daripada laman web yang bersifat penipuan. Jika anda mematikan ciri ini, berhati-hati semasa menyemak imbas, terutamanya sebelum memasukkan kata laluan.</translation>
 <translation id="4662373422909645029">Nama panggilan tidak boleh mengandungi nombor</translation>
@@ -1648,6 +1650,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7686086654630106285">Lagi tentang iklan laman yang dicadangkan</translation>
 <translation id="7690596512217303514">Peranti anda tidak dapat membuka Chrome. Untuk menyelesaikan masalah ini, muat turun kemaskinian Chrome terkini daripada gedung apl anda.</translation>
 <translation id="7692761875510935111">Buka penyemak imbas dengan pantas. Untuk mengedit pintasan ini, sentuh dan tahan butang.</translation>
+<translation id="7695270712963178084">Penemuan Chrome</translation>
 <translation id="7697383401610880082">Pemegang seret</translation>
 <translation id="7698359219371678927">Buat e-mel dalam <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Helaian bawah aktiviti baru-baru ini dibuka pada ketinggian penuh</translation>

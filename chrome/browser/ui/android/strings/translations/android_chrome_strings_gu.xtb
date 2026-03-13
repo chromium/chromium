@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">આગળ વધીને, તમે <ph name="BEGIN_TOS_LINK" />સેવાની શરતો<ph name="END_TOS_LINK" /> સાથે સંમત થાઓ છો.</translation>
 <translation id="1904580727789512086">તમે મુલાકાત લો છો તે URLsને તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે</translation>
 <translation id="1910950723001426294">શેરિંગના વિકલ્પોની સૂચિ બંધ છે.</translation>
+<translation id="1912367671208932516">એક્સ્ટેન્શન મેનૂ ખોલો</translation>
 <translation id="191726024256261717">પરવાનગીઓ રિવ્યૂ કરો</translation>
 <translation id="1917766536967060661">તમે તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) Googleની બધી સેવાઓમાં તમારી સાથે ક્રિયાપ્રતિક્રિયા કરી શકશે નહીં.</translation>
 <translation id="1919130412786645364">Chromeમાં સાઇન-ઇનની મંજૂરી આપો</translation>
@@ -852,6 +853,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો # પાસવર્ડ}other{ચેડાં કરાયેલા # પાસવર્ડ}}</translation>
 <translation id="4641919525231168205">આગલા પેજ પર જાઓ</translation>
 <translation id="4642472735733036929">કિંમત ટ્રૅક કરવાનું બંધ કર્યું</translation>
+<translation id="4643661539340338954">Chrome Findsના નોટિફિકેશન ચાલુ કર્યા</translation>
 <translation id="4649493483932335039">તાજેતરના ટૅબ જુઓ</translation>
 <translation id="465657074423018424">Safe Browsing તમારું છેતરામણી વેબસાઇટથી રક્ષણ કરે છે. જો તમે તેને બંધ કરો, તો બ્રાઉઝ કરતી વખતે વધુ સાવધાન રહેજો, ખાસ કરીને પાસવર્ડ દાખલ કરતા પહેલાં.</translation>
 <translation id="4662373422909645029">ઉપનામમાં સંખ્યા ન હોઈ શકે</translation>
@@ -1648,6 +1650,7 @@
 <translation id="7686086654630106285">સાઇટ દ્વારા સૂચિત જાહેરાતો વિશે વધુ વિગતો</translation>
 <translation id="7690596512217303514">તમારા ડિવાઇસ દ્વારા Chrome ખોલી શક્યું નથી. સમસ્યાને ઠીક કરવા માટે, તમારા ઍપ સ્ટોરમાંથી Chromeની નવીનતમ અપડેટ ડાઉનલોડ કરો.</translation>
 <translation id="7692761875510935111">ઝડપથી બ્રાઉઝરમાં ખોલો. આ શૉર્ટકટમાં ફેરફાર કરવા માટે, ટચ કરીને થોડીવાર દબાવી રાખો.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">ઑબ્જેક્ટ ખેંચવાનું હૅન્ડલ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> માં ઇમેઇલ બનાવો</translation>
 <translation id="7702420606070050505">તાજેતરની ઍક્ટિવિટી બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>

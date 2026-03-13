@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
+<translation id="263447411082773721">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chrome, niin saat tutut ominaisuudet helposti käyttöösi. Chrome kiinnitetään tehtäväpalkkiin, jotta voit käyttää sitä nopeasti.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome tarkistaa säännöllisesti, että selaimen asetukset ovat mahdollisimman turvalliset. Ilmoitamme, jos jotain on tarkistettava.</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Chrome voi kysyä myöhemmin, haluatko käyttää tallennettuja tietoja lomakkeiden automaattiseen täyttöön</translation>
 <translation id="3352986031709923790">hakualueen oikea yläkulma: oikea <ph name="RIGHT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Joissakin Chromen ominaisuuksissa ja laajennuksissa on pikanäppäimiä. Voit halutessasi laittaa ne takaisin päälle.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käynnistetään uudelleen nyt}=1{Chrome käynnistetään uudelleen 1 sekunnin kuluttua}other{Chrome käynnistetään uudelleen # sekunnin kuluttua.}}</translation>
 <translation id="3380249972812870825">Avaa Gemini in Chrome painamalla <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Asennuksessa havaittiin käyttöjärjestelmävirhe. Lataa Google Chrome uudelleen.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Klikkaa <ph name="BUTTON_LABEL" /> alta
 2. Klikkaa Windowsin asetuksista <ph name="BUTTON_2" />
 3. Klikkaa Windowsin ilmoituksesta <ph name="BUTTON_3" />, niin voit kiinnittää Chromen tehtäväpalkkiin nopeaa käyttöä varten</translation>
+<translation id="8074398340364918139">Etsi tiettyä Chromen ominaisuutta tai laajennusta kirjoittamalla sen pikakomento osoitepalkkiin ja painamalla valitsemaasi näppäintä</translation>
 <translation id="8077579734294125741">Muut Chrome-profiilit</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
 <translation id="8113883687556086139">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8162006532256575008">Käytä Chromea ilman tiliä</translation>
+<translation id="8172231188687329735">Lataa Chrome-sovellus, niin voit tallentaa salasanoja missä tahansa</translation>
 <translation id="8177472873527554730">Sisältöä ei löydy sivulta</translation>
 <translation id="8221491193165283816">Estät yleensä ilmoitukset. Voit antaa tälle sivustolle luvan lähettää ilmoituksia klikkaamalla tätä.</translation>
 <translation id="8253851811470049684">Avaa linkit Chromessa mistä tahansa sovelluksesta ja pidä selain käytettävissä tehtäväpalkissa</translation>
@@ -726,6 +730,7 @@
 
 Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. Jos kirjaudut ulos nyt, tallentamattomat kirjanmerkit poistetaan.</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
+<translation id="8458117863387545390">Lataa Chrome puhelimelle</translation>
 <translation id="8496177819998570653">Google S&amp;alasanat</translation>
 <translation id="8498858610309223613">Google Chromen tärkeä tietoturvapäivitys on asennettu. Käynnistä selain uudelleen – palautamme avoimet välilehdet.</translation>
 <translation id="8516431725144212809">Chromen arvio siitä, mitkä ovat kiinnostuksen kohteitasi</translation>

@@ -269,6 +269,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="3658847490588580244">Hoja inferior del navegador predeterminado</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sitio en el grupo de sitios de <ph name="RWS_OWNER" /> puede ver tu actividad en el grupo}other{<ph name="RWS_MEMBERS_COUNT" /> sitios en el grupo de sitios de <ph name="RWS_OWNER" /> pueden ver tu actividad en el grupo}}</translation>
 <translation id="3676777756440746804">Los sitios no podrán solicitarte usar la información que guardaron sobre ti</translation>
+<translation id="3677897809642449131">Los sitios pueden solicitar permiso para usar los sensores de movimiento</translation>
 <translation id="3678318839615834650">Hoja inferior de las tarjetas de la página Nueva pestaña abierta en tamaño completo</translation>
 <translation id="3697164069658504920">Cuando esta opción está activada, los sitios pueden solicitar permiso para usar dispositivos USB. Cuando está desactivada, los sitios no pueden usar dispositivos USB.</translation>
 <translation id="3703430731944883733">Administra tu feed</translation>
@@ -746,6 +747,7 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:
 <translation id="8707904142362025782">Permitir que el sitio solicite el uso de la cámara</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8715862698998036666">Arrastra el dedo desde la parte superior y deslízalo desde el borde izquierdo o derecho para salir del modo de pantalla completa.</translation>
+<translation id="8716050156658570300">Los sitios pueden solicitar permiso para usar los sensores de movimiento y luz</translation>
 <translation id="8719283222052720129">Activa el permiso para <ph name="APP_NAME" /> en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Cuando esta opción está activada, los sitios pueden solicitar permiso para buscar dispositivos Bluetooth. Cuando está desactivada, los sitios no pueden buscar dispositivos Bluetooth.</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>

@@ -10,6 +10,7 @@
 
 일부 기능을 사용할 수 없으며 환경설정의 변경사항이 저장되지 않습니다.</translation>
 <translation id="1083934481477628225">부모님이 Chromium의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지했습니다</translation>
+<translation id="1090946077924227754">특정 Chromium 기능 또는 확장 프로그램을 검색하려면 주소 표시줄에 바로가기를 입력한 다음 선택한 키보드 키를 입력하세요</translation>
 <translation id="1104942323762546749">Chromium에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="112640046208448578">사물 또는 장소를 식별하고 텍스트를 복사하거나 번역합니다. 이미지 검색을 사용하면 페이지의 스크린샷이 서버로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium이 기본 브라우저로 설정되어 있습니다.</translation>
@@ -27,6 +28,7 @@
 <translation id="1262876892872089030">이 탭이 비활성 상태인 동안 Chromium의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
 <translation id="1265577313130862557">위험한 파일이므로 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chromium에 자동으로 로그인할 수 있습니다.</translation>
+<translation id="1287534462498555020">휴대전화에 Chromium을 다운로드하세요</translation>
 <translation id="1290883685122687410">설정 오류: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">새 Chromium 프로필 설정</translation>
 <translation id="132092532143527429">Chromium의 Gemini로 사용해 보기</translation>
@@ -381,6 +383,7 @@
 <translation id="5231355151045086930">Chromium에서 로그아웃</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5254739261293693943">이 동영상에 관해 질문하기</translation>
+<translation id="5276305953263010518">이동 중에도 비밀번호를 저장하려면 Chromium 앱을 다운로드하세요</translation>
 <translation id="5277894862589591112">변경사항을 적용하려면 Chromium을 다시 실행하세요.</translation>
 <translation id="5286907366254680517">감지됨</translation>
 <translation id="5289287148052354622">Chromium 앱 다운로드</translation>
@@ -694,6 +697,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8522801943730206384">비밀번호를 저장하면 Chromium에서 확인할 수 있습니다</translation>
 <translation id="8548787790260785208">Chromium에서 공개적인 정보 유출로 인해 노출된 비밀번호를 발견하면 경고가 표시됩니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
+<translation id="8556055872671007529">일부 Chromium 기능 및 확장 프로그램에는 바로가기가 제공됩니다. 다시 사용 설정할 수 있습니다</translation>
 <translation id="8556420416730706394">측면 패널 상단의 고정 버튼을 클릭하여 이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
 <translation id="856656450041460113">언어 목록 검색</translation>
 <translation id="8568283329061645092">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
@@ -729,6 +733,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8988036198400390003">Chromium 프로필 관리</translation>
 <translation id="9019929317751753759">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
 <translation id="904366664621834601">보관 파일에 멀웨어를 숨길 수 있는 다른 파일이 포함되어 있기 때문에 Chromium에서 이 다운로드를 차단했습니다</translation>
+<translation id="9053882453960391422">비밀번호, 북마크, 방문 기록을 모든 기기에서 완벽하게 동기화하세요. 기본 브라우저를 Chromium으로 업데이트하면 즐겨 사용하는 기능을 간편하게 이용할 수 있습니다. 빠른 액세스를 위해 Chromium이 작업 표시줄에 고정됩니다.</translation>
 <translation id="9062666675513499497">다른 Google 서비스에 로그인할 때 Chromium에 로그인</translation>
 <translation id="9078733879136747090">Chromium이 자동으로 종료되었습니다</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>

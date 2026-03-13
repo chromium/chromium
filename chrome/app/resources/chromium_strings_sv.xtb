@@ -10,6 +10,7 @@
 
 Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna sparas inte.</translation>
 <translation id="1083934481477628225">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium.</translation>
+<translation id="1090946077924227754">Om du vill söka efter en specifik funktion eller ett specifikt tillägg i Chromium skriver du kortkommandot i adressfältet följt av önskad tangent</translation>
 <translation id="1104942323762546749">Lösenorden exporteras från Chromium. Skriv ditt Windows-lösenord om du tillåter detta.</translation>
 <translation id="112640046208448578">Identifiera saker eller platser och kopiera eller översätt text. När du använder bildsökning skickas en skärmbild av sidan till servern. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium är din standardwebbläsare</translation>
@@ -27,6 +28,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1262876892872089030">När den här fliken var inaktiv frigjordes minne för att hålla Chromium snabbt. Du kan välja att aldrig inaktivera den här webbplatsen.</translation>
 <translation id="1265577313130862557">Den här nedladdningen blockerades av Chromium eftersom filen är farlig</translation>
 <translation id="126567311906253476">När du loggar in på Googles tjänster, som Gmail eller YouTube, med <ph name="USER_EMAIL" /> kan du logga in automatiskt i Chromium med samma konto</translation>
+<translation id="1287534462498555020">Skaffa Chromium på telefonen</translation>
 <translation id="1290883685122687410">Konfigureringsfel: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfigurera din nya profil i Chromium</translation>
 <translation id="132092532143527429">Testa med Gemini i Chromium</translation>
@@ -382,6 +384,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5231355151045086930">Logga ut från Chromium</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5254739261293693943">Ställ en fråga om den här videon</translation>
+<translation id="5276305953263010518">Skaffa Chromium-appen för att spara lösenord på språng</translation>
 <translation id="5277894862589591112">Ändringarna tillämpas när du startar om Chromium</translation>
 <translation id="5286907366254680517">Identifierades</translation>
 <translation id="5289287148052354622">Skaffa Chromium-appen</translation>
@@ -695,6 +698,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8522801943730206384">Chromium kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="8548787790260785208">Få en varning om Chromium upptäcker att ett av dina lösenord har läckt ut i ett offentligt dataintrång</translation>
 <translation id="8555465886620020932">Tjänstfel: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Vissa funktioner och tillägg i Chromium har kortkommandon. Du kan välja att aktivera dem igen.</translation>
 <translation id="8556420416730706394">Du kan fästa Bildsökning för enkel åtkomst. Klicka på knappen Fäst högst upp på sidopanelen</translation>
 <translation id="856656450041460113">Sök efter språklista</translation>
 <translation id="8568283329061645092">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot</translation>
@@ -730,6 +734,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8988036198400390003">Hantera Chromium-profiler</translation>
 <translation id="9019929317751753759">Vi har gjort Chromium säkrare genom att inaktivera följande tillägg som inte anges i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
 <translation id="904366664621834601">Den här nedladdningen blockerades av Chromium eftersom arkivfilen innehåller andra filer som kan dölja skadlig kod</translation>
+<translation id="9053882453960391422">Håll dina lösenord, bokmärken och din historik helt synkroniserade på alla enheter. Få enkel åtkomst till funktionerna du känner till och gillar genom att uppdatera standardwebbläsaren till Chromium. Chromium fästs i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="9062666675513499497">Logga in i Chromium när du loggar in i andra tjänster från Google</translation>
 <translation id="9078733879136747090">Chromium avslutades automatiskt</translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>

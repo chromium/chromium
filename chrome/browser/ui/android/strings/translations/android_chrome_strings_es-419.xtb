@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Ver estadísticas de la pág.</translation>
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1111673857033749125">Los favoritos guardados en tus otros dispositivos aparecerán aquí.</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla</translation>
 <translation id="1126696498560056882">Administrar cuentas en este dispositivo</translation>
 <translation id="1135018701024399762">El modo Incógnito mantiene tu navegación privada ante las personas que usan tu dispositivo</translation>
 <translation id="113752097246673894">Para acceder a tus favoritos y más en todos tus dispositivos, accede a Chrome como <ph name="EMAIL" /></translation>
@@ -318,6 +319,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2386938421315164605">Oculta y muestra temas.</translation>
 <translation id="2390510615457643724">¿Quieres descargar <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> de nuevo?</translation>
 <translation id="2392369802118427583">Activar</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, pestaña de incógnito con pantalla en pantalla seleccionada</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, pestaña de incógnito con grabación</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, pestaña con sonido seleccionada</translation>
@@ -377,6 +379,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2604446170045642109">En la configuración, puedes desactivar el Tema oscuro para los sitios.</translation>
 <translation id="2605017215201958293">Escucha esta página con IA</translation>
 <translation id="2607441479295509868">Saliste de tu cuenta. Vuelve a acceder para usar los favoritos, las contraseñas y otros datos de tu cuenta.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 elemento}other{# elementos}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> te invitó a acceder a un elemento compartido.</translation>
 <translation id="2634393460268044753">Envía a la Navegación segura de Google las URLs de sitios que visitas y una pequeña muestra del contenido de las páginas, las descargas, la actividad de las extensiones y la información del sistema para revisar si los sitios son dañinos.</translation>
 <translation id="2643064289437760082">Para borrar los datos de medición de anuncios, borra tus datos de navegación en cualquier momento.</translation>
@@ -528,6 +531,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3268048651973962414">Desliza hacia arriba para ver los resultados de la búsqueda</translation>
 <translation id="3269093882174072735">Cargar imagen</translation>
 <translation id="3280562213547448728">Búsqueda por voz</translation>
+<translation id="3282801380074962248">Expandir sección</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> pestañas}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 contraseña se guarda solo en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google.}other{# contraseñas se guardan solo en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu Cuenta de Google.}}</translation>
 <translation id="3293181007446299124">Se mantendrá la privacidad del historial de navegación en tu dispositivo y los informes se enviarán con demora para proteger tu identidad.</translation>
@@ -659,6 +663,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3863527519275151528">Procesando la notificación</translation>
 <translation id="3866863539038222107">Inspeccionar</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla seleccionada</translation>
 <translation id="3870908470613821006">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se borrará de todos los dispositivos</translation>
 <translation id="3873174561423636563">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio. Consulta las <ph name="BEGIN_LINK1" />condiciones del servicio<ph name="END_LINK1" /> del sitio.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
@@ -674,6 +679,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">hace cuatro semanas</translation>
 <translation id="393697183122708255">La búsqueda por voz no está habilitada</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla fijada</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="395377504920307820">Usar sin una cuenta</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome cargará la página cuando esté lista}other{Chrome cargará las páginas cuando estén listas}}</translation>
@@ -740,6 +746,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4214315110991671325">Si permites las cookies, Chrome puede usarlas para la precarga.</translation>
 <translation id="421517251707893998">Presiona fijar este acceso directo</translation>
 <translation id="4216511743389425832">Escuchar esta página</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, pestaña de incógnito con pantalla en pantalla seleccionada y fijada</translation>
 <translation id="4225725533026049334">Siguiendo</translation>
 <translation id="4225895483398857530">Acceso directo a la barra de herramientas</translation>
 <translation id="4232376164796433044">Contraseñas y Autocompletar</translation>
@@ -753,6 +760,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="427987768447457592">Nuevo grupo de pestañas</translation>
 <translation id="4282440837784183472">Tu organización, <ph name="MANAGED_DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chrome. El administrador puede configurar o restringir ciertas funciones.</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, pestaña de incógnito con pantalla en pantalla</translation>
 <translation id="4285498937028063278">Dejar de fijar</translation>
 <translation id="4285846616383034558">Cookies, caché y otros datos de sitios</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activa el bloqueo de pantalla en la configuración de Android<ph name="END_LINK" />.</translation>
@@ -792,6 +800,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4408965460206576430">Este archivo contiene software malicioso o proviene de un sitio sospechoso</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> y <ph name="TAB_COUNT" /> pestañas más</translation>
 <translation id="441100617989818073">Pestañas y grupos sin usar o duplicados</translation>
+<translation id="4412123112245770507">Contraer sección</translation>
 <translation id="4414179633735763985">Se borró <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="4415276339145661267">Administrar tu Cuenta de Google</translation>
 <translation id="4425140285732600465">Sigues el precio. Recibe alertas si baja el precio en algún sitio.</translation>
@@ -1037,6 +1046,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5415871492522952905">Verás tu historial y tus pestañas en todos los dispositivos para que puedas retomar la navegación</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderá el acceso al grupo de pestañas “<ph name="GROUP_NAME" />” de inmediato</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, pestaña de incógnito con pantalla en pantalla y selección múltiple</translation>
 <translation id="5436928407363358055">Para retomar fácilmente tu actividad desde donde la dejaste, sincroniza tu historial y tus pestañas</translation>
 <translation id="5438292632479953702">Volver a descargar</translation>
 <translation id="5439191312780166229">Analiza más datos de los sitios que la protección estándar para advertirte sobre sitios peligrosos, incluso sobre los que Google no conocía. Puedes omitir las advertencias de Chrome.</translation>
@@ -1050,6 +1060,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5471273988133666918">No se puede mover la pestaña <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Abrir en una app de mapas</translation>
 <translation id="5489222148748465285">¿Quieres que Chrome siga buscando?</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla con selección múltiple</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="549660026907543296">Únete como <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Hoja inferior de actividad reciente</translation>
@@ -1474,6 +1485,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7063106218165698546">Personaliza el grupo de pestañas y presiona listo</translation>
 <translation id="7071521146534760487">Administrar cuenta</translation>
 <translation id="707155805709242880">Elige lo que quieres sincronizar a continuación</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, pestaña de incógnito con pantalla en pantalla fijada y con selección múltiple</translation>
 <translation id="7077143737582773186">Tarjeta SD</translation>
 <translation id="7078916049958741685">Borrar también los datos de Chrome de este dispositivo</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, pestaña silenciada, fijada y seleccionada</translation>
@@ -1855,6 +1867,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8512053371384421952">Ya no recibirás notificaciones de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Editor de imágenes</translation>
 <translation id="8533670235862049797">Se activó la Navegación segura</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, pestaña con pantalla en pantalla fijada y con selección múltiple</translation>
 <translation id="8540136935098276800">Ingresa una URL con el formato correcto</translation>
 <translation id="854522910157234410">Abrir esta página</translation>
 <translation id="8547466829003330976">Revisar PDF con IA</translation>
@@ -1969,6 +1982,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9055497320631373736">Se volvió a agregar el sitio a los sitios potenciales</translation>
 <translation id="9057030985451135243">Más información sobre los grupos de pestañas compartidos</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla fijada y seleccionada</translation>
 <translation id="9063400323119781058">Suscripción anulada</translation>
 <translation id="9063523880881406963">Desactivar la opción para solicitar versión de escritorio</translation>
 <translation id="9065203028668620118">Editar</translation>
@@ -2027,6 +2041,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="930834144334005936">Restablecer el modo actual <ph name="MODE_NAME" /> a Búsqueda</translation>
 <translation id="938850635132480979">Error: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Ingresar frase de contraseña</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, pestaña de incógnito con pantalla en pantalla fijada</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="95817756606698420">Chrome puede usar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para realizar búsquedas en China. Puede cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>

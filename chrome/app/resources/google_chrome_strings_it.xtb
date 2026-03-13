@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Impossibile memorizzare nella cache il programma di installazione scaricato. Errore: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Mantieni password, preferiti e cronologia perfettamente sincronizzati tra i dispositivi. Accedi facilmente alle funzionalità che conosci e che ami aggiornando il browser predefinito su Chrome. Chrome verrà fissato sulla barra delle app per un accesso rapido.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>
 <translation id="2652691236519827073">Apri link in una nuova &amp;scheda di Chrome</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">In un secondo momento, Chrome può chiederti se vuoi usare le informazioni salvate per compilare automaticamente i moduli per te</translation>
 <translation id="3352986031709923790">angolo in alto a destra dell'area di ricerca: destra <ph name="RIGHT" />%, in alto <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Supporto Chrome</translation>
+<translation id="3373752068427117404">Alcune funzionalità ed estensioni di Chrome sono dotate di scorciatoie. Puoi scegliere di riattivarle.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verrà riavviato ora}=1{Chrome verrà riavviato tra 1 secondo}other{Chrome verrà riavviato tra # secondi}}</translation>
 <translation id="3380249972812870825">Per aprire Gemini in Chrome, premi <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Durante l'installazione si è verificato un errore del sistema operativo. Scarica nuovamente Google Chrome.</translation>
@@ -689,6 +691,7 @@
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">1. Fai clic su <ph name="BUTTON_LABEL" /> qui sotto. Fai clic su <ph name="BUTTON_2" /> nelle impostazioni di Windows
 3. Fai clic su <ph name="BUTTON_3" /> nella notifica di Windows per fissare Chrome alla barra delle app per un accesso rapido</translation>
+<translation id="8074398340364918139">Per cercare una funzionalità o un'estensione specifica di Chrome, digita la relativa scorciatoia nella barra degli indirizzi, seguita dal tasto della tastiera selezionato</translation>
 <translation id="8077579734294125741">Altri profili Chrome</translation>
 <translation id="8086881907087796310">Installazione non riuscita perché il computer non soddisfa i requisiti hardware minimi.</translation>
 <translation id="8113883687556086139">Verifica la tua identità per usare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -697,6 +700,7 @@
 <translation id="8129812357326543296">Informazioni su &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8162006532256575008">Utilizza Chrome senza un account</translation>
+<translation id="8172231188687329735">Scarica l'app Chrome per salvare le password ovunque ti trovi</translation>
 <translation id="8177472873527554730">Impossibile trovare contenuti nella pagina</translation>
 <translation id="8221491193165283816">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic qui.</translation>
 <translation id="8253851811470049684">Apri i link in Chrome da qualsiasi app e mantieni il browser accessibile sulla barra delle app</translation>
@@ -724,6 +728,7 @@
 
 Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini alcuni. Se esci ora, i preferiti non salvati verranno eliminati.</translation>
 <translation id="8433638294851456451">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
+<translation id="8458117863387545390">Scarica Chrome sul tuo smartphone</translation>
 <translation id="8496177819998570653">Gestore delle p&amp;assword di Google</translation>
 <translation id="8498858610309223613">È stato appena applicato un aggiornamento di sicurezza speciale per Google Chrome. Riavvia ora e le schede verranno ripristinate.</translation>
 <translation id="8516431725144212809">I tuoi interessi stimati da Chrome</translation>

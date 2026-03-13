@@ -213,6 +213,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="1900260903084164610">Davom etish orqali siz <ph name="BEGIN_TOS_LINK" />xizmat shartlariga<ph name="END_TOS_LINK" /> rozilik bildirasiz</translation>
 <translation id="1904580727789512086">Tashrif qilingan URL manzillar Google hisobingizda saqlanadi</translation>
 <translation id="1910950723001426294">Ruxsat parametrlari roʻyxati yopildi.</translation>
+<translation id="1912367671208932516">Kengaytmalar menyusini ochish</translation>
 <translation id="191726024256261717">Ruxsatlarni tekshirish</translation>
 <translation id="1917766536967060661">“<ph name="GROUP_NAME" />” varaqlar guruhiga ruxsat darhol yopiladi va keyin <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) siz bilan Google xizmatlari orqali muloqot qila olmaydi.</translation>
 <translation id="1919130412786645364">Chrome hisobiga kirishga ruxsat berish</translation>
@@ -852,6 +853,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ta parol oshkor etilgan}other{# ta parol oshkor etilgan}}</translation>
 <translation id="4641919525231168205">Keyingi sahifaga</translation>
 <translation id="4642472735733036929">Narx kuzatuvi toʻxtatildi</translation>
+<translation id="4643661539340338954">Chrome Finds bildirishnomalari yoqildi</translation>
 <translation id="4649493483932335039">Oxirgi varaqlar</translation>
 <translation id="465657074423018424">Saytlarni xavfsiz kezish sizni firibgar saytlardan himoya qiladi. Agar bu funksiyani faolsizlantirsangiz, notanish va shubhali saytlarga parol kiritishda ehtiyot boʻling.</translation>
 <translation id="4662373422909645029">Taxallusga raqam kiritish mumkin emas</translation>
@@ -1648,6 +1650,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7686086654630106285">Saytlar tomonidan tavsiya etilgan reklamalar haqida</translation>
 <translation id="7690596512217303514">Qurilmangizda Chrome ochilmadi. Buni tuzatish uchun ilovalar doʻkoni orqali Chromening oxirgi versiyasini yuklab oling.</translation>
 <translation id="7692761875510935111">Brauzerda tezkor ochish. Bu yorliqni tahrirlash uchun ustiga bosib turing.</translation>
+<translation id="7695270712963178084">Chrome Finds</translation>
 <translation id="7697383401610880082">Surish dastagi</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> orqali e-pochta yaratish</translation>
 <translation id="7702420606070050505">Quyi ekrandagi oxirgi amallar toʻliq hajmda ochildi</translation>

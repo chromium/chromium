@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">גיליון תחתון של דפדפן ברירת המחדל</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{אתר אחד (<ph name="RWS_MEMBERS_COUNT" />) בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש לו הרשאה לראות את הפעילות שלך בקבוצה}one{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}two{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}other{‫<ph name="RWS_MEMBERS_COUNT" /> אתרים בקבוצת האתרים של <ph name="RWS_OWNER" /> שיש להם הרשאה לראות את הפעילות שלך בקבוצה}}</translation>
 <translation id="3676777756440746804">לאתרים אין אפשרות לבקש ממך הרשאה להשתמש במידע שנשמר עליך</translation>
+<translation id="3677897809642449131">אתרים יכולים לבקש הרשאה להשתמש בחיישני התנועה</translation>
 <translation id="3678318839615834650">הגיליון התחתון של הכרטיסים בדף "כרטיסייה חדשה" נפתח בגובה מלא</translation>
 <translation id="3697164069658504920">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש בהתקני USB. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש בהתקני USB.</translation>
 <translation id="3703430731944883733">ניהול הפיד</translation>
@@ -747,6 +748,7 @@
 <translation id="8707904142362025782">האתר יכול לבקש הרשאה להשתמש במצלמה</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8715862698998036666">כדי לצאת מהמסך המלא, גוררים את האצבע מלמעלה למטה ומחליקים מהקצה הימני או השמאלי של המסך.</translation>
+<translation id="8716050156658570300">אתרים יכולים לבקש הרשאה להשתמש בחיישני התנועה והאור</translation>
 <translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">‏כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה לחפש מכשירי Bluetooth. כשהאפשרות מושבתת, אתרים לא יכולים לחפש מכשירי Bluetooth.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>

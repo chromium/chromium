@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2371084566192454134">ٹیبز اور ٹیب گروپس</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_ONE" /> ٹیب کے ساتھ سکیڑیں۔}other{<ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
+<translation id="2476179388576975626">تصویر میں تصویر</translation>
 <translation id="2498435670446402865">ٹیب گروپ کا نام بدلیں</translation>
 <translation id="2536366509642644298">اب "<ph name="TAB_GROUP_NAME_1" />" اور "<ph name="TAB_GROUP_NAME_2" />" "ٹیب گروپس دستیاب نہیں ہیں</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">シークレット モードの改善のため、1 分程度のアンケートにご協力ください。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
 <translation id="1083934481477628225">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました</translation>
+<translation id="1090946077924227754">Chromium の特定の機能や拡張機能を検索するには、アドレスバーに該当のショートカットを入力して、選択したキーボードキーを押します</translation>
 <translation id="1104942323762546749">Chromium からパスワードをエクスポートするための許可を求められています。許可するには Windows のパスワードを入力してください。</translation>
 <translation id="112640046208448578">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。画像検索を使用すると、ページのスクリーンショットがサーバーに送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">既定のブラウザは Chromium です</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Chromium を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
 <translation id="1265577313130862557">危険なファイルであるため、このダウンロードは Chromium でブロックされました</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chromium に自動的にログインできます</translation>
+<translation id="1287534462498555020">スマートフォンで Chromium を活用</translation>
 <translation id="1290883685122687410">設定エラー: <ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
 <translation id="132092532143527429">Gemini in Chromium を使ってみる</translation>
@@ -375,6 +377,7 @@
 <translation id="5231355151045086930">Chromium からのログアウト</translation>
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5254739261293693943">この動画について質問する</translation>
+<translation id="5276305953263010518">Chromium アプリを入手して、外出先でパスワードを保存</translation>
 <translation id="5277894862589591112">変更を適用するには Chromium を再起動してください</translation>
 <translation id="5286907366254680517">検出しました</translation>
 <translation id="5289287148052354622">Chromium アプリを入手</translation>
@@ -686,6 +689,7 @@
 <translation id="8522801943730206384">パスワードを保存すると、Chromium による確認が可能になります</translation>
 <translation id="8548787790260785208">一般に報告されているデータ侵害でパスワードが検出された場合、警告が表示されます</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
+<translation id="8556055872671007529">Chromium の一部の機能と拡張機能にはショートカットが用意されており、有効にするよう選択できます。</translation>
 <translation id="8556420416730706394">画像検索を固定して簡単にアクセスできます。固定するには、サイドパネルの上部にある [固定] ボタンをクリックします</translation>
 <translation id="856656450041460113">言語リストを検索</translation>
 <translation id="8568283329061645092">Google アカウントでログインすると、Chromium がパスワードを確認できます。</translation>
@@ -721,6 +725,7 @@
 <translation id="8988036198400390003">Chromium プロファイルを管理</translation>
 <translation id="9019929317751753759">Chromium をより安全にご利用いただくために、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない次の拡張機能を無効にしました。これは知らないうちに追加された可能性があります。</translation>
 <translation id="904366664621834601">このダウンロードは Chromium でブロックされました。アーカイブ ファイルに他のファイルが含まれており、マルウェアが隠されている可能性があります</translation>
+<translation id="9053882453960391422">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chromium に変更すると、お馴染みの機能を簡単に利用できるようになります。Chromium はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="9062666675513499497">他の Google サービスにログインしたときに Chromium にログインする</translation>
 <translation id="9078733879136747090">Chromium は自動的に終了しました</translation>
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>

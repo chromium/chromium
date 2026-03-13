@@ -213,6 +213,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1900260903084164610">Duke vazhduar, ti pranon <ph name="BEGIN_TOS_LINK" />Kushtet e shërbimit<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">URL-të që viziton ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="1910950723001426294">Lista e opsioneve të ndarjes është e mbyllur.</translation>
+<translation id="1912367671208932516">Hap menynë e shtesave</translation>
 <translation id="191726024256261717">Rishiko lejet</translation>
 <translation id="1917766536967060661">Do të humbasësh menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) nuk do të mund të ndërveprojë më me ty në shërbimet e Google.</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
@@ -852,6 +853,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 fjalëkalim i komprometuar}other{# fjalëkalime të komprometuara}}</translation>
 <translation id="4641919525231168205">Shko te faqja tjetër</translation>
 <translation id="4642472735733036929">Monitorimi i çmimeve ndaloi</translation>
+<translation id="4643661539340338954">Njoftimet për gjetjet në Chrome janë aktivizuar</translation>
 <translation id="4649493483932335039">Shiko skedat e fundit</translation>
 <translation id="465657074423018424">"Shfletimi i sigurt" të mbron kundër sajteve mashtruese. Nëse e çaktivizon, ki shumë kujdes kur shfleton, sidomos përpara se të futësh fjalëkalime.</translation>
 <translation id="4662373422909645029">Pseudonimi nuk mund të përmbajë numra</translation>
@@ -1648,6 +1650,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7686086654630106285">Më shumë rreth reklamave të sugjeruara nga sajtet</translation>
 <translation id="7690596512217303514">Pajisja jote nuk mund ta hapte Chrome. Për ta rregulluar problemin, shkarko përditësimin më të fundit të Chrome nga dyqani yt i aplikacioneve.</translation>
 <translation id="7692761875510935111">Hape me shpejtësi në shfletues. Për ta modifikuar këtë shkurtore, preke dhe mbaje shtypur.</translation>
+<translation id="7695270712963178084">Gjetjet në Chrome</translation>
 <translation id="7697383401610880082">Doreza e zvarritjes</translation>
 <translation id="7698359219371678927">Krijo mail në <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Fleta e poshtme e aktivitetit të fundit është hapur në lartësi të plotë</translation>

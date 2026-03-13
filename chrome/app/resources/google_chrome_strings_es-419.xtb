@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Esta acción borrará tus datos de navegación de este dispositivo. Si más adelante deseas recuperarlos, accede a tu cuenta en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">El instalador que se descargó no se almacenó en la caché. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Mantén tus contraseñas, favoritos y el historial perfectamente sincronizados en todos los dispositivos. Actualiza tu navegador predeterminado a Chrome para acceder fácilmente a las funciones que conoces y te encantan. Chrome se fijará a la barra de tareas para que puedas acceder a él rápidamente.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome verifica con regularidad que el navegador tenga la configuración más segura. Te avisaremos si hay algo que debas revisar.</translation>
 <translation id="2652691236519827073">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Más adelante, Chrome puede preguntarte si quieres usar la información guardada para completar formularios automáticamente</translation>
 <translation id="3352986031709923790">esquina superior derecha del área de búsqueda: derecha <ph name="RIGHT" />%, superior <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Ayuda de Chrome</translation>
+<translation id="3373752068427117404">Algunas funciones y extensiones de Chrome incluyen atajos. Puedes volver a activarlos.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Se reiniciará Chrome ahora}=1{Se reiniciará Chrome en 1 segundo}other{Se reiniciará Chrome en # segundos}}</translation>
 <translation id="3380249972812870825">Para abrir Gemini en Chrome, presiona <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Se produjo un error del sistema operativo durante la instalación. Descargue Google Chrome nuevamente.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Haz clic en <ph name="BUTTON_LABEL" /> a continuación.
 2. Haz clic en <ph name="BUTTON_2" /> en la configuración de Windows.
 3. Haz clic en <ph name="BUTTON_3" /> en la notificación de Windows para fijar Chrome a la barra de tareas y acceder rápidamente.</translation>
+<translation id="8074398340364918139">Para buscar una función o extensión específica de Chrome, escribe su atajo en la barra de direcciones, seguido de la tecla que seleccionaste</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">La instalación falló porque tu computadora no cumple con los requisitos mínimos de hardware.</translation>
 <translation id="8113883687556086139">Verifica tu identidad para usar y guardar datos de Chrome en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Acerca de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8162006532256575008">Usar Chrome sin una cuenta</translation>
+<translation id="8172231188687329735">Obtén la app de Chrome para guardar contraseñas estés donde estés</translation>
 <translation id="8177472873527554730">No se puede encontrar el contenido de la página</translation>
 <translation id="8221491193165283816">Por lo general, bloqueas las notificaciones. Si quieres permitir que este sitio las muestre, haz clic aquí.</translation>
 <translation id="8253851811470049684">Abre vínculos en Chrome desde cualquier app y mantén el navegador accesible en la barra de tareas</translation>
@@ -726,6 +730,7 @@
 
 No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si sales ahora, se borrarán los favoritos no guardados.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
+<translation id="8458117863387545390">Obtén Chrome en tu teléfono</translation>
 <translation id="8496177819998570653">Administrador de contraseñas de Google</translation>
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia el navegador ahora (se restablecerán tus pestañas).</translation>
 <translation id="8516431725144212809">Tus intereses estimados por Chrome</translation>

@@ -269,6 +269,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3658847490588580244">Riquadro inferiore del browser predefinito</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sito del gruppo di siti di <ph name="RWS_OWNER" /> può vedere le tue attività nel gruppo}other{<ph name="RWS_MEMBERS_COUNT" /> siti del gruppo di siti di <ph name="RWS_OWNER" /> possono vedere le tue attività nel gruppo}}</translation>
 <translation id="3676777756440746804">I siti non possono chiederti di usare le informazioni su di te che hanno salvato</translation>
+<translation id="3677897809642449131">I siti possono chiedere di usare i sensori di movimento</translation>
 <translation id="3678318839615834650">Riquadro inferiore di Contenuti nuove schede aperto a schermo intero</translation>
 <translation id="3697164069658504920">Quando l'opzione è attiva, i siti potrebbero chiedere di usare i dispositivi USB. Quando l'opzione è disattivata, i siti non possono utilizzare i dispositivi USB.</translation>
 <translation id="3703430731944883733">Gestisci il tuo feed</translation>
@@ -746,6 +747,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="8707904142362025782">Il sito può chiedere di utilizzare la videocamera</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8715862698998036666">Trascina dall'alto e scorri dal bordo sinistro o destro per uscire dalla modalità a schermo intero.</translation>
+<translation id="8716050156658570300">I siti possono chiedere di usare i sensori di movimento e di luce</translation>
 <translation id="8719283222052720129">Attiva l'autorizzazione per l'app <ph name="APP_NAME" /> nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Quando l'opzione è attiva, i siti potrebbero chiedere di cercare dispositivi Bluetooth. Quando l'opzione è disattivata, i siti non possono cercare dispositivi Bluetooth.</translation>
 <translation id="8725066075913043281">Riprova</translation>

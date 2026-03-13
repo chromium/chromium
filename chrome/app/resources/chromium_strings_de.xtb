@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Hilf uns, den Inkognitomodus zu verbessern, indem du dir 1 Minute Zeit für diese Umfrage nimmst.</translation>
 <translation id="1065672644894730302">Deine Einstellungen können nicht gelesen werden. Einige Funktionen sind möglicherweise nicht verfügbar und Änderungen an Einstellungen werden nicht gespeichert.</translation>
 <translation id="1083934481477628225">Deine Eltern haben „Berechtigungen für Websites, Apps und Erweiterungen“ für Chromium deaktiviert</translation>
+<translation id="1090946077924227754">Wenn du nach einer bestimmten Chromium-Funktion oder ‑Erweiterung suchen möchtest, gib das Kürzel in die Adressleiste ein und drücke die von dir ausgewählte Taste</translation>
 <translation id="1104942323762546749">Chromium möchte deine Passwörter exportieren. Wenn du dies zulassen möchtest, gib dein Windows-Passwort ein.</translation>
 <translation id="112640046208448578">Du kannst Dinge oder Orte identifizieren und Text kopieren oder übersetzen. Wenn du die Bildersuche verwendest, wird ein Screenshot der Seite an den Server gesendet. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium ist dein Standardbrowser</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chromium schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
 <translation id="1265577313130862557">Chromium hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
 <translation id="126567311906253476">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chromium anmelden</translation>
+<translation id="1287534462498555020">Chromium auf deinem Smartphone installieren</translation>
 <translation id="1290883685122687410">Einrichtungsfehler: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Neues Chromium-Profil erstellen</translation>
 <translation id="132092532143527429">Mit Gemini in Chromium ausprobieren</translation>
@@ -379,6 +381,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="5231355151045086930">Von Chromium abmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5254739261293693943">Nach Infos zu diesem Video fragen</translation>
+<translation id="5276305953263010518">Mit der Chromium App kannst du Passwörter unterwegs speichern</translation>
 <translation id="5277894862589591112">Starte Chromium neu, um die Änderungen zu übernehmen</translation>
 <translation id="5286907366254680517">Erkannt</translation>
 <translation id="5289287148052354622">Chromium App herunterladen</translation>
@@ -692,6 +695,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8522801943730206384">Chromium kann deine Passwörter prüfen, wenn du sie speicherst</translation>
 <translation id="8548787790260785208">Du wirst gewarnt, wenn Chromium eines deiner Passwörter bei einer öffentlichen Datenpanne findet</translation>
 <translation id="8555465886620020932">Dienstfehler: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Für bestimmte Chromium-Funktionen und -Erweiterungen sind Kürzel verfügbar. Du kannst sie wieder aktivieren.</translation>
 <translation id="8556420416730706394">Du kannst die Bildersuche anpinnen, um leichter darauf zuzugreifen. Klicke dazu oben in der Seitenleiste auf den Button „Anpinnen“.</translation>
 <translation id="856656450041460113">In Liste mit Sprachen suchen</translation>
 <translation id="8568283329061645092">Chromium kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest</translation>
@@ -727,6 +731,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8988036198400390003">Chromium-Profile verwalten</translation>
 <translation id="9019929317751753759">Um Chromium sicherer zu machen, haben wir die folgende Erweiterung deaktiviert. Sie ist nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt und wurde möglicherweise ohne dein Wissen hinzugefügt.</translation>
 <translation id="904366664621834601">Chromium hat diesen Download blockiert, weil die Archivdatei weitere Dateien enthält, die möglicherweise Malware verbergen</translation>
+<translation id="9053882453960391422">Passwörter, Lesezeichen und Verlauf werden auf allen Geräten synchronisiert. Wenn du deinen Standardbrowser auf Chromium aktualisierst, kannst du ganz einfach auf die vertrauten Funktionen zugreifen. Chromium wird für den Schnellzugriff an die Taskleiste angepinnt.</translation>
 <translation id="9062666675513499497">In Chromium anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
 <translation id="9078733879136747090">Chromium wurde automatisch geschlossen</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>

@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">מילוי הסקר הזה ייקח רק דקה ויעזור לנו לשפר את המצב הפרטי.</translation>
 <translation id="1065672644894730302">לא הייתה אפשרות לקרוא את ההעדפות שלך. ייתכן שחלק מהתכונות לא יהיו זמינות ושינויים בהעדפות לא יישמרו.</translation>
 <translation id="1083934481477628225">‏ההורה שלך השבית ב-Chromium את ההגדרה 'הרשאות לאתרים, לאפליקציות ולתוספים'</translation>
+<translation id="1090946077924227754">‏כדי לחפש תכונה או תוסף ספציפיים של Chromium, אפשר להקליד את השם המקוצר שלהם בסרגל הכתובות ואז ללחוץ על מקש המקלדת שנבחר</translation>
 <translation id="1104942323762546749">‏Chromium רוצה לייצא את הסיסמאות שלך. יש להקליד את הסיסמה שלך ל-Windows כדי לאפשר זאת.</translation>
 <translation id="112640046208448578">אפשר לנסות לזהות דברים או מקומות ולהעתיק או לתרגם טקסטים. כשמשתמשים בחיפוש תמונות, צילום מסך של הדף נשלח לשרת. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">‏Chromium מוגדר כדפדפן ברירת המחדל</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">‏בזמן שהכרטיסייה הזו לא הייתה פעילה, התפנה זיכרון כדי ש-Chromium ימשיך לפעול במהירות. ניתן לבחור להחריג תמיד את האתר הזה כדי שיישאר במצב פעיל.</translation>
 <translation id="1265577313130862557">‏Chromium חסם את ההורדה הזאת כי הקובץ מסוכן</translation>
 <translation id="126567311906253476">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס אוטומטית ל-Chromium עם אותו חשבון</translation>
+<translation id="1287534462498555020">‏הורדת Chromium לטלפון</translation>
 <translation id="1290883685122687410">שגיאה בהגדרה: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">‏הגדרת הפרופיל החדש שלך ב-Chromium</translation>
 <translation id="132092532143527429">‏כדאי לנסות את Gemini ב-Chromium</translation>
@@ -378,6 +380,7 @@
 <translation id="5231355151045086930">‏יציאה מ-Chromium</translation>
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5254739261293693943">אפשר לשאול שאלות לגבי הסרטון הזה</translation>
+<translation id="5276305953263010518">‏כדי לשמור סיסמאות תוך כדי תנועה, צריך להוריד את אפליקציית Chromium</translation>
 <translation id="5277894862589591112">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chromium</translation>
 <translation id="5286907366254680517">זוהתה</translation>
 <translation id="5289287148052354622">‏הורדת אפליקציית Chromium</translation>
@@ -691,6 +694,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8522801943730206384">‏ל-Chromium יש אפשרות לבדוק את הסיסמאות שלך רק אם שמרת אותן</translation>
 <translation id="8548787790260785208">‏אפשר לקבל אזהרה אם Chromium ימצא שאחת מהסיסמאות שלך דלפה בגלל פרצה באבטחת מידע</translation>
 <translation id="8555465886620020932">שגיאה בשירות: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">‏חלק מהתכונות והתוספים של Chromium מגיעים עם מקשי קיצור. אפשר להפעיל אותם מחדש.</translation>
 <translation id="8556420416730706394">אפשר להצמיד את התכונה 'חיפוש תמונות' כדי לאפשר גישה נוחה: פשוט לוחצים על הכפתור 'הצמדה' בחלק העליון של החלונית הצדדית</translation>
 <translation id="856656450041460113">רשימת שפות לחיפוש</translation>
 <translation id="8568283329061645092">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
@@ -726,6 +730,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8988036198400390003">‏ניהול הפרופילים ב-Chromium</translation>
 <translation id="9019929317751753759">‏כדי לשפר את האבטחה של Chromium, השבתנו את התוסף הבא שאינו רשום ב-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> וייתכן שנוסף ללא ידיעתך.</translation>
 <translation id="904366664621834601">‏‫Chromium חסם את ההורדה הזו כי קובץ הארכיון כולל קבצים אחרים שעלולים להסתיר תוכנות זדוניות</translation>
+<translation id="9053882453960391422">‏רוצה לסנכרן את הסיסמאות, הסימניות וההיסטוריה שלך באופן מושלם בין המכשירים? כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך לעדכן את דפדפן ברירת המחדל ל-Chromium. לגישה מהירה, Chromium יוצמד לסרגל האפליקציות.</translation>
 <translation id="9062666675513499497">‏כניסה אל Chromium כשנכנסים לשירותי Google אחרים</translation>
 <translation id="9078733879136747090">‏Chromium נסגר באופן אוטומטי</translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>

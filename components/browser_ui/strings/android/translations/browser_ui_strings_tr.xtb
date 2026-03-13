@@ -269,6 +269,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="3658847490588580244">Varsayılan tarayıcı alt sayfası</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}other{<ph name="RWS_OWNER" /> site grubunda yer alan ve gruptaki etkinliğinizi görebilen <ph name="RWS_MEMBERS_COUNT" /> site var}}</translation>
 <translation id="3676777756440746804">Sitelerin, hakkınızda kaydettikleri bilgileri kullanmak için izin istemesi engellendi</translation>
+<translation id="3677897809642449131">Siteler, hareket sensörlerini kullanmak için izin isteyebilir</translation>
 <translation id="3678318839615834650">Yeni sekme sayfası kartları alt sayfası tam boyutta açıldı</translation>
 <translation id="3697164069658504920">Bu düğme açıkken siteler USB cihazları kullanmak isteyebilir. Düğme kapalıyken siteler USB cihazları kullanamaz.</translation>
 <translation id="3703430731944883733">Feed'inizi yönetin</translation>
@@ -746,6 +747,7 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:
 <translation id="8707904142362025782">Site, kameranızı kullanmak isteyebilir</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="8715862698998036666">Tam ekrandan çıkmak için yukarıdan sürükleyip sol veya sağ kenardan kaydırın.</translation>
+<translation id="8716050156658570300">Siteler, hareket ve ışık sensörlerini kullanmak için izin isteyebilir</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ında <ph name="APP_NAME" /> için izni açın.</translation>
 <translation id="8721719390026067591">Bu düğme açıkken siteler Bluetooth cihazları aramak isteyebilir. Düğme kapalıyken siteler Bluetooth cihazları arayamaz.</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>

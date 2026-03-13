@@ -213,6 +213,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="1900260903084164610">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_TOS_LINK" />.</translation>
 <translation id="1904580727789512086">Naka-save sa iyong Google Account ang mga URL na iyong binibisita</translation>
 <translation id="1910950723001426294">Nakasara ang listahan ng mga opsyon sa pagbabahagi.</translation>
+<translation id="1912367671208932516">Buksan ang extensions menu</translation>
 <translation id="191726024256261717">Suriin ang mga pahintulot</translation>
 <translation id="1917766536967060661">Mawawalan ka kaagad ng access sa grupo ng tab na “<ph name="GROUP_NAME" />,” at hindi na magagawa ni <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) na makipag-interact sa iyo sa mga serbisyo ng Google.</translation>
 <translation id="1919130412786645364">Pagayan ang pag-sign in sa Chrome</translation>
@@ -852,6 +853,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 nakompromisong password}one{# nakompromisong password}other{# na nakompromisong password}}</translation>
 <translation id="4641919525231168205">Pumunta sa susunod na page</translation>
 <translation id="4642472735733036929">Ihininto ang pagsubaybay sa presyo</translation>
+<translation id="4643661539340338954">Naka-on ang mga notification sa Chrome finds</translation>
 <translation id="4649493483932335039">Tingnan ang mga kamakailang tab</translation>
 <translation id="465657074423018424">Pinoprotektahan ka ng Ligtas na Pag-browse laban sa mga mapanlinlang na website. Kung io-off mo ito, maging mas maingat kapag nagba-browse, lalo na kapag maglalagay ng mga password.</translation>
 <translation id="4662373422909645029">Bawal numero sa nickname</translation>
@@ -1648,6 +1650,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7686086654630106285">Higit pa tungkol sa mga ad na iminumungkahi ng site</translation>
 <translation id="7690596512217303514">Hindi mabuksan ng iyong device ang Chrome. Para ayusin ang isyu, i-download ang pinakabagong update sa Chrome sa iyong app store.</translation>
 <translation id="7692761875510935111">Mabilis na buksan sa browser. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>
+<translation id="7695270712963178084">Chrome finds</translation>
 <translation id="7697383401610880082">Handle sa pag-drag</translation>
 <translation id="7698359219371678927">Gumawa ng email sa <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Binuksan nang buo ang bottom sheet ng kamakailang aktibidad</translation>

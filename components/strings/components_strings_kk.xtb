@@ -211,6 +211,7 @@
 <translation id="1323433172918577554">Толық ақпарат</translation>
 <translation id="1329916999021038454">Есепті жіберу</translation>
 <translation id="1330449323196174374">Сол жағын қақпа тәрізді бүктеу</translation>
+<translation id="133173645041092770">Веб-сайтты жабу</translation>
 <translation id="1333745675627230582">Chrome Dino ойынын ойнау</translation>
 <translation id="1333989956347591814">Әрекетіңіз <ph name="BEGIN_EMPHASIS" />төмендегілерге көрінуі мүмкін<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -608,6 +609,7 @@
 <translation id="1960664692890490165">Chrome-да тауар сатып алатын кезде, картадан басқа төлеу әдістері опция ретінде көрсетіледі.</translation>
 <translation id="196146181975453736">Жылдам төлеу үшін бір реттік қауіпсіздік тексерісінен өтіңіз.</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> бетбелгілері</translation>
+<translation id="1966259577349514951">Қазір төлеу</translation>
 <translation id="1973335181906896915">Сериалау қатесі</translation>
 <translation id="1973785048533660168">Діни және әкімшілік жұмыс орындары</translation>
 <translation id="1974060860693918893">Қосымша</translation>
@@ -638,6 +640,7 @@
 <translation id="2027465737841872819">Пластик</translation>
 <translation id="2027707238798802149">Карта қолжетімді емес</translation>
 <translation id="2029735183873159415">Ата-тек және генеалогия</translation>
+<translation id="2031095660415483845">Кез келген жерден іздеп, толтырыңыз...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси және брандмауэр конфигурациясын тексеріп көріңіз<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Жылдам пәрмен <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> анықтаған әдепкі іздеу провайдері кілтсөзімен бірдей болмауы керек: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Сонда да сақтау</translation>
@@ -939,12 +942,14 @@
 <translation id="2466004615675155314">Интернеттен алынған ақпаратты көрсету</translation>
 <translation id="2466682894498377850">Қойынды <ph name="DEVICE_NAME" /> құрылғысынан жіберілді</translation>
 <translation id="2467272921457885625">Орталық процессордың/жедел жад құрылғысының пайдаланылу тарихы сияқты құрылғы жабдығының сипаттамасы мен статистикасы</translation>
+<translation id="2467421459221956357">Датчиктерді пайдалану</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Network Diagnostics құралын қосу<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 бастап N дейінгі ретпен</translation>
 <translation id="24699311393038040">Қағаз (жылтыратылған)</translation>
 <translation id="2471632709106952369">Салыстыру кестелері</translation>
 <translation id="2473810985261856484">Заң қызметтері</translation>
 <translation id="2477607419416067650">Басқа Google деректері</translation>
+<translation id="247903268499247848">Қозғалыс және жарық датчиктерін пайдалануға рұқсат жоқ</translation>
 <translation id="2479148705183875116">Параметрлерге өту</translation>
 <translation id="2479410451996844060">Жарамсыз іздеу URL сілтемесі.</translation>
 <translation id="2480300195898055381">Google аккаунтыңызда (<ph name="USER_EMAIL" />)</translation>
@@ -1069,6 +1074,7 @@
 <translation id="2674524144218093528">Үйді бояу және әрлеу</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> қойындылар тобы бұдан былай қолжетімді емес.</translation>
 <translation id="2677748264148917807">Шығу</translation>
+<translation id="2679216653373462289">Қозғалыс және жарық датчиктерін пайдалану</translation>
 <translation id="2679659833697380">Ақпаратыңыз құрылғыңызға сақталады.</translation>
 <translation id="2683195745483370038">Басқа нәтижелер табылды</translation>
 <translation id="2686919536310834199">"Жазуға көмек керек" функциясына қатысты пікір жіберіңіз.</translation>
@@ -1081,6 +1087,7 @@
 <translation id="2696385693639654606">Chrome Enterprise Core браузер саясаттарын, қолданбалар мен кеңейтімдерді бұлттан басқаруға мүмкіндік береді.</translation>
 <translation id="2697248912349197812"><ph name="KEYWORD_SHORT_NAME" /> көмекшісінен сұрау</translation>
 <translation id="2699273987028089219">Ішкі мәзір бар. Қосымша опцияларға өту үшін <ph name="SHORTCUT" /> пайдаланыңыз.</translation>
+<translation id="2700335762333112350">Кейінірек төлеу</translation>
 <translation id="2701514975700770343">Төмен қарату</translation>
 <translation id="2702592986366989640">Бағасы төмен опция</translation>
 <translation id="2702801445560668637">Оқу тізімі</translation>
@@ -1150,6 +1157,7 @@
 <translation id="2820957248982571256">Іздеуде...</translation>
 <translation id="2824775600643448204">Мекенжайы және іздеу жолағы</translation>
 <translation id="2826760142808435982">Байланыс <ph name="CIPHER" /> көмегімен шифрланды және аутентификацияланды, сонымен қатар кілт ауыстыру механизмі ретінде <ph name="KX" /> пайдаланады.</translation>
+<translation id="2828797285817981634">Қозғалыс датчиктеріне әзірше рұқсат берілген</translation>
 <translation id="2833637280516285136">Ток-радио</translation>
 <translation id="2835170189407361413">Нысанды тазарту</translation>
 <translation id="2835907903001172712">Браузер туралы жалпы ақпарат</translation>
@@ -1276,6 +1284,7 @@
 <translation id="3030331669969285614">Бұл жалаушалар негізгі өзгеріске жол бермейді немесе оны қайтарады. Олар тек шектеулі уақыт қолжетімді болады.</translation>
 <translation id="3030542417256082866">Көлік құралын сақтау керек пе?</translation>
 <translation id="3033200136993730761">Үй мекенжайы сәйкес іздеу нәтижелері және Google Maps-тегі бағыттар сияқты Google қызметтерінде көп тапсырма орындауға мүмкіндік береді. Мекенжайды <ph name="BEGIN_LINK" />Google аккаунтында (<ph name="ACCOUNT" />)<ph name="END_LINK" /> өзгертуге немесе жоюға болады.</translation>
+<translation id="3033777742142108756">Қозғалыс және жарық датчиктерін пайдалануға әзірше рұқсат берілген</translation>
 <translation id="3034526003882782781">Айналдыру мен масштабтауға рұқсат берілді</translation>
 <translation id="3036894576201005614">Тұрмыстық тазалау құралдары</translation>
 <translation id="3037177537145227281">Баға бақылануда</translation>
@@ -1361,6 +1370,7 @@
 <translation id="3156511682997763015">10 секунд алға айналдыру</translation>
 <translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3158539265159265653">Диск</translation>
+<translation id="3159556963589020896">Pro</translation>
 <translation id="3162070126914310576">Бұл құрылғыны дәл қазір тіркеу мүмкін емес, себебі ұйым бөлімі бастапқы тіркеу шегіне жетті. Көмек алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
 <translation id="316638481603975524">Веб-қолданбаларды орнатуға рұқсат сұрауы мүмкін</translation>
@@ -2299,6 +2309,7 @@
 <translation id="4658638640878098064">Жоғарғы сол жағын қапсыру</translation>
 <translation id="4658801711339831733">Сканерленген файл Google Drive-қа сақталды</translation>
 <translation id="4660592918803576381">Drive-тан ашу</translation>
+<translation id="4660780573807106293">Қозғалыс және жарық датчиктерін пайдалануға рұқсат сұрай алады</translation>
 <translation id="4661556981531699496">Үй жануарлары мен аңдар</translation>
 <translation id="4661868874067696603">Басқа сатып алу опцияларын іздеу</translation>
 <translation id="4663373278480897665">Камераны пайдалануға рұқсат берілген</translation>
@@ -2756,6 +2767,7 @@
 <translation id="5371425731340848620">Картаны жаңарту</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> қойындыны өзгертті.</translation>
 <translation id="5374324662289354619">Ішкі түзету беттері әзірше өшірілген.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> қозғалыс датчиктерін пайдаланғысы келеді</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Сағатыңыз артта", "Сағатыңыз алда" немесе "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Бұл құпия сөз барлық құрылғыңызда болуы үшін жеке басыңызды растаңыз.</translation>
@@ -2805,6 +2817,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Жылдамырақ төлеу үшін осы CVC кодын Google Wallet-ке (<ph name="ACCOUNT_EMAIL" />) сақтаңыз.</translation>
 <translation id="5436307623797390637">Құрылғыдағы қолданбалар</translation>
+<translation id="543656192084990644">Қозғалыс датчиктеріне рұқсат жоқ</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, бұған дейін <ph name="PREVIOUS_VALUE" /> болған</translation>
 <translation id="5443468954631487277">Кері ретпен беткі жағында</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> сайтының олар сіз туралы сақтаған ақпаратты пайдалануына рұқсат етіңіз.</translation>
@@ -3096,6 +3109,7 @@
 <translation id="5918847752193018339">CVC кодтарыңыз сақталған кезде, жылдамырақ төлеңіз. <ph name="LINK_BEGIN" />Сақталған қауіпсіздік кодтарын жою<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Қосулы</translation>
+<translation id="5921432337686792850">Қозғалыс датчиктерін пайдалануға рұқсат сұрай алады</translation>
 <translation id="5921639886840618607">Картаны Google аккаунтына сақтау қажет пе?</translation>
 <translation id="5921952831792678223">Пикаптар</translation>
 <translation id="5923492272538889093">CVC-дің орнына құрылғының құлпын ашу функциясын пайдалану керек пе?</translation>
@@ -3164,6 +3178,7 @@
 <translation id="6028591542479806248">Мобильдік және электрондық пошта хабарландырулары басқарылады.</translation>
 <translation id="6028833024483927901">Әлем халықтарының тағамдары</translation>
 <translation id="603068602130820122">Оң жағын екі рет қапсыру</translation>
+<translation id="6031824805267965302">Қозғалыс датчиктерін пайдалану</translation>
 <translation id="6032524144326295339">2-ші пошта жәшігі</translation>
 <translation id="6032955021262906325">Сол жағын байлау</translation>
 <translation id="6034000775414344507">Ашық сұр</translation>
@@ -3245,6 +3260,7 @@
 <translation id="6133984428121856852">Файл кеңейтімі бос немесе оның форматы қате.</translation>
 <translation id="6139975341602920272">17 x 22 дюйм</translation>
 <translation id="6143097244789397208">Толықтырылған және виртуалдық шындық</translation>
+<translation id="614327212146763975">Қозғалыс және жарық датчиктеріне рұқсат берілген</translation>
 <translation id="6146055958333702838">Барлық кабельдерді тексеріп, пайдаланып отырған кез
     келген роутерлерді, модемдерді немесе басқа желі құрылғыларын қайта жүктеңіз.</translation>
 <translation id="614940544461990577">Орындап көріңіз:</translation>
@@ -3625,6 +3641,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6734506549556896534">Симуляциялық ойындар</translation>
+<translation id="6735589846038045679">Төлем жоспарлары талаптарға сай болуы керек. <ph name="BEGIN_BOLD" />Бұл опцияларды ұсыну үшін төлеу бетіндегі контент Google-ға жіберіледі.<ph name="END_BOLD" /> Кейін төлеу опцияларын жасыру үшін <ph name="BEGIN_LINK" />төлем параметрлеріне<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="6737708609449480586">Піскен нан өнімдері</translation>
 <translation id="6738516213925468394">Деректеріңіз <ph name="TIME" /> күні <ph name="BEGIN_LINK" />синхрондаудың құпия фразасымен<ph name="END_LINK" /> шифрланған. Синхрондау үшін оны енгізіңіз.</translation>
 <translation id="6740851646645036700">"Жазуға көмек керек" шегіне жеттіңіз. Кейінірек қайталап көріңіз.</translation>
@@ -3638,6 +3655,7 @@
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> жазбасын жою</translation>
 <translation id="6754547388777247439">Жинақ шоттары</translation>
 <translation id="6757797048963528358">Құрылғы ұйқы күйіне өтті.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> қозғалыс және жарық датчиктерін пайдаланғысы келеді</translation>
 <translation id="6766558780547452153">Тамақ пісіру және рецептілер</translation>
 <translation id="6770747695101757579">Қағаз (мақта)</translation>
 <translation id="677257480647123231">Баланың интернеттегі қауіпсіздігі</translation>
@@ -4400,6 +4418,7 @@
 <translation id="79338296614623784">Дұрыс телефон нөмірін енгізіңіз</translation>
 <translation id="7934414805353235750"><ph name="URL" /> қорғалған контентті ойнатуға рұқсат сұрады. Google құрылғыңыздың идентификаторын тексереді.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">Қозғалыс датчиктеріне рұқсат етілген</translation>
 <translation id="7937163678541954811">Жылдам төлеу үшін бұл картаның CVC коды шифрланады және құрылғыңызға сақталады.</translation>
 <translation id="7937554595067888181">Жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Сервер сертификаты әлі жарамды емес.</translation>
@@ -5027,6 +5046,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузерін қолдану тарихын көру үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="8987663052629670333">Фотосуретті басып шығару қызметтері</translation>
 <translation id="8987927404178983737">Ай</translation>
+<translation id="8988966534058783995">Қозғалыс датчиктерін пайдалану</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> сіз құрылғыны қашан белсенді пайдаланатыныңыз туралы білгісі келеді.</translation>
 <translation id="8997023839087525404">Сервер Сертификат айқындығы саясаты жалпыға жарияламаған сертификатты ұсынды. Бұл – кейбір сертификаттардың сенімді екенін растау үшін және оларды шабуылдаушылардан қорғау мақсатында қойылатын міндетті талап.</translation>

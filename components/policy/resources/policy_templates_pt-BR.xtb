@@ -101,13 +101,6 @@ Se esta política for desativada, o recurso de correção automática no teclado
       Definir esta política como 0 significa que os usuários não serão notificados com antecedência. Eles só serão notificados depois que a senha expirar.
 
       Se esta política for definida, o usuário não poderá alterá-la ou substitui-la.</translation>
-<translation id="105369313766849861">Configura o diretório que o <ph name="PRODUCT_FRAME_NAME" /> usará para armazenar dados do usuário.
-
-      Se você definir esta política, o <ph name="PRODUCT_FRAME_NAME" /> usará o diretório fornecido.
-
-      Acesse https://support.google.com/chrome/a?p=Supported_directory_variables para ver uma lista das variáveis que podem ser usadas.
-
-      Se a política não for definida, o diretório padrão do perfil será utilizado.</translation>
 <translation id="1053981429146436598">Um grupo de políticas relacionadas às configurações de solicitação de rede privada.  Consulte https://wicg.github.io/private-network-access/ (link em inglês).</translation>
 <translation id="1055159224864957792">Senha local</translation>
 <translation id="1059069692400941670">Desativar a importação do mecanismo de pesquisa padrão na primeira execução</translation>
@@ -736,7 +729,6 @@ Se ela for ativada ou deixada sem definição, os usuários poderão ativar ou d
 A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLICY_NAME" /> seja desativada.
 
 Esta política foi descontinuada na versão 144 do <ph name="PRODUCT_NAME" /> com a descontinuação da API Attribution Reporting.</translation>
-<translation id="1530812829012954197">Sempre renderizar os seguintes padrões de URL no navegador do host</translation>
 <translation id="1532928374875633053">Permite definir uma lista de padrões de URL que especificam os sites que vão conceder automaticamente a permissão para posicionamento de janelas. Isso vai ampliar a capacidade dos sites de acessar informações sobre as telas do dispositivo e de usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em casos específicos.
 
       Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
@@ -839,7 +831,6 @@ As ações disponíveis são:
 O usuário vai continuar conectado à Conta do Google ao usar <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" /> para excluir cookies.
 
 A definição de <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> e <ph name="CLEAR_SITE_SETTINGS_ACTION" /> vai desativar a sincronização dos respectivos tipos de dados se a <ph name="CHROME_SYNC_NAME" /> nem a <ph name="BROWSER_SIGNIN_POLICY_NAME" /> forem desativadas pela configuração da política <ph name="SYNC_DISABLED_POLICY_NAME" />.</translation>
-<translation id="1583248206450240930">Usar o <ph name="PRODUCT_FRAME_NAME" /> por padrão</translation>
 <translation id="1585643501600142852">Não ativar a integração com o Google Developer Program na ferramenta <ph name="CHROME_DEVTOOLS_NAME" />.</translation>
 <translation id="1587585749332985896">Não permitir o uso do modo headless</translation>
 <translation id="1588240398285670601">Configurações do navegador</translation>
@@ -3683,7 +3674,6 @@ Se esta política for ativada ou deixada sem definição, o recurso de escrita p
 Se esta política for definida como desativada, o recurso de escrita preditiva no teclado físico será bloqueado.</translation>
 <translation id="3380801667330555918">Mudar a configuração pré-preenchida para tíquetes do Kerberos</translation>
 <translation id="338149029069528354">Não apagar dados locais de usuários</translation>
-<translation id="3381968327636295719">Usar o navegador de host por padrão</translation>
 <translation id="3383857097929929678">Abrir links em apps Android por padrão</translation>
 <translation id="3387117557265712991">Desativar a criptografia vinculada ao aplicativo</translation>
 <translation id="3387211681524224831">Se a política for definida como "Ativada" o histórico de navegação não será salvo, a sincronização de guias será desativada e os usuários não poderão mudar essa configuração.
@@ -5519,7 +5509,6 @@ Comportamento novo e correto: em "beforeunload", chamar "event.preventDefault()"
 
 Comportamento antigo e legado: em "beforeunload", chamar "event.preventDefault()" não vai acionar a caixa de diálogo de confirmação. Definir "event.returnValue" como a string vazia vai acionar a caixa de diálogo de confirmação.</translation>
 <translation id="4615892138881859957">Controla o atalho usado para acionar a tecla "Insert"</translation>
-<translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Recurso NewBaseUrlInheritanceBehavior disponível</translation>
 <translation id="4619091826372095683">Se a política for definida, será possível configurar uma lista de padrões de URL especificando quais apps da web não podem pedir para os usuários concederem acesso a tipos de arquivos.
 
@@ -5532,7 +5521,6 @@ Comportamento antigo e legado: em "beforeunload", chamar "event.preventDefault()
       Para saber mais sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="4624417808625504735">Bloquear o uso de JIT pelo JavaScript nestes sites</translation>
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
-<translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
 <translation id="4636354638176939375">Desativar a criação de usuários supervisionados</translation>
 <translation id="4637701328641064644">Esta política controla se os URLs de blobs são particionados durante a busca e navegação.
 Se ela for ativada ou não for definida, os URLs de blobs serão particionados.
@@ -5662,11 +5650,6 @@ Após a configuração inicial, os usuários poderão ativar ou desativar os Ser
 <translation id="4670865688564083639">Mínimo:</translation>
 <translation id="467236746355332046">Recursos compatíveis:</translation>
 <translation id="4672774129073185053">Ativar a substituição da verificação de acessibilidade do IPv6</translation>
-<translation id="4674167212832291997">Personaliza a lista de padrões de URL que devem ser sempre renderizados por <ph name="PRODUCT_FRAME_NAME" />.
-
-          Se esta política não for definida, o renderizador padrão será utilizado para todos os sites conforme especificado pela política "ChromeFrameRendererSettings".
-
-          Para acessar exemplos de padrões, consulte http://www.chromium.org/developers/how-tos/chrome-frame-getting-started (link em inglês).</translation>
 <translation id="467449052039111439">Abrir uma lista de URLs</translation>
 <translation id="4674542060943819878">Ativar a opção de dispensar alertas de senha comprometida</translation>
 <translation id="4674871290487541952">Permite algoritmos inseguros em verificações de integridade nas atualizações e instalações de extensão</translation>
@@ -6435,8 +6418,6 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
 Quando a política está ativada, o usuário pode usar a caixa de pesquisa do acesso rápido do <ph name="PRODUCT_OS_NAME" /> e a caixa de endereço do navegador <ph name="PRODUCT_NAME" /> no <ph name="PRODUCT_OS_NAME" />. Os cookies e dados só podem ser usados para fins essenciais.
 Quando a política não está definida ou é desativada, os cookies e os dados podem ser usados para fins não essenciais.</translation>
 <translation id="5141670636904227950">Definir o tipo de lupa padrão ativada na tela de login</translation>
-<translation id="5142301680741828703">Sempre renderizar os seguintes padrões de URL no <ph name="PRODUCT_FRAME_NAME" /></translation>
-<translation id="5148753489738115745">Permite especificar os parâmetros adicionais que são usados quando o <ph name="PRODUCT_FRAME_NAME" /> inicia o <ph name="PRODUCT_NAME" />. Se essa política não for configurada, será usada a linha de comando padrão.</translation>
 <translation id="5151099177901233471">Ativar relatórios de informações de fuso horário do dispositivo</translation>
 <translation id="5151163911478747031">Desativar a atribuição de extensão no rodapé da página "Nova guia"</translation>
 <translation id="5151850599880109339">Ativar o modo somente HTTPS no modo equilibrado</translation>
@@ -6793,7 +6774,6 @@ As contas gerenciadas não podem participar nem criar um grupo familiar. Por iss
 <translation id="532848608876725157">Ativar DNS sobre HTTPS com substituto inseguro</translation>
 <translation id="5328965694451556034">Informar login/logout</translation>
 <translation id="5329018127554115226">O modo de alta eficiência vai ser desativado.</translation>
-<translation id="5330684698007383292">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo a seguir</translation>
 <translation id="5331342092479819688">Permitir hashes não seguros em handshakes do TLS</translation>
 <translation id="5331746669335642668">A política de nuvem do <ph name="PRODUCT_NAME" /> substitui a política da plataforma.</translation>
 <translation id="533287753294126753">Permitir o uso da Tabela de comparação e melhorar os modelos de IA.</translation>
@@ -6867,7 +6847,6 @@ Se o valor for "false", os usuários não poderão acessar o recurso.</translati
 <translation id="5377606826822211923">Controla, no lugar do usuário, o uso de apps Android de fontes não confiáveis</translation>
 <translation id="537786648513450280">Controla, no lugar do dispositivo, o uso de apps Android de fontes não confiáveis</translation>
 <translation id="5378885577701865339">Desativar a área de transferência compartilhada</translation>
-<translation id="538108065117008131">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> lide com os seguintes tipos de conteúdo.</translation>
 <translation id="5385337904220716757">Permitir acesso apenas aos serviços do sistema pela geolocalização</translation>
 <translation id="538768040137709073">Ativar o recurso de área de transferência compartilhada, que permite que os usuários enviem texto entre computadores Chrome e um dispositivo Android quando a sincronização está ativada e o usuário está conectado.
 
@@ -6999,7 +6978,6 @@ os atalhos baseados em pesquisa vão funcionar como padrão.</translation>
 
       O valor da política precisa ser especificado em dias.</translation>
 <translation id="5457065417344056871">Ativar o modo visitante no navegador</translation>
-<translation id="5457924070961220141">Permite configurar o processador HTML padrão quando <ph name="PRODUCT_FRAME_NAME" /> estiver instalado. A configuração padrão utilizada quando esta política é deixada sem definição é permitir que o navegador host faça o processamento, mas você pode, opcionalmente, substituí-la para que <ph name="PRODUCT_FRAME_NAME" /> processe as páginas HTML por padrão.</translation>
 <translation id="545817252640069915">Ativar interceptação de login</translation>
 <translation id="5460797984317417682">Permitir alertas de tela cheia</translation>
 <translation id="5462898272514237681">Controlar o acesso do <ph name="PRODUCT_OS_NAME" /> aos Serviços de localização do Google</translation>
@@ -7549,6 +7527,7 @@ Se a política não for definida, isso será funcionalmente equivalente a defini
 <translation id="5815990343032461023">Comportamento legado: os apps do Chrome para quiosque serão atualizados pelo sistema de extensão usando o URL de atualização do manifesto de extensão e armazenando o gerenciador em cache com o URL definido na política</translation>
 <translation id="5816688024515869030">Desativar o provedor de <ph name="UIA_NAME" />.</translation>
 <translation id="581737504822041364">Permitir que o ServiceWorker envie solicitações de navegação sem esperar a inicialização</translation>
+<translation id="5827464697821627670">Pode ser definido para máquina e usuário</translation>
 <translation id="5828008775808363753">Não abrir o navegador na inicialização</translation>
 <translation id="582857022372205358">Ativar impressão duplex de borda curta</translation>
 <translation id="5830196507442186669">Permitir que dispositivos usem a <ph name="BOREALIS_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
@@ -10114,7 +10093,6 @@ Se esta política for desativada ou não for definida, as configurações de con
           Se você definir esta política, os usuários não poderão mudá-la ou substituí-la.
 
           Se esta política não for definida, o recurso de correção de cor ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
-<translation id="7323896582714668701">Parâmetros de linha de comando adicionais para o <ph name="PRODUCT_NAME" /></translation>
 <translation id="7324627441366994249">Permite definir uma lista de padrões do URL que especificam sites em que integrações do app Gemini não podem agir diretamente em páginas da web.
 
 Os URLs que não correspondem à lista de permissões nem à lista de bloqueio usam <ph name="GEMINI_ACT_ON_WEB_SETTINGS_POLICY_NAME" />.
@@ -10632,9 +10610,6 @@ Essa política pode ser substituída para origens específicas de Apps Isolados 
 
           Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="7683777542468165012">Atualização de política dinâmica</translation>
-<translation id="7687943045976362719">Se esta política for definida, os tipos de conteúdo especificados serão processados pelo <ph name="PRODUCT_FRAME_NAME" />.
-
-Se esta política não for definida, o renderizador padrão será usado para todos os sites. A política <ph name="CHROME_FRAME_RENDERER_SETTINGS_POLICY_NAME" /> pode ser usada para configurar o renderizador padrão.</translation>
 <translation id="768925347918758827">Estados Unidos.</translation>
 <translation id="7696412993033202071">URLs de inicialização de apps para autenticação externa</translation>
 <translation id="7696534428021833264">Ativar o card de arquivos do SharePoint e do OneDrive na página "Nova guia"</translation>
@@ -11016,6 +10991,21 @@ Se a política <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> for definida como d
 <translation id="7933141401888114454">Ativar a criação de usuários supervisionados</translation>
 <translation id="793473937901685727">Definir a disponibilidade do certificado para apps ARC</translation>
 <translation id="7936302526928951356">A string do user agent não vai congelar a versão principal.</translation>
+<translation id="7936632434238618620">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites para que o Chrome possa selecionar um certificado do cliente automaticamente. O valor é uma matriz de dicionários JSON convertidos em strings, cada um com o formato <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, em que <ph name="URL_PATTERN_PLACEHOLDER" /> é um padrão de configuração de conteúdo. <ph name="FILTER_PLACEHOLDER" /> restringe quais certificados do cliente podem ser selecionados automaticamente pelo navegador. Seja qual for o filtro utilizado, apenas os certificados correspondentes à solicitação do servidor serão selecionados. No Android e iOS, o Chrome só pode selecionar certificados do cliente que ele mesmo provisionou. Ele não pode acessar certificados instalados no nível do sistema operacional.
+
+      Exemplos de uso da seção <ph name="FILTER_PLACEHOLDER" />:
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_FILTER_EXAMPLE" />, apenas certificados do cliente emitidos por um certificado com o CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> serão selecionados.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> contiver as seções <ph name="ISSUER_STRING_VALUE" /> e <ph name="SUBJECT_STRING_VALUE" /> ao mesmo tempo, apenas certificados do cliente que satisfaçam ambas as condições serão selecionados.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> contiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com o valor <ph name="FILTER_STRING_ORGANIZATION" />, um certificado precisará de pelo menos uma organização correspondente ao valor especificado para ser selecionado.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> contiver uma seção <ph name="SUBJECT_STRING_VALUE" /> com um valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, um certificado precisará de pelo menos uma unidade organizacional correspondente ao valor especificado para ser selecionado.
+
+      * Quando <ph name="FILTER_PLACEHOLDER" /> estiver definido como <ph name="EMPTY_DICTIONARY" />, a seleção de certificados do cliente não será restringida de nenhuma outra forma. Os filtros fornecidos pelo servidor da web ainda se aplicam.
+
+      Se a política não for definida, não haverá seleção automática para nenhum site.</translation>
 <translation id="7937766917976512374">Permitir ou negar captura de vídeo</translation>
 <translation id="7937825205289116563">Se a política for ativada ou deixada sem definição, será possível usar assinaturas ad hoc no app nativo criado ao instalar um App Web Progressivo (PWA). Isso garante que cada aplicativo instalado tenha uma identidade exclusiva para os componentes do sistema <ph name="MAC_OS_NAME" />.
 
@@ -11568,13 +11558,6 @@ Várias políticas listam origens que afetam as solicitações para o dispositiv
 
           O limite superior do tamanho da área de transferência é baseado no tamanho máximo das mensagens no canal de dados WebRTC, que esta política não controla.</translation>
 <translation id="8294127013911518331">Controlar a disponibilidade do recurso XSLT</translation>
-<translation id="8294750666104911727">Normalmente as páginas com X-UA-Compatible configuradas para chrome=1 são renderizadas no <ph name="PRODUCT_FRAME_NAME" /> independentemente da política "ChromeFrameRendererSettings".
-
-          Se você ativar essa configuração, não haverá a busca de metatags nas páginas.
-
-          Se você desativar essa configuração, haverá a busca de metatags nas páginas.
-
-          Se esta política não for configurada, haverá a busca de metatags nas páginas.</translation>
 <translation id="8295496526151576383">Esta política especifica as extensões com permissão para pular a caixa de diálogo de confirmação do trabalho de impressão quando elas usarem a função <ph name="SUBMIT_JOB_FUNCTION" /> da <ph name="PRINTING_API" /> para enviar um trabalho de impressão.
 
       Se uma extensão não estiver na lista, ou a lista não estiver definida, a caixa de diálogo de confirmação do trabalho de impressão será mostrada ao usuário para cada chamada de função <ph name="SUBMIT_JOB_FUNCTION" />.</translation>
@@ -11841,11 +11824,6 @@ O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade míni
 
       A política será removida em M75.</translation>
 <translation id="8484375800789836289">Permite que o navegador filtre parâmetros de URL.</translation>
-<translation id="8484458986062090479">Personaliza a lista de padrões de URL que deve sempre ser processada pelo navegador do host.
-
-          Se esta política não estiver definida, o renderizador padrão será usado para todos os sites, conforme especificado pela política "ChromeFrameRendererSettings".
-
-          Para acessar exemplos de padrões, acesse http://www.chromium.org/developers/how-tos/chrome-frame-getting-started (link em inglês).</translation>
 <translation id="8484830523381746060">Você pode ativar esta política para criar um dicionário de extensões de tipos de arquivo com uma lista de domínios correspondentes que estão isentos dos avisos de download com base na extensão do tipo de arquivo. Isso permite que os admins corporativos bloqueiem avisos de download com base na extensão de tipo para arquivos associados a um domínio listado. Por exemplo, se a extensão "jnlp" estiver associada ao "site1.com", os usuários não vão receber um aviso ao baixar arquivos "jnlp" do "site1.com", mas vão receber um aviso baixar arquivos "jnlp" do "site2.com".
 
 Arquivos com extensões especificadas para domínios identificados por esta política ainda estarão sujeitos a avisos de segurança não baseados na extensão do tipo do arquivo, como avisos de download de conteúdo misto e da Navegação segura.
@@ -11957,7 +11935,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="8543108307976719751">Impedir conexões de acesso remoto a esta máquina</translation>
 <translation id="8543639085146778837">Permitir a coleta de registros de textos WebRTC em Serviços do Google</translation>
 <translation id="8543975123557636331">Ativar saída de áudio</translation>
-<translation id="8544375438507658205">Renderizador padrão de HTML para o <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite a sincronização de mensagens SMS do smartphone com o Chromebook.</translation>
 <translation id="8549906780629620346">Ativar a recuperação de conta</translation>
 <translation id="855182606166519378">Os usuários não podem iniciar atualizações de firmware</translation>
@@ -12426,7 +12403,6 @@ muito menor, o que vai prejudicar a proteção.</translation>
 
 Isso é útil quando o administrador sabe que um recurso que exige a presença do Conteúdo baixado provavelmente será usado pelos usuários do dispositivo.</translation>
 <translation id="8864727482158496280">Não permitir atualizações automáticas estendidas</translation>
-<translation id="8864975621965365890">Remove a solicitação de recusa que aparece quando um site é processado pelo <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Aplicar a configuração padrão para a verificação de uso da Chave RSA</translation>
 <translation id="8866430022832109569">Relatórios de inventário do app</translation>
 <translation id="886645881209114007">Permitir que os usuários usem um <ph name="PLUGIN_VM_NAME" /> no <ph name="PRODUCT_OS_NAME" /></translation>
@@ -12611,7 +12587,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="8956312248048980644">Permite o clustering do agente com origin-key por padrão.</translation>
 <translation id="8963464192296208229">As configurações F11 usam o atalho que contém a tecla modificadora Alt</translation>
 <translation id="8966888925105658202">Não permitir que as origens de Apps Isolados da Web se comuniquem com endpoints de rede particulares na API Direct Sockets</translation>
-<translation id="8970205333161758602">Remover a solicitação de recusa do <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Definir se a solicitação do <ph name="PRIVACY_SANDBOX_NAME" /> pode ser mostrada aos usuários</translation>
 <translation id="8974457039656761249">Controlar o recurso de escrita preditiva no teclado físico</translation>
 <translation id="8974588819713914715">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
@@ -12982,7 +12957,6 @@ atualizados para HTTPS por esse recurso.</translation>
 <translation id="929549405492388749">Se definida como verdadeira, esta política forçará a ativação do AppCache, mesmo que ele esteja indisponível no Chrome por padrão.
 
       Se a política não for definida ou for definida como falsa, o AppCache seguirá o padrão do Chrome.</translation>
-<translation id="930930237275114205">Configura o diretório de dados do usuário do <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="931156018951676976">Desativar a exibição de conteúdo promocional</translation>
 <translation id="935779984563655842">Enviar informações sobre o Bluetooth</translation>
 <translation id="936188865879911137">Se a política for definida como ativada, significa que o <ph name="PRODUCT_NAME" /> permite a instalação e atualizações de extensões hospedadas fora da Chrome Web Store, cujo conteúdo pode estar apenas minimamente protegido.
@@ -12993,8 +12967,6 @@ atualizados para HTTPS por esse recurso.</translation>
 <translation id="93985900824506396">Os pacotes de criptografia 3DES serão desativados em TLS</translation>
 <translation id="940706688964479124">Lista de tipos de arquivo que devem ser abertos automaticamente após o download</translation>
 <translation id="942977875497446094">Abrir o navegador de forma automática após a inicialização</translation>
-<translation id="943865157632139008">Permite configurar o renderizador padrão de HTML quando o <ph name="PRODUCT_FRAME_NAME" /> estiver instalado.
-A configuração padrão é permitir que o navegador do host faça a renderização, mas você pode modificá-la, se quiser, e fazer com que o <ph name="PRODUCT_FRAME_NAME" /> renderize páginas HTML por padrão.</translation>
 <translation id="944817693306670849">Definir o tamanho do disco de cache</translation>
 <translation id="949192525372487705">Impedir a troca para um gerenciador de senhas de terceiros</translation>
 <translation id="950536431142353155">Descontinuação: o recurso de configuração do nome do host foi removido na versão M145. O administrador ainda pode controlar o nome do host usando a política <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME" />.

@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Amb aquesta acció, se suprimiran les teves dades de navegació d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">No s'ha pogut desar l'instal·lador baixat a la memòria cau. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistema</translation>
+<translation id="263447411082773721">Mantén les contrasenyes, les adreces d'interès i l'historial perfectament sincronitzats en tots els dispositius. Accedeix fàcilment a les funcions que coneixes i que tant t'agraden actualitzant el navegador predeterminat a Chrome. Chrome es fixarà a la barra de tasques perquè hi puguis accedir ràpidament.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome comprova regularment que el navegador tingui la configuració més segura. T'avisarem si hi ha res que hagis de revisar.</translation>
 <translation id="2652691236519827073">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Més tard, Chrome et pot preguntar si vols utilitzar la informació desada per emplenar automàticament formularis per tu</translation>
 <translation id="3352986031709923790">extrem superior dret de l'àrea de cerca: <ph name="RIGHT" /> % per la dreta i <ph name="TOP" /> % per dalt</translation>
 <translation id="3360895254066713204">Aplicació d'ajuda de Chrome</translation>
+<translation id="3373752068427117404">Algunes funcions i extensions de Chrome inclouen dreceres. Pots decidir si vols tornar-les a activar.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome es reiniciarà ara}=1{Chrome es reiniciarà d'aquí a 1 segon}other{Chrome es reiniciarà d'aquí a # segons}}</translation>
 <translation id="3380249972812870825">Per obrir Gemini a Chrome, prem <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Hi ha hagut un error en el sistema operatiu durant la instal·lació. Torna a baixar Google Chrome.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Fes clic a <ph name="BUTTON_LABEL" /> a continuació.
 2. Fes clic a <ph name="BUTTON_2" /> a la configuració de Windows.
 3. Fes clic a <ph name="BUTTON_3" /> a la notificació de Windows per fixar Chrome a la barra de tasques i accedir-hi ràpidament</translation>
+<translation id="8074398340364918139">Per cercar una funció o una extensió específiques de Chrome, escriu la seva drecera a la barra d'adreces, seguida de la tecla que hagis seleccionat</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
 <translation id="8113883687556086139">Verifica la teva identitat per utilitzar i desar les dades de Chrome al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Quant a &amp;Google Chrome</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8162006532256575008">Fes servir Chrome sense cap compte</translation>
+<translation id="8172231188687329735">Obtén l'aplicació Chrome per desar contrasenyes siguis on siguis</translation>
 <translation id="8177472873527554730">No es troba contingut a la pàgina</translation>
 <translation id="8221491193165283816">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic aquí.</translation>
 <translation id="8253851811470049684">Obre enllaços a Chrome des de qualsevol aplicació i mantén el navegador accessible a la barra de tasques</translation>
@@ -726,6 +730,7 @@
 
 No es poden desar adreces d'interès noves al teu compte fins que no en suprimeixis algunes. Si tanques la sessió ara, se suprimiran les adreces d'interès no desades.</translation>
 <translation id="8433638294851456451">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
+<translation id="8458117863387545390">Obtén Chrome al telèfon</translation>
 <translation id="8496177819998570653">G&amp;estor de contrasenyes de Google</translation>
 <translation id="8498858610309223613">S'acaba d'aplicar una actualització de seguretat especial per a Google Chrome. Reinicia el navegador i restaurarem les pestanyes.</translation>
 <translation id="8516431725144212809">Els teus interessos segons les estimacions de Chrome</translation>

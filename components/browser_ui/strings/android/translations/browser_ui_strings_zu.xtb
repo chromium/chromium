@@ -269,6 +269,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="3658847490588580244">Ishidi eliphansi lebhrawuza evuleka ngokuzenzekela</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Isayithi elingu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> lingabona umsebenzi wakho eqenjini}one{Amasayithi angu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> angabona umsebenzi wakho eqenjini}other{Amasayithi angu-<ph name="RWS_MEMBERS_COUNT" /> eqenjini lamasayithi ka-<ph name="RWS_OWNER" /> angabona umsebenzi wakho eqenjini}}</translation>
 <translation id="3676777756440746804">Amasayithi avinjiwe ekukuceleni ukuba usebenzise ulwazi alulondolozile ngawe</translation>
+<translation id="3677897809642449131">Amasayithi angacela ukusebenzisa izinzwa zokunyakaza</translation>
 <translation id="3678318839615834650">Ishidi eliphansi lamakhadi ekhasi lethebhu entsha livulwe ngobude obugcwele</translation>
 <translation id="3697164069658504920">Lapho ivuliwe, amasayithi angacela ukusebenzisa amadivayisi e-USB. Lapho ivaliwe, amasayithi awakwazi ukusebenzisa amadivayisi e-USB.</translation>
 <translation id="3703430731944883733">Lawula okuphakelayo kwakho</translation>
@@ -746,6 +747,7 @@ Ukuvikela Okuthuthukile kulawula lawa masethingi eChrome:
 <translation id="8707904142362025782">Isayithi lingacela ikhamera yakho</translation>
 <translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="8715862698998036666">Hudula ukusuka phezulu bese uswayipha ukusuka kwesokunxele noma kwesokudla ukuze uphume esikrinini esigcwele.</translation>
+<translation id="8716050156658570300">Amasayithi angacela ukusebenzisa izinzwa zokunyakaza nezokukhanya</translation>
 <translation id="8719283222052720129">Vula imvume ye-<ph name="APP_NAME" /> <ph name="BEGIN_LINK" />Kumasethingi e-Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Lapho ivuliwe, amasayithi angakucela ukuthi ubheke amadivayisi e-Bluetooth. Lapho ivaliwe, amasayithi awakwazi ukubheka amadivayisi e-Bluetooth.</translation>
 <translation id="8725066075913043281">Zama futhi</translation>

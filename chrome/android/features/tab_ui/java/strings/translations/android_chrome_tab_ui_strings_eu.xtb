@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2371084566192454134">Fitxak eta fitxa taldeak</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tolestu fitxa <ph name="TABS_COUNT_ONE" /> duen<ph name="TITLE_OF_GROUP" /> fitxa taldea.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}}</translation>
+<translation id="2476179388576975626">Pantaila txiki gainjarria</translation>
 <translation id="2498435670446402865">Aldatu fitxa taldearen izena</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" eta "<ph name="TAB_GROUP_NAME_2" />" fitxa taldeak jadanik ez daude erabilgarri</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>

@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Мобільний сайт</translation>
 <translation id="2362083820973145409">Ви ввійшли як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ця опція відкриває налаштування.</translation>
 <translation id="2371084566192454134">Вкладки й групи вкладок</translation>
+<translation id="2371303771137626249">Додати</translation>
 <translation id="2381405137052800939">Основні</translation>
 <translation id="2384692388811649784">Приховувати анонімні вкладки</translation>
 <translation id="2386793615875593361">Вибрано 1</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">Адреса 2</translation>
 <translation id="3328801116991980348">Інформація про сайт</translation>
 <translation id="333229797575847124">Як увімкнути цю функцію</translation>
+<translation id="334004756946755423">Поясни це:</translation>
 <translation id="3344233834747405775">Недійсне ім’я власника картки</translation>
 <translation id="3344485292736684439">{count,plural, =1{Закладку збережено в папці "{title}" у вашому обліковому записі ({email})}one{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}few{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}many{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}other{Закладки збережено в папці "{title}" у вашому обліковому записі ({email})}}</translation>
 <translation id="334690320928261823">Останні вкладки</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">Швидко знаходьте відкриті та нещодавно закриті вкладки на всіх синхронізованих пристроях.</translation>
 <translation id="3530767473765895035">Керувати обліковими записами на цьому пристрої…</translation>
 <translation id="3533436815740441613">Нова вкладка</translation>
+<translation id="3534738261102690620">Запитати Gemini</translation>
 <translation id="3540141921715814660">Додати в закладки</translation>
 <translation id="3546122170015471515">Карти Бета на сайті google.com</translation>
 <translation id="3547356470684043247">Переглянути відгуки покупців про товари, послуги чи враження, щоб прийняти зваженіше рішення</translation>
@@ -1087,6 +1090,7 @@
 <translation id="4944543191714094452">Знайти на сторінці…</translation>
 <translation id="4945756290001680296">Доступ до налаштувань паролів</translation>
 <translation id="4949302115427722371">Керувати налаштуваннями…</translation>
+<translation id="4952050521954075618">Знімки з фотоплівки не синхронізуватимуться на ваших пристроях</translation>
 <translation id="4958444002117714549">Розгорнути список</translation>
 <translation id="496392417432935267">Відкрито в іншому вікні</translation>
 <translation id="4970724460420203313">Використовуйте керований обліковий запис у Chrome, щоб відокремити дані вебперегляду, пов’язані з вашою організацією (зокрема вкладки, історію і паролі), від особистих</translation>
@@ -1286,6 +1290,7 @@
 <translation id="5647702255748985085">Вийти з групи?</translation>
 <translation id="5648166631817621825">Останні 7 днів</translation>
 <translation id="5652623411397330904">Тут показуватимуться товари, ціни на які ви відстежуєте.</translation>
+<translation id="5653100054596780862">Усі вкладки</translation>
 <translation id="5656431592348714536">Покращений Календар</translation>
 <translation id="5659593005791499971">Ел. пошта</translation>
 <translation id="5665739277590037307">Застосовуються <ph name="GOOGLE_TERMS" /> та <ph name="GEMINI_APPS_PRIVACY" />. Gemini може припускатися помилок, тому радимо ретельно перевіряти відповіді.</translation>
@@ -1751,6 +1756,7 @@
 <translation id="7300448350764260141">Додайте ще один рівень захисту від загроз в Інтернеті.</translation>
 <translation id="7311244614769792472">Результатів не знайдено</translation>
 <translation id="7313347584264171202">Тут відображатимуться ваші анонімні вкладки</translation>
+<translation id="7322186060879266048">{count,plural, =1{Над клавіатурою показується {count} варіант автозаповнення.}one{Над клавіатурою показується {count} варіант автозаповнення.}few{Над клавіатурою показуються {count} варіанти автозаповнення.}many{Над клавіатурою показуються {count} варіантів автозаповнення.}other{Над клавіатурою показуються {count} варіанта автозаповнення.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Завантажено <ph name="PERCENT" />%</translation>
 <translation id="7345061034321640811">Імпорт заборонено</translation>

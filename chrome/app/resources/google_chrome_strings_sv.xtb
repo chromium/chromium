@@ -155,6 +155,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2586406160782125153">Webbinformationen raderas från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="259935314519650377">Det gick inte att cachelagra det nedladdade installationsprogrammet. Fel: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="263447411082773721">Håll dina lösenord, bokmärken och din historik helt synkroniserade på alla enheter. Få enkel åtkomst till funktionerna du känner till och gillar genom att uppdatera standardwebbläsaren till Chrome. Chrome fästs i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
 <translation id="2652691236519827073">Öppna länkar i en ny flik i Chrome</translation>
@@ -233,6 +234,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3327226547491422998">Senare kan Chrome fråga om du vill använda sparade uppgifter för att fylla i formulär automatiskt åt dig</translation>
 <translation id="3352986031709923790">övre högra hörnet av sökområdet: <ph name="RIGHT" /> % åt höger, <ph name="TOP" /> % uppåt</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Vissa funktioner och tillägg i Chrome har kortkommandon. Du kan välja att aktivera dem igen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startas om nu}=1{Om en sekund startas Chrome om}other{Om # sekunder startas Chrome om}}</translation>
 <translation id="3380249972812870825">Tryck på <ph name="GLOBAL_HOTKEY" /> för att öppna Gemini i Chrome</translation>
 <translation id="3396977131400919238">Ett operativsystemsfel inträffade under installationen. Ladda ned Google Chrome igen.</translation>
@@ -699,6 +701,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8064965390968184078">1. Klicka på <ph name="BUTTON_LABEL" /> nedan
 2. Klicka på <ph name="BUTTON_2" /> i Windows-inställningarna
 3. Klicka på <ph name="BUTTON_3" /> i Windows-aviseringen för att fästa Chrome i aktivitetsfältet för snabb åtkomst</translation>
+<translation id="8074398340364918139">Om du vill söka efter en specifik funktion eller ett specifikt tillägg i Chrome skriver du kortkommandot i adressfältet följt av önskad tangent</translation>
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen misslyckades eftersom datorn inte uppfyller minimikraven för hårdvara.</translation>
 <translation id="8113883687556086139">Verifiera din identitet för att använda och spara Chrome-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -707,6 +710,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8162006532256575008">Använd Chrome utan konto</translation>
+<translation id="8172231188687329735">Skaffa Chrome-appen för att spara lösenord på språng</translation>
 <translation id="8177472873527554730">Det gick inte att hitta innehåll på sidan</translation>
 <translation id="8221491193165283816">Du blockerar aviseringar. Klicka här om du vill tillåta aviseringar från webbplatsen.</translation>
 <translation id="8253851811470049684">Öppna länkar från appar i Chrome och ha webbläsaren tillgänglig i aktivitetsfältet</translation>
@@ -734,6 +738,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 
 Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om du loggar ut nu raderas bokmärken som inte har sparats.</translation>
 <translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
+<translation id="8458117863387545390">Skaffa Chrome på telefonen</translation>
 <translation id="8496177819998570653">Googles Lösenordshantering</translation>
 <translation id="8498858610309223613">En särskild säkerhetsuppdatering för Google Chrome installerades precis. Starta om webbläsaren nu. Flikarna återställs efteråt.</translation>
 <translation id="8516431725144212809">Chromes uppskattning av dina intressen</translation>
