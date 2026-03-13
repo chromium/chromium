@@ -8,12 +8,13 @@
 #include <optional>
 
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 
 class AuthenticationService;
+struct CoreAccountInfo;
 namespace signin {
-class CoreAccountInfo;
 class IdentityManager;
 }  // namespace signin
 class OptimizationGuideService;
@@ -77,6 +78,10 @@ class BwgService : public KeyedService,
 
   // Invoked when the eligibility check is done.
   void OnGeminiEligibilityResult(bool eligible);
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Weak pointer factory for Gemini eligibility checks.
   base::WeakPtrFactory<BwgService> eligibility_weak_ptr_factory_{this};

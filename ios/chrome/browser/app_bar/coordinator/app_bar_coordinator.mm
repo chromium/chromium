@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -21,6 +22,9 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @interface AppBarCoordinator () <GuidedTourCommands>
@@ -60,6 +64,7 @@
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
 
   SceneState* sceneState = _regularBrowser->GetSceneState();
+  ProfileIOS* profile = _regularBrowser->GetProfile();
 
   FullscreenController* regularFullscreenController =
       FullscreenController::FromBrowser(_regularBrowser);
@@ -71,10 +76,17 @@
               incognitoWebStateList:_incognitoBrowser->GetWebStateList()
         regularFullscreenController:regularFullscreenController
       incognitoFullscreenController:incognitoFullscreenController
-                        prefService:_regularBrowser->GetProfile()->GetPrefs()
+                        prefService:profile->GetPrefs()
                  templateURLService:ios::TemplateURLServiceFactory::
                                         GetForProfile(
                                             _regularBrowser->GetProfile())
+              authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                        profile)
+                      geminiService:BwgServiceFactory::GetForProfile(profile)
+              accountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForProfile(profile)
+                    identityManager:IdentityManagerFactory::GetForProfile(
+                                        profile)
                           URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                         _regularBrowser)
                        tabGridState:sceneState.tabGridState

@@ -30,7 +30,7 @@ BwgService::BwgService(ProfileIOS* profile,
   profile_ = profile;
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
   pref_service_ = pref_service;
 
   if (IsAskGeminiChipEnabled()) {
@@ -51,7 +51,7 @@ BwgService::BwgService(ProfileIOS* profile,
 BwgService::~BwgService() = default;
 
 void BwgService::Shutdown() {
-  identity_manager_->RemoveObserver(this);
+  identity_manager_observation_.Reset();
 }
 
 #pragma mark - Public
@@ -108,9 +108,7 @@ void BwgService::OnPrimaryAccountChanged(
 
 void BwgService::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
-  if (identity_manager_) {
-    identity_manager_->RemoveObserver(this);
-  }
+  identity_manager_observation_.Reset();
 }
 
 void BwgService::OnRefreshTokenUpdatedForAccount(

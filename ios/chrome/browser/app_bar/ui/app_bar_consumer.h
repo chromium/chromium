@@ -14,6 +14,13 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
   AppBarButtonTypeTabGrid,
 };
 
+// The states for the assistant button.
+enum class AppBarAssistantButtonState {
+  kSignedOut,
+  kAccount,
+  kAsk,
+};
+
 // Consumer of the app bar.
 @protocol AppBarConsumer <NSObject>
 
@@ -37,6 +44,10 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
 
 // Enables or disables the buttons.
 - (void)setButtonsEnabled:(BOOL)enabled;
+
+// Sets the assistant button state and avatar.
+- (void)setAssistantButtonState:(AppBarAssistantButtonState)state
+                         avatar:(UIImage*)avatar;
 
 @end
 

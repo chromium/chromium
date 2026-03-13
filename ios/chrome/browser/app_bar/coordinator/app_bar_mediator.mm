@@ -8,13 +8,18 @@
 #import <optional>
 #import <set>
 
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/search/search.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -22,6 +27,7 @@
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -33,6 +39,11 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -41,7 +52,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
-@interface AppBarMediator () <IncognitoStateObserver,
+@interface AppBarMediator () <AuthenticationServiceObserving,
+                              IdentityManagerObserverBridgeDelegate,
+                              IncognitoStateObserver,
                               TabGridStateObserver,
                               WebStateListObserving>
 
@@ -55,6 +68,8 @@
 
 @implementation AppBarMediator {
   std::unique_ptr<WebStateListObserverBridge> _observerBridge;
+  std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
+  std::unique_ptr<signin::IdentityManagerObserverBridge> _identityManagerBridge;
   raw_ptr<WebStateList> _regularWebStateList;
   raw_ptr<WebStateList> _incognitoWebStateList;
   raw_ptr<FullscreenController> _regularFullscreenController;
@@ -62,6 +77,10 @@
   raw_ptr<FullscreenController> _incognitoFullscreenController;
   std::unique_ptr<FullscreenUIUpdater> _incognitoFullscreenUIUpdater;
   raw_ptr<PrefService> _prefService;
+  raw_ptr<AuthenticationService> _authenticationService;
+  raw_ptr<BwgService> _geminiService;
+  raw_ptr<ChromeAccountManagerService> _accountManagerService;
+  raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   raw_ptr<TemplateURLService> _templateURLService;
   TabGridPage _currentPage;
@@ -69,18 +88,23 @@
   IncognitoState* _incognitoState;
 }
 
-- (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
-                      incognitoWebStateList:(WebStateList*)incognitoWebStateList
-                regularFullscreenController:
-                    (FullscreenController*)regularFullscreenController
-              incognitoFullscreenController:
-                  (FullscreenController*)incognitoFullscreenController
-                                prefService:(PrefService*)prefService
-                         templateURLService:
-                             (TemplateURLService*)templateURLService
-                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                               tabGridState:(TabGridState*)tabGridState
-                             incognitoState:(IncognitoState*)incognitoState {
+- (instancetype)
+      initWithRegularWebStateList:(WebStateList*)regularWebStateList
+            incognitoWebStateList:(WebStateList*)incognitoWebStateList
+      regularFullscreenController:
+          (FullscreenController*)regularFullscreenController
+    incognitoFullscreenController:
+        (FullscreenController*)incognitoFullscreenController
+                      prefService:(PrefService*)prefService
+               templateURLService:(TemplateURLService*)templateURLService
+            authenticationService:(AuthenticationService*)authenticationService
+                    geminiService:(BwgService*)geminiService
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
+                  identityManager:(signin::IdentityManager*)identityManager
+                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                     tabGridState:(TabGridState*)tabGridState
+                   incognitoState:(IncognitoState*)incognitoState {
   self = [super init];
   if (self) {
     _regularWebStateList = regularWebStateList;
@@ -93,6 +117,18 @@
     _URLLoader = URLLoader;
     _prefService = prefService;
     _templateURLService = templateURLService;
+
+    _authenticationService = authenticationService;
+    _authServiceBridge = std::make_unique<AuthenticationServiceObserverBridge>(
+        _authenticationService, self);
+
+    _geminiService = geminiService;
+    _accountManagerService = accountManagerService;
+
+    _identityManager = identityManager;
+    _identityManagerBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
 
     _tabGridState = tabGridState;
     [_tabGridState addObserver:self];
@@ -159,11 +195,17 @@
   _incognitoFullscreenController = nullptr;
   [_tabGridState removeObserver:self];
   [_incognitoState removeObserver:self];
+  _identityManager = nullptr;
+  _authServiceBridge.reset();
+  _identityManagerBridge.reset();
   _observerBridge.reset();
   _regularWebStateList = nullptr;
   _incognitoWebStateList = nullptr;
   _prefService = nullptr;
   _templateURLService = nullptr;
+  _authenticationService = nullptr;
+  _geminiService = nullptr;
+  _accountManagerService = nullptr;
   _URLLoader = nullptr;
   _incognitoState = nil;
   _tabGridState = nil;
@@ -351,6 +393,7 @@
            forButtonType:AppBarButtonTypeNewTab];
   [self.consumer setMenu:[self createContextMenuForTabGridButton]
            forButtonType:AppBarButtonTypeTabGrid];
+  [self updateAssistantButton];
   [self updateButtonsForCurrentTabGridPage];
 }
 
@@ -663,6 +706,56 @@
     }
   }
   return nil;
+}
+
+// Updates the consumer with the latest state of the assistant button.
+- (void)updateAssistantButton {
+  AppBarAssistantButtonState state = AppBarAssistantButtonState::kSignedOut;
+  UIImage* avatar = nil;
+
+  if (IsPageActionMenuEnabled()) {
+    state = AppBarAssistantButtonState::kAsk;
+  } else if (_authenticationService->HasPrimaryIdentity(
+                 signin::ConsentLevel::kSignin)) {
+    state = AppBarAssistantButtonState::kAccount;
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    ApplicationContext* context = GetApplicationContext();
+    signin::AvatarProvider* avatarProvider =
+        context ? context->GetIdentityAvatarProvider() : nullptr;
+    if (avatarProvider) {
+      avatar = avatarProvider->GetIdentityAvatar(
+          identity, IdentityAvatarSize::TableViewIcon);
+    }
+  }
+
+  [self.consumer setAssistantButtonState:state avatar:avatar];
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self updateAssistantButton];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  [self updateAssistantButton];
+}
+
+- (void)onAccountsOnDeviceChanged {
+  [self updateAssistantButton];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  [self updateAssistantButton];
+}
+
+- (void)onIdentityManagerShutdown:(signin::IdentityManager*)identityManager {
+  _identityManager = nullptr;
+  _identityManagerBridge.reset();
 }
 
 @end

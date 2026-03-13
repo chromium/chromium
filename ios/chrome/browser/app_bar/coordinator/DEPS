@@ -1,8 +1,11 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/fullscreen/ui_bundled",
+  "+ios/chrome/browser/intelligence/bwg/model",
+  "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_availability.h",
   "+ios/chrome/browser/menu/ui_bundled/browser_action_factory.h",
+  "+ios/chrome/browser/signin/model",
   # keep-sorted end
 ]

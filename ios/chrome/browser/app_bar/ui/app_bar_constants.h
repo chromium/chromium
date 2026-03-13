@@ -10,4 +10,7 @@
 // The width of the app bar when in landscape.
 extern const CGFloat kAppBarHeight;
 
+// Accessibility identifier for the assistant button.
+extern NSString* const kAppBarAssistantButtonId;
+
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSTANTS_H_

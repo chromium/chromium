@@ -10,10 +10,16 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
 
 @protocol AppBarConsumer;
+class AuthenticationService;
+class BwgService;
+class ChromeAccountManagerService;
 @class BrowserActionFactory;
 class FullscreenController;
 @protocol FullscreenUIElement;
 @class IncognitoState;
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 class PrefService;
 @protocol SceneCommands;
 @protocol TabGridCommands;
@@ -45,19 +51,23 @@ class WebStateList;
 @property(nonatomic, strong) BrowserActionFactory* incognitoActionFactory;
 
 // Initializes the mediator with the two web state lists.
-- (instancetype)initWithRegularWebStateList:(WebStateList*)regularWebStateList
-                      incognitoWebStateList:(WebStateList*)incognitoWebStateList
-                regularFullscreenController:
-                    (FullscreenController*)regularFullscreenController
-              incognitoFullscreenController:
-                  (FullscreenController*)incognitoFullscreenController
-                                prefService:(PrefService*)prefService
-                         templateURLService:
-                             (TemplateURLService*)templateURLService
-                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
-                               tabGridState:(TabGridState*)tabGridState
-                             incognitoState:(IncognitoState*)incognitoState
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+      initWithRegularWebStateList:(WebStateList*)regularWebStateList
+            incognitoWebStateList:(WebStateList*)incognitoWebStateList
+      regularFullscreenController:
+          (FullscreenController*)regularFullscreenController
+    incognitoFullscreenController:
+        (FullscreenController*)incognitoFullscreenController
+                      prefService:(PrefService*)prefService
+               templateURLService:(TemplateURLService*)templateURLService
+            authenticationService:(AuthenticationService*)authenticationService
+                    geminiService:(BwgService*)geminiService
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
+                  identityManager:(signin::IdentityManager*)identityManager
+                        URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                     tabGridState:(TabGridState*)tabGridState
+                   incognitoState:(IncognitoState*)incognitoState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
