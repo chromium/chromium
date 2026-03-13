@@ -6,24 +6,29 @@ package org.chromium.chrome.browser.actor.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ChromeImageButton;
 
@@ -32,11 +37,13 @@ import org.chromium.ui.widget.ChromeImageButton;
 @Config(manifest = Config.NONE)
 public class ActorControlCoordinatorTest {
     private Activity mActivity;
-    private FrameLayout mParentView;
     private ActorControlCoordinator mCoordinator;
     private PropertyModel mModel;
     private ActorControlMediator mMediator;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private TabBottomSheetManager mTabBottomSheetManager;
     @Mock private View.OnClickListener mPlayPauseListener;
     @Mock private View.OnClickListener mCloseListener;
 
@@ -45,15 +52,11 @@ public class ActorControlCoordinatorTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        mParentView = new FrameLayout(mActivity);
-        mActivity.setContentView(mParentView);
-
-        mPlayPauseListener = mock(View.OnClickListener.class);
-        mCloseListener = mock(View.OnClickListener.class);
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(true);
 
         mCoordinator =
                 new ActorControlCoordinator(
-                        mActivity, mParentView, mPlayPauseListener, mCloseListener);
+                        mActivity, mPlayPauseListener, mCloseListener, mTabBottomSheetManager);
 
         mModel = mCoordinator.getModelForTesting();
         mMediator = mCoordinator.getMediatorForTesting();
@@ -70,7 +73,8 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testStatusIconUpdates_PausedToPlaying() {
-        ActorControlView view = (ActorControlView) mParentView.getChildAt(0);
+        mCoordinator.attachPeekView();
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
         ChromeImageButton statusButton = view.findViewById(R.id.actor_control_status_button);
 
         // Set to Paused (should show Play Arrow)
@@ -103,7 +107,8 @@ public class ActorControlCoordinatorTest {
 
         mMediator.setContent(testTitle, testDesc);
 
-        ActorControlView view = (ActorControlView) mParentView.getChildAt(0);
+        mCoordinator.attachPeekView();
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
         TextView titleView = view.findViewById(R.id.actor_control_title);
         TextView descView = view.findViewById(R.id.actor_control_description);
 
@@ -113,7 +118,8 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testPlayPauseClickTriggered() {
-        ActorControlView view = (ActorControlView) mParentView.getChildAt(0);
+        mCoordinator.attachPeekView();
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
         ChromeImageButton playPauseButton = view.findViewById(R.id.actor_control_status_button);
 
         playPauseButton.performClick();
@@ -122,11 +128,24 @@ public class ActorControlCoordinatorTest {
 
     @Test
     public void testCloseClickTriggered() {
-        ActorControlView view = (ActorControlView) mParentView.getChildAt(0);
+        mCoordinator.attachPeekView();
+        ActorControlView view = (ActorControlView) mCoordinator.getPeekViewForTesting();
         ChromeImageButton closeButton = view.findViewById(R.id.actor_control_close_button);
 
         closeButton.performClick();
         verify(mCloseListener).onClick(closeButton);
     }
 
+    @Test
+    public void testAttachPeekView() {
+        mCoordinator.attachPeekView();
+        verify(mTabBottomSheetManager).attachPeekView(any());
+    }
+
+    @Test
+    public void testAttachPeekView_sheetNotInitialized() {
+        when(mTabBottomSheetManager.isSheetInitialized()).thenReturn(false);
+        mCoordinator.attachPeekView();
+        verify(mTabBottomSheetManager, never()).attachPeekView(any());
+    }
 }

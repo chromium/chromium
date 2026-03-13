@@ -79,6 +79,15 @@ public class TabBottomSheetCoordinator {
         }
     }
 
+    /**
+     * Attaches the peek view to the bottom sheet.
+     *
+     * @param peekView The peek view to attach.
+     */
+    void attachPeekView(View peekView) {
+        mCoBrowseViews.attachPeekView(peekView);
+    }
+
     void closeBottomSheet() {
         if (!mIsSheetCurrentlyManagedByController) {
             return;

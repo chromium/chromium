@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.view.View;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -91,6 +93,21 @@ public class TabBottomSheetManager implements Destroyable {
         if (mTabBottomSheetCoordinator != null) {
             mTabBottomSheetCoordinator.closeBottomSheet();
         }
+    }
+
+    /**
+     * Attaches the peek view to the bottom sheet.
+     *
+     * @param peekView The peek view to attach.
+     */
+    public void attachPeekView(View peekView) {
+        if (mTabBottomSheetCoordinator != null) {
+            mTabBottomSheetCoordinator.attachPeekView(peekView);
+        }
+    }
+
+    public boolean isSheetInitialized() {
+        return mTabBottomSheetCoordinator != null;
     }
 
     boolean isSheetShowing() {

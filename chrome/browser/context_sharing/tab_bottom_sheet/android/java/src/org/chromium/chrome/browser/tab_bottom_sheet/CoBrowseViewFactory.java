@@ -68,6 +68,7 @@ public class CoBrowseViewFactory {
      * @param webContents The {@link WebContents} to be displayed in the thin web view.
      * @param showToolbar Whether to show the toolbar.
      * @param showFusebox Whether to show the fusebox.
+     * @param peekView The peek view to be displayed in the bottom sheet.
      * @return The {@link CoBrowseViews} instance.
      */
     CoBrowseViews buildCoBrowseViews(
