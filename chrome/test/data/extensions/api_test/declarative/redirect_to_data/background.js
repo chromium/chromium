@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 // |testTitle| needs to be the same as |kTestTitle| in declarative_apitest.cc.
-var testTitle = ':TEST:';
-var redirectDataURI = 'data:text/html;charset=utf-8,<html><head><title>' +
-                      testTitle +
-                      '<%2Ftitle><%2Fhtml>';
+const testTitle = ':TEST:';
+const redirectDataURI =
+    `data:text/html;charset=utf-8,<html><head><title>${testTitle}` +
+    `<%2Ftitle><%2Fhtml>`;
 
-var rule = {
+const rule = {
   conditions: [
     new chrome.declarativeWebRequest.RequestMatcher({
         url: {schemes: ['http']}})
@@ -28,10 +28,10 @@ function report(details) {
   }
 }
 
-var activeTabId;
+let activeTabId;
 
 function navigateAndWait(url, callback) {
-  var done =
+  const done =
       chrome.test.listenForever(chrome.tabs.onUpdated, function(_, info, tab) {
         if (tab.id == activeTabId && info.status == 'complete') {
           if (callback)
