@@ -58,6 +58,7 @@ source_set("capture_device_specific") {
     ":capture_lib",
     "//media/capture/video/android",
     "//media/capture/video/chromeos",
+    "//media/capture/video/fuchsia",
     "//media/capture/video/linux",
     "//media/capture/video/win",
   ]
@@ -250,18 +251,7 @@ component("capture_lib") {
   }
 
   if (is_fuchsia) {
-    sources += [
-      "video/fuchsia/video_capture_device_factory_fuchsia.cc",
-      "video/fuchsia/video_capture_device_factory_fuchsia.h",
-      "video/fuchsia/video_capture_device_fuchsia.cc",
-      "video/fuchsia/video_capture_device_fuchsia.h",
-    ]
-    deps += [
-      "//media/fuchsia/common",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-      "//third_party/libyuv",
-    ]
+    deps += [ "video/fuchsia" ]
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -384,16 +374,7 @@ test("capture_unittests") {
   }
 
   if (is_fuchsia) {
-    deps += [
-      "//media/fuchsia/camera:test_support",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem:fuchsia.sysmem_hlcpp",
-      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
-    ]
-    sources += [
-      "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
-      "video/fuchsia/video_capture_device_fuchsia_test.cc",
-    ]
+    deps += [ "video/fuchsia:unit_tests" ]
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/sysmem.shard.test-cml" ]
   }

@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+source_set("fuchsia") {
+  visibility = [
+    ":unit_tests",
+    "//media/capture:capture_lib",
+  ]
+  defines = [ "CAPTURE_IMPLEMENTATION" ]
+
+  sources = [
+    "video_capture_device_factory_fuchsia.cc",
+    "video_capture_device_factory_fuchsia.h",
+    "video_capture_device_fuchsia.cc",
+    "video_capture_device_fuchsia.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media/capture:capture_device_specific",
+    "//media/fuchsia/common",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3:fuchsia.camera3_hlcpp",
+  ]
+
+  deps = [
+    "//media",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    "//third_party/libyuv",
+  ]
+}
+
+source_set("unit_tests") {
+  visibility = [ "//media/capture:capture_unittests__exec" ]
+  testonly = true
+
+  sources = [
+    "video_capture_device_factory_fuchsia_test.cc",
+    "video_capture_device_fuchsia_test.cc",
+  ]
+
+  deps = [
+    ":fuchsia",
+    "//base/test:test_support",
+    "//media/capture",
+    "//media/fuchsia/camera:test_support",
+    "//testing/gtest",
+  ]
+}
