@@ -110,7 +110,7 @@ using base::test::EqualsProto;
 
 class ComposeboxQueryControllerTest
     : public testing::Test,
-      public ComposeboxQueryController::FileUploadStatusObserver {
+      public ComposeboxQueryController::ContextUploadStatusObserver {
  public:
   using QueryControllerState =
       TestComposeboxQueryController::QueryControllerState;
@@ -414,7 +414,7 @@ class ComposeboxQueryControllerTest
     controller_state_future_.AddValue(new_state);
   }
 
-  // ComposeboxQueryController::FileUploadStatusObserver:
+  // ComposeboxQueryController::ContextUploadStatusObserver:
   void OnContextUploadStatusChanged(
       const base::UnguessableToken& context_token,
       lens::MimeType mime_type,

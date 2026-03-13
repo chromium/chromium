@@ -85,7 +85,7 @@ class ContextualOmniboxClient : public SearchboxOmniboxClient {
 // shared between the composebox and realbox to support contextual search.
 class ContextualSearchboxHandler
     : public contextual_search::ContextualSearchContextController::
-          FileUploadStatusObserver,
+          ContextUploadStatusObserver,
       public SearchboxHandler,
       public TabStripModelObserver {
  public:
@@ -157,7 +157,7 @@ class ContextualSearchboxHandler
       std::unique_ptr<lens::ContextualInputData> data,
       RecontextualizeTabCallback callback);
 
-  // contextual_search::FileUploadStatusObserver:
+  // contextual_search::ContextUploadStatusObserver:
   void OnContextUploadStatusChanged(
       const base::UnguessableToken& context_token,
       lens::MimeType mime_type,

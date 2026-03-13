@@ -27,14 +27,14 @@
 // ComposeboxQueryController to an Objective-C observer.
 class ComposeboxFileUploadObserverBridge
     : public contextual_search::ContextualSearchContextController::
-          FileUploadStatusObserver {
+          ContextUploadStatusObserver {
  public:
   ComposeboxFileUploadObserverBridge(
       id<ComposeboxFileUploadObserver> observer,
       contextual_search::ContextualSearchContextController* controller);
   ~ComposeboxFileUploadObserverBridge() override;
 
-  // ComposeboxQueryController::FileUploadStatusObserver implementation.
+  // ComposeboxQueryController::ContextUploadStatusObserver implementation.
   void OnContextUploadStatusChanged(
       const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
@@ -46,7 +46,7 @@ class ComposeboxFileUploadObserverBridge
   __weak id<ComposeboxFileUploadObserver> observer_;
   base::ScopedObservation<contextual_search::ContextualSearchContextController,
                           contextual_search::ContextualSearchContextController::
-                              FileUploadStatusObserver>
+                              ContextUploadStatusObserver>
       observation_{this};
 };
 

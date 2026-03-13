@@ -87,8 +87,8 @@ class ComposeboxQueryController
   lens::ClientToAimMessage CreateClientToAimRequest(
       std::unique_ptr<CreateClientToAimRequestInfo>
           create_client_to_aim_request_info) override;
-  void AddObserver(FileUploadStatusObserver* obs) override;
-  void RemoveObserver(FileUploadStatusObserver* obs) override;
+  void AddObserver(ContextUploadStatusObserver* obs) override;
+  void RemoveObserver(ContextUploadStatusObserver* obs) override;
   void StartFileUploadFlow(
       const base::UnguessableToken& file_token,
       std::unique_ptr<lens::ContextualInputData> contextual_input_data,
@@ -540,7 +540,7 @@ class ComposeboxQueryController
   lens::LensOverlayRequestIdGenerator request_id_generator_;
 
   // The observer list, managed via AddObserver() and RemoveObserver().
-  base::ObserverList<FileUploadStatusObserver> observers_;
+  base::ObserverList<ContextUploadStatusObserver> observers_;
 
   // Owned by the Profile, and thus guaranteed to outlive this instance.
   const raw_ptr<TemplateURLService> template_url_service_;

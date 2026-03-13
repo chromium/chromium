@@ -19,7 +19,7 @@ class ContextualSearchService;
 // An entry in the session map, containing the ContextualSearchContextController
 // and its reference count.
 class ContextualSearchSessionEntry
-    : public ContextualSearchContextController::FileUploadStatusObserver {
+    : public ContextualSearchContextController::ContextUploadStatusObserver {
  public:
   ContextualSearchSessionEntry(const ContextualSearchSessionEntry&) = delete;
   ContextualSearchSessionEntry& operator=(const ContextualSearchSessionEntry&) =
@@ -38,7 +38,7 @@ class ContextualSearchSessionEntry
       std::unique_ptr<ContextualSearchContextController> controller,
       std::unique_ptr<ContextualSearchMetricsRecorder> metrics_recorder);
 
-  // ContextualSearchContextController::FileUploadStatusObserver:
+  // ContextualSearchContextController::ContextUploadStatusObserver:
   void OnContextUploadStatusChanged(
       const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
@@ -51,8 +51,8 @@ class ContextualSearchSessionEntry
 
   base::ScopedObservation<
       ContextualSearchContextController,
-      ContextualSearchContextController::FileUploadStatusObserver>
-      file_upload_status_observer_{this};
+      ContextualSearchContextController::ContextUploadStatusObserver>
+      context_upload_status_observer_{this};
 
   size_t ref_count_ = 1;
 };

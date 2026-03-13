@@ -39,15 +39,15 @@ class TestContextualSearchContextController
     }
   }
 
-  void AddObserver(FileUploadStatusObserver* obs) override {
+  void AddObserver(ContextUploadStatusObserver* obs) override {
     observers_.AddObserver(obs);
   }
-  void RemoveObserver(FileUploadStatusObserver* obs) override {
+  void RemoveObserver(ContextUploadStatusObserver* obs) override {
     observers_.RemoveObserver(obs);
   }
 
  private:
-  base::ObserverList<FileUploadStatusObserver> observers_;
+  base::ObserverList<ContextUploadStatusObserver> observers_;
 };
 
 class MockContextualSearchMetricsRecorder

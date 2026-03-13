@@ -83,13 +83,13 @@ class MockQueryController
   }
 
   void AddObserver(contextual_search::ContextualSearchContextController::
-                       FileUploadStatusObserver* obs) override {
+                       ContextUploadStatusObserver* obs) override {
     observers_.AddObserver(obs);
     TestComposeboxQueryController::AddObserver(obs);
   }
 
   void RemoveObserver(contextual_search::ContextualSearchContextController::
-                          FileUploadStatusObserver* obs) override {
+                          ContextUploadStatusObserver* obs) override {
     observers_.RemoveObserver(obs);
     TestComposeboxQueryController::RemoveObserver(obs);
   }
@@ -105,7 +105,7 @@ class MockQueryController
 
  private:
   base::ObserverList<contextual_search::ContextualSearchContextController::
-                         FileUploadStatusObserver>
+                         ContextUploadStatusObserver>
       observers_;
 };
 

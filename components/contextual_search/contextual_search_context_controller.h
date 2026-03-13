@@ -72,8 +72,8 @@ class ContextualSearchContextController {
     bool attach_page_title_and_url_to_suggest_requests = false;
   };
 
-  // Observer interface for the Page Handler to get updates on file upload
-  class FileUploadStatusObserver : public base::CheckedObserver {
+  // Observer interface for the Page Handler to get updates on context upload
+  class ContextUploadStatusObserver : public base::CheckedObserver {
    public:
     virtual void OnContextUploadStatusChanged(
         const base::UnguessableToken& context_token,
@@ -82,7 +82,7 @@ class ContextualSearchContextController {
         const std::optional<ContextUploadErrorType>& error_type) = 0;
 
    protected:
-    ~FileUploadStatusObserver() override = default;
+    ~ContextUploadStatusObserver() override = default;
   };
 
   // The possible search url types.
@@ -195,8 +195,8 @@ class ContextualSearchContextController {
           create_client_to_aim_request_info) = 0;
 
   // Observer management.
-  virtual void AddObserver(FileUploadStatusObserver* obs) = 0;
-  virtual void RemoveObserver(FileUploadStatusObserver* obs) = 0;
+  virtual void AddObserver(ContextUploadStatusObserver* obs) = 0;
+  virtual void RemoveObserver(ContextUploadStatusObserver* obs) = 0;
 
   // Triggers upload of the file with data and stores the file info in the
   // internal map. Call after setting the file info fields.

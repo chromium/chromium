@@ -27,7 +27,7 @@ using SearchUrlType =
 // A router for queries that Lens should perform.
 class LensQueryFlowRouter
     : public contextual_search::ContextualSearchContextController::
-          FileUploadStatusObserver {
+          ContextUploadStatusObserver {
  public:
   explicit LensQueryFlowRouter(LensSearchController* lens_search_controller);
   ~LensQueryFlowRouter() override;
@@ -158,7 +158,7 @@ class LensQueryFlowRouter
  private:
   friend class LensQueryFlowRouterTestApi;
 
-  // contextual_search::ContextualSearchContextController::FileUploadStatusObserver:
+  // contextual_search::ContextualSearchContextController::ContextUploadStatusObserver:
   void OnContextUploadStatusChanged(
       const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
@@ -284,7 +284,7 @@ class LensQueryFlowRouter
 
   base::ScopedObservation<contextual_search::ContextualSearchContextController,
                           contextual_search::ContextualSearchContextController::
-                              FileUploadStatusObserver>
+                              ContextUploadStatusObserver>
       file_upload_status_observation_{this};
 
   base::WeakPtrFactory<LensQueryFlowRouter> weak_factory_{this};
