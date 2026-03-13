@@ -132,8 +132,12 @@ void RecordUserFolderLoadStatsOnProfileLoad(const UserFolderLoadStats& stats);
 // bookmarks that were selected.
 void RecordCloneBookmarkNode(int num_cloned);
 
-// Records the approximate average node size at startup.
-void RecordAverageNodeSizeAtStartup(size_t size_in_bytes);
+// Records the approximate average node size at startup if
+// sum_file_size_in_bytes and total_url_bookmark_count are not zero.
+void RecordAverageNodeSizeAtStartupIfNonZero(
+    StorageFileEncryptionType encryption_type,
+    int total_url_bookmark_count,
+    size_t sum_file_size_in_bytes);
 
 // Records whether or not node IDs were reassigned as a result of loading the
 // JSON file representing local-or-syncable bookmarks.

@@ -144,14 +144,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bookmarks.AverageNodeSize" units="Bytes"
-    expires_after="2026-01-11">
-  <owner>wylieb@google.com</owner>
+<histogram name="Bookmarks.AverageNodeSize.{EncryptionType}" units="Bytes"
+    expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
-    Records the average size of bookmark nodes on disk. Approximated by dividing
-    the total size on disk by the number of non-folder nodes. Recorded at
-    startup when the bookmark model is loaded from disk.
+    Records the average size of {EncryptionType} bookmark nodes on disk.
+    Approximated by dividing the total size on disk by the number of non-folder
+    nodes. This value won't be recorded if there is no bookmarks or the total
+    size on disk is zero.
   </summary>
 </histogram>
 
@@ -746,8 +747,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.Storage.FileSizeAtStartup2" units="KB"
-    expires_after="2026-07-19">
+    expires_after="2027-02-24">
   <owner>wylieb@google.com</owner>
+  <owner>plcoirier@google.com</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
     Size of the bookmarks file, recorded when the bookmarks model is loaded.

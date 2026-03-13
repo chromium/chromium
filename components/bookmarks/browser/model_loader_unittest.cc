@@ -50,6 +50,8 @@ constexpr char kBookmarksEncryptedStorageFileSizeAtStartupMetricName[] =
     "Bookmarks.Storage.EncryptedFileSizeAtStartup";
 constexpr char kBookmarksTimeToReadFileMetricName[] =
     "Bookmarks.TimeToReadFile";
+constexpr char kBookmarksAverageNodeSizeMetricName[] =
+    "Bookmarks.AverageNodeSize";
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -1393,8 +1395,14 @@ TEST_P(ModelLoaderWithSecondayFileTest,
       kBookmarksStorageFileSizeAtStartupMetricName,
       /*expected_count=*/2);
   histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksAverageNodeSizeMetricName, ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
       kBookmarksEncryptedStorageFileSizeAtStartupMetricName,
       /*expected_count=*/2);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksAverageNodeSizeMetricName, ".Encrypted"}),
+      /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
       base::StrCat({kBookmarksTimeToReadFileMetricName, ".LocalOrSyncable",
                     ".ClearText"}),

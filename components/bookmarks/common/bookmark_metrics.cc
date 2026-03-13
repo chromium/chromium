@@ -219,8 +219,19 @@ void RecordCloneBookmarkNode(int num_cloned) {
   base::UmaHistogramCounts100("Bookmarks.Clone.NumCloned", num_cloned);
 }
 
-void RecordAverageNodeSizeAtStartup(size_t size_in_bytes) {
-  base::UmaHistogramCounts10000("Bookmarks.AverageNodeSize", size_in_bytes);
+void RecordAverageNodeSizeAtStartupIfNonZero(
+    StorageFileEncryptionType encryption_type,
+    int total_url_bookmark_count,
+    size_t sum_file_size_in_bytes) {
+  if (sum_file_size_in_bytes == 0 || total_url_bookmark_count == 0) {
+    return;
+  }
+
+  base::UmaHistogramCounts10000(
+      base::StrCat(
+          {"Bookmarks.AverageNodeSize",
+           GetStorageFileEncryptionTypeSuffixForMetrics(encryption_type)}),
+      sum_file_size_in_bytes / total_url_bookmark_count);
 }
 
 void RecordIdsReassignedOnProfileLoad(StorageFileForUma storage_file,
