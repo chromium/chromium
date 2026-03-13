@@ -6,17 +6,19 @@
 '''
 
 
-import collections
 import codecs
+import collections
 import filecmp
 import getopt
 import gzip
+import multiprocessing
 import os
 import pathlib
 import re
 import shutil
 import sys
 import tempfile
+import traceback
 
 from grit import grd_reader
 from grit import shortcuts
@@ -391,7 +393,81 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # TODO(gfeher) modify here to set utf-8 encoding for admx/adml
     return 'utf_16'
 
+  def _ProcessOutput(self, output, zippable_android_xml_outputs):
+    self.VerboseOut('Creating %s...' % output.GetOutputFilename())
+
+    # Set the context, for conditional inclusion of resources
+    self.res.SetOutputLanguage(output.GetLanguage())
+    self.res.SetOutputContext(output.GetContext())
+    self.res.SetFallbackToDefaultLayout(output.GetFallbackToDefaultLayout())
+    self.res.SetDefines(self.defines)
+
+    # Write the results to a temporary file and only overwrite the original
+    # if the file changed.  This avoids unnecessary rebuilds.
+    #
+    # TODO(hartmanng): Android xml strings currently bypass this behaviour
+    # when self.android_output_zip_path is set. We should take another look to
+    # make sure we avoid unnecessary rebuilds.
+    out_filename = output.GetOutputFilename()
+    tmp_filename = out_filename + '.tmp'
+
+    output_type = output.GetType()
+    if output_type == 'android' and self.android_output_zip_path is not None:
+      # if these files are just going to be zipped and then deleted, they
+      # shouldn't be in the normal `out/...` directory - we'll just store them
+      # in the system tmp dir instead.
+      tmp_filename = self.GetTempAndroidOutputPath(tmp_filename)
+      out_filename = self.GetTempAndroidOutputPath(out_filename)
+      zippable_android_xml_outputs.append(out_filename)
+
+    # Make the output directory if it doesn't exist.
+    self.MakeDirectoriesTo(out_filename)
+    tmpfile = self.fo_create(tmp_filename, 'wb')
+
+    if output_type != 'data_package':
+      encoding = self._EncodingForOutputType(output_type)
+      tmpfile = util.WrapOutputStream(tmpfile, encoding)
+
+    # Iterate in-order through entire resource tree, calling formatters on
+    # the entry into a node and on exit out of it.
+    with tmpfile:
+      self.ProcessNode(self.res, output, tmpfile)
+
+    if output_type == 'chrome_messages_json_gzip':
+      gz_filename = tmp_filename + '.gz'
+      with open(tmp_filename, 'rb') as tmpfile, open(gz_filename, 'wb') as f:
+        with gzip.GzipFile(filename='', mode='wb', fileobj=f, mtime=0) as fgz:
+          shutil.copyfileobj(tmpfile, fgz)
+      os.remove(tmp_filename)
+      tmp_filename = gz_filename
+
+    # Now copy from the temp file back to the real output, but on Windows,
+    # only if the real output doesn't exist or the contents of the file
+    # changed.  This prevents identical headers from being written and .cc
+    # files from recompiling (which is painful on Windows).
+    if not os.path.exists(out_filename):
+      os.rename(tmp_filename, out_filename)
+    else:
+      # CHROMIUM SPECIFIC CHANGE.
+      # This clashes with gyp + vstudio, which expect the output timestamp
+      # to change on a rebuild, even if nothing has changed, so only do
+      # it when opted in.
+      if not self.write_only_new:
+        write_file = True
+      else:
+        files_match = filecmp.cmp(out_filename, tmp_filename)
+        write_file = not files_match
+      if write_file:
+        shutil.copy2(tmp_filename, out_filename)
+      os.remove(tmp_filename)
+
+    self.VerboseOut(' done.\n')
+
   def Process(self):
+    # Assign IDs only once to ensure that all outputs use the same IDs.
+    if self.res.GetIdMap() is None:
+      self.res.InitializeIds()
+
     for output in self.res.GetOutputFiles():
       output.output_filename = os.path.abspath(os.path.join(
         self.output_directory, output.GetOutputFilename()))
@@ -405,79 +481,82 @@ are exported to translation interchange files (e.g. XMB files), etc.
       self.android_output_tmp_dir = tempfile.TemporaryDirectory(
           ignore_cleanup_errors=True)
     zippable_android_xml_outputs = []
-    for output in self.res.GetOutputFiles():
-      self.VerboseOut('Creating %s...' % output.GetOutputFilename())
+    can_fork = hasattr(os, 'fork')
+    if os.environ.get('GRIT_DISABLE_MULTIPROCESSING') == '1':
+      can_fork = False
 
-      # Set the context, for conditional inclusion of resources
-      self.res.SetOutputLanguage(output.GetLanguage())
-      self.res.SetOutputContext(output.GetContext())
-      self.res.SetFallbackToDefaultLayout(output.GetFallbackToDefaultLayout())
-      self.res.SetDefines(self.defines)
+    outputs = self.res.GetOutputFiles()
+    if can_fork and len(outputs) > 1:
+      # WARM UP CACHES: process the first output file synchronously in the
+      # parent process. This builds the O(1) attribute caches (e.g.
+      # `FindBooleanAttribute`) and lazy-initialized structures for the entire
+      # AST. If we don't do this, all N child processes will concurrently
+      # perform the O(N) tree traversals and destroy memory/CPU caches.
+      first_output = outputs[0]
+      self._ProcessOutput(first_output, zippable_android_xml_outputs)
 
-      # Assign IDs only once to ensure that all outputs use the same IDs.
-      if self.res.GetIdMap() is None:
-        self.res.InitializeIds()
+      remaining_outputs = outputs[1:]
+      # Limit max workers to 16 to avoid overwhelming the system with Copy-On-Write
+      # page faults caused by Python reference counting on the 100MB AST.
+      num_workers = min(16, multiprocessing.cpu_count(), len(remaining_outputs))
+      chunks = [remaining_outputs[i::num_workers] for i in range(num_workers)]
+      pids = []
+      tmp_dir = tempfile.mkdtemp()
 
-      # Write the results to a temporary file and only overwrite the original
-      # if the file changed.  This avoids unnecessary rebuilds.
-      #
-      # TODO(hartmanng): Android xml strings currently bypass this behaviour
-      # when self.android_output_zip_path is set. We should take another look to
-      # make sure we avoid unnecessary rebuilds.
-      out_filename = output.GetOutputFilename()
-      tmp_filename = out_filename + '.tmp'
+      # Flush standard streams before forking to prevent buffered data from
+      # being copied into child processes and printed multiple times.
+      sys.stdout.flush()
+      sys.stderr.flush()
 
-      output_type = output.GetType()
-      if output_type == 'android' and self.android_output_zip_path is not None:
-        # if these files are just going to be zipped and then deleted, they
-        # shouldn't be in the normal `out/...` directory - we'll just store them
-        # in the system tmp dir instead.
-        tmp_filename = self.GetTempAndroidOutputPath(tmp_filename)
-        out_filename = self.GetTempAndroidOutputPath(out_filename)
-        zippable_android_xml_outputs.append(out_filename)
+      for i, chunk in enumerate(chunks):
+        # We use os.fork() instead of multiprocessing.Pool to completely bypass
+        # the massive overhead of pickling/unpickling the 100MB+ in-memory AST
+        # over IPC pipelines. os.fork() immediately shares the pre-built AST
+        # via OS Copy-On-Write (COW) without any serialization cost.
+        # It also bypasses Python's Global Interpreter Lock (GIL) to truly
+        # parallelize the CPU-bound AST traversals and string generation,
+        # unlike a threadpool which is slower due to GIL contention.
+        pid = os.fork()
+        if pid == 0:
+          # Child process
+          child_zippable = []
+          try:
+            for output in chunk:
+              self._ProcessOutput(output, child_zippable)
+            if child_zippable:
+              with open(os.path.join(tmp_dir, f'zip_{i}.txt'),
+                        'w',
+                        encoding='utf-8') as f:
+                f.write('\n'.join(child_zippable))
+            os._exit(0)
+          except Exception as e:
+            traceback.print_exc()
+            os._exit(1)
 
-      # Make the output directory if it doesn't exist.
-      self.MakeDirectoriesTo(out_filename)
-      tmpfile = self.fo_create(tmp_filename, 'wb')
+        pids.append(pid)
 
-      if output_type != 'data_package':
-        encoding = self._EncodingForOutputType(output_type)
-        tmpfile = util.WrapOutputStream(tmpfile, encoding)
+      success = True
+      for pid in pids:
+        _, status = os.waitpid(pid, 0)
+        if status != 0:
+          success = False
 
-      # Iterate in-order through entire resource tree, calling formatters on
-      # the entry into a node and on exit out of it.
-      with tmpfile:
-        self.ProcessNode(self.res, output, tmpfile)
+      if not success:
+        print("Error: One or more grit output workers failed. Aborting.")
+        sys.exit(1)
 
-      if output_type == 'chrome_messages_json_gzip':
-        gz_filename = tmp_filename + '.gz'
-        with open(tmp_filename, 'rb') as tmpfile, open(gz_filename, 'wb') as f:
-          with gzip.GzipFile(filename='', mode='wb', fileobj=f, mtime=0) as fgz:
-            shutil.copyfileobj(tmpfile, fgz)
-        os.remove(tmp_filename)
-        tmp_filename = gz_filename
+      for i in range(num_workers):
+        zip_file = os.path.join(tmp_dir, f'zip_{i}.txt')
+        if os.path.exists(zip_file):
+          with open(zip_file, 'r', encoding='utf-8') as f:
+            zippable_android_xml_outputs.extend(f.read().splitlines())
+          os.remove(zip_file)
+      shutil.rmtree(tmp_dir, ignore_errors=True)
 
-      # Now copy from the temp file back to the real output, but on Windows,
-      # only if the real output doesn't exist or the contents of the file
-      # changed.  This prevents identical headers from being written and .cc
-      # files from recompiling (which is painful on Windows).
-      if not os.path.exists(out_filename):
-        os.rename(tmp_filename, out_filename)
-      else:
-        # CHROMIUM SPECIFIC CHANGE.
-        # This clashes with gyp + vstudio, which expect the output timestamp
-        # to change on a rebuild, even if nothing has changed, so only do
-        # it when opted in.
-        if not self.write_only_new:
-          write_file = True
-        else:
-          files_match = filecmp.cmp(out_filename, tmp_filename)
-          write_file = not files_match
-        if write_file:
-          shutil.copy2(tmp_filename, out_filename)
-        os.remove(tmp_filename)
+    else:
+      for output in outputs:
+        self._ProcessOutput(output, zippable_android_xml_outputs)
 
-      self.VerboseOut(' done.\n')
 
     # Move all the Android xml files into a single zip file. This simplifies gn
     # logic, since the next step in the build process would be to zip the files
