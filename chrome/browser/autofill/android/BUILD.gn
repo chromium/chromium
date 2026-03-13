@@ -251,6 +251,7 @@ android_library("test_java") {
     "javatest/src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/autofill_ai/AutofillAiSaveUpdateEntityPromptRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/address/AddressEditorRenderTest.java",
+    "javatest/src/org/chromium/chrome/browser/autofill/editors/autofill_ai/EntityEditorRenderTest.java",
     "javatest/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewTest.java",
   ]
 
