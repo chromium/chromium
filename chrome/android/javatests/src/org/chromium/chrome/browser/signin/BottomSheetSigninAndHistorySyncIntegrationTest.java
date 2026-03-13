@@ -51,9 +51,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -84,6 +86,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.Result;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -107,6 +110,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.ui.test.util.ViewUtils;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -145,7 +150,13 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
     @Mock private DeviceLockActivityLauncherImpl mDeviceLockActivityLauncher;
-    @Mock private BottomSheetSigninAndHistorySyncCoordinator.Delegate mDelegate;
+
+    // TODO(crbug.com/469772349): Switch to using a more complete FakeSigninDelegate implementation
+    // instead of @Spy and stubbing to simulate runPostSigninAction and onFlowComplete results.
+    private static class FakeSigninDelegate
+            implements BottomSheetSigninAndHistorySyncCoordinator.Delegate {}
+
+    @Spy private FakeSigninDelegate mDelegate = new FakeSigninDelegate();
 
     @Before
     public void setUp() {
@@ -187,8 +198,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         })
                 .when(mDeviceLockActivityLauncher)
                 .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
-
-        when(mDelegate.getSigninFlowVariant()).thenReturn(FlowVariant.OTHER);
     }
 
     @After
@@ -657,12 +666,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 HistorySyncConfig.OptInMode.NONE);
 
         // Start sign-in from the collapsed sign-in bottom-sheet shown.
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed)),
-                                isCompletelyDisplayed()))
-                .perform(click());
+        clickContinueButtonOnCollapsedBottomSheet();
 
         // The management notice should be displayed.
         waitForView(withText(R.string.sign_in_managed_account));
@@ -1185,12 +1189,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         mActivity = mActivityTestRule.getActivity();
 
         // Start sign-in from the collapsed bottom-sheet.
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed)),
-                                isCompletelyDisplayed()))
-                .perform(click());
+        clickContinueButtonOnCollapsedBottomSheet();
 
         // Wait for the history opt-in dialog and verify the custom strings.
         waitForView(withId(R.id.history_sync_illustration));
@@ -1386,15 +1385,117 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistorySyncConfig.OptInMode.NONE,
                 TestAccounts.ACCOUNT1.getId());
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed)),
-                                isCompletelyDisplayed()))
-                .perform(click());
+        clickContinueButtonOnCollapsedBottomSheet();
 
         mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
         signinHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testDelegatePostSignin_AuthErrorShown() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> callback = invocation.getArgument(2);
+                            callback.onResult(PostSigninOperationResult.AUTH_ERROR);
+                            return null;
+                        })
+                .when(mDelegate)
+                .runPostSigninAction(any(), any(), any());
+
+        launchSigninFlow(
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED,
+                TestAccounts.ACCOUNT1.getId());
+        clickContinueButtonOnCollapsedBottomSheet();
+
+        // Verify that the auth error screen is shown and the flow is "paused".
+        waitForView(withId(R.id.account_picker_auth_error_title));
+        onView(withId(R.id.history_sync_illustration)).check(doesNotExist());
+        verify(mDelegate, never()).onFlowComplete(any());
+
+        // Verify that the user remains signed in (current behavior).
+        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testDelegatePostSigninGeneralError_retrySuccess() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+
+        // Return error first, then success.
+        AtomicInteger count = new AtomicInteger(0);
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> callback = invocation.getArgument(2);
+                            callback.onResult(
+                                    count.getAndIncrement() == 0
+                                            ? PostSigninOperationResult.OTHER_ERROR
+                                            : PostSigninOperationResult.SUCCESS);
+                            return null;
+                        })
+                .when(mDelegate)
+                .runPostSigninAction(any(), any(), any());
+
+        launchSigninFlow(
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.NONE,
+                TestAccounts.ACCOUNT1.getId());
+        clickContinueButtonOnCollapsedBottomSheet();
+
+        // Verify that the general error screen is shown and the flow is "paused".
+        waitForView(withId(R.id.account_picker_general_error_title));
+        verify(mDelegate, never()).onFlowComplete(any());
+
+        clickContinueButtonToTryAgainGeneralError();
+
+        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onFlowComplete(
+                        eq(
+                                new Result(
+                                        /* hasSignedIn= */ true,
+                                        /* hasOptedInHistorySync= */ false)));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testDelegatePostSigninGeneralError_backPressAndDismiss() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> callback = invocation.getArgument(2);
+                            callback.onResult(PostSigninOperationResult.OTHER_ERROR);
+                            return null;
+                        })
+                .when(mDelegate)
+                .runPostSigninAction(any(), any(), any());
+
+        launchSigninFlow(
+                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                HistorySyncConfig.OptInMode.REQUIRED,
+                TestAccounts.ACCOUNT1.getId());
+        clickContinueButtonOnCollapsedBottomSheet();
+
+        // Verify that the general error screen is shown and the flow is "paused".
+        waitForView(withId(R.id.account_picker_general_error_title));
+        onView(withId(R.id.history_sync_illustration)).check(doesNotExist());
+        verify(mDelegate, never()).onFlowComplete(any());
+
+        // Return to the account picker screen.
+        Espresso.pressBack();
+        waitForView(withId(R.id.account_picker_state_collapsed));
+
+        // Dismiss the bottom sheet and verify flow completion with aborted result.
+        Espresso.pressBack();
+        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onFlowComplete(eq(Result.aborted()));
+
+        // Verify that the user remains signed in (current behavior).
+        assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
     }
 
     private void launchSeamlessSigninAndVerifySignedIn(
@@ -1459,6 +1560,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistorySyncConfig.OptInMode int historyOptInMode) {
+        assert !SigninFeatureMap.isEnabled(SigninFeatures.ENABLE_SEAMLESS_SIGNIN);
         // These histograms are recorded in the SigninAndHistorySync activity but they should
         // only be recorded in the fullscreen case.
         HistogramWatcher fullscreenActivityHistograms =
@@ -1509,12 +1611,7 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                         .build();
 
         // Start sign-in from the collapsed sign-in bottom-sheet shown.
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_continue_as_button),
-                                withParent(withId(R.id.account_picker_state_collapsed)),
-                                isCompletelyDisplayed()))
-                .perform(click());
+        clickContinueButtonOnCollapsedBottomSheet();
 
         signinHistogramWatcher.assertExpected();
 
@@ -1601,5 +1698,23 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
                     return BottomSheetControllerProvider.from(
                             mBaseActivityTestRule.getActivity().getWindowAndroid());
                 });
+    }
+
+    private void clickContinueButtonOnCollapsedBottomSheet() {
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                withParent(withId(R.id.account_picker_state_collapsed)),
+                                isCompletelyDisplayed()))
+                .perform(click());
+    }
+
+    private void clickContinueButtonToTryAgainGeneralError() {
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                isDescendantOfA(withId(R.id.account_picker_state_general_error)),
+                                isDisplayed()))
+                .perform(click());
     }
 }

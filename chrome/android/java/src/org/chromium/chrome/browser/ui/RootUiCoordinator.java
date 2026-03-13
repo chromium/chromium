@@ -1476,7 +1476,10 @@ public class RootUiCoordinator
                                 mWindowAndroid,
                                 mActivity,
                                 mActivityResultTracker,
-                                new WebSigninAccountPickerDelegate(new WebSigninBridge.Factory()),
+                                new WebSigninAccountPickerDelegate(
+                                        profile,
+                                        mTabModelSelectorSupplier.get(),
+                                        new WebSigninBridge.Factory()),
                                 mDeviceLockActivityLauncherSupplier.get(),
                                 profileSupplier,
                                 this::getBottomSheetController,

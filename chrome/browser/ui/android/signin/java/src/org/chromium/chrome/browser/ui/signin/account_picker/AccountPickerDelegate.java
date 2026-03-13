@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.FlowVariant;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -15,7 +16,13 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 @NullMarked
 public interface AccountPickerDelegate {
 
-    /** A controller for the state of the sign-in flow, e.g. showing error screens. */
+    /**
+     * A controller for the state of the sign-in flow, e.g. showing error screens.
+     *
+     * @deprecated TODO(crbug.com/469772349): Remove SigninStateController after {@link
+     *     WebSigninAccountPickerDelegate} and {@link SendTabToSelfCoordinator} migration to
+     *     {@BottomSheetSigninAndHistorySyncCoordinator.Delegate}
+     */
     interface SigninStateController {
 
         /** Shows the sign-in flow generic error state. */
@@ -43,6 +50,21 @@ public interface AccountPickerDelegate {
      * "add account" flow in the embedder.
      */
     void addAccount();
+
+    /**
+     * Notifies the delegate that the sign-in step has completed successfully, and allows it to
+     * perform domain-specific post-sign-in logic before potentially closing the bottom sheet.
+     *
+     * <p>This is called while the sign-in bottom sheet is still visible.
+     *
+     * @param signedInAccount The account that was just signed in.
+     * @param onComplete Callback to be called when the post-sign-in delegate logic is finished.
+     */
+    default void runPostSigninAction(
+            CoreAccountInfo signedInAccount,
+            Callback<@PostSigninOperationResult Integer> onComplete) {
+        onComplete.onResult(PostSigninOperationResult.SUCCESS);
+    }
 
     /** Called when the sign-in finishes successfully. */
     void onSignInComplete(

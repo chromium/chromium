@@ -10,6 +10,7 @@ import android.app.Activity;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -20,6 +21,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.account_picker.SeamlessSigninCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.SigninBottomSheetUiCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -53,6 +55,19 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
          * the "add account" flow in the embedder.
          */
         void addAccount();
+
+        /**
+         * Notifies the delegate that the sign-in step has completed successfully, and allows it to
+         * perform domain-specific post-sign-in logic.
+         *
+         * <p>This is called while the sign-in bottom sheet is still visible.
+         *
+         * @param signedInAccount The account that was just signed in.
+         * @param onComplete Callback to be called when the post-sign-in delegate logic is finished.
+         */
+        void runPostSigninAction(
+                CoreAccountInfo signedInAccount,
+                Callback<@PostSigninOperationResult Integer> onComplete);
 
         /** Called when the sign-in successfully finishes. */
         void onSignInComplete();
@@ -164,6 +179,14 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     public void onAccountPickerDestroy() {
         // The bottom sheet dismissal should already be requested when this method is called.
         // Therefore no further cleaning is needed.
+    }
+
+    /** Implements {@link AccountPickerDelegate}. */
+    @Override
+    public void runPostSigninAction(
+            CoreAccountInfo signedInAccount,
+            Callback<@PostSigninOperationResult Integer> onComplete) {
+        mDelegate.runPostSigninAction(signedInAccount, onComplete);
     }
 
     /** Implements {@link AccountPickerDelegate}. */

@@ -184,7 +184,15 @@ public class AccountPickerBottomSheetTest {
         when(mSigninManagerMock.extractDomainName(TestAccounts.ACCOUNT1.getEmail()))
                 .thenReturn(DOMAIN1);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+        // TODO(crbug.com/469772349): Use real implementation instead of stubbing
+        // AccountPickerDelegate.
         when(mAccountPickerDelegateMock.getSigninFlowVariant()).thenReturn(FlowVariant.OTHER);
+        doCallback(
+                        /* index= */ 1,
+                        (Callback<Integer> callback) ->
+                                callback.onResult(PostSigninOperationResult.SUCCESS))
+                .when(mAccountPickerDelegateMock)
+                .runPostSigninAction(eq(TestAccounts.ACCOUNT1), any());
     }
 
     @After

@@ -380,7 +380,7 @@ public class AccountPickerBottomSheetMediator
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.SIGNIN_AUTH_ERROR);
     }
 
-    /** Implements {@link AccountPickerDelegate.ResultHandler}. */
+    /** Implements {@link AccountPickerDelegate.SigninStateController}. */
     @Override
     public void onSigninComplete() {
         assertNonNull(mSigninTimestampsLogger).recordTimestamp(Event.SIGNIN_COMPLETED);
@@ -682,8 +682,13 @@ public class AccountPickerBottomSheetMediator
                 new SigninManager.SignInCallback() {
                     @Override
                     public void onSignInComplete() {
-                        mAccountPickerDelegate.onSignInComplete(
-                                selectedAccount, AccountPickerBottomSheetMediator.this);
+                        // Delegates can optionally run extra operations immediately after sign-in
+                        // while the loading bottom sheet is still shown. For example, websignin
+                        // creates a WebSigninBridge which asynchronously awaits cookie sync. If
+                        // this fails reauthentication is necessary.
+                        mAccountPickerDelegate.runPostSigninAction(
+                                selectedAccount,
+                                result -> handlePostSigninResult(selectedAccount, result));
                     }
 
                     @Override
@@ -691,6 +696,25 @@ public class AccountPickerBottomSheetMediator
                         showGenericError();
                     }
                 });
+    }
+
+    private void handlePostSigninResult(
+            CoreAccountInfo signedInAccount, @PostSigninOperationResult int result) {
+        @ViewState int viewState = mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE);
+        assert viewState == ViewState.SIGNIN_IN_PROGRESS;
+
+        if (result == PostSigninOperationResult.SUCCESS) {
+            // TODO(crbug.com/469772349): After {@link SigninStateController} is removed, inline
+            // {@link #onSigninComplete()} here.
+            mAccountPickerDelegate.onSignInComplete(
+                    signedInAccount, AccountPickerBottomSheetMediator.this);
+        } else if (result == PostSigninOperationResult.AUTH_ERROR) {
+            showAuthError();
+        } else if (result == PostSigninOperationResult.OTHER_ERROR) {
+            showGenericError();
+        } else {
+            throw new IllegalStateException("Unexpected result: " + result);
+        }
     }
 
     /** Handles a missing selected account during sign-in. */

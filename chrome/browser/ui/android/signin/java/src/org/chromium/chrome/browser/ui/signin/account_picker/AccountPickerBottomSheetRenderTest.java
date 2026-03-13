@@ -11,7 +11,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
@@ -54,6 +53,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.test.util.SigninMatchers;
 import org.chromium.components.signin.test.util.TestAccounts;
@@ -90,7 +90,40 @@ public class AccountPickerBottomSheetRenderTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private AccountPickerDelegate mAccountPickerDelegateMock;
+    private static class FakeAccountPickerDelegate implements AccountPickerDelegate {
+        private final @PostSigninOperationResult Integer mPostSigninOperationResult;
+
+        public FakeAccountPickerDelegate(
+                @PostSigninOperationResult Integer postSigninOperationResult) {
+            mPostSigninOperationResult = postSigninOperationResult;
+        }
+
+        @Override
+        public void onAccountPickerDestroy() {}
+
+        @Override
+        public boolean canHandleAddAccount() {
+            return false;
+        }
+
+        @Override
+        public void addAccount() {}
+
+        @Override
+        public void runPostSigninAction(
+                CoreAccountInfo signedInAccount,
+                Callback<@PostSigninOperationResult Integer> onComplete) {
+            onComplete.onResult(mPostSigninOperationResult);
+        }
+
+        @Override
+        public void onSignInComplete(
+                CoreAccountInfo accountInfo,
+                AccountPickerDelegate.SigninStateController controller) {}
+    }
+
+    private FakeAccountPickerDelegate mAccountPickerDelegate =
+            new FakeAccountPickerDelegate(PostSigninOperationResult.SUCCESS);
 
     // TODO(crbug.com/433919394): Use FakeSigninManager instead.
     @Mock(strictness = Mock.Strictness.LENIENT)
@@ -304,15 +337,8 @@ public class AccountPickerBottomSheetRenderTest {
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mIsNextSigninSuccessful.set(true);
-        doAnswer(
-                        invocation -> {
-                            AccountPickerDelegate.SigninStateController controller =
-                                    invocation.getArgument(1);
-                            controller.showAuthError();
-                            return null;
-                        })
-                .when(mAccountPickerDelegateMock)
-                .onSignInComplete(any(), any());
+        mAccountPickerDelegate =
+                new FakeAccountPickerDelegate(PostSigninOperationResult.AUTH_ERROR);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
@@ -414,7 +440,7 @@ public class AccountPickerBottomSheetRenderTest {
                                     mAccountManagerTestRule.getIdentityManager(),
                                     mSigninManagerMock,
                                     getBottomSheetController(),
-                                    mAccountPickerDelegateMock,
+                                    mAccountPickerDelegate,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
                                             mActivityTestRule.getActivity(), mSigninAccessPoint),
                                     null,

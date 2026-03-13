@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerLaunchMode;
+import org.chromium.chrome.browser.ui.signin.account_picker.PostSigninOperationResult;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
@@ -46,6 +47,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -134,6 +136,25 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
 
     /** This is a delegate that the sign-in flow embedder needs to implement. */
     public interface Delegate {
+
+        /**
+         * Notifies the delegate that the sign-in step has completed successfully, and allows it to
+         * perform domain-specific post-sign-in logic before potentially closing the bottom sheet.
+         * If you wish to wait until the entire flow (including History Sync) is finished and the
+         * bottom sheet is dismissed, use {@link #onFlowComplete()} instead.
+         *
+         * <p>This is called while the sign-in bottom sheet is still visible.
+         *
+         * @param signedInAccount The account that was just signed in.
+         * @param delegateContext The state persisted across activity recreation, if provided.
+         * @param onComplete Callback to be called when the post-sign-in delegate logic is finished.
+         */
+        default void runPostSigninAction(
+                CoreAccountInfo signedInAccount,
+                @Nullable DelegateContext delegateContext,
+                Callback<@PostSigninOperationResult Integer> onComplete) {
+            onComplete.onResult(PostSigninOperationResult.SUCCESS);
+        }
 
         /** Called when the whole flow finishes. */
         default void onFlowComplete(SigninAndHistorySyncCoordinator.Result result) {}
@@ -442,6 +463,14 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         } else {
             mActivityDelegate.addAccount();
         }
+    }
+
+    /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
+    @Override
+    public void runPostSigninAction(
+            CoreAccountInfo signedInAccount,
+            Callback<@PostSigninOperationResult Integer> onComplete) {
+        mDelegate.runPostSigninAction(signedInAccount, mDelegateContext, onComplete);
     }
 
     /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
