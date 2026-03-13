@@ -11205,6 +11205,7 @@ from previous Chrome versions.
   <int value="-1113746031" label="AppDeduplicationService:enabled"/>
   <int value="-1113373128" label="WebUIDownloadShelf:enabled"/>
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
+  <int value="-1112099771" label="AndroidPageInfoAsAppMenuItem:disabled"/>
   <int value="-1112092067" label="AndroidHubV2:disabled"/>
   <int value="-1111837928" label="NtpMobilePromo:enabled"/>
   <int value="-1111269978" label="FluentOverlayScrollbar:enabled"/>
@@ -17721,6 +17722,7 @@ from previous Chrome versions.
   <int value="1106890743"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:enabled"/>
   <int value="1107293950" label="WebUIBrandingUpdate:disabled"/>
+  <int value="1107418884" label="AndroidPageInfoAsAppMenuItem:enabled"/>
   <int value="1107543566" label="enable-one-copy"/>
   <int value="1108200393" label="PeripheralCustomization:enabled"/>
   <int value="1108663108" label="disable-device-discovery-notifications"/>

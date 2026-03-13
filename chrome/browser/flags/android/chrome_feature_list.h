@@ -49,6 +49,7 @@ BASE_DECLARE_FEATURE(kAndroidHistoryClustering);
 BASE_DECLARE_FEATURE(kAndroidNewMediaPicker);
 BASE_DECLARE_FEATURE(kAndroidNoVisibleHintForDifferentTLD);
 BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
+BASE_DECLARE_FEATURE(kAndroidPageInfoAsAppMenuItem);
 BASE_DECLARE_FEATURE(kAndroidProgressBarVisualUpdate);
 BASE_DECLARE_FEATURE(kAndroidSearchInSettings);
 BASE_DECLARE_FEATURE(kAndroidSettingsContainment);
