@@ -11,18 +11,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace content {
 class WebContents;
+}
+
+namespace views {
+class Widget;
 }
 
 namespace ash {
 class CaptivePortalView;
 
 // Proxy which manages showing of the window for CaptivePortal sign-in.
-class CaptivePortalWindowProxy {
+class CaptivePortalWindowProxy : public views::WidgetObserver {
  public:
   // Observer interface for CaptivePortalWindowProxy that gets notified when the
   // CaptivePortal widget is shown or hidden/closed.
@@ -39,7 +42,7 @@ class CaptivePortalWindowProxy {
   explicit CaptivePortalWindowProxy(content::WebContents* web_contents);
   CaptivePortalWindowProxy(const CaptivePortalWindowProxy&) = delete;
   CaptivePortalWindowProxy& operator=(const CaptivePortalWindowProxy&) = delete;
-  virtual ~CaptivePortalWindowProxy();
+  ~CaptivePortalWindowProxy() override;
 
   // Shows captive portal window only after a redirection has happened. So it is
   // safe to call this method, when the caller isn't 100% sure that the network
@@ -64,6 +67,9 @@ class CaptivePortalWindowProxy {
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Overridden from views::WidgetObserver:
+  void OnWidgetDestroyed(views::Widget* widget) override;
 
   bool IsDisplayedForTesting() const { return GetState() == STATE_DISPLAYED; }
 
@@ -95,12 +101,12 @@ class CaptivePortalWindowProxy {
   // Returns symbolic state name based on internal state.
   State GetState() const;
 
-  // Called when the widget is closed.
-  void CloseWidget(views::Widget::ClosedReason closed_reason);
+  // When `widget` is not NULL and the same as `widget_` stops to observe
+  // notifications from `widget_` and resets it.
+  void DetachFromWidget(views::Widget* widget);
 
   raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<views::WidgetDelegate> delegate_;
-  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   std::unique_ptr<CaptivePortalView> captive_portal_view_;
 
