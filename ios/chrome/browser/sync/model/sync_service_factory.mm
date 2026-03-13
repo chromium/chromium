@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -150,7 +151,8 @@ syncer::DataTypeController::TypeVector CreateControllers(
   syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos) &&
+      IsNTPBackgroundCustomizationEnabled()) {
     HomeBackgroundCustomizationService* service =
         HomeBackgroundCustomizationServiceFactory::GetForProfile(profile);
     // TODO(crbug.com/481713548): Log metrics indicating service

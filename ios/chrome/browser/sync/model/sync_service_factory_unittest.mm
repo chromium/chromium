@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -115,7 +116,8 @@ class SyncServiceFactoryTest : public PlatformTest {
     if (base::FeatureList::IsEnabled(syncer::kSyncGeminiThread)) {
       datatypes.Put(syncer::GEMINI_THREAD);
     }
-    if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos) &&
+        IsNTPBackgroundCustomizationEnabled()) {
       datatypes.Put(syncer::THEMES_IOS);
     }
     if (base::FeatureList::IsEnabled(syncer::kSyncAccessibilityAnnotation)) {
