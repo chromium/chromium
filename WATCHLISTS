@@ -63,7 +63,8 @@
       'filepath': 'chrome/browser/actor/ui/'
     },
     'ad_tracker': {
-      'filepath': 'third_party/blink/renderer/core/frame/ad_tracker.*|' \
+      'filepath': 'third_party/blink/renderer/platform/loader/fetch/ad_tagging_utils.*|' \
+                  'third_party/blink/renderer/core/ad_tracker/|' \
                   'chrome/browser/page_load_metrics/observers/ad_metrics/',
     },
     'add_to_homescreen': {
