@@ -11,6 +11,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
@@ -479,8 +480,10 @@ std::string DemoSetupController::GetDemoSetupStepString(
 }
 
 DemoSetupController::DemoSetupController(
+    PrefService* local_state,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
-    : component_manager_ash_(std::move(component_manager_ash)) {
+    : local_state_(CHECK_DEREF(local_state)),
+      component_manager_ash_(std::move(component_manager_ash)) {
   CHECK(component_manager_ash_);
 }
 
@@ -508,9 +511,8 @@ void DemoSetupController::Enroll(
 
   SetCurrentSetupStep(DemoSetupStep::kDownloadResources);
 
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetString(prefs::kDemoModeRetailerId, retailer_name_);
-  prefs->SetString(prefs::kDemoModeStoreId, store_number_);
+  local_state_->SetString(prefs::kDemoModeRetailerId, retailer_name_);
+  local_state_->SetString(prefs::kDemoModeStoreId, store_number_);
 
   switch (demo_config_) {
     case DemoSession::DemoModeConfig::kOnline:
@@ -528,8 +530,8 @@ void DemoSetupController::LoadDemoComponents() {
   download_start_time_ = base::TimeTicks::Now();
 
   if (!demo_components_)
-    demo_components_ =
-        std::make_unique<DemoComponents>(component_manager_ash_, demo_config_);
+    demo_components_ = std::make_unique<DemoComponents>(
+        &local_state_.get(), component_manager_ash_, demo_config_);
 
   // Simulate loading demo components completed for unit tests.
   if (DBusThreadManager::Get()->IsUsingFakes() &&
@@ -701,9 +703,9 @@ void DemoSetupController::OnDeviceRegistered() {
 
   SetCurrentSetupStep(DemoSetupStep::kComplete);
 
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetInteger(prefs::kDemoModeConfig, static_cast<int>(demo_config_));
-  prefs->CommitPendingWrite();
+  local_state_->SetInteger(prefs::kDemoModeConfig,
+                           static_cast<int>(demo_config_));
+  local_state_->CommitPendingWrite();
   Reset();
   if (!on_setup_success_.is_null())
     std::move(on_setup_success_).Run();

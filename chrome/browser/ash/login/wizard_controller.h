@@ -122,8 +122,9 @@ class WizardController : public OobeUI::Observer {
     virtual void OnShutdown() = 0;
   };
 
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state` must be non-null and must be valid while the main RunLoop is
+  // running.
+  // `application_locale_storage` must be non-null and must outlive `this`.
   // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
   WizardController(
       PrefService* local_state,

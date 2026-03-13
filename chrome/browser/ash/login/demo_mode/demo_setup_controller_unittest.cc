@@ -133,9 +133,11 @@ class DemoSetupControllerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->InitializeComponentManager();
-    tested_controller_.emplace(TestingBrowserProcess::GetGlobal()
-                                   ->platform_part()
-                                   ->component_manager_ash());
+    tested_controller_.emplace(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->component_manager_ash());
   }
 
   void TearDown() override {

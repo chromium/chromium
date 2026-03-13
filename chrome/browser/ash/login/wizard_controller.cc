@@ -3559,8 +3559,8 @@ bool WizardController::HandleAccelerator(LoginAcceleratorAction action) {
 void WizardController::StartDemoModeSetup() {
   // Start Demo Mode by initiate demo set up controller and showing the first
   // network screen in demo mode setup flow.
-  demo_setup_controller_ =
-      std::make_unique<DemoSetupController>(component_manager_ash_);
+  demo_setup_controller_ = std::make_unique<DemoSetupController>(
+      &local_state_.get(), component_manager_ash_);
   ShowNetworkScreen();
 }
 
@@ -3571,8 +3571,8 @@ void WizardController::CreateChoobeFlowController() {
 void WizardController::SimulateDemoModeSetupForTesting(
     std::optional<DemoSession::DemoModeConfig> demo_config) {
   if (!demo_setup_controller_) {
-    demo_setup_controller_ =
-        std::make_unique<DemoSetupController>(component_manager_ash_);
+    demo_setup_controller_ = std::make_unique<DemoSetupController>(
+        &local_state_.get(), component_manager_ash_);
   }
   if (demo_config.has_value()) {
     demo_setup_controller_->set_demo_config(*demo_config);

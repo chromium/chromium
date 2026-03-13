@@ -9,12 +9,15 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+
+class PrefService;
 
 namespace policy {
 class EnrollmentStatus;
@@ -227,10 +230,12 @@ class DemoSetupController
   // Converts a step enum to a string e.g. to sent to JavaScript.
   static std::string GetDemoSetupStepString(const DemoSetupStep step_enum);
 
+  // `local_state` must be non-null and must be valid while the main run loop is
+  // running.
   // `component_manager_ash` must be non-null.
-  explicit DemoSetupController(
-      scoped_refptr<component_updater::ComponentManagerAsh>
-          component_manager_ash);
+  DemoSetupController(PrefService* local_state,
+                      scoped_refptr<component_updater::ComponentManagerAsh>
+                          component_manager_ash);
 
   DemoSetupController(const DemoSetupController&) = delete;
   DemoSetupController& operator=(const DemoSetupController&) = delete;
@@ -309,6 +314,7 @@ class DemoSetupController
   // Clears the internal state.
   void Reset();
 
+  const raw_ref<PrefService> local_state_;
   const scoped_refptr<component_updater::ComponentManagerAsh>
       component_manager_ash_;
 

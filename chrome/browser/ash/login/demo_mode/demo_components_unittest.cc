@@ -86,10 +86,12 @@ class DemoComponentsTest : public testing::Test {
 };
 
 TEST_F(DemoComponentsTest, GetPaths) {
-  DemoComponents demo_components(TestingBrowserProcess::GetGlobal()
-                                     ->platform_part()
-                                     ->component_manager_ash(),
-                                 DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_components(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->component_manager_ash(),
+      DemoSession::DemoModeConfig::kOnline);
   demo_components.LoadResourcesComponent(base::DoNothing());
   EXPECT_FALSE(demo_components.resources_component_loaded());
 
@@ -115,10 +117,12 @@ TEST_F(DemoComponentsTest, GetPaths) {
 }
 
 TEST_F(DemoComponentsTest, LoadResourcesComponent) {
-  DemoComponents demo_components(TestingBrowserProcess::GetGlobal()
-                                     ->platform_part()
-                                     ->component_manager_ash(),
-                                 DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_components(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->component_manager_ash(),
+      DemoSession::DemoModeConfig::kOnline);
   demo_components.LoadResourcesComponent(base::DoNothing());
 
   EXPECT_FALSE(demo_components.resources_component_loaded());
@@ -130,10 +134,12 @@ TEST_F(DemoComponentsTest, LoadResourcesComponent) {
 }
 
 TEST_F(DemoComponentsTest, EnsureResourcesLoadedRepeatedly) {
-  DemoComponents demo_components(TestingBrowserProcess::GetGlobal()
-                                     ->platform_part()
-                                     ->component_manager_ash(),
-                                 DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_components(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->component_manager_ash(),
+      DemoSession::DemoModeConfig::kOnline);
 
   bool first_callback_called = false;
   demo_components.LoadResourcesComponent(
@@ -175,10 +181,12 @@ TEST_F(DemoComponentsTest, EnsureResourcesLoadedRepeatedly) {
 }
 
 TEST_F(DemoComponentsTest, LoadAppComponent) {
-  DemoComponents demo_cros_components(TestingBrowserProcess::GetGlobal()
-                                          ->platform_part()
-                                          ->component_manager_ash(),
-                                      DemoSession::DemoModeConfig::kOnline);
+  DemoComponents demo_cros_components(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->platform_part()
+          ->component_manager_ash(),
+      DemoSession::DemoModeConfig::kOnline);
 
   demo_cros_components.LoadAppComponent(base::DoNothing());
   ASSERT_TRUE(FinishComponentLoad(kAppComponent,

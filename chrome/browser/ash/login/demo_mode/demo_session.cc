@@ -475,7 +475,8 @@ base::ListValue DemoSession::GetCountryList(
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
   if (!components_) {
     components_ = std::make_unique<DemoComponents>(
-        component_manager_ash_, GetDemoConfig(local_state_.get()));
+        &local_state_.get(), component_manager_ash_,
+        GetDemoConfig(local_state_.get()));
   }
   components_->LoadResourcesComponent(std::move(load_callback));
 }
@@ -614,7 +615,8 @@ void DemoSession::OnSessionStateChanged() {
       // Download/update the Demo app component during session startup
       if (!components_) {
         components_ = std::make_unique<DemoComponents>(
-            component_manager_ash_, GetDemoConfig(local_state_.get()));
+            &local_state_.get(), component_manager_ash_,
+            GetDemoConfig(local_state_.get()));
       }
 
       // Create the window closer.
