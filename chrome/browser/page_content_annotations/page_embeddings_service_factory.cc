@@ -48,7 +48,7 @@ PageEmbeddingsServiceFactory::~PageEmbeddingsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
   return nullptr;
 #else
   Profile* profile = Profile::FromBrowserContext(browser_context);

@@ -101,6 +101,42 @@ def _CheckNoIsAppleBuildFlagsInChrome(input_api, output_api):
     ]
 
 
+def _CheckNoIsFuchsiaBuildFlagsInChromeFile(input_api, f):
+    """Check for IS_FUCHSIA in a given file in chrome/."""
+    preprocessor_statement = input_api.re.compile(r'^\s*#')
+    fuchsia_buildflag = input_api.re.compile(r'BUILDFLAG\(IS_FUCHSIA\)')
+    results = []
+    for lnum, line in f.ChangedContents():
+        if preprocessor_statement.search(line) and fuchsia_buildflag.search(
+                line):
+            results.append('    %s:%d' % (f.LocalPath(), lnum))
+
+    return results
+
+
+def _CheckNoIsFuchsiaBuildFlagsInChrome(input_api, output_api):
+    """Check for IS_FUCHSIA which isn't used in chrome/."""
+    fuchsia_buildflags = []
+
+    def SourceFilter(affected_file):
+        return input_api.FilterSourceFile(affected_file,
+                                          INCLUDE_SOURCE_FILES_ONLY,
+                                          input_api.DEFAULT_FILES_TO_SKIP)
+
+    for f in input_api.AffectedSourceFiles(SourceFilter):
+        fuchsia_buildflags.extend(
+            _CheckNoIsFuchsiaBuildFlagsInChromeFile(input_api, f))
+
+    if not fuchsia_buildflags:
+        return []
+
+    return [
+        output_api.PresubmitError(
+            'IS_FUCHSIA is not used in chrome/ but found in:\n',
+            fuchsia_buildflags)
+    ]
+
+
 def _CheckNoIsIOSBuildFlagsInChromeFile(input_api, f):
     """Check for IS_IOS in a given file in chrome/."""
     preprocessor_statement = input_api.re.compile(r'^\s*#')

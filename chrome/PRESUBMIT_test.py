@@ -32,5 +32,15 @@ class DisallowedBuildFlagsTest(unittest.TestCase):
         self.assertEqual(1, len(errors))
         self.assertEqual('    chrome/path/foo_platform.cc:1', errors[0])
 
+    def testChromeDoesNotUseISFUCHSIA(self):
+        lines = [
+            '#if BUILDFLAG(IS_FUCHSIA)', '#error IS_FUCHSIA not allowed',
+            '#endif'
+        ]
+        errors = PRESUBMIT._CheckNoIsFuchsiaBuildFlagsInChromeFile(
+            MockInputApi(), MockFile('chrome/path/foo_platform.cc', lines))
+        self.assertEqual(1, len(errors))
+        self.assertEqual('    chrome/path/foo_platform.cc:1', errors[0])
+
 if __name__ == '__main__':
     unittest.main()
