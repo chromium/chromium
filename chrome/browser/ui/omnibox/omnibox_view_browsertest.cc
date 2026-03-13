@@ -1356,7 +1356,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur) {
             GetOmniboxController()->autocomplete_controller()->input_.text());
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxViewTest, Paste) {
+// TODO(crbug.com/492408135): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Paste DISABLED_Paste
+#else
+#define MAYBE_Paste Paste
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxViewTest, MAYBE_Paste) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   EXPECT_FALSE(GetOmniboxController()->IsPopupOpen());
