@@ -428,14 +428,6 @@ gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumMainAreaSize(
                      std::max(contents_size.height(),
                               contents_height_side_panel_size.height());
 
-  if (tab_strip_type == TabStripType::kHorizontal &&
-      IsParentedToAndVisible(views().horizontal_tab_strip_region_view,
-                             views().browser_view)) {
-    // When toolbar-height side panel is present, ensure that the shadow box
-    // padding is included in the size calculation.
-    width += GetLayoutConstant(LayoutConstant::kToolbarHeightSidePanelInset);
-  }
-
   return gfx::Size(width, height);
 }
 
@@ -544,7 +536,7 @@ gfx::Size BrowserViewTabbedLayoutImpl::GetMinimumSize(
 
   // Maybe adjust for additional padding when toolbar height side panel is
   // visible.
-  if (!toolbar_height_side_panel_size.IsEmpty()) {
+  if (toolbar_height_side_panel_size.width() > 0) {
     const auto padding =
         GetLayoutConstant(LayoutConstant::kToolbarHeightSidePanelInset);
     min_height += 2 * padding;
