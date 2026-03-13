@@ -1,3 +1,3 @@
 WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
-++++View text:"Apple" supplementalDescription:"Fruit" canOpenPopUp clickable focusable focused expandedState:1 actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", roleDescription="menu pop up button"]
+++++View text:"Apple" supplementalDescription:"Fruit" canOpenPopUp clickable focusable focused expandedState:1 actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", roleDescription="menu pop up button"]

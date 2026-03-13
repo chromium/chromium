@@ -1,2 +1,2 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"This is an ARIA article." actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="article", roleDescription="article"]
+++View text:"This is an ARIA article." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="article", roleDescription="article"]

@@ -538,11 +538,6 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
       ranges_count);
 }
 
-bool DoesNodeSupportExtendedSelection(ui::BrowserAccessibility* node) {
-  return node->IsText() || node->IsTextField() ||
-         static_cast<BrowserAccessibilityAndroid*>(node)->IsAndroidTextView();
-}
-
 // In case the `node` does not exist on Android, updates node and offset to the
 // highest leaf node (ancestor of node).
 void UpdateTextPositionForSelection(ui::BrowserAccessibility*& node,
@@ -610,7 +605,8 @@ bool ConvertToTextSelectionForAndroid(ui::BrowserAccessibility*& anchor_node,
     ui::BrowserAccessibility* android_node =
         manager->GetFromAXNode(pos.anchor()->GetAnchor())
             ->PlatformGetLowestPlatformAncestor();
-    if (DoesNodeSupportExtendedSelection(android_node)) {
+    if (static_cast<BrowserAccessibilityAndroid*>(android_node)
+            ->CanSetExtendedSelection()) {
       if (!found) {
         anchor_position = pos.anchor()->Clone();
         found = true;
@@ -1613,8 +1609,9 @@ void WebContentsAccessibilityAndroid::
       node->IsContentInvalid(), node->IsEnabled(), node->IsEditable(),
       node->IsFocusable(), node->IsFocused(), node->HasImage(),
       node->IsPasswordField(), node->IsScrollable(), node->IsSelected(),
-      node->IsVisibleToUser(), node->HasCharacterLocations(),
-      node->IsRequired(), node->IsHeading() || node->IsTableHeader(),
+      node->IsTextSelectable(), node->IsVisibleToUser(),
+      node->HasCharacterLocations(), node->IsRequired(),
+      node->IsHeading() || node->IsTableHeader(),
       node->HasLayoutBasedActions());
 }
 
@@ -1628,12 +1625,12 @@ void WebContentsAccessibilityAndroid::
 
   int32_t unique_id = node->GetUniqueId();
   Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoActions(
-      env, obj, info, unique_id, node->CanScrollForward(),
-      node->CanScrollBackward(), node->CanScrollUp(), node->CanScrollDown(),
-      node->CanScrollLeft(), node->CanScrollRight(), node->IsClickable(),
-      node->IsTextField(), node->IsEnabled(), node->IsEditable(),
-      node->IsFocusable(), node->IsFocused(), node->IsCollapsed(),
-      node->IsExpanded(), node->HasNonEmptyValue(),
+      env, obj, info, unique_id, node->CanSetExtendedSelection(),
+      node->CanScrollForward(), node->CanScrollBackward(), node->CanScrollUp(),
+      node->CanScrollDown(), node->CanScrollLeft(), node->CanScrollRight(),
+      node->IsClickable(), node->IsTextField(), node->IsEnabled(),
+      node->IsEditable(), node->IsFocusable(), node->IsFocused(),
+      node->IsCollapsed(), node->IsExpanded(), node->HasNonEmptyValue(),
       !node->GetTextContentUTF16().empty(), node->IsSeekControl(),
       node->IsFormDescendant());
 }
@@ -2177,10 +2174,8 @@ bool WebContentsAccessibilityAndroid::SetExtendedSelection(
     return false;
   }
 
-  // Extended selection is currently only supported for text nodes.
-  // TODO(crbug.com/488168548): Cover all node types.
-  if (!DoesNodeSupportExtendedSelection(start_node) ||
-      !DoesNodeSupportExtendedSelection(end_node)) {
+  if (!start_node->CanSetExtendedSelection() ||
+      !end_node->CanSetExtendedSelection()) {
     return false;
   }
 
