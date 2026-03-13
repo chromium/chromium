@@ -1,14 +1,13 @@
 {
   "name": "Uninstall URL",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Browser test for chrome.runtime.setUninstallURL",
   "permissions": [
     "management",
     "tabs"
   ],
   "background": {
-    "scripts": ["test.js"],
-    "persistent": true
+    "service_worker": "test.js"
   }
 }

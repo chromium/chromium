@@ -1,10 +1,9 @@
 {
   "name": "API test for the runtime API in content scripts",
   "version": "1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["test.js"],
-    "persistent": true
+    "service_worker": "test.js"
   },
   "content_scripts": [
     {

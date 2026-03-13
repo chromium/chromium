@@ -1,10 +1,9 @@
 {
   "name": "Sets Uninstall Url",
   "version": "1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Test extension that sets an uninstall URL.",
   "background": {
-    "scripts": ["bg.js"],
-    "persistent": true
+    "service_worker": "bg.js"
   }
 }

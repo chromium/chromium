@@ -67,12 +67,9 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-using ContextType = extensions::browser_test_util::ContextType;
-
-class RuntimeApiTest : public ExtensionApiTest,
-                       public testing::WithParamInterface<ContextType> {
+class RuntimeApiTest : public ExtensionApiTest {
  public:
-  RuntimeApiTest() : ExtensionApiTest(GetParam()) {}
+  RuntimeApiTest() = default;
   ~RuntimeApiTest() override = default;
   RuntimeApiTest(const RuntimeApiTest&) = delete;
   RuntimeApiTest& operator=(const RuntimeApiTest&) = delete;
@@ -82,25 +79,13 @@ class RuntimeApiTest : public ExtensionApiTest,
   }
 };
 
-// Android only supports MV3 and later, therefore don't need to test for
-// persistent background context.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         RuntimeApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         RuntimeApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
 // Tests the privileged components of chrome.runtime.
-IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimePrivileged) {
+IN_PROC_BROWSER_TEST_F(RuntimeApiTest, ChromeRuntimePrivileged) {
   ASSERT_TRUE(RunExtensionTest("runtime/privileged")) << message_;
 }
 
 // Tests the unprivileged components of chrome.runtime.
-IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
+IN_PROC_BROWSER_TEST_F(RuntimeApiTest, ChromeRuntimeUnprivileged) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("runtime/content_script")));
@@ -112,7 +97,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUnprivileged) {
   EXPECT_TRUE(catcher.GetNextResult()) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
+IN_PROC_BROWSER_TEST_F(RuntimeApiTest, ChromeRuntimeUninstallURL) {
   // Auto-confirm the uninstall dialog.
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
   ExtensionTestMessageListener ready_listener("ready");
@@ -123,13 +108,11 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, ChromeRuntimeUninstallURL) {
   ASSERT_TRUE(RunExtensionTest("runtime/uninstall_url")) << message_;
 }
 
-class RuntimeGetPlatformInfoTest
-    : public ExtensionApiTest,
-      public testing::WithParamInterface<std::tuple<ContextType, bool>> {
+class RuntimeGetPlatformInfoTest : public ExtensionApiTest,
+                                   public testing::WithParamInterface<bool> {
  public:
-  RuntimeGetPlatformInfoTest()
-      : ExtensionApiTest(std::get<ContextType>(GetParam())) {
-    if (std::get<bool>(GetParam())) {
+  RuntimeGetPlatformInfoTest() {
+    if (GetParam()) {
       feature_list_.InitAndEnableFeature(
           extensions_features::kApiRuntimeGetPlatformInfoNaClArch);
     } else {
@@ -148,29 +131,14 @@ class RuntimeGetPlatformInfoTest
 
 IN_PROC_BROWSER_TEST_P(RuntimeGetPlatformInfoTest, GetPlatformInfo) {
   {
-    if (!std::get<bool>(GetParam())) {
+    if (!GetParam()) {
       SetCustomArg("NaCl Arch unavailable");
     }
     ASSERT_TRUE(RunExtensionTest("runtime/get_platform_info")) << message_;
   }
 }
 
-// Android only supports MV3 and later, therefore don't need to test for
-// persistent background context.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground,
-    RuntimeGetPlatformInfoTest,
-    ::testing::Values(std::make_tuple(ContextType::kPersistentBackground, true),
-                      std::make_tuple(ContextType::kPersistentBackground,
-                                      false)));
-#endif
-
-INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker,
-    RuntimeGetPlatformInfoTest,
-    ::testing::Values(std::make_tuple(ContextType::kServiceWorker, true),
-                      std::make_tuple(ContextType::kServiceWorker, false)));
+INSTANTIATE_TEST_SUITE_P(All, RuntimeGetPlatformInfoTest, ::testing::Bool());
 
 namespace {
 
@@ -252,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeGetPlatformInfoTest,
   // Native Client had never supported RISC-V ISA or Android OS.
   EXPECT_FALSE(dict.contains("nacl_arch"));
 #else
-  EXPECT_EQ(dict.contains("nacl_arch"), std::get<bool>(GetParam()));
+  EXPECT_EQ(dict.contains("nacl_arch"), GetParam());
 #endif
 }
 
@@ -266,23 +234,14 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
-// Tests chrome.runtime.getPackageDirectory with an MV2 extension.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       ChromeRuntimeGetPackageDirectoryEntryMV2Extension) {
-  ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
-                               {.extension_url = "test/test.html"}))
-      << message_;
-}
-
-// Tests chrome.runtime.getPackageDirectory with an MV3 extension. Note: we use
+// Tests chrome.runtime.getPackageDirectory with an extension. Note: we use
 // an html page in this test as getPackageDirectory isn't exposed on service
 // workers.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
-                       ChromeRuntimeGetPackageDirectoryEntryMV3Extension) {
+                       ChromeRuntimeGetPackageDirectoryEntryExtension) {
   SetCustomArg("run_promise_test");
   ASSERT_TRUE(RunExtensionTest("runtime/get_package_directory/extension",
-                               {.extension_url = "test/test.html"},
-                               {.load_as_manifest_version_3 = true}))
+                               {.extension_url = "test/test.html"}))
       << message_;
 }
 
@@ -295,9 +254,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
         "name": "reload",
         "version": "1.0",
         "background": {
-          "scripts": ["background.js"]
+          "service_worker": "background.js"
         },
-        "manifest_version": 2
+        "manifest_version": 3
       })";
 
   TestExtensionDir dir;
@@ -319,8 +278,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ExtensionTerminatedForRapidReloads) {
   for (int i = 0; i < RuntimeAPI::kFastReloadCount + 1; i++) {
     ExtensionTestMessageListener ready_listener_reload("ready");
     TestExtensionRegistryObserver unload_observer(registry, extension_id);
-    ASSERT_TRUE(ExecuteScriptInBackgroundPageNoWait(
-        extension_id, "chrome.runtime.reload();"));
+    BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension_id,
+                                                 "chrome.runtime.reload();");
     unload_observer.WaitForExtensionUnloaded();
     base::RunLoop().RunUntilIdle();
 
@@ -340,9 +299,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeReload) {
         "name": "reload",
         "version": "1.0",
         "background": {
-          "scripts": ["background.js"]
+          "service_worker": "background.js"
         },
-        "manifest_version": 2
+        "manifest_version": 3
       })";
 
   static constexpr char kScript[] = R"(
@@ -389,6 +348,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeSendMessage) {
 
 // Simple test for chrome.runtime.getBackgroundPage with a persistent background
 // page.
+// Note: Uses an MV2 extension because chrome.runtime.getBackgroundPage is
+// unavailable in MV3.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPage) {
   static constexpr char kManifest[] = R"(
       {
@@ -543,6 +504,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, RuntimeRequestUpdateCheck) {
 // Tests that updating a terminated extension sends runtime.onInstalled event
 // with correct previousVersion.
 // Regression test for https://crbug.com/40521729.
+// TODO(https://crbug.com/491516661): This uses an MV2 extension because it
+// currently relies on crashing the extension's background page. We can update
+// that.
 IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
                        TerminatedExtensionUpdateHasCorrectPreviousVersion) {
   std::vector<ExtensionCRXData> data;
@@ -596,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeAPIUpdateTest,
 #define MAYBE_OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab \
   OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab
 #endif
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     RuntimeApiTest,
     MAYBE_OpenUninstallUrlWhenExtensionPageIsTheOnlyActiveTab) {
   ExtensionTestMessageListener ready_listener("ready");
@@ -638,7 +602,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests that when a blocklisted extension with a set uninstall url is
 // uninstalled, its uninstall url does not open.
-IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
+IN_PROC_BROWSER_TEST_F(RuntimeApiTest,
                        DoNotOpenUninstallUrlForBlocklistedExtensions) {
   ExtensionTestMessageListener ready_listener("ready");
   // Load an extension that has set an uninstall url.
@@ -694,22 +658,14 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Used for tests that only make sense with a background page. Unsupported on
-// Android because it only supports service workers.
-using BackgroundPageOnlyRuntimeApiTest = RuntimeApiTest;
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackgroundPageOnlyRuntimeApiTest,
-                         testing::Values(ContextType::kPersistentBackground));
-
 // Regression test for https://crbug.com/1298195 - whether a tab opened
 // from the background page (via `window.open(...)`) will be correctly
 // marked as `mojom::ViewType::kTabContents`.
 //
-// This test is a BackgroundPageOnlyRuntimeApiTest, because service workers
-// can call neither 1) window.open nor 2) chrome.extension.getViews.
-IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
+// This test runs with an MV2 extension because service workers can call
+// neither 1) window.open nor 2) chrome.extension.getViews.
+IN_PROC_BROWSER_TEST_F(RuntimeApiTest,
                        GetViewsOfWindowOpenedFromBackgroundPage) {
-  ASSERT_EQ(GetParam(), ContextType::kPersistentBackground);
   static constexpr char kManifest[] = R"(
       {
         "name": "test",
