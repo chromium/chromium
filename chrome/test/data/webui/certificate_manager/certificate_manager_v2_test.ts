@@ -81,7 +81,7 @@ suite('CertificateManagerV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
-        certManager.$.localCertSection.shadowRoot!.querySelector(
+        certManager.$.localCertSection.shadowRoot.querySelector(
             '#customCertsSection');
     const linkRow = customSection!.querySelector('cr-link-row');
     linkRow!.click();
@@ -107,7 +107,7 @@ suite('CertificateManagerV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
-        certManager.$.localCertSection.shadowRoot!.querySelector(
+        certManager.$.localCertSection.shadowRoot.querySelector(
             '#customCertsSection');
     const linkRow = customSection!.querySelector('cr-link-row');
     linkRow!.click();
@@ -209,9 +209,8 @@ suite('CertificateManagerV2Test', () => {
     initializeElement();
     await microtasksFinished();
     assertFalse(certManager.$.userCertsSection.classList.contains('selected'));
-    const userSection =
-        certManager.$.localCertSection.shadowRoot!.querySelector(
-            '#userCertsSection');
+    const userSection = certManager.$.localCertSection.shadowRoot.querySelector(
+        '#userCertsSection');
     const linkRow = userSection!.querySelector('cr-link-row');
     linkRow!.click();
     await microtasksFinished();
@@ -232,9 +231,8 @@ suite('CertificateManagerV2Test', () => {
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
     await microtasksFinished();
-    const userSection =
-        certManager.$.localCertSection.shadowRoot!.querySelector(
-            '#userCertsSection');
+    const userSection = certManager.$.localCertSection.shadowRoot.querySelector(
+        '#userCertsSection');
     const linkRow = userSection!.querySelector('cr-link-row');
     linkRow!.click();
     await microtasksFinished();

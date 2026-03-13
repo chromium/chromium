@@ -26,7 +26,6 @@ build_webui("build") {
     "certificate_manager.ts",
     "certificate_subpage.ts",
     "crs_section.ts",
-    "local_certs_section.ts",
   ]
   ts_files = [
     "certificate_confirmation_dialog.html.ts",
@@ -40,6 +39,8 @@ build_webui("build") {
     "certificate_password_dialog.html.ts",
     "certificate_password_dialog.ts",
     "certificates_browser_proxy.ts",
+    "local_certs_section.html.ts",
+    "local_certs_section.ts",
     "navigation.ts",
   ]
 
@@ -52,6 +53,7 @@ build_webui("build") {
     "certificate_list.css",
     "certificate_manager_style.css",
     "certificate_manager_style_lit.css",
+    "local_certs_section.css",
   ]
 
   if (is_chromeos) {

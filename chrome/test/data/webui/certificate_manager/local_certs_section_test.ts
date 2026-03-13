@@ -261,7 +261,7 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
-        localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+        localCertsSection.shadowRoot.querySelector('#customCertsSection');
     const adminLinkRow =
         customSection!.querySelector('#adminCertsInstalledLinkRow');
     assertNull(adminLinkRow, 'admin certs section not hidden');
@@ -288,7 +288,7 @@ suite('LocalCertsSectionV2Test', () => {
     await pluralStringProxy.whenCalled('getPluralString');
     await microtasksFinished();
     const customSection =
-        localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+        localCertsSection.shadowRoot.querySelector('#customCertsSection');
     const adminLinkRow = customSection!.querySelector('cr-link-row');
     assertEquals('5 certificates', adminLinkRow!.subLabel);
   });
@@ -391,7 +391,7 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
-        localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+        localCertsSection.shadowRoot.querySelector('#customCertsSection');
     const userLinkDiv = customSection!.querySelector('#userCertsSection');
     const userLinkRow = userLinkDiv!.querySelector('cr-link-row');
     assertEquals('5 certificates', userLinkRow!.subLabel);
@@ -414,7 +414,7 @@ suite('LocalCertsSectionV2Test', () => {
     await testProxy.handler.whenCalled('getCertManagementMetadata');
     await microtasksFinished();
     const customSection =
-        localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+        localCertsSection.shadowRoot.querySelector('#customCertsSection');
     const userLinkRow =
         customSection!.querySelector('#userCertsInstalledLinkRow');
     assertNull(userLinkRow, 'user certs section not hidden');
@@ -439,7 +439,7 @@ suite('LocalCertsSectionV2Test', () => {
         await testProxy.handler.whenCalled('getCertManagementMetadata');
         await microtasksFinished();
         const customSection =
-            localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+            localCertsSection.shadowRoot.querySelector('#customCertsSection');
         assertNull(customSection, 'custom certs section not hidden');
       });
 });

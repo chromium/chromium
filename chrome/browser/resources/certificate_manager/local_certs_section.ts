@@ -8,27 +8,24 @@
  * trusted roots for TLS server auth (e.g. roots imported from the platform).
  */
 
+import '/strings.m.js';
 import './certificate_manager_icons.html.js';
-import './certificate_manager_style.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/cr_page_host_style.css.js';
 
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CertManagementMetadata} from './certificate_manager.mojom-webui.js';
-import {CertificateSource} from './certificate_manager.mojom-webui.js';
 import {CertificatesBrowserProxy} from './certificates_browser_proxy.js';
-import {getTemplate} from './local_certs_section.html.js';
+import {getCss} from './local_certs_section.css.js';
+import {getHtml} from './local_certs_section.html.js';
 import {Page, Router} from './navigation.js';
-
 
 export interface LocalCertsSectionElement {
   $: {
@@ -45,64 +42,40 @@ export interface LocalCertsSectionElement {
   };
 }
 
-export class LocalCertsSectionElement extends PolymerElement {
+export class LocalCertsSectionElement extends CrLitElement {
   static get is() {
     return 'local-certs-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      numPolicyCertsString_: String,
-      numUserCertsString_: String,
-      certManagementMetadata_: Object,
-
+      numPolicyCertsString_: {type: String},
+      numUserCertsString_: {type: String},
+      certManagementMetadata_: {type: Object},
       // <if expr="not is_chromeos">
-      numSystemCertsString_: String,
-
-      importOsCertsEnabled_: {
-        type: Boolean,
-        computed: 'computeImportOsCertsEnabled_(certManagementMetadata_)',
-      },
-
-      importOsCertsEnabledManaged_: {
-        type: Boolean,
-        computed: 'computeImportOsCertsManaged_(certManagementMetadata_)',
-      },
-
-      showViewOsCertsLinkRow_: {
-        type: Boolean,
-        computed: 'computeShowViewOsCertsLinkRow_(certManagementMetadata_)',
-      },
+      numSystemCertsString_: {type: String},
       // </if>
-
-      certificateSourceEnum_: {
-        type: Object,
-        value: CertificateSource,
-      },
-
-      pageEnum_: {
-        type: Object,
-        value: Page,
-      },
     };
   }
 
-  declare private numPolicyCertsString_: string;
-  declare private numUserCertsString_: string;
-  declare private certManagementMetadata_: CertManagementMetadata;
+  protected accessor numPolicyCertsString_: string = '';
+  protected accessor numUserCertsString_: string = '';
+  protected accessor certManagementMetadata_: CertManagementMetadata|null =
+      null;
   // <if expr="not is_chromeos">
-  declare private numSystemCertsString_: string;
-  declare private importOsCertsEnabled_: boolean;
-  declare private importOsCertsEnabledManaged_: boolean;
-  declare private showViewOsCertsLinkRow_: boolean;
+  protected accessor numSystemCertsString_: string = '';
   // </if>
 
-  override ready() {
-    super.ready();
+  override firstUpdated(changedProperties: PropertyValues<this>) {
+    super.firstUpdated(changedProperties);
     this.onMetadataRefresh_();
     const proxy = CertificatesBrowserProxy.getInstance();
     proxy.callbackRouter.triggerMetadataUpdate.addListener(
@@ -121,7 +94,7 @@ export class LocalCertsSectionElement extends PolymerElement {
   setFocusToLinkRow(p: Page) {
     switch (p) {
       case Page.ADMIN_CERTS:
-        const adminLinkRow = this.shadowRoot!.querySelector<HTMLElement>(
+        const adminLinkRow = this.shadowRoot.querySelector<HTMLElement>(
             '#adminCertsInstalledLinkRow');
         assert(adminLinkRow);
         focusWithoutInk(adminLinkRow);
@@ -132,7 +105,7 @@ export class LocalCertsSectionElement extends PolymerElement {
         break;
       // </if>
       case Page.USER_CERTS:
-        const userLinkRow = this.shadowRoot!.querySelector<HTMLElement>(
+        const userLinkRow = this.shadowRoot.querySelector<HTMLElement>(
             '#userCertsInstalledLinkRow');
         assert(userLinkRow);
         focusWithoutInk(userLinkRow);
@@ -143,7 +116,7 @@ export class LocalCertsSectionElement extends PolymerElement {
   }
 
   private updateNumCertsStrings_() {
-    if (this.certManagementMetadata_ === undefined) {
+    if (!this.certManagementMetadata_) {
       this.numPolicyCertsString_ = '';
       // <if expr="not is_chromeos">
       this.numSystemCertsString_ = '';
@@ -177,63 +150,63 @@ export class LocalCertsSectionElement extends PolymerElement {
   }
 
   // <if expr="not is_chromeos">
-  private onPlatformCertsLinkRowClick_(e: Event) {
+  protected onPlatformCertsLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.PLATFORM_CERTS);
   }
   // </if>
 
-  private onAdminCertsInstalledLinkRowClick_(e: Event) {
+  protected onAdminCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.ADMIN_CERTS);
   }
 
-  private onUserCertsInstalledLinkRowClick_(e: Event) {
+  protected onUserCertsInstalledLinkRowClick_(e: Event) {
     e.preventDefault();
     Router.getInstance().navigateTo(Page.USER_CERTS);
   }
 
   // <if expr="not is_chromeos">
-  private computeImportOsCertsEnabled_(): boolean {
-    return this.certManagementMetadata_.includeSystemTrustStore;
+  protected importOsCertsEnabled_(): boolean {
+    return !!this.certManagementMetadata_?.includeSystemTrustStore;
   }
 
-  private computeImportOsCertsManaged_(): boolean {
-    return this.certManagementMetadata_.isIncludeSystemTrustStoreManaged;
+  protected importOsCertsEnabledManaged_(): boolean {
+    return !!this.certManagementMetadata_?.isIncludeSystemTrustStoreManaged;
   }
 
-  private computeShowViewOsCertsLinkRow_(): boolean {
-    return this.certManagementMetadata_ !== undefined &&
+  protected showViewOsCertsLinkRow_(): boolean {
+    return !!this.certManagementMetadata_ &&
         this.certManagementMetadata_.numUserAddedSystemCerts > 0;
   }
   // </if>
 
   // If true, show the Custom Certs section.
-  private showCustomSection_(): boolean {
+  protected showCustomSection_(): boolean {
     return this.showPolicySection_() || this.showUserSection_();
   }
 
   // If true, show the Policy Certs section.
-  private showPolicySection_(): boolean {
-    return this.certManagementMetadata_ !== undefined &&
+  protected showPolicySection_(): boolean {
+    return !!this.certManagementMetadata_ &&
         this.certManagementMetadata_.numPolicyCerts > 0;
   }
 
   // If true, show the User Certs section.
-  private showUserSection_(): boolean {
-    return this.certManagementMetadata_ !== undefined &&
+  protected showUserSection_(): boolean {
+    return !!this.certManagementMetadata_ &&
         this.certManagementMetadata_.showUserCertsUi;
   }
 
   // <if expr="is_win or is_macosx">
-  private onManageCertsExternal_() {
+  protected onManageCertsExternalClick_() {
     const proxy = CertificatesBrowserProxy.getInstance();
     proxy.handler.showNativeManageCertificates();
   }
   // </if>
 
   // <if expr="not is_chromeos">
-  private onOsCertsToggleChanged_(e: CustomEvent<boolean>) {
+  protected onOsCertsToggleChange_(e: CustomEvent<boolean>) {
     const proxy = CertificatesBrowserProxy.getInstance();
     proxy.handler.setIncludeSystemTrustStore(e.detail);
   }
