@@ -10,6 +10,6 @@ namespace enterprise_auth {
 
 BASE_FEATURE(kEnableExtensibleEnterpriseSSO, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidEntraSSO, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidEntraSSO, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace enterprise_auth

@@ -7,7 +7,7 @@
 namespace enterprise_auth {
 
 // Enables native SSO support with Okta services.
-BASE_FEATURE(kOktaSSO, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOktaSSO, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allowlist for request headers on the Okta SSO URL request.
 // Header names must be lowercase. The list is comma-separated.
