@@ -19,7 +19,10 @@ source_set("inttest") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [ "composebox_inttest_egtest.mm" ]
+  sources = [
+    "composebox_adaptive_suggestions_egtest.mm",
+    "composebox_inttest_egtest.mm",
+  ]
   deps = [
     ":eg_test_support+eg2",
     "//base",
@@ -62,6 +65,8 @@ source_set("eg_test_support+eg2") {
   sources = [
     "composebox_inttest_app_interface.h",
     "composebox_inttest_app_interface_stub.mm",
+    "composebox_inttest_earl_grey.h",
+    "composebox_inttest_earl_grey.mm",
   ]
   deps = [
     "//base/test:test_support",
