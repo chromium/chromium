@@ -91,9 +91,7 @@ class TestSchemaRegistryObserver : public policy::SchemaRegistry::Observer {
 
 class ExtensionSettingsApiTest : public ExtensionApiTest {
  public:
-  explicit ExtensionSettingsApiTest(
-      ContextType context_type = ContextType::kNone)
-      : ExtensionApiTest(context_type) {}
+  ExtensionSettingsApiTest() = default;
   ~ExtensionSettingsApiTest() override = default;
   ExtensionSettingsApiTest(const ExtensionSettingsApiTest&) = delete;
   ExtensionSettingsApiTest& operator=(const ExtensionSettingsApiTest&) = delete;
@@ -583,14 +581,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsApiTest, IsStorageEnabled) {
   EXPECT_TRUE(frontend->IsStorageEnabled(settings_namespace::MANAGED));
 }
 
-using ContextType = extensions::browser_test_util::ContextType;
-
-class ExtensionSettingsManagedStorageApiTest
-    : public ExtensionSettingsApiTest,
-      public testing::WithParamInterface<ContextType> {
+class ExtensionSettingsManagedStorageApiTest : public ExtensionSettingsApiTest {
  public:
-  ExtensionSettingsManagedStorageApiTest()
-      : ExtensionSettingsApiTest(GetParam()) {}
+  ExtensionSettingsManagedStorageApiTest() = default;
   ~ExtensionSettingsManagedStorageApiTest() override = default;
   ExtensionSettingsManagedStorageApiTest(
       const ExtensionSettingsManagedStorageApiTest& other) = delete;
@@ -607,18 +600,7 @@ class ExtensionSettingsManagedStorageApiTest
   ResultCatcher events_result_catcher_;
 };
 
-// Desktop Android supports only service worker, not persistent background.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionSettingsManagedStorageApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionSettingsManagedStorageApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsManagedStorageApiTest,
                        ExtensionsSchemas) {
   // Verifies that the Schemas for the extensions domain are created on startup.
   ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
@@ -704,7 +686,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 
 // TODO(crbug.com/40789870): This test should be rewritten. See the bug for more
 // details.
-IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
   // Set policies for the test extension.
   base::DictValue policy =
       base::DictValue()
@@ -734,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest, ManagedStorage) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/40789870): This test should be rewritten. See the bug for more
 // details.
-IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsManagedStorageApiTest,
                        PRE_ManagedStorageEvents) {
   // This test starts without any test extensions installed.
   EXPECT_FALSE(GetSingleLoadedExtension());
@@ -769,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
       << events_result_catcher_.message();
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsManagedStorageApiTest,
                        ManagedStorageEvents) {
   // This test runs after PRE_ManagedStorageEvents without having deleted the
   // profile, so the extension is still around. While the browser restarted the
@@ -790,7 +772,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionSettingsManagedStorageApiTest,
                        ManagedStorageDisabled) {
   // Disable the 'managed' namespace.
   StorageFrontend* frontend = StorageFrontend::Get(profile());
