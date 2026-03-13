@@ -11,8 +11,9 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/public/ash_interfaces.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -947,12 +948,10 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
       crosapi::mojom::DisplayRotationOptions::kZeroDegrees,
   };
 
-  mojo::Remote<crosapi::mojom::CrosDisplayConfigController> cros_display_config;
-  ash::BindCrosDisplayConfigController(
-      cros_display_config.BindNewPipeAndPassReceiver());
-
   base::test::TestFuture<std::vector<crosapi::mojom::DisplayUnitInfoPtr>>
       info_list_future;
+  ash::CrosDisplayConfig* cros_display_config =
+      ash::Shell::Get()->cros_display_config();
   cros_display_config->GetDisplayUnitInfoList(false /* single_unified */,
                                               info_list_future.GetCallback());
   auto info_list = info_list_future.Take();

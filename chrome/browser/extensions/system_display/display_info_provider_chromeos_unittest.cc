@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "ash/display/cros_display_config.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -65,19 +64,8 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
 
     ChromeAshTestBase::SetUp();
 
-    // Note: for now we have two instances of CrosDisplayConfig, one owned by
-    // ash::Shell and this one. Since CrosDisplayConfig just provides an
-    // interface and doesn't own any classes this should be fine.
-    cros_display_config_ = std::make_unique<ash::CrosDisplayConfig>();
-
-    // Initialize the DisplayInfoProviderChromeOS with a remote connected to our
-    // local implementation.
-    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
-        display_config;
-    cros_display_config_->BindReceiver(
-        display_config.InitWithNewPipeAndPassReceiver());
     DisplayInfoProvider::InitializeForTesting(
-        new DisplayInfoProviderChromeOS(std::move(display_config)));
+        new DisplayInfoProviderChromeOS());
 
     provider_ = DisplayInfoProvider::Get();
     ASSERT_TRUE(provider_);
@@ -86,14 +74,6 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
     // manager.
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(display::Screen::Get()->InTabletMode());
-  }
-
-  void TearDown() override {
-    // Destroy CrosDisplayConfig before the ash::Shell is destroyed, since it
-    // depends on the TabletModeController and the ScreenOrientationController.
-    cros_display_config_.reset();
-
-    ChromeAshTestBase::TearDown();
   }
 
   float GetDisplayZoom(int64_t display_id) {
@@ -193,9 +173,6 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
     run_loop.Run();
     return result.empty();
   }
-
- private:
-  std::unique_ptr<ash::CrosDisplayConfig> cros_display_config_;
 
  protected:
   raw_ptr<DisplayInfoProvider> provider_;

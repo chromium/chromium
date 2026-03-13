@@ -26,6 +26,8 @@ specific_include_rules = {
     "+ash",
   ],
   "top_controls_slide_controller_chromeos_browsertest\\.cc": [
+    "+ash/display/cros_display_config.h",
+    "+ash/shell.h",
     "+cc/base/math_util.h",
   ],
   "system_menu_model_builder\\.cc": [

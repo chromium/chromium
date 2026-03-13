@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/ash_interfaces.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -112,11 +111,6 @@ void CrosapiAsh::BindCfmServiceContext(
     mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver) {
   chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
       std::move(receiver));
-}
-
-void CrosapiAsh::BindCrosDisplayConfigController(
-    mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver) {
-  ash::BindCrosDisplayConfigController(std::move(receiver));
 }
 
 void CrosapiAsh::BindDocumentScan(

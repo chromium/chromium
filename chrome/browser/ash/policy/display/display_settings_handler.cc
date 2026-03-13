@@ -6,7 +6,8 @@
 
 #include <utility>
 
-#include "ash/public/ash_interfaces.h"
+#include "ash/display/cros_display_config.h"
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -18,15 +19,21 @@
 
 namespace policy {
 
-DisplaySettingsHandler::DisplaySettingsHandler() {
-  ash::BindCrosDisplayConfigController(
-      cros_display_config_.BindNewPipeAndPassReceiver());
+DisplaySettingsHandler::DisplaySettingsHandler()
+    : cros_display_config_(ash::Shell::Get()->cros_display_config()) {
+  CHECK(cros_display_config_);
 }
 
 DisplaySettingsHandler::~DisplaySettingsHandler() = default;
 
 void DisplaySettingsHandler::OnDisplayConfigChanged() {
-  RequestDisplaysAndApplyChanges();
+  // TODO(crbug.com/489591497): Redesign how policy enforces display properties.
+  // Currently we need to post a task here to avoid an ordering issue with
+  // reentrant observers (see the bug for details).
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DisplaySettingsHandler::RequestDisplaysAndApplyChanges,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DisplaySettingsHandler::RegisterHandler(
@@ -50,8 +57,7 @@ void DisplaySettingsHandler::Start() {
                                 base::Unretained(handler.get()))));
   }
 
-  // Make the initial display unit info request. This will be queued until the
-  // Ash service is ready.
+  // Make the initial display unit info request.
   cros_display_config_->GetDisplayUnitInfoList(
       false /* single_unified */,
       base::BindOnce(&DisplaySettingsHandler::OnGetInitialDisplayInfo,
@@ -60,13 +66,8 @@ void DisplaySettingsHandler::Start() {
 
 void DisplaySettingsHandler::OnGetInitialDisplayInfo(
     std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
-  // Add this as an observer to the mojo service now that it is ready.
   // (We only care about changes that occur after we apply any changes below).
-  mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
-      observer;
-  cros_display_config_observer_receiver_.Bind(
-      observer.InitWithNewEndpointAndPassReceiver());
-  cros_display_config_->AddObserver(std::move(observer));
+  cros_display_config_observation_.Observe(cros_display_config_);
 
   ApplyChanges(std::move(info_list));
 }
@@ -96,7 +97,7 @@ void DisplaySettingsHandler::UpdateSettingAndApplyChanges(
     DisplaySettingsPolicyHandler* handler,
     const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
   handler->OnSettingUpdate();
-  handler->ApplyChanges(cros_display_config_.get(), info_list);
+  handler->ApplyChanges(*cros_display_config_, info_list);
 }
 
 void DisplaySettingsHandler::OnConfigurationChangeForHandler(

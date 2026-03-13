@@ -11,12 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
-#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "components/user_manager/user_manager.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class ContentTracingManager;
@@ -203,9 +201,6 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   scoped_refptr<input_method::InputMethodManager::State> ime_state_;
 
   std::unique_ptr<input_method::InputMethodSyncer> input_method_syncer_;
-
-  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
-      cros_display_config_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

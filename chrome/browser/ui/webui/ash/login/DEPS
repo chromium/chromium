@@ -60,28 +60,32 @@ specific_include_rules = {
   "welcome_screen_handler\\.cc": [
     "+chrome/browser/global_features.h",
   ],
-  "core_oobe_handler\.cc": [
+  "core_oobe_handler\\.cc": [
     "+ash/shell.h",
   ],
-  "network_state_informer_browsertest\.cc": [
+  "oobe_display_chooser.*": [
+    "+ash/display/cros_display_config.h",
+  ],
+  "oobe_ui\\.cc": [
+    "+ash/shell.h",
+    "+remoting/host/chromeos:features"
+  ],
+
+  # Tests.
+  "network_state_informer_browsertest\\.cc": [
     "+ash/shell.h",
     "+components/proxy_config",
     "+ash/test/ash_test_base.h",
   ],
-  "oobe_ui\.cc": [
-    "+ash/shell.h",
-    "+remoting/host/chromeos:features"
-  ],
-  # Tests.
-  "oobe_display_chooser_browsertest\.cc": [
+  "oobe_display_chooser_browsertest\\.cc": [
     "+ash/shell.h",
   ],
-  "oobe_display_chooser_unittest.cc": [
+  "oobe_display_chooser_unittest\\.cc": [
     "+ash/display/display_configuration_controller.h",
     "+ash/shell.h",
     "+ash/test/ash_test_base.h",
   ],
-  "signin_userlist_unittest\.cc": [
+  "signin_userlist_unittest\\.cc": [
     "+ash/test/ash_test_base.h"
   ],
 }

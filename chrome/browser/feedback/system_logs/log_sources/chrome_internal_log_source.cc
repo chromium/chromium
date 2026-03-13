@@ -13,6 +13,7 @@
 
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
@@ -46,7 +47,8 @@
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/ash_interfaces.h"
+#include "ash/display/cros_display_config.h"
+#include "ash/shell.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -279,25 +281,31 @@ void PopulateDiskSpaceLogsAsync(std::unique_ptr<SystemLogsResponse> response,
 }
 
 // Called from the main (UI) thread, invokes |callback| when complete.
-void PopulateMonitorInfoAsync(
-    crosapi::mojom::CrosDisplayConfigController* cros_display_config_ptr,
-    SystemLogsResponse* response,
-    base::OnceCallback<void()> callback) {
-  cros_display_config_ptr->GetDisplayUnitInfoList(
-      false /* single_unified */,
-      base::BindOnce(
-          [](SystemLogsResponse* response, base::OnceCallback<void()> callback,
-             std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
-            std::string entry;
-            for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
-              if (!entry.empty())
-                base::StringAppendF(&entry, "\n");
-              entry += GetDisplayInfoString(*info);
-            }
-            response->emplace(kMonitorInfoKey, entry);
-            std::move(callback).Run();
-          },
-          response, std::move(callback)));
+void PopulateMonitorInfoAsync(SystemLogsResponse* response,
+                              base::OnceCallback<void()> callback) {
+  if (ash::Shell::HasInstance()) {
+    ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
+        false /* single_unified */,
+        base::BindOnce(
+            [](SystemLogsResponse* response,
+               base::OnceCallback<void()> callback,
+               std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
+              std::string entry;
+              for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
+                if (!entry.empty()) {
+                  base::StringAppendF(&entry, "\n");
+                }
+                entry += GetDisplayInfoString(*info);
+              }
+              response->emplace(kMonitorInfoKey, entry);
+              std::move(callback).Run();
+            },
+            response, std::move(callback)));
+  } else {
+    // TODO(crbug.com/485123493): Remove once confirmed this does/doesn't
+    // happen.
+    base::debug::DumpWithoutCrashing();
+  }
 }
 
 void OnPopulateMonitorInfoAsync(std::unique_ptr<SystemLogsResponse> response,
@@ -409,12 +417,7 @@ void PopulateUsbKeyboardDetected(std::unique_ptr<SystemLogsResponse> response,
 }  // namespace
 
 ChromeInternalLogSource::ChromeInternalLogSource()
-    : SystemLogsSource("ChromeInternal") {
-#if BUILDFLAG(IS_CHROMEOS)
-  ash::BindCrosDisplayConfigController(
-      cros_display_config_.BindNewPipeAndPassReceiver());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
+    : SystemLogsSource("ChromeInternal") {}
 
 ChromeInternalLogSource::~ChromeInternalLogSource() = default;
 
@@ -496,9 +499,8 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
   // Chain asynchronous fetchers: PopulateMonitorInfoAsync,
   // PopulateEntriesAsync, PopulateDiskSpaceAsync
   PopulateMonitorInfoAsync(
-      cros_display_config_.get(), response.get(),
-      base::BindOnce(&OnPopulateMonitorInfoAsync, std::move(response),
-                     std::move(callback)));
+      response.get(), base::BindOnce(&OnPopulateMonitorInfoAsync,
+                                     std::move(response), std::move(callback)));
 #elif BUILDFLAG(IS_WIN)
   // Fetch keyboard info then run callback. Keyboard info may require some
   // expensive WMI queries which should not run on the UI thread.

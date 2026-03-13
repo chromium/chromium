@@ -24,9 +24,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "components/device_event_log/device_event_log.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -545,12 +544,12 @@ display::TouchCalibrationData::CalibrationPointPair GetCalibrationPair(
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// CrosDisplayConfig::ObserverImpl:
+// CrosDisplayConfigImpl::ObserverImpl:
 
 // Observes display and tablet mode events, and notifies the
 // CrosDisplayConfigObservers with OnDisplayConfigChanged() in response to those
 // events.
-class CrosDisplayConfig::ObserverImpl
+class CrosDisplayConfigImpl::ObserverImpl
     : public display::DisplayObserver,
       public TabletModeObserver,
       public ScreenOrientationController::Observer {
@@ -568,12 +567,12 @@ class CrosDisplayConfig::ObserverImpl
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
 
-  void AddObserver(
-      mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
-          observer) {
-    observers_.Add(
-        mojo::AssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>(
-            std::move(observer)));
+  void AddObserver(crosapi::mojom::CrosDisplayConfigObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+
+  void RemoveObserver(crosapi::mojom::CrosDisplayConfigObserver* observer) {
+    observers_.RemoveObserver(observer);
   }
 
   // display::DisplayObserver:
@@ -602,37 +601,36 @@ class CrosDisplayConfig::ObserverImpl
 
  private:
   void NotifyObserversDisplayConfigChanged() {
-    for (auto& observer : observers_) {
-      observer->OnDisplayConfigChanged();
-    }
+    observers_.Notify(
+        &crosapi::mojom::CrosDisplayConfigObserver::OnDisplayConfigChanged);
   }
 
-  mojo::AssociatedRemoteSet<crosapi::mojom::CrosDisplayConfigObserver>
+  // TODO(crbug.com/485123493): Make "checked" after migrating
+  // CrosDisplayConfigObserver out of mojo.
+  base::ObserverList<crosapi::mojom::CrosDisplayConfigObserver>::Unchecked
       observers_;
   display::ScopedDisplayObserver display_observer_{this};
 };
 
 // -----------------------------------------------------------------------------
-// CrosDisplayConfig:
+// CrosDisplayConfigImpl:
 
-CrosDisplayConfig::CrosDisplayConfig()
+CrosDisplayConfigImpl::CrosDisplayConfigImpl()
     : observer_impl_(std::make_unique<ObserverImpl>()) {}
 
-CrosDisplayConfig::~CrosDisplayConfig() = default;
+CrosDisplayConfigImpl::~CrosDisplayConfigImpl() = default;
 
-void CrosDisplayConfig::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::CrosDisplayConfigController>
-        receiver) {
-  receivers_.Add(this, std::move(receiver));
+void CrosDisplayConfigImpl::AddObserver(
+    crosapi::mojom::CrosDisplayConfigObserver* observer) {
+  observer_impl_->AddObserver(observer);
 }
 
-void CrosDisplayConfig::AddObserver(
-    mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
-        observer) {
-  observer_impl_->AddObserver(std::move(observer));
+void CrosDisplayConfigImpl::RemoveObserver(
+    crosapi::mojom::CrosDisplayConfigObserver* observer) {
+  observer_impl_->RemoveObserver(observer);
 }
 
-void CrosDisplayConfig::GetDisplayLayoutInfo(
+void CrosDisplayConfigImpl::GetDisplayLayoutInfo(
     GetDisplayLayoutInfoCallback callback) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
@@ -730,7 +728,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayouts(
   return crosapi::mojom::DisplayConfigResult::kSuccess;
 }
 
-void CrosDisplayConfig::SetDisplayLayoutInfo(
+void CrosDisplayConfigImpl::SetDisplayLayoutInfo(
     crosapi::mojom::DisplayLayoutInfoPtr info,
     SetDisplayLayoutInfoCallback callback) {
   crosapi::mojom::DisplayConfigResult result = SetDisplayLayoutMode(*info);
@@ -748,7 +746,7 @@ void CrosDisplayConfig::SetDisplayLayoutInfo(
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
 
-void CrosDisplayConfig::GetDisplayUnitInfoList(
+void CrosDisplayConfigImpl::GetDisplayUnitInfoList(
     bool single_unified,
     GetDisplayUnitInfoListCallback callback) {
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list;
@@ -778,7 +776,7 @@ void CrosDisplayConfig::GetDisplayUnitInfoList(
   std::move(callback).Run(std::move(info_list));
 }
 
-void CrosDisplayConfig::SetDisplayProperties(
+void CrosDisplayConfigImpl::SetDisplayProperties(
     const std::string& id,
     crosapi::mojom::DisplayConfigPropertiesPtr properties,
     crosapi::mojom::DisplayConfigSource source,
@@ -860,11 +858,11 @@ void CrosDisplayConfig::SetDisplayProperties(
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
 
-void CrosDisplayConfig::SetUnifiedDesktopEnabled(bool enabled) {
+void CrosDisplayConfigImpl::SetUnifiedDesktopEnabled(bool enabled) {
   GetDisplayManager()->SetUnifiedDesktopEnabled(enabled);
 }
 
-void CrosDisplayConfig::OverscanCalibration(
+void CrosDisplayConfigImpl::OverscanCalibration(
     const std::string& display_id,
     crosapi::mojom::DisplayConfigOperation op,
     const std::optional<gfx::Insets>& delta,
@@ -929,7 +927,7 @@ void CrosDisplayConfig::OverscanCalibration(
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
 
-void CrosDisplayConfig::TouchCalibration(
+void CrosDisplayConfigImpl::TouchCalibration(
     const std::string& display_id,
     crosapi::mojom::DisplayConfigOperation op,
     crosapi::mojom::TouchCalibrationPtr calibration,
@@ -1079,26 +1077,26 @@ void CrosDisplayConfig::TouchCalibration(
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
 
-OverscanCalibrator* CrosDisplayConfig::GetOverscanCalibrator(
+OverscanCalibrator* CrosDisplayConfigImpl::GetOverscanCalibrator(
     const std::string& id) {
   auto iter = overscan_calibrators_.find(id);
   return iter == overscan_calibrators_.end() ? nullptr : iter->second.get();
 }
 
-void CrosDisplayConfig::HighlightDisplay(int64_t display_id) {
+void CrosDisplayConfigImpl::HighlightDisplay(int64_t display_id) {
   Shell::Get()->display_highlight_controller()->SetHighlightedDisplay(
       display_id);
 }
 
-void CrosDisplayConfig::DragDisplayDelta(int64_t display_id,
-                                         int32_t delta_x,
-                                         int32_t delta_y) {
+void CrosDisplayConfigImpl::DragDisplayDelta(int64_t display_id,
+                                             int32_t delta_x,
+                                             int32_t delta_y) {
   DCHECK(features::IsDisplayAlignmentAssistanceEnabled());
   Shell::Get()->display_alignment_controller()->DisplayDragged(
       display_id, delta_x, delta_y);
 }
 
-bool CrosDisplayConfig::IsCalibrating() const {
+bool CrosDisplayConfigImpl::IsCalibrating() const {
   return touch_calibrator_ && touch_calibrator_->IsCalibrating();
 }
 

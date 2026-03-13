@@ -9,12 +9,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/url_constants.h"
-#include "ash/public/ash_interfaces.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
 #include "ash/webui/common/shortcut_input_key_strings.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -872,14 +873,15 @@ DeviceSection::DeviceSection(Profile* profile,
   UpdateStylusSearchTags();
 
   // Display search tags are added/removed dynamically.
-  BindCrosDisplayConfigController(
-      cros_display_config_.BindNewPipeAndPassReceiver());
-  mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
-      observer;
-  cros_display_config_observer_receiver_.Bind(
-      observer.InitWithNewEndpointAndPassReceiver());
-  cros_display_config_->AddObserver(std::move(observer));
-  OnDisplayConfigChanged();
+  if (Shell::HasInstance()) {
+    cros_display_config_ = Shell::Get()->cros_display_config();
+    CHECK(cros_display_config_);
+    cros_display_config_observation_.Observe(cros_display_config_);
+    shell_observation_.Observe(ash::Shell::Get());
+    OnDisplayConfigChanged();
+  } else {
+    CHECK_IS_TEST();
+  }
 
   // Night Light settings are added/removed dynamically.
   NightLightController* night_light_controller =
@@ -900,6 +902,12 @@ DeviceSection::~DeviceSection() {
   if (night_light_controller) {
     night_light_controller->RemoveObserver(this);
   }
+}
+
+void DeviceSection::OnShellDestroying() {
+  shell_observation_.Reset();
+  cros_display_config_observation_.Reset();
+  cros_display_config_ = nullptr;
 }
 
 void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
@@ -1227,17 +1235,21 @@ void DeviceSection::OnNightLightEnabledChanged(bool enabled) {
 }
 
 void DeviceSection::OnDisplayConfigChanged() {
-  cros_display_config_->GetDisplayUnitInfoList(
-      /*single_unified=*/true,
-      base::BindOnce(&DeviceSection::OnGetDisplayUnitInfoList,
-                     base::Unretained(this)));
+  if (cros_display_config_) {
+    cros_display_config_->GetDisplayUnitInfoList(
+        /*single_unified=*/true,
+        base::BindOnce(&DeviceSection::OnGetDisplayUnitInfoList,
+                       base::Unretained(this)));
+  }
 }
 
 void DeviceSection::OnGetDisplayUnitInfoList(
     std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list) {
-  cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
-      &DeviceSection::OnGetDisplayLayoutInfo, base::Unretained(this),
-      std::move(display_unit_info_list)));
+  if (cros_display_config_) {
+    cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
+        &DeviceSection::OnGetDisplayLayoutInfo, base::Unretained(this),
+        std::move(display_unit_info_list)));
+  }
 }
 
 void DeviceSection::OnGetDisplayLayoutInfo(

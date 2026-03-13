@@ -1845,7 +1845,7 @@ void Shell::Init(
   screen_orientation_controller_ =
       std::make_unique<ScreenOrientationController>();
 
-  cros_display_config_ = std::make_unique<CrosDisplayConfig>();
+  cros_display_config_ = std::make_unique<CrosDisplayConfigImpl>();
 
   screen_layout_observer_ = std::make_unique<ScreenLayoutObserver>();
   sms_observer_ = std::make_unique<SmsObserver>();
