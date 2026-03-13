@@ -90,7 +90,7 @@ GpuMemoryBufferHandle::GpuMemoryBufferHandle(
     base::UnsafeSharedMemoryRegion region)
     : type(GpuMemoryBufferType::SHARED_MEMORY_BUFFER),
       region_(std::move(region)) {
-  CHECK(region_.IsValid(), base::NotFatalUntil::M147);
+  CHECK(region_.IsValid(), base::NotFatalUntil::M155);
 }
 
 #if BUILDFLAG(IS_WIN)
