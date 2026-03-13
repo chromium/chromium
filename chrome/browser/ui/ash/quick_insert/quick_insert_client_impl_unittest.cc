@@ -90,7 +90,7 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
   Profile* profile = Profile::FromBrowserContext(context);
   auto service = std::make_unique<history::HistoryService>();
   service->Init(history::TestHistoryDatabaseParamsForPath(profile->GetPath()));
-  return std::move(service);
+  return service;
 }
 
 struct Volume {

@@ -44,7 +44,7 @@ void QuickInsertThumbnailLoader::Load(const base::FilePath& path,
           drive::DriveIntegrationServiceFactory::FindForProfile(profile_)) {
     if (std::optional<base::FilePath> relative_path =
             MaybeGetDriveFileRelativePath(*drive_integration, path);
-        relative_path.has_value()) {
+        relative_path) {
       drive_integration->GetThumbnail(
           *relative_path, /*crop_to_square=*/true,
           base::BindOnce(&QuickInsertThumbnailLoader::DecodeDriveThumbnail,
@@ -62,7 +62,7 @@ void QuickInsertThumbnailLoader::DecodeDriveThumbnail(
     LoadCallback callback,
     const gfx::Size& size,
     const std::optional<std::vector<uint8_t>>& bytes) {
-  if (!bytes.has_value()) {
+  if (!bytes) {
     std::move(callback).Run(nullptr, base::File::Error::FILE_ERROR_FAILED);
     return;
   }

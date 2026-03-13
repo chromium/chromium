@@ -187,8 +187,7 @@ std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
           continue;
         }
 
-        if (std::optional<GURL> result_url = result->url();
-            result_url.has_value()) {
+        if (std::optional<GURL> result_url = result->url(); result_url) {
           quick_insert_results.push_back(ash::QuickInsertBrowsingHistoryResult(
               *result_url, result->title(), result->icon().icon,
               result->best_match()));
@@ -210,7 +209,7 @@ std::vector<ash::QuickInsertSearchResult> ConvertSearchResults(
         break;
       default:
         LOG(DFATAL) << "Got unexpected search result type "
-                    << static_cast<int>(result->result_type());
+                    << std::to_underlying(result->result_type());
         break;
     }
   }
@@ -273,7 +272,7 @@ void QuickInsertClientImpl::StartCrosSearch(
     CrosSearchResultsCallback callback) {
   ranker_manager_->Start(query, {{.category = app_list::Category::kWeb},
                                  {.category = app_list::Category::kFiles}});
-  if (!category.has_value()) {
+  if (!category) {
     CHECK(search_engine_);
     search_engine_->StartSearch(
         query, app_list::SearchOptions(),
@@ -294,7 +293,7 @@ void QuickInsertClientImpl::StartCrosSearch(
     case ash::QuickInsertCategory::kDatesTimes:
     case ash::QuickInsertCategory::kUnitsMaths:
       DLOG(FATAL) << "Unexpected category for StartCrosSearch: "
-                  << static_cast<int>(*category);
+                  << std::to_underlying(*category);
       break;
     case ash::QuickInsertCategory::kLinks:
     case ash::QuickInsertCategory::kDriveFiles:
@@ -574,7 +573,7 @@ QuickInsertClientImpl::CreateSearchProviderForCategory(
     case ash::QuickInsertCategory::kDatesTimes:
     case ash::QuickInsertCategory::kUnitsMaths:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
-                  << static_cast<int>(category);
+                  << std::to_underlying(category);
       return nullptr;
     case ash::QuickInsertCategory::kLinks:
       return CreateOmniboxProvider(/*bookmarks=*/true, /*history=*/true,
