@@ -74,13 +74,64 @@
 
     // 2. Wait a frame and assert that onpaint fires.
     await waitForOneFrame();
-    assert_equals(onPaintCount, 1, 'onpaint should fire after a child changes.');
+    assert_equals(onPaintCount, 1,
+        'onpaint should fire after a child changes.');
     assert_array_equals(lastChanged, [child]);
 
     // 3. Wait another frame and assert that onpaint does not fire again.
     await waitForOneFrame();
-    assert_equals(onPaintCount, 1, 'onpaint should not fire without additional changes.');
+    assert_equals(onPaintCount, 1,
+      'onpaint should not fire without additional changes.');
   }, 'onpaint should fire once if a canvas child changes');
+
+  promise_test(async t => {
+    const child = document.getElementById('child');
+    t.add_cleanup(() => {
+      canvas.appendChild(child);
+    });
+
+    // Wait a frame.
+    await waitForOneFrame();
+
+    let onPaintCount = 0;
+    let lastChanged = [];
+    canvas.onpaint = (event) => {
+      onPaintCount++;
+      lastChanged = event.changedElements;
+    };
+
+    // 1. Remove #child and assert that onpaint fires.
+    canvas.removeChild(child);
+    await waitForOneFrame();
+    assert_equals(onPaintCount, 1,
+      'onpaint should fire after a child is removed.');
+    assert_array_equals(lastChanged, [],
+      '#child should not be changed if it is removed.');
+
+    // 2. Add and remove #child without painting #child, and assert onpaint does
+    // not fire, as the rendering of the canvas is unchanged.
+    canvas.appendChild(child);
+    canvas.removeChild(child);
+    await waitForOneFrame();
+    assert_equals(onPaintCount, 1,
+      'onpaint should not fire for dom changes that do not affect the canvas.');
+
+    // 3. Append #child and assert that onpaint fires.
+    canvas.appendChild(child);
+    await waitForOneFrame();
+    assert_equals(onPaintCount, 2,
+      'onpaint should fire after a child is added.');
+    assert_array_equals(lastChanged, [child],
+      '#child should be changed when added.');
+
+    // 4. Remove all children of the canvas and assert that onpaint fires.
+    canvas.innerHTML = '';
+    await waitForOneFrame();
+    assert_equals(onPaintCount, 3,
+      'onpaint should fire after all children are removed.');
+    assert_array_equals(lastChanged, [],
+      '#child should not be changed if it is removed.');
+  }, 'onpaint should fire if a canvas child is added or removed');
 
   promise_test(async t => {
     // Wait a frame.
@@ -103,7 +154,8 @@
 
     // 3. Wait another frame and assert that onpaint does not fire again.
     await waitForOneFrame();
-    assert_equals(onPaintCount, 1, 'onpaint should not fire without additional changes.');
+    assert_equals(onPaintCount, 1,
+      'onpaint should not fire without additional changes.');
   }, 'onpaint should fire once if a canvas grandchild changes');
 
   promise_test(async t => {
@@ -149,7 +201,8 @@
       onPaintCount++;
     };
 
-    // 1. Make a change to a canvas ancestor that causes the ancestor to repaint.
+    // 1. Make a change to a canvas ancestor that causes the ancestor to
+    // repaint.
     container.classList.toggle('color-change');
 
     // 2. Wait a frame and assert that onpaint doesn't fire.
@@ -180,8 +233,10 @@
 
     // 3. Wait another frame and assert that onpaint does not fire again.
     await waitForOneFrame();
-    // TODO(crbug.com/484345338): This assertion fails because initial implementation triggers onpaint for transform changes.
-    // assert_equals(onPaintCount, 1, 'onpaint should not fire after transform changes.');
+    // TODO(crbug.com/488090082): These assertions fails because we incorrectly
+    // trigger onpaint for transform changes.
+    // assert_equals(onPaintCount, 1,
+    //   'onpaint should not fire after transform changes.');
     // assert_equals(child.style.transform, 'translateX(1px)');
   }, 'onpaint should not fire after canvas child transform changes');
 
@@ -206,7 +261,8 @@
 
     // 3. Wait another frame and assert that onpaint does not fire again.
     await waitForOneFrame();
-    assert_equals(onPaintCount, 1, 'drawing operations should not cause onpaint to fire.');
+    assert_equals(onPaintCount, 1,
+      'drawing operations should not cause onpaint to fire.');
   }, 'onpaint should not fire after canvas drawing operations');
 
   promise_test(async t => {
@@ -229,7 +285,8 @@
 
     // 3. Wait a frame.
     await waitForOneFrame();
-    assert_equals(onPaintCount, 0, 'onpaint should not fire when layoutsubtree is missing.');
+    assert_equals(onPaintCount, 0,
+      'onpaint should not fire when layoutsubtree is missing.');
 
     // 4. Add layoutsubtree back.
     canvas.setAttribute('layoutsubtree', '');
@@ -239,7 +296,8 @@
 
     // 6. Wait a frame.
     await waitForOneFrame();
-    assert_equals(onPaintCount, 1, 'onpaint should fire when layoutsubtree is present.');
+    assert_equals(onPaintCount, 1,
+      'onpaint should fire when layoutsubtree is present.');
   }, 'onpaint should respect layoutsubtree attribute mutation');
 
   promise_test(async t => {
@@ -258,6 +316,7 @@
 
     // 2. Wait a frame and assert that onpaint fires.
     await waitForOneFrame();
-    assert_equals(onPaintCount, 1, 'addEventListener should receive the paint event.');
+    assert_equals(onPaintCount, 1,
+      'addEventListener should receive the paint event.');
   }, 'onpaint should work with addEventListener');
 </script>

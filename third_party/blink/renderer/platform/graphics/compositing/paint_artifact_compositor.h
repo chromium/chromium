@@ -217,6 +217,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   void SetTracksRasterInvalidations(bool);
 
+  bool HasCanvasChildPaintRecord(DOMNodeId child_id) const;
   std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord(
       DOMNodeId child_id) const;
 

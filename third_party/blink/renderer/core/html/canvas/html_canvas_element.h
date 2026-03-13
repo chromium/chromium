@@ -396,7 +396,9 @@ class CORE_EXPORT HTMLCanvasElement final
   static std::pair<blink::Image*, float> BrokenCanvas(
       float device_scale_factor);
 
+  bool ChildrenChangedAllChildrenRemovedNeedsList() const final;
   void ChildrenChanged(const ChildrenChange&) override;
+  void ChildElementRemoved(Element&);
 
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 

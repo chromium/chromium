@@ -105,6 +105,11 @@ void PaintArtifactCompositor::SetTracksRasterInvalidations(bool should_track) {
   }
 }
 
+bool PaintArtifactCompositor::HasCanvasChildPaintRecord(
+    DOMNodeId child_id) const {
+  return canvas_child_layer_map_.Contains(child_id);
+}
+
 std::optional<CanvasChildPaintRecord>
 PaintArtifactCompositor::GetCanvasChildPaintRecord(DOMNodeId child_id) const {
   auto it = canvas_child_layer_map_.find(child_id);
