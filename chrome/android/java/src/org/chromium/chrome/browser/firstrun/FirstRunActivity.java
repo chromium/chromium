@@ -212,6 +212,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private boolean mLaunchedFromChromeIcon;
 
     private boolean mLaunchedFromCct;
+    private boolean mTemplateUrlServiceLoaded;
 
     /**
      * {@link SystemClock} timestamp from when the FRE intent was initially created. This marks when
@@ -447,14 +448,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
 
-        Runnable onNativeFinished =
+        Runnable onTemplateUrlServiceLoaded =
                 () -> {
                     if (isActivityFinishingOrDestroyed()) return;
 
+                    mTemplateUrlServiceLoaded = true;
                     onNativeDependenciesFullyInitialized();
                 };
         Profile profile = assumeNonNull(getProfileProviderSupplier().get()).getOriginalProfile();
-        TemplateUrlServiceFactory.getForProfile(profile).runWhenLoaded(onNativeFinished);
+        TemplateUrlServiceFactory.getForProfile(profile).runWhenLoaded(onTemplateUrlServiceLoaded);
         // Notify feature engagement that FRE occurred.
         TrackerFactory.getTrackerForProfile(profile)
                 .notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
@@ -475,9 +477,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     private void onNativeDependenciesFullyInitialized() {
-        mNativeInitializationPromise.fulfill(null);
         mPager.setOffscreenPageLimit(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
-
         onInternalStateChanged();
     }
 
@@ -494,6 +494,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private void onInternalStateChanged() {
         if (!isFlowKnown()) {
             return;
+        }
+
+        if (mTemplateUrlServiceLoaded && mNativeInitializationPromise.isPending()) {
+            // `mNativeInitializationPromise` should only be set after flow is known.
+            mNativeInitializationPromise.fulfill(null);
         }
 
         if (mPagerAdapter == null) {
