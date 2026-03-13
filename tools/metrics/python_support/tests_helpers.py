@@ -4,7 +4,6 @@
 
 import os
 import re
-import sys
 from pathlib import Path
 from typing import Iterable, List, Set, Dict
 from dataclasses import dataclass
@@ -63,12 +62,11 @@ class TestableScript:
       flags - a list of flags to pass to the script
 
     Returns:
-      TestableScript object set up to run using the current interpreter
+      TestableScript object set up to run using vpython3
     """
     return TestableScript(identifiable_name=str(file_path),
                           file_path=file_path,
-                          cmd=[sys.executable,
-                               str(file_path), *flags])
+                          cmd=['vpython3', str(file_path), *flags])
 
 
 # As one of the check we just run some of our existing scripts that don't have
