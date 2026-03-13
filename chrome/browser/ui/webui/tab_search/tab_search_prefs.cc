@@ -25,15 +25,10 @@ const char kTabSearchUsed[] = "tab_search.used";
 // when interacting with the Tab Organization UI.
 const char kTabOrganizationShowFRE[] = "tab_organization.show_fre_2";
 
-// Integer pref indicating which model strategy the user would like their tabs
-// to be organized according to.
-const char kTabOrganizationModelStrategy[] = "tab_organization.model_strategy";
-
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabSearchRecentlyClosedSectionExpanded, true);
   registry->RegisterBooleanPref(kTabSearchUsed, false);
   registry->RegisterBooleanPref(kTabOrganizationShowFRE, true);
-  registry->RegisterIntegerPref(kTabOrganizationModelStrategy, 0);
 }
 
 }  // namespace tab_search_prefs

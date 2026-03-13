@@ -30,7 +30,6 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_test_utils.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -181,9 +180,7 @@ IN_PROC_BROWSER_TEST_F(
 class TabStripModelBrowserTest : public InProcessBrowserTest,
                                  public TabStripModelObserver {
  public:
-  TabStripModelBrowserTest() {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
-  }
+  TabStripModelBrowserTest() = default;
 
   void TearDownOnMainThread() override { observer_.Reset(); }
 
@@ -222,7 +219,6 @@ class TabStripModelBrowserTest : public InProcessBrowserTest,
         model, tab_count, pinned_count, selected_tabs);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedObservation<TabStripModel, TabStripModelBrowserTest> observer_{
       this};
 };

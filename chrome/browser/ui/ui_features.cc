@@ -157,50 +157,6 @@ BASE_FEATURE(kTabGroupHoverCards, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabModalUsesDesktopWidget, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTabOrganization, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsTabOrganization() {
-  return base::FeatureList::IsEnabled(features::kTabOrganization);
-}
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kTabOrganizationTriggerPeriod,
-                   &kTabOrganization,
-                   "trigger_period",
-                   base::Hours(6));
-
-BASE_FEATURE_PARAM(double,
-                   kTabOrganizationTriggerBackoffBase,
-                   &kTabOrganization,
-                   "backoff_base",
-                   2.0);
-
-BASE_FEATURE_PARAM(double,
-                   kTabOrganizationTriggerThreshold,
-                   &kTabOrganization,
-                   "trigger_threshold",
-                   7.0);
-
-BASE_FEATURE_PARAM(double,
-                   kTabOrganizationTriggerSensitivityThreshold,
-                   &kTabOrganization,
-                   "trigger_sensitivity_threshold",
-                   0.5);
-
-BASE_FEATURE_PARAM(bool,
-                   KTabOrganizationTriggerDemoMode,
-                   &kTabOrganization,
-                   "trigger_demo_mode",
-                   false);
-
-BASE_FEATURE(kTabOrganizationModelStrategy, base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabOrganizationUserInstruction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabOrganizationEnableNudgeForEnterprise,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables creating a web app window when tearing off a tab with a url
 // controlled by a web app.
 BASE_FEATURE(kTearOffWebAppTabOpensWebAppWindow,

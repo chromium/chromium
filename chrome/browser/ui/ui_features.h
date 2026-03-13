@@ -202,32 +202,6 @@ inline constexpr char kTabHoverCardAdditionalMaxWidthDelay[] =
 // If enabled, use desktop widget to show tab modal dialogs.
 BASE_DECLARE_FEATURE(kTabModalUsesDesktopWidget);
 
-BASE_DECLARE_FEATURE(kTabOrganization);
-bool IsTabOrganization();
-
-// The target (and minimum) interval between proactive nudge triggers. Measured
-// against a clock that only runs while Chrome is in the foreground.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabOrganizationTriggerPeriod);
-
-// The base to use for the trigger logic's exponential backoff.
-BASE_DECLARE_FEATURE_PARAM(double, kTabOrganizationTriggerBackoffBase);
-
-// The minimum score threshold for proactive nudge triggering to occur.
-BASE_DECLARE_FEATURE_PARAM(double, kTabOrganizationTriggerThreshold);
-
-// The maximum sensitivity score for a tab to contribute to trigger scoring.
-BASE_DECLARE_FEATURE_PARAM(double, kTabOrganizationTriggerSensitivityThreshold);
-
-// Enable 'demo mode' for Tab Organization triggering, which triggers much more
-// predictably and frequently.
-BASE_DECLARE_FEATURE_PARAM(bool, KTabOrganizationTriggerDemoMode);
-
-BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
-
-BASE_DECLARE_FEATURE(kTabOrganizationEnableNudgeForEnterprise);
-
-BASE_DECLARE_FEATURE(kTabOrganizationUserInstruction);
-
 BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
 
 #if !BUILDFLAG(IS_ANDROID)
