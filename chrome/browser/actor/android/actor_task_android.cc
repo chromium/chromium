@@ -9,6 +9,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/actor/android/jni_headers/ActorTask_jni.h"
+#include "chrome/browser/profiles/profile.h"
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaRef;
@@ -42,7 +43,8 @@ ActorTaskAndroid::ActorTaskAndroid(ActorTask* task) : task_(task) {
   java_obj_.Reset(env, Java_ActorTask_Constructor(
                            env, reinterpret_cast<int64_t>(this),
                            task_->id().GetUnsafeValue(),
-                           ConvertUTF8ToJavaString(env, task_->title())));
+                           ConvertUTF8ToJavaString(env, task_->title()),
+                           task_->GetProfile()->GetJavaObject()));
 }
 
 ActorTaskAndroid::~ActorTaskAndroid() {

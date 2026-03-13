@@ -9,7 +9,10 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,12 +23,14 @@ public class ActorTask {
     private long mNativeTask;
     private final int mId;
     private final String mTitle;
+    private final WeakReference<Profile> mProfile;
 
     @CalledByNative
-    private ActorTask(long nativeTask, int id, String title) {
+    private ActorTask(long nativeTask, int id, String title, Profile profile) {
         mNativeTask = nativeTask;
         mId = id;
         mTitle = title;
+        mProfile = new WeakReference<>(profile);
     }
 
     /**
@@ -107,6 +112,13 @@ public class ActorTask {
         // TODO(haileywang): This currently loops through all the tabs associated to the task. Look
         // into having native update the latest tabId when the actuated tab changes.
         return isUnderActorControl() && getTabs().contains(tabId);
+    }
+
+    /**
+     * @return The {@link Profile} associated with this task.
+     */
+    public @Nullable Profile getProfile() {
+        return mProfile.get();
     }
 
     @CalledByNative

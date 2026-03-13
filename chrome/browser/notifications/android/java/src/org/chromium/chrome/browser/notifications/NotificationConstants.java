@@ -31,6 +31,13 @@ public class NotificationConstants {
     static final String ACTION_REPORT_UNWARNED_NOTIFICATION_AS_SPAM =
             "org.chromium.chrome.browser.notifications.REPORT_UNWARNED_NOTIFICATION_AS_SPAM";
 
+    public static final String ACTION_ACTOR_PAUSE =
+            "org.chromium.chrome.browser.actor.ACTION_PAUSE";
+    public static final String ACTION_ACTOR_RESUME =
+            "org.chromium.chrome.browser.actor.ACTION_RESUME";
+    public static final String ACTION_ACTOR_CANCEL =
+            "org.chromium.chrome.browser.actor.ACTION_CANCEL";
+
     /**
      * Name of the Intent extra set by the framework when a notification preferences intent has been
      * triggered from there, which could be one of the setting gears in system UI.
@@ -60,6 +67,8 @@ public class NotificationConstants {
     static final String EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT =
             "notification_backup_for_suspicious_verdict";
     static final String EXTRA_SUSPICIOUS_NOTIFICATION_COUNT = "suspicious_notification_count";
+
+    public static final String EXTRA_ACTOR_TASK_ID = "org.chromium.chrome.browser.actor.TASK_ID";
 
     static final String EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED =
             "notification_allow_reporting_as_spam_is_notification_warned";
@@ -184,6 +193,7 @@ public class NotificationConstants {
     public static final String GROUP_SHARED_CLIPBOARD = "SharedClipboard";
     public static final String GROUP_SHARE_SAVE_IMAGE = "ShareSaveImage";
     public static final String GROUP_SMS_FETCHER = "SmsFetcher";
+    public static final String GROUP_ACTOR = "Actor";
 
     // Web notification group names are set dynamically as this prefix + notification origin.
     // For example, 'Web:chromium.org' for a notification from chromium.org.

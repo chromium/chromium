@@ -79,4 +79,41 @@
   <message name="IDS_GLIC_BUTTON_STATUS_REVIEW" desc="Label on the Gemini entry point button when Gemini requires user attention." formatter_data="android_java">
     Review
   </message>
+
+  <message name="IDS_ACTOR_NOTIFICATION_TITLE_WORKING_ON_TASK" desc="Notification title when the actor is actively working on a task." formatter_data="android_java">
+   Working on your task
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_TITLE_CHECK_YOUR_TASK" desc="Notification title when the actor is waiting for user input to proceed with a task." formatter_data="android_java">
+   Check your task
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_TITLE_TASK_PAUSED" desc="Notification title when a task has been paused by the user or the actor." formatter_data="android_java">
+   Task paused
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_TITLE_TASK_COMPLETED" desc="Notification title when a task has finished successfully." formatter_data="android_java">
+   Task completed
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BUTTON_VIEW_TASK" desc="Label for the notification button that takes the user to the tab where the task is running." formatter_data="android_java">
+    View task
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BUTTON_PAUSE_TASK" desc="Label for the notification button that pauses the currently running task." formatter_data="android_java">
+    Pause task
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BUTTON_RESUME_TASK" desc="Label for the notification button that resumes a paused task." formatter_data="android_java">
+    Resume task
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BODY_WORKING" desc="Notification body text when the actor is working on a task." formatter_data="android_java">
+    <ph name="TASK_TITLE">$1<ex>My Task</ex></ph>\nI’m working on your task, and will let you know if more action is needed
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BODY_USER_INPUT" desc="Notification body text when the actor is waiting for user input." formatter_data="android_java">
+    <ph name="TASK_TITLE">$1<ex>My Task</ex></ph>\nI need your help to proceed with your task
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BODY_PAUSED" desc="Notification body text when the actor has paused a task." formatter_data="android_java">
+    <ph name="TASK_TITLE">$1<ex>My Task</ex></ph>\nI have paused your task
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BODY_FINISHED" desc="Notification body text when the actor has finished a task." formatter_data="android_java">
+    <ph name="TASK_TITLE">$1<ex>My Task</ex></ph>\nI was able to fulfill your request, you may view it within Chrome
+  </message>
+  <message name="IDS_ACTOR_NOTIFICATION_BODY_INTERRUPTED" desc="Notification body text when the actor has interrupted by other activityies." formatter_data="android_java">
+    <ph name="TASK_TITLE">$1<ex>My Task</ex></ph>\nI've paused your task due to other activity. You can return to chrome to view it when ready.
+  </message>
 </grit-part>
