@@ -2286,7 +2286,8 @@ void BrowserView::FullscreenStateChanged() {
 
     // Reshow the split view after completing the toolbar sizing.
     if (!IsFullscreen() && browser_->tab_strip_model()->IsActiveTabSplit()) {
-      ShowSplitView(GetActiveContentsWebView()->HasFocus());
+      ShowSplitView(GetActiveContentsWebView()->HasFocus() ||
+                    !GetFocusManager()->GetFocusedView());
     }
   }
 }
@@ -3604,7 +3605,8 @@ void BrowserView::OnSplitTabChanged(const SplitTabChange& change) {
       const tabs::TabInterface* active_tab =
           browser_->tab_strip_model()->GetActiveTab();
       if (active_tab->IsSplit()) {
-        ShowSplitView(GetActiveContentsWebView()->HasFocus());
+        ShowSplitView(GetActiveContentsWebView()->HasFocus() ||
+                      !GetFocusManager()->GetFocusedView());
       }
       break;
     }
@@ -5672,7 +5674,8 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
 
   // Reshow the split view after completing the toolbar sizing.
   if (!fullscreen && browser_->tab_strip_model()->IsActiveTabSplit()) {
-    ShowSplitView(GetActiveContentsWebView()->HasFocus());
+    ShowSplitView(GetActiveContentsWebView()->HasFocus() ||
+                  !GetFocusManager()->GetFocusedView());
   }
 }
 
