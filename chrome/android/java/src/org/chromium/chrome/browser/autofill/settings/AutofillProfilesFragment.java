@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -493,12 +494,17 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                                                     getProfile(),
                                                     DeviceAuthSource.AUTOFILL);
                                 }
-                                mReauthenticatorBridge.reauthenticate(
-                                        success -> {
-                                            if (success) {
-                                                showEntityEditor(entityInstance);
-                                            }
-                                        });
+                                if (mReauthenticatorBridge.getBiometricAvailabilityStatus()
+                                        != BiometricStatus.UNAVAILABLE) {
+                                    mReauthenticatorBridge.reauthenticate(
+                                            success -> {
+                                                if (success) {
+                                                    showEntityEditor(entityInstance);
+                                                }
+                                            });
+                                } else {
+                                    showEntityEditor(entityInstance);
+                                }
                             } else {
                                 showEntityEditor(entityInstance);
                             }
