@@ -336,19 +336,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // floaty is expanded, the time is reset to null.
   base::TimeTicks elapsed_minimized_floaty_time_;
 
-  // Whether an external overlay is currently presented e.g. Lens Overlay. Used
-  // to avoid showing the floaty when view controllers are presented/dismissed
-  // while an overlay is presented.
-  bool is_external_overlay_presented_ = false;
-
-  // Whether an alert is currently presented. Used to avoid showing the floaty
-  // when view controllers are presented/dismissed while an alert is presented.
-  bool is_alert_presented_ = false;
-
-  // Whether a banner is currently presented. Used to avoid showing the floaty
-  // when view controllers are presented/dismissed while a banner is presented.
-  bool is_banner_presented_ = false;
-
   // Registrar for pref changes.
   PrefChangeRegistrar pref_change_registrar_;
 
