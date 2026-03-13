@@ -366,6 +366,7 @@ public class TabStateStore implements TabPersistentStore {
                         }
                         assumeNonNull(mMergeCombinedTabRestorer);
                         mMergeCombinedTabRestorer.onDataLoaded(data, incognitoFinal);
+                        new PersistentStoreMigrationManagerImpl(windowTagToMerge).onWindowCleared();
                     });
         }
         mMergeCombinedTabRestorer.start(
