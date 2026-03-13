@@ -1,5 +1,14 @@
 # gemini-cli policies
 
+============
+
+NOTE!!! This entire directory is currently IGNORED COMPLETELY by gemini CLI.
+See http://github.com/google-gemini/gemini-cli/issues/18186.
+Do not put files here or expect them to work until this bug is fixed.
+
+============
+
+
 This folder is gitignored, with specific checked in files exempted. Developers
 are encouraged to put their personal chromium-specific policies in this same
 folder. Other policies in this folder, with a higher priority, can override the
