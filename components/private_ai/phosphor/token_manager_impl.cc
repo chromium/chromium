@@ -61,9 +61,4 @@ void TokenManagerImpl::OnAccountStatusChanged(bool available) {
   proxy_token_manager_->OnAccountStatusChanged(available);
 }
 
-PrivateAiLogger* TokenManagerImpl::GetLogger() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return logger_;
-}
-
 }  // namespace private_ai::phosphor

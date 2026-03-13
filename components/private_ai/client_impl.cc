@@ -115,10 +115,6 @@ void ClientImpl::SendTextRequest(proto::FeatureName feature_name,
                              std::move(text_response_callback), options);
 }
 
-PrivateAiLogger* ClientImpl::GetLogger() {
-  return logger_;
-}
-
 void ClientImpl::SendGenerateContentRequest(
     proto::FeatureName feature_name,
     const proto::GenerateContentRequest& request,

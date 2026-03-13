@@ -140,6 +140,7 @@ void ConnectionProxy::OnDestroy(ErrorCode error) {
 
   token_manager_ = nullptr;
   network_service_ = nullptr;
+  logger_ = nullptr;
   weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 

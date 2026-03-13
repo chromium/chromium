@@ -12,10 +12,6 @@
 #include "components/private_ai/phosphor/data_types.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 
-namespace private_ai {
-class PrivateAiLogger;
-}
-
 namespace private_ai::phosphor {
 
 // Manages the cache of blind-signed auth tokens for PrivateAI.
@@ -44,8 +40,6 @@ class TokenManager {
 
   // Notification that the account status has changed.
   virtual void OnAccountStatusChanged(bool available) = 0;
-
-  virtual PrivateAiLogger* GetLogger() = 0;
 };
 
 }  // namespace private_ai::phosphor

@@ -87,8 +87,7 @@ class ClientImplTest : public ::testing::Test {
   ClientImplTest() {
     auto factory = std::make_unique<FakeConnectionFactory>();
     factory_ = factory.get();
-    logger_ = std::make_unique<PrivateAiLogger>();
-    client_ = std::make_unique<ClientImpl>(std::move(factory), logger_.get());
+    client_ = std::make_unique<ClientImpl>(std::move(factory), &logger_);
   }
 
   ~ClientImplTest() override = default;
@@ -97,7 +96,7 @@ class ClientImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<PrivateAiLogger> logger_;
+  PrivateAiLogger logger_;
   std::unique_ptr<Client> client_;
   raw_ptr<FakeConnectionFactory> factory_;
 };

@@ -63,6 +63,8 @@ class PrivateAiService : public KeyedService,
 
   Client* GetClient();
 
+  PrivateAiLogger* GetLogger();
+
   void SetClientForTesting(std::unique_ptr<Client> client);
 
   // phosphor::OAuthTokenProvider override:
@@ -86,7 +88,7 @@ class PrivateAiService : public KeyedService,
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<PrefService> pref_service_;
 
-  std::unique_ptr<PrivateAiLogger> logger_;
+  PrivateAiLogger logger_;
 
   std::unique_ptr<phosphor::BlindSignAuthFactory> bsa_factory_;
 

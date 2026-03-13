@@ -50,8 +50,6 @@ class ClientImpl : public Client {
                        OnPaicMessageRequestCompletedCallback callback,
                        const RequestOptions& options) override;
 
-  PrivateAiLogger* GetLogger() override;
-
  private:
   // Callback for when a `SendRequest` operation completes.
   // If the operation is successful, the result will contain the server's

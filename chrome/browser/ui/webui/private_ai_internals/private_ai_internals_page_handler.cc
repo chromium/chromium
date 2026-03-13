@@ -30,12 +30,19 @@ PrivateAiInternalsPageHandler::PrivateAiInternalsPageHandler(
     phosphor::TokenManager* token_manager,
     network::mojom::NetworkContext* network_context,
     Client* private_ai_client,
+    PrivateAiLogger* private_ai_logger,
     mojo::PendingReceiver<
         private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver)
     : token_manager_(token_manager),
       private_ai_client_(private_ai_client),
+      private_ai_logger_(private_ai_logger),
       network_context_(network_context),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  CHECK(private_ai_logger_);
+
+  scoped_logger_observations_.AddObservation(private_ai_logger_.get());
+  scoped_logger_observations_.AddObservation(&webui_logger_);
+}
 
 PrivateAiInternalsPageHandler::~PrivateAiInternalsPageHandler() = default;
 
@@ -43,9 +50,6 @@ void PrivateAiInternalsPageHandler::SetPage(
     mojo::PendingRemote<private_ai_internals::mojom::PrivateAiInternalsPage>
         page) {
   page_.Bind(std::move(page));
-  if (private_ai_client_) {
-    scoped_logger_observations_.AddObservation(private_ai_client_->GetLogger());
-  }
 }
 
 void PrivateAiInternalsPageHandler::Connect(const std::string& url,
@@ -53,10 +57,6 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
                                             const std::string& proxy_url,
                                             bool use_token_attestation,
                                             ConnectCallback callback) {
-  if (webui_client_) {
-    scoped_logger_observations_.RemoveObservation(webui_client_->GetLogger());
-  }
-  webui_logger_ = std::make_unique<PrivateAiLogger>();
   std::string effective_api_key = api_key;
   if (effective_api_key == kApiKeyPlaceholder) {
     effective_api_key = private_ai::kPrivateAiApiKey.Get();
@@ -64,18 +64,13 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
                      network_context_, token_manager_,
-                     content::GetNetworkService(), webui_logger_.get());
-  scoped_logger_observations_.AddObservation(webui_client_->GetLogger());
+                     content::GetNetworkService(), &webui_logger_);
   webui_client_->EstablishConnection();
   std::move(callback).Run();
 }
 
 void PrivateAiInternalsPageHandler::Close(CloseCallback callback) {
-  if (webui_client_) {
-    scoped_logger_observations_.RemoveObservation(webui_client_->GetLogger());
-    webui_client_.reset();
-  }
-  webui_logger_.reset();
+  webui_client_.reset();
   std::move(callback).Run();
 }
 

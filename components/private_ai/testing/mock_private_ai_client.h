@@ -34,9 +34,7 @@ class MockPrivateAiClient : public Client {
                OnPaicMessageRequestCompletedCallback callback,
                const RequestOptions& options),
               (override));
-  MOCK_METHOD(PrivateAiLogger*, GetLogger, (), (override));
 };
-
 }  // namespace private_ai
 
 #endif  // COMPONENTS_PRIVATE_AI_TESTING_MOCK_PRIVATE_AI_CLIENT_H_

@@ -45,12 +45,10 @@ using ::testing::Invoke;
 class ClientImplIntegrationTest : public testing::Test {
  public:
   void SetUp() override {
-    logger_ = std::make_unique<PrivateAiLogger>();
-    PrivateAiLogger* logger_ptr = logger_.get();
     GURL url("wss://example.com?key=test-api-key");
 
     auto factory = std::make_unique<ConnectionFactoryImpl>(
-        url, &test_network_context_, logger_ptr);
+        url, &test_network_context_, &logger_);
     factory->EnableTokenAttestation(&token_manager_);
     factory->SetSecureChannelFactoryForTesting(base::BindLambdaForTesting(
         [this]() -> std::unique_ptr<SecureChannel::Factory> {
@@ -63,7 +61,7 @@ class ClientImplIntegrationTest : public testing::Test {
                   base::Unretained(this)));
         }));
 
-    client_ = std::make_unique<ClientImpl>(std::move(factory), logger_ptr);
+    client_ = std::make_unique<ClientImpl>(std::move(factory), &logger_);
   }
 
   void TearDown() override {
@@ -92,7 +90,7 @@ class ClientImplIntegrationTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  std::unique_ptr<PrivateAiLogger> logger_;
+  PrivateAiLogger logger_;
   network::TestNetworkContext test_network_context_;
   FakeTokenManager token_manager_;
   std::vector<raw_ptr<FakeSecureChannel>> secure_channels_;

@@ -97,8 +97,6 @@ class Client {
                                const proto::PaicMessage& request,
                                OnPaicMessageRequestCompletedCallback callback,
                                const RequestOptions& options) = 0;
-
-  virtual PrivateAiLogger* GetLogger() = 0;
 };
 
 }  // namespace private_ai

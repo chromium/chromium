@@ -90,7 +90,7 @@ void PrivateAiInternalsUI::BindInterface(
       profile->GetDefaultStoragePartition()->GetNetworkContext();
   page_handler_ = std::make_unique<PrivateAiInternalsPageHandler>(
       token_manager, network_context, private_ai_service->GetClient(),
-      std::move(receiver));
+      private_ai_service->GetLogger(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PrivateAiInternalsUI)

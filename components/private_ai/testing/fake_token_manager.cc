@@ -64,10 +64,6 @@ void FakeTokenManager::RespondToGetAuthTokenForProxy(
 
 void FakeTokenManager::OnAccountStatusChanged(bool available) {}
 
-PrivateAiLogger* FakeTokenManager::GetLogger() {
-  return &logger_;
-}
-
 std::optional<phosphor::BlindSignedAuthToken> FakeTokenManager::GetToken() {
   if (!return_token_) {
     return std::nullopt;

@@ -41,7 +41,6 @@ class TokenManagerImpl : public TokenManager {
   void GetAuthTokenForProxy(GetAuthTokenCallback callback) override;
   void PrefetchAuthTokensForProxy() override;
   void OnAccountStatusChanged(bool available) override;
-  PrivateAiLogger* GetLogger() override;
 
  private:
   const int batch_size_;
