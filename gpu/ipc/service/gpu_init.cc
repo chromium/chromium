@@ -44,6 +44,7 @@
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_display.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_switches.h"
@@ -683,7 +684,17 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
     base::FilePath module_path;
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
-      {
+      // Preload vk_swiftshader.dll when SwiftShader may be needed:
+      // - IsSwiftShaderAllowed() covers ANGLE/GL flags like
+      //   --enable-unsafe-swiftshader and --use-angle=swiftshader.
+      // - use_webgpu_adapter covers --use-webgpu-adapter=swiftshader for
+      //   WebGPU fallback adapter selection.
+      // - DefaultForceFallbackAdapter() covers Graphite/Dawn using
+      //   SwiftShader via --skia-graphite-dawn-backend=swiftshader.
+      if (features::IsSwiftShaderAllowed(command_line) ||
+          gpu_preferences_.use_webgpu_adapter ==
+              WebGPUAdapterName::kSwiftShader ||
+          DawnContextProvider::DefaultForceFallbackAdapter()) {
         TRACE_EVENT("gpu,startup", "Load vk_swiftshader.dll");
         base::LoadNativeLibrary(module_path.Append(L"vk_swiftshader.dll"),
                                 nullptr);
