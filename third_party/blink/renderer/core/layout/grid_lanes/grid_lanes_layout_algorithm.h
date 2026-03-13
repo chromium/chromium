@@ -166,6 +166,13 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       bool needs_intrinsic_track_size,
       bool* opt_needs_additional_pass = nullptr) const;
 
+  // Performs the final baseline alignment pass of a sizing subtree in the grid
+  // axis.
+  void ComputeBaselineAlignment(GridSizingTree* sizing_tree);
+
+  // Helper that calls the method above for the entire grid sizing tree.
+  void CompleteFinalBaselineAlignment(GridSizingTree* sizing_tree);
+
   // Populate `sizing_tree` with the track sizes of an auto repeat that has
   // intrinsic track size(s). This method assumes that such an auto repeat
   // exists in the sizing tree's track collection.

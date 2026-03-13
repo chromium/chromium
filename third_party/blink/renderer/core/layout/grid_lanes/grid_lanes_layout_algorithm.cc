@@ -344,25 +344,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   }
   CHECK(baseline_accumulator);
 
-  // TODO(yanlingwang): Properly handle baselines here for intrinsic tracks.
-
-  // If an item is baseline aligned, placement is required in two passes because
-  // track baselines must be computed before items can be aligned.
-  if (track_collection.HasBaselines()) {
-    // In the initial placement pass, compute track baselines by placing items
-    // to determine their positions and baselines. `running_positions` is
-    // needed here in order to determine item placement. We use a copy of
-    // `running_positions` to preserve their original state for the second pass.
-    // Note that during this baseline calculation pass, items are not added to
-    // the container; only baseline information is computed and stored, since
-    // baselines are needed before items can be properly aligned and placed.
-    GridLanesRunningPositions running_positions_for_baseline(running_positions);
-    RunGridLanesPlacementPhase(
-        sizing_tree, sizing_constraint, stacking_axis_gap,
-        PlacementPhase::kCalculateBaselines, baseline_accumulator,
-        running_positions_for_baseline);
-  }
-
   // Run a final placement pass of all items and add their layout results to
   // the container. This is the second placement pass if there are any items
   // requiring baseline alignment, and the only placement pass otherwise. Item
@@ -642,7 +623,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
           grid_lanes_item.resolved_position, grid_axis_direction);
     }
 
-    // TODO(yanlingwang): Properly handle baselines here for intrinsic tracks.
     if (placement_phase == PlacementPhase::kCalculateBaselines) {
       // In the baseline calculation pass, skip items without baseline
       // alignment since they don't contribute to track baselines. This check
@@ -1196,9 +1176,7 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
   return baseline_fragment.BlockSize();
 }
 
-// TODO(almaher): This should return GridLayoutTree like Grid's version, but we
-// will need to move out the baseline related logic first. Instead, we will use
-// the GridSizingTree for now.
+// TODO(almaher): This should return GridLayoutTree like Grid's version.
 GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
     SizingConstraint sizing_constraint,
     bool should_apply_inline_size_containment,
@@ -1227,13 +1205,11 @@ GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
                                 &sizing_tree, needs_intrinsic_track_size);
   }
 
-  // TODO(almaher): In grid, size containment happens at this point. Should we
-  // do the same?
-  //
   // TODO(almaher): We will want special logic here for `needs_additional_pass`,
   // similar to grid.
-  //
-  // TODO(almaher): Will want to move baseline logic here.
+
+  CompleteFinalBaselineAlignment(&sizing_tree);
+
   return sizing_tree;
 }
 
@@ -1310,12 +1286,6 @@ void GridLanesLayoutAlgorithm::InitializeTrackSizes(
 
   // TODO(almaher): For subgrid, we will want to get the tracks the parent.
   auto& track_collection = layout_data.SizingCollection(grid_axis_direction);
-
-  // Allocate the major/minor baseline vectors now that we know the set count.
-  if (track_collection.HasBaselines()) {
-    track_collection.ResetBaselines();
-  }
-
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(
         track_collection, &sizing_tree->GetVirtualItems());
@@ -1376,6 +1346,63 @@ void GridLanesLayoutAlgorithm::CompleteTrackSizingAlgorithm(
   }
 
   // TODO(almaher): Do this for each subgrid (similar to grid).
+}
+
+void GridLanesLayoutAlgorithm::CompleteFinalBaselineAlignment(
+    GridSizingTree* sizing_tree) {
+  ComputeBaselineAlignment(sizing_tree);
+}
+
+void GridLanesLayoutAlgorithm::ComputeBaselineAlignment(
+    GridSizingTree* sizing_tree) {
+  DCHECK(sizing_tree);
+
+  const auto& style = Style();
+  const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
+  auto& track_collection =
+      sizing_tree->LayoutData().SizingCollection(grid_axis_direction);
+
+  if (!track_collection.HasBaselines()) {
+    return;
+  }
+
+  track_collection.ResetBaselines();
+
+  const bool is_for_columns = grid_axis_direction == kForColumns;
+  const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
+      style, grid_lanes_available_size_,
+      is_for_columns ? kForRows : kForColumns);
+
+  // If an item is baseline aligned, placement is required in two passes because
+  // track baselines must be computed before items can be aligned. In the
+  // initial placement pass, compute track baselines by placing items to
+  // determine their positions and baselines. Note that during this baseline
+  // calculation pass, items are not added to the container; only baseline
+  // information is computed and stored, since baselines are needed before items
+  // can be properly aligned and placed.
+  GridLanesRunningPositions running_positions(
+      track_collection, style,
+      ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_));
+
+  // Use a dummy baseline accumulator since we only care about storing
+  // baselines on the track collection, not accumulating container baselines.
+  std::optional<StackingBaselineAccumulator> stacking_baseline_accumulator;
+  std::optional<GridBaselineAccumulator> grid_baseline_accumulator;
+  BaselineAccumulator* baseline_accumulator;
+  if (is_for_columns) {
+    stacking_baseline_accumulator.emplace(&track_collection);
+    baseline_accumulator = &stacking_baseline_accumulator.value();
+  } else {
+    grid_baseline_accumulator.emplace(style.GetFontBaseline());
+    baseline_accumulator = &grid_baseline_accumulator.value();
+  }
+
+  RunGridLanesPlacementPhase(*sizing_tree, SizingConstraint::kLayout,
+                             stacking_axis_gap,
+                             PlacementPhase::kCalculateBaselines,
+                             baseline_accumulator, running_positions);
+
+  // TODO(almaher): Do this for each layer of subgrid (similar to grid).
 }
 
 void GridLanesLayoutAlgorithm::ComputeSizingTreeInGridAxis(
