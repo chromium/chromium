@@ -16,7 +16,7 @@
 #include "base/pickle.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/x/selection_owner.h"
-#include "ui/base/x/selection_requestor.h"
+#include "ui/base/x/selection_requester.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"

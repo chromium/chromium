@@ -20,7 +20,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/x/selection_owner.h"
-#include "ui/base/x/selection_requestor.h"
+#include "ui/base/x/selection_requester.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/atom_cache.h"
@@ -138,11 +138,11 @@ XClipboardHelper::XClipboardHelper(
     : connection_(*x11::Connection::Get()),
       x_root_window_(ui::GetX11RootWindow()),
       x_window_(connection_->CreateDummyWindow("Chromium Clipboard Window")),
-      selection_requestor_(
-          std::make_unique<SelectionRequestor>(x_window_, this)),
+      selection_requester_(
+          std::make_unique<SelectionRequester>(x_window_, this)),
       clipboard_owner_(connection_.get(), x_window_, x11::GetAtom(kClipboard)),
       primary_owner_(connection_.get(), x_window_, x11::Atom::PRIMARY) {
-  DCHECK(selection_requestor_);
+  DCHECK(selection_requester_);
 
   connection_->SetStringProperty(x_window_, x11::Atom::WM_NAME,
                                  x11::Atom::STRING, "Chromium clipboard");
@@ -214,7 +214,7 @@ void XClipboardHelper::OnReadAsyncTargetList(
     TargetList targets) {
   std::vector<x11::Atom> intersection;
   GetAtomIntersection(types, targets.target_list(), &intersection);
-  selection_requestor_->RequestTypesAsync(selection_name, intersection,
+  selection_requester_->RequestTypesAsync(selection_name, intersection,
                                           std::move(callback));
 }
 
@@ -347,7 +347,7 @@ void XClipboardHelper::GetTargetListAsync(
     return;
   }
 
-  selection_requestor_->PerformConvertSelectionAsync(
+  selection_requester_->PerformConvertSelectionAsync(
       selection_name, x11::GetAtom(kTargets),
       base::BindOnce(&XClipboardHelper::OnGetTargetListResponse, GetWeakPtr(),
                      selection_name, std::move(callback)));
@@ -391,7 +391,7 @@ void XClipboardHelper::OnGetTargetListResponse(
                         std::move(final_callback)));
 
   for (const auto& text_atom : types) {
-    selection_requestor_->PerformConvertSelectionAsync(
+    selection_requester_->PerformConvertSelectionAsync(
         selection_name, text_atom,
         base::BindOnce(
             [](x11::Atom text_atom,
@@ -419,7 +419,7 @@ bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
     }
   } else if (auto* notify = xev.As<x11::SelectionNotifyEvent>()) {
     if (notify->requestor == x_window_) {
-      selection_requestor_->OnSelectionNotify(*notify);
+      selection_requester_->OnSelectionNotify(*notify);
     } else {
       return false;
     }
@@ -440,8 +440,8 @@ bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
       primary_owner_.OnPropertyEvent(*prop);
     } else if (clipboard_owner_.CanDispatchPropertyEvent(*prop)) {
       clipboard_owner_.OnPropertyEvent(*prop);
-    } else if (selection_requestor_->CanDispatchPropertyEvent(*prop)) {
-      selection_requestor_->OnPropertyEvent(*prop);
+    } else if (selection_requester_->CanDispatchPropertyEvent(*prop)) {
+      selection_requester_->OnPropertyEvent(*prop);
     } else {
       return false;
     }
@@ -451,8 +451,8 @@ bool XClipboardHelper::DispatchEvent(const x11::Event& xev) {
   return true;
 }
 
-SelectionRequestor* XClipboardHelper::GetSelectionRequestorForTest() {
-  return selection_requestor_.get();
+SelectionRequester* XClipboardHelper::GetSelectionRequesterForTest() {
+  return selection_requester_.get();
 }
 
 base::WeakPtr<XClipboardHelper> XClipboardHelper::GetWeakPtr() {

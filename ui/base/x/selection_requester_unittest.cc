@@ -1,8 +1,8 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/x/selection_requestor.h"
+#include "ui/base/x/selection_requester.h"
 
 #include <stddef.h>
 
@@ -25,16 +25,16 @@
 
 namespace ui {
 
-class SelectionRequestorTest : public testing::Test {
+class SelectionRequesterTest : public testing::Test {
  public:
-  explicit SelectionRequestorTest() : connection_(*x11::Connection::Get()) {}
+  explicit SelectionRequesterTest() : connection_(*x11::Connection::Get()) {}
 
-  SelectionRequestorTest(const SelectionRequestorTest&) = delete;
-  SelectionRequestorTest& operator=(const SelectionRequestorTest&) = delete;
+  SelectionRequesterTest(const SelectionRequesterTest&) = delete;
+  SelectionRequesterTest& operator=(const SelectionRequesterTest&) = delete;
 
-  ~SelectionRequestorTest() override = default;
+  ~SelectionRequesterTest() override = default;
 
-  // Responds to the SelectionRequestor's XConvertSelection() request by
+  // Responds to the SelectionRequester's XConvertSelection() request by
   // - Setting the property passed into the XConvertSelection() request to
   //   |value|.
   // - Sending a SelectionNotify event.
@@ -64,7 +64,7 @@ class SelectionRequestorTest : public testing::Test {
   void SetUp() override {
     helper_ = std::make_unique<XClipboardHelper>(
         base::BindRepeating([](ClipboardBuffer buffer) {}));
-    requestor_ = helper_->GetSelectionRequestorForTest();
+    requestor_ = helper_->GetSelectionRequesterForTest();
   }
 
   void TearDown() override {
@@ -75,16 +75,16 @@ class SelectionRequestorTest : public testing::Test {
   raw_ref<x11::Connection> connection_;
 
   std::unique_ptr<XClipboardHelper> helper_;
-  raw_ptr<SelectionRequestor> requestor_ = nullptr;
+  raw_ptr<SelectionRequester> requestor_ = nullptr;
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-// Test that SelectionRequestor correctly handles receiving a request while it
+// Test that SelectionRequester correctly handles receiving a request while it
 // is processing another request.
-TEST_F(SelectionRequestorTest, NestedRequests) {
+TEST_F(SelectionRequesterTest, NestedRequests) {
   // Assume that |selection| will have no owner. If there is an owner, the owner
   // will set the property passed into the XConvertSelection() request which is
   // undesirable.
@@ -115,7 +115,7 @@ TEST_F(SelectionRequestorTest, NestedRequests) {
   EXPECT_EQ(x11::Atom::STRING, future2.Get<2>());
 }
 
-TEST_F(SelectionRequestorTest, AbortStaleRequests) {
+TEST_F(SelectionRequesterTest, AbortStaleRequests) {
   x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
   x11::Atom target = x11::GetAtom("TARGET");
 
@@ -131,7 +131,7 @@ TEST_F(SelectionRequestorTest, AbortStaleRequests) {
   EXPECT_EQ(x11::Atom::None, future.Get<2>());
 }
 
-TEST_F(SelectionRequestorTest, RequestTypesAsync) {
+TEST_F(SelectionRequesterTest, RequestTypesAsync) {
   x11::Atom selection = x11::GetAtom("FAKE_SELECTION");
   x11::Atom target1 = x11::GetAtom("TARGET1");
   x11::Atom target2 = x11::GetAtom("TARGET2");

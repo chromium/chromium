@@ -25,7 +25,7 @@
 
 namespace ui {
 
-class SelectionRequestor;
+class SelectionRequester;
 
 // Helper class that provides core X11 clipboard integration code. Shared by
 // both legacy and Ozone X11 backends.
@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   // Returns true if the event was handled.
   bool DispatchEvent(const x11::Event& xev);
 
-  SelectionRequestor* GetSelectionRequestorForTest();
+  SelectionRequester* GetSelectionRequesterForTest();
 
   base::WeakPtr<XClipboardHelper> GetWeakPtr();
 
@@ -141,7 +141,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XClipboardHelper : public x11::EventObserver {
   x11::ScopedEventSelector x_window_events_;
 
   // Object which requests and receives selection data.
-  const std::unique_ptr<SelectionRequestor> selection_requestor_;
+  const std::unique_ptr<SelectionRequester> selection_requester_;
 
   // Temporary target map that we write to during DispatchObects.
   SelectionFormatMap clipboard_data_;

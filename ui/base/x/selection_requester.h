@@ -1,9 +1,9 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_X_SELECTION_REQUESTOR_H_
-#define UI_BASE_X_SELECTION_REQUESTOR_H_
+#ifndef UI_BASE_X_SELECTION_REQUESTER_H_
+#define UI_BASE_X_SELECTION_REQUESTER_H_
 
 #include <cstddef>
 #include <memory>
@@ -27,19 +27,19 @@ class XClipboardHelper;
 //
 // X11 uses a system called "selections" to implement clipboards and drag and
 // drop. This class interprets messages from the stateful selection request
-// API. SelectionRequestor should only deal with the X11 details; it does not
+// API. SelectionRequester should only deal with the X11 details; it does not
 // implement per-component fast-paths.
-class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
+class COMPONENT_EXPORT(UI_BASE_X) SelectionRequester {
  public:
   using ConvertSelectionCallback = base::OnceCallback<
       void(bool success, std::vector<uint8_t> out_data, x11::Atom out_type)>;
 
-  SelectionRequestor(x11::Window xwindow, XClipboardHelper* helper);
-  SelectionRequestor(const SelectionRequestor&) = delete;
-  SelectionRequestor& operator=(const SelectionRequestor&) = delete;
-  ~SelectionRequestor();
+  SelectionRequester(x11::Window xwindow, XClipboardHelper* helper);
+  SelectionRequester(const SelectionRequester&) = delete;
+  SelectionRequester& operator=(const SelectionRequester&) = delete;
+  ~SelectionRequester();
 
-  base::WeakPtr<SelectionRequestor> GetWeakPtr();
+  base::WeakPtr<SelectionRequester> GetWeakPtr();
 
   // Does the work of requesting |target| from |selection|. The result is
   // returned via |callback|.
@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
   void OnPropertyEvent(const x11::PropertyNotifyEvent& event);
 
  private:
-  friend class SelectionRequestorTest;
+  friend class SelectionRequesterTest;
 
   // A request that has been issued.
   struct Request {
@@ -140,9 +140,9 @@ class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
 
   base::OneShotTimer abort_timer_;
 
-  base::WeakPtrFactory<SelectionRequestor> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SelectionRequester> weak_ptr_factory_{this};
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_X_SELECTION_REQUESTOR_H_
+#endif  // UI_BASE_X_SELECTION_REQUESTER_H_

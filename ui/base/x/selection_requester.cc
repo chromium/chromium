@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/x/selection_requestor.h"
+#include "ui/base/x/selection_requester.h"
 
 #include <algorithm>
 
@@ -42,19 +42,19 @@ std::vector<uint8_t> CombineData(
 
 }  // namespace
 
-SelectionRequestor::SelectionRequestor(x11::Window x_window,
+SelectionRequester::SelectionRequester(x11::Window x_window,
                                        XClipboardHelper* helper)
     : x_window_(x_window),
       helper_(helper),
       x_property_(x11::GetAtom(kChromeSelection)) {}
 
-SelectionRequestor::~SelectionRequestor() = default;
+SelectionRequester::~SelectionRequester() = default;
 
-base::WeakPtr<SelectionRequestor> SelectionRequestor::GetWeakPtr() {
+base::WeakPtr<SelectionRequester> SelectionRequester::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void SelectionRequestor::PerformConvertSelectionAsync(
+void SelectionRequester::PerformConvertSelectionAsync(
     x11::Atom selection,
     x11::Atom target,
     ConvertSelectionCallback callback) {
@@ -68,11 +68,11 @@ void SelectionRequestor::PerformConvertSelectionAsync(
 
   if (!abort_timer_.IsRunning()) {
     abort_timer_.Start(FROM_HERE, base::Milliseconds(kRequestTimeoutMs), this,
-                       &SelectionRequestor::AbortStaleRequests);
+                       &SelectionRequester::AbortStaleRequests);
   }
 }
 
-void SelectionRequestor::RequestTypesAsync(
+void SelectionRequester::RequestTypesAsync(
     x11::Atom selection,
     const std::vector<x11::Atom>& types,
     base::OnceCallback<void(SelectionData)> callback) {
@@ -81,7 +81,7 @@ void SelectionRequestor::RequestTypesAsync(
                         std::move(callback));
 }
 
-void SelectionRequestor::RequestTypesRecursive(
+void SelectionRequester::RequestTypesRecursive(
     x11::Atom selection,
     std::vector<x11::Atom> types,
     base::OnceCallback<void(SelectionData)> callback) {
@@ -95,12 +95,12 @@ void SelectionRequestor::RequestTypesRecursive(
 
   PerformConvertSelectionAsync(
       selection, target,
-      base::BindOnce(&SelectionRequestor::OnRequestTypesAsyncResponse,
+      base::BindOnce(&SelectionRequester::OnRequestTypesAsyncResponse,
                      GetWeakPtr(), selection, std::move(types),
                      std::move(callback)));
 }
 
-void SelectionRequestor::OnRequestTypesAsyncResponse(
+void SelectionRequester::OnRequestTypesAsyncResponse(
     x11::Atom selection,
     std::vector<x11::Atom> remaining_types,
     base::OnceCallback<void(SelectionData)> callback,
@@ -116,7 +116,7 @@ void SelectionRequestor::OnRequestTypesAsyncResponse(
                         std::move(callback));
 }
 
-void SelectionRequestor::OnSelectionNotify(
+void SelectionRequester::OnSelectionNotify(
     const x11::SelectionNotifyEvent& selection) {
   Request* request = GetCurrentRequest();
   x11::Atom event_property = selection.property;
@@ -156,13 +156,13 @@ void SelectionRequestor::OnSelectionNotify(
   }
 }
 
-bool SelectionRequestor::CanDispatchPropertyEvent(
+bool SelectionRequester::CanDispatchPropertyEvent(
     const x11::PropertyNotifyEvent& prop) {
   return prop.window == x_window_ && prop.atom == x_property_ &&
          prop.state == x11::Property::NewValue;
 }
 
-void SelectionRequestor::OnPropertyEvent(
+void SelectionRequester::OnPropertyEvent(
     const x11::PropertyNotifyEvent& event) {
   Request* request = GetCurrentRequest();
   if (!request || !request->data_sent_incrementally) {
@@ -200,7 +200,7 @@ void SelectionRequestor::OnPropertyEvent(
   }
 }
 
-void SelectionRequestor::AbortStaleRequests() {
+void SelectionRequester::AbortStaleRequests() {
   base::TimeTicks now = base::TimeTicks::Now();
   auto weak_this = GetWeakPtr();
   // Iterate backwards. CompleteRequest() only erases from the front, so
@@ -216,11 +216,11 @@ void SelectionRequestor::AbortStaleRequests() {
 
   if (!requests_.empty()) {
     abort_timer_.Start(FROM_HERE, base::Milliseconds(kRequestTimeoutMs), this,
-                       &SelectionRequestor::AbortStaleRequests);
+                       &SelectionRequester::AbortStaleRequests);
   }
 }
 
-void SelectionRequestor::CompleteRequest(size_t index, bool success) {
+void SelectionRequester::CompleteRequest(size_t index, bool success) {
   CHECK_LT(index, requests_.size());
 
   Request* request = requests_[index].get();
@@ -261,7 +261,7 @@ void SelectionRequestor::CompleteRequest(size_t index, bool success) {
   }
 }
 
-void SelectionRequestor::ConvertSelectionForCurrentRequest() {
+void SelectionRequester::ConvertSelectionForCurrentRequest() {
   Request* request = GetCurrentRequest();
   if (request) {
     x11::Connection::Get()->ConvertSelection({
@@ -275,11 +275,11 @@ void SelectionRequestor::ConvertSelectionForCurrentRequest() {
   }
 }
 
-SelectionRequestor::Request* SelectionRequestor::GetCurrentRequest() {
+SelectionRequester::Request* SelectionRequester::GetCurrentRequest() {
   return requests_.empty() ? nullptr : requests_.front().get();
 }
 
-SelectionRequestor::Request::Request(x11::Atom selection,
+SelectionRequester::Request::Request(x11::Atom selection,
                                      x11::Atom target,
                                      base::TimeTicks timeout,
                                      ConvertSelectionCallback callback)
@@ -292,6 +292,6 @@ SelectionRequestor::Request::Request(x11::Atom selection,
       completed(false),
       callback(std::move(callback)) {}
 
-SelectionRequestor::Request::~Request() = default;
+SelectionRequester::Request::~Request() = default;
 
 }  // namespace ui

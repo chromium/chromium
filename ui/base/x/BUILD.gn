@@ -14,8 +14,8 @@ component("x") {
   output_name = "ui_base_x"
 
   sources = [
-    "selection_requestor.cc",
-    "selection_requestor.h",
+    "selection_requester.cc",
+    "selection_requester.h",
     "selection_utils.cc",
     "selection_utils.h",
     "x11_clipboard_helper.cc",
@@ -161,7 +161,7 @@ source_set("test_support") {
 source_set("unittests") {
   testonly = true
   sources = [
-    "selection_requestor_unittest.cc",
+    "selection_requester_unittest.cc",
     "selection_utils_unittest.cc",
     "x11_cursor_factory_unittest.cc",
     "x11_cursor_loader_unittest.cc",
