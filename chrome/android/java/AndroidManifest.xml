@@ -699,7 +699,7 @@ by a child template that "extends" this file.
         </activity>
         <activity
             android:name="org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity"
-            android:theme="@style/Theme.Chromium.WithWindowAnimation"
+            android:theme="@style/Theme.Chromium.Activity.FakeTranslucent"
             android:exported="false"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode">
         </activity>

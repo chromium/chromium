@@ -199,7 +199,7 @@
         android:name="org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
         android:exported="false"
-        android:theme="@style/Theme.Chromium.WithWindowAnimation">
+        android:theme="@style/Theme.Chromium.Activity.FakeTranslucent">
     </activity>  # DIFF-ANCHOR: 81783ca5
     <activity  # DIFF-ANCHOR: 44266a6a
         android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"

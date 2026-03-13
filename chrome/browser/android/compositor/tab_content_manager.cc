@@ -60,10 +60,10 @@ using TabReadbackCallback = base::OnceCallback<void(float, const SkBitmap&)>;
 // After this amount of time we will give up waiting for the readback as it is
 // unlikely that it will complete. Having the callbacks continue to wait may
 // leak memory or cause callbacks to hang indefinitely.
-const base::TimeDelta kTabReadbackTimeout = base::Seconds(15);
+const base::TimeDelta kTabReadbackTimeout = base::Seconds(5);
 
 constexpr int kMaxReadbackRetries = 5;
-constexpr base::TimeDelta kReadbackRetryDelay = base::Milliseconds(20);
+constexpr base::TimeDelta kReadbackRetryDelay = base::Milliseconds(100);
 
 content::RenderWidgetHostView* GetRwhv(content::WebContents* web_contents) {
   content::RenderViewHost* rvh = web_contents->GetRenderViewHost();
