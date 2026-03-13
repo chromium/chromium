@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_MOCK_EXTENSION_INSTALL_POLICY_SERVICE_H_
 #define CHROME_BROWSER_POLICY_CLOUD_MOCK_EXTENSION_INSTALL_POLICY_SERVICE_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
@@ -21,7 +23,8 @@ class MockExtensionInstallPolicyService : public ExtensionInstallPolicyService {
   // ExtensionInstallPolicyService:
   MOCK_METHOD(void,
               CanInstallExtension,
-              (const ExtensionIdAndVersion&, base::OnceCallback<void(bool)>),
+              (const ExtensionIdAndVersion&,
+               base::OnceCallback<void(bool, std::u16string)>),
               (const, override));
   MOCK_METHOD(std::optional<bool>,
               IsExtensionAllowed,

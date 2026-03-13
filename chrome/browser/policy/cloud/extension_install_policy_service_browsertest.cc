@@ -43,10 +43,12 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/strings/grit/extensions_strings.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -205,16 +207,51 @@ class ExtensionInstallPolicyServiceTest : public PolicyTest {
         extension_install_policies.SerializeAsString());
   }
 
-  void CheckCanInstallExtension(const std::string& extension_id,
-                                const std::string& extension_version,
-                                bool expected_result) {
+  enum class DisplayMessage {
+    kRiskScore,
+    kCategory,
+    kFallback,
+  };
+
+  void CheckCanInstallExtension(
+      const std::string& extension_id,
+      const std::string& extension_version,
+      bool expected_result,
+      std::optional<DisplayMessage> message = std::nullopt) {
     ExtensionInstallPolicyServiceImpl service(browser()->profile());
-    base::test::TestFuture<bool> future;
+    base::test::TestFuture<bool, std::u16string> future;
     service.CanInstallExtension(
         ExtensionIdAndVersion(extension_id, extension_version),
         future.GetCallback());
     ASSERT_TRUE(future.Wait());
-    EXPECT_EQ(future.Get(), expected_result);
+    EXPECT_EQ(expected_result, future.Get<bool>());
+    std::u16string expected_blocked_message;
+    if (message.has_value()) {
+      switch (message.value()) {
+        case DisplayMessage::kRiskScore:
+          expected_blocked_message = l10n_util::GetStringUTF16(
+              IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_RISK_SCORE);
+          break;
+        case DisplayMessage::kCategory:
+          expected_blocked_message = l10n_util::GetStringUTF16(
+              IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_CATEGORY);
+          break;
+        case DisplayMessage::kFallback:
+          expected_blocked_message = l10n_util::GetStringUTF16(
+              IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_POLICY_FALLBACK);
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+    EXPECT_EQ(expected_blocked_message, future.Get<std::u16string>());
+    // Post-condition of CanInstallExtension(): if true, `blocked_message` is
+    // empty. If false, `blocked_message` is non-empty.
+    if (future.Get<bool>()) {
+      EXPECT_EQ(std::u16string(), future.Get<std::u16string>());
+    } else {
+      EXPECT_NE(std::u16string(), future.Get<std::u16string>());
+    }
     service.Shutdown();
   }
 
@@ -250,12 +287,13 @@ class ExtensionInstallPolicyServiceTest : public PolicyTest {
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                        CanInstallExtensionAllowedByDefault) {
   ExtensionInstallPolicyServiceImpl service(browser()->profile());
-  base::test::TestFuture<bool> future;
+  base::test::TestFuture<bool, std::u16string> future;
   service.CanInstallExtension(
       ExtensionIdAndVersion(kExtensionId1, kExtensionVersion1),
       future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(future.Get<bool>());
+  EXPECT_EQ(std::u16string(), future.Get<std::u16string>());
   ASSERT_NO_FATAL_FAILURE(CheckUserMayInstall(kExtensionId1, kExtensionVersion1,
                                               /*is_from_webstore=*/true,
                                               /*expected_result=*/true));
@@ -276,8 +314,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
       {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
       /*is_machine_level=*/true);
 
-  CheckCanInstallExtension(kExtensionId1, kExtensionVersion1,
-                           /*expected_result=*/false);
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kCategory));
   // Unrelated extension versions are not blocked.
   ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
                                                    kExtensionVersion2,
@@ -292,6 +331,55 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
   ASSERT_NO_FATAL_FAILURE(CheckUserMayInstall(kExtensionId1, kExtensionVersion1,
                                               /*is_from_webstore=*/true,
                                               /*expected_result=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
+                       CanInstallExtensionBlockedMessage) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
+
+  // We should display a different message to the user, depending on the
+  // `reasons` in the ExtensionInstallPolicy.
+
+  // Risk score: kRiskScore message.
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_RISK_SCORE},
+      /*is_machine_level=*/true);
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kRiskScore));
+
+  // Category: kCategory message.
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
+      /*is_machine_level=*/true);
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kCategory));
+
+  // Both risk score and category: kRiskScore message.
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK,
+      {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY,
+       enterprise_management::ExtensionInstallPolicy::REASON_RISK_SCORE},
+      /*is_machine_level=*/true);
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kRiskScore));
+
+  // Neither risk score nor category: kFallback message.
+  SetExtensionInstallPolicy(
+      kExtensionId1, kExtensionVersion1,
+      enterprise_management::ExtensionInstallPolicy::ACTION_BLOCK, {},
+      /*is_machine_level=*/true);
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kFallback));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
@@ -319,9 +407,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
       {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
       /*is_machine_level=*/false);
 
-  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
-                                                   kExtensionVersion1,
-                                                   /*expected_result=*/false));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kCategory));
   // Unrelated extension versions are not blocked.
   ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
                                                    kExtensionVersion2,
@@ -351,9 +439,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
       {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
       /*is_machine_level=*/false);
 
-  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
-                                                   kExtensionVersion1,
-                                                   /*expected_result=*/false));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kCategory));
   // Unrelated extension versions are not blocked.
   ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
                                                    kExtensionVersion2,
@@ -382,9 +470,9 @@ IN_PROC_BROWSER_TEST_F(
       {enterprise_management::ExtensionInstallPolicy::REASON_BLOCKED_CATEGORY},
       /*is_machine_level=*/false);
 
-  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
-                                                   kExtensionVersion1,
-                                                   /*expected_result=*/false));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kCategory));
   // Unrelated extension versions are not blocked.
   ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
                                                    kExtensionVersion2,
@@ -413,9 +501,9 @@ IN_PROC_BROWSER_TEST_F(
       enterprise_management::ExtensionInstallPolicy::ACTION_ALLOW, {},
       /*is_machine_level=*/false);
 
-  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
-                                                   kExtensionVersion1,
-                                                   /*expected_result=*/false));
+  ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(
+      kExtensionId1, kExtensionVersion1,
+      /*expected_result=*/false, DisplayMessage::kCategory));
   // Unrelated extension versions are not blocked.
   ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
                                                    kExtensionVersion2,
@@ -493,9 +581,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
       extensions::ExtensionManagementFactory::GetForBrowserContext(
           browser()->profile());
   ASSERT_TRUE(extension_management);
-  // CanInstallExtension() returns true even though the extension is blocked by
-  // the ExtensionSettings policy. "true" here means "EIPS will not block it",
-  // but other things still can (in this case,
+  // CanInstallExtension() returns true even though the extension is blocked
+  // by the ExtensionSettings policy. "true" here means "EIPS will not block
+  // it", but other things still can (in this case,
   // StandardManagementPolicyProvider).
   ASSERT_NO_FATAL_FAILURE(CheckCanInstallExtension(kExtensionId1,
                                                    kExtensionVersion1,

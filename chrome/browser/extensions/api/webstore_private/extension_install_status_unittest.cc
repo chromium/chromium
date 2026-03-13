@@ -676,7 +676,7 @@ TEST_F(ExtensionInstallStatusTestWithCloudPolicyChecks,
       *mock_extension_install_policy_service(),
       CanInstallExtension(policy::ExtensionIdAndVersion(kExtensionId, "1.0.0"),
                           testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(false));
+      .WillOnce(base::test::RunOnceCallback<1>(false, std::u16string()));
   EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetInstallStatusSynchronously(
                 kExtensionId, profile(), base::Version("1.0.0"),
@@ -687,7 +687,7 @@ TEST_F(ExtensionInstallStatusTestWithCloudPolicyChecks,
       *mock_extension_install_policy_service(),
       CanInstallExtension(policy::ExtensionIdAndVersion(kExtensionId, "1.0.0"),
                           testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(true));
+      .WillOnce(base::test::RunOnceCallback<1>(true, std::u16string()));
   EXPECT_EQ(ExtensionInstallStatus::kInstallable,
             GetInstallStatusSynchronously(
                 kExtensionId, profile(), base::Version("1.0.0"),

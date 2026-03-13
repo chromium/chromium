@@ -312,6 +312,12 @@
       <message name="IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_RISK_SCORE" desc="Error message when a user tries to install an extension that is blocked due to the extension's risk score heuristics.">
         Access to this extension is blocked under your organization's extension risk policy.
       </message>
+      <message name="IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_CATEGORY" desc="Error message when a user tries to install an extension that is blocked due to the extension's category (e.g. Games).">
+        Access to this extension category is blocked by your organization.
+      </message>
+      <message name="IDS_EXTENSION_CANT_INSTALL_BLOCKED_BY_POLICY_FALLBACK" desc="Fallback, generic error message when an extension can't be installed due to enterprise policy, but the specific reason is unknown.">
+        Access to this extension is blocked by your organization.
+      </message>
       <!--
         Device API strings. Please keep alphabetized.
 

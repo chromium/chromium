@@ -53,7 +53,7 @@ class ExtensionInstallPolicyService
   // as "id@version".
   virtual void CanInstallExtension(
       const ExtensionIdAndVersion& extension_id_and_version,
-      base::OnceCallback<void(bool)>) const = 0;
+      base::OnceCallback<void(bool, std::u16string blocked_message)>) const = 0;
 
   virtual std::optional<bool> IsExtensionAllowed(
       const ExtensionIdAndVersion& extension_id_and_version) const = 0;
@@ -76,7 +76,8 @@ class ExtensionInstallPolicyServiceImpl
   // ExtensionInstallPolicyService impl:
   void CanInstallExtension(
       const ExtensionIdAndVersion& extension_id_and_version,
-      base::OnceCallback<void(bool)>) const override;
+      base::OnceCallback<void(bool, std::u16string blocked_message)>)
+      const override;
   std::optional<bool> IsExtensionAllowed(
       const ExtensionIdAndVersion& extension_id_and_version) const override;
 

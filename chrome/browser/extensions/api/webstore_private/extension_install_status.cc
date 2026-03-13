@@ -201,7 +201,9 @@ ExtensionInstallStatus PerformSynchronousChecks(
 
 void OnCloudPolicyCheckDone(
     base::OnceCallback<void(ExtensionInstallStatus)> callback,
-    bool can_install) {
+    bool can_install,
+    std::u16string blocked_message) {
+  // TODO(crbug.com/477545527): Also return `blocked_message` via the callback.
   std::move(callback).Run(can_install ? kInstallable : kBlockedByPolicy);
 }
 
