@@ -5412,7 +5412,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableVulkanDescription, kOsLinux | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kVulkan)},
     {"force-enable-webgpu-interop", flag_descriptions::kWebGpuInteropName,
-     flag_descriptions::kkWebGpuInteropDescription, kOsLinux,
+     flag_descriptions::kWebGpuInteropDescription, kOsLinux,
      FEATURE_VALUE_TYPE(features::kForceEnableWebGpuInterop)},
     {"default-angle-vulkan", flag_descriptions::kDefaultAngleVulkanName,
      flag_descriptions::kDefaultAngleVulkanDescription, kOsLinux | kOsAndroid,
