@@ -236,12 +236,12 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       let enabled = false;
 
       if (id === SettingsOption.IMAGES) {
-        enabled = this.settingsPrefs.imagesEnabled;
+        enabled = chrome.readingMode.imagesEnabled;
         ariaLabel = this.getImageItemLabels();
       }
 
       if (id === SettingsOption.LINKS) {
-        enabled = this.settingsPrefs.linksEnabled;
+        enabled = chrome.readingMode.linksEnabled;
         ariaLabel = this.getLinkItemLabels();
       }
 
