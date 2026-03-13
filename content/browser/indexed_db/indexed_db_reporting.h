@@ -86,6 +86,31 @@ enum BackingStoreOpenResult {
   INDEXED_DB_BACKING_STORE_OPEN_MAX,
 };
 
+// The outcome of an `IDBFactory::Open` request from the browser's perspective,
+// after which subsequent outcomes are dependent on the client's behaviour.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DatabaseConnectionOpenResult)
+enum class DatabaseConnectionOpenResult {
+  // Logged for all ostensibly valid requests before processing begins.
+  kReceivedRequest = 0,
+  // The database was opened directly without a version change.
+  kSuccessDirectOpen = 1,
+  // The database was opened successfully and a version change is needed.
+  kSuccessUpgradeNeeded = 2,
+  // A version change is needed, but the database had to be recreated due to
+  // data loss (e.g. corruption).
+  kSuccessUpgradeNeededWithDataLoss = 3,
+  // The backing store could not be initialized.
+  kErrorBackingStoreInitFailed = 4,
+  // Creating/opening the database in the backing store failed.
+  kErrorDatabaseOpenFailed = 5,
+  // The requested version is lower than the existing version.
+  kErrorVersionTooLow = 6,
+  kMaxValue = kErrorVersionTooLow,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:DatabaseConnectionOpenResult)
+
 // These values are used for UMA metrics and should never be changed.
 enum class IndexedDBAction {
   // This is recorded every time there is an attempt to open an unopened backing
@@ -125,6 +150,14 @@ void ReportInternalError(const char* type, BackingStoreErrorSource location);
 
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s);
+
+inline void Log(DatabaseConnectionOpenResult result,
+                std::string_view histogram_suffix) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"IndexedDB.DatabaseConnectionOpenResult", histogram_suffix}),
+      result);
+}
 
 // Logs `duration` to `histogram_name` concatenated with `histogram_suffix`.
 inline void LogDuration(const base::TimeDelta& duration,

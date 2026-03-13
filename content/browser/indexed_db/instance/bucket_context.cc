@@ -717,6 +717,11 @@ void BucketContext::Open(
     return;
   }
 
+  std::string_view fallback_suffix = DetermineHistogramSuffix(
+      sqlite_rollout_stage_, bucket_locator(), data_path_);
+  Log(DatabaseConnectionOpenResult::kReceivedRequest,
+      backing_store_ ? GetHistogramSuffix() : fallback_suffix);
+
   // TODO(dgrogan): Don't let a non-existing database be opened (and therefore
   // created) if this origin is already over quota.
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client(
@@ -724,15 +729,15 @@ void BucketContext::Open(
 
   IndexedDBDataLossInfo data_loss_info;
   if (!backing_store_) {
-    std::string_view suffix_if_init_fails = DetermineHistogramSuffix(
-        sqlite_rollout_stage_, bucket_locator(), data_path_);
     Status s;
     DatabaseError error;
     std::tie(s, error, data_loss_info) =
         InitBackingStore(/*create_if_missing=*/true);
     LogStatus(s, "IndexedDB.BackingStore.CreateIfMissing",
-              s.ok() ? GetHistogramSuffix() : suffix_if_init_fails);
+              s.ok() ? GetHistogramSuffix() : fallback_suffix);
     if (!s.ok()) {
+      Log(DatabaseConnectionOpenResult::kErrorBackingStoreInitFailed,
+          fallback_suffix);
       std::move(factory_client)->Error(error.code(), error.message());
       if (s.IsCorruption()) {
         HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
@@ -1297,8 +1302,11 @@ void BucketContext::ResetBackingStore() {
   idle_timer_.Stop();
 
   std::optional<bool> was_using_sqlite;
+  std::optional<std::string_view> histogram_suffix;
   if (backing_store_) {
+    base::ElapsedTimer timer;
     was_using_sqlite = IsUsingSqlite();
+    histogram_suffix = GetHistogramSuffix();
     base::WaitableEvent destruct_event;
     std::move(*backing_store()).SignalWhenDestructionComplete(&destruct_event);
     backing_store_.reset();
@@ -1306,24 +1314,32 @@ void BucketContext::ResetBackingStore() {
     if (!GetTeardownExtraStepForTesting().is_null()) {
       std::move(GetTeardownExtraStepForTesting()).Run();
     }
+    LogDuration(timer.Elapsed(), "IndexedDB.BackendDuration.CloseBackingStore",
+                histogram_suffix.value());
   }
 
   if (is_doomed_ && !in_memory()) {
-    // TODO(crbug.com/436887363): Log if deletion fails.
+    bool delete_success = false;
     if (ShouldUseLegacyFilePath(bucket_locator())) {
       if (was_using_sqlite.value_or(ShouldUseSqlite(
               sqlite_rollout_stage_, bucket_locator(), data_path_))) {
-        base::DeletePathRecursively(
+        delete_success = base::DeletePathRecursively(
             data_path_.Append(GetSqliteDbDirectory(bucket_locator())));
       } else {
-        base::DeletePathRecursively(
+        delete_success = base::DeletePathRecursively(
             data_path_.Append(GetLevelDBFileName(bucket_locator())));
-        base::DeletePathRecursively(
+        delete_success &= base::DeletePathRecursively(
             data_path_.Append(GetBlobStoreFileName(bucket_locator())));
       }
     } else {
-      base::DeletePathRecursively(data_path_);
+      delete_success = base::DeletePathRecursively(data_path_);
     }
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"IndexedDB.DeleteBucketDataSuccess",
+             histogram_suffix.value_or(DetermineHistogramSuffix(
+                 sqlite_rollout_stage_, bucket_locator(), data_path_))}),
+        delete_success);
   }
 
   task_run_queued_ = false;

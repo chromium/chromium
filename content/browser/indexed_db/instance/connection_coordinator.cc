@@ -252,6 +252,8 @@ class ConnectionCoordinator::OpenRequest
             absl::StrFormat("Internal error opening database with version %i",
                             pending_->version));
       }
+      Log(DatabaseConnectionOpenResult::kErrorDatabaseOpenFailed,
+          bucket_context_handle_->GetHistogramSuffix());
       TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
                                  message);
       state_ = base::unexpected(open_status);
@@ -278,6 +280,8 @@ class ConnectionCoordinator::OpenRequest
     if (!is_new_database &&
         (new_version == old_version ||
          new_version == IndexedDBDatabaseMetadata::NO_VERSION)) {
+      Log(DatabaseConnectionOpenResult::kSuccessDirectOpen,
+          bucket_context_handle_->GetHistogramSuffix());
       OnOpenSuccess(db_->CreateConnection(
           std::move(pending_->database_callbacks),
           std::move(pending_->client_state_checker), pending_->client_token,
@@ -295,6 +299,8 @@ class ConnectionCoordinator::OpenRequest
     } else if (new_version < old_version) {
       // Requested version is lower than current version - fail the request.
       CHECK(!is_new_database);
+      Log(DatabaseConnectionOpenResult::kErrorVersionTooLow,
+          bucket_context_handle_->GetHistogramSuffix());
       TakeFactoryClient()->Error(blink::mojom::IDBException::kVersionError,
                                  base::ASCIIToUTF16(absl::StrFormat(
                                      "The requested version (%i) is less than "
@@ -306,6 +312,10 @@ class ConnectionCoordinator::OpenRequest
 
     // Requested version is higher than current version - upgrade needed.
     CHECK_GT(new_version, old_version);
+    Log(pending_->data_loss_info.status == blink::mojom::IDBDataLoss::None
+            ? DatabaseConnectionOpenResult::kSuccessUpgradeNeeded
+            : DatabaseConnectionOpenResult::kSuccessUpgradeNeededWithDataLoss,
+        bucket_context_handle_->GetHistogramSuffix());
 
     if (!has_connections) {
       OnNoConnections();

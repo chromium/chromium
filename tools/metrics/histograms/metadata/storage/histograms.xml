@@ -304,6 +304,7 @@ chromium-metrics-reviews@google.com.
     <variant name="BeginTransaction"/>
     <variant name="ChangeDatabaseVersion"/>
     <variant name="ClearObjectStore"/>
+    <variant name="CloseBackingStore"/>
     <variant name="CommitTransaction"/>
     <variant name="ContinueCursor"/>
     <variant name="CountRecords"/>
@@ -461,6 +462,35 @@ chromium-metrics-reviews@google.com.
     histograms is similar to the number of clients who hit transaction timeouts.
   </summary>
   <token key="Mode" variants="IndexedDBTransactionMode"/>
+</histogram>
+
+<histogram
+    name="IndexedDB.DatabaseConnectionOpenResult.{IndexedDBBackingStoreType}"
+    enum="DatabaseConnectionOpenResult" expires_after="2027-03-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The outcome of an IDBFactory::Open request from the browser process's
+    perspective for an {IndexedDBBackingStoreType} backing store. Logged once on
+    receipt of the request and once at the terminal outcome, which is the point
+    after which subsequent results of the request depend on the client's
+    response or on external factors such as the bucket being force-closed.
+  </summary>
+</histogram>
+
+<histogram name="IndexedDB.DeleteBucketDataSuccess.{IndexedDBBackingStoreType}"
+    enum="BooleanSuccess" expires_after="2026-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Whether deleting the on-disk data of a bucket with an
+    {IndexedDBBackingStoreType} backing store succeeded. Logged after the
+    attempt to delete on-disk files by a doomed bucket context instance.
+  </summary>
 </histogram>
 
 <histogram name="IndexedDB.FilePathLengthOverflow.{Engine}" units="characters"

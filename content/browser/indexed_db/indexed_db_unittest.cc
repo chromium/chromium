@@ -62,6 +62,7 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
@@ -558,7 +559,8 @@ class IndexedDBTestBase : public testing::Test {
       const std::u16string& name,
       int64_t transaction_id,
       blink::mojom::IDBDataLoss expected_data_loss =
-          blink::mojom::IDBDataLoss::None) {
+          blink::mojom::IDBDataLoss::None,
+      int64_t version = 1) {
     MockMojoFactoryClient client;
     MockMojoDatabaseCallbacks database_callbacks;
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
@@ -571,7 +573,7 @@ class IndexedDBTestBase : public testing::Test {
         .WillOnce(MoveArgPointee<0>(&pending_database));
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(), name,
-                         /*version=*/1,
+                         version,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          transaction_id, /*priority=*/0);
 
@@ -1687,7 +1689,8 @@ TEST_P(IndexedDBTest, Bug464999826) {
 
 // Verifies that the IDB connection is force closed and the directory is deleted
 // when the bucket is deleted.
-TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
+TEST_P(IndexedDBTestWithBucketType, ForceCloseOpenDatabasesOnDelete) {
+  base::HistogramTester histograms;
   storage::BucketInfo bucket_info;
   VerifyForcedClosedCalled(
       base::BindOnce(base::IgnoreResult(&IndexedDBTest::DeleteBucket),
@@ -1697,6 +1700,10 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDelete) {
   base::FilePath test_path =
       GetFilePathForTesting(bucket_info.ToBucketLocator());
   EXPECT_FALSE(base::DirectoryExists(test_path));
+  histograms.ExpectTotalCount(
+      "IndexedDB.BackendDuration.CloseBackingStore.OnDisk", 1);
+  histograms.ExpectUniqueSample("IndexedDB.DeleteBucketDataSuccess.OnDisk",
+                                true, 1);
 }
 
 // Verifies that the IDB connection is force closed when the backing store has
@@ -2257,6 +2264,12 @@ TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
         0 /*Status::Type::kOk*/, 1);
     histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.CreateDatabase.OnDisk", 1);
+    histogram_tester.ExpectBucketCount(
+        "IndexedDB.DatabaseConnectionOpenResult.OnDisk",
+        DatabaseConnectionOpenResult::kReceivedRequest, 1);
+    histogram_tester.ExpectBucketCount(
+        "IndexedDB.DatabaseConnectionOpenResult.OnDisk",
+        DatabaseConnectionOpenResult::kSuccessUpgradeNeeded, 1);
   }
 
   // Fast forward by the grace period so that the backing store gets closed.
@@ -2276,6 +2289,12 @@ TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
         0 /*Status::Type::kOk*/, 1);
     histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.OpenDatabase.OnDisk", 1);
+    histogram_tester.ExpectBucketCount(
+        "IndexedDB.DatabaseConnectionOpenResult.OnDisk",
+        DatabaseConnectionOpenResult::kReceivedRequest, 1);
+    histogram_tester.ExpectBucketCount(
+        "IndexedDB.DatabaseConnectionOpenResult.OnDisk",
+        DatabaseConnectionOpenResult::kSuccessDirectOpen, 1);
   }
 }
 
@@ -2769,6 +2788,13 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
                                   5 /*Status::Type::kDatabaseEngine*/, 1);
   }
 
+  histograms.ExpectBucketCount(
+      "IndexedDB.DatabaseConnectionOpenResult.OnDisk",
+      IsSqliteBackingStoreEnabled()
+          ? DatabaseConnectionOpenResult::kErrorDatabaseOpenFailed
+          : DatabaseConnectionOpenResult::kErrorBackingStoreInitFailed,
+      1);
+
   // An error on open results in a write error reported to the quota system.
   ASSERT_EQ(1U, quota_manager_->write_error_tracker().size());
   EXPECT_EQ(GetTestStorageKey(),
@@ -2780,7 +2806,6 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
 
 TEST_P(IndexedDBTest, DatabaseFailedOpen) {
   storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
-  const std::u16string db_name(u"db");
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
@@ -2789,25 +2814,13 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
   BindFactory(std::move(checker_remote),
               factory_remote.BindNewPipeAndPassReceiver(), bucket_info);
 
-  // Open at version 2.
-  {
-    const int64_t db_version = 2;
-    MockMojoFactoryClient client;
-    MockMojoDatabaseCallbacks database_callbacks;
-    base::RunLoop run_loop;
-    EXPECT_CALL(client, MockedUpgradeNeeded)
-        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
-    mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
-    factory_remote->Open(client.CreateInterfacePtrAndBind(),
-                         database_callbacks.CreateInterfacePtrAndBind(),
-                         db_name, db_version,
-                         transaction_remote.BindNewEndpointAndPassReceiver(),
-                         /*transaction_id=*/1, /*priority=*/0);
-    run_loop.Run();
-  }
+  // Create at version 2.
+  CreateDatabase(factory_remote, kDatabaseName, /*transaction_id=*/1,
+                 blink::mojom::IDBDataLoss::None, /*version=*/2);
 
   // Open at version < 2, which will fail.
   {
+    base::HistogramTester histogram_tester;
     const int64_t db_version = 1;
     base::RunLoop run_loop;
     MockMojoFactoryClient client;
@@ -2817,13 +2830,17 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(),
-                         db_name, db_version,
+                         kDatabaseName, db_version,
                          transaction_remote.BindNewEndpointAndPassReceiver(),
                          /*transaction_id=*/2, /*priority=*/0);
     run_loop.Run();
     BucketContext* bucket_context = GetBucketContext(bucket_info.id);
     ASSERT_TRUE(bucket_context);
-    EXPECT_FALSE(bucket_context->GetDatabasesForTesting().contains(db_name));
+    EXPECT_FALSE(
+        bucket_context->GetDatabasesForTesting().contains(kDatabaseName));
+    histogram_tester.ExpectBucketCount(
+        "IndexedDB.DatabaseConnectionOpenResult.OnDisk",
+        DatabaseConnectionOpenResult::kErrorVersionTooLow, 1);
   }
 }
 
@@ -2873,6 +2890,9 @@ TEST_P(IndexedDBTestWithBucketType, DataLoss) {
       histograms.ExpectUniqueSample("IndexedDB.SQLite.OpenRetryResult",
                                     0 /*Status::Type::kOk*/, 1);
     }
+    histograms.ExpectBucketCount(
+        "IndexedDB.DatabaseConnectionOpenResult.OnDisk",
+        DatabaseConnectionOpenResult::kSuccessUpgradeNeededWithDataLoss, 1);
   }
 }
 
