@@ -345,9 +345,10 @@ class CONTENT_EXPORT ServiceWorkerContext {
       int64_t service_worker_version_id) = 0;
 
   // Returns true if the ServiceWorkerVersion for `service_worker_version_id` is
-  // live (starting or running) and its associated worker instance matches the
-  // `token`. This can be used to ensure that IPC messages are not from a stale
-  // worker instance that has already been stopped.
+  // live (starting or running, but NOT stopping) and its associated worker
+  // instance matches the `token`. This can be used to ensure that IPC messages
+  // are not from a stale worker instance that has already been stopped, or is
+  // already stopping.
   virtual bool IsLiveServiceWorkerWithToken(
       int64_t service_worker_version_id,
       const blink::ServiceWorkerToken& token) = 0;

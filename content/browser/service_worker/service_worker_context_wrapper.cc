@@ -1084,7 +1084,9 @@ bool ServiceWorkerContextWrapper::IsLiveServiceWorkerWithToken(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* version = GetLiveServiceWorker(service_worker_version_id);
   return version && version->worker_host() &&
-         version->worker_host()->token() == token;
+         version->worker_host()->token() == token &&
+         (version->running_status() == blink::EmbeddedWorkerStatus::kStarting ||
+          version->running_status() == blink::EmbeddedWorkerStatus::kRunning);
 }
 
 service_manager::InterfaceProvider&
