@@ -127,6 +127,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace {
 // The amount of vertical padding in dips the separator should have to
 // prevent menu items from being visually too close to each other.
@@ -210,6 +214,32 @@ views::Widget* TabGroupEditorBubbleView::Show(
   TabGroupEditorBubbleView* tab_group_editor_bubble_view =
       new TabGroupEditorBubbleView(browser, group, anchor_view, anchor_rect,
                                    stop_context_menu_propagation);
+
+  // In ozone/wayland platforms, BubbleDialogDelegateView ignores calls to
+  // `set_adjust_if_offscreen()`. Instead calculate if there is not enough room
+  // below the bubble and render the bubble above instead.
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    const int bubble_height =
+        tab_group_editor_bubble_view->GetPreferredSize().height();
+    const BrowserView* const browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser);
+    if (browser_view && browser_view->GetWidget()) {
+      const gfx::Rect window_bounds =
+          browser_view->GetWidget()->GetWindowBoundsInScreen();
+      if (window_bounds.height() > 2 * bubble_height &&
+          window_bounds.bottom() -
+                  tab_group_editor_bubble_view->GetAnchorRect().bottom() <
+              bubble_height) {
+        tab_group_editor_bubble_view->SetArrow(
+            views::BubbleBorder::Arrow::BOTTOM_LEFT);
+      }
+    }
+  }
+#endif
+
   views::Widget* const widget =
       BubbleDialogDelegateView::CreateBubble(tab_group_editor_bubble_view);
   tab_group_editor_bubble_view->set_adjust_if_offscreen(true);
