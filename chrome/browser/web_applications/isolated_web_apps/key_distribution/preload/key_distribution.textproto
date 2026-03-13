@@ -182,9 +182,30 @@ iwa_access_control {
 
   # crbug.com/461787022
   user_install_allowlist: {
-    key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai",
+    key: "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai"
     value: {
       enterprise_name: "Google LLC"
+      entitlements {
+        version_range {
+          begin: "1.0.0"
+        }
+        entitlement: CONTROLLED_FRAME
+        entitlement: DIRECT_SOCKETS
+      }
+    }
+  }
+  # crbug.com/453632844
+  user_install_allowlist: {
+    key: "cpt62davrxj4yzauslsummydorzgy2kcnhbayaziceuqlzhaue7qaaic"
+    value: {
+      enterprise_name: "Google LLC"
+      entitlements {
+        version_range {
+          begin: "0.0.0"
+          end: "1.0.0"
+        }
+        entitlement: SMART_CARD
+      }
     }
   }
 }
