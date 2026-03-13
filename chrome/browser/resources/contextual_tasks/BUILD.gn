@@ -45,6 +45,8 @@ build_webui("build") {
     "internals/app.ts",
     "internals/browser_proxy.ts",
     "post_message_handler.ts",
+    "reopen_tabs.ts",
+    "reopen_tabs.html.ts",
     "sources_menu.html.ts",
     "sources_menu.ts",
     "top_toolbar.html.ts",
@@ -68,12 +70,16 @@ build_webui("build") {
     "favicon_group.css",
     "ghost_loader.css",
     "internals/app.css",
+    "reopen_tabs.css",
     "sources_menu.css",
     "top_toolbar.css",
   ]
 
   if (!is_android) {
-    css_files += [ "composebox.css", "onboarding_tooltip.css" ]
+    css_files += [
+      "composebox.css",
+      "onboarding_tooltip.css",
+    ]
   }
 
   mojo_files_deps =

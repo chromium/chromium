@@ -608,7 +608,8 @@ error-page {
   grid-column: 1;
   grid-row: 1;
   /* Makes the toolbar the correct height. */
-  height: 48px;
+  height: auto;
+  min-height: 48px;
   position: relative;
   z-index: 2;
 }
