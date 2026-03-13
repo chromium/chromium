@@ -50,15 +50,15 @@ public class ActorNotificationService {
     /**
      * Returns the notification that should be pinned to the {@link ActorForegroundService}.
      *
-     * @param primaryTask The task to show the notification for.
+     * @param task The task to show the notification for.
      * @return The notification to be used for the foreground service, or null if the task is null.
      */
-    public @Nullable Notification getForegroundNotification(@Nullable ActorTask primaryTask) {
-        if (primaryTask == null) return null;
+    public @Nullable Notification getForegroundNotification(@Nullable ActorTask task) {
+        if (task == null) return null;
 
         // Currently, we only support pinning one task's notification.
         // In the future, this can be extended to return a grouped summary notification.
-        return getCachedNotification(primaryTask.getId());
+        return getCachedNotification(task.getId());
     }
 
     /**
@@ -108,9 +108,8 @@ public class ActorNotificationService {
 
     @VisibleForTesting
     protected NotificationWrapperBuilder getNotificationBuilder(int notificationId) {
-        // TODO(487982067): Create new channel for Actor.
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                ChromeChannelDefinitions.ChannelId.BROWSER,
+                ChromeChannelDefinitions.ChannelId.ACTOR,
                 new NotificationMetadata(SystemNotificationType.ACTOR, TAG, notificationId));
     }
 

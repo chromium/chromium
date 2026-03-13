@@ -73,6 +73,11 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
 
         sInstance = new ActorForegroundServiceManager();
         ProfileManager.addObserver(sInstance.mProfileObserver);
+
+        // Handle profiles that were already loaded before initialization.
+        for (Profile profile : ProfileManager.getLoadedProfiles()) {
+            sInstance.mProfileObserver.onProfileAdded(profile);
+        }
     }
 
     @VisibleForTesting
@@ -178,12 +183,14 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             }
             // TODO(b/487671227): Revisit lifecycle for paused tasks. We should stop the
             // foreground service when tasks are paused.
-            Integer primaryTaskId = mActiveTaskIds.iterator().next();
-            ActorTask primaryTask = mKeyedService.getTask(primaryTaskId);
-            int notificationId = primaryTaskId;
-            Notification notification = mNotificationService.getForegroundNotification(primaryTask);
+            ActorTask currentTask = mKeyedService.getCurrentActiveTask();
+            if (currentTask != null) {
+                int notificationId = currentTask.getId();
+                Notification notification =
+                        mNotificationService.getForegroundNotification(currentTask);
 
-            startOrUpdateForegroundService(notificationId, notification);
+                startOrUpdateForegroundService(notificationId, notification);
+            }
         } else {
             if (!mStopServiceDelayed) {
                 postMaybeStopServiceRunnable();
