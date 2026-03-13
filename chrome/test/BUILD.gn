@@ -7237,6 +7237,7 @@ test("unit_tests") {
     "//chrome/browser/ui/safety_hub:test_support",
     "//chrome/browser/ui/search_engines:unit_tests",
     "//chrome/browser/ui/serial:unit_tests",
+    "//chrome/browser/ui/side_panel:unit_tests",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/startup:unit_tests",
     "//chrome/browser/ui/sync:unit_tests",
@@ -8176,7 +8177,6 @@ test("unit_tests") {
       "//chrome/browser/ui/plus_addresses:unit_tests",
       "//chrome/browser/ui/serial",
       "//chrome/browser/ui/serial:test_support",
-      "//chrome/browser/ui/side_panel:unit_tests",
       "//chrome/browser/ui/side_panel/test:native_unit_test_support_java",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/usb",
@@ -8414,12 +8414,6 @@ test("unit_tests") {
       "../browser/ui/incognito_allowed_url_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
-
-      # TODO(crbug.com/492272439): Move side_panel_entry_key_unittest to c/b/ui/side_panel:unit_tests
-      "../browser/ui/side_panel/side_panel_entry_key_unittest.cc",
-
-      # TODO(crbug.com/492272439): Move side_panel_metrics_unittest to c/b/ui/side_panel:unit_tests
-      "../browser/ui/side_panel/side_panel_metrics_unittest.cc",
       "../browser/ui/url_identity_unittest.cc",
       "../browser/ui/views/accessibility/theme_tracking_non_accessible_image_view_unittest.cc",
       "../browser/ui/views/autofill/address_editor_view_unittest.cc",
@@ -8601,7 +8595,6 @@ test("unit_tests") {
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/search:unit_tests",
-      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tab_sharing",

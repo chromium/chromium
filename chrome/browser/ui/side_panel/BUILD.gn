@@ -122,17 +122,29 @@ if (is_android) {
 # Platform-specific tests are conditionally compiled in.
 source_set("unit_tests") {
   testonly = true
-  sources = []
-  deps = []
+
+  # Cross-platform unit tests
+  sources = [ "side_panel_entry_key_unittest.cc" ]
+  deps = [
+    ":side_panel",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//testing/gtest",
+    "//ui/actions:actions_headers",
+  ]
 
   if (is_android) {
+    # Android unit tests
     sources += [ "android/side_panel_ui_android_unittest.cc" ]
-
     deps += [
-      ":side_panel",
       "//base",
       "//chrome/browser/ui/side_panel/test:native_unit_test_support_jni",
-      "//testing/gtest",
+    ]
+  } else {
+    # Unit tests for Windows/Max/Linux
+    sources += [ "side_panel_metrics_unittest.cc" ]
+    deps += [
+      ":side_panel_views_dependent",
+      "//base/test:test_support",
     ]
   }
 }
