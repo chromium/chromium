@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.components.regional_capabilities.RegionalProgram;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -578,6 +579,38 @@ public class SetupListManagerUnitTest {
         assertTrue(rankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
         assertTrue(rankedModules.contains(ModuleType.SAVE_PASSWORDS_PROMO));
         assertTrue(rankedModules.contains(ModuleType.PASSWORD_CHECKUP_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultBrowserPromoDelegate_Suppression() {
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+
+        // Case 1: Setup List is active -> Should suppress.
+        assertTrue(manager.isSetupListActive());
+        assertTrue(manager.shouldSuppressPromo());
+
+        // Case 2: Setup List is inactive -> Should NOT suppress.
+        mSharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP,
+                TimeUtils.currentTimeMillis() - SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS);
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        manager = SetupListManager.getInstance();
+        assertFalse(manager.isSetupListActive());
+        assertFalse(manager.shouldSuppressPromo());
+    }
+
+    @Test
+    @SmallTest
+    public void testDefaultBrowserPromoDelegate_Registration() {
+        DefaultBrowserPromoUtils.setDelegate(null);
+        assertNull(DefaultBrowserPromoUtils.getDelegateForTesting());
+
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+
+        assertEquals(manager, DefaultBrowserPromoUtils.getDelegateForTesting());
     }
 
     @Test
