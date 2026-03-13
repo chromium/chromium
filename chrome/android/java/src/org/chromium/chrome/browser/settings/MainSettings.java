@@ -132,6 +132,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_HOMEPAGE = "homepage";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
+    public static final String PREF_AUTOFILL_AND_PASSWORDS = "autofill_and_passwords";
     public static final String PREF_AUTOFILL_SECTION = "autofill_section";
     public static final String PREF_PRIVACY = "privacy";
     public static final String PREF_NOTIFICATIONS = "notifications";
@@ -689,6 +690,33 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updateAutofillPreferences() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            updateAutofillAndPasswords();
+        } else {
+            removePreferenceIfPresent(PREF_AUTOFILL_AND_PASSWORDS);
+            updateAutofillPreferencesPreAutofillAndPasswords();
+        }
+
+        maybeStartPasswordsExportFlow();
+    }
+
+    private void updateAutofillAndPasswords() {
+        removePreferenceIfPresent(PREF_AUTOFILL_SECTION);
+        removePreferenceIfPresent(PREF_PASSWORDS);
+        removePreferenceIfPresent(PREF_AUTOFILL_PAYMENTS);
+        removePreferenceIfPresent(PREF_AUTOFILL_ADDRESSES);
+        removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
+
+        Preference autofillAndPasswordsEntry = addPreferenceIfAbsent(PREF_AUTOFILL_AND_PASSWORDS);
+        autofillAndPasswordsEntry.setOnPreferenceClickListener(
+                preference -> {
+                    // TODO(crbug.com/482994356): Start the new Autofill and passwords fragment.
+                    return true;
+                });
+    }
+
+    // TODO(crbug.com/482988366): Remove this method once the Autofill and passwords feature is launched.
+    private void updateAutofillPreferencesPreAutofillAndPasswords() {
         addPreferenceIfAbsent(PREF_AUTOFILL_SECTION);
         addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
         Preference autofillOptionsPreference = findPreference(PREF_AUTOFILL_OPTIONS);
@@ -730,7 +758,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
                             mModalDialogManagerSupplier.asNonNull().get());
                     return true;
                 });
+    }
 
+    private void maybeStartPasswordsExportFlow() {
         // This is temporary code needed for migrating people to UPM. With UPM there is no
         // longer passwords setting page in Chrome, so we need to ask users to export their
         // passwords here, in main settings.
@@ -826,6 +856,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private static boolean shouldAddPlusAddressesPref() {
+        // Plus Addresses feature is being removed before the launch. See crbug.com/491379411.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            return false;
+        }
+
         // TODO(crbug.com/40276862): Replace with a static string once name is finalized.
         String title =
                 ChromeFeatureList.getFieldTrialParamByFeature(
@@ -1097,6 +1132,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     }
                     if (!shouldShowGlicPreference()) {
                         indexData.removeEntry(getUniqueId(PREF_GLIC));
+                    }
+
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SECTION));
+                        indexData.removeEntry(getUniqueId(PREF_PASSWORDS));
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_PAYMENTS));
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_ADDRESSES));
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_OPTIONS));
+                    } else {
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AND_PASSWORDS));
                     }
                 }
             };

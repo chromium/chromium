@@ -134,7 +134,8 @@ public class MultiColumnSettingsTest {
     })
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
-        ChromeFeatureList.PLUS_ADDRESSES_ENABLED
+        ChromeFeatureList.PLUS_ADDRESSES_ENABLED,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testSinglePane() {
         // Start the main settings, which is an embeddable fragment.
@@ -151,7 +152,8 @@ public class MultiColumnSettingsTest {
     })
     @DisableFeatures({
         ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
-        ChromeFeatureList.PLUS_ADDRESSES_ENABLED
+        ChromeFeatureList.PLUS_ADDRESSES_ENABLED,
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
     })
     public void testTwoPane() {
         // Start the main settings, which is an embeddable fragment.

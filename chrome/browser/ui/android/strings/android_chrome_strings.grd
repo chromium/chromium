@@ -716,6 +716,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PREFS_SECTION_AUTOFILL" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
         Passwords and Autofill
       </message>
+      <message name="IDS_AUTOFILL_AND_PASSWORDS_SETTINGS_TITLE" desc="Title for the settings menu item leading to the Autofill and passwords UI surface. [CHAR_LIMIT=32]">
+        Autofill and passwords
+      </message>
       <message name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Chrome." formatter_data="android_java">
         Autofill services
       </message>
