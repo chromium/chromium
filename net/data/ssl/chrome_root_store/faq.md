@@ -243,7 +243,7 @@ No, Chrome does **not** depend on the id-kp-clientAuth Extended Key Usage (EKU)
 contained in server certificates when establishing secure connections to
 websites.
 
-Beginning [June 15, 2026](https://googlechrome.github.io/chromerootprogram/#322-pki-hierarchies-included-in-the-chrome-root-store),
+Beginning [March 15, 2027](https://googlechrome.github.io/chromerootprogram/#322-pki-hierarchies-included-in-the-chrome-root-store),
 PKI hierarchies represented by a root CA certificate included in the Chrome Root
 Store are expected to only issue TLS server authentication certificates that
 contain *only* the id-kp-serverAuth EKU. This expectation does not apply to
