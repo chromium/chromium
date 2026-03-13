@@ -1,0 +1,28 @@
+static_library("annotation_index") {
+  public = [ "annotation_index_client.h" ]
+
+  sources = [
+    "annotation_index_client_impl.cc",
+    "annotation_index_client_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/multistep_filter/core/annotation_index/proto",
+    "//components/multistep_filter/core/data_models",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_annotation_index_client.cc",
+    "mock_annotation_index_client.h",
+  ]
+
+  public_deps = [
+    ":annotation_index",
+    "//testing/gmock",
+  ]
+}
