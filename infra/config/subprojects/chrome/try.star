@@ -147,6 +147,22 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "chromeos-betty-compile-chrome",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-betty-chrome-gtest",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-betty-chrome-gtest-and-cqtast",
+)
+
+chrome_internal_verifier(
+    builder = "chromeos-betty-chrome-gtest-and-tast",
+)
+
+chrome_internal_verifier(
     builder = "chromeos-betty-chrome-dchecks",
 )
 
