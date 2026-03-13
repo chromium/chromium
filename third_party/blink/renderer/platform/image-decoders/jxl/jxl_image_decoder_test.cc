@@ -108,6 +108,86 @@ TEST_F(JXLImageDecoderTest, DecodeWithAlpha) {
   EXPECT_FALSE(decoder->Failed());
 }
 
+// Test codestream orientation metadata is applied to the decoded dimensions.
+TEST_F(JXLImageDecoderTest, DecodeOrientationFromCodestream) {
+  auto decoder = CreateJXLDecoder();
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kJxlTestDir, "orientation6_rotate_90_cw.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(256, decoder->Size().width());
+  EXPECT_EQ(100, decoder->Size().height());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+// Test decoding of CMYK+alpha fixture with an ICC profile.
+TEST_F(JXLImageDecoderTest, DecodeCmykWithIccProfile) {
+  auto decoder = CreateJXLDecoder();
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kJxlTestDir, "conformance_cmyk_layers.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(512, decoder->Size().width());
+  EXPECT_EQ(512, decoder->Size().height());
+  EXPECT_TRUE(decoder->HasEmbeddedColorProfile());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_TRUE(frame->HasAlpha());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+// Test grayscale+alpha fixture carrying an embedded ICC profile.
+TEST_F(JXLImageDecoderTest, DecodeWithEmbeddedIccProfile) {
+  auto decoder = CreateJXLDecoder();
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kJxlTestDir, "with_icc.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(169, decoder->Size().width());
+  EXPECT_EQ(118, decoder->Size().height());
+  EXPECT_TRUE(decoder->HasEmbeddedColorProfile());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_TRUE(frame->HasAlpha());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+// Test high bit depth fixture from interop assets decodes to half-float output.
+TEST_F(JXLImageDecoderTest, HighBitDepthInteropHalfFloatFormat) {
+  auto decoder = CreateJXLDecoderWithOptions(
+      ImageDecoder::kAlphaNotPremultiplied,
+      ImageDecoder::kHighBitDepthToHalfFloat, ColorBehavior::kTag);
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kJxlTestDir, "has_permutation.jxl");
+  ASSERT_TRUE(data);
+
+  decoder->SetData(data.get(), true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(2143, decoder->Size().width());
+  EXPECT_EQ(1050, decoder->Size().height());
+  EXPECT_TRUE(decoder->ImageIsHighBitDepth());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::PixelFormat::kRGBA_F16, frame->GetPixelFormat());
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
 // Test high bit depth decoding selects F16 pixel format.
 TEST_F(JXLImageDecoderTest, HighBitDepthHalfFloatFormat) {
   auto decoder = CreateJXLDecoderWithOptions(
@@ -156,6 +236,52 @@ TEST_F(JXLImageDecoderTest, EmptyData) {
 
   decoder->SetData(data.get(), true);
   EXPECT_FALSE(decoder->IsSizeAvailable());
+}
+
+// Regression test: the smallest valid naked JXL codestream (12 bytes) must
+// decode to a 512x256 black image. See crbug.com/484214291.
+TEST_F(JXLImageDecoderTest, SmallestValidBitstream) {
+  auto decoder = CreateJXLDecoder();
+  // base64: /wr/BwiDBAwASyAY
+  static constexpr std::array<uint8_t, 12> kSmallestValid = {
+      0xFF, 0x0A, 0xFF, 0x07, 0x08, 0x83, 0x04, 0x0C, 0x00, 0x4B, 0x20, 0x18};
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(base::span(kSmallestValid));
+
+  decoder->SetData(data.get(), true);
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_EQ(512, decoder->Size().width());
+  EXPECT_EQ(256, decoder->Size().height());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+}
+
+// Regression test: a corrupt bitstream with trailing invalid bytes must be
+// rejected. The decoder must not silently produce a transparent image.
+// See crbug.com/484171917.
+TEST_F(JXLImageDecoderTest, InvalidBitstreamWithTrailingBytes) {
+  auto decoder = CreateJXLDecoder();
+  // base64: /wr/BwiDBAwASyA0123
+  static constexpr std::array<uint8_t, 14> kInvalidTrailing = {
+      0xFF, 0x0A, 0xFF, 0x07, 0x08, 0x83, 0x04,
+      0x0C, 0x00, 0x4B, 0x20, 0x34, 0xD7, 0x6D};
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(base::span(kInvalidTrailing));
+
+  decoder->SetData(data.get(), true);
+  // The header looks valid enough to parse a size, but the frame data
+  // is corrupt. The decoder should report failure when attempting to
+  // decode the frame.
+  EXPECT_TRUE(decoder->IsSizeAvailable());
+
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_NE(ImageFrame::kFrameComplete, frame->GetStatus())
+      << "Corrupt bitstream should not produce a complete frame";
+  EXPECT_TRUE(decoder->Failed());
 }
 
 // Test JXL signature detection
