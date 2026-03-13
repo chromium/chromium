@@ -772,7 +772,6 @@ class CrossbenchTest(object):
     self.isolated_out_dir = isolated_out_dir
     self.is_chrome = (not self.cb_options.official_browser
                       or self.cb_options.official_browser.startswith('chrome'))
-    self.env = self._create_env_arg()
     if self.options.luci_chromium:
       # In luci.chromium the Chrome and driver are in the user path.
       self.browser = '--browser=%s' % get_abs_user_path('chrome')
@@ -787,6 +786,7 @@ class CrossbenchTest(object):
       browser_arg = _get_browser_arg(options.passthrough_args)
       self.is_android = _is_android(browser_arg)
       self._find_browser(browser_arg)
+    self.env = self._create_env_arg()
     self.network = self._get_network_arg(options.passthrough_args)
 
   def _parse_arguments(self):
@@ -844,6 +844,9 @@ class CrossbenchTest(object):
         and sys.platform == 'darwin'):
       # Set screen refresh rate to 60Hz on Mac due to crbug.com/415318275.
       return ['--env={screen_refresh_rate:60}']
+    if self.is_android:
+      # Set Android CPU governor due to crbug.com/487175106.
+      return ['--env={"cpu_power_mode":"performance"}']
     return []
 
   def _create_fileserver_network(self, arg):
