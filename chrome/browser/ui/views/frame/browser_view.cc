@@ -1285,7 +1285,7 @@ bool BrowserView::UsesImmersiveFullscreenMode() const {
 bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
   const bool is_pwa = GetIsWebAppType();
   const bool is_tabbed_window = GetSupportsTabStrip();
-  return is_tabbed_window && !is_pwa && !ShouldDrawVerticalTabStrip();
+  return is_tabbed_window && !is_pwa;
 }
 #endif
 
@@ -1531,8 +1531,6 @@ void BrowserView::OnVerticalTabStripModeChanged(
     vertical_tab_strip_region_view_->ResetTabStrip();
     horizontal_tab_strip_region_view_->InitializeTabStrip();
   }
-
-  ImmersiveModeController::From(browser())->OnVerticalTabStripModeChanged();
 
   GetFrameView()->OnTabStripStateChanged();
 
