@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.back_press.BackPressMetrics.PredictiveGesture
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.bottombar.BottomBarContainerCoordinator;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -191,6 +192,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
@@ -297,6 +299,8 @@ public class ToolbarManager
 
     private SettableMonotonicObservableSupplier<BottomControlsCoordinator>
             mTabGroupUiBottomControlsCoordinatorSupplier = ObservableSuppliers.createMonotonic();
+    private SettableMonotonicObservableSupplier<BottomControlsCoordinator>
+            mBottomAppBarCoordinatorSupplier = ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean> mSuppressToolbarSceneLayerSupplier =
             ObservableSuppliers.createNonNull(false);
     private final SettableMonotonicObservableSupplier<Long> mCaptureResourceIdSupplier =
@@ -2251,6 +2255,13 @@ public class ToolbarManager
 
     /** Enable the bottom controls. */
     public void enableBottomControls() {
+        enableTabGroupUiControls();
+        if (BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
+            enableBottomBar();
+        }
+    }
+
+    private void enableTabGroupUiControls() {
         View tabGroupUiContainer =
                 ((ViewStub) mActivity.findViewById(R.id.tab_group_ui_container_stub)).inflate();
         assert mTabGroupUiOneshotSupplier == null;
@@ -2315,6 +2326,41 @@ public class ToolbarManager
             mBackPressManager.addHandler(
                     tabGroupUiBottomControlsCoordinator, BackPressHandler.Type.BOTTOM_CONTROLS);
         }
+    }
+
+    private void enableBottomBar() {
+        View bottomAppBarContainer =
+                ((ViewStub) mActivity.findViewById(R.id.bottom_app_bar_container_stub)).inflate();
+        assert mLayoutManager != null;
+
+        var bottomBarContainerOneshotSupplier =
+                new OneshotSupplierImpl<BottomControlsContentDelegate>();
+        bottomBarContainerOneshotSupplier.set(
+                new BottomBarContainerCoordinator(
+                        bottomAppBarContainer.findViewById(R.id.bottom_container_slot)));
+        var bottomAppBarCoordinator =
+                new BottomControlsCoordinator(
+                        mWindowAndroid,
+                        mLayoutManager,
+                        mCompositorViewHolder.getResourceManager(),
+                        mBottomControlsStacker,
+                        mControlsVisibilityDelegate,
+                        mFullscreenManager,
+                        mEdgeToEdgeControllerSupplier,
+                        (ScrollingBottomViewResourceFrameLayout) bottomAppBarContainer,
+                        LayerType.BOTTOM_APP_BAR,
+                        bottomBarContainerOneshotSupplier,
+                        mTabObscuringHandler,
+                        mOverlayPanelVisibilitySupplier,
+                        mConstraintsSupplier,
+                        /* readAloudRestoringSupplier= */ () -> {
+                            final var readAloud = mReadAloudControllerSupplier.get();
+                            return readAloud != null && readAloud.isRestoringPlayer();
+                        });
+        if (mInitializedWithNative) {
+            bottomAppBarCoordinator.initializeWithNative();
+        }
+        mBottomAppBarCoordinatorSupplier.set(bottomAppBarCoordinator);
     }
 
     /**
@@ -2499,6 +2545,10 @@ public class ToolbarManager
         if (tabGroupUiBottomControlsCoordinator != null) {
             tabGroupUiBottomControlsCoordinator.initializeWithNative();
         }
+        BottomControlsCoordinator bottomAppBarCoordinator = mBottomAppBarCoordinatorSupplier.get();
+        if (bottomAppBarCoordinator != null) {
+            bottomAppBarCoordinator.initializeWithNative();
+        }
 
         if (mOnInitializedRunnable != null) {
             mOnInitializedRunnable.run();
@@ -2638,6 +2688,12 @@ public class ToolbarManager
         if (tabGroupUiBottomControlsCoordinator != null) {
             tabGroupUiBottomControlsCoordinator.destroy();
             mTabGroupUiBottomControlsCoordinatorSupplier = null;
+        }
+
+        BottomControlsCoordinator bottomAppBarCoordinator = mBottomAppBarCoordinatorSupplier.get();
+        if (bottomAppBarCoordinator != null) {
+            bottomAppBarCoordinator.destroy();
+            mBottomAppBarCoordinatorSupplier = null;
         }
 
         if (mLocationBar != null) {
@@ -3282,6 +3338,10 @@ public class ToolbarManager
                 mTabGroupUiBottomControlsCoordinatorSupplier.get();
         if (tabGroupUiBottomControlsCoordinator != null) {
             tabGroupUiBottomControlsCoordinator.setLayoutStateProvider(mLayoutStateProvider);
+        }
+        BottomControlsCoordinator bottomAppBarCoordinator = mBottomAppBarCoordinatorSupplier.get();
+        if (bottomAppBarCoordinator != null) {
+            bottomAppBarCoordinator.setLayoutStateProvider(mLayoutStateProvider);
         }
     }
 

@@ -52,6 +52,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         LayerType.BOTTOM_TOOLBAR,
         LayerType.BOTTOM_CHIN,
         LayerType.BOTTOM_SHEET,
+        LayerType.BOTTOM_APP_BAR,
         LayerType.TEST_BOTTOM_LAYER
     })
     public @interface LayerType {
@@ -66,6 +67,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         // respect to other bottom controls, and/or specialized bottom sheets that can push web
         // content up in PEEK state.
         int BOTTOM_SHEET = 6;
+        int BOTTOM_APP_BAR = 7;
 
         // Layer that's used for testing.
         int TEST_BOTTOM_LAYER = 100;
@@ -129,6 +131,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 LayerType.READ_ALOUD_PLAYER,
                 LayerType.TABSTRIP_TOOLBAR,
                 LayerType.BOTTOM_TOOLBAR,
+                LayerType.BOTTOM_APP_BAR,
                 LayerType.BOTTOM_CHIN,
                 LayerType.TEST_BOTTOM_LAYER
             };

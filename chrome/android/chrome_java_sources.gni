@@ -214,6 +214,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetProvider.java",
   "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetProxy.java",
   "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetServiceImpl.java",
+  "java/src/org/chromium/chrome/browser/bottombar/BottomBarContainerCoordinator.java",
   "java/src/org/chromium/chrome/browser/browserservices/BrowserServicesStore.java",
   "java/src/org/chromium/chrome/browser/browserservices/ClearDataDialogActivity.java",
   "java/src/org/chromium/chrome/browser/browserservices/InstalledWebappBroadcastReceiver.java",

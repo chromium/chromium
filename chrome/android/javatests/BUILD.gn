@@ -589,6 +589,14 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
   deps = [ ":chrome_test_java_helper" ]
 }
 
+android_library("chrome_test_java_org.chromium.chrome.browser.bottombar") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "//chrome/android/java/src/org/chromium/chrome/browser/bottombar/BottomBarPtTest.java" ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
 android_library(
     "chrome_test_java_org.chromium.chrome.browser.browser_controls") {
   resources_package = "org.chromium.chrome.test"
