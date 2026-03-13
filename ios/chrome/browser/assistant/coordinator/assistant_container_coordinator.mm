@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -103,6 +104,11 @@
                                               willAppearAnimated:)]) {
     [_delegate assistantContainer:_containerViewController willAppearAnimated:YES];
   }
+
+  // Set up fullscreen observation.
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(self.browser);
+  [_containerViewController setUpFullscreenObservation:fullscreenController];
 
   _animator = [[AssistantContainerAnimator alloc] init];
 
@@ -210,6 +216,7 @@
   _dismissalInProgress = NO;
 
   // Cleanup view controller and state.
+  [_containerViewController setUpFullscreenObservation:nullptr];
   [_containerViewController willMoveToParentViewController:nil];
   [_containerViewController.view removeFromSuperview];
   [_containerViewController removeFromParentViewController];

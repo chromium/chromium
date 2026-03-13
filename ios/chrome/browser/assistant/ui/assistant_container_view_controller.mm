@@ -13,6 +13,9 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -43,6 +46,9 @@ constexpr CGFloat kLandscapeSidePadding = 20.0;
 // landscape).
 constexpr CGFloat kMinTopPadding = 12.0;
 
+// The fullscreen progress threshold below which the container minimizes.
+constexpr CGFloat kFullscreenMinimizationThreshold = 0.50;
+
 // Returns YES if the layout should be adapted for iPad.
 BOOL IsiPadLayout(UITraitCollection* trait_collection) {
   return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
@@ -58,7 +64,8 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
 
 }  // namespace
 
-@interface AssistantContainerViewController () <UIGestureRecognizerDelegate>
+@interface AssistantContainerViewController () <FullscreenUIElement,
+                                                UIGestureRecognizerDelegate>
 @end
 
 @implementation AssistantContainerViewController {
@@ -96,6 +103,9 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
   // Tracks the active detent to prevent redundant delegate callbacks and layout
   // loops.
   std::optional<AssistantContainerDetent> _activeDetent;
+
+  // Observer for the fullscreen controller.
+  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
 }
 
 @synthesize isAnimating = _isAnimating;
@@ -264,6 +274,15 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
       }];
 }
 
+- (void)setUpFullscreenObservation:(FullscreenController*)fullscreenController {
+  if (fullscreenController) {
+    _fullscreenUIUpdater =
+        std::make_unique<FullscreenUIUpdater>(fullscreenController, self);
+  } else {
+    _fullscreenUIUpdater = nullptr;
+  }
+}
+
 #pragma mark - Properties
 
 - (void)setDetents:(std::vector<AssistantContainerDetent>)detents {
@@ -331,6 +350,20 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
         [otherGestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]];
   }
   return NO;
+}
+
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  self.view.alpha = MIN(1.0, progress / kFullscreenMinimizationThreshold);
+
+  AssistantContainerDetent smallestDetent = _detents.front();
+  if (progress <= kFullscreenMinimizationThreshold &&
+      _activeDetent != smallestDetent) {
+    [self animateToDetent:smallestDetent
+                 duration:kSpringDuration
+                    curve:UIViewAnimationCurveEaseInOut];
+  }
 }
 
 #pragma mark - Private

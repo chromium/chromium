@@ -1,0 +1,7 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
+  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h",
+  "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h",
+  # keep-sorted end
+]

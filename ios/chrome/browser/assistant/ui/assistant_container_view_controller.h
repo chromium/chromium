@@ -13,10 +13,14 @@
 
 enum class AssistantContainerDetent : NSInteger;
 @protocol AssistantContainerDelegate;
+class FullscreenController;
 
 // View Controller for the Assistant Container.
 @interface AssistantContainerViewController
     : UIViewController <AssistantContainerAnimatable>
+
+// Sets up observation of the given fullscreen controller.
+- (void)setUpFullscreenObservation:(FullscreenController*)fullscreenController;
 
 // Whether to anchor to the bottom of the view (YES) or the top (NO).
 // Defaults to NO.
