@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_FEEDBACK_REPORT_UNSAFE_SITE_REPORT_UNSAFE_SITE_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/feedback/screenshot_taker.h"
+#include "chrome/browser/feedback/report_unsafe_site/screenshot_taker.h"
 #include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

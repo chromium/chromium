@@ -4,8 +4,8 @@
 
 #include "chrome/browser/feedback/report_unsafe_site_dialog_views.h"
 
+#include "chrome/browser/feedback/report_unsafe_site/screenshot_taker.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
-#include "chrome/browser/feedback/screenshot_taker.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
