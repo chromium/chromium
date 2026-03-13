@@ -44,6 +44,14 @@ source_set("script_error_stack_util") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("error_reporting") {
   sources = [
     "ios_javascript_error_report.h",
@@ -52,6 +60,7 @@ source_set("error_reporting") {
     "web_js_error_report_processor.mm",
   ]
   deps = [
+    ":features",
     ":script_error_details",
     "//base",
     "//build:branding_buildflags",
@@ -75,6 +84,7 @@ source_set("unittests") {
   testonly = true
 
   deps = [
+    ":features",
     ":script_error_details",
     ":script_error_stack_util",
     ":window_error",
@@ -87,6 +97,7 @@ source_set("unittests") {
   ]
 
   sources = [
+    "features_unittest.mm",
     "script_error_message_handler_java_script_feature_unittest.mm",
     "script_error_stack_util_unittest.mm",
   ]

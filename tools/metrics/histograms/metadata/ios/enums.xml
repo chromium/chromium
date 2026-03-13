@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Session Storage"/>
 </enum>
 
-<!-- LINT.IfChange(IOSJavascriptContentBlockType) -->
+<!-- LINT.IfChange(IOSJavascriptErrorReportProcessorResult) -->
 
 <enum name="IOSJavascriptErrorReportProcessorResult">
   <summary>The results of attempting to report a JavaScript error.</summary>
@@ -1042,6 +1042,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Duplicate"/>
   <int value="3" label="Upload Failed"/>
   <int value="4" label="Success"/>
+  <int value="5" label="Filtered"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/web/js_features/window_error/web_js_error_report_processor.mm:IOSJavascriptErrorReportProcessorResult) -->
