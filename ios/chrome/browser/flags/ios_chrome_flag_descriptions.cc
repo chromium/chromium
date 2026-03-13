@@ -746,12 +746,6 @@ const char kHttpsUpgradesDescription[] =
     "When enabled, eligible navigations will automatically be upgraded to "
     "HTTPS.";
 
-const char kIOSAppBundlePromoEphemeralCardName[] =
-    "Enable App Bundle Promo Magic Stack Card";
-const char kIOSAppBundlePromoEphemeralCardDescription[] =
-    "Enables showing a promotional card for the Best of Google app "
-    "bundle in the Magic Stack.";
-
 const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";

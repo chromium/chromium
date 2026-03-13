@@ -2347,12 +2347,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillBottomSheetNewBlurName,
      flag_descriptions::kAutofillBottomSheetNewBlurDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAutofillBottomSheetNewBlur)},
-    {"ios-app-bundle-promo-magic-stack",
-     flag_descriptions::kIOSAppBundlePromoEphemeralCardName,
-     flag_descriptions::kIOSAppBundlePromoEphemeralCardDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         segmentation_platform::features::kAppBundlePromoEphemeralCard)},
     {"hide-fusebox-voice-lens-actions",
      flag_descriptions::kHideFuseboxVoiceLensActionsName,
      flag_descriptions::kHideFuseboxVoiceLensActionsDescription,

@@ -465,9 +465,6 @@ extern const char kHideToolbarsInOverflowMenuDescription[];
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 
-extern const char kIOSAppBundlePromoEphemeralCardName[];
-extern const char kIOSAppBundlePromoEphemeralCardDescription[];
-
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 
