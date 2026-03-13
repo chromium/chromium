@@ -89,13 +89,16 @@ export class ContextualEntrypointAndMenuElement extends
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
 
-  constructor() {
-    super();
-  }
-
   openMenuForMultiSelection() {
     if (this.enableMultiTabSelection_) {
-      this.updateComplete.then(this.showMenuAtEntrypoint_.bind(this));
+      const entrypoint =
+          this.$.entrypointButton.shadowRoot.querySelector<HTMLElement>(
+              '#entrypoint');
+      // TODO(crbug.com/491126593): Add an assert to catch additional race
+      // conditions.
+      if (entrypoint) {
+        this.showMenuAtEntrypoint_();
+      }
     }
   }
 

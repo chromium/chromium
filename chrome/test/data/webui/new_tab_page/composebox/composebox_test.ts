@@ -50,6 +50,31 @@ suite('NewTabPageComposeboxTest', () => {
         assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
       });
 
+  test('updates state from state property', async () => {
+    createComposeboxElement(testProxy);
+    testProxy.searchboxHandler.setPromiseResolveFor(
+        ADD_FILE_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
+    const composebox = testProxy.element;
+
+    composebox.state = {
+      text: 'hello world',
+      files:
+          [{file: new File(['test'], 'test.pdf', {type: 'application/pdf'})}],
+      mode: ComposeboxToolMode.kDeepSearch,
+      model: ModelMode.kGeminiRegular,
+    };
+    await testProxy.searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    assertEquals('hello world', composebox.getText());
+    assertEquals(ComposeboxToolMode.kDeepSearch, composebox.activeToolMode);
+    assertEquals(1, composebox.getNumOfFilesForTesting());
+    const activeModel =
+        await testProxy.searchboxHandler.whenCalled('setActiveModelMode');
+    assertEquals(ModelMode.kGeminiRegular, activeModel);
+  });
+
   test('clear functionality', async () => {
     loadTimeData.overrideValues({composeboxShowSubmit: true});
     createComposeboxElement(testProxy);

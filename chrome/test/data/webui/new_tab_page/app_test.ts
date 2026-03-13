@@ -15,7 +15,7 @@ import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/ne
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
-import {ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ModelMode, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -1296,6 +1296,30 @@ suite('NewTabPageAppTest', () => {
       });
       // Needed so `.click()` calls don't navigate.
       window.open = () => null;
+    });
+
+    test('populates the correct state', async () => {
+      const searchbox = $$(app, '#searchbox');
+      assertTrue(!!searchbox);
+
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {
+          searchboxText: 'test text',
+          contextFiles: [{file: new File([], 'test.pdf')}],
+          mode: ComposeboxToolMode.kDeepSearch,
+          model: ModelMode.kGeminiRegular,
+        },
+      }));
+      await microtasksFinished();
+
+      const composebox = app.shadowRoot.querySelector('cr-composebox');
+      assertTrue(!!composebox);
+      const state = composebox.state!;
+      assertTrue(!!state);
+      assertEquals('test text', state.text);
+      assertEquals(1, state.files!.length);
+      assertEquals(ComposeboxToolMode.kDeepSearch, state.mode);
+      assertEquals(ModelMode.kGeminiRegular, state.model);
     });
 
     test('toggle composebox visibility', async () => {
