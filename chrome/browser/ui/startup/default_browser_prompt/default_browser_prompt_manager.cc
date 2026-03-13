@@ -95,6 +95,26 @@ DefaultBrowserPromptSurface GetPromptSurface() {
   return default_browser::GetDefaultBrowserPromptSurface();
 }
 
+#if BUILDFLAG(IS_WIN)
+browser_util::PinAppToTaskbarChannel GetPinToTaskbarChannel(
+    DefaultBrowserPromptSurface prompt_surface) {
+  switch (prompt_surface) {
+    case DefaultBrowserPromptSurface::kInfobar:
+      return browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar;
+    case DefaultBrowserPromptSurface::kBubbleDialog:
+      return browser_util::PinAppToTaskbarChannel::kDefaultBrowserBubbleDialog;
+    case DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration:
+      return browser_util::PinAppToTaskbarChannel::
+          kDefaultBrowserModalDialogWithSettingsImage;
+    case DefaultBrowserPromptSurface::kModalDialogWithoutSettingsIllustration:
+      return browser_util::PinAppToTaskbarChannel::
+          kDefaultBrowserModalDialogWithoutSettingsImage;
+    default:
+      NOTREACHED();
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 // static
@@ -127,7 +147,7 @@ bool DefaultBrowserPromptManager::MaybeShowPrompt() {
   // global singleton - DefaultBrowserPromptManager.
   browser_util::ShouldOfferToPin(
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
-      browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
+      GetPinToTaskbarChannel(GetPromptSurface()),
       base::BindOnce(&DefaultBrowserPromptManager::OnCanPinToTaskbarResult,
                      base::Unretained(this)));
   return true;
