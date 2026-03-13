@@ -550,6 +550,7 @@ source_set("extensions") {
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/undo",
+    "//chrome/browser/update_client",
     "//chrome/common",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",

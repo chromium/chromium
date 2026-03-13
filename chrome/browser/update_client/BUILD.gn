@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("update_client") {
+  public = [ "chrome_update_query_params_delegate.h" ]
+
+  public_deps = [ "//components/update_client" ]
+}
+
+source_set("impl") {
+  sources = [ "chrome_update_query_params_delegate.cc" ]
+
+  deps = [
+    ":update_client",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/common",
+    "//components/version_info",
+    "//extensions/buildflags",
+  ]
+
+  if (enable_extensions_core) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "chrome_update_query_params_delegate_unittest.cc" ]
+
+  deps = [
+    ":update_client",
+    "//base",
+    "//chrome/common",
+    "//components/update_client",
+    "//components/version_info",
+    "//testing/gtest",
+  ]
+}
