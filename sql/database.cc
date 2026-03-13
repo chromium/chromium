@@ -617,6 +617,7 @@ bool Database::OpenInMemory() {
 
 void Database::DetachFromSequence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!weak_factory_.HasWeakPtrs());
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
