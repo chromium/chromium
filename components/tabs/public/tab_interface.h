@@ -258,9 +258,13 @@ class TabInterface : public SupportsTabHandles {
   // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
   // always non-nullptr.
   //
-  // TODO(crbug.com/481636328): Support BrowserWindowInterface on all Android
-  // form factors. Currently, this is only supported on Desktop Android. On
-  // other Android form factors, this will return nullptr.
+  // Android specific notes:
+  // * Tabs that are reparenting, closing or in undoable closure state will
+  //   return nullptr.
+  // * Prior to associating the tab with a browser window (i.e. early in
+  //   startup), this will be nullptr.
+  // * After dissociation from a browser window (i.e. during activity/profile
+  //   destruction), this will be nullptr.
   virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
   virtual const BrowserWindowInterface* GetBrowserWindowInterface() const = 0;
 
