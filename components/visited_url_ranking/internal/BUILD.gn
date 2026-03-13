@@ -11,7 +11,6 @@ if (is_android) {
 static_library("internal") {
   visibility = [
     ":*",
-    "//chrome/browser",
     "//chrome/browser/visited_url_ranking:*",
     "//chrome/test:*",
     "//ios/chrome/browser/visited_url_ranking/model:*",
@@ -62,8 +61,8 @@ static_library("internal") {
 static_library("internal_url_grouping") {
   visibility = [
     ":*",
-    "//chrome/browser",
     "//chrome/browser/prefs:impl",
+    "//chrome/browser/visited_url_ranking:*",
   ]
   sources = [
     "url_grouping/group_suggestions_manager.cc",

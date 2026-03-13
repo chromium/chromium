@@ -1,0 +1,139 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("visited_url_ranking") {
+  sources = [
+    "group_suggestions_service_factory.h",
+    "url_deduplication/search_engine_url_strip_handler.h",
+    "visited_url_ranking_service_factory.h",
+  ]
+
+  if (is_android) {
+    sources += [ "android_tab_model_url_visit_data_fetcher.h" ]
+  } else {
+    sources += [ "desktop_tab_model_url_visit_data_fetcher.h" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/search_engines",
+    "//components/url_deduplication",
+    "//components/visited_url_ranking/public",
+  ]
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "group_suggestions_service_factory.cc",
+    "url_deduplication/search_engine_url_strip_handler.cc",
+    "visited_url_ranking_service_factory.cc",
+  ]
+
+  if (is_android) {
+    sources += [ "android_tab_model_url_visit_data_fetcher.cc" ]
+  } else {
+    sources += [ "desktop_tab_model_url_visit_data_fetcher.cc" ]
+  }
+
+  deps = [
+    ":visited_url_ranking",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/commerce",
+    "//chrome/browser/history",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/browser/sync",
+    "//chrome/common",
+    "//components/bookmarks/browser",
+    "//components/history/core/browser",
+    "//components/history_clusters/core",
+    "//components/keyed_service/core",
+    "//components/search_engines",
+    "//components/sessions",
+    "//components/sync_device_info",
+    "//components/tabs",
+    "//components/url_deduplication",
+    "//components/visited_url_ranking/internal",
+    "//components/visited_url_ranking/internal:internal_url_grouping",
+    "//components/visited_url_ranking/public",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/android/tab_model",
+      "//ui/base",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = []
+
+  if (is_android) {
+    sources += [ "group_suggestions_service_factory_browsertest.cc" ]
+  }
+
+  if (!is_android) {
+    sources += [ "desktop_tab_model_url_visit_data_fetcher_browsertest.cc" ]
+  }
+
+  deps = [
+    ":visited_url_ranking",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//components/visited_url_ranking/public",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/android/tab_model",
+      "//net:test_support",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//components/sessions",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "url_deduplication/search_engine_url_strip_handler_unittest.cc" ]
+
+  deps = [
+    ":visited_url_ranking",
+    "//base",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+    "//components/search_engines",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

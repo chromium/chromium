@@ -1273,12 +1273,6 @@ static_library("browser") {
     "v8_compile_hints/v8_compile_hints_tab_helper.h",
     "visibility_timer_tab_helper.cc",
     "visibility_timer_tab_helper.h",
-    "visited_url_ranking/group_suggestions_service_factory.cc",
-    "visited_url_ranking/group_suggestions_service_factory.h",
-    "visited_url_ranking/url_deduplication/search_engine_url_strip_handler.cc",
-    "visited_url_ranking/url_deduplication/search_engine_url_strip_handler.h",
-    "visited_url_ranking/visited_url_ranking_service_factory.cc",
-    "visited_url_ranking/visited_url_ranking_service_factory.h",
     "webapps/chrome_webapps_client.cc",
     "webapps/chrome_webapps_client.h",
     "webapps/installable/installable_utils.cc",
@@ -1927,6 +1921,8 @@ static_library("browser") {
     "//chrome/browser/updater",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/updates/announcement_notification:impl",
+    "//chrome/browser/visited_url_ranking",
+    "//chrome/browser/visited_url_ranking:impl",
     "//chrome/browser/vr",
     "//chrome/browser/vr:impl",
     "//chrome/browser/web_share_target",
@@ -2314,8 +2310,6 @@ static_library("browser") {
     "//components/variations/service",
     "//components/vector_icons",
     "//components/version_info",
-    "//components/visited_url_ranking/internal",
-    "//components/visited_url_ranking/internal:internal_url_grouping",
     "//components/visited_url_ranking/public",
     "//components/visitedlink/browser",
     "//components/visitedlink/common",
@@ -3094,8 +3088,6 @@ static_library("browser") {
       "tab_group_sync/android/tab_group_sync_utils_android.cc",
       "translate/android/translate_bridge.cc",
       "translate/android/translate_bridge.h",
-      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.cc",
-      "visited_url_ranking/android_tab_model_url_visit_data_fetcher.h",
       "wallet/android/boarding_pass_bridge.cc",
       "wallet/android/boarding_pass_detector.cc",
       "wallet/android/boarding_pass_detector.h",
@@ -3462,7 +3454,6 @@ static_library("browser") {
       # - c/b/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h
       # - c/b/android/tab_android.h
       # - c/b/ntp_tiles/chrome_most_visited_sites_factory.h
-      # - c/b/visited_url_ranking/visited_url_ranking_service_factory.h
       "//chrome/browser/auxiliary_search:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the following
@@ -3996,8 +3987,6 @@ static_library("browser") {
       "support_tool/system_log_source_data_collector_adaptor.h",
       "tab_contents/form_interaction_tab_helper.cc",
       "tab_contents/form_interaction_tab_helper.h",
-      "visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.cc",
-      "visited_url_ranking/desktop_tab_model_url_visit_data_fetcher.h",
       "webapps/webapps_client_desktop.cc",
       "webapps/webapps_client_desktop.h",
       "webauthn/authenticator_list_observer.h",

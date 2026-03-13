@@ -1675,6 +1675,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui_browser:impl",
       "//chrome/browser/ui/window_sizer",
       "//chrome/browser/ui/window_sizer:impl",
+      "//chrome/browser/visited_url_ranking:impl",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
       "//chrome/common:buildflags",
@@ -1883,6 +1884,10 @@ static_library("ui") {
       "//chrome/browser/ui/bookmarks:impl",
       "//chrome/browser/ui/feature_first_run:impl",
       "//chrome/browser/ui/desktop_to_mobile_promos:controller",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/ui/browser.h gets componentized.
+      "//chrome/browser/visited_url_ranking:impl",
 
       # TODO(crbug.com/364667551): It includes quite a few files from //c/b/ui's
       # subdirectories such as views and webui which are not modularized yet.

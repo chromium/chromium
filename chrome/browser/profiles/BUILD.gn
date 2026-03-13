@@ -381,6 +381,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/undo",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/usb",
+    "//chrome/browser/visited_url_ranking",
     "//chrome/browser/webauthn",
     "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
