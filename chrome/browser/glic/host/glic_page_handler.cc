@@ -952,7 +952,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
     }
 
-    if (base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
+    if (GlicEnabling::IsAutoOpenForPdfEnabled(profile_)) {
       state->host_capabilities.push_back(mojom::HostCapability::kPdfZeroState);
     }
 
@@ -960,15 +960,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(mojom::HostCapability::kInvoke);
     }
 
-    const mojom::InvocationSource invocation_source =
-        host().invocation_source().value_or(
-            mojom::InvocationSource::kUnsupported);
-
-    const bool should_bypass_fre_ui =
-        GlicEnabling::ShouldBypassFreUi(profile_, invocation_source);
-
-    if (!should_bypass_fre_ui &&
-        GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
+    if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
       int arm = features::kGlicTrustFirstOnboardingArmParam.Get();
       if (arm == 1) {
         state->host_capabilities.push_back(
@@ -1007,7 +999,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(
             features::kGlicOpenPasswordManagerSettingsPageApi);
     state->enable_trust_first_onboarding =
-        !should_bypass_fre_ui &&
         GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_);
     state->onboarding_completed =
         GlicEnabling::HasConsentedForProfile(profile_);

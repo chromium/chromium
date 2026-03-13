@@ -398,13 +398,15 @@ void ContextualCueingHelper::OnCueingDecision(
       decision_result->auto_open_eligible &&
       base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
 
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   const bool is_auto_open_pdf_side_panel_cue =
       should_open_side_panel &&
       web_contents()->GetContentsMimeType() == pdf::kPDFMimeType &&
-      base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf);
+      glic::GlicEnabling::IsAutoOpenForPdfEnabled(profile);
 
   // Check nudge rate-limiting/backoff caps. Auto-open PDF side panel bypasses
-  // this check for a more detemrinistic feel.
+  // this check for a more deterministic feel.
   NudgeDecision can_show_decision;
   if (is_auto_open_pdf_side_panel_cue) {
     can_show_decision = NudgeDecision::kSuccess;
@@ -422,8 +424,6 @@ void ContextualCueingHelper::OnCueingDecision(
   if (should_open_side_panel) {
     auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
     auto* browser_window_interface = tab_interface->GetBrowserWindowInterface();
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     if (glic_service && browser_window_interface) {

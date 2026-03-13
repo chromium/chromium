@@ -4003,7 +4003,8 @@ INSTANTIATE_TEST_SUITE_P(
                     TestParams{.enable_scroll_to_pdf = true},
                     TestParams{.trust_first_onboarding_arm1 = true},
                     TestParams{.trust_first_onboarding_arm2 = true},
-                    TestParams{.auto_open_pdf = true}),
+                    TestParams{.trust_first_onboarding_arm1 = true,
+                               .auto_open_pdf = true}),
     &WithTestParams::PrintTestVariant);
 
 auto DefaultTestParamSet() {

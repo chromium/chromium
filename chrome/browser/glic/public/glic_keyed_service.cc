@@ -363,9 +363,7 @@ void GlicKeyedService::ToggleUIInternal(
   }
 
   // Show the FRE if not yet completed, and if we have a browser to use.
-  // Ignore ShouldBypassFreUi if auto_send is true.
-  if ((!GlicEnabling::ShouldBypassFreUi(profile_, source) || auto_send) &&
-      fre_controller_->ShouldShowFreDialog()) {
+  if (fre_controller_->ShouldShowFreDialog()) {
     fre_controller_->MarkFreStartAttempt();
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
     if (!GlicEnabling::IsUnifiedFreEnabled(profile_)) {
