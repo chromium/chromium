@@ -433,6 +433,7 @@ static_library("ui") {
     "//chrome/browser/undo",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/updates/announcement_notification:impl",
+    "//chrome/browser/v8_compile_hints",
     "//chrome/browser/vr",
     "//chrome/browser/webauthn",
     "//chrome/browser/webnn",
