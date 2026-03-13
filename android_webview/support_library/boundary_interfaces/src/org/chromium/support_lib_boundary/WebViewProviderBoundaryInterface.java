@@ -92,6 +92,13 @@ public interface WebViewProviderBoundaryInterface {
     void removeWebViewNavigationListener(
             /* WebViewNavigationListener */ InvocationHandler listener);
 
+    @Deprecated
+    /* WebViewNavigationClient */ @Nullable InvocationHandler getWebViewNavigationClient();
+
+    @Deprecated
+    void setWebViewNavigationClient(
+            /* WebViewNavigationClient */ @Nullable InvocationHandler webViewNavigationClient);
+
     /* ScriptHandler */ InvocationHandler addJavaScriptOnEvent(
             String script,
             String[] allowedOriginRules,

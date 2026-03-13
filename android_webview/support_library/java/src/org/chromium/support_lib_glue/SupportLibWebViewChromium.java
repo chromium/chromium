@@ -532,4 +532,13 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                                     listener, Runnable::run));
         }
     }
+
+    @Override
+    public /* WebViewNavigationClient */ InvocationHandler getWebViewNavigationClient() {
+        return null;
+    }
+
+    @Override
+    public void setWebViewNavigationClient(
+            /* WebViewNavigationClient */ InvocationHandler webViewNavigationClient) {}
 }
