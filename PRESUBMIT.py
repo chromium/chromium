@@ -2242,7 +2242,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         pattern='WebContentsDestroyed',
         explanation=
-        ('Do not use this method. It is invoked half-way through the '
+        ('Do not use WebContentsDestroyed. It is invoked half-way through the '
          'destructor of WebContentsImpl and using it often results in crashes '
          'or surprising behavior. Conceptually, this is only necessary by '
          'objects that depend on, but outlive the WebContents. These objects '
