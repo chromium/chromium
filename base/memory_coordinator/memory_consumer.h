@@ -78,6 +78,7 @@ class BASE_EXPORT MemoryConsumer {
   // This is the default value for a consumer's memory limit. It corresponds to
   // 100%, meaning the consumer is not restricted in its memory usage.
   static constexpr int kDefaultMemoryLimit = 100;
+  static constexpr double kDefaultMemoryLimitRatio = 1.0;
 
   MemoryConsumer();
   virtual ~MemoryConsumer() = default;
