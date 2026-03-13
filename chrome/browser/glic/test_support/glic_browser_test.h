@@ -181,16 +181,6 @@ class GlicBrowserTestMixin : public T {
         "Failed to close Glic UI");
   }
 
-  // Closes Glic for a given tab and waits for it to close.
-  [[nodiscard]] bool CloseGlicForTabAndWait(tabs::TabInterface* tab) {
-    GlicInstanceImpl* instance = GetInstanceForTab(tab);
-    if (!instance) {
-      return false;
-    }
-    instance->Close(tab);
-    return WaitForGlicClose(instance);
-  }
-
   [[nodiscard]] GlicInstanceImpl* WaitForGlicInstanceBoundToTab(
       tabs::TabInterface* tab) {
     bool success = RunUntil(

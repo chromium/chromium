@@ -119,7 +119,6 @@ class EmptyInstanceDelegate : public Host::InstanceDelegate {
   }
   void OnWebClientCleared() override {}
   void PrepareForOpen() override {}
-  void OnUserInputSubmitted(mojom::WebClientMode mode) override {}
   void OnInteractionModeChange(mojom::WebClientMode new_mode) override {}
   GlicInstanceMetrics* instance_metrics() override { return nullptr; }
   GlicInstanceMetricsBackwardsCompatibility&
