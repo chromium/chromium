@@ -264,5 +264,6 @@ fuzzer_test("media_vpx_quantizer_parser_fuzzer") {
   deps = [
     ":encoding",
     "//components/openscreen_platform:openscreen_platform_using_net_sockets",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }

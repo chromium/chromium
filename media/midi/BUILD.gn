@@ -198,5 +198,8 @@ fuzzer_test("midi_webmidi_data_validator_fuzzer") {
 fuzzer_test("midi_message_queue_fuzzer") {
   sources = [ "midi_message_queue_fuzzer.cc" ]
   seed_corpus = "fuzz/corpus"
-  deps = [ ":midi" ]
+  deps = [
+    ":midi",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
 }

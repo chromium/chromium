@@ -133,6 +133,7 @@ if (enable_hevc_parser_and_hw_decoder) {
     deps = [
       "//base",
       "//media",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 }
@@ -143,6 +144,7 @@ fuzzer_test("media_jpeg_parser_picture_fuzzer") {
     ":parsers",
     "//base",
     "//media:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "//media/test/data"
   dict = "//media/test/jpeg.dict"
@@ -185,6 +187,7 @@ fuzzer_test("media_webp_parser_fuzzer") {
     ":parsers",
     "//base",
     "//media:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   seed_corpus = "//media/test/data"
   dict = "//media/test/webp.dict"

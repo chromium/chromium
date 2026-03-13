@@ -4,17 +4,19 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/parsers/h265_parser.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (!size)
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  if (data.empty()) {
     return 0;
+  }
 
   media::H265Parser parser;
-  parser.SetStream(UNSAFE_TODO(base::span(data, size)));
+  parser.SetStream(data);
 
   // Parse until the end of stream/unsupported stream/error in stream is
   // found.

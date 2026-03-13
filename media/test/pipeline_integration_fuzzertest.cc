@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -29,6 +25,7 @@
 #include "media/media_buildflags.h"
 #include "media/test/pipeline_integration_test_base.h"
 #include "media/test/test_media_source.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "third_party/googletest/src/googletest/src/gtest-internal-inl.h"
 
 namespace {
@@ -250,12 +247,11 @@ struct Environment {
 Environment* env = new Environment();
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> bytes) {
   // Media pipeline starts new threads, which needs AtExitManager.
   base::AtExitManager at_exit;
 
   FuzzerVariant variant = PIPELINE_FUZZER_VARIANT;
-  base::span<const uint8_t> bytes(data, size);
 
   // These tests use GoogleTest assertions without using the GoogleTest
   // framework. While this is the case, tell GoogleTest's stack trace getter

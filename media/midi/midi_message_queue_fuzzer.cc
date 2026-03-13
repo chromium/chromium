@@ -2,33 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
+#include "media/midi/midi_message_queue.h"
+
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
-#include "media/midi/midi_message_queue.h"
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   auto queue_running = std::make_unique<midi::MidiMessageQueue>(true);
   auto queue_normal = std::make_unique<midi::MidiMessageQueue>(false);
 
-  // SAFETY: `data` is a fuzzer input and should have valid size.
-  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
-  queue_running->Add(data_span);
-  queue_normal->Add(data_span);
+  queue_running->Add(data);
+  queue_normal->Add(data);
 
   std::vector<uint8_t> message;
   while (true) {
     queue_running->Get(&message);
-    if (message.empty())
+    if (message.empty()) {
       break;
+    }
   }
 
   while (true) {
     queue_normal->Get(&message);
-    if (message.empty())
+    if (message.empty()) {
       break;
+    }
   }
 
   return 0;

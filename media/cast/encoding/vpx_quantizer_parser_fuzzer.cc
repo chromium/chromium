@@ -9,11 +9,9 @@
 #include <tuple>
 
 #include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::ignore = media::cast::ParseVpxHeaderQuantizer(
-      // SAFETY: data is validated by the fuzzer runtime. Any AV crashes here
-      // will result in a fuzzing bug, not a runtime issue.
-      UNSAFE_BUFFERS(base::span<const uint8_t>(data, size)));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  std::ignore = media::cast::ParseVpxHeaderQuantizer(data);
   return 0;
 }

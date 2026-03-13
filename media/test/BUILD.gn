@@ -166,6 +166,7 @@ foreach(variant, pipeline_integration_fuzzer_variants) {
       "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
       "//ui/gfx:test_support",
     ]
 
