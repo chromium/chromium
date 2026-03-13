@@ -28,12 +28,12 @@ UChar32 ConsumeEscape(CSSTokenizerInputStream& input) {
   UChar cc = input.NextInputChar();
   input.Advance();
   DCHECK(!IsCSSNewLine(cc));
-  if (IsASCIIHexDigit(cc)) {
+  if (IsAsciiHexDigit(cc)) {
     unsigned consumed_hex_digits = 1;
     StringBuilder hex_chars;
     hex_chars.Append(cc);
     while (consumed_hex_digits < 6 &&
-           IsASCIIHexDigit(input.PeekWithoutReplacement(0))) {
+           IsAsciiHexDigit(input.PeekWithoutReplacement(0))) {
       cc = input.NextInputChar();
       input.Advance();
       hex_chars.Append(cc);

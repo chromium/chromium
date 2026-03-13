@@ -162,8 +162,8 @@ void QuotedPrintableEncode(base::span<const char> input,
     // Finally, insert the actual character(s).
     if (requires_encoding) {
       out.push_back('=');
-      out.push_back(UpperNibbleToASCIIHexDigit(current_character));
-      out.push_back(LowerNibbleToASCIIHexDigit(current_character));
+      out.push_back(UpperNibbleToAsciiHexDigit(current_character));
+      out.push_back(LowerNibbleToAsciiHexDigit(current_character));
       current_line_length += 3;
     } else {
       out.push_back(current_character);

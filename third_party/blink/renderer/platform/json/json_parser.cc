@@ -179,7 +179,7 @@ Error ReadHexDigits(Cursor* cursor,
     return Error::kInvalidEscape;
   }
   for (size_t i = 0; i < digits; ++i) {
-    if (!IsASCIIHexDigit(data[cursor->pos++])) {
+    if (!IsAsciiHexDigit(data[cursor->pos++])) {
       cursor->pos = token_start;
       return Error::kInvalidEscape;
     }
@@ -442,10 +442,10 @@ Error DecodeString(Cursor* cursor,
         c = '\v';
         break;
       case 'u':
-        c = (ToASCIIHexValue(data[cursor->pos]) << 12) +
-            (ToASCIIHexValue(data[cursor->pos + 1]) << 8) +
-            (ToASCIIHexValue(data[cursor->pos + 2]) << 4) +
-            ToASCIIHexValue(data[cursor->pos + 3]);
+        c = (ToAsciiHexValue(data[cursor->pos]) << 12) +
+            (ToAsciiHexValue(data[cursor->pos + 1]) << 8) +
+            (ToAsciiHexValue(data[cursor->pos + 2]) << 4) +
+            ToAsciiHexValue(data[cursor->pos + 3]);
         cursor->pos += 4;
         break;
       default:

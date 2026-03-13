@@ -117,7 +117,7 @@ CSSParserToken CSSTokenizer::Hash(UChar cc) {
 
 CSSParserToken CSSTokenizer::LetterU(UChar cc) {
   if (unicode_ranges_allowed_ && input_.PeekWithoutReplacement(0) == '+' &&
-      (IsASCIIHexDigit(input_.PeekWithoutReplacement(1)) ||
+      (IsAsciiHexDigit(input_.PeekWithoutReplacement(1)) ||
        input_.PeekWithoutReplacement(1) == '?')) {
     input_.Advance();
     return ConsumeUnicodeRange();
@@ -435,14 +435,14 @@ CSSParserToken CSSTokenizer::ConsumeStringTokenUntil(UChar ending_code_point) {
 }
 
 CSSParserToken CSSTokenizer::ConsumeUnicodeRange() {
-  DCHECK(IsASCIIHexDigit(input_.PeekWithoutReplacement(0)) ||
+  DCHECK(IsAsciiHexDigit(input_.PeekWithoutReplacement(0)) ||
          input_.PeekWithoutReplacement(0) == '?');
   int length_remaining = 6;
   UChar32 start = 0;
 
   while (length_remaining &&
-         IsASCIIHexDigit(input_.PeekWithoutReplacement(0))) {
-    start = start * 16 + ToASCIIHexValue(Consume());
+         IsAsciiHexDigit(input_.PeekWithoutReplacement(0))) {
+    start = start * 16 + ToAsciiHexValue(Consume());
     --length_remaining;
   }
 
@@ -454,15 +454,15 @@ CSSParserToken CSSTokenizer::ConsumeUnicodeRange() {
       --length_remaining;
     } while (length_remaining && ConsumeIfNext('?'));
   } else if (input_.PeekWithoutReplacement(0) == '-' &&
-             IsASCIIHexDigit(input_.PeekWithoutReplacement(1))) {
+             IsAsciiHexDigit(input_.PeekWithoutReplacement(1))) {
     input_.Advance();
     length_remaining = 6;
     end = 0;
     do {
-      end = end * 16 + ToASCIIHexValue(Consume());
+      end = end * 16 + ToAsciiHexValue(Consume());
       --length_remaining;
     } while (length_remaining &&
-             IsASCIIHexDigit(input_.PeekWithoutReplacement(0)));
+             IsAsciiHexDigit(input_.PeekWithoutReplacement(0)));
   }
 
   return CSSParserToken(kUnicodeRangeToken, start, end);

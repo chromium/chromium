@@ -91,10 +91,11 @@ inline bool ParseHexColorInternal(base::span<const CharacterType> name,
   }
   uint32_t value = 0;
   for (unsigned i = 0; i < name.size(); ++i) {
-    if (!IsASCIIHexDigit(name[i]))
+    if (!IsAsciiHexDigit(name[i])) {
       return false;
+    }
     value <<= 4;
-    value |= ToASCIIHexValue(name[i]);
+    value |= ToAsciiHexValue(name[i]);
   }
   if (name.size() == 6) {
     color = Color::FromRGBA32(0xFF000000 | value);

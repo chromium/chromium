@@ -44,7 +44,7 @@ std::optional<uint32_t> ConvertToHashInteger(std::string_view chars) {
     return std::nullopt;
   }
   for (auto c : chars) {
-    if (!IsASCIIHexDigit(c)) {
+    if (!IsAsciiHexDigit(c)) {
       return std::nullopt;
     }
   }

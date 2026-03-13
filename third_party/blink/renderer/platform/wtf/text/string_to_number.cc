@@ -25,7 +25,7 @@ bool IsCharacterAllowedInBase<10>(UChar c) {
 
 template <>
 bool IsCharacterAllowedInBase<16>(UChar c) {
-  return IsASCIIHexDigit(c);
+  return IsAsciiHexDigit(c);
 }
 
 template <typename IntegralType, typename CharType, int base>

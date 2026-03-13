@@ -3361,10 +3361,11 @@ static Color ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   // "characters" in the String.
   for (; i < color_string.length() && digit_buffer.size() < kMaxColorLength;
        i++) {
-    if (!IsASCIIHexDigit(color_string[i]))
+    if (!IsAsciiHexDigit(color_string[i])) {
       digit_buffer.push_back('0');
-    else
+    } else {
       digit_buffer.push_back(color_string[i]);
+    }
   }
 
   if (!digit_buffer.size())
@@ -3375,9 +3376,9 @@ static Color ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   digit_buffer.push_back('0');
 
   if (digit_buffer.size() < 6) {
-    return Color::FromRGB(ToASCIIHexValue(digit_buffer[0]),
-                          ToASCIIHexValue(digit_buffer[1]),
-                          ToASCIIHexValue(digit_buffer[2]));
+    return Color::FromRGB(ToAsciiHexValue(digit_buffer[0]),
+                          ToAsciiHexValue(digit_buffer[1]),
+                          ToAsciiHexValue(digit_buffer[2]));
   }
 
   // Split the digits into three components, then search the last 8 digits of
@@ -3406,11 +3407,11 @@ static Color ParseColorStringWithCrazyLegacyRules(const String& color_string) {
   SECURITY_DCHECK(blue_index + 1 < digit_buffer.size());
 
   int red_value =
-      ToASCIIHexValue(digit_buffer[red_index], digit_buffer[red_index + 1]);
+      ToAsciiHexValue(digit_buffer[red_index], digit_buffer[red_index + 1]);
   int green_value =
-      ToASCIIHexValue(digit_buffer[green_index], digit_buffer[green_index + 1]);
+      ToAsciiHexValue(digit_buffer[green_index], digit_buffer[green_index + 1]);
   int blue_value =
-      ToASCIIHexValue(digit_buffer[blue_index], digit_buffer[blue_index + 1]);
+      ToAsciiHexValue(digit_buffer[blue_index], digit_buffer[blue_index + 1]);
   return Color::FromRGB(red_value, green_value, blue_value);
 }
 

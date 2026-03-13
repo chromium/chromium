@@ -207,7 +207,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
         return false;
       }
       case kMaybeHexLowerCaseX: {
-        if (IsASCIIHexDigit(cc)) {
+        if (IsAsciiHexDigit(cc)) {
           entity_state = kHex;
           continue;
         }
@@ -216,7 +216,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
         return false;
       }
       case kMaybeHexUpperCaseX: {
-        if (IsASCIIHexDigit(cc)) {
+        if (IsAsciiHexDigit(cc)) {
           entity_state = kHex;
           continue;
         }
@@ -225,9 +225,9 @@ bool ConsumeHTMLEntity(SegmentedString& source,
         return false;
       }
       case kHex: {
-        if (IsASCIIHexDigit(cc)) {
+        if (IsAsciiHexDigit(cc)) {
           if (result != kInvalidUnicode)
-            result = result * 16 + ToASCIIHexValue(cc);
+            result = result * 16 + ToAsciiHexValue(cc);
         } else if (cc == ';') {
           source.AdvanceAndASSERT(cc);
           AppendLegalEntityFor(result, decoded_entity);

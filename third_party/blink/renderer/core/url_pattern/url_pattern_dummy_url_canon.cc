@@ -229,7 +229,7 @@ base::expected<String, String> CanonicalizeIPv6HostnameInternal(
   // we simply check for valid characters and lowercase any hex digits.
   for (size_t i = 0; i < input.length(); ++i) {
     char c = input[i];
-    if (!blink::IsASCIIHexDigit(c) && c != '[' && c != ']' && c != ':') {
+    if (!blink::IsAsciiHexDigit(c) && c != '[' && c != ']' && c != ':') {
       return base::unexpected(blink::StrCat(
           {"Invalid IPv6 hostname character '", String(std::string_view(&c, 1)),
            "' in '", input, "'."}));

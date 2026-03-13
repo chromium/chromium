@@ -53,10 +53,10 @@ struct Unicode16BitEscapeSequence {
                                  wtf_size_t end_position) {
     wtf_size_t run_end = start_position;
     while (end_position - run_end >= kSequenceSize && string[run_end] == '%' &&
-           string[run_end + 1] == 'u' && IsASCIIHexDigit(string[run_end + 2]) &&
-           IsASCIIHexDigit(string[run_end + 3]) &&
-           IsASCIIHexDigit(string[run_end + 4]) &&
-           IsASCIIHexDigit(string[run_end + 5])) {
+           string[run_end + 1] == 'u' && IsAsciiHexDigit(string[run_end + 2]) &&
+           IsAsciiHexDigit(string[run_end + 3]) &&
+           IsAsciiHexDigit(string[run_end + 4]) &&
+           IsAsciiHexDigit(string[run_end + 5])) {
       run_end += kSequenceSize;
     }
     return run_end;
@@ -76,8 +76,8 @@ struct Unicode16BitEscapeSequence {
     builder.reserve(number_of_sequences);
     while (number_of_sequences--) {
       UChar code_unit =
-          (ToASCIIHexValue(run[2]) << 12) | (ToASCIIHexValue(run[3]) << 8) |
-          (ToASCIIHexValue(run[4]) << 4) | ToASCIIHexValue(run[5]);
+          (ToAsciiHexValue(run[2]) << 12) | (ToAsciiHexValue(run[3]) << 8) |
+          (ToAsciiHexValue(run[4]) << 4) | ToAsciiHexValue(run[5]);
       builder.Append(code_unit);
       run += kSequenceSize;
     }
@@ -105,12 +105,13 @@ struct URLEscapeSequence {
     while (run_end < end_position) {
       if (string[run_end] == '%') {
         if (end_position - run_end >= kSequenceSize &&
-            IsASCIIHexDigit(string[run_end + 1]) &&
-            IsASCIIHexDigit(string[run_end + 2])) {
+            IsAsciiHexDigit(string[run_end + 1]) &&
+            IsAsciiHexDigit(string[run_end + 2])) {
           run_end += kSequenceSize;
           number_of_trailing_characters = 0;
-        } else
+        } else {
           break;
+        }
       } else if (string[run_end] >= 0x40 && string[run_end] <= 0x7F &&
                  number_of_trailing_characters < 2) {
         run_end += 1;
@@ -135,7 +136,7 @@ struct URLEscapeSequence {
     const CharType* run_end = run + run_length;
     while (run < run_end) {
       if (run[0] == '%') {
-        *p++ = (ToASCIIHexValue(run[1]) << 4) | ToASCIIHexValue(run[2]);
+        *p++ = (ToAsciiHexValue(run[1]) << 4) | ToAsciiHexValue(run[2]);
         run += kSequenceSize;
       } else {
         *p++ = run[0];

@@ -69,8 +69,9 @@ inline bool IsASCIIAlphanumeric(CharType c) {
   return IsASCIIDigit(c) || IsASCIIAlpha(c);
 }
 
+// Returns true if the character is an ASCII hex digit (0-9, a-f, or A-F).
 template <typename CharType>
-inline bool IsASCIIHexDigit(CharType c) {
+inline bool IsAsciiHexDigit(CharType c) {
   return IsASCIIDigit(c) || ((c | 0x20) >= 'a' && (c | 0x20) <= 'f');
 }
 
@@ -158,26 +159,36 @@ constexpr inline CharType ToASCIIUpper(CharType c) {
   return c & ~((c >= 'a' && c <= 'z') << 5);
 }
 
+// Returns the value of an ASCII hex digit.
+// The return value is 0-15.
+// `c` must satisfy IsAsciiHexDigit(c).
 template <typename CharType>
-inline int ToASCIIHexValue(CharType c) {
-  DCHECK(IsASCIIHexDigit(c));
+inline int ToAsciiHexValue(CharType c) {
+  DCHECK(IsAsciiHexDigit(c));
   return c < 'A' ? c - '0' : (c - 'A' + 10) & 0xF;
 }
 
+// Returns the value of two ASCII hex digits combined into a single byte.
+// The return value is 0-255.
+// `upper_value` and `lower_value` must satisfy IsAsciiHexDigit().
 template <typename CharType>
-inline int ToASCIIHexValue(CharType upper_value, CharType lower_value) {
-  DCHECK(IsASCIIHexDigit(upper_value));
-  DCHECK(IsASCIIHexDigit(lower_value));
-  return ((ToASCIIHexValue(upper_value) << 4) & 0xF0) |
-         ToASCIIHexValue(lower_value);
+inline int ToAsciiHexValue(CharType upper_value, CharType lower_value) {
+  DCHECK(IsAsciiHexDigit(upper_value));
+  DCHECK(IsAsciiHexDigit(lower_value));
+  return ((ToAsciiHexValue(upper_value) << 4) & 0xF0) |
+         ToAsciiHexValue(lower_value);
 }
 
-inline char LowerNibbleToASCIIHexDigit(char c) {
+// Returns the ASCII hex digit for the lower 4 bits of the given character.
+// The return value is one of '0'-'9' and 'A'-'F'.
+inline char LowerNibbleToAsciiHexDigit(char c) {
   char nibble = c & 0xF;
   return nibble < 10 ? '0' + nibble : 'A' + nibble - 10;
 }
 
-inline char UpperNibbleToASCIIHexDigit(char c) {
+// Returns the ASCII hex digit for the upper 4 bits of the given character.
+// The return value is one of '0'-'9' and 'A'-'F'.
+inline char UpperNibbleToAsciiHexDigit(char c) {
   char nibble = (c >> 4) & 0xF;
   return nibble < 10 ? '0' + nibble : 'A' + nibble - 10;
 }
