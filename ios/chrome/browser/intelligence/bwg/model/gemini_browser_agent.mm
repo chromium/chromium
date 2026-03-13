@@ -279,10 +279,13 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
 
   is_keyboard_visible_ = is_visible;
   if (is_visible) {
-    // If the floaty is expanded or temporarily hidden, the floaty should not be
-    // re-shown on keyboard updates.
-    if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded ||
-        is_floaty_temporarily_hidden_) {
+    // If the floaty is expanded but not thinking or temporarily hidden, the
+    // floaty should not be re-shown on keyboard updates.
+    bool is_expanded_not_thinking =
+        last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
+        ios::provider::GetCurrentClientMode() !=
+            ios::provider::GeminiClientMode::kThinking;
+    if (is_expanded_not_thinking || is_floaty_temporarily_hidden_) {
       return;
     }
 
