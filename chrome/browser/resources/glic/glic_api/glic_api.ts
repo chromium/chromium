@@ -1140,6 +1140,14 @@ export declare interface GlicBrowserHostMetrics {
   onUserInputSubmitted?(mode: WebClientMode): void;
 
   /**
+   * Called when the web client sends a browser actuation result over the
+   * network. This is used to track metrics for model responses. For a single
+   * actuation, this may be called multiple times if retries occur.
+   * @param isRetry Whether this request is a retry of a previous attempt.
+   */
+  onPerformActionResultSubmitted?(isRetry?: boolean): void;
+
+  /**
    * Called after user input is submitted, but before a response starts,
    * when the UI shows a message that explains the progress of the request.
    */
