@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="/wpt_internal/svg/resources/util.css">
+
+<iframe id="nested_iframe"></iframe>
+
+<script type=module>
+  import {
+    expectCounters,
+    printCounters,
+    resetCounters,
+    waitForLoad,
+    waitForRender,
+  } from '/wpt_internal/svg/resources/util.js';
+
+  function reset() {
+    document.getElementById('nested_iframe').className = '';
+    resetCounters();
+  }
+
+  async function getIframeResults(url) {
+    document.getElementById('nested_iframe').setAttribute('src', url);
+    return await new Promise(resolve => window.addEventListener('message', (e) => {
+      resolve(e.data);
+    }, {once: true}));
+  }
+
+  function expectIframeCounters(message, local, remote, plugin, context) {
+    assert_equals(
+      printCounters(message.local, message.remote, message.plugin),
+      printCounters(local, remote, plugin),
+      context
+    );
+  }
+
+  promise_test(async (t) => {
+    await waitForLoad();
+
+    reset();
+    await waitForRender();
+    let message = await getIframeResults('resources/nested.sub.html');
+    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'Unfiltered nested load.');
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Unfiltered load.');
+
+    reset();
+    await waitForRender();
+    document.getElementById('nested_iframe').className = 'svg-blur';
+    message = await getIframeResults('resources/nested.sub.html');
+    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'Filtered nested load.');
+    expectCounters(/*local=*/true, /*remote=*/false, /*plugin=*/false, 'Filtered load.');
+  }, 'SVG filter applied to nested, but internally unfiltered, local iframe');
+
+  promise_test(async (t) => {
+    await waitForLoad();
+
+    reset();
+    await waitForRender();
+    let message = await getIframeResults('https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/nested.sub.html');
+    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'Unfiltered nested load.');
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Unfiltered load.');
+
+    reset();
+    await waitForRender();
+    document.getElementById('nested_iframe').className = 'svg-blur';
+    message = await getIframeResults('https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/nested.sub.html');
+    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'Filtered nested load.');
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Filtered load.');
+  }, 'SVG filter applied to nested, but internally unfiltered, remote iframe');
+
+  promise_test(async (t) => {
+    await waitForLoad();
+
+    reset();
+    await waitForRender();
+    let message = await getIframeResults('resources/nested.sub.html?filter');
+    expectIframeCounters(message, /*local=*/true, /*remote=*/true, /*plugin=*/true, 'Unfiltered nested load.');
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Unfiltered load.');
+
+    reset();
+    await waitForRender();
+    document.getElementById('nested_iframe').className = 'svg-blur';
+    message = await getIframeResults('resources/nested.sub.html?filter');
+    expectIframeCounters(message, /*local=*/true, /*remote=*/true, /*plugin=*/true, 'Filtered nested load.');
+    expectCounters(/*local=*/true, /*remote=*/false, /*plugin=*/false, 'Filtered load.');
+  }, 'SVG filter applied to nested, internally filtered, local iframe');
+
+  promise_test(async (t) => {
+    await waitForLoad();
+
+    reset();
+    await waitForRender();
+    let message = await getIframeResults('https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/nested.sub.html?filter');
+    expectIframeCounters(message, /*local=*/true, /*remote=*/true, /*plugin=*/true, 'Unfiltered nested load.');
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Unfiltered load.');
+
+    reset();
+    await waitForRender();
+    document.getElementById('nested_iframe').className = 'svg-blur';
+    message = await getIframeResults('https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/nested.sub.html?filter');
+    expectIframeCounters(message, /*local=*/true, /*remote=*/true, /*plugin=*/true, 'Filtered nested load.');
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Filtered load.');
+  }, 'SVG filter applied to nested, internally filtered, remote iframe');
+</script>

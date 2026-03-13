@@ -1,0 +1,6 @@
+.css-blur {
+  filter: blur(1px);
+}
+.svg-blur {
+  filter: url("/wpt_internal/svg/resources/util.svg#svg-blur");
+}

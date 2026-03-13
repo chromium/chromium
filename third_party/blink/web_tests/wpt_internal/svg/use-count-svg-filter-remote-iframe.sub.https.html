@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="/wpt_internal/svg/resources/util.css">
+
+<div id="remote_outer">
+  <div id="remote_inner">
+    <iframe id="remote_iframe" src="https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html"></iframe>
+  </div>
+</div>
+
+<script type=module>
+  import {
+    expectCounters,
+    resetCounters,
+    waitForLoad,
+    waitForRender,
+  } from '/wpt_internal/svg/resources/util.js';
+
+  function reset() {
+    document.getElementById('remote_outer').className = '';
+    document.getElementById('remote_inner').className = '';
+    document.getElementById('remote_iframe').className = '';
+    resetCounters();
+  }
+
+  promise_test(async (t) => {
+    await waitForLoad();
+
+    reset();
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Initial load.');
+
+    reset();
+    document.getElementById('remote_outer').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Outer filter.');
+
+    reset();
+    document.getElementById('remote_inner').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Inner filter.');
+
+    reset();
+    document.getElementById('remote_iframe').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Iframe filter.');
+  }, 'SVG filter applied to remote frame');
+
+  promise_test(async (t) => {
+    await waitForLoad();
+
+    reset();
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Initial load.');
+
+    reset();
+    document.getElementById('remote_outer').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Outer filter.');
+
+    reset();
+    document.getElementById('remote_inner').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Inner filter.');
+
+    reset();
+    document.getElementById('remote_iframe').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Iframe filter.');
+  }, 'CSS filter applied to remote frame');
+
+  promise_test(async (t) => {
+    await waitForLoad();
+
+    reset();
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Initial load.');
+
+    reset();
+    document.getElementById('remote_outer').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Outer filter CSS.');
+
+    document.getElementById('remote_outer').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Outer filter SVG.');
+
+    reset();
+    document.getElementById('remote_inner').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Inner filter CSS.');
+
+    document.getElementById('remote_inner').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Inner filter SVG.');
+
+    reset();
+    document.getElementById('remote_iframe').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Iframe filter CSS.');
+
+    document.getElementById('remote_iframe').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/true, /*plugin=*/false, 'Iframe filter SVG.');
+  }, 'CSS & SVG filter applied to remote frame');
+</script>

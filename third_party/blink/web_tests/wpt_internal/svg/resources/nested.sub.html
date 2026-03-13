@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<svg width="0" height="0">
-  <filter id="svg-blur">
-    <feGaussianBlur stdDeviation="1" />
-  </filter>
-</svg>
-<style>
-  .svg-blur {
-    filter: url(#svg-blur);
-  }
-</style>
+<link rel="stylesheet" href="/wpt_internal/svg/resources/util.css">
+
 <iframe id="iframe_1" src="https://{{host}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html"></iframe>
 <iframe id="iframe_2" src="https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html"></iframe>
 <embed id="plugin" type="application/x-webkit-test-webplugin"></embed>
 <script type=module>
-  import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+  import {
+    getCounters,
+    resetCounters,
+  } from '/wpt_internal/svg/resources/util.js';
 
   (async function() {
-    internals.clearUseCounter(document, WebFeature.kSvgFilterPaintedOnLocalFrame);
-    internals.clearUseCounter(document, WebFeature.kSvgFilterPaintedOnRemoteFrame);
-    internals.clearUseCounter(document, WebFeature.kSvgFilterPaintedOnWebPlugin);
+    resetCounters();
 
     if ((new URLSearchParams(window.location.search)).has('filter')) {
       document.getElementById('iframe_1').className = 'svg-blur';
@@ -30,10 +23,6 @@
 
     await new Promise(requestAnimationFrame);
     await new Promise(setTimeout);
-    window.top.postMessage({
-      local: internals.isUseCounted(document, WebFeature.kSvgFilterPaintedOnLocalFrame),
-      remote: internals.isUseCounted(document, WebFeature.kSvgFilterPaintedOnRemoteFrame),
-      plugin: internals.isUseCounted(document, WebFeature.kSvgFilterPaintedOnWebPlugin),
-    }, '*');
+    window.top.postMessage(getCounters(), '*');
   })();
 </script>`
