@@ -57,6 +57,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
@@ -501,8 +502,7 @@ std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
 
   std::optional<PageTarget> password_button;
   std::optional<PageTarget> sign_in_with_google_button;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginFederatedLoginSupport)) {
+  if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
     for (const auto& login_target : action.login_targets()) {
       if (!login_target.has_login_type() || !login_target.has_target()) {
         return nullptr;

@@ -472,17 +472,4 @@ std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
   return base::UTF8ToUTF16(signon_realm);
 }
 
-#if !BUILDFLAG(IS_IOS)
-bool ShouldUploadActorLoginMqls() {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kActorLoginQualityLogs) &&
-         // Disable MQLS upload if FedCM support is enabled while prototyping to
-         // not upload wrong logs.
-         // TODO(crbug.com/480920277): Remove this check once the prototyping is
-         // complete.
-         !base::FeatureList::IsEnabled(
-             password_manager::features::kActorLoginFederatedLoginSupport);
-}
-#endif  // !BUILDFLAG(IS_IOS)
-
 }  // namespace password_manager_util

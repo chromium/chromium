@@ -11,6 +11,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/common/content_features.h"
 #include "url/gurl.h"
 
 namespace actor_login {
@@ -33,8 +34,7 @@ void ActorLoginFederatedCredentialsFetcher::Fetch(
     FetchResultCallback callback) {
   callback_ = std::move(callback);
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginFederatedLoginSupport)) {
+  if (!base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback_), std::vector<Credential>(),

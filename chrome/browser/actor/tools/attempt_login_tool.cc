@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
@@ -122,8 +123,14 @@ AttemptLoginTool::~AttemptLoginTool() {
   }
   OptimizationGuideKeyedService* opt_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  // Disable MQLS upload if FedCM support is enabled while prototyping to
+  // not upload wrong logs.
+  // TODO(crbug.com/480920277): Remove this check once the prototyping is
+  // complete.
   if (opt_guide_service &&
-      password_manager_util::ShouldUploadActorLoginMqls()) {
+      base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginQualityLogs) &&
+      !base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
     // TODO(crbug.com/459393643): Add a check for filtering out logs of
     // enterprise users.
     quality_logger_.UploadFinalLog(

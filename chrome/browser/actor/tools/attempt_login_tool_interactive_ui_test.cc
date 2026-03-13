@@ -189,13 +189,9 @@ class AttemptLoginToolInteractiveUiTest
     }
 
     if (federation_enabled()) {
-      enabled_features.push_back(
-          password_manager::features::kActorLoginFederatedLoginSupport);
       enabled_features.push_back(features::kFedCmEmbedderInitiatedLogin);
       enabled_features.push_back(features::kFedCmNavigationInterception);
     } else {
-      disabled_features.push_back(
-          password_manager::features::kActorLoginFederatedLoginSupport);
       disabled_features.push_back(features::kFedCmEmbedderInitiatedLogin);
       disabled_features.push_back(features::kFedCmNavigationInterception);
     }

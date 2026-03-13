@@ -56,9 +56,7 @@ std::string_view AttemptLoginToolRequest::Name() const {
 }
 
 bool AttemptLoginToolRequest::RequiresOpeningWebContents() const {
-  return base::FeatureList::IsEnabled(
-             password_manager::features::kActorLoginFederatedLoginSupport) &&
-         base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin) &&
+  return base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin) &&
          base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
 }
 

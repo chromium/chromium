@@ -1003,8 +1003,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       glic::GlicEnabling::EnablementForProfile(profile).EligibleForLive());
   html_source->AddBoolean(
       "actorLoginFederatedLoginSupportEnabled",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginFederatedLoginSupport));
+      base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin));
   html_source->AddBoolean(
       "glicSelectionFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
