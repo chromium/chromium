@@ -103,7 +103,7 @@ void LocalAuthFactorsPolicyController::OnGetAuthFactorsConfiguration(
                << error->get_cryptohome_error();
     return;
   }
-
+  CHECK(user_context);
   const auto& config = user_context->GetAuthFactorsConfiguration();
   auto* password_factor =
       config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
@@ -120,6 +120,8 @@ void LocalAuthFactorsPolicyController::OnGetAuthFactorsConfiguration(
     ash::RecordReauthReason(user_context->GetAccountId(),
                             ash::ReauthReason::kForcedByLocalAuthFactorsPolicy);
   }
+  VLOG(1) << "Local auth factors check. Forced online signin: "
+          << has_local_auth_factors;
 }
 
 AuthFactorEditor* LocalAuthFactorsPolicyController::GetAuthFactorEditor() {

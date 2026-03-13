@@ -45,11 +45,17 @@ LocalAuthFactorsPolicyControllerFactory::
 std::unique_ptr<KeyedService>
 LocalAuthFactorsPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  CHECK(context);
   Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    LOG(WARNING) << "Profile was null not building service instance.";
+    return nullptr;
+  }
   const user_manager::User* user =
       BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
 
-  if (!profile || !user) {
+  if (!user) {
+    LOG(WARNING) << "User was null not building service instance.";
     return nullptr;
   }
 
