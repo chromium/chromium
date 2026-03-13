@@ -1173,6 +1173,9 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
     {" - PW Autofill", kMobilePromoOnDesktopAutofill, nullptr},
     {" - PW Autofill with push notification",
      kMobilePromoOnDesktopAutofillNotification, nullptr},
+};
+
+const FeatureEntry::FeatureVariation kMobilePromoOnDesktopWave1Variations[] = {
     {" - Tab Groups", kMobilePromoOnDesktopTabGroups, nullptr},
     {" - Tab Groups with push notification",
      kMobilePromoOnDesktopTabGroupsNotification, nullptr},
@@ -2753,8 +2756,14 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(client_certificates::features::
                             kEnableClientCertificateProvisioningOnIOS)},
     {"ask-about-this-page", flag_descriptions::kAskAboutThisPageName,
-         flag_descriptions::kAskAboutThisPageDescription, flags_ui::kOsIos,
-         FEATURE_VALUE_TYPE(kAskAboutThisPage)},
+     flag_descriptions::kAskAboutThisPageDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAskAboutThisPage)},
+    {"mobile-promo-on-desktop-with-reminder-wave-1",
+     flag_descriptions::kMobilePromoOnDesktopWave1Name,
+     flag_descriptions::kMobilePromoOnDesktopWave1Description, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktopWithReminderWave1,
+                                    kMobilePromoOnDesktopWave1Variations,
+                                    "MobilePromoOnDesktopWithReminderWave1")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

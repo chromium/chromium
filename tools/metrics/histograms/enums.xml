@@ -9498,6 +9498,8 @@ from previous Chrome versions.
   <int value="-1682843294" label="DataReductionProxyDecidesTransform:enabled"/>
   <int value="-1681823704" label="DeviceBoundSessionsRefreshQuota:disabled"/>
   <int value="-1681777841" label="TabGroupsForTablets:enabled"/>
+  <int value="-1679997318"
+      label="MobilePromoOnDesktopWithReminderWave1:enabled"/>
   <int value="-1679849626" label="AuraWindowSubtreeCapture:disabled"/>
   <int value="-1679829698" label="ColorProviderRedirection:disabled"/>
   <int value="-1679823299"
@@ -13438,6 +13440,8 @@ from previous Chrome versions.
   <int value="-345181892" label="new-tab-button-position"/>
   <int value="-345156835" label="OmniboxDisableCGIParamMatching:enabled"/>
   <int value="-344740441" label="DesktopPWAsAppHomePage:disabled"/>
+  <int value="-344497222"
+      label="MobilePromoOnDesktopWithReminderWave1:disabled"/>
   <int value="-344357771"
       label="WebAuthenticationCrosPlatformAuthenticator:enabled"/>
   <int value="-344343842" label="disable-experimental-app-list"/>
@@ -15832,6 +15836,7 @@ from previous Chrome versions.
   <int value="457364142" label="ShimlessRMAHardwareValidationSkip:enabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>
   <int value="458410433" label="disable-views-rect-based-targeting"/>
+  <int value="459521369" label="MobilePromoOnDesktopWithQRCodeWave1:disabled"/>
   <int value="459538570" label="CrosMallManaged:enabled"/>
   <int value="460136092" label="MidiManagerAndroid:disabled"/>
   <int value="460475728" label="wake-on-wifi-packet"/>
@@ -19590,6 +19595,7 @@ from previous Chrome versions.
   <int value="1728763346" label="TabStorageSqlitePrototype:disabled"/>
   <int value="1728816382" label="SeaPenEnterprise:disabled"/>
   <int value="1729485335" label="CastMessageLogging:disabled"/>
+  <int value="1729672254" label="MobilePromoOnDesktopWithQRCodeWave1:enabled"/>
   <int value="1730094138" label="enable-md-storage-manager"/>
   <int value="1730236697" label="force-device-scale-factor"/>
   <int value="1730416578" label="NTPCondensedLayout:enabled"/>

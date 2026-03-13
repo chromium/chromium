@@ -2860,17 +2860,33 @@ inline constexpr char kMobileNTPPromoOnDesktopName[] =
 inline constexpr char kMobileNTPPromoOnDesktopDescription[] =
     "Enables the Mobile NTP Promo on Desktop.";
 
+inline constexpr char kMobilePromoOnDesktopWithQRCodeName[] =
+    "Mobile Promo On Desktop - QRCode";
+inline constexpr char kMobilePromoOnDesktopWithQRCodeDescription[] =
+    "When enabled, shows a mobile promo with a QR code on desktop for eligible "
+    "users.";
+
+inline constexpr char kMobilePromoOnDesktopWithQRCodeWave1Name[] =
+    "Mobile Promo On Desktop - QR Code (Wave 1)";
+
+inline constexpr char kMobilePromoOnDesktopWithQRCodeWave1Description[] =
+    "When enabled, shows a mobile promo with a QR code on desktop for eligible "
+    "users. This version highlights features not included in the existing "
+    "Mobile promos.";
+
 inline constexpr char kMobilePromoOnDesktopWithReminderName[] =
     "Mobile Promo On Desktop - Reminder";
 inline constexpr char kMobilePromoOnDesktopWithReminderDescription[] =
     "When enabled, shows a mobile promo with a reminder flow on desktop for "
     "eligible users.";
 
-inline constexpr char kMobilePromoOnDesktopWithQRCodeName[] =
-    "Mobile Promo On Desktop - QRCode";
-inline constexpr char kMobilePromoOnDesktopWithQRCodeDescription[] =
-    "When enabled, shows a mobile promo with a QR code on desktop for eligible "
-    "users.";
+inline constexpr char kMobilePromoOnDesktopWithReminderWave1Name[] =
+    "Mobile Promo On Desktop - Reminder (Wave 1)";
+
+inline constexpr char kMobilePromoOnDesktopWithReminderWave1Description[] =
+    "When enabled, shows a mobile promo with a reminder flow on desktop for "
+    "eligible users. This version highlights features not included in the "
+    "existing mobile promos.";
 
 inline constexpr char kMojoUseEventFdName[] =
     "Notify about new Mojo Channel messages using eventfd";
