@@ -156,6 +156,12 @@ CGFloat const kSheetCornerRadius = 30;
 
   [self dismissBackgroundPickerActionSheet];
 
+  for (SearchEngineLogoMediator* mediator in _activeSearchEngineLogoMediator
+           .allValues) {
+    [mediator disconnect];
+  }
+  [_activeSearchEngineLogoMediator removeAllObjects];
+
   if (self.openedForUserEducation) {
     feature_engagement::Tracker* tracker =
         feature_engagement::TrackerFactory::GetForProfile(self.profile);
@@ -179,6 +185,7 @@ CGFloat const kSheetCornerRadius = 30;
   _magicStackViewController = nil;
   _discoverViewController = nil;
   _dimView = nil;
+  _activeSearchEngineLogoMediator = nil;
 
   // Enable accessibility in the presenting view, as UIKit doesn't enable it
   // automatically.
