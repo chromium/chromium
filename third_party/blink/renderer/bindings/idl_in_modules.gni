@@ -219,6 +219,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/credentialmanagement/remote_desktop_client_override.idl",
   "//third_party/blink/renderer/modules/crypto/crypto.idl",
   "//third_party/blink/renderer/modules/crypto/crypto_key.idl",
+  "//third_party/blink/renderer/modules/crypto/encapsulation.idl",
   "//third_party/blink/renderer/modules/crypto/json_web_key.idl",
   "//third_party/blink/renderer/modules/crypto/rsa_other_primes_info.idl",
   "//third_party/blink/renderer/modules/crypto/subtle_crypto.idl",

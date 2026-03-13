@@ -54,7 +54,11 @@ enum WebCryptoOperation {
   kWebCryptoOperationDeriveBits,
   kWebCryptoOperationWrapKey,
   kWebCryptoOperationUnwrapKey,
-  kWebCryptoOperationLast = kWebCryptoOperationUnwrapKey,
+  kWebCryptoOperationEncapsulateKey,
+  kWebCryptoOperationEncapsulateBits,
+  kWebCryptoOperationDecapsulateKey,
+  kWebCryptoOperationDecapsulateBits,
+  kWebCryptoOperationLast = kWebCryptoOperationDecapsulateBits,
 };
 
 enum WebCryptoAlgorithmId {

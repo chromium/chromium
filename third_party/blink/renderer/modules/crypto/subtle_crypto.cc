@@ -40,6 +40,8 @@
 #include "third_party/blink/public/web/web_crypto_histograms.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_bits.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_json_web_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_jsonwebkey.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -811,6 +813,57 @@ ScriptPromise<IDLAny> SubtleCrypto::deriveKey(
       key_length_algorithm, extractable, key_usages, result->Result(),
       std::move(task_runner));
   return promise;
+}
+
+// TODO(crbug.com/450627019): implement encapsulate/decapsulate functions
+ScriptPromise<EncapsulatedKey> SubtleCrypto::encapsulateKey(
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* encapsulation_algorithm,
+    CryptoKey* encapsulation_key,
+    const V8AlgorithmIdentifier* shared_key_algorithm,
+    bool extractable,
+    const Vector<String>& raw_key_usages,
+    ExceptionState& exception_state) {
+  WebCryptoKeyUsageMask key_usages;
+  if (!CryptoKey::ParseUsageMask(raw_key_usages, key_usages, exception_state)) {
+    return EmptyPromise();
+  }
+
+  return EmptyPromise();
+}
+
+ScriptPromise<EncapsulatedBits> SubtleCrypto::encapsulateBits(
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* encapsulation_algorithm,
+    CryptoKey* encapsulation_key,
+    ExceptionState& exception_state) {
+  return EmptyPromise();
+}
+
+ScriptPromise<CryptoKey> SubtleCrypto::decapsulateKey(
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* decapsulation_algorithm,
+    CryptoKey* decapsulation_key,
+    const V8BufferSource* ciphertext,
+    const V8AlgorithmIdentifier* shared_key_algorithm,
+    bool extractable,
+    const Vector<String>& raw_key_usages,
+    ExceptionState& exception_state) {
+  WebCryptoKeyUsageMask key_usages;
+  if (!CryptoKey::ParseUsageMask(raw_key_usages, key_usages, exception_state)) {
+    return EmptyPromise();
+  }
+
+  return EmptyPromise();
+}
+
+ScriptPromise<DOMArrayBuffer> SubtleCrypto::decapsulateBits(
+    ScriptState* script_state,
+    const V8AlgorithmIdentifier* decapsulation_algorithm,
+    CryptoKey* decapsulation_key,
+    const V8BufferSource* ciphertext,
+    ExceptionState& exception_state) {
+  return EmptyPromise();
 }
 
 }  // namespace blink

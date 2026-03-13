@@ -73,9 +73,13 @@ const KeyUsageMapping kKeyUsageMappings[] = {
     {kWebCryptoKeyUsageDeriveBits, "deriveBits"},
     {kWebCryptoKeyUsageWrapKey, "wrapKey"},
     {kWebCryptoKeyUsageUnwrapKey, "unwrapKey"},
+    {kWebCryptoKeyUsageEncapsulateKey, "encapsulateKey"},
+    {kWebCryptoKeyUsageEncapsulateBits, "encapsulateBits"},
+    {kWebCryptoKeyUsageDecapsulateKey, "decapsulateKey"},
+    {kWebCryptoKeyUsageDecapsulateBits, "decapsulateBits"},
 };
 
-static_assert(kEndOfWebCryptoKeyUsage == (1 << 7) + 1,
+static_assert(kEndOfWebCryptoKeyUsage == (1 << 11) + 1,
               "keyUsageMappings needs to be updated");
 
 const char* KeyUsageToString(WebCryptoKeyUsage usage) {
