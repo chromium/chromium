@@ -10,13 +10,13 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "components/multistep_filter/core/annotation_index/annotation_index_client.h"
+#include "components/multistep_filter/core/data_models/filter_annotation.h"
+#include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace multistep_filter {
-
-struct FilterAttribute;
 
 class MockAnnotationIndexClient : public AnnotationIndexClient {
  public:
