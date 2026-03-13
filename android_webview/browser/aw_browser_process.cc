@@ -15,8 +15,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
 #include "base/base_paths_posix.h"
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -406,17 +404,7 @@ static void JNI_AwBrowserProcess_DisableTracingInitDuringBrowserMain(
 void AwBrowserProcess::WaitForBackgroundTracingInit() {
   if (g_initializing_tracing_on_background_thread) {
     base::TimeTicks wait_start = base::TimeTicks::Now();
-    bool finished_in_time = GetTracingInitEvent()->TimedWait(base::Seconds(1));
-    if (!finished_in_time) {
-      // The P99 of the histogram below is 2ms. If we have waited for 1 second
-      // without getting a signal, we emit a crash dump to help triage before
-      // continuing to wait.
-      SCOPED_CRASH_KEY_STRING32("WebView", "WaitForBackgroundTracingInit",
-                                "Timeout");
-      base::debug::DumpWithoutCrashing();
-      // Continue waiting on the off chance that it finishes.
-      GetTracingInitEvent()->Wait();
-    }
+    GetTracingInitEvent()->Wait();
     // We only want to log the wait time if the init happened on a background
     // thread.
     base::TimeDelta init_wait_time = base::TimeTicks::Now() - wait_start;
