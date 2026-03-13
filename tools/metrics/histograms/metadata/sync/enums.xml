@@ -1080,9 +1080,9 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->
 
-<!-- LINT.IfChange(SyncDeviceStatisticsHistoryOptInSummary) -->
+<!-- LINT.IfChange(SyncDeviceStatisticsHistoryOptInDevicesSummary) -->
 
-<enum name="SyncDeviceStatisticsHistoryOptInSummary">
+<enum name="SyncDeviceStatisticsHistoryOptInDevicesSummary">
   <int value="0"
       label="Primary account is opted in to history on this device; no other
              devices exist"/>
@@ -1103,7 +1103,38 @@ chromium-metrics-reviews@google.com.
              on any other devices"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsHistoryOptInSummary) -->
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsHistoryOptInDevicesSummary) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsHistoryOptInPlatformsSummary) -->
+
+<enum name="SyncDeviceStatisticsHistoryOptInPlatformsSummary">
+  <int value="0"
+      label="Primary account is opted in to history on the current platform
+             (one or more devices, not necessarily including the current
+             one); no devices with other platforms exist"/>
+  <int value="1"
+      label="Primary account is NOT opted in to history on any device
+             matching the current platform; no devices with other platforms
+             exist"/>
+  <int value="2"
+      label="Primary account is opted in to history on both the current
+             platform (one or more devices, not necessarily including the
+             current one) and at least one device with a different platform"/>
+  <int value="3"
+      label="Primary account is opted in to history on the current platform
+             (one or more devices, not necessarily including the current
+             one), but not on any device with a different platform"/>
+  <int value="4"
+      label="Primary account is NOT opted in to history on any device
+             matching the current platform, but it IS opted in on at least
+             one device with a different platform"/>
+  <int value="5"
+      label="Primary account is NOT opted in to history on any device
+             matching the current platform, nor on any device with a
+             different platform"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsHistoryOptInPlatformsSummary) -->
 
 <!-- LINT.IfChange(SyncDeviceStatisticsMultiDeviceReadiness) -->
 
@@ -1121,6 +1152,57 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsMultiDeviceReadiness) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsMultiPlatformOutcome) -->
+
+<enum name="SyncDeviceStatisticsMultiPlatformOutcome">
+  <int value="0"
+      label="Primary account has devices with other platforms; no non-primary
+             accounts"/>
+  <int value="1"
+      label="Primary account does not have devices with other platforms; no
+             non-primary accounts"/>
+  <int value="2"
+      label="Primary account has devices with other platforms; at least one
+             non-primary account has devices with other platforms"/>
+  <int value="3"
+      label="Primary account has devices with other platforms; at least one
+             non-primary account exists, but none of them have devices with
+             other platforms"/>
+  <int value="4"
+      label="Primary account does not have devices with other platforms; at
+             least one non-primary account has devices with other platforms"/>
+  <int value="5"
+      label="Primary account does not have devices with other platforms; at
+             least one non-primary account exists, but none of them have
+             devices with other platforms"/>
+  <int value="6"
+      label="Primary account does not exist; at least one non-primary account
+             has devices with other platforms"/>
+  <int value="7"
+      label="Primary account does not exist; at least one non-primary account
+             exists, but none of them have devices with other platforms"/>
+  <int value="8" label="No accounts"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsMultiPlatformOutcome) -->
+
+<!-- LINT.IfChange(SyncDeviceStatisticsMultiPlatformReadiness) -->
+
+<enum name="SyncDeviceStatisticsMultiPlatformReadiness">
+  <int value="0" label="Signed out (no primary account)"/>
+  <int value="1"
+      label="Single-platform (primary account does not have other platforms)"/>
+  <int value="2"
+      label="Multi-platform without history (primary account has devices with
+             other platforms, but is missing history opt-in across platforms)"/>
+  <int value="3"
+      label="Multi-platform with history (primary account has devices with
+             other platforms, and both the current device and at least one
+             device with a different platform have history opt-in)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/service/device_statistics_tracker.h:SyncDeviceStatisticsMultiPlatformReadiness) -->
 
 <!-- LINT.IfChange(SyncDeviceStatisticsOutcome) -->
 

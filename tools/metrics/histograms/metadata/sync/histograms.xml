@@ -1237,6 +1237,33 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.NumberOfAdditionalPlatforms"
+    units="platforms" expires_after="2026-08-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of distinct platforms among the
+    additional syncing clients (i.e. not counting this client) of a non-primary
+    account. Recorded at most once per day (30 seconds after profile
+    initialization) for every non-primary account.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.NumberOfAdditionalPlatformsWithHistoryOptIn"
+    units="platforms" expires_after="2026-08-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of distinct platforms among the
+    additional syncing clients (i.e. not counting this client) of a non-primary
+    account where at least one client on that platform is opted in to history
+    sync. Recorded at most once per day (30 seconds after profile
+    initialization) for every non-primary account.
+  </summary>
+</histogram>
+
+<histogram
     name="Sync.DeviceStatistics.Outcome.NonPrimaryAccount.PlatformOfAdditionalClient"
     enum="SyncDeviceStatisticsPlatform" expires_after="2026-08-30">
   <owner>treib@chromium.org</owner>
@@ -1261,14 +1288,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.DeviceStatistics.Outcome.OverallMultiPlatform"
+    enum="SyncDeviceStatisticsMultiPlatformOutcome" expires_after="2026-08-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the overall outcome, i.e. whether primary and/or
+    non-primary accounts have other syncing clients on other platforms. Recorded
+    at most once per day (30 seconds after profile initialization).
+  </summary>
+</histogram>
+
 <histogram name="Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptIn"
-    enum="SyncDeviceStatisticsHistoryOptInSummary" expires_after="2026-06-30">
+    enum="SyncDeviceStatisticsHistoryOptInDevicesSummary"
+    expires_after="2026-06-30">
   <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
     Device statistics: Records the history opt-in status of the primary account,
     across this device and any other signed-in-to-Chrome devices. Recorded at
     most once per day (30 seconds after profile initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.HistoryOptInMultiPlatform"
+    enum="SyncDeviceStatisticsHistoryOptInPlatformsSummary"
+    expires_after="2026-06-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the history opt-in status of the primary account,
+    across this device and any other signed-in-to-Chrome devices *on different
+    platforms* only. Recorded at most once per day (30 seconds after profile
+    initialization).
   </summary>
 </histogram>
 
@@ -1281,6 +1334,20 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the multi-device readiness of the primary
     account, i.e. whether there are other signed-in-to-Chrome devices. Recorded
     at most once per day (30 seconds after profile initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.MultiPlatformReadiness"
+    enum="SyncDeviceStatisticsMultiPlatformReadiness"
+    expires_after="2026-08-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the multi-platform readiness of the primary
+    account, i.e. whether there are other signed-in-to-Chrome devices *on
+    different platforms*. Recorded at most once per day (30 seconds after
+    profile initialization).
   </summary>
 </histogram>
 
@@ -1305,6 +1372,33 @@ chromium-metrics-reviews@google.com.
     Device statistics: Records the number of additional syncing clients (i.e.
     not counting this client) of the primary account which are opted in to
     history sync. Recorded at most once per day (30 seconds after profile
+    initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalPlatforms"
+    units="platforms" expires_after="2026-08-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of distinct platforms among the
+    additional syncing clients (i.e. not counting this client) of the primary
+    account. Recorded at most once per day (30 seconds after profile
+    initialization).
+  </summary>
+</histogram>
+
+<histogram
+    name="Sync.DeviceStatistics.Outcome.PrimaryAccount.NumberOfAdditionalPlatformsWithHistoryOptIn"
+    units="platforms" expires_after="2026-08-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Device statistics: Records the number of distinct platforms among the
+    additional syncing clients (i.e. not counting this client) of the primary
+    account where at least one client on that platform is opted in to history
+    sync. Recorded at most once per day (30 seconds after profile
     initialization).
   </summary>
 </histogram>
