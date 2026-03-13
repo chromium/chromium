@@ -6,9 +6,9 @@ chrome.test.runTests([
     // TODO(battre, mkwst): add more tests.
 
     function testAssertEq() {
-      var chromeTestFail = chrome.test.fail;
-      var messages = "";
-      chrome.test.fail = function (message) { messages += "\n" + message; };
+      const chromeTestFail = chrome.test.fail;
+      let messages = '';
+      chrome.test.fail = function(message) { messages += '\n' + message; };
 
       // Check that assertEq(..., null) doesn't crash.
       chrome.test.assertEq({test: 1}, null);
@@ -18,12 +18,12 @@ chrome.test.runTests([
 
       chrome.test.fail = chromeTestFail;
       chrome.test.assertEq(
-        "\nAPI Test Error in testAssertEq" +
-        "\nActual: null" +
-        "\nExpected: {\"test\":1}" +
-        "\nAPI Test Error in testAssertEq" +
-        "\nActual: {\"test\":1}" +
-        "\nExpected: null",
+        '\nAPI Test Error in testAssertEq' +
+        '\nActual: null' +
+        '\nExpected: {"test":1}' +
+        '\nAPI Test Error in testAssertEq' +
+        '\nActual: {"test":1}' +
+        '\nExpected: null',
         messages);
       chrome.test.notifyPass();
     }
