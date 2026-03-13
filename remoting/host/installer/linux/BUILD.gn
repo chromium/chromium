@@ -54,7 +54,6 @@ action("remoting_me2me_host_deb_installer") {
   inputs = [
     build_deb_script,
     "Makefile",
-    "debian/chrome-remote-desktop.init",
     "debian/chrome-remote-desktop.pam",
     "debian/compat",
     "debian/control",
@@ -88,7 +87,6 @@ action("remoting_me2me_host_deb_installer") {
     "$root_out_dir/remoting_me2me_host",
     "$root_out_dir/remoting_native_messaging_host",
     "$root_out_dir/remoting_start_host",
-    "$root_out_dir/remoting_user_session",
     "$root_out_dir/remoting/com.google.chrome.remote_assistance-firefox.json",
     "$root_out_dir/remoting/com.google.chrome.remote_assistance.json",
     "$root_out_dir/remoting/com.google.chrome.remote_desktop-firefox.json",
@@ -122,7 +120,6 @@ action("remoting_me2me_host_deb_installer") {
     "//remoting/host:remoting_start_host",
     "//remoting/host/crash:crash_tools",
     "//remoting/host/it2me:remote_assistance_host",
-    "//remoting/host/linux:remoting_user_session",
     "//remoting/host/linux:url_forwarder_desktop_entry",
     "//remoting/host/remote_open_url",
     "//remoting/host/webauthn:remote_webauthn",

@@ -19,9 +19,7 @@ NOTIFIER_DIR="/var/lib/update-notifier/user.d"
 VAR_DIR="/var/lib/chrome-remote-desktop"
 HASHES_FILE="$VAR_DIR/hashes"
 INSTALL_DIR="/opt/google/chrome-remote-desktop"
-USER_SESSION_PATH="$INSTALL_DIR/user-session"
 HOST_PATH="$INSTALL_DIR/chrome-remote-desktop-host"
-CRD_GROUP="chrome-remote-desktop"
 # Per Debian policy 9.2.1, system usernames should all start with an underscore.
 CRD_NETWORK_USER="_crd_network"
 
@@ -39,70 +37,6 @@ kill_processes() {
 
 case "$1" in
   "configure")
-    # Check if the systemd is running systemd.
-    if [ -d /run/systemd/system ]; then
-      # If so, and this is an upgrade from a version prior to native systemd
-      # support, migrate the CRD group to systemd unit instances.
-      if getent group "$CRD_GROUP" > /dev/null 2>&1; then
-        echo 'This release provides a native systemd unit template to manage'
-        echo 'Chrome Remote Desktop instances, like so:'
-        echo ''
-        echo '    systemctl restart chrome-remote-desktop@$USER'
-        echo ''
-        echo 'Enabling service for current group members of chrome-remote-desktop...'
-
-        # Disable the old SysV-style init script
-        systemctl disable chrome-remote-desktop
-        # Extract list of users in the chrome-remoting group.
-        USERS=$(getent group "$CRD_GROUP" |
-                awk -F ':' '{ gsub(",", " ", $4); print $4 }')
-
-        # Enable, but don't start, the respective service instance. (We don't
-        # start the service instance here because there is likely already a CRD
-        # session running, which would prevent the new service from starting.)
-        for user in $USERS; do
-          systemctl enable chrome-remote-desktop@$user
-        done
-
-        echo 'Removing the chrome-remote-desktop group...'
-
-        groupdel "$CRD_GROUP"
-
-        echo 'Done.'
-        echo ''
-        echo 'Note: To avoid losing work, any previously-started chrome-remote-desktop'
-        echo 'sessions are still running, not controlled by systemd. To stop your existing'
-        echo 'session and start it again under systemd, run the following commands:'
-        echo ''
-        echo '    /opt/google/chrome-remote-desktop/chrome-remote-desktop --stop'
-        echo '    systemctl start chrome-remote-desktop@$USER'
-        echo ''
-        echo 'This will close any programs currently running in the session. Alternatively,'
-        echo 'you can just reboot the machine.'
-        echo ''
-        echo 'This update also moves log messages to the journal. View them with'
-        echo ''
-        echo '    journalctl SYSLOG_IDENTIFIER=chrome-remote-desktop'
-        echo ''
-      fi
-    else
-      # The system is not running systemd, so set up the group and user-session
-      # permissions needed for the SysV-style init script.
-
-      # Create CRD group if it doesn't already exist
-      if ! getent group "$CRD_GROUP" > /dev/null 2>&1; then
-        addgroup --system "$CRD_GROUP"
-      fi
-      # dpkg supports "stat overrides", which allow the administrator to specify
-      # the ownership and permissions that should be used when a given filesystem
-      # object is installed. If such an override is set, we shouldn't change the
-      # owner and permissions here.
-      if ! dpkg-statoverride --list "$USER_SESSION_PATH" > /dev/null 2>&1; then
-        chown root:"$CRD_GROUP" "$USER_SESSION_PATH"
-        chmod u=srwx,g=rx,o=r "$USER_SESSION_PATH"
-      fi
-    fi
-
     echo "Adding user $CRD_NETWORK_USER to allow the Chrome Remote Desktop network "
     echo 'process to be run in a sandboxed environment.'
     adduser --system "$CRD_NETWORK_USER"

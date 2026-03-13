@@ -31,8 +31,6 @@ ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
 START_PROGNAME = $(BUILD_DIR)/remoting_start_host
 START_DEBUGFILE = $(START_PROGNAME).debug
-SESSION_WRAPPER_PROGNAME = $(BUILD_DIR)/remoting_user_session
-SESSION_WRAPPER_DEBUGFILE = $(SESSION_WRAPPER_PROGNAME).debug
 ME2ME_NM_PROGNAME = $(BUILD_DIR)/remoting_native_messaging_host
 ME2ME_NM_DEBUGFILE = $(ME2ME_NM_PROGNAME).debug
 REMOTE_ASSISTANCE_PROGNAME = $(BUILD_DIR)/remote_assistance_host
@@ -125,10 +123,6 @@ endif
 	install "$(START_PROGNAME)" "$(INSTALL_DIR)/start-host"
 	eu-strip -f "$(START_DEBUGFILE)" "$(INSTALL_DIR)/start-host"
 
-	install "$(SESSION_WRAPPER_PROGNAME)" "$(INSTALL_DIR)/user-session"
-	eu-strip -f "$(SESSION_WRAPPER_DEBUGFILE)" \
-	  "$(INSTALL_DIR)/user-session"
-
 	install "$(ME2ME_NM_PROGNAME)" "$(INSTALL_DIR)/native-messaging-host"
 	eu-strip -f "$(ME2ME_NM_DEBUGFILE)" \
 	  "$(INSTALL_DIR)/native-messaging-host"
@@ -161,9 +155,6 @@ endif
 	install -m 0644 \
 	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop@.service" \
 	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
-
-	# Mask the SysV-style init script under systemd so both don't end up enabled.
-	ln -s /dev/null "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop.service"
 
 	install $(BUILD_DIR)/remoting/installer/cron/chrome-remote-desktop \
 	  "$(CRON_DIR)/chrome-remote-desktop"

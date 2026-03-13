@@ -30,55 +30,9 @@ namespace remoting {
 
 namespace {
 
-constexpr char kChromotingGroupName[] = "chrome-remote-desktop";
 constexpr std::string_view kUserNameSwitch = "user-name";
 constexpr std::string_view kCorpUserSwitch = "corp-user";
 constexpr std::string_view kCloudUserSwitch = "cloud-user";
-
-void PrintGroupMembershipError(const char* user_name) {
-  std::cerr << user_name << " is not a member of the `" << kChromotingGroupName
-            << "` group.\n"
-            << "  Please add them using this command:\n"
-            << "  sudo usermod -G " << kChromotingGroupName << " " << user_name
-            << "\n";
-}
-
-bool CheckChromotingGroupMembership(const char* user_name,
-                                    gid_t user_group_id) {
-  errno = 0;
-  group* chromoting_group = getgrnam(kChromotingGroupName);
-  if (!chromoting_group) {
-    // The installer creates this group so this condition is unexpected but we
-    // check here in case the machine is in a bad state or our installer was
-    // modified (broken) in some way such that the group does not exist.
-    std::cerr << "Failed to retrieve group info for `" << kChromotingGroupName
-              << "`. errno = " << strerror(errno) << "(" << errno << ")\n"
-              << "  Please create this group using this command:\n"
-              << "  sudo addgroup --system chrome-remote-desktop\n";
-    return false;
-  }
-
-  // Figure out how many groups the user is in.
-  int group_count = 0;
-  getgrouplist(user_name, user_group_id, nullptr, &group_count);
-
-  if (group_count < 1) {
-    PrintGroupMembershipError(user_name);
-    return false;
-  }
-
-  // Retrieve the groups.
-  std::vector<gid_t> groups(group_count);
-  getgrouplist(user_name, user_group_id, groups.data(), &group_count);
-  if (!std::ranges::contains(groups, chromoting_group->gr_gid)) {
-    PrintGroupMembershipError(user_name);
-    return false;
-  }
-
-  std::cout << "Verified that " << user_name << " is a member of "
-            << kChromotingGroupName << "\n";
-  return true;
-}
 
 bool ValidateCommandLine(const base::CommandLine& command_line) {
   bool has_username = command_line.HasSwitch(kUserNameSwitch);
@@ -178,19 +132,8 @@ int StartHostAsRoot(int argc, char** argv) {
               << user_name << "(" << user_struct->pw_uid << ")\n";
   }
 
-  // This switch is provided for environments where systemd is not being used.
-  bool use_sysvinit = command_line.HasSwitch("sysvinit");
-  if (use_sysvinit) {
-    std::cout << "Checking sysvinit configuration requirements.\n";
-    if (!CheckChromotingGroupMembership(user_struct->pw_name,
-                                        user_struct->pw_gid)) {
-      return -1;
-    }
-  }
-
   int return_value = 1;
   command_line.RemoveSwitch(kUserNameSwitch);
-  command_line.RemoveSwitch("sysvinit");
   command_line.AppendSwitch("no-start");
   std::vector<std::string> create_config_command_line{
       "/usr/bin/sudo",
@@ -216,12 +159,6 @@ int StartHostAsRoot(int argc, char** argv) {
   std::vector<std::string> start_service_command_line{
       "systemctl", "enable", "--now",
       std::string("chrome-remote-desktop@") + user_name};
-  if (use_sysvinit) {
-    // Using sysvinit is much less common that using systemd so we optimize for
-    // that codepath and reset the vector if needed.
-    start_service_command_line = {"/etc/init.d/chrome-remote-desktop", "start",
-                                  user_name};
-  }
 
   return_value = 1;
   auto start_service_process =
