@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Προβολή insight σελίδας</translation>
 <translation id="1108938384783527433">Συγχρονισμός ιστορικού</translation>
 <translation id="1111673857033749125">Οι σελιδοδείκτες που είναι αποθηκευμένοι σε άλλες συσκευές θα εμφανίζονται εδώ.</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, Καρτέλα Picture-in-Picture</translation>
 <translation id="1126696498560056882">Διαχείριση λογαριασμών σε αυτή τη συσκευή</translation>
 <translation id="1135018701024399762">Η κατάσταση ανώνυμης περιήγησης διατηρεί την περιήγησή σας ιδιωτική από άλλα άτομα που χρησιμοποιούν τη συσκευή σας</translation>
 <translation id="113752097246673894">Για να έχετε πρόσβαση στους σελιδοδείκτες σας και σε άλλα στοιχεία σε όλες τις συσκευές σας, συνδεθείτε στο Chrome ως <ph name="EMAIL" /></translation>
@@ -321,6 +322,7 @@
 <translation id="2386938421315164605">Απόκρυψη και κατάργηση απόκρυψης θεμάτων</translation>
 <translation id="2390510615457643724">Θέλετε να κατεβάσετε ξανά το αρχείο <ph name="FILE_NAME" /><ph name="FILE_SIZE" />;</translation>
 <translation id="2392369802118427583">Ενεργοποίηση</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα ανώνυμης περιήγησης Picture-in-Picture</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, Καρτέλα ανώνυμης περιήγησης που κάνει εγγραφή</translation>
 <translation id="2410754283952462441">Επιλέξτε λογαριασμό</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα που έχει ήχο</translation>
@@ -381,6 +383,7 @@
 <translation id="2604446170045642109">Μπορείτε να απενεργοποιήσετε το σκούρο θέμα για ιστοτόπους στις ρυθμίσεις σας.</translation>
 <translation id="2605017215201958293">Ακρόαση αυτής της σελίδας με AI</translation>
 <translation id="2607441479295509868">Αποσυνδεθήκατε. Συνδεθείτε ξανά για να χρησιμοποιήσετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα στον λογαριασμό σας.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 στοιχείο}other{# στοιχεία}}</translation>
 <translation id="2620314865574742210">Ο χρήστης <ph name="NAME" /> έστειλε πρόσκληση για να αποκτήσετε πρόσβαση σε ένα κοινόχρηστο στοιχείο.</translation>
 <translation id="2634393460268044753">Στέλνει στην Ασφαλή περιήγηση Google τα URL ιστοτόπων που επισκέπτεστε και ένα μικρό δείγμα περιεχομένου σελίδας, λήψεων, δραστηριοτήτων επέκτασης και πληροφοριών συστήματος, για να ελέγξει αν είναι επιβλαβή.</translation>
 <translation id="2643064289437760082">Μπορείτε να διαγράψετε τα δεδομένα μέτρησης διαφημίσεων ανά πάσα στιγμή, διαγράφοντας τα δεδομένα περιήγησης.</translation>
@@ -535,6 +538,7 @@
 <translation id="3268048651973962414">Σύρετε προς τα επάνω για να δείτε τα αποτελέσματα αναζήτησης</translation>
 <translation id="3269093882174072735">Φόρτωση εικόνας</translation>
 <translation id="3280562213547448728">Φωνητική αναζήτηση</translation>
+<translation id="3282801380074962248">Ανάπτυξη ενότητας</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> καρτέλα}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> καρτέλες}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 κωδικός πρόσβασης έχει αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τον χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τον στον Λογαριασμό σας Google.}other{# κωδικοί πρόσβασης έχουν αποθηκευτεί μόνο σε αυτή τη συσκευή. Για να τους χρησιμοποιήσετε στις άλλες συσκευές σας, αποθηκεύστε τους στον Λογαριασμό σας Google.}}</translation>
 <translation id="3293181007446299124">Το ιστορικό περιήγησής σας διατηρείται ιδιωτικό στη συσκευή σας και οι αναφορές αποστέλλονται με καθυστέρηση για την προστασία της ταυτότητάς σας.</translation>
@@ -667,6 +671,7 @@
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3863527519275151528">Επεξεργασία ειδοποίησης</translation>
 <translation id="3866863539038222107">Επιθεώρηση</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, Επιλεγμένη καρτέλα Picture-in-Picture</translation>
 <translation id="3870908470613821006">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και θα διαγραφεί από όλες τις συσκευές</translation>
 <translation id="3873174561423636563">Για να συνεχίσετε, το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> θα κοινοποιήσει το <ph name="FIELDS_STRING" /> σε αυτόν τον ιστότοπο. Ανατρέξτε στους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών<ph name="END_LINK1" /> αυτού του ιστοτόπου.</translation>
 <translation id="3892148308691398805">Αντιγραφή κειμένου</translation>
@@ -682,6 +687,7 @@
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3931947361983910192">τελευταίες 4 εβδομάδες</translation>
 <translation id="393697183122708255">Δεν έχει ενεργοποιηθεί φωνητ. αναζήτηση</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα Picture-in-Picture</translation>
 <translation id="3950820424414687140">Σύνδεση</translation>
 <translation id="395377504920307820">Χρήση χωρίς λογαριασμό</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Το Chrome θα φορτώσει τη σελίδα σας όταν είναι έτοιμη}other{Το Chrome θα φορτώσει τις σελίδες σας όταν είναι έτοιμες}}</translation>
@@ -748,6 +754,7 @@
 <translation id="4214315110991671325">Εάν επιτρέψετε τη χρήση cookie, το Chrome μπορεί να τα χρησιμοποιήσει για την προφόρτωση.</translation>
 <translation id="421517251707893998">Πατήστε Καρφίτσωμα αυτής της συντόμευσης</translation>
 <translation id="4216511743389425832">Ακρόαση αυτής της σελίδας</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, Επιλεγμένη καρφιτσωμένη καρτέλα ανώνυμης περιήγησης Picture-in-Picture</translation>
 <translation id="4225725533026049334">Ακολουθείτε</translation>
 <translation id="4225895483398857530">Συντόμευση γραμμής εργαλείων</translation>
 <translation id="4232376164796433044">Κωδ. πρόσβ. και αυτ. συμπλήρωση</translation>
@@ -762,6 +769,7 @@
 <translation id="4277529130885813215">Χρήση άλλης συσκευής</translation>
 <translation id="427987768447457592">Νέα ομάδα καρτελών</translation>
 <translation id="4282440837784183472">Ο οργανισμός σας, <ph name="MANAGED_DOMAIN" />, διαχειρίζεται τον λογαριασμό στον οποίο συνδέεστε και τον τρόπο με τον οποίο μπορεί να χρησιμοποιηθεί το Chrome. Ο διαχειριστής σας μπορεί να ρυθμίσει ή να περιορίσει ορισμένες λειτουργίες.</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, Καρτέλα ανώνυμης περιήγησης Picture-in-Picture</translation>
 <translation id="4285498937028063278">Ξεκαρφίτσωμα</translation>
 <translation id="4285846616383034558">Cookie, κρυφή μνήμη και άλλα δεδομένα ιστοτόπου</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Ενεργοποίηση κλειδώματος οθόνης στις ρυθμίσεις Android<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@
 <translation id="4408965460206576430">Αυτό το αρχείο περιέχει κακόβουλο πρόγραμμα ή προέρχεται από ύποπτο ιστότοπο</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> και <ph name="TAB_COUNT" /> άλλες καρτέλες</translation>
 <translation id="441100617989818073">Μη χρησιμοπ. ή διπλότ. καρτέλες και ομάδες</translation>
+<translation id="4412123112245770507">Σύμπτυξη ενότητας</translation>
 <translation id="4414179633735763985">Η ομάδα καρτελών <ph name="TAB_GROUPS_AND_TABS_PART" /> διαγράφηκε</translation>
 <translation id="4415276339145661267">Διαχείριση Λογαριασμού Google</translation>
 <translation id="4425140285732600465">Παρακολούθηση τιμής. Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο.</translation>
@@ -1049,6 +1058,7 @@
 <translation id="5415871492522952905">Θα έχετε στη διάθεσή σας το ιστορικό και τις καρτέλες σε όλες τις συσκευές σας, ώστε να μπορείτε να συνεχίσετε ό,τι κάνατε</translation>
 <translation id="542073632571549028">Ο χρήστης <ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) θα χάσει αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /></translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB διαθέσιμα</translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, Καρτέλα ανώνυμης περιήγησης Picture-in-Picture με πολλαπλή επιλογή</translation>
 <translation id="5436928407363358055">Για να συνεχίσετε εύκολα από εκεί που σταματήσατε, συγχρονίστε το ιστορικό και τις καρτέλες σας</translation>
 <translation id="5438292632479953702">Λήψη ξανά</translation>
 <translation id="5439191312780166229">Σας προειδοποιεί για επικίνδυνους ιστοτόπους, ακόμα και για όσους δεν γνώριζε η Google στο παρελθόν, αναλύοντας περισσότερα δεδομένα από ιστοτόπους σε σχέση με την βασική προστασία. Μπορείτε να επιλέξετε να παραβλέψετε τις ειδοποιήσεις του Chrome.</translation>
@@ -1063,6 +1073,7 @@
 <translation id="5471273988133666918">Δεν είναι δυνατή η μετακίνηση της καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="548278423535722844">Άνοιγμα σε εφαρμογή χαρτών</translation>
 <translation id="5489222148748465285">Συνέχεια αναζήτησης Chrome;</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, Καρτέλα picture-in-picture με πολλαπλή επιλογή</translation>
 <translation id="5494920125229734069">Επιλογή όλων</translation>
 <translation id="549660026907543296">Συμμετοχή ως <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Φύλλο κάτω μέρους πρόσφατης δραστηριότητας</translation>
@@ -1488,6 +1499,7 @@
 <translation id="7063106218165698546">Προσαρμόστε την ομάδα καρτελών και πατήστε Τέλος</translation>
 <translation id="7071521146534760487">Διαχείριση λογαριασμού</translation>
 <translation id="707155805709242880">Επιλέξτε παρακάτω τι θέλετε να συγχρονίσετε.</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης Picture-in-Picture με πολλαπλή επιλογή</translation>
 <translation id="7077143737582773186">Secure Digital</translation>
 <translation id="7078916049958741685">Να διαγραφούν επίσης τα δεδομένα Chrome από αυτή τη συσκευή</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, Επιλεγμένη καρφιτσωμένη καρτέλα που είναι σε σίγαση</translation>
@@ -1874,6 +1886,7 @@
 <translation id="8512053371384421952">Δεν θα λαμβάνετε πλέον ειδοποιήσεις από <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Πρόγραμμα επεξεργασίας εικόνας</translation>
 <translation id="8533670235862049797">Η Ασφαλής περιήγηση είναι ενεργή.</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα Picture-in-Picture με πολλαπλή επιλογή</translation>
 <translation id="8540136935098276800">Εισαγάγετε ένα URL με σωστή μορφοποίηση.</translation>
 <translation id="854522910157234410">Άνοιγμα αυτής της σελίδας</translation>
 <translation id="8547466829003330976">Έλεγχος PDF με AI</translation>
@@ -1987,6 +2000,7 @@
 <translation id="9050666287014529139">Φράση πρόσβασής σας</translation>
 <translation id="9055497320631373736">Ο ιστότοπος προστέθηκε ξανά στους πιθανούς ιστοτόπους</translation>
 <translation id="9057030985451135243">Μάθετε περισσότερα σχετικά με τις κοινόχρηστες ομάδες καρτελών</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, Επιλεγμένη καρφιτσωμένη καρτέλα Picture-in-Picture</translation>
 <translation id="9063400323119781058">Απεγγραφήκατε</translation>
 <translation id="9063523880881406963">Απενεργοποίηση αιτήματος ιστότοπου για υπολογιστές</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
@@ -2045,6 +2059,7 @@
 <translation id="930834144334005936">Επαναφορά της τρέχουσας λειτουργίας <ph name="MODE_NAME" /> στην Αναζήτηση</translation>
 <translation id="938850635132480979">Σφάλμα: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Εισαγωγή φράσης πρόσβασης</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης Picture-in-Picture</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="95817756606698420">Το Chrome μπορεί να χρησιμοποιήσει το <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> για την αναζήτηση στην Κίνα. Μπορείτε να αλλάξετε αυτή την επιλογή στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>

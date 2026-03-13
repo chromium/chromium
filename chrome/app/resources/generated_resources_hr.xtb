@@ -526,6 +526,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="13392265090583506">Pristupačnost</translation>
 <translation id="1340527397989195812">Napravite sigurnosnu kopiju medija s uređaja pomoću aplikacije Datoteke.</translation>
 <translation id="1340839264183302272">Napusti grupu</translation>
+<translation id="1341002693404468853">Sakrij organizatora</translation>
 <translation id="1341701348342335220">Odlično obavljeno!</translation>
 <translation id="1342886103232377846">Da biste provjerili jesu li zaporke ugrožene, otvorite Google upravitelj zaporki</translation>
 <translation id="1343920184519992513">Nastavite tamo gdje ste stali i otvorite određeni skup stranica</translation>
@@ -2351,6 +2352,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2555855727505718984">Automatsko popunjavanje neće imati te podatke na ovom uređaju kako bi vam pomoglo popuniti obrasce</translation>
 <translation id="25568951186001797">Ograđeni okvir: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Ovdje možete vidjeti sve svoje oznake</translation>
+<translation id="2563924218974330506">Sada ovdje možete upravljati svojim grupama kartica. Uvijek možete poništiti prikvačivanje.</translation>
 <translation id="2564520396658920462">Izvršavanje JavaScripta putem AppleScripta isključeno je. Da biste ga uključili, na traci izbornika otvorite Prikaz &gt; Razvojni programer &gt; Dopusti JavaScript iz Appleovih događaja. Više informacija dostupno je na stranici https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Poboljšana provjera pravopisa</translation>
 <translation id="256481480019204378">ID Google računa</translation>
@@ -5670,6 +5672,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4816336393325437908">{COUNT,plural, =1{Izbrisana je jedna oznaka}one{Izbrisana je {COUNT} oznaka}few{Izbrisane su {COUNT} oznake}other{Izbrisano je {COUNT} oznaka}}</translation>
 <translation id="481689174647911539">Ta datoteka možda sadrži virus ili zlonamjerni softver.<ph name="LINE_BREAK" />Možete je poslati Google sigurnom pregledavanju da biste provjerili je li nesigurna. Pregled obično traje nekoliko sekundi.</translation>
 <translation id="4816900689218414104">Izrada pristupnog ključa na telefonu ili tabletu</translation>
+<translation id="481852950686014162">Nastavite tamo gdje ste stali u Geminiju i u AI načinu</translation>
 <translation id="4819323978093861656">{0,plural, =0{Zatvara se odmah.}=1{Zatvara se za 1 s}one{Zatvara se za # s}few{Zatvara se za # s}other{Zatvara se za # s}}</translation>
 <translation id="4819818293886748542">Preuzimanje veze na alat za podršku</translation>
 <translation id="4820236583224459650">Postavi kao aktivni tiket</translation>
@@ -5874,6 +5877,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="495164417696120157">{COUNT,plural, =1{datoteku}one{# datoteku}few{# datoteke}other{# datoteka}}</translation>
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4951966678293618079">Nikad ne spremaj zaporke za ovu web-lokaciju</translation>
+<translation id="4952580838083306838">Sakrij organizatora</translation>
 <translation id="4953808748584563296">Zadani narančasti avatar</translation>
 <translation id="4954652437333037880">Datoteka</translation>
 <translation id="4954831709600868883">Postavite pitanje o: <ph name="TEXT" /></translation>
@@ -6291,6 +6295,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5246282308050205996">Aplikacija <ph name="APP_NAME" /> srušila se. Kliknite ovaj balon za ponovno pokretanje aplikacije.</translation>
 <translation id="5247051749037287028">Ime za prikaz (izborno)</translation>
 <translation id="5247243947166567755">Odaberite: <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="5248934139541843042">Prikaži organizatora</translation>
 <translation id="5249624017678798539">Preglednik se srušio prije nego što je preuzimanje dovršeno.</translation>
 <translation id="5249818097095743806">Upotrijebite sigurnosni ključ</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> upotrebljava vašu lokaciju radi pružanja lokalnog sadržaja. To možete promijeniti na stranici <ph name="SETTINGS_LINK" />.</translation>
@@ -6929,6 +6934,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5698878456427040674">Provjerite je li odabrani račun podržan.</translation>
 <translation id="5698900765010620315">Tamna tema s niskim kontrastom</translation>
 <translation id="5699227710146832453">S</translation>
+<translation id="5700024700429259844">Ovdje možete izravno ponovno pokrenuti razgovore s Geminijem i niti u AI načinu. Uvijek možete poništiti prikvačivanje.</translation>
 <translation id="570043786759263127">Aplikacije i usluge Google Playa</translation>
 <translation id="5700761515355162635">Dopušteni su kolačići trećih strana</translation>
 <translation id="5700836101007545240">Dodavanje veze onemogućio je administrator</translation>
@@ -8361,6 +8367,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6686878118106035853">Prilagođena poboljšana zaštita isključuje optimizaciju JavaScripta za sve web-lokacije</translation>
 <translation id="6687008241368170505">Promijenite PIN za Google upravitelj zaporki</translation>
 <translation id="6687079240787935001">Sakrij <ph name="MODULE_TITLE" /></translation>
+<translation id="6689092196793298127">Organizator</translation>
 <translation id="6689948774466767379">Tipke za pokrete mišem</translation>
 <translation id="6690659332373509948">Nije moguće raščlaniti datoteku: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Proslijedi</translation>
@@ -9686,6 +9693,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="760197030861754408">Otvorite <ph name="LANDING_PAGE" /> za povezivanje.</translation>
 <translation id="7602079150116086782">Nema kartica s drugih uređaja</translation>
 <translation id="7602173054665172958">Upravljanje ispisom</translation>
+<translation id="7602805861133750578">Sada možete upravljati grupama kartica, razgovorima s Geminijem i nitima AI načina na jednom mjestu. Uvijek možete poništiti prikvačivanje.</translation>
 <translation id="7602868996817972616">Postavite pitanje Googleu o ovoj stranici</translation>
 <translation id="7603785829538808504">Web-lokacije navedene u nastavku imaju prilagođenu postavku</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{Nije uvezena jedna zaporka}one{Nije uvezena {NUM_PASSWORDS} zaporka}few{Nisu uvezene {NUM_PASSWORDS} zaporke}other{Nije uvezeno {NUM_PASSWORDS} zaporki}}</translation>
@@ -10393,6 +10401,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8054609631325628928">Pomoću tih brojeva možete aktivirati uslugu</translation>
 <translation id="8054883179223321715">Dostupno za određene web-lokacije za videozapise</translation>
 <translation id="8054921503121346576">USB tipkovnica povezana</translation>
+<translation id="8055975688427973864">Prikaži gumb organizatora</translation>
 <translation id="8058655154417507695">Godina isteka</translation>
 <translation id="8058986560951482265">Isprekidano</translation>
 <translation id="8059417245945632445">&amp;Provjeri uređaje</translation>
@@ -11376,6 +11385,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="871515167518607670">Odaberite uređaj. Zatim otvorite Chrome da biste vidjeli stranicu.</translation>
 <translation id="8715480913140015283">Pozadinska kartica upotrebljava vaš fotoaparat</translation>
 <translation id="8716050156658570300">Web-lokacije mogu tražiti dopuštenje za upotrebu senzora kretanja i svjetlosnih senzora</translation>
+<translation id="8716067129332848360">Prikaži organizatora</translation>
 <translation id="8716931980467311658">Želite li s ovog <ph name="DEVICE_TYPE" /> uređaja izbrisati sve Linuxove aplikacije i podatke u svojoj mapi Linux datoteke?</translation>
 <translation id="8717864919010420084">Kopiraj vezu</translation>
 <translation id="8718994464069323380">Dodirni zaslon otkriven</translation>
@@ -11839,6 +11849,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="9013037634206938463">Za instaliranje Linuxa trebate <ph name="INSTALL_SIZE" /> slobodnog prostora. Da biste oslobodili prostor, izbrišite datoteke s uređaja.</translation>
 <translation id="9014206344398081366">Vodič za ChromeVox</translation>
 <translation id="9014674417732091912">Premješteno u redak <ph name="ROW_NUMBER" /></translation>
+<translation id="9015849286924418538">Organizirajte kartice u grupe označene bojama radi lakšeg pristupa</translation>
 <translation id="901668144954885282">Sigurnosno kopiranje na Google disku</translation>
 <translation id="9016827136585652292">prekidač zaslona privatnosti</translation>
 <translation id="90181708067259747">Datum isteka: <ph name="CARD" /></translation>

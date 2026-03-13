@@ -525,6 +525,7 @@
 <translation id="13392265090583506">دسترس‌پذیری</translation>
 <translation id="1340527397989195812">‏با استفاده از برنامه Files از رسانه‌ دستگاه پشتیبان بگیرید.</translation>
 <translation id="1340839264183302272">ترک گروه</translation>
+<translation id="1341002693404468853">پنهان کردن سازمان‌دهنده</translation>
 <translation id="1341701348342335220">بسیار عالی!</translation>
 <translation id="1342886103232377846">‏برای بررسی گذرواژه‌های لورفته، به «مدیر گذرواژه Google» بروید</translation>
 <translation id="1343920184519992513">کار را از همان‌جایی که رها کردید ادامه دهید و مجموعه صفحات خاصی را باز کنید</translation>
@@ -2358,6 +2359,7 @@
 <translation id="2555855727505718984">«تکمیل خودکار» این اطلاعات را برای کمک به پر کردن فرم‌ها در این دستگاه نخواهد داشت</translation>
 <translation id="25568951186001797">قاب محصور: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">همه نشانک‌هایتان را در اینجا ببینید</translation>
+<translation id="2563924218974330506">اکنون می‌توانید گروه‌های زبانه را در اینجا مدیریت کنید. هرزمان بخواهید می‌توانید سنجاق این را بردارید.</translation>
 <translation id="2564520396658920462">‏اجرای جاوااسکریپت ازطریق AppleScript خاموش شده است. برای روشن کردن آن، از نوار منو به View (مشاهده) &gt; Developer (برنامه‌نویس) &gt; Allow JavaScript from Apple Events (مجاز کردن JavaScript از رویدادهای Apple) بروید. برای اطلاعات بیشتر به این نشانی بروید: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">غلط‌یاب املایی بهبودیافته</translation>
 <translation id="256481480019204378">‏شناسه «حساب Google»</translation>
@@ -5526,7 +5528,7 @@
 <translation id="4699172675775169585">تصاویر و فایل‌های ذخیره‌شده در حافظه نهان</translation>
 <translation id="4699357559218762027">(اجرای خودکار)</translation>
 <translation id="4699473989647132421">خط ساحلی</translation>
-<translation id="4701025263201366865">ورود ولی به سیستم</translation>
+<translation id="4701025263201366865">وارد شدن ولی به سیستم</translation>
 <translation id="4701335814944566468">دیروز مشاهده شده</translation>
 <translation id="470644585772471629">وارونگی رنگ</translation>
 <translation id="4707337002099455863">همیشه در همه سایت‌ها روشن باشد</translation>
@@ -5678,6 +5680,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{۱ نشانک حذف شد}one{{COUNT} نشانک حذف شد}other{{COUNT} نشانک حذف شد}}</translation>
 <translation id="481689174647911539">‏این فایل ممکن است ویروس یا بدافزار باشد.<ph name="LINE_BREAK" />می‌توانید آن را برای «مرور ایمن Google» ارسال کنید تا بررسی کند که ایمن است یا نه. اسکن معمولاً چند ثانیه طول می‌کشد.</translation>
 <translation id="4816900689218414104">گذرکلیدی در تلفن یا رایانه لوحی ایجاد کنید</translation>
+<translation id="481852950686014162">‏در Gemini و «حالت هوشواره‌ای» از جایی که رها کردید ادامه دهید</translation>
 <translation id="4819323978093861656">{0,plural, =0{اکنون بسته می‌شود.}=1{یک ثانیه دیگر بسته می‌شود}one{# ثانیه دیگر بسته می‌شود}other{# ثانیه دیگر بسته می‌شود}}</translation>
 <translation id="4819818293886748542">دریافت پیوند «ابزار پشتیبانی»</translation>
 <translation id="4820236583224459650">تنظیم به‌عنوان بلیت فعال</translation>
@@ -5883,6 +5886,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{یک فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="495170559598752135">کنش‌ها</translation>
 <translation id="4951966678293618079">هرگز گذرواژه‌ها برای این سایت ذخیره نشود</translation>
+<translation id="4952580838083306838">پنهان کردن سازمان‌دهنده</translation>
 <translation id="4953808748584563296">چهرک پیش‌فرض نارنجی</translation>
 <translation id="4954652437333037880">فایل</translation>
 <translation id="4954831709600868883">پرسش درباره <ph name="TEXT" /></translation>
@@ -6300,6 +6304,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> خراب شده است. برای راه‌اندازی مجدد برنامه بر روی این بالون کلیک کنید.</translation>
 <translation id="5247051749037287028">نام نمایشی (اختیاری)</translation>
 <translation id="5247243947166567755">انتخاب <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="5248934139541843042">مشاهده سازمان‌دهنده</translation>
 <translation id="5249624017678798539">مرورگر پیش از تکمیل بارگیری ناگهان خارج شد.</translation>
 <translation id="5249818097095743806">استفاده از کلید امنیتی</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> از مکانتان برای ارائه محتوای محلی استفاده می‌کند. می‌توانید در <ph name="SETTINGS_LINK" /> آن را تغییر دهید.</translation>
@@ -6941,6 +6946,7 @@
 <translation id="5698878456427040674">بررسی کنید از حساب انتخاب‌شده پشتیبانی می‌شود.</translation>
 <translation id="5698900765010620315">تیره با کنتراست پایین</translation>
 <translation id="5699227710146832453">از شما</translation>
+<translation id="5700024700429259844">‏اکنون می‌توانید گپ‌های Gemini و رشته‌های «حالت هوشواره‌ای» را مستقیماً از اینجا ازسر بگیرید. هرزمان بخواهید می‌توانید سنجاق این را بردارید.</translation>
 <translation id="570043786759263127">‏خدمات و برنامه‌های Google Play</translation>
 <translation id="5700761515355162635">کوکی‌های طرف سوم مجاز هستند</translation>
 <translation id="5700836101007545240">سرپرستتان افزودن اتصال را غیرفعال کرده است</translation>
@@ -8372,6 +8378,7 @@
 <translation id="6686878118106035853">محافظت بهبودیافته سفارشی، بهینه‌سازی جاوا اسکریپت را برای همه سایت‌ها خاموش می‌کند</translation>
 <translation id="6687008241368170505">‏تغییر پین «مدیر گذرواژه Google»</translation>
 <translation id="6687079240787935001">پنهان کردن <ph name="MODULE_TITLE" /></translation>
+<translation id="6689092196793298127">سازمان‌دهنده</translation>
 <translation id="6689948774466767379">کلیدهای موشواره</translation>
 <translation id="6690659332373509948">این فایل تجزیه نمی‌شود: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;ارسال کردن</translation>
@@ -9697,6 +9704,7 @@
 <translation id="760197030861754408">رفتن به <ph name="LANDING_PAGE" /> جهت اتصال.</translation>
 <translation id="7602079150116086782">هیچ برگه‌ای از دستگاه‌های وجود ندارد</translation>
 <translation id="7602173054665172958">مدیریت چاپ</translation>
+<translation id="7602805861133750578">‏اکنون می‌توانید گروه‌های زبانه، گپ‌های Gemini، و رشته‌های «حالت هوشواره‌ای» را در یک مکان مدیریت کنید. هرزمان بخواهید می‌توانید سنجاق این را بردارید.</translation>
 <translation id="7602868996817972616">‏پرسیدن از Google درباره این صفحه</translation>
 <translation id="7603785829538808504">سایت‌های فهرست‌شده در زیر از تنظیم سفارشی پیروی می‌کنند</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{یک گذرواژه وارد نشد}one{{NUM_PASSWORDS} گذرواژه وارد نشد}other{{NUM_PASSWORDS} گذرواژه وارد نشد}}</translation>
@@ -10404,6 +10412,7 @@
 <translation id="8054609631325628928">می‌توان از این شماره‌ها برای کمک به فعال‌سازی سرویس استفاده کرد</translation>
 <translation id="8054883179223321715">دردسترس برای بعضی از سایت‌های ویدیویی</translation>
 <translation id="8054921503121346576">‏صفحه‌کلید USB متصل شد</translation>
+<translation id="8055975688427973864">نمایش دکمه سازمان‌دهنده</translation>
 <translation id="8058655154417507695">سال انقضا</translation>
 <translation id="8058986560951482265">جریان نامنظم</translation>
 <translation id="8059417245945632445">&amp;بازرسی دستگاه‌ها</translation>
@@ -11387,6 +11396,7 @@
 <translation id="871515167518607670">‏دستگاهی انتخاب کنید؛ سپس، برای دیدن صفحه، Chrome را باز کنید.</translation>
 <translation id="8715480913140015283">برگه پس‌زمینه درحال استفاده از دوربین است</translation>
 <translation id="8716050156658570300">سایت‌ها می‌توانند استفاده از حسگرهای حرکتی و نوری را درخواست کنند</translation>
+<translation id="8716067129332848360">مشاهده سازمان‌دهنده</translation>
 <translation id="8716931980467311658">‏آیا همه برنامه‌های Linux و داده‌های موجود در پوشه فایل‌های Linux این <ph name="DEVICE_TYPE" /> حذف شود؟</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>
 <translation id="8718994464069323380">صفحه لمسی شناسایی شد</translation>
@@ -11849,6 +11859,7 @@
 <translation id="9013037634206938463">‏برای نصب Linux <ph name="INSTALL_SIZE" /> فضای آزاد لازم است. برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="9014206344398081366">‏آموزش گام‌به‌گام ChromeVox</translation>
 <translation id="9014674417732091912">به ردیف <ph name="ROW_NUMBER" /> منتقل شد</translation>
+<translation id="9015849286924418538">برای دسترسی داشتن آسان، زبانه‌ها را در گروه‌های برچسب‌گذاری‌شده و کدبندی‌شده با رنگ سازمان‌دهی کنید</translation>
 <translation id="901668144954885282">‏پشتیبان‌گیری در Google Drive</translation>
 <translation id="9016827136585652292">پنهان/ نمایان کردن صفحه حریم خصوصی</translation>
 <translation id="90181708067259747">تاریخ انقضا: <ph name="CARD" /></translation>

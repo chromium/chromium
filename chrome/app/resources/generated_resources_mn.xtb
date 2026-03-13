@@ -524,6 +524,7 @@
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Files app ашиглан төхөөрөмжөөс мэдээллийг хуулан авч хадгалах.</translation>
 <translation id="1340839264183302272">Бүлгээс гарах</translation>
+<translation id="1341002693404468853">Зохион байгуулагчийг нуух</translation>
 <translation id="1341701348342335220">Амжилттай дууссан!</translation>
 <translation id="1342886103232377846">Алдагдсан нууц үгнүүд байгаа эсэхийг шалгахын тулд Google Password Manager лүү очно уу</translation>
 <translation id="1343920184519992513">Орхисон хэсгээсээ үргэлжлүүлж, тодорхой багц хуудаснуудыг нээнэ үү</translation>
@@ -2357,6 +2358,7 @@
 <translation id="2555855727505718984">Автоматаар бөглөх онцлогт маягт бөглөхөд туслах энэ мэдээлэл уг төхөөрөмж дээр байхгүй байна</translation>
 <translation id="25568951186001797">Хашсан фрейм: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Бүх хавчуургаа эндээс харна уу</translation>
+<translation id="2563924218974330506">Та одоо табын бүлгүүдээ эндээс удирдах боломжтой. Үүнийг бэхэлснийг хүссэн үедээ болиулж болно.</translation>
 <translation id="2564520396658920462">AppleScript-р гүйцэтгэж байгаа JavaScript-г унтраалттай байна. Үүнийг асаахын тулд цэсийн талбарын Apple-н арга хэмжээнээс Харах &gt; Хөгжүүлэгч &gt; JavaScript-г зөвшөөрөх хэсэгт очно уу. Дэлгэрэнгүй мэдээллийг: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Зөв бичгийн алдаа шалгах сайжруулсан онцлог</translation>
 <translation id="256481480019204378">Google Бүртгэлийн ID</translation>
@@ -5676,6 +5678,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 хавчуургыг устгасан}other{{COUNT} хавчуургыг устгасан}}</translation>
 <translation id="481689174647911539">Энэ файл вирус эсвэл хортой программ байж магадгүй.<ph name="LINE_BREAK" />Та үүнийг аюултай эсэхийг шалгуулахаар Google-н аюулгүй хөтөч рүү илгээх боломжтой. Скан хийхэд ихэвчлэн хэдэн секунд зарцуулдаг.</translation>
 <translation id="4816900689218414104">Утас эсвэл таблетад passkey үүсгэнэ үү</translation>
+<translation id="481852950686014162">Gemini, ХОУ-ы горим дээр орхисон газраасаа үргэлжлүүлээрэй</translation>
 <translation id="4819323978093861656">{0,plural, =0{Одоо хааж байна.}=1{Дараах хугацааны дараа хаана: 1 секунд}other{Дараах хугацааны дараа хаана: # секунд}}</translation>
 <translation id="4819818293886748542">Тусламжийн хэрэгслийн холбоосыг авах</translation>
 <translation id="4820236583224459650">Идэвхтэй тасалбар болгож тохируулах</translation>
@@ -5881,6 +5884,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
 <translation id="4951966678293618079">Энэ сайтад нууц үгнүүдийг хэзээ ч бүү хадгал</translation>
+<translation id="4952580838083306838">Зохион байгуулагчийг нуух</translation>
 <translation id="4953808748584563296">Өгөгдмөл улбар шар аватар</translation>
 <translation id="4954652437333037880">Файл</translation>
 <translation id="4954831709600868883"><ph name="TEXT" />-н тухай асуух</translation>
@@ -6298,6 +6302,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> эвдэрсэн байна. Энэ аппликйешнийг дахин эхлүүлэхийн тулд энэ заагч суман дээр дарна уу.</translation>
 <translation id="5247051749037287028">Дэлгэцийн нэр (заавал биш)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" />-г сонгох</translation>
+<translation id="5248934139541843042">Зохион байгуулагчийг харах</translation>
 <translation id="5249624017678798539">Татаж дуусахаас өмнө веб хөтөч ажиллагаагүй болсон.</translation>
 <translation id="5249818097095743806">Аюулгүй байдлын түлхүүрээ ашиглана уу</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> танд дотоод агуулга харуулахын тулд таны байршлыг ашигладаг. Та үүнийг <ph name="SETTINGS_LINK" />-д өөрчлөх боломжтой.</translation>
@@ -6940,6 +6945,7 @@
 <translation id="5698878456427040674">Сонгосон бүртгэлийг дэмждэг эсэхийг шалгана уу.</translation>
 <translation id="5698900765010620315">Бага ялгаралтай бараан</translation>
 <translation id="5699227710146832453">Таны дараахаас</translation>
+<translation id="5700024700429259844">Та одоо Gemini-тай хийсэн чат болон ХОУ-ы горимын уялдаа холбоог эндээс шууд үргэлжлүүлэх боломжтой. Үүнийг бэхэлснийг хүссэн үедээ болиулж болно.</translation>
 <translation id="570043786759263127">Google Play-н аппууд болон үйлчилгээнүүд</translation>
 <translation id="5700761515355162635">Гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="5700836101007545240">Таны админ холболт нэмэх тохиргоог цуцалсан байна</translation>
@@ -8368,6 +8374,7 @@
 <translation id="6686878118106035853">Захиалгат сайжруулсан хамгаалалт нь бүх сайтын JavaScript-н оновчлолыг унтраадаг</translation>
 <translation id="6687008241368170505">Google Нууц үгний менежерийн ПИН-г өөрчлөх</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" />-г нуух</translation>
+<translation id="6689092196793298127">Зохион байгуулагч</translation>
 <translation id="6689948774466767379">Хулганын товч</translation>
 <translation id="6690659332373509948">Файлыг задлах боломжгүй байна: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">Forward</translation>
@@ -9692,6 +9699,7 @@
 <translation id="760197030861754408">Холбохын тулд <ph name="LANDING_PAGE" />-д очно уу.</translation>
 <translation id="7602079150116086782">Бусад төхөөрөмжөөс ирсэн цонх байхгүй байна</translation>
 <translation id="7602173054665172958">Хэвлэлийн удирдлага</translation>
+<translation id="7602805861133750578">Та одоо табын бүлэг, Gemini-тай хийсэн чат, ХОУ-ы горимын уялдаа холбоог нэг дор удирдах боломжтой. Үүнийг бэхэлснийг хүссэн үедээ болиулж болно.</translation>
 <translation id="7602868996817972616">Энэ хуудасны тухай Google-с асуух</translation>
 <translation id="7603785829538808504">Доор жагсаасан сайтууд захиалгат тохиргоог дагадаг</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 нууц үгийг импорт хийгээгүй}other{{NUM_PASSWORDS} нууц үгийг импорт хийгээгүй}}</translation>
@@ -10397,6 +10405,7 @@
 <translation id="8054609631325628928">Эдгээр дугаарыг үйлчилгээг идэвхжүүлэхэд туслахад ашиглаж болно</translation>
 <translation id="8054883179223321715">Тодорхой видео сайтуудад боломжтой</translation>
 <translation id="8054921503121346576">USB гар холбогдсон байна.</translation>
+<translation id="8055975688427973864">Зохион байгуулагчийг харуулах товч</translation>
 <translation id="8058655154417507695">Дуусах он</translation>
 <translation id="8058986560951482265">Тасалддаг</translation>
 <translation id="8059417245945632445">&amp; Төхөөрөмжүүдийг хянан, шалгах</translation>
@@ -11380,6 +11389,7 @@
 <translation id="871515167518607670">Төхөөрөмж сонгоно уу. Дараа нь хуудсыг харахын тулд тэнд Chrome-г нээнэ үү.</translation>
 <translation id="8715480913140015283">Дэвсгэр таб таны камерыг ашиглаж байна</translation>
 <translation id="8716050156658570300">Сайтууд хөдөлгөөн, гэрэл мэдрэгчдийг ашиглахыг хүсэж чадна</translation>
+<translation id="8716067129332848360">Зохион байгуулагчийг харах</translation>
 <translation id="8716931980467311658">Linux-н бүх апп болон Linux-н файлуудын фолдерт байгаа өгөгдлөө энэ <ph name="DEVICE_TYPE" />-с устгах уу?</translation>
 <translation id="8717864919010420084">Холбоосыг хуулах</translation>
 <translation id="8718994464069323380">Мэдрэмтгий дэлгэц илрүүлсэн</translation>
@@ -11839,6 +11849,7 @@
 <translation id="9013037634206938463">Linux-г суулгахад <ph name="INSTALL_SIZE" />-н сул зай шаардлагатай байна. Сул зайг нэмэгдүүлэхийн тулд төхөөрөмжөөсөө файлуудыг устгана уу.</translation>
 <translation id="9014206344398081366">ChromeVox-н практик хичээл</translation>
 <translation id="9014674417732091912"><ph name="ROW_NUMBER" />-р мөр лүү зөөсөн</translation>
+<translation id="9015849286924418538">Хялбар хандахын тулд табуудыг шошголсон, өнгөний кодтой бүлгүүд болгон эмхэлнэ үү</translation>
 <translation id="901668144954885282">Google Драйвт хуулбарлах</translation>
 <translation id="9016827136585652292">нууцлалын дэлгэцийг асаах/унтраах</translation>
 <translation id="90181708067259747">Хүчинтэй хугацаа: <ph name="CARD" /></translation>

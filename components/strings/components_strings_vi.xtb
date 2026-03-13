@@ -211,6 +211,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1323433172918577554">Xem thêm</translation>
 <translation id="1329916999021038454">Gửi báo cáo</translation>
 <translation id="1330449323196174374">Gấp dạng cửa bên trái</translation>
+<translation id="133173645041092770">Đóng trang web</translation>
 <translation id="1333745675627230582">Chơi Trò chơi khủng long trên Chrome</translation>
 <translation id="1333989956347591814">Hoạt động của bạn <ph name="BEGIN_EMPHASIS" />có thể vẫn hiển thị<ph name="END_EMPHASIS" /> với:
         <ph name="BEGIN_LIST" />
@@ -638,6 +639,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2027465737841872819">Nhựa</translation>
 <translation id="2027707238798802149">Thẻ không dùng được</translation>
 <translation id="2029735183873159415">Tổ tiên và gia phả</translation>
+<translation id="2031095660415483845">Tìm kiếm và điền dữ liệu ở bất cứ đâu...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Kiểm tra proxy và tường lửa<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Lối tắt không được giống với từ khoá của nhà cung cấp dịch vụ tìm kiếm mặc định do <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> xác định: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Vẫn lưu</translation>
@@ -939,12 +941,14 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2466004615675155314">Hiện thông tin trên web</translation>
 <translation id="2466682894498377850">Thẻ được gửi từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Thông số kỹ thuật và thống kê phần cứng của thiết bị, chẳng hạn như nhật ký sử dụng CPU/RAM</translation>
+<translation id="2467421459221956357">Sử dụng cảm biến?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Chạy Chẩn đoán mạng<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Thứ tự từ 1 đến N</translation>
 <translation id="24699311393038040">Giấy (Tráng bóng)</translation>
 <translation id="2471632709106952369">Bảng so sánh</translation>
 <translation id="2473810985261856484">Dịch vụ pháp lý</translation>
 <translation id="2477607419416067650">Dữ liệu khác trên Google</translation>
+<translation id="247903268499247848">Đã từ chối cấp quyền sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2479410451996844060">URL tìm kiếm hợp lệ.</translation>
 <translation id="2480300195898055381">Trong Tài khoản Google của bạn, <ph name="USER_EMAIL" /></translation>
@@ -1069,6 +1073,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2674524144218093528">Sơn và hoàn thiện nhà cửa</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> nhóm thẻ không còn hoạt động</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
+<translation id="2679216653373462289">Sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="2679659833697380">Thông tin sẽ được lưu vào thiết bị của bạn</translation>
 <translation id="2683195745483370038">Kết quả tìm được khác</translation>
 <translation id="2686919536310834199">Gửi phản hồi về tính năng Giúp tôi viết.</translation>
@@ -1150,6 +1155,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2820957248982571256">Đang quét...</translation>
 <translation id="2824775600643448204">Thanh địa chỉ và tìm kiếm</translation>
 <translation id="2826760142808435982">Kết nối được mã hóa và xác thực bằng <ph name="CIPHER" /> đồng thời sử dụng <ph name="KX" /> làm cơ chế trao đổi chính.</translation>
+<translation id="2828797285817981634">Đã cho phép sử dụng cảm biến chuyển động vào lần này</translation>
 <translation id="2833637280516285136">Talk Radio</translation>
 <translation id="2835170189407361413">Xóa biểu mẫu</translation>
 <translation id="2835907903001172712">Thông tin tổng quan về trình duyệt</translation>
@@ -1276,6 +1282,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3030331669969285614">Những cờ này ngăn chặn hoặc đảo ngược một thay đổi có thể gây lỗi và sẽ chỉ dùng được trong thời gian có hạn.</translation>
 <translation id="3030542417256082866">Lưu thông tin về xe?</translation>
 <translation id="3033200136993730761">Địa chỉ nhà riêng có thể giúp bạn hoàn thành công việc trên các dịch vụ của Google, như đường đi trên Google Maps và kết quả phù hợp hơn trên Tìm kiếm. Bạn có thể chỉnh sửa hoặc xoá địa chỉ <ph name="BEGIN_LINK" />trong Tài khoản Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033777742142108756">Đã cho phép sử dụng cảm biến chuyển động và cảm biến ánh sáng vào lần này</translation>
 <translation id="3034526003882782781">Cho phép cuộn và thu phóng</translation>
 <translation id="3036894576201005614">Đồ dùng vệ sinh gia đình</translation>
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
@@ -2299,6 +2306,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4658638640878098064">Dập ghim trên cùng bên trái</translation>
 <translation id="4658801711339831733">Đã lưu bản quét vào Google Drive</translation>
 <translation id="4660592918803576381">Mở trong Drive</translation>
+<translation id="4660780573807106293">Có thể yêu cầu sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="4661556981531699496">Thú cưng và động vật</translation>
 <translation id="4661868874067696603">Tìm thêm lựa chọn mua hàng</translation>
 <translation id="4663373278480897665">Cho phép máy ảnh</translation>
@@ -2756,6 +2764,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5371425731340848620">Cập nhật thẻ</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> đã thay đổi một thẻ</translation>
 <translation id="5374324662289354619">Trang gỡ lỗi nội bộ đang bị vô hiệu hoá.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> muốn sử dụng cảm biến chuyển động</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Đồng hồ của bạn chạy chậm" hoặc "Đồng hồ của bạn chạy nhanh" hay "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Để sử dụng mật khẩu này trên mọi thiết bị, hãy xác minh danh tính của bạn</translation>
@@ -2805,6 +2814,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
         <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Để thanh toán nhanh hơn, hãy lưu mã CVC này vào Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Ứng dụng trên thiết bị</translation>
+<translation id="543656192084990644">Đã từ chối cấp quyền sử dụng cảm biến chuyển động</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, trước đây là <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Thứ tự đảo ngược hướng lên</translation>
 <translation id="5447235695608032700">Cho phép <ph name="SITE" /> sử dụng thông tin mà họ đã lưu về bạn</translation>
@@ -3096,6 +3106,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5918847752193018339">Bạn sẽ thanh toán nhanh hơn khi lưu mã CVC. <ph name="LINK_BEGIN" />Xoá mã bảo mật đã lưu<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Đang bật</translation>
+<translation id="5921432337686792850">Có thể yêu cầu sử dụng cảm biến chuyển động</translation>
 <translation id="5921639886840618607">Bạn có muốn lưu thẻ vào Tài khoản Google không?</translation>
 <translation id="5921952831792678223">Xe bán tải</translation>
 <translation id="5923492272538889093">Sử dụng tính năng mở khoá thiết bị thay cho CVC?</translation>
@@ -3164,6 +3175,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6028591542479806248">Quản lý thông báo qua email và thiết bị di động</translation>
 <translation id="6028833024483927901">Ẩm thực thế giới</translation>
 <translation id="603068602130820122">Dập 2 ghim bên phải</translation>
+<translation id="6031824805267965302">Sử dụng cảm biến chuyển động</translation>
 <translation id="6032524144326295339">Hộp thư 2</translation>
 <translation id="6032955021262906325">Đóng gáy bên trái</translation>
 <translation id="6034000775414344507">Xám nhạt</translation>
@@ -3245,6 +3257,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6133984428121856852">Đuôi tệp đang trống hoặc không hợp lệ.</translation>
 <translation id="6139975341602920272">17 x 22 inch</translation>
 <translation id="6143097244789397208">Thực tế ảo và thực tế tăng cường</translation>
+<translation id="614327212146763975">Đã cho phép sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="6146055958333702838">Kiểm tra mọi dây cáp rồi khởi động lại bộ định tuyến, modem hoặc các thiết bị
     mạng khác mà bạn có thể đang sử dụng.</translation>
 <translation id="614940544461990577">Hãy thử:</translation>
@@ -3625,6 +3638,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6734506549556896534">Trò chơi mô phỏng</translation>
+<translation id="6735589846038045679">Gói thanh toán sẽ phụ thuộc vào điều kiện áp dụng. <ph name="BEGIN_BOLD" />Nội dung trên trang thanh toán sẽ được chia sẻ với Google để cung cấp những lựa chọn này.<ph name="END_BOLD" /> Để ẩn các lựa chọn trả sau, hãy chuyển đến phần <ph name="BEGIN_LINK" />cài đặt thông tin thanh toán<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Bánh nướng</translation>
 <translation id="6738516213925468394">Dữ liệu của bạn đã được mã hóa bằng <ph name="BEGIN_LINK" />cụm mật khẩu đồng bộ hóa<ph name="END_LINK" /> vào <ph name="TIME" />. Hãy nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="6740851646645036700">Số lần bạn sử dụng tính năng trợ giúp khi viết hiện đã đạt mức tối đa. Hãy thử lại sau.</translation>
@@ -3638,6 +3652,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6753434778807740853">Xoá mục <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Tài khoản tiết kiệm</translation>
 <translation id="6757797048963528358">Thiết bị của bạn đã chuyển sang chế độ ngủ.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> muốn sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="6766558780547452153">Nấu ăn và công thức nấu ăn</translation>
 <translation id="6770747695101757579">Giấy (Cotton)</translation>
 <translation id="677257480647123231">An toàn cho trẻ em khi sử dụng Internet</translation>
@@ -4401,6 +4416,7 @@ Thông tin chi tiết bổ sung:
 <translation id="79338296614623784">Nhập số điện thoại hợp lệ</translation>
 <translation id="7934414805353235750"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh thiết bị của bạn sẽ được Google xác minh.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">Đã cho phép sử dụng cảm biến chuyển động</translation>
 <translation id="7937163678541954811">CVC của thẻ này sẽ được mã hoá và lưu vào thiết bị của bạn để giúp bạn thanh toán nhanh hơn</translation>
 <translation id="7937554595067888181">Hết hạn vào <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Chứng chỉ của máy chủ chưa hợp lệ.</translation>
@@ -5029,6 +5045,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn Enter để xem nhật ký duyệt web của bạn trong Chrome</translation>
 <translation id="8987663052629670333">Dịch vụ in ảnh</translation>
 <translation id="8987927404178983737">Tháng</translation>
+<translation id="8988966534058783995">Sử dụng cảm biến chuyển động?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> muốn biết khi bạn đang sử dụng thiết bị này</translation>
 <translation id="8997023839087525404">Máy chủ đã đưa ra chứng chỉ không được tiết lộ công khai theo chính sách Tính minh bạch của chứng chỉ. Đây là yêu cầu đối với một số chứng chỉ, để đảm bảo chúng đáng tin cậy và giúp chống lại những kẻ tấn công.</translation>

@@ -211,6 +211,7 @@
 <translation id="1323433172918577554">और दिखाएं</translation>
 <translation id="1329916999021038454">रिपोर्ट भेजें</translation>
 <translation id="1330449323196174374">बांया गेट फ़ोल्ड</translation>
+<translation id="133173645041092770">वेबसाइट बंद करें</translation>
 <translation id="1333745675627230582">Chrome Dino गेम खेलें</translation>
 <translation id="1333989956347591814">आपकी गतिविधि इन्हें <ph name="BEGIN_EMPHASIS" />अब भी दिखाई दे सकती है<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -639,6 +640,7 @@
 <translation id="2027465737841872819">प्लास्टिक</translation>
 <translation id="2027707238798802149">कार्ड उपलब्ध नहीं है</translation>
 <translation id="2029735183873159415">पूर्वज और वंशावली</translation>
+<translation id="2031095660415483845">ब्राउज़र या वेब पेज के किसी भी हिस्से से खोजकर जानकारी भरें...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />प्रॉक्सी और फ़ायरवॉल की जांच करें<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">शॉर्टकट और <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> की ओर से तय किया गया, खोज की सेवा देने वाली डिफ़ॉल्ट कंपनी का कीवर्ड, एक जैसे नहीं हो सकते: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">फिर भी सेव करें</translation>
@@ -940,12 +942,14 @@
 <translation id="2466004615675155314">वेब से जानकारी दिखाता है</translation>
 <translation id="2466682894498377850">आपके <ph name="DEVICE_NAME" /> से टैब भेजा गया है</translation>
 <translation id="2467272921457885625">डिवाइस के हार्डवेयर की खास जानकारी और आंकड़े, जैसे कि सीपीयू/रैम के इस्तेमाल का इतिहास</translation>
+<translation id="2467421459221956357">क्या सेंसर का इस्तेमाल करना है?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />नेटवर्क निदान चलाकर देखें<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-से-N के क्रम में</translation>
 <translation id="24699311393038040">पेपर (कोटेड)</translation>
 <translation id="2471632709106952369">तुलना करने वाली टेबल</translation>
 <translation id="2473810985261856484">कानूनी सेवाएं</translation>
 <translation id="2477607419416067650">Google का अन्य डेटा</translation>
+<translation id="247903268499247848">मोशन और लाइट सेंसर को ऐक्सेस करने की अनुमति नहीं मिली है</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
 <translation id="2479410451996844060">गलत खोज URL.</translation>
 <translation id="2480300195898055381">अपने Google खाते, <ph name="USER_EMAIL" /> में</translation>
@@ -1070,6 +1074,7 @@
 <translation id="2674524144218093528">घर की पेंटिंग और फ़िनिशिंग का सामान</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
+<translation id="2679216653373462289">मोशन और लाइट सेंसर का इस्तेमाल करें</translation>
 <translation id="2679659833697380">आपकी जानकारी आपके डिवाइस में सेव हो गई है</translation>
 <translation id="2683195745483370038">अन्य नतीजे मिले</translation>
 <translation id="2686919536310834199">'लिखने में मेरी मदद करें' सुविधा के लिए सुझाव/राय भेजें या शिकायत करें.</translation>
@@ -1151,6 +1156,7 @@
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
 <translation id="2824775600643448204">पता और सर्च बार</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> का इस्तेमाल करके कनेक्शन को एन्क्रिप्ट (सुरक्षित) किया गया है और उसकी पुष्टि की गई है. साथ ही, यह मुख्य एक्सचेंज तकनीक के रूप में <ph name="KX" /> का इस्तेमाल करता है.</translation>
+<translation id="2828797285817981634">मोशन सेंसर को फ़िलहाल अनुमति मिल गई है</translation>
 <translation id="2833637280516285136">टॉक रेडियो</translation>
 <translation id="2835170189407361413">फ़ॉर्म साफ़ करें</translation>
 <translation id="2835907903001172712">ब्राउज़र के बारे में खास जानकारी</translation>
@@ -1277,6 +1283,7 @@
 <translation id="3030331669969285614">ये फ़्लैग, नुकसान पहुंचा सकने वाले बदलाव को रोकते या उन्हें पहले जैसा करते हैं. साथ ही, ये फ़्लैग सिर्फ़ कुछ समय के लिए उपलब्ध रहते हैं.</translation>
 <translation id="3030542417256082866">क्या आपको वाहन से जुड़ी जानकारी सेव करनी है?</translation>
 <translation id="3033200136993730761">अगर आपने Chrome में अपने घर का पता सेट किया है, तो Google की अलग-अलग सेवाओं का आसानी से फ़ायदा लिया जा सकता है. जैसे, ज़्यादा काम के नतीजे पाना और Google Maps में घर जाने का रास्ता देखना. <ph name="BEGIN_LINK" />Google खाते <ph name="ACCOUNT" /><ph name="END_LINK" /> में जाकर, अपने पते में बदलाव किया जा सकता है या उसे मिटाया जा सकता है.</translation>
+<translation id="3033777742142108756">फ़िलहाल, मोशन और लाइट सेंसर इस्तेमाल करने की अनुमति मिल गई है</translation>
 <translation id="3034526003882782781">स्क्रोल और ज़ूम करने की अनुमति है</translation>
 <translation id="3036894576201005614">घर की साफ़-सफ़ाई में इस्तेमाल होने वाली चीज़ें</translation>
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
@@ -2299,6 +2306,7 @@
 <translation id="4658638640878098064">सबसे ऊपर बाईं ओर स्टेपल</translation>
 <translation id="4658801711339831733">स्कैन किया गया दस्तावेज़, Google Drive में सेव किया गया</translation>
 <translation id="4660592918803576381">फ़ाइलों को Drive में खोलें</translation>
+<translation id="4660780573807106293">आपको साइट से, मोशन और लाइट सेंसर इस्तेमाल करने की अनुमति देने का प्रॉम्प्ट मिल सकता है</translation>
 <translation id="4661556981531699496">पालतू पशु और जानवर</translation>
 <translation id="4661868874067696603">खरीदारी के ज़्यादा विकल्प खोजें</translation>
 <translation id="4663373278480897665">कैमरे की अनुमति है</translation>
@@ -2756,6 +2764,7 @@
 <translation id="5371425731340848620">कार्ड अपडेट करें</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ने एक टैब बदला है</translation>
 <translation id="5374324662289354619">फ़िलहाल, इंटरनल डिबगिंग पेजों को लोड करने की सुविधा बंद है.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> को आपके मोशन सेंसर इस्तेमाल करने की अनुमति चाहिए</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"आपकी घड़ी पीछे चल रही है" या "आपकी घड़ी आगे चल रही है" या "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">इस पासवर्ड को अपने सभी डिवाइसों पर सेव करने के लिए, अपनी पहचान की पुष्टि करें</translation>
@@ -2805,6 +2814,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">तेज़ी से चेकआउट करने के लिए, इस सीवीसी को Google Wallet (<ph name="ACCOUNT_EMAIL" />) में सेव करें</translation>
 <translation id="5436307623797390637">इस डिवाइस पर इंस्टॉल किए गए ऐप्लिकेशन</translation>
+<translation id="543656192084990644">मोशन सेंसर इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="5441409130426352029">मौजूदा <ph name="ATTRIBUTE_VALUE" />, पहले यह <ph name="PREVIOUS_VALUE" /> था</translation>
 <translation id="5443468954631487277">दूसरी तरफ़ सीधा करके रखें</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> को आपकी सेव की गई जानकारी का इस्तेमाल करने की अनुमति दें</translation>
@@ -3096,6 +3106,7 @@
 <translation id="5918847752193018339">सीवीसी सेव होने पर तेज़ी से पैसे चुकाए जा सकते हैं. <ph name="LINK_BEGIN" />सेव किए गए सुरक्षा कोड मिटाएं<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">बी10</translation>
 <translation id="5921185718311485855">चालू है</translation>
+<translation id="5921432337686792850">आपको साइट से, मोशन सेंसर इस्तेमाल करने की अनुमति देने का प्रॉम्प्ट मिल सकता है</translation>
 <translation id="5921639886840618607">कार्ड को Google खाते में सेव करें?</translation>
 <translation id="5921952831792678223">पिकअप ट्रक</translation>
 <translation id="5923492272538889093">सीवीसी के बजाय डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल करें?</translation>
@@ -3164,6 +3175,7 @@
 <translation id="6028591542479806248">मोबाइल और ईमेल सूचनाएं मैनेज करें</translation>
 <translation id="6028833024483927901">दुनिया भर की जगहों के पकवान</translation>
 <translation id="603068602130820122">दाईं ओर ड्युएल स्टेपल</translation>
+<translation id="6031824805267965302">मोशन सेंसर का इस्तेमाल करें</translation>
 <translation id="6032524144326295339">मेलबॉक्स 2</translation>
 <translation id="6032955021262906325">बाईं ओर बाइंड</translation>
 <translation id="6034000775414344507">हल्का भूरा</translation>
@@ -3245,6 +3257,7 @@
 <translation id="6133984428121856852">फ़ाइल एक्सटेंशन खाली है या खराब है.</translation>
 <translation id="6139975341602920272">17 x 22 इंच</translation>
 <translation id="6143097244789397208">ऑगमेंटेड और वर्चुअल रिएलिटी</translation>
+<translation id="614327212146763975">मोशन और लाइट सेंसर इस्तेमाल करने की अनुमति मिल गई है</translation>
 <translation id="6146055958333702838">सभी केबल जांचें और आपके उपयोग किए जा रहे सभी राउटर, मॉडेम या अन्य नेटवर्क
     डिवाइस को 'फिर चालू करें'.</translation>
 <translation id="614940544461990577">यह आज़माकर देखें:</translation>
@@ -3625,6 +3638,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">कैमरा</translation>
 <translation id="6734506549556896534">सिम्युलेशन गेम</translation>
+<translation id="6735589846038045679">बिलिंग प्लान, ज़रूरी शर्तें पूरी करने पर ही उपलब्ध होते हैं. <ph name="BEGIN_BOLD" />ये विकल्प उपलब्ध कराने के लिए, चेकआउट पेज का कॉन्टेंट Google के साथ शेयर किया जाता है.<ph name="END_BOLD" /> बाद में पेमेंट करने के विकल्प छिपाने के लिए, <ph name="BEGIN_LINK" />पेमेंट सेटिंग<ph name="END_LINK" /> पर जाएं</translation>
 <translation id="6737708609449480586">बेकरी का सामान</translation>
 <translation id="6738516213925468394">आपका डेटा <ph name="TIME" /> को <ph name="BEGIN_LINK" />सिंक करने के लिए लंबा पासवर्ड बनाकर<ph name="END_LINK" /> सुरक्षित किया गया था. सिंक शुरू करने के लिए पासवर्ड डालें.</translation>
 <translation id="6740851646645036700">फ़िलहाल, लिखने में मदद पाने की तय सीमा पूरी हो गई है. बाद में कोशिश करें.</translation>
@@ -3638,6 +3652,7 @@
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> की एंट्री मिटाएं</translation>
 <translation id="6754547388777247439">बचत खाते</translation>
 <translation id="6757797048963528358">आपका डिवाइस निष्क्रिय हो गया है.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> को आपके डिवाइस के मोशन और लाइट सेंसर इस्तेमाल करने की अनुमति चाहिए</translation>
 <translation id="6766558780547452153">कुकिंग और रेसिपी</translation>
 <translation id="6770747695101757579">पेपर (कॉटन)</translation>
 <translation id="677257480647123231">इंटरनेट पर बच्चों की सुरक्षा</translation>
@@ -4401,6 +4416,7 @@
 <translation id="79338296614623784">मान्य फ़ोन नंबर डालें</translation>
 <translation id="7934414805353235750"><ph name="URL" /> सुरक्षित सामग्री चलाना चाहता है. Google आपके डिवाइस की पहचान की पुष्टि करेगा.</translation>
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
+<translation id="7935520077478121175">मोशन सेंसर इस्तेमाल करने की अनुमति मिल गई है</translation>
 <translation id="7937163678541954811">इस कार्ड के सीवीसी को एन्क्रिप्ट (सुरक्षित) करके आपके डिवाइस में सेव किया जाएगा, ताकि आप तेज़ी से चेकआउट कर सकें</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> को खत्म होने वाला है</translation>
 <translation id="7938958445268990899">सर्वर का प्रमाणपत्र अभी तक मान्य नहीं है.</translation>
@@ -5029,6 +5045,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome में अपने ब्राउज़िंग इतिहास को देखने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="8987663052629670333">फ़ोटो प्रिंटिंग की सेवाएं</translation>
 <translation id="8987927404178983737">माह</translation>
+<translation id="8988966534058783995">क्या मोशन सेंसर का इस्तेमाल करना है?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> को यह जानना है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="8997023839087525404">सर्वर ने एक प्रमाणपत्र प्रस्तुत किया है, जिसे प्रमाणपत्र पारदर्शिता पॉलिसी का उपयोग करके सार्वजनिक रूप से प्रकट नहीं किया गया था. कुछ प्रमाणपत्रों के लिए यह पक्का करना आवश्यक है कि वे विश्वसनीय हैं और आक्रमणकर्ताओं से रक्षा करते हैं.</translation>

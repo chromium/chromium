@@ -1373,6 +1373,23 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
 <translation id="1954612656043024615">Bật tính năng bảng nhớ tạm dùng chung</translation>
 <translation id="1955063069502242812">Bật chuông báo pin yếu</translation>
 <translation id="1955806069704957172">Kiểm soát các chế độ cài đặt Desk Connector API.</translation>
+<translation id="1956346847126765379">Nếu bạn đặt chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />, hệ thống sẽ ngừng tải các trang web có URL bị cấm. Quản trị viên có thể chỉ định danh sách mẫu URL cần chặn. Nếu bạn không đặt chính sách này, hệ thống sẽ không chặn URL nào trong trình duyệt. Bạn có thể xác định tối đa 1.000 trường hợp ngoại lệ trong <ph name="URL_ALLOWLIST_POLICY_NAME" />. Hãy xem cách định dạng mẫu URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Lưu ý: Chính sách này không áp dụng với URL JavaScript trong trang có dữ liệu được tải tự động. Nếu bạn đã chặn example.com/abc thì example.com vẫn tải được URL đó qua XMLHTTPRequest. Ngoài ra, chính sách này không ngăn các trang web cập nhật URL hiển thị trong thanh địa chỉ thành URL bị chặn bằng JavaScript History API.
+
+Kể từ <ph name="PRODUCT_NAME" /> phiên bản 73, bạn có thể chặn các URL javascript://*. Tuy nhiên, chính sách này chỉ ảnh hưởng đến JavaScript đã nhập vào thanh địa chỉ hoặc các bookmarklet chẳng hạn.
+
+Kể từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng được hỗ trợ ở chế độ không có giao diện người dùng.
+
+Kể từ <ph name="PRODUCT_NAME" /> phiên bản 147, ký tự đại diện * đứng một mình không áp dụng cho URL nội bộ chrome://. Để chặn các URL này, bạn phải sử dụng mẫu chrome://* một cách rõ ràng.
+
+Lưu ý: Việc chặn các URL nội bộ chrome://* và chrome-untrusted://* có thể dẫn đến lỗi không mong muốn hoặc có thể bị bỏ qua trong một số trường hợp. Thay vì chặn một số URL nội bộ nhất định, hãy xem có chính sách cụ thể hơn không. Ví dụ:
+
+– Thay vì chặn chrome://settings/certificates, hãy sử dụng <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+– Thay vì chặn chrome-untrusted://crosh, hãy sử dụng <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
+
+– Thay vì chặn devtools://*, hãy sử dụng một trong các chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> hoặc <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1957093168333856467">Tắt bàn phím ảo hỗ trợ tiếp cận</translation>
 <translation id="1958110911685486719">Đã bật tính năng hỗ trợ biểu mẫu XFA trong PDF</translation>
 <translation id="1960059835237529462">Cho phép người dùng thấy quảng cáo Xếp hạng <ph name="IOS_NAME" /> trong App Store</translation>

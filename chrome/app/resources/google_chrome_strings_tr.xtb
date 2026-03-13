@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Bu işlem, tarama verilerinizi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="259935314519650377">İndirilen yükleyici önbelleğe alınamadı. Hata: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="263447411082773721">Şifreleriniz, yer işaretleriniz ve geçmişinizi cihazlar arasında mükemmel şekilde senkronize edin. Varsayılan tarayıcınızı Chrome'a güncelleyerek sevdiğiniz ve bildiğiniz özelliklere kolayca erişin. Chrome, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome, tarayıcınızın en güvenli ayarlara sahip olup olmadığını düzenli olarak kontrol eder. İncelemeniz gereken bir konu varsa sizi bilgilendiririz.</translation>
 <translation id="2652691236519827073">Bağlantıyı Yeni Chrome &amp;sekmesinde aç</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Daha sonra Chrome, formlarınızın otomatik olarak doldurulması için kayıtlı bilgileri kullanmak isteyip istemediğinizi sorabilir</translation>
 <translation id="3352986031709923790">arama alanının sağ üst köşesi: sağ %<ph name="RIGHT" />, üst %<ph name="TOP" /></translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Bazı Chrome özellikleri ve uzantıları kısayollar içerir. Dilerseniz bunları tekrar etkinleştirebilirsiniz.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome şimdi yeniden başlatılacak}=1{Chrome 1 saniye içinde yeniden başlatılacak}other{Chrome # saniye içinde yeniden başlatılacak}}</translation>
 <translation id="3380249972812870825">Chrome'da Gemini'i açmak için <ph name="GLOBAL_HOTKEY" /> tuşuna basın</translation>
 <translation id="3396977131400919238">Yükleme sırasında bir işletim sistemi hatası oluştu. Lütfen Google Chrome'u yeniden indirin.</translation>
@@ -692,6 +694,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8064965390968184078">1. Aşağıdaki <ph name="BUTTON_LABEL" /> düğmesini tıklayın.
 2. Windows ayarlarınızda <ph name="BUTTON_2" /> düğmesini tıklayın.
 3. Hızlı erişim için Chrome'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BUTTON_3" /> düğmesini tıklayın.</translation>
+<translation id="8074398340364918139">Belirli bir Chrome özelliğinde veya uzantısında arama yapmak için ilgili kısayolu adres çubuğuna yazdıktan sonra seçtiğiniz klavye tuşuna basın</translation>
 <translation id="8077579734294125741">Diğer Chrome Profilleri</translation>
 <translation id="8086881907087796310">Bilgisayarınız minimum donanım gereksinimlerini karşılamadığından yükleme işlemi başarısız oldu.</translation>
 <translation id="8113883687556086139">Chrome verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için kimliğinizi doğrulayın</translation>
@@ -700,6 +703,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8129812357326543296">&amp;Google Chrome hakkında</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8162006532256575008">Chrome'u hesap olmadan kullan</translation>
+<translation id="8172231188687329735">Hareket halindeyken şifreleri kaydetmek için Chrome uygulamasını indirin</translation>
 <translation id="8177472873527554730">Sayfada içerik bulunamadı</translation>
 <translation id="8221491193165283816">Genelde bildirimleri engelliyorsunuz. Bu sitenin size bildirim göndermesine izin vermek için burayı tıklayın.</translation>
 <translation id="8253851811470049684">Uygulamalardaki bağlantıları Chrome'da açın ve tarayıcıyı görev çubuğunuzda erişilebilir tutun</translation>
@@ -727,6 +731,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 
 Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedilemez. Oturumu şimdi kapatırsanız kaydedilmemiş yer işaretleri silinir.</translation>
 <translation id="8433638294851456451">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
+<translation id="8458117863387545390">Telefonunuza Chrome'u yükleyin</translation>
 <translation id="8496177819998570653">Google Ş&amp;ifre Yöneticisi</translation>
 <translation id="8498858610309223613">Google Chrome için özel bir güvenlik güncellemesi uygulandı. Uygulamayı hemen yeniden başlatın; açık sekmeleriniz geri yüklenir.</translation>
 <translation id="8516431725144212809">Chrome'un tahmin ettiği ilgi alanlarınız</translation>

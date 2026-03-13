@@ -524,6 +524,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Fazer cópia de segurança de multimédia a partir do dispositivo com a aplicação Ficheiros.</translation>
 <translation id="1340839264183302272">Sair do grupo</translation>
+<translation id="1341002693404468853">Ocultar organizador</translation>
 <translation id="1341701348342335220">Bom trabalho!</translation>
 <translation id="1342886103232377846">Para verificar se existem palavras-passe comprometidas, aceda ao Gestor de Palavras-passe da Google</translation>
 <translation id="1343920184519992513">Continue onde parou e abra um conjunto específico de páginas</translation>
@@ -2348,6 +2349,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2555855727505718984">O preenchimento automático não vai ter estas informações neste dispositivo para ajudar a preencher formulários</translation>
 <translation id="25568951186001797">Frame bloqueado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Veja todos os marcadores aqui</translation>
+<translation id="2563924218974330506">Agora pode gerir os seus grupos de separadores aqui. Desafixe em qualquer altura.</translation>
 <translation id="2564520396658920462">A opção de execução do JavaScript através do AppleScript está desativada. Para a ativar, na barra de menu aceda a Vista &gt; Programador &gt; Permitir JavaScript de eventos Apple. Para mais informações: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Verificação ortográfica melhorada</translation>
 <translation id="256481480019204378">ID da Conta Google</translation>
@@ -5669,6 +5671,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
 <translation id="481689174647911539">Este ficheiro pode ser um vírus ou software malicioso.<ph name="LINE_BREAK" />Pode enviá-lo para a Navegação Segura do Google para verificar se não é seguro. Normalmente, as análises demoram alguns segundos.</translation>
 <translation id="4816900689218414104">Crie uma chave de acesso num telemóvel ou tablet</translation>
+<translation id="481852950686014162">Continue a partir do ponto onde ficou no Gemini e no Modo IA</translation>
 <translation id="4819323978093861656">{0,plural, =0{A fechar agora.}=1{A fechar dentro de: 1 segundo}other{A fechar dentro de: # segundos}}</translation>
 <translation id="4819818293886748542">Receba um link da ferramenta de apoio técnico</translation>
 <translation id="4820236583224459650">Definir como permissão ativa</translation>
@@ -5874,6 +5877,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um ficheiro}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4951966678293618079">Nunca guarde palavras-passe para este site</translation>
+<translation id="4952580838083306838">Ocultar organizador</translation>
 <translation id="4953808748584563296">Avatar cor de laranja predefinido</translation>
 <translation id="4954652437333037880">Ficheiro</translation>
 <translation id="4954831709600868883">Pergunte sobre <ph name="TEXT" /></translation>
@@ -6291,6 +6295,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> falhou. Clique neste balão para reiniciar a aplicação.</translation>
 <translation id="5247051749037287028">Nome a apresentar (opcional)</translation>
 <translation id="5247243947166567755">Selecionar <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="5248934139541843042">Ver organizador</translation>
 <translation id="5249624017678798539">O navegador bloqueou antes de a transferência ter sido concluída.</translation>
 <translation id="5249818097095743806">Use a sua chave de segurança</translation>
 <translation id="5250372599208556903">O <ph name="SEARCH_ENGINE_NAME" /> utiliza a sua localização para lhe fornecer conteúdo local. Pode alterar esta opção em <ph name="SETTINGS_LINK" />.</translation>
@@ -6933,6 +6938,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5698878456427040674">Verifique se a conta selecionada é suportada.</translation>
 <translation id="5698900765010620315">Escuro com baixo contraste</translation>
 <translation id="5699227710146832453">Do seu</translation>
+<translation id="5700024700429259844">Já pode retomar diretamente os chats do Gemini e as discussões do Modo IA aqui. Desafixe em qualquer altura.</translation>
 <translation id="570043786759263127">Apps e serviços do Google Play</translation>
 <translation id="5700761515355162635">Cookies de terceiros permitidos</translation>
 <translation id="5700836101007545240">A opção Adicionar ligação foi desativada pelo gestor</translation>
@@ -8362,6 +8368,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6686878118106035853">A Proteção melhorada personalizada desativa a otimização do JavaScript para todos os sites</translation>
 <translation id="6687008241368170505">Altere o PIN do Gestor de Palavras-passe da Google</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
+<translation id="6689092196793298127">Organizador</translation>
 <translation id="6689948774466767379">Teclas do rato</translation>
 <translation id="6690659332373509948">Impossível analisar o ficheiro: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">A&amp;vançar</translation>
@@ -9687,6 +9694,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="760197030861754408">Aceda a <ph name="LANDING_PAGE" /> para ligar.</translation>
 <translation id="7602079150116086782">Sem separadores de outros dispositivos</translation>
 <translation id="7602173054665172958">Gestão de impressões</translation>
+<translation id="7602805861133750578">Agora, pode gerir os seus grupos de separadores, chats do Gemini e discussões do Modo de IA num único local. Desafixe em qualquer altura.</translation>
 <translation id="7602868996817972616">Perguntar ao Google acerca desta página</translation>
 <translation id="7603785829538808504">Os sites indicados abaixo seguem uma definição personalizada</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 palavra-passe não importada}other{{NUM_PASSWORDS} palavras-passe não importadas}}</translation>
@@ -10394,6 +10402,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8054609631325628928">Estes números podem ser usados para ajudar a ativar o serviço</translation>
 <translation id="8054883179223321715">Disponível para sites de vídeo específicos</translation>
 <translation id="8054921503121346576">Teclado USB ligado</translation>
+<translation id="8055975688427973864">Mostrar botão de organizador</translation>
 <translation id="8058655154417507695">Ano de expiração</translation>
 <translation id="8058986560951482265">Irregular</translation>
 <translation id="8059417245945632445">&amp;Inspecionar dispositivos</translation>
@@ -11377,6 +11386,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="871515167518607670">Escolha um dispositivo. Em seguida, abra o Chrome aqui para ver a página.</translation>
 <translation id="8715480913140015283">O separador em segundo plano está a utilizar a sua câmara.</translation>
 <translation id="8716050156658570300">Os sites podem pedir para usar sensores de movimento e de luz</translation>
+<translation id="8716067129332848360">Ver organizador</translation>
 <translation id="8716931980467311658">Eliminar todas as aplicações e os dados do Linux da pasta Ficheiros Linux deste <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8718994464069323380">Ecrã tátil detetado</translation>
@@ -11838,6 +11848,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9013037634206938463">É necessário <ph name="INSTALL_SIZE" /> de espaço livre para instalar o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="9014206344398081366">Tutorial do ChromeVox</translation>
 <translation id="9014674417732091912">Movido para a linha <ph name="ROW_NUMBER" /></translation>
+<translation id="9015849286924418538">Organize os separadores em grupos etiquetados e com códigos de cores para facilitar o acesso</translation>
 <translation id="901668144954885282">Faça uma cópia no Google Drive</translation>
 <translation id="9016827136585652292">botão do ecrã de privacidade</translation>
 <translation id="90181708067259747">Data de validade: <ph name="CARD" /></translation>

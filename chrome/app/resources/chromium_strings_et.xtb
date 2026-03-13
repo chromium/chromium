@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Aidake meil inkognito režiimi täiustada, vastates sellele küsitlusele, milleks kulub üks minut.</translation>
 <translation id="1065672644894730302">Teie eelistusi ei saa lugeda. Mõned funktsioonid ei pruugi saadaval olla ja eelistuste muudatusi ei salvestata.</translation>
 <translation id="1083934481477628225">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja</translation>
+<translation id="1090946077924227754">Konkreetse Chromiumi funktsiooni või laienduse otsimiseks sisestage selle otsetee aadressiribale ja lisage enda valitud klaviatuuriklahv.</translation>
 <translation id="1104942323762546749">Chromium soovib teie paroole eksportida. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="112640046208448578">Tuvastage asju ja kohti ning kopeerige või tõlkige teksti. Kui kasutate pildiotsingut, saadetakse lehe ekraanipilt serverisse. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium on teie vaikebrauser</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Ajal, mil see vaheleht oli inaktiivne, vabastati mälu, et Chromium oleks jätkuvalt kiire. Soovi korral võite selle saidi inaktiivseks muutumise alati välistada.</translation>
 <translation id="1265577313130862557">Chromium blokeeris selle allalaadimise, kuna fail on ohtlik</translation>
 <translation id="126567311906253476">E-posti aadressiga <ph name="USER_EMAIL" /> Google'i teenustesse (nt Gmaili või Youtube'i) sisse logides saate Chromiumi automaatselt sisse logida sama kontoga</translation>
+<translation id="1287534462498555020">Hankige Chromium oma telefoni</translation>
 <translation id="1290883685122687410">Seadistuse viga: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Uue Chromiumi profiili seadistamine</translation>
 <translation id="132092532143527429">Proovige Geminiga Chromiumis</translation>
@@ -380,6 +382,7 @@
 <translation id="5231355151045086930">Chromiumist väljalogimine</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5254739261293693943">Küsige selle video kohta</translation>
+<translation id="5276305953263010518">Hankige Chromiumi rakendus, et liikvel olles paroole salvestada</translation>
 <translation id="5277894862589591112">Muudatuste rakendamiseks käivitage Chromium uuesti</translation>
 <translation id="5286907366254680517">Tuvastatud</translation>
 <translation id="5289287148052354622">Hankige Chromiumi rakendus</translation>
@@ -693,6 +696,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8522801943730206384">Chromium saab teie paroole kontrollida, kui olete need salvestanud</translation>
 <translation id="8548787790260785208">Teid hoiatatakse, kui Chromium leiab avalikust andmetega seotud rikkumisest mõne teie parooli.</translation>
 <translation id="8555465886620020932">Teenuse viga: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Mõned Chromiumi funktsioonid ja laiendused hõlmavad otseteid. Saate need soovi korral uuesti sisse lülitada.</translation>
 <translation id="8556420416730706394">Saate pildiotsingu hõlpsaks juurdepääsuks kinnitada; klõpsake külgpaneeli ülaosas nupul Kinnita</translation>
 <translation id="856656450041460113">Keeleloendi otsing</translation>
 <translation id="8568283329061645092">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga</translation>
@@ -728,6 +732,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8988036198400390003">Halda Chromiumi profiile</translation>
 <translation id="9019929317751753759">Chromiumi turvalisemaks muutmiseks keelasime järgmise laienduse, mida ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja mis võidi lisada teie teadmata.</translation>
 <translation id="904366664621834601">Chromium blokeeris selle allalaadimise, kuna arhiivifail sisaldab muid faile, mis võivad peita pahavara</translation>
+<translation id="9053882453960391422">Hoidke oma paroolid, järjehoidjad ja ajalugu seadmetes täiuslikult sünkroonituna. Määrake Chromium oma vaikebrauseriks, et oma lemmikfunktsioonidele hõlpsasti juurde pääseda. Kiireks juurdepääsuks kinnitatakse Chromium teie tegumiribale.</translation>
 <translation id="9062666675513499497">Chromiumi sisselogimine teistesse Google'i teenustesse sisselogimisel</translation>
 <translation id="9078733879136747090">Chromium suleti automaatselt</translation>
 <translation id="9089354809943900324">Chromium on aegunud</translation>

@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2371084566192454134">टैब और टैब ग्रुप</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले <ph name="TITLE_OF_GROUP" /> टैब ग्रुप को छोटा करें.}}</translation>
+<translation id="2476179388576975626">पिक्चर में पिक्चर</translation>
 <translation id="2498435670446402865">टैब ग्रुप का नाम बदलें</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" और "<ph name="TAB_GROUP_NAME_2" />" टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब छोटा करें.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को छोटा करें.}}</translation>

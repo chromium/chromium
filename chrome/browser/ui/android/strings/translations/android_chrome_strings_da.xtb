@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Se sideindsigt</translation>
 <translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, fane i tilstanden integreret billede</translation>
 <translation id="1126696498560056882">Administrer konti på denne enhed</translation>
 <translation id="1135018701024399762">Inkognitotilstand sørger for, at din internetaktivitet er privat, så andre, der bruger din enhed, ikke kan se den</translation>
 <translation id="113752097246673894">Hvis du vil have dine bogmærker m.m. på alle dine enheder, skal du logge ind i Chrome som <ph name="EMAIL" /></translation>
@@ -321,6 +322,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2386938421315164605">Skjul og vis emner</translation>
 <translation id="2390510615457643724">Vil du downloade <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
 <translation id="2392369802118427583">Aktivér</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, valgt inkognitofane i tilstanden integreret billede</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, inkognitofane, der optager</translation>
 <translation id="2410754283952462441">Vælg en konto</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, valgt fane, der afspiller lyd</translation>
@@ -381,6 +383,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2604446170045642109">Du kan deaktivere mørkt tema for websites i dine indstillinger.</translation>
 <translation id="2605017215201958293">Få oplæst denne side med AI</translation>
 <translation id="2607441479295509868">Logget ud. Log ind igen for at bruge bogmærkerne, adgangskoderne m.m. på din konto.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 element}one{# element}other{# elementer}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> har givet dig adgang til et delt element.</translation>
 <translation id="2634393460268044753">Sender webadresserne for de websites, du besøger, samt et lille uddrag af sideindhold, downloads, udvidelsesaktivitet og systemoplysninger til Google Beskyttet browsing for at tjekke, om indholdet er skadeligt.</translation>
 <translation id="2643064289437760082">Du kan til enhver tid slette data om annoncemåling ved at slette dine browserdata</translation>
@@ -535,6 +538,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3268048651973962414">Træk opad for at se søgeresultater</translation>
 <translation id="3269093882174072735">Indlæs billede</translation>
 <translation id="3280562213547448728">Stemmesøgning</translation>
+<translation id="3282801380074962248">Udvid sektion</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> fane}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> faner}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 adgangskode er kun gemt på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto.}one{# adgangskode er kun gemt på denne enhed. Hvis du vil bruge den på dine andre enheder, skal du gemme den på din Google-konto.}other{# adgangskoder er kun gemt på denne enhed. Hvis du vil bruge dem på dine andre enheder, skal du gemme dem på din Google-konto.}}</translation>
 <translation id="3293181007446299124">Din browserhistorik holdes privat på din enhed, og rapporter sendes med forsinkelse for at beskytte din identitet</translation>
@@ -667,6 +671,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3863527519275151528">Notifikationen behandles</translation>
 <translation id="3866863539038222107">Inspicer</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, valgt fane i tilstanden integreret billede</translation>
 <translation id="3870908470613821006">Alle mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle enheder</translation>
 <translation id="3873174561423636563">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> med dette website. Se <ph name="BEGIN_LINK1" />servicevilkårene<ph name="END_LINK1" /> for dette website.</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
@@ -682,6 +687,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3927692899758076493">Sans serif</translation>
 <translation id="3931947361983910192">de seneste fire uger</translation>
 <translation id="393697183122708255">Aktiveret talesøgning ikke tilgængelig</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, fastgjort fane i tilstanden integreret billede</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="395377504920307820">Brug uden en konto</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome indlæser din side, når det er muligt}one{Chrome indlæser din side, når det er muligt}other{Chrome indlæser dine sider, når det er muligt}}</translation>
@@ -748,6 +754,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
 <translation id="421517251707893998">Tryk på Fastgør denne genvej</translation>
 <translation id="4216511743389425832">Få oplæst denne side</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, valgt og fastgjort inkognitofane i tilstanden integreret billede</translation>
 <translation id="4225725533026049334">Følger</translation>
 <translation id="4225895483398857530">Genvej til værktøjslinje</translation>
 <translation id="4232376164796433044">Adgangskoder og autofyld</translation>
@@ -762,6 +769,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4277529130885813215">Brug en anden enhed</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
 <translation id="4282440837784183472">Din organisation, <ph name="MANAGED_DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chrome kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, inkognitofane i tilstanden integreret billede</translation>
 <translation id="4285498937028063278">Frigør</translation>
 <translation id="4285846616383034558">Cookies, cache og andre websitedata</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivér skærmlåsen i Android-indstillingerne<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4408965460206576430">Denne fil indeholder malware eller stammer fra et mistænkeligt website</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> og <ph name="TAB_COUNT" /> andre faner</translation>
 <translation id="441100617989818073">Faner og grupper (ubrugte el. dubletter)</translation>
+<translation id="4412123112245770507">Skjul sektion</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> er slettet</translation>
 <translation id="4415276339145661267">Administrer din Google-konto</translation>
 <translation id="4425140285732600465">Der holdes øje med prisen. Få besked, hvis prisen falder på et website.</translation>
@@ -1049,6 +1058,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5415871492522952905">Du har adgang til din historik og dine faner på alle dine enheder, så du kan fortsætte med det, du var i gang med</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) mister øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ledig plads</translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, inkognitofane med multivalg i tilstanden integreret billede</translation>
 <translation id="5436928407363358055">Synkroniser din historik og dine faner for nemt at fortsætte, hvor du slap</translation>
 <translation id="5438292632479953702">Download igen</translation>
 <translation id="5439191312780166229">Advarer dig om skadelige websites – også websites, som Google ikke tidligere har kendt til – ved at analysere flere data fra websites end Standardbeskyttelse. Du kan vælge at springe Chrome-advarsler over.</translation>
@@ -1063,6 +1073,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5471273988133666918">Fanen <ph name="TAB_TITLE" /> kan ikke flyttes</translation>
 <translation id="548278423535722844">Åbn i kortapp</translation>
 <translation id="5489222148748465285">Skal Chrome fortsætte med at søge?</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, fane med multivalg i tilstanden integreret billede</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="549660026907543296">Deltag som <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Felt i bunden med den seneste aktivitet</translation>
@@ -1488,6 +1499,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7063106218165698546">Tilpas fanegruppen, og tryk på Udfør</translation>
 <translation id="7071521146534760487">Administrer konto</translation>
 <translation id="707155805709242880">Vælg, hvad der skal synkroniseres, nedenfor</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, fastgjort inkognitofane med multivalg i tilstanden integreret billede</translation>
 <translation id="7077143737582773186">SD-kort</translation>
 <translation id="7078916049958741685">Slet også dine Chrome-data på denne enhed</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, valgt fane, der er fastgjort, med lyden slået fra</translation>
@@ -1874,6 +1886,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8512053371384421952">Du vil ikke længere modtage notifikationer fra <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Billedredigering</translation>
 <translation id="8533670235862049797">Beskyttet browsing er aktiveret</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, fastgjort fane med multivalg i tilstanden integreret billede</translation>
 <translation id="8540136935098276800">Angiv en webadresse i korrekt format</translation>
 <translation id="854522910157234410">Åbn denne side</translation>
 <translation id="8547466829003330976">Gennemgå PDF-filen med AI</translation>
@@ -1987,6 +2000,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9050666287014529139">Adgangssætning</translation>
 <translation id="9055497320631373736">Websitet blev føjet til potentielle websites igen</translation>
 <translation id="9057030985451135243">Få flere oplysninger om delte fanegrupper</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, valgt fastgjort fane i tilstanden integreret billede</translation>
 <translation id="9063400323119781058">Frameldt</translation>
 <translation id="9063523880881406963">Slå anmodning om computerversionen af websitet fra</translation>
 <translation id="9065203028668620118">Rediger</translation>
@@ -2045,6 +2059,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="930834144334005936">Nulstil den aktuelle tilstand <ph name="MODE_NAME" /> til Søgning</translation>
 <translation id="938850635132480979">Fejl: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Angiv adgangssætning</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, fastgjort inkognitofane i tilstanden integreret billede</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="95817756606698420">Chrome kan bruge <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> til søgninger i Kina. Du kan ændre dette i <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Slet browserdata</translation>

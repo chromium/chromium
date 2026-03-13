@@ -524,6 +524,7 @@
 <translation id="13392265090583506">भिजिबिलिटी</translation>
 <translation id="1340527397989195812">फाइलहरु एप प्रयोग गरेर उपकरणबाट मिडिया ब्याकअप गर्नुहोस्।</translation>
 <translation id="1340839264183302272">समूह छाड्नुहोस्</translation>
+<translation id="1341002693404468853">आयोजक लुकाउनुहोस्</translation>
 <translation id="1341701348342335220">राम्रोसँग सम्पन्न गरियो!</translation>
 <translation id="1342886103232377846">ह्याक वा चोरी भएका पासवर्डहरू हेर्न Google पासवर्ड म्यानेजरमा जानुहोस्</translation>
 <translation id="1343920184519992513">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस् र आफूले चाहेका विशेष पेजहरू खोल्नुहोस्</translation>
@@ -2348,6 +2349,7 @@
 <translation id="2555855727505718984">फारामहरू भर्न सघाउन अटोफिलले यस डिभाइसमा यो जानकारी प्रयोग गर्न सक्ने छैन</translation>
 <translation id="25568951186001797">Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">आफ्ना सबै बुकमार्कहरू यहाँ हेर्नुहोस्</translation>
+<translation id="2563924218974330506">तपाईं अब यहाँबाटै आफ्ना ट्याब समूहहरू व्यवस्थापन गर्न सक्नुहुन्छ। जुनसुकै बेला अनपिन गर्नुहोस्।</translation>
 <translation id="2564520396658920462">AppleScript मार्फत JavaScript कार्यान्वयन गर्ने सुविधा निष्क्रिय पारिएको छ। मेनु बारबाट यो सुविधा सक्रिय गर्न हेर्नुहोस्&gt; विकासकर्ता &gt; Apple Events बाट JavaScript लाई अनुमति दिनुहोस् नामक विकल्पमा जानुहोस् । थप जानकारीका लागि https://support.google.com/chrome/?p=applescript मा जानुहोस्</translation>
 <translation id="2564653188463346023">परिष्कृत हिज्जे जाँच</translation>
 <translation id="256481480019204378">Google खाताको ID</translation>
@@ -5666,6 +5668,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{एउटा पुस्तक चिन्ह मेटाइयो}other{{COUNT} वटा पुस्तक चिन्ह मेटाइए}}</translation>
 <translation id="481689174647911539">यो फाइल भाइरस वा मालवेयर हुन सक्छ।<ph name="LINE_BREAK" />तपाईं यो फाइल सुरक्षित छ कि छैन भन्ने कुरा जाँच्न यसलाई Google सुरक्षित ब्राउजिङमा पठाउन सक्नुहुन्छ। स्क्यान गर्न सामान्यतया केही सेकेन्ड लाग्छ।</translation>
 <translation id="4816900689218414104">फोन वा ट्याब्लेटमा पासकी सेट गर्नुहोस्</translation>
+<translation id="481852950686014162">आफूले Gemini र AI मोडमा छाडेकै ठाउँबाट सुरु गर्नुहोस्</translation>
 <translation id="4819323978093861656">{0,plural, =0{अहिले बन्द गरिँदै छन्।}=1{निम्न समयपछि बन्द गरिन्छन्: १ सेकेन्ड}other{निम्न समयपछि बन्द गरिन्छन्: # सेकेन्ड}}</translation>
 <translation id="4819818293886748542">सहायता टुलको लिंक प्राप्त गर्नुहोस्</translation>
 <translation id="4820236583224459650">सक्रिय टिकटको रूपमा सेट गर्नुहोस्</translation>
@@ -5871,6 +5874,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4951966678293618079">यो साइटका पासवर्ड कहिले पनि सेभ नगर्नुहोस्</translation>
+<translation id="4952580838083306838">आयोजक लुकाउनुहोस्</translation>
 <translation id="4953808748584563296">डिफल्ट सुन्तला रङ्गको अवतार</translation>
 <translation id="4954652437333037880">फाइल</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> का बारेमा सोध्नुहोस्</translation>
@@ -6288,6 +6292,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> क्रयास भएको छ। एप पुन: चालू गर्नको लागि यस बेलुनलाई क्लिक गर्नुहोस्।</translation>
 <translation id="5247051749037287028">नाम प्रदर्शन गर्नुहोस् (ऐच्छिक)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> चयन गर्नुहोस्</translation>
+<translation id="5248934139541843042">आयोजक हेर्नुहोस्</translation>
 <translation id="5249624017678798539">डाउनलोड पूरा हुनुभन्दा अगाडि नै ब्राउजर क्र्यास भयो।</translation>
 <translation id="5249818097095743806">आफ्नो सुरक्षा साँचो प्रयोग गर्नुहोस्</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ले तपाईं समक्ष स्थानीय सामग्री प्रस्तुत गर्नका लागि तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्छ। तपाईंले <ph name="SETTINGS_LINK" /> मा गएर यसलाई परिवर्तन गर्न सक्नुहुन्छ।</translation>
@@ -6929,6 +6934,7 @@
 <translation id="5698878456427040674">चयन गरिएको खाता प्रयोग गर्न मिल्छ कि मिल्दैन भन्ने कुरा जाँच्नुहोस्।</translation>
 <translation id="5698900765010620315">न्यून कन्ट्रास्ट भएको अँध्यारो थिम</translation>
 <translation id="5699227710146832453">निम्न साइटबाट</translation>
+<translation id="5700024700429259844">तपाईं अब यहाँबाटै Gemini च्याट र AI मोडका थ्रेडहरू सुचारु गर्न सक्नुहुन्छ। जुनसुकै बेला अनपिन गर्नुहोस्।</translation>
 <translation id="570043786759263127">Google Play एप र सेवाहरू</translation>
 <translation id="5700761515355162635">तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5700836101007545240">तपाईंका प्रशासकले जडान थप्ने सुविधालाई असक्षम पार्नुभएको छ</translation>
@@ -8357,6 +8363,7 @@
 <translation id="6686878118106035853">कस्टम उन्नत सुरक्षाले सबै साइटहरूमा JavaScript अप्टिमाइजेसन अफ गर्छ</translation>
 <translation id="6687008241368170505">Google पासवर्ड म्यानेजरको PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> नदेखिने पार्नुहोस्</translation>
+<translation id="6689092196793298127">आयोजक</translation>
 <translation id="6689948774466767379">माउस की सुविधा</translation>
 <translation id="6690659332373509948">फाइललाई पदच्छेद गर्न सकिएन: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;अ</translation>
@@ -9681,6 +9688,7 @@
 <translation id="760197030861754408">जडान गर्न <ph name="LANDING_PAGE" /> मा जानुहोस्।</translation>
 <translation id="7602079150116086782">अन्य यन्त्रहरूका कुनै ट्याबहरू छैनन्</translation>
 <translation id="7602173054665172958">प्रिन्टको व्यवस्थापन</translation>
+<translation id="7602805861133750578">तपाईं अब ट्याब समूह, Gemini च्याट र AI मोडका थ्रेडहरू एकै ठाउँमा व्यवस्थापन गर्न सक्नुहुन्छ। जुनसुकै बेला अनपिन गर्नुहोस्।</translation>
 <translation id="7602868996817972616">Google लाई यो पेजका बारेमा प्रश्न सोध्नुहोस्</translation>
 <translation id="7603785829538808504">तल सूचीबद्ध गरिएका साइटका हकमा तपाईंका रोजाइअनुसारका सेटिङ लागू हुन्छन्</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{एउटा पासवर्ड इम्पोर्ट गरिएको छैन}other{{NUM_PASSWORDS} वटा पासवर्ड इम्पोर्ट गरिएका छैनन्}}</translation>
@@ -10387,6 +10395,7 @@
 <translation id="8054609631325628928">यी नम्बरहरू सेवा एक्टिभेट गर्ने प्रयोजनका लागि प्रयोग गर्न सकिन्छ</translation>
 <translation id="8054883179223321715">भिडियो हेर्ने सुविधा प्रदान गर्ने केही निश्चित साइटहरूका लागि उपलब्ध</translation>
 <translation id="8054921503121346576">युएसबी कुञ्जीपाट जडित</translation>
+<translation id="8055975688427973864">आयोजक बटन देखाउनुहोस्</translation>
 <translation id="8058655154417507695">म्याद सकिने वर्ष</translation>
 <translation id="8058986560951482265">चल्दै रोकिदै गर्ने</translation>
 <translation id="8059417245945632445">यन्त्रहरू &amp;निरीक्षण गर्नुहोस्</translation>
@@ -11370,6 +11379,7 @@
 <translation id="871515167518607670">कुनै डिभाइस छनौट गर्नुहोस्। त्यसपछि पेज हेर्न उक्त डिभाइसमा Chrome खोल्नुहोस्।</translation>
 <translation id="8715480913140015283">पृष्ठभूमि ट्याबले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
 <translation id="8716050156658570300">साइटहरूले मोसन तथा लाइट सेन्सरहरू प्रयोग गर्ने अनुमति माग्न सक्छन्</translation>
+<translation id="8716067129332848360">आयोजक हेर्नुहोस्</translation>
 <translation id="8716931980467311658"><ph name="DEVICE_TYPE" /> बाट आफ्नो Linux फाइलका फोल्डरहरूमा रहेका सबै Linux एप र डेटा मेट्ने हो?</translation>
 <translation id="8717864919010420084">लिंक कपी गर्नुहोस्</translation>
 <translation id="8718994464069323380">टचस्क्रिन भेटियो</translation>
@@ -11831,6 +11841,7 @@
 <translation id="9013037634206938463">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> खाली ठाउँ आवश्यक पर्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="9014206344398081366">ChromeVox को ट्युटोरियल</translation>
 <translation id="9014674417732091912">सारेर रो <ph name="ROW_NUMBER" /> मा लगियो</translation>
+<translation id="9015849286924418538">ट्याबहरूलाई लेबल र रङअनुसार समूहमा विभाजन गरी सजिलै एक्सेस गर्न मिल्ने बनाउनुहोस्</translation>
 <translation id="901668144954885282">Google ड्राइभमा ब्याकअप गर्नुहोस्</translation>
 <translation id="9016827136585652292">प्राइभेसी स्क्रिन अन/अफ गर्ने की</translation>
 <translation id="90181708067259747">म्याद सकिने मिति: <ph name="CARD" /></translation>

@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">預設瀏覽器底部功能表</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}other{在 <ph name="RWS_OWNER" /> 的網站群組中，有 <ph name="RWS_MEMBERS_COUNT" /> 個網站可以查看你在群組中的活動}}</translation>
 <translation id="3676777756440746804">已禁止網站要求使用與你相關的既有資訊</translation>
+<translation id="3677897809642449131">網站可以要求使用動作感應器</translation>
 <translation id="3678318839615834650">新分頁資訊卡底部功能表已開啟，並顯示在整個畫面</translation>
 <translation id="3697164069658504920">如果啟用，網站就可以要求使用 USB 裝置。如果停用，網站將無法使用 USB 裝置。</translation>
 <translation id="3703430731944883733">管理動態消息</translation>
@@ -748,6 +749,7 @@
 <translation id="8707904142362025782">網站可以要求使用攝影機</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8715862698998036666">從頂端向下拖曳並向右側或左側滑動，即可退出全螢幕模式。</translation>
+<translation id="8716050156658570300">網站可以要求使用動作感應器和光度感應器</translation>
 <translation id="8719283222052720129">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中啟用「<ph name="APP_NAME" />」的權限。</translation>
 <translation id="8721719390026067591">如果啟用，網站就可以要求尋找藍牙裝置。如果停用，網站將無法尋找藍牙裝置。</translation>
 <translation id="8725066075913043281">再試一次</translation>

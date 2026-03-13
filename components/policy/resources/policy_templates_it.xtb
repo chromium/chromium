@@ -1395,6 +1395,23 @@ Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> chiude la scheda dopo
 <translation id="1954612656043024615">Attiva la funzione Appunti condivisi</translation>
 <translation id="1955063069502242812">Attiva il suono della batteria in esaurimento</translation>
 <translation id="1955806069704957172">Consente di gestire le impostazioni dell'API Desktop Connector.</translation>
+<translation id="1956346847126765379">Se la policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> viene configurata, le pagine web con URL vietati non vengono caricate. Gli amministratori possono specificare l'elenco di pattern URL da bloccare. Se la policy non viene configurata, non viene bloccato nessun URL nel browser. Nella policy <ph name="URL_ALLOWLIST_POLICY_NAME" /> è possibile definire fino a 1000 eccezioni. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Nota: questa policy non si applica agli URL JavaScript in-page con dati caricati dinamicamente. Se hai bloccato example.com/abc, example.com potrebbe comunque caricarlo utilizzando XMLHTTPRequest. Inoltre, questa policy non impedisce alle pagine web di aggiornare l'URL mostrato nella omnibox con uno bloccato usando l'API JavaScript History.
+
+A partire dalla versione 73 di <ph name="PRODUCT_NAME" />, puoi bloccare gli URL javascript://*. Tuttavia, questa operazione interessa solo il codice JavaScript inserito nella barra degli indirizzi o, ad esempio, nei bookmarklet.
+
+A partire dalla versione 92 di <ph name="PRODUCT_NAME" />, questa policy è supportata anche nella modalità headless.
+
+A partire dalla versione 147 di <ph name="PRODUCT_NAME" />, il carattere jolly * da solo non si applica agli URL chrome:// interni. Per bloccarli, devi utilizzare esplicitamente il pattern chrome://*.
+
+Nota: il blocco degli URL interni chrome://* e chrome-untrusted://* può causare errori imprevisti o essere aggirato in alcuni casi. Anziché bloccare determinati URL interni, controlla se sono disponibili policy più specifiche. Ad esempio:
+
+- Anziché bloccare chrome://settings/certificates, usa la policy <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+- Anziché bloccare chrome-untrusted://crosh, usa la policy <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
+
+- Anziché bloccare DevTools://*, usa una delle policy <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> o <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1957093168333856467">Disattiva tastiera virtuale di accessibilità</translation>
 <translation id="1958110911685486719">Supporto per i moduli XFA PDF abilitato</translation>
 <translation id="1960059835237529462">Consente agli utenti di visualizzare la promozione di valutazione dell'App Store <ph name="IOS_NAME" /></translation>

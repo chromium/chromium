@@ -268,6 +268,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="3658847490588580244">Bảng dưới cùng của trình duyệt mặc định</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}other{<ph name="RWS_MEMBERS_COUNT" /> trang web trong nhóm các trang web của <ph name="RWS_OWNER" /> có thể xem hoạt động của bạn trong nhóm}}</translation>
 <translation id="3676777756440746804">Các trang web không được yêu cầu bạn cho phép sử dụng thông tin mà trang web đã lưu về bạn</translation>
+<translation id="3677897809642449131">Các trang web có thể yêu cầu sử dụng cảm biến chuyển động</translation>
 <translation id="3678318839615834650">Bảng thẻ trên trang Thẻ mới ở dưới cùng đã mở trên toàn màn hình</translation>
 <translation id="3697164069658504920">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị USB. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị USB.</translation>
 <translation id="3703430731944883733">Quản lý nguồn cấp dữ liệu của bạn</translation>
@@ -747,6 +748,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8707904142362025782">Các trang web có thể yêu cầu sử dụng camera</translation>
 <translation id="8712637175834984815">Tôi hiểu</translation>
 <translation id="8715862698998036666">Kéo từ trên xuống và vuốt từ mép trái hoặc mép phải để thoát khỏi chế độ toàn màn hình.</translation>
+<translation id="8716050156658570300">Các trang web có thể yêu cầu sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
 <translation id="8719283222052720129">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tìm thiết bị Bluetooth. Khi bạn tắt tuỳ chọn này, các trang web không thể tìm thiết bị Bluetooth.</translation>
 <translation id="8725066075913043281">Thử lại</translation>

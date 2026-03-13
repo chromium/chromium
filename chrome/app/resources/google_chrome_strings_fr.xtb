@@ -154,6 +154,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2586406160782125153">Cette action aura pour effet de supprimer vos données de navigation de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Système</translation>
+<translation id="263447411082773721">Synchronisez parfaitement vos mots de passe, vos favoris et votre historique sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et appréciez en définissant Chrome comme navigateur par défaut. Chrome sera épinglé à la barre des tâches pour un accès rapide.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome vérifie régulièrement que les paramètres de votre navigateur sont les plus sûrs possibles. Si vous devez examiner quoi que ce soit, nous vous le signalerons.</translation>
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
@@ -232,6 +233,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3327226547491422998">Plus tard, Chrome pourra vous demander si vous souhaitez utiliser les informations enregistrées pour remplir automatiquement des formulaires</translation>
 <translation id="3352986031709923790">angle supérieur droit de la zone de recherche : <ph name="RIGHT" /> % droite, <ph name="TOP" /> % haut</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
+<translation id="3373752068427117404">Certaines fonctionnalités et extensions Chrome sont accompagnées de raccourcis. Vous pouvez choisir de les réactiver.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va être relancé maintenant}=1{Chrome va être relancé dans 1 seconde}one{Chrome va être relancé dans # seconde}other{Chrome va être relancé dans # secondes}}</translation>
 <translation id="3380249972812870825">Pour ouvrir Gemini dans Chrome, appuyez sur <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Erreur de système d'exploitation pendant l'installation. Veuillez télécharger de nouveau Google Chrome.</translation>
@@ -698,6 +700,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8064965390968184078">1. Cliquez sur <ph name="BUTTON_LABEL" /> ci-dessous
 2. Cliquez sur <ph name="BUTTON_2" /> dans les paramètres Windows
 3. Cliquez sur <ph name="BUTTON_3" /> dans la notification Windows pour épingler Chrome à la barre des tâches et y accéder rapidement</translation>
+<translation id="8074398340364918139">Pour effectuer une recherche sur une fonctionnalité ou extension Chrome spécifique, tapez son raccourci dans la barre d'adresse, suivi de la touche de clavier de votre choix</translation>
 <translation id="8077579734294125741">Autres profils Chrome</translation>
 <translation id="8086881907087796310">L'installation a échoué, car votre ordinateur ne dispose pas de la configuration matérielle minimale requise.</translation>
 <translation id="8113883687556086139">Confirmez votre identité pour utiliser et enregistrer des données Chrome dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
@@ -706,6 +709,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8129812357326543296">À propos de &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisation…</translation>
 <translation id="8162006532256575008">Utiliser Chrome sans compte</translation>
+<translation id="8172231188687329735">Téléchargez l'appli Chrome pour enregistrer des mots de passe où que vous soyez</translation>
 <translation id="8177472873527554730">Impossible de trouver du contenu sur la page</translation>
 <translation id="8221491193165283816">Les notifications sont bloquées par défaut. Pour autoriser ce site à vous envoyer des notifications, cliquez ici.</translation>
 <translation id="8253851811470049684">Ouvrez les liens dans Chrome depuis n'importe quelle appli et gardez le navigateur à portée de main dans la barre des tâches</translation>
@@ -733,6 +737,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 
 Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que vous n'en aurez pas supprimé. Si vous vous déconnectez maintenant, les favoris non enregistrés seront supprimés.</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
+<translation id="8458117863387545390">Installez Chrome sur votre téléphone</translation>
 <translation id="8496177819998570653">Gestionnaire de mots de p&amp;asse de Google</translation>
 <translation id="8498858610309223613">Une mise à jour spéciale de sécurité pour Google Chrome vient d'être installée. Veuillez redémarrer le navigateur. Vos onglets seront restaurés.</translation>
 <translation id="8516431725144212809">Vos centres d'intérêt estimés par Chrome</translation>

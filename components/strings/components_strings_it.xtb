@@ -211,6 +211,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1323433172918577554">Espandi</translation>
 <translation id="1329916999021038454">Invia una segnalazione</translation>
 <translation id="1330449323196174374">Piegatura a finestra a sinistra</translation>
+<translation id="133173645041092770">Chiudi sito web</translation>
 <translation id="1333745675627230582">Gioca a Dino di Chrome</translation>
 <translation id="1333989956347591814">La tua attività <ph name="BEGIN_EMPHASIS" />potrebbe comunque essere visibile<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -638,6 +639,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2027465737841872819">Plastica</translation>
 <translation id="2027707238798802149">Carta non disponibile</translation>
 <translation id="2029735183873159415">Antenati e genealogia</translation>
+<translation id="2031095660415483845">Cerca e compila da qualsiasi posizione…</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Controllare il proxy e firewall<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">La scorciatoia non può essere uguale alla parola chiave del provider di ricerca predefinito definita da <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salva comunque</translation>
@@ -939,12 +941,14 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2466004615675155314">Mostra informazioni dal Web</translation>
 <translation id="2466682894498377850">Scheda inviata dal tuo <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Specifiche hardware e statistiche del dispositivo quali la cronologia dell'utilizzo di CPU/RAM</translation>
+<translation id="2467421459221956357">Utilizzare i sensori?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Eseguire lo strumento Diagnostica di rete<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Ordine da 1 a N</translation>
 <translation id="24699311393038040">Carta (patinata)</translation>
 <translation id="2471632709106952369">Tabelle di confronto</translation>
 <translation id="2473810985261856484">Servizi legali</translation>
 <translation id="2477607419416067650">Altri dati di Google</translation>
+<translation id="247903268499247848">Sensori di movimento e di luce non consentiti</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2479410451996844060">URL ricerca non valido.</translation>
 <translation id="2480300195898055381">Nel tuo Account Google <ph name="USER_EMAIL" /></translation>
@@ -957,7 +961,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2491414235131909199">Questa pagina è stata bloccata da un'estensione</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
 <translation id="2496402116964818747">Puoi scegliere se utilizzare l'impronta per inserire le password in <ph name="SETTINGS" /></translation>
-<translation id="2498091847651709837">Esegui scansione nuova carta</translation>
+<translation id="2498091847651709837">Scansiona una nuova carta</translation>
 <translation id="2501270939904835585">Etichette (satinate)</translation>
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="250346157641628208">Carta (getto di inchiostro)</translation>
@@ -1069,6 +1073,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2674524144218093528">Verniciatura e finitura case</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> gruppi di schede non sono più disponibili</translation>
 <translation id="2677748264148917807">Esci</translation>
+<translation id="2679216653373462289">Usare i sensori di movimento e di luce</translation>
 <translation id="2679659833697380">Le tue informazioni sono salvate sul dispositivo</translation>
 <translation id="2683195745483370038">Altri risultati trovati</translation>
 <translation id="2686919536310834199">Invia feedback per Aiutami a scrivere.</translation>
@@ -1150,6 +1155,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2820957248982571256">Scansione…</translation>
 <translation id="2824775600643448204">Barra degli indirizzi e di ricerca</translation>
 <translation id="2826760142808435982">La connessione è stata criptata e autenticata utilizzando <ph name="CIPHER" /> e <ph name="KX" /> come meccanismo di scambio delle chiavi.</translation>
+<translation id="2828797285817981634">Sensori di movimento consentiti per ora</translation>
 <translation id="2833637280516285136">Talk-show radiofonici</translation>
 <translation id="2835170189407361413">Cancella modulo</translation>
 <translation id="2835907903001172712">Panoramica del browser</translation>
@@ -1276,6 +1282,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3030331669969285614">Questi flag impediscono o ripristinano una modifica che provoca un errore e saranno disponibili solo per un periodo di tempo limitato.</translation>
 <translation id="3030542417256082866">Salvare il veicolo?</translation>
 <translation id="3033200136993730761">Il tuo indirizzo di casa può aiutarti a svolgere attività sui servizi Google, ad esempio a ricevere risultati di ricerca più pertinenti e indicazioni stradali in Google Maps. Puoi modificare o eliminare il tuo indirizzo <ph name="BEGIN_LINK" />nel tuo Account Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033777742142108756">Sensori di movimento e di luce consentiti per ora</translation>
 <translation id="3034526003882782781">Scorrimento e zoom consentiti</translation>
 <translation id="3036894576201005614">Forniture per la pulizia della casa</translation>
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
@@ -2296,6 +2303,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4658638640878098064">Pinzatura in alto a sinistra</translation>
 <translation id="4658801711339831733">Scansione salvata su Google Drive</translation>
 <translation id="4660592918803576381">Apri in Drive</translation>
+<translation id="4660780573807106293">Può chiedere di usare i sensori di movimento e di luce</translation>
 <translation id="4661556981531699496">Animali e animali domestici</translation>
 <translation id="4661868874067696603">Cerca altre opzioni di acquisto</translation>
 <translation id="4663373278480897665">Videocamera consentita</translation>
@@ -2753,6 +2761,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5371425731340848620">Aggiorna carta</translation>
 <translation id="537425196847960924">Chi ha modificato una scheda: <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="5374324662289354619">Le pagine di debug interno sono attualmente disattivate.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> vuole usare i sensori di movimento</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"L'orologio è indietro", "L'orologio è avanti" oppure "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Per avere questa password su tutti i tuoi dispositivi, verifica la tua identità</translation>
@@ -2802,6 +2811,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Per velocizzare i pagamenti, salva questo CVC in Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">App sul dispositivo</translation>
+<translation id="543656192084990644">Sensori di movimento non consentiti</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, in precedenza <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Ordine inverso a faccia in su</translation>
 <translation id="5447235695608032700">Consenti a <ph name="SITE" /> di utilizzare le informazioni salvate su di te</translation>
@@ -3093,6 +3103,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5918847752193018339">Puoi pagare più velocemente se salvi i CVC. <ph name="LINK_BEGIN" />Elimina i codici di sicurezza salvati<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">On</translation>
+<translation id="5921432337686792850">Può chiedere l'autorizzazione per utilizzare i sensori di movimento</translation>
 <translation id="5921639886840618607">Vuoi salvare la carta nell'Account Google?</translation>
 <translation id="5921952831792678223">Furgoni pick-up</translation>
 <translation id="5923492272538889093">Usare lo sblocco del dispositivo anziché il CVC?</translation>
@@ -3161,6 +3172,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6028591542479806248">Gestisci le notifiche mobile e via email</translation>
 <translation id="6028833024483927901">Cucine nazionali</translation>
 <translation id="603068602130820122">Doppia pinzatura a destra</translation>
+<translation id="6031824805267965302">Usare i sensori di movimento</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
 <translation id="6032955021262906325">Rilegatura a sinistra</translation>
 <translation id="6034000775414344507">Grigio chiaro</translation>
@@ -3242,6 +3254,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6133984428121856852">L'estensione del file è vuota o errata.</translation>
 <translation id="6139975341602920272">43,1 × 55,8 cm</translation>
 <translation id="6143097244789397208">Realtà aumentata e virtuale</translation>
+<translation id="614327212146763975">Sensori di movimento e di luce consentiti</translation>
 <translation id="6146055958333702838">Controlla eventuali cavi e riavvia eventuali router, modem o altri dispositivi di rete in uso.</translation>
 <translation id="614940544461990577">Prova a:</translation>
 <translation id="6150036310511284407">Tripla perforatura a sinistra</translation>
@@ -3621,6 +3634,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">fotocamera</translation>
 <translation id="6734506549556896534">Giochi di simulazione</translation>
+<translation id="6735589846038045679">I piani di pagamento sono soggetti a idoneità. <ph name="BEGIN_BOLD" />I contenuti della pagina di pagamento vengono condivisi con Google per offrire queste opzioni.<ph name="END_BOLD" /> Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LINK" />impostazioni di pagamento<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">Prodotti da forno</translation>
 <translation id="6738516213925468394">I tuoi dati sono stati criptati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" /> in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="6740851646645036700">Per il momento, hai raggiunto il limite di aiuto per la scrittura. Riprova più tardi.</translation>
@@ -3634,6 +3648,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6753434778807740853">Elimina voce <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Depositi di risparmio</translation>
 <translation id="6757797048963528358">Il dispositivo è entrato in modalità sospensione.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> vuole usare i sensori di movimento e di luce</translation>
 <translation id="6766558780547452153">Cucina e ricette</translation>
 <translation id="6770747695101757579">Carta (cotone)</translation>
 <translation id="677257480647123231">Sicurezza dei bambini su internet</translation>
@@ -4397,6 +4412,7 @@ Ulteriori dettagli:
 <translation id="79338296614623784">Inserisci un numero di telefono valido</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vuole riprodurre contenuti protetti. Google verificherà l'identità del tuo dispositivo.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">Sensori di movimento consentiti</translation>
 <translation id="7937163678541954811">Il CVC di questa carta verrà criptato e salvato sul tuo dispositivo per velocizzare i pagamenti</translation>
 <translation id="7937554595067888181">Scadenza: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Il certificato del server non è ancora valido.</translation>
@@ -5024,6 +5040,7 @@ Ulteriori dettagli:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per visualizzare la tua cronologia di navigazione in Chrome</translation>
 <translation id="8987663052629670333">Servizi di stampa fotografica</translation>
 <translation id="8987927404178983737">Mese</translation>
+<translation id="8988966534058783995">Usare i sensori di movimento?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> vuole sapere quando usi attivamente questo dispositivo</translation>
 <translation id="8997023839087525404">Il server ha presentato un certificato che non è stato reso pubblico tramite le norme di Certificate Transparency, la cui applicazione costituisce un requisito di alcuni certificati al fine di garantire la loro attendibilità nonché la sicurezza nei confronti degli attaccanti.</translation>

@@ -525,6 +525,7 @@
 <translation id="13392265090583506">অ্যাক্সেসিবিলিটি সেটিংস</translation>
 <translation id="1340527397989195812">ফাইল অ্যাপ ব্যবহার করে ডিভাইস থেকে মিডিয়া ব্যাক আপ নিন৷</translation>
 <translation id="1340839264183302272">গ্রুপ থেকে বেরিয়ে আসুন</translation>
+<translation id="1341002693404468853">অর্গানাইজার লুকান</translation>
 <translation id="1341701348342335220">দারুণ হয়েছে!</translation>
 <translation id="1342886103232377846">চুরি হয়ে যাওয়া পাসওয়ার্ড চেক করতে, Google Password Manager-এ যান</translation>
 <translation id="1343920184519992513">আপনি যেখানে ছেড়ে গিয়েছিলেন সেখান থেকেই আবার শুরু করুন এবং পৃষ্ঠার একটি নির্দিষ্ট সেট খুলুন</translation>
@@ -2362,6 +2363,7 @@
 <translation id="2555855727505718984">এই ডিভাইসে ফর্ম অটোফিল সুবিধা ব্যবহার করে, পূরণ করার জন্য কোনও তথ্য পাওয়া যাবে না</translation>
 <translation id="25568951186001797">ফেন্সড ফ্রেম: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">এখানে আপনার সব বুকমার্ক দেখুন</translation>
+<translation id="2563924218974330506">আপনি এখন এখান থেকে আপনার ট্যাব গ্রুপ ম্যানেজ করতে পারবেন। যেকোনও সময় এটি আনপিন করুন।</translation>
 <translation id="2564520396658920462">AppleScript-এর মাধ্যমে জাভাস্ক্রিপ্ট চালানো বন্ধ করা আছে। এটি চালু করতে মেনু বার থেকে, ভিউ &gt; ডেভেলপার &gt; জাভাস্ক্রিপ্টের অনুমতি দিন-এ যান। আরও তথ্যের জন্য: https://support.google.com/chrome/?p=applescript-এ যান</translation>
 <translation id="2564653188463346023">আরও উন্নত বানান পরীক্ষা</translation>
 <translation id="256481480019204378">Google অ্যাকাউন্ট আইডি</translation>
@@ -5682,6 +5684,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{১টি বুকমার্ক মোছা হয়েছে}one{{COUNT}টি বুকমার্ক মোছা হয়েছে}other{{COUNT}টি বুকমার্ক মোছা হয়েছে}}</translation>
 <translation id="481689174647911539">এই ফাইলটি ভাইরাস বা ম্যালওয়্যার হতে পারে।<ph name="LINE_BREAK" />এটি অসুরক্ষিত কিনা তা চেক করতে Google Safe Browsing-এ পাঠাতে পারবেন। স্ক্যান করতে সাধারণত কয়েক সেকেন্ড সময় লাগে।</translation>
 <translation id="4816900689218414104">একটি ফোন বা ট্যাবলেটে একটি পাসকি তৈরি করুন</translation>
+<translation id="481852950686014162">Gemini ও AI মোডে আপনি যেখানে ছেড়েছিলেন সেখান থেকেই শুরু করুন</translation>
 <translation id="4819323978093861656">{0,plural, =0{এখন বন্ধ করা হচ্ছে।}=1{বন্ধ করা হচ্ছে: ১ সেকেন্ডের মধ্যে}one{বন্ধ করা হচ্ছে: # সেকেন্ডের মধ্যে}other{বন্ধ করা হচ্ছে: # সেকেন্ডের মধ্যে}}</translation>
 <translation id="4819818293886748542">সাপোর্ট টুলের লিঙ্ক পান</translation>
 <translation id="4820236583224459650">অ্যাক্টিভ টিকিট হিসেবে সেট করুন</translation>
@@ -5887,6 +5890,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{একটি ফাইল}one{#টি ফাইল}other{#টি ফাইল}}</translation>
 <translation id="495170559598752135">ক্রিয়াসমূহ</translation>
 <translation id="4951966678293618079">এই সাইটের জন্য কখনও পাসওয়ার্ড সেভ করবেন না</translation>
+<translation id="4952580838083306838">অর্গানাইজার লুকান</translation>
 <translation id="4953808748584563296">ডিফল্ট কমলা রঙের অবতার</translation>
 <translation id="4954652437333037880">ফাইল</translation>
 <translation id="4954831709600868883"><ph name="TEXT" /> সম্পর্কে জিজ্ঞাসা করুন</translation>
@@ -6304,6 +6308,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ক্র্যাশ করেছে৷ অ্যাপ পুনঃসূচনা করতে এই বেলুনটি ক্লিক করুন৷</translation>
 <translation id="5247051749037287028">প্রদর্শিত নাম (ঐচ্ছিক)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> বেছে নিন</translation>
+<translation id="5248934139541843042">অর্গানাইজার দেখুন</translation>
 <translation id="5249624017678798539">ব্রাউজারটি ডাউনলোড সম্পূর্ণ হওয়ার আগে ক্র্যাশ করেছে৷</translation>
 <translation id="5249818097095743806">আপনার নিরাপত্তা কী ব্যবহার করুন</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> আপনাকে স্থানীয় কন্টেন্ট দেওয়ার জন্য আপনার লোকেশন ব্যবহার করে। আপনি <ph name="SETTINGS_LINK" /> থেকে এটি পরিবর্তন করতে পারেন।</translation>
@@ -6946,6 +6951,7 @@
 <translation id="5698878456427040674">বেছে নেওয়া অ্যাকাউন্ট কাজ করছে কিনা তা চেক করে দেখে নিন।</translation>
 <translation id="5698900765010620315">লো কনট্রাস্ট ডার্ক</translation>
 <translation id="5699227710146832453">আপনার থেকে</translation>
+<translation id="5700024700429259844">আপনি এখন সরাসরি Gemini চ্যাট ও AI মোড থ্রেড এখানে আবার শুরু করতে পারবেন। যেকোনও সময় এটি আনপিন করুন।</translation>
 <translation id="570043786759263127">Google Play অ্যাপ এবং পরিষেবা</translation>
 <translation id="5700761515355162635">থার্ড-পার্টি কুকির অনুমতি আছে</translation>
 <translation id="5700836101007545240">আপনার প্রশাসকের দ্বারা ‘সংযোগ জুড়ুন’ অক্ষম করা হয়েছে</translation>
@@ -8377,6 +8383,7 @@
 <translation id="6686878118106035853">কাস্টম 'উন্নত সুরক্ষা' সব সাইটের জন্য জাভাস্ক্রিপ্ট অপ্টিমাইজেশন বন্ধ করে দেয়</translation>
 <translation id="6687008241368170505">Google Password Manager পিন পরিবর্তন করুন</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> লুকান</translation>
+<translation id="6689092196793298127">অর্গানাইজার</translation>
 <translation id="6689948774466767379">মাউস কী</translation>
 <translation id="6690659332373509948">ফাইল বিশ্লেষণ করতে বন্ধ: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;ফরওয়ার্ড</translation>
@@ -9702,6 +9709,7 @@
 <translation id="760197030861754408">সংযোগের জন্য <ph name="LANDING_PAGE" /> এ যান।</translation>
 <translation id="7602079150116086782">অন্য ডিভাইসগুলি থেকে কোনো ট্যাব নেই</translation>
 <translation id="7602173054665172958">প্রিন্ট করার কাজকর্মের ম্যানেজমেন্ট</translation>
+<translation id="7602805861133750578">আপনি এখন এক জায়গা থেকেই আপনার ট্যাব গ্রুপ, Gemini চ্যাট ও AI মোড থ্রেড ম্যানেজ করতে পারবেন। যেকোনও সময় এটি আনপিন করুন।</translation>
 <translation id="7602868996817972616">এই পৃষ্ঠা সম্পর্কে Google-কে জিজ্ঞাসা করুন</translation>
 <translation id="7603785829538808504">নিচের তালিকাভুক্ত সাইটগুলির একটি কাস্টম সেটিং আছে</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{১টি পাসওয়ার্ড ইমপোর্ট করা হয়নি}one{{NUM_PASSWORDS}টি পাসওয়ার্ড ইমপোর্ট করা হয়নি}other{{NUM_PASSWORDS}টি পাসওয়ার্ড ইমপোর্ট করা হয়নি}}</translation>
@@ -10409,6 +10417,7 @@
 <translation id="8054609631325628928">পরিষেবা চালু করার জন্য এই নম্বরগুলি ব্যবহার করা যেতে পারে</translation>
 <translation id="8054883179223321715">নির্দিষ্ট ভিডিও সাইটের জন্য উপলভ্য আছে</translation>
 <translation id="8054921503121346576">USB কীবোর্ড সংযুক্ত হয়েছে</translation>
+<translation id="8055975688427973864">অর্গানাইজার বোতাম দেখুন</translation>
 <translation id="8058655154417507695">মেয়াদ শেষের বছর</translation>
 <translation id="8058986560951482265">কাঁপতে থাকে</translation>
 <translation id="8059417245945632445">এবং ডিভাইসগুলি পরিদর্শন</translation>
@@ -11392,6 +11401,7 @@
 <translation id="871515167518607670">একটি ডিভাইস বেছে নিন। তারপর পৃষ্ঠাটি দেখতে, ডিভাইসে Chrome খুলুন।</translation>
 <translation id="8715480913140015283">ব্যাকগ্রাউন্ড ট্যাব আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="8716050156658570300">সাইট আপনার কাছে মোশন ও লাইট সেন্সর ব্যবহার করার অনুমতি চাইতে পারে</translation>
+<translation id="8716067129332848360">অর্গানাইজার দেখুন</translation>
 <translation id="8716931980467311658">এই <ph name="DEVICE_TYPE" /> থেকে Linux ফাইল ফোল্ডারের মধ্যে থাকা Linux অ্যাপ এবং সমস্ত ডেটা মুছে ফেলবেন?</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
 <translation id="8718994464069323380">টাচস্ক্রিন শনাক্ত করা হয়েছে</translation>
@@ -11854,6 +11864,7 @@
 <translation id="9013037634206938463">Linux ইনস্টল করার জন্য <ph name="INSTALL_SIZE" /> খালি জায়গা প্রয়োজন। খালি জায়গা বাড়াতে, আপনার ডিভাইস থেকে ফাইল মুছে দিন।</translation>
 <translation id="9014206344398081366">ChromeVox টিউটোরিয়াল</translation>
 <translation id="9014674417732091912"><ph name="ROW_NUMBER" /> নম্বর রোতে সরান</translation>
+<translation id="9015849286924418538">সহজ অ্যাক্সেসের জন্য লেবেল করা, কালার-কোড করা গ্রুপে ট্যাব সাজান</translation>
 <translation id="901668144954885282">Google Drive-এ ব্যাক-আপ নিন</translation>
 <translation id="9016827136585652292">প্রাইভেসি স্ক্রিন টগল করা</translation>
 <translation id="90181708067259747">মেয়াদ সমাপ্তির তারিখ: <ph name="CARD" /></translation>

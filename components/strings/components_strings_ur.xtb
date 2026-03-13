@@ -211,6 +211,7 @@
 <translation id="1323433172918577554">مزید دکھائیں</translation>
 <translation id="1329916999021038454">رپورٹ بھیجیں</translation>
 <translation id="1330449323196174374">بایاں گیٹ فولڈ</translation>
+<translation id="133173645041092770">ویب سائٹ بند کریں</translation>
 <translation id="1333745675627230582">‏Chrome ڈائنوسار گیم کھیلیں</translation>
 <translation id="1333989956347591814">ممکن ہے آپ کی سرگرمی مندرجہ ذیل کو <ph name="BEGIN_EMPHASIS" />اب بھی دکھائی دے<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -638,6 +639,7 @@
 <translation id="2027465737841872819">پلاسٹک</translation>
 <translation id="2027707238798802149">کارڈ دستیاب نہیں ہے</translation>
 <translation id="2029735183873159415">شجرہ نسب اورعلم الانساب</translation>
+<translation id="2031095660415483845">کہیں سے بھی تلاش کریں اور پُر کریں...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />پراکسی اور فائروال چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">شارٹ کٹ ڈیفالٹ تلاش فراہم کنندہ کلیدی لفظ جیسا نہیں ہو سکتا جس کی وضاحت <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> کے ذریعے کی گئی ہے: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">بہرحال محفوظ کریں</translation>
@@ -939,12 +941,14 @@
 <translation id="2466004615675155314">ویب سے معلومات دکھائیں</translation>
 <translation id="2466682894498377850">آپ کے <ph name="DEVICE_NAME" /> سے بھیجا گیا ٹیب</translation>
 <translation id="2467272921457885625">‏آلے کے ہارڈویئر کی وضاحتیں اور اعداد وشمار جیسے CPU/RAM کے استعمال کی سرگزشت</translation>
+<translation id="2467421459221956357">سینسرز کا استعمال کریں؟</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">‏1 سے N ترتیب</translation>
 <translation id="24699311393038040">کاغذ (کوٹیڈ)</translation>
 <translation id="2471632709106952369">موازنہ کے ٹیبلز</translation>
 <translation id="2473810985261856484">قانونی سروسز</translation>
 <translation id="2477607419416067650">‏دیگر Google ڈیٹا</translation>
+<translation id="247903268499247848">موشن اور لائٹ سینسرز کی اجازت نہیں ہے</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2479410451996844060">‏غلط تلاش URL۔</translation>
 <translation id="2480300195898055381">‏آپ کے Google اکاؤنٹ میں، <ph name="USER_EMAIL" /></translation>
@@ -1069,6 +1073,7 @@
 <translation id="2674524144218093528">گھر کی پینٹنگ اور سجاوٹ</translation>
 <translation id="26774279487328902">‫<ph name="GROUP_COUNT" /> ٹیب گروپس اب مزید دستیاب نہیں ہیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
+<translation id="2679216653373462289">اپنے موشن اور لائٹ سینسرز کا استعمال کریں</translation>
 <translation id="2679659833697380">آپ کی معلومات آپ کے آلے میں محفوظ ہے</translation>
 <translation id="2683195745483370038">دوسرے نتائج ملے</translation>
 <translation id="2686919536310834199">لکھنے میں میری مدد کریں کے لیے تاثرات بھیجیں۔</translation>
@@ -1150,6 +1155,7 @@
 <translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
 <translation id="2824775600643448204">پتہ اور تلاش بار</translation>
 <translation id="2826760142808435982">کنکشن کو <ph name="CIPHER" /> کا استعمال کر کے مرموز کیا گیا ہے اور اس کی توثیق کی گئی ہے اور یہ کلید کے تبادلہ کے طریقہ کار کے بطور <ph name="KX" /> کا استعمال کرتا ہے۔</translation>
+<translation id="2828797285817981634">موشن سینسرز کو ابھی کے لیے اجازت ہے</translation>
 <translation id="2833637280516285136">ٹاک ریڈیو</translation>
 <translation id="2835170189407361413">فارم صاف کریں</translation>
 <translation id="2835907903001172712">براؤزر کا مجموعی جائزہ</translation>
@@ -1276,6 +1282,7 @@
 <translation id="3030331669969285614">یہ پرچم خلل انگیز تبدیلی کو روکتے یا اسے واپس لوٹا دیتے ہیں اور یہ صرف ایک محدود وقت کے لیے دستیاب ہوں گے۔</translation>
 <translation id="3030542417256082866">گاڑی کی معلومات محفوظ کریں؟</translation>
 <translation id="3033200136993730761">‏آپ کے گھر کا پتہ Google Maps میں تلاش کے مزید متعلقہ نتائج اور ڈائریکشنز جیسی تمام Google سروسز پر کام کرنے میں آپ کی مدد کر سکتا ہے۔ آپ <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ <ph name="ACCOUNT" /> میں<ph name="END_LINK" /> اپنے پتے میں ترمیم یا حذف کر سکتے ہیں۔</translation>
+<translation id="3033777742142108756">موشن اور لائٹ سینسرز کو ابھی کے لیے اجازت ہے</translation>
 <translation id="3034526003882782781">اسکرول اور زوم کی اجازت نہیں ہے</translation>
 <translation id="3036894576201005614">گھر کی صفائی کا ساز و سامان</translation>
 <translation id="3037177537145227281">قیمت ٹریک کی جا رہی ہے</translation>
@@ -2300,6 +2307,7 @@
 <translation id="4658638640878098064">اوپر بائیں طرف سٹیپل</translation>
 <translation id="4658801711339831733">‏اسکین Google Drive میں محفوظ ہو گیا</translation>
 <translation id="4660592918803576381">‏‫Drive میں کھولیں</translation>
+<translation id="4660780573807106293">آپ کے موشن اور لائٹ سینسرز استعمال کرنے کے لیے پوچھ سکتی ہے</translation>
 <translation id="4661556981531699496">پالتو جانور اور حیوانات</translation>
 <translation id="4661868874067696603">خریداری کے مزید اختیارات تلاش کریں</translation>
 <translation id="4663373278480897665">کیمرا اجازت یافتہ ہے</translation>
@@ -2757,6 +2765,7 @@
 <translation id="5371425731340848620">کارڈ اپ ڈیٹ کریں</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو تبدیل کیا</translation>
 <translation id="5374324662289354619">اندرونی ڈیبگنگ صفحات فی الحال غیر فعال ہیں۔</translation>
+<translation id="5374983318402742558"><ph name="URL" /> آپ کے موشن سینسرز کا استعمال کرنا چاہتا ہے</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏"آپ کی گھڑی پیچھے ہے" یا "آپ کی گھڑی آگے ہے" یا "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">اپنے سبھی آلات پر اس پاس ورڈ کو حاصل کرنے کے لیے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
@@ -2806,6 +2815,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">‏تیزی سے چیک آؤٹ کے لیے، اس CVC کو Google والٹ (<ph name="ACCOUNT_EMAIL" />) میں محفوظ کریں</translation>
 <translation id="5436307623797390637">آلے پر انسٹال کردہ ایپس</translation>
+<translation id="543656192084990644">موشن سینسرز کی اجازت نہیں ہے</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />، <ph name="PREVIOUS_VALUE" /> تھی</translation>
 <translation id="5443468954631487277">اُلٹ ترتیب میں، صفحات کا رُخ اوپر کی جانب</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> کو ان معلومات کو استعمال کرنے کی اجازت دیں جو انہوں نے آپ کے بارے میں محفوظ کی ہیں</translation>
@@ -3097,6 +3107,7 @@
 <translation id="5918847752193018339">‏جب آپ کے CVCs محفوظ ہو جائیں تو تیزی سے چیک آؤٹ کریں۔ <ph name="LINK_BEGIN" />محفوظ کردہ سیکیورٹی کوڈز حذف کریں<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">آن</translation>
+<translation id="5921432337686792850">آپ کے موشن سینسرز استعمال کرنے کے لیے پوچھ سکتی ہے</translation>
 <translation id="5921639886840618607">‏کارڈ کو Google اکاؤنٹ میں محفوظ کریں؟</translation>
 <translation id="5921952831792678223">پک اپ ٹرکس</translation>
 <translation id="5923492272538889093">‏CVC کے بجائے آلے کو غیر مقفل کرنے کی خصوصیت کا استعمال کریں؟</translation>
@@ -3165,6 +3176,7 @@
 <translation id="6028591542479806248">موبائل اور ای میل کی اطلاعات کا نظم کریں</translation>
 <translation id="6028833024483927901">عالمی پکوان</translation>
 <translation id="603068602130820122">دائیں طرف دُہری سٹیپل</translation>
+<translation id="6031824805267965302">اپنے موشن سینسرز کا استعمال کریں</translation>
 <translation id="6032524144326295339">میل باکس 2</translation>
 <translation id="6032955021262906325">بائیں طرف باندھیں</translation>
 <translation id="6034000775414344507">ہلکا خاکستری</translation>
@@ -3246,6 +3258,7 @@
 <translation id="6133984428121856852">فائل ایکسٹینشن خالی یا خراب ہے۔</translation>
 <translation id="6139975341602920272">‏‎17 x 22 انچ</translation>
 <translation id="6143097244789397208">افزودہ اور ورچوئل رئیلٹی</translation>
+<translation id="614327212146763975">موشن اور لائٹ سینسرز کی اجازت ہے</translation>
 <translation id="6146055958333702838">کوئی بھی کیبلز چیک کریں اور کوئی بھی
     روٹرز، موڈمز
 یا ان دیگر نیٹ ورک آلات کو ریبوٹ کریں جنہیں آپ استعمال کر سکتے ہیں۔</translation>
@@ -3627,6 +3640,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">کیمرا</translation>
 <translation id="6734506549556896534">سمیولیشن گیمز</translation>
+<translation id="6735589846038045679">‏ادائیگی کے پلانز اہلیت کے ساتھ مشروط ہیں۔ <ph name="BEGIN_BOLD" />ان اختیارات کی پیشکش کرنے کیلئے، چیک آؤٹ صفحے سے صفحے کے مواد کا اشتراک Google کے ساتھ کیا جاتا ہے۔<ph name="END_BOLD" /> بعد میں ادائیگی کے اختیارات کو چھپانے کے لیے، <ph name="BEGIN_LINK" />ادائیگی کی ترتیبات<ph name="END_LINK" /> پر جائیں</translation>
 <translation id="6737708609449480586">سینکی ہوئی اشیاء</translation>
 <translation id="6738516213925468394">آپ کے ڈیٹا کی آپ کے <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ <ph name="TIME" /> کو مرموز کاری کی گئی تھی۔ مطابقت پذیری شروع کرنے کیلئے اسے درج کریں۔</translation>
 <translation id="6740851646645036700">آپ ابھی کے لیے اپنی تحریری مدد کی حد کو پہنچ گئے ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -3640,6 +3654,7 @@
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> کا اندراج حذف کریں</translation>
 <translation id="6754547388777247439">سیونگز اکاؤنٹس</translation>
 <translation id="6757797048963528358">آپ کا آلہ سیلپ وضع میں چلا گیا۔</translation>
+<translation id="6758934187792712102"><ph name="URL" /> آپ کے موشن اور لائٹ سینسرز کا استعمال کرنا چاہتا ہے</translation>
 <translation id="6766558780547452153">پکانا اور ترکیبیں</translation>
 <translation id="6770747695101757579">کاغذ (کاٹن)</translation>
 <translation id="677257480647123231">انٹرنیٹ پر بچوں کی حفاظت</translation>
@@ -4402,6 +4417,7 @@
 <translation id="79338296614623784">ایک درست فون نمبر درج کریں</translation>
 <translation id="7934414805353235750">‏<ph name="URL" /> تحفظ یافتہ مواد چلانا چاہتا ہے۔ Google آپ کے آلے کی شناخت کی توثیق کرے گا۔</translation>
 <translation id="7935318582918952113">‏DOM ڈسٹلر</translation>
+<translation id="7935520077478121175">موشن سینسرز کی اجازت ہے</translation>
 <translation id="7937163678541954811">‏اس کارڈ کے CVC کو مرموز کیا جائے گا اور تیز چیک آؤٹ کے لیے آپ کے آلے میں محفوظ کیا جائے گا</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> کو میعاد ختم ہو جائے گی</translation>
 <translation id="7938958445268990899">سرور کا سرٹیفکیٹ ابھی تک درست نہیں ہے۔</translation>
@@ -5029,6 +5045,7 @@
 <translation id="8987245424886630962">‏<ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome میں اپنی براؤزنگ کی سرگزشت دیکھنے کے لیے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="8987663052629670333">تصاویر پرنٹنگ کی سروسز</translation>
 <translation id="8987927404178983737">ماہ</translation>
+<translation id="8988966534058783995">موشن سینسرز استعمال کریں؟</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> جاننا چاہتا ہے کہ فعال طور پر آپ اس آلہ کا استعمال کب کر رہے ہیں</translation>
 <translation id="8997023839087525404">سرور نے ایک ایسا سرٹیفیکیٹ پیش کیا جس کا سرٹیفیکیٹ کی شفافیت کی پالیسی استعمال کر کے انکشاف نہیں کیا گیا۔ یہ یقینی بنانے کیلئے کہ کچھ سرٹیفیکیٹس قابل بھروسہ ہیں اور حملہ آوروں کے خلاف حفاظت کرتی ہیں، یہ ان کیلئے ایک تقاضہ ہے۔</translation>

@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2371084566192454134">Vaheleht</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}}</translation>
+<translation id="2476179388576975626">Pilt pildis</translation>
 <translation id="2498435670446402865">Vahelehegrupi ümbernimetamine</translation>
 <translation id="2536366509642644298">Vahelehegrupid „<ph name="TAB_GROUP_NAME_1" />“ ja „<ph name="TAB_GROUP_NAME_2" />“ ei ole enam saadaval</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vaheleht.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>

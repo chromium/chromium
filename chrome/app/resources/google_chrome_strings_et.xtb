@@ -153,6 +153,7 @@
 <translation id="2586406160782125153">See kustutab sellest seadmest teie sirvimisandmed. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Allalaaditud installiprogrammi vahemällu salvestamine ebaõnnestus. Viga: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Süsteem</translation>
+<translation id="263447411082773721">Hoidke oma paroolid, järjehoidjad ja ajalugu seadmetes täiuslikult sünkroonituna. Määrake Chrome oma vaikebrauseriks, et oma lemmikfunktsioonidele hõlpsasti juurde pääseda. Kiireks juurdepääsuks kinnitatakse Chrome teie tegumiribale.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontrollib regulaarselt, kas teie brauseril on kõige turvalisemad seaded. Anname teile teada, kui midagi tuleb üle vaadata.</translation>
 <translation id="2652691236519827073">Ava link Chrome'i uuel &amp;vahelehel</translation>
@@ -231,6 +232,7 @@
 <translation id="3327226547491422998">Hiljem võib Chrome teilt küsida, kas soovite salvestatud teavet vormide automaattäitmiseks kasutada</translation>
 <translation id="3352986031709923790">otsinguala parem ülanurk: <ph name="RIGHT" />% paremal, <ph name="TOP" />% üleval</translation>
 <translation id="3360895254066713204">Chrome'i abistaja</translation>
+<translation id="3373752068427117404">Mõned Chrome'i funktsioonid ja laiendused hõlmavad otseteid. Saate need soovi korral uuesti sisse lülitada.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käivitatakse kohe uuesti}=1{Chrome käivitatakse uuesti 1 sekundi pärast}other{Chrome käivitatakse uuesti # sekundi pärast}}</translation>
 <translation id="3380249972812870825">Gemini avamiseks Chrome'is vajutage klahvikombinatsiooni <ph name="GLOBAL_HOTKEY" />.</translation>
 <translation id="3396977131400919238">Installimisel ilmnes operatsioonisüsteemi viga. Palun laadige Google Chrome uuesti alla.</translation>
@@ -695,6 +697,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8064965390968184078">1. Klõpsake alloleval nupul <ph name="BUTTON_LABEL" />
 2. Klõpsake Windowsi seadetes nupul <ph name="BUTTON_2" />
 3. Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BUTTON_3" />, et kinnitada Chrome oma tegumiribale</translation>
+<translation id="8074398340364918139">Konkreetse Chrome'i funktsiooni või laienduse otsimiseks sisestage selle otsetee aadressiribale ja lisage enda valitud klaviatuuriklahv.</translation>
 <translation id="8077579734294125741">Muud Chrome'i profiilid</translation>
 <translation id="8086881907087796310">Installimine ebaõnnestus, kuna arvuti ei vasta riistvara miinimumnõuetele.</translation>
 <translation id="8113883687556086139">Kinnitage oma isik, et Chrome'i andmeid kasutada ja oma kontole <ph name="ACCOUNT_EMAIL" /> salvestada</translation>
@@ -703,6 +706,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8129812357326543296">Teave &amp;Google Chrome'i kohta</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
 <translation id="8162006532256575008">Kasuta Chrome'i ilma kontota</translation>
+<translation id="8172231188687329735">Hankige Chrome'i rakendus, et liikvel olles paroole salvestada</translation>
 <translation id="8177472873527554730">Lehe sisu ei õnnestu leida</translation>
 <translation id="8221491193165283816">Tavaliselt blokeerite märguanded. Kui soovite lubada sellel saidil endale märguandeid saata, klõpsake siin.</translation>
 <translation id="8253851811470049684">Avage mis tahes rakenduse lingid Chrome'is ja hoidke brauser tegumiribal käepärast.</translation>
@@ -730,6 +734,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 
 Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. Kui logite praegu välja, siis salvestamata järjehoidjad kustutatakse.</translation>
 <translation id="8433638294851456451">Numbri saatmiseks siit Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
+<translation id="8458117863387545390">Hankige Chrome oma telefoni</translation>
 <translation id="8496177819998570653">Google'i p&amp;aroolihaldur</translation>
 <translation id="8498858610309223613">Äsja rakendati Google Chrome'i spetsiaalne turvavärskendus. Taaskäivitage brauser, misjärel taastame teie vahelehed.</translation>
 <translation id="8516431725144212809">Teie Chrome'i prognoositud huvid</translation>

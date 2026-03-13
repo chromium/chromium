@@ -211,6 +211,7 @@
 <translation id="1323433172918577554">더보기</translation>
 <translation id="1329916999021038454">보고서 보내기</translation>
 <translation id="1330449323196174374">왼쪽 게이트 폴드</translation>
+<translation id="133173645041092770">웹사이트 닫기</translation>
 <translation id="1333745675627230582">Chrome 공룡 게임 플레이</translation>
 <translation id="1333989956347591814">내 활동 내역을 <ph name="BEGIN_EMPHASIS" />확인할 수도 있는<ph name="END_EMPHASIS" /> 주체:
         <ph name="BEGIN_LIST" />
@@ -638,6 +639,7 @@
 <translation id="2027465737841872819">플라스틱</translation>
 <translation id="2027707238798802149">카드를 사용할 수 없음</translation>
 <translation id="2029735183873159415">조상 찾기 및 족보</translation>
+<translation id="2031095660415483845">어디서나 검색하고 입력하세요...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />프록시 및 방화벽 확인<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">바로가기는 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />에서 정의한 기본 검색 공급자 키워드와 같을 수 없습니다. <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">무시하고 저장</translation>
@@ -939,12 +941,14 @@
 <translation id="2466004615675155314">웹에서 찾은 정보 표시</translation>
 <translation id="2466682894498377850"><ph name="DEVICE_NAME" />에서 전송한 탭</translation>
 <translation id="2467272921457885625">CPU/RAM 사용 기록과 같은 기기 하드웨어 사양 및 통계</translation>
+<translation id="2467421459221956357">센서를 사용하시겠습니까?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />네트워크 진단 프로그램 실행<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1-to-N 순서</translation>
 <translation id="24699311393038040">용지(코팅됨)</translation>
 <translation id="2471632709106952369">비교 테이블</translation>
 <translation id="2473810985261856484">법률 서비스</translation>
 <translation id="2477607419416067650">기타 Google 데이터</translation>
+<translation id="247903268499247848">움직임 감지 센서 및 조도 센서가 허용되지 않았습니다</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
 <translation id="2479410451996844060">검색 URL이 잘못됨</translation>
 <translation id="2480300195898055381">Google 계정(<ph name="USER_EMAIL" />)에 저장됩니다</translation>
@@ -1069,6 +1073,7 @@
 <translation id="2674524144218093528">페인트칠 및 마감</translation>
 <translation id="26774279487328902">탭 그룹 <ph name="GROUP_COUNT" />개를 더 이상 사용할 수 없음</translation>
 <translation id="2677748264148917807">나가기</translation>
+<translation id="2679216653373462289">움직임 감지 센서 및 조도 센서 사용</translation>
 <translation id="2679659833697380">정보가 기기에 저장됩니다.</translation>
 <translation id="2683195745483370038">다른 검색 결과가 표시됨</translation>
 <translation id="2686919536310834199">작성 지원 기능에 관한 의견을 보냅니다.</translation>
@@ -1150,6 +1155,7 @@
 <translation id="2820957248982571256">검색 중...</translation>
 <translation id="2824775600643448204">주소창 및 검색창</translation>
 <translation id="2826760142808435982">이 연결은 <ph name="CIPHER" />을(를) 사용하여 암호화되고 인증되며 <ph name="KX" />을(를) 키 교환 매커니즘으로 사용합니다.</translation>
+<translation id="2828797285817981634">현재 움직임 감지 센서가 허용되어 있습니다</translation>
 <translation id="2833637280516285136">라디오 토크쇼</translation>
 <translation id="2835170189407361413">서식 지우기</translation>
 <translation id="2835907903001172712">브라우저 개요</translation>
@@ -1276,6 +1282,7 @@
 <translation id="3030331669969285614">이 플래그는 브레이킹 체인지를 방지하거나 되돌리며 제한된 기간 동안만 사용할 수 있습니다.</translation>
 <translation id="3030542417256082866">차량을 저장하시겠습니까?</translation>
 <translation id="3033200136993730761">집 주소를 입력하면 더 관련성 높은 Google 검색 결과를 확인하고 Google 지도에서 경로 안내를 받는 등 Google 서비스 전반에서 작업을 처리하는 데 도움이 됩니다. <ph name="BEGIN_LINK" />Google 계정(<ph name="ACCOUNT" />)에서<ph name="END_LINK" /> 주소를 수정하거나 삭제할 수 있습니다.</translation>
+<translation id="3033777742142108756">현재 움직임 감지 센서 및 조도 센서가 허용되어 있습니다</translation>
 <translation id="3034526003882782781">스크롤 및 확대/축소가 허용됨</translation>
 <translation id="3036894576201005614">가정용 청소용품</translation>
 <translation id="3037177537145227281">가격 추적</translation>
@@ -2299,6 +2306,7 @@
 <translation id="4658638640878098064">왼쪽 상단 스테이플</translation>
 <translation id="4658801711339831733">스캔 항목이 Google Drive에 저장됨</translation>
 <translation id="4660592918803576381">Drive에서 열기</translation>
+<translation id="4660780573807106293">움직임 감지 센서 및 조도 센서를 사용하도록 요청할 수 있습니다</translation>
 <translation id="4661556981531699496">반려동물 및 동물</translation>
 <translation id="4661868874067696603">더 많은 구매 옵션 검색</translation>
 <translation id="4663373278480897665">카메라 허용됨</translation>
@@ -2756,6 +2764,7 @@
 <translation id="5371425731340848620">카드 업데이트</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" />님이 탭을 변경했습니다.</translation>
 <translation id="5374324662289354619">현재 내부 디버깅 페이지가 사용 중지된 상태입니다</translation>
+<translation id="5374983318402742558"><ph name="URL" />에서 움직임 감지 센서를 사용하려고 합니다</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'시간이 너무 먼 과거로 설정되어 있습니다.', '시간이 너무 먼 미래로 설정되어 있습니다.', 또는  '&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;'</translation>
 <translation id="5379618281582508161">모든 기기에서 이 비밀번호를 가져오려면 본인 인증을 진행하세요</translation>
@@ -2805,6 +2814,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">더 빠르게 결제하려면 Google 월렛(<ph name="ACCOUNT_EMAIL" />)에 이 CVC를 저장하세요.</translation>
 <translation id="5436307623797390637">기기에 있는 앱</translation>
+<translation id="543656192084990644">움직임 감지 센서가 허용되지 않았습니다</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, 이전 값: <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">역순으로 인쇄면이 위를 향하게</translation>
 <translation id="5447235695608032700"><ph name="SITE" />에서 나에 관해 저장한 정보를 사용하도록 허용</translation>
@@ -3096,6 +3106,7 @@
 <translation id="5918847752193018339">CVC를 저장하면 더 빠르게 결제할 수 있습니다. <ph name="LINK_BEGIN" />저장된 보안 코드 삭제<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">사용</translation>
+<translation id="5921432337686792850">움직임 감지 센서를 사용하도록 요청할 수 있습니다</translation>
 <translation id="5921639886840618607">카드를 Google 계정에 저장하시겠습니까?</translation>
 <translation id="5921952831792678223">픽업 트럭</translation>
 <translation id="5923492272538889093">CVC 대신 기기 잠금 해제를 사용하시겠습니까?</translation>
@@ -3164,6 +3175,7 @@
 <translation id="6028591542479806248">모바일 및 이메일 알림 관리</translation>
 <translation id="6028833024483927901">세계 음식</translation>
 <translation id="603068602130820122">오른쪽 듀얼 스테이플</translation>
+<translation id="6031824805267965302">움직임 감지 센서 사용</translation>
 <translation id="6032524144326295339">메일박스 2</translation>
 <translation id="6032955021262906325">왼쪽 바인드</translation>
 <translation id="6034000775414344507">연한 회색</translation>
@@ -3245,6 +3257,7 @@
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
 <translation id="6139975341602920272">17x22인치</translation>
 <translation id="6143097244789397208">증강 현실 및 가상 현실</translation>
+<translation id="614327212146763975">움직임 감지 센서 및 조도 센서가 허용되었습니다</translation>
 <translation id="6146055958333702838">케이블을 확인하고 사용 중인 라우터, 모뎀 또는 기타 네트워크 기기를
     재부팅하시기 바랍니다.</translation>
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
@@ -3625,6 +3638,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">카메라</translation>
 <translation id="6734506549556896534">시뮬레이션 게임</translation>
+<translation id="6735589846038045679">요금제는 자격 요건을 충족해야 이용할 수 있습니다. <ph name="BEGIN_BOLD" />이러한 옵션을 제공하기 위해 결제 페이지의 페이지 콘텐츠가 Google과 공유됩니다.<ph name="END_BOLD" /> 후불 결제 옵션을 숨기려면 <ph name="BEGIN_LINK" />결제 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="6737708609449480586">베이커리 제품</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6740851646645036700">현재 쓰기 지원 한도에 도달했습니다. 나중에 다시 시도해 주세요.</translation>
@@ -3638,6 +3652,7 @@
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> 항목 삭제</translation>
 <translation id="6754547388777247439">저축 예금</translation>
 <translation id="6757797048963528358">기기가 절전 모드 상태입니다.</translation>
+<translation id="6758934187792712102"><ph name="URL" />에서 움직임 감지 센서 및 조도 센서를 사용하려고 합니다</translation>
 <translation id="6766558780547452153">요리 및 레시피</translation>
 <translation id="6770747695101757579">용지(면)</translation>
 <translation id="677257480647123231">어린이 인터넷 안전</translation>
@@ -4400,6 +4415,7 @@
 <translation id="79338296614623784">올바른 전화번호를 입력하세요.</translation>
 <translation id="7934414805353235750"><ph name="URL" />에서 보호된 콘텐츠를 재생하려고 합니다. Google에서 기기의 ID를 인증해야 합니다.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">움직임 감지 센서가 허용되었습니다</translation>
 <translation id="7937163678541954811">더 빠른 결제를 위해 이 카드의 CVC가 암호화되어 기기에 저장됩니다.</translation>
 <translation id="7937554595067888181">만료일: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">서버 인증서가 유효하지 않습니다.</translation>
@@ -5027,6 +5043,7 @@
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome 방문 기록 보기</translation>
 <translation id="8987663052629670333">사진 인화 서비스</translation>
 <translation id="8987927404178983737">월</translation>
+<translation id="8988966534058783995">움직임 감지 센서를 사용하시겠습니까?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">사용자가 현재 기기를 사용 중인지 <ph name="URL" />에서 알고자 합니다.</translation>
 <translation id="8997023839087525404">서버에서 인증서 투명성 정책을 사용하여 공개되지 않은 인증서를 제시했습니다. 인증서 투명성 정책은 인증서가 신뢰할 수 있으며 공격자로부터 사용자를 보호하고 있음을 보장하기 위한 것으로 일부 인증서의 경우 필수사항입니다.</translation>

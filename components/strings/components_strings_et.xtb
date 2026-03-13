@@ -211,6 +211,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1323433172918577554">Kuva rohkem</translation>
 <translation id="1329916999021038454">Teatamine</translation>
 <translation id="1330449323196174374">Vasakult väravakujuliselt volditud</translation>
+<translation id="133173645041092770">Sule veebisait</translation>
 <translation id="1333745675627230582">Chrome'i dinosaurusemängu mängimine</translation>
 <translation id="1333989956347591814">Teie tegevused <ph name="BEGIN_EMPHASIS" />võivad siiski olla nähtavad<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -638,6 +639,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kaart ei ole saadaval</translation>
 <translation id="2029735183873159415">Päritolu ja genealoogia</translation>
+<translation id="2031095660415483845">Otsige ja täitke kõikjal …</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Kontrollige puhverserverit ja tulemüüri<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Otsetee ei tohi olla sama, mis vaikeotsingupakkuja märksõna, mille on määranud <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Salvesta ikkagi</translation>
@@ -939,12 +941,14 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2466004615675155314">Teabe kuvamine veebist</translation>
 <translation id="2466682894498377850">Vaheleht saadeti teie seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Seadme riistvara tehnilised andmed ja statistika, näiteks protsessori/muutmälu kasutamise ajalugu</translation>
+<translation id="2467421459221956357">Kas lubate andureid kasutada?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Võrgudiagnostika käitamine<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">Järjestus 1–N</translation>
 <translation id="24699311393038040">Paber (kaetud)</translation>
 <translation id="2471632709106952369">Võrdlustabelid</translation>
 <translation id="2473810985261856484">Õigusteenused</translation>
 <translation id="2477607419416067650">Muud Google'i andmed</translation>
+<translation id="247903268499247848">Liikumis- ja valgusandurid pole lubatud</translation>
 <translation id="2479148705183875116">Ava seaded</translation>
 <translation id="2479410451996844060">Kehtetu otsingu URL.</translation>
 <translation id="2480300195898055381">Teie Google’i kontol <ph name="USER_EMAIL" /></translation>
@@ -1069,6 +1073,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2674524144218093528">Maja värvimine ja viimistlemine</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> vahelehegruppi ei ole enam saadaval</translation>
 <translation id="2677748264148917807">Lahku</translation>
+<translation id="2679216653373462289">Kasutada liikumis- ja valgusandureid</translation>
 <translation id="2679659833697380">Teie teave salvestatakse teie seadmesse.</translation>
 <translation id="2683195745483370038">Leiti muud tulemused</translation>
 <translation id="2686919536310834199">Saatke tagasisidet funktsiooni „Aita mul kirjutada” jaoks.</translation>
@@ -1150,6 +1155,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2820957248982571256">Skannimine …</translation>
 <translation id="2824775600643448204">Aadressi- ja otsinguriba</translation>
 <translation id="2826760142808435982">Ühendus on krüptitud ja autenditud üksusega <ph name="CIPHER" /> ning kasutab peamise vahetusmehhanismina üksust <ph name="KX" />.</translation>
+<translation id="2828797285817981634">Liikumisandurid on praegu lubatud</translation>
 <translation id="2833637280516285136">Raadiojutusaated</translation>
 <translation id="2835170189407361413">Tühjenda vorm</translation>
 <translation id="2835907903001172712">Brauseri ülevaade</translation>
@@ -1276,6 +1282,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3030331669969285614">Need märgistused hoiavad ära või ennistavad probleeme põhjustava muudatuse ja on saadaval vaid piiratud aja.</translation>
 <translation id="3030542417256082866">Kas salvestada sõiduk?</translation>
 <translation id="3033200136993730761">Teie kodune aadress aitab teil Google'i teenustes asju ajada, näiteks saada Google Mapsis asjakohasemaid otsingutulemusi ja juhiseid. Saate oma aadressi muuta või kustutada <ph name="BEGIN_LINK" />oma Google'i kontol <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033777742142108756">Liikumis- ja valgusandurid on praegu lubatud</translation>
 <translation id="3034526003882782781">Kerimine ja suumimine on lubatud</translation>
 <translation id="3036894576201005614">Majapidamise puhastustarbed</translation>
 <translation id="3037177537145227281">Jälgite hinda</translation>
@@ -2299,6 +2306,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4658638640878098064">Kirjaklamber vasakul ülal</translation>
 <translation id="4658801711339831733">Skann salvestati Google Drive’i</translation>
 <translation id="4660592918803576381">Ava Drive'is</translation>
+<translation id="4660780573807106293">Saab küsida luba teie liikumis- ja valgusandurite kasutamiseks</translation>
 <translation id="4661556981531699496">Lemmikloomad ja loomad</translation>
 <translation id="4661868874067696603">Otsige rohkem ostuvõimalusi</translation>
 <translation id="4663373278480897665">Kaamera on lubatud</translation>
@@ -2756,6 +2764,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5371425731340848620">Värskendage kaarti</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> muutis vahelehte</translation>
 <translation id="5374324662289354619">Sisekasutuseks mõeldud silumislehed on praegu keelatud.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> soovib kasutada teie liikumisandureid.</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„Teie kell on ajast maas” või „Teie kell on ajast ees” või „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;”</translation>
 <translation id="5379618281582508161">Selle parooli saamiseks kõikidesse oma seadmetesse, kinnitage oma isik</translation>
@@ -2805,6 +2814,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Kiiremaks maksmiseks salvestage see CVC Google Walletisse (<ph name="ACCOUNT_EMAIL" />).</translation>
 <translation id="5436307623797390637">Seadmes olevad rakendused</translation>
+<translation id="543656192084990644">Liikumisandurid pole lubatud</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, oli varem <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Vastupidine järjestus, esikülg ülespoole</translation>
 <translation id="5447235695608032700">Lubage saidil <ph name="SITE" /> kasutada teavet, mille on teie kohta salvestanud</translation>
@@ -3096,6 +3106,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5918847752193018339">CVC-de salvestamise korral tasute kassas kiiremini. <ph name="LINK_BEGIN" />Salvestatud turvakoodide kustutamine<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Sees</translation>
+<translation id="5921432337686792850">Saab küsida luba teie liikumisandurite kasutamiseks</translation>
 <translation id="5921639886840618607">Kas salvestada kaart Google'i kontole?</translation>
 <translation id="5921952831792678223">Pikapid</translation>
 <translation id="5923492272538889093">Kas kasutada CVC asemel seadmega avamist?</translation>
@@ -3164,6 +3175,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6028591542479806248">Mobiili- ja meilimärguannete haldamine</translation>
 <translation id="6028833024483927901">Maailma köök</translation>
 <translation id="603068602130820122">Kaks kirjaklambrit paremal</translation>
+<translation id="6031824805267965302">Kasutada liikumisandureid</translation>
 <translation id="6032524144326295339">Postkast 2</translation>
 <translation id="6032955021262906325">Köide vasakul</translation>
 <translation id="6034000775414344507">Helehall</translation>
@@ -3245,6 +3257,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6133984428121856852">Failinimelaiend on tühi või vigane.</translation>
 <translation id="6139975341602920272">17 × 22 tolli</translation>
 <translation id="6143097244789397208">Liit- ja virtuaalreaalsus</translation>
+<translation id="614327212146763975">Liikumis- ja valgusandurid on lubatud</translation>
 <translation id="6146055958333702838">Kontrollige kaableid ning taaskäivitage kõik ruuterid, modemid ja muud
     kasutuses olevad võrguseadmed.</translation>
 <translation id="614940544461990577">Proovige järgmist.</translation>
@@ -3625,6 +3638,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kaamera</translation>
 <translation id="6734506549556896534">Simulatsioonimängud</translation>
+<translation id="6735589846038045679">Maksegraafikutele kehtivad sobilikkuse nõuded. <ph name="BEGIN_BOLD" />Nende valikute pakkumiseks jagatakse Google’iga kassalehe sisu.<ph name="END_BOLD" /> Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph name="END_LINK" />.</translation>
 <translation id="6737708609449480586">Küpsetised</translation>
 <translation id="6738516213925468394">Teie andmed krüpteeriti teie <ph name="BEGIN_LINK" />sünkroonimisparooliga<ph name="END_LINK" /> kuupäeval <ph name="TIME" />. Sisestage see sünkroonimise alustamiseks.</translation>
 <translation id="6740851646645036700">Teie abitaotluste limiit on praeguseks täis. Proovige hiljem uuesti.</translation>
@@ -3638,6 +3652,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6753434778807740853">Kustuta sisestus <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Hoiukontod</translation>
 <translation id="6757797048963528358">Teie seade lülitus unerežiimile.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> soovib kasutada teie liikumis- ja valgusandureid.</translation>
 <translation id="6766558780547452153">Toiduvalmistamine ja retseptid</translation>
 <translation id="6770747695101757579">Paber (puuvill)</translation>
 <translation id="677257480647123231">Laste internetiohutus</translation>
@@ -4401,6 +4416,7 @@ Lisateave:
 <translation id="79338296614623784">Sisestage kehtiv telefoninumber</translation>
 <translation id="7934414805353235750"><ph name="URL" /> soovib esitada kaitstud sisu. Google kontrollib teie seadme identiteeti.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">Liikumisandurid on lubatud</translation>
 <translation id="7937163678541954811">Selle kaardi CVC krüpteeritakse ja salvestatakse teie seadmesse, et saaksite kiiremini maksta</translation>
 <translation id="7937554595067888181">Aegub <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Serveri sertifikaat ei kehti veel.</translation>
@@ -5028,6 +5044,7 @@ Lisateave:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'is oma sirvimisajaloo vaatamiseks vajutage tabulaatorit ja seejärel sisestusklahvi.</translation>
 <translation id="8987663052629670333">Fotode printimisteenused</translation>
 <translation id="8987927404178983737">kuu</translation>
+<translation id="8988966534058783995">Kas kasutada liikumisandureid?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> soovib teada, millal kasutate aktiivselt seda seadet</translation>
 <translation id="8997023839087525404">Server esitas sertifikaadi, mida ei ole sertifikaadi läbipaistvuse reegli kohaselt avalikustatud. See on teatud sertifikaatide puhul nõutav, et need oleksid usaldusväärsed ja kaitseksid ründajate eest.</translation>

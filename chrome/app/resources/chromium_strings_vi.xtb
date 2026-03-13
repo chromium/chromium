@@ -8,6 +8,7 @@
 <translation id="1051793555070215510">Vui lòng dành một phút làm bản khảo sát này để giúp chúng tôi cải thiện chế độ ẩn danh.</translation>
 <translation id="1065672644894730302">Không thể đọc tùy chọn của bạn. Một số tính năng có thể không khả dụng và các thay đổi đối với tùy chọn sẽ không được lưu.</translation>
 <translation id="1083934481477628225">Cha mẹ bạn đã tắt tuỳ chọn "Quyền của các trang web, ứng dụng và tiện ích" đối với Chromium</translation>
+<translation id="1090946077924227754">Để tìm kiếm một tính năng hoặc tiện ích cụ thể của Chromium, hãy nhập lối tắt của tính năng hoặc tiện ích đó vào thanh địa chỉ, sau đó nhấn phím bạn chọn trên bàn phím</translation>
 <translation id="1104942323762546749">Chromium muốn xuất các mật khẩu của bạn. Hãy nhập mật khẩu Windows để cho phép thực hiện việc này.</translation>
 <translation id="112640046208448578">Xác định đồ vật hoặc địa điểm, sao chép hoặc dịch văn bản. Khi bạn sử dụng tính năng Tìm kiếm hình ảnh, ảnh chụp màn hình trang sẽ được gửi đến máy chủ. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium là trình duyệt mặc định của bạn</translation>
@@ -25,6 +26,7 @@
 <translation id="1262876892872089030">Mặc dù thẻ này không hoạt động nhưng bộ nhớ đã được giải phóng để giúp Chromium luôn hoạt động nhanh. Bạn có thể chọn luôn loại trừ trang web này khỏi trạng thái không hoạt động.</translation>
 <translation id="1265577313130862557">Chromium đã chặn tệp tải xuống này vì đây là tệp nguy hiểm</translation>
 <translation id="126567311906253476">Khi đăng nhập vào các dịch vụ của Google như Gmail hoặc YouTube bằng <ph name="USER_EMAIL" />, bạn có thể tự động được đăng nhập vào Chromium bằng cùng một tài khoản</translation>
+<translation id="1287534462498555020">Tải Chromium về điện thoại</translation>
 <translation id="1290883685122687410">Lỗi thiết lập: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Thiết lập hồ sơ Chromium mới</translation>
 <translation id="132092532143527429">Dùng thử với Gemini trong Chromium</translation>
@@ -380,6 +382,7 @@
 <translation id="5231355151045086930">Đăng xuất khỏi Chromium</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5254739261293693943">Hỏi về video này</translation>
+<translation id="5276305953263010518">Tải ứng dụng Chromium để lưu mật khẩu mọi lúc, mọi nơi</translation>
 <translation id="5277894862589591112">Để áp dụng các mục thay đổi của bạn, hãy chạy lại Chromium</translation>
 <translation id="5286907366254680517">Đã phát hiện</translation>
 <translation id="5289287148052354622">Tải ứng dụng Chromium</translation>
@@ -693,6 +696,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8522801943730206384">Chromium có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó</translation>
 <translation id="8548787790260785208">Nhận cảnh báo nếu Chromium phát hiện một trong những mật khẩu của bạn bị lộ trong sự cố rò rỉ dữ liệu công khai</translation>
 <translation id="8555465886620020932">Lỗi dịch vụ: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Một số tính năng và tiện ích của Chromium đi kèm lối tắt. Bạn có thể chọn bật lại các lối tắt này.</translation>
 <translation id="8556420416730706394">Bạn có thể ghim tính năng Tìm kiếm hình ảnh để thuận tiện sử dụng; hãy nhấp vào nút Ghim ở đầu bảng điều khiển bên</translation>
 <translation id="856656450041460113">Tìm kiếm trong danh sách ngôn ngữ</translation>
 <translation id="8568283329061645092">Chromium có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình</translation>
@@ -728,6 +732,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8988036198400390003">Quản lý hồ sơ trên Chromium</translation>
 <translation id="9019929317751753759">Để làm cho Chromium an toàn hơn, chúng tôi đã vô hiệu hóa tiện ích không được liệt kê trong <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> và có thể đã được thêm mà bạn không biết.</translation>
 <translation id="904366664621834601">Chromium đã chặn tệp tải xuống này vì tệp lưu trữ gồm các tệp khác có thể ẩn chứa phần mềm độc hại</translation>
+<translation id="9053882453960391422">Mật khẩu, dấu trang và nhật ký của bạn sẽ được đồng bộ hoá liền mạch trên mọi thiết bị. Hãy cập nhật trình duyệt mặc định thành Chromium để dễ dàng sử dụng các tính năng bạn quen thuộc và yêu thích. Chromium sẽ được ghim vào thanh tác vụ để bạn có thể truy cập nhanh chóng.</translation>
 <translation id="9062666675513499497">Đăng nhập vào Chromium khi bạn đăng nhập vào các dịch vụ khác của Google</translation>
 <translation id="9078733879136747090">Chromium đã tự động đóng</translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>

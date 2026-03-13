@@ -526,6 +526,7 @@
 <translation id="13392265090583506">Приступачност</translation>
 <translation id="1340527397989195812">Направите резервну копију медија са уређаја помоћу апликације Датотеке.</translation>
 <translation id="1340839264183302272">Напусти групу</translation>
+<translation id="1341002693404468853">Сакриј организатора</translation>
 <translation id="1341701348342335220">Одлично!</translation>
 <translation id="1342886103232377846">Да бисте проверили да ли има угрожених лозинки, идите у Google менаџер лозинки</translation>
 <translation id="1343920184519992513">Наставите где сте стали и отворите одређену групу страница</translation>
@@ -2346,6 +2347,7 @@
 <translation id="2555855727505718984">Аутоматско попуњавање неће имати ове информације на овом уређају да би вам помогло да попуњавате обрасце</translation>
 <translation id="25568951186001797">Затворени оквир: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Прегледајте све обележиваче овде</translation>
+<translation id="2563924218974330506">Сада можете да управљате групама картица овде. То окно можете да откачите у било ком тренутку.</translation>
 <translation id="2564520396658920462">Извршавање JavaScript-а помоћу AppleScript-а је искључено. Да бисте га укључили, на траци менија изаберите View &gt; Developer &gt; Allow JavaScript from Apple Events (Приказ &gt; Програмер &gt; Дозволи JavaScript из Apple Events-а). Додатне информације: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Побољшана провера правописа</translation>
 <translation id="256481480019204378">ИД Google налога</translation>
@@ -5666,6 +5668,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 обележивач је избрисан}one{{COUNT} обележивач је избрисан}few{{COUNT} обележивача су избрисана}other{{COUNT} обележивача је избрисано}}</translation>
 <translation id="481689174647911539">Овај фајл је можда вирус или малвер.<ph name="LINE_BREAK" />Можете да га пошаљете Google безбедном прегледању да бисте проверили да ли је безбедан. Скенирање обично траје неколико секунди.</translation>
 <translation id="4816900689218414104">Направите приступни кључ на телефону или таблету</translation>
+<translation id="481852950686014162">Наставите тамо где сте стали у Gemini-ју и AI режиму</translation>
 <translation id="4819323978093861656">{0,plural, =0{Затвара се одмах.}=1{Затвара се за 1 секунду}one{Затвара се за # секунду}few{Затвара се за # секунде}other{Затвара се за # секунди}}</translation>
 <translation id="4819818293886748542">Преузмите линк алатке за подршку</translation>
 <translation id="4820236583224459650">Подеси као активни тикет</translation>
@@ -5871,6 +5874,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{фајл}one{# фајл}few{# фајла}other{# фајлова}}</translation>
 <translation id="495170559598752135">Радње</translation>
 <translation id="4951966678293618079">Никада не чувај лозинке за овај сајт</translation>
+<translation id="4952580838083306838">Сакриј организатора</translation>
 <translation id="4953808748584563296">Подразумевани наранџасти аватар</translation>
 <translation id="4954652437333037880">Фајл</translation>
 <translation id="4954831709600868883">Упитајте о: <ph name="TEXT" /></translation>
@@ -6288,6 +6292,7 @@
 <translation id="5246282308050205996">Апликација <ph name="APP_NAME" /> је отказала. Кликните на овај облачић да бисте је поново покренули.</translation>
 <translation id="5247051749037287028">Име за приказ (опционално)</translation>
 <translation id="5247243947166567755">Изаберите <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="5248934139541843042">Прикажи организатора</translation>
 <translation id="5249624017678798539">Прегледач је отказао пре него што је преузимање довршено.</translation>
 <translation id="5249818097095743806">Користите безбедносни кључ</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> користи локацију да би вам пружао локални садржај. То можете да промените у: <ph name="SETTINGS_LINK" />.</translation>
@@ -6928,6 +6933,7 @@
 <translation id="5698878456427040674">Проверите да ли је изабрани налог подржан.</translation>
 <translation id="5698900765010620315">Тамна ниског контраста</translation>
 <translation id="5699227710146832453">Са уређаја</translation>
+<translation id="5700024700429259844">Сада можете директно да наставите Gemini четове и конверзације из AI режима овде. То окно можете да откачите у било ком тренутку.</translation>
 <translation id="570043786759263127">Google Play апликације и услуге</translation>
 <translation id="5700761515355162635">Колачићи трећих страна су дозвољени</translation>
 <translation id="5700836101007545240">Администратор је онемогућио додавање везе</translation>
@@ -8361,6 +8367,7 @@
 <translation id="6686878118106035853">Прилагођена побољшана заштита искључује оптимизацију JavaScript-а за све сајтове</translation>
 <translation id="6687008241368170505">Промените PIN Google менаџера лозинки</translation>
 <translation id="6687079240787935001">Сакриј <ph name="MODULE_TITLE" /></translation>
+<translation id="6689092196793298127">Организатор</translation>
 <translation id="6689948774466767379">Тастери миша</translation>
 <translation id="6690659332373509948">Није могуће рашчланити датотеку: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">Напре&amp;д</translation>
@@ -9686,6 +9693,7 @@
 <translation id="760197030861754408">Идите на <ph name="LANDING_PAGE" /> да бисте се повезали.</translation>
 <translation id="7602079150116086782">Нема картица са других уређаја</translation>
 <translation id="7602173054665172958">Управљање штампањем</translation>
+<translation id="7602805861133750578">Сада можете да управљате групама картица, Gemini четовима и конверзацијама из AI режима на једном месту. То окно можете да откачите у било ком тренутку.</translation>
 <translation id="7602868996817972616">Упитајте Google о овој страници</translation>
 <translation id="7603785829538808504">Сајтови наведени у наставку прате прилагођено подешавање</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 лозинка није увезена}one{{NUM_PASSWORDS} лозинка није уведена}few{{NUM_PASSWORDS} лозинке нису уведене}other{{NUM_PASSWORDS} лозинки није уведено}}</translation>
@@ -10393,6 +10401,7 @@
 <translation id="8054609631325628928">Ове бројеве можете да користите да бисте активирали услугу</translation>
 <translation id="8054883179223321715">Доступно за одређене сајтове за видео снимке</translation>
 <translation id="8054921503121346576">USB тастатура је повезана</translation>
+<translation id="8055975688427973864">Дугме Прикажи организатора</translation>
 <translation id="8058655154417507695">Година истека</translation>
 <translation id="8058986560951482265">Испрекидан</translation>
 <translation id="8059417245945632445">&amp;Испитај уређаје</translation>
@@ -11376,6 +11385,7 @@
 <translation id="871515167518607670">Одаберите уређај. Затим отворите Chrome да бисте видели страницу.</translation>
 <translation id="8715480913140015283">Картица у позадини користи камеру</translation>
 <translation id="8716050156658570300">Сајтови могу да траже да користе сензоре покрета и светлости</translation>
+<translation id="8716067129332848360">Прикажи организатора</translation>
 <translation id="8716931980467311658">Желите ли да избришете све Linux апликације и податке у директоријуму Linux датотека на овом <ph name="DEVICE_TYPE" /> уређају?</translation>
 <translation id="8717864919010420084">Копирај линк</translation>
 <translation id="8718994464069323380">Откривен је додирни екран</translation>
@@ -11839,6 +11849,7 @@
 <translation id="9013037634206938463">Треба вам <ph name="INSTALL_SIZE" /> слободног простора да бисте инсталирали Linux. Да бисте ослободили простор, избришите датотеке са уређаја.</translation>
 <translation id="9014206344398081366">Водич за ChromeVox</translation>
 <translation id="9014674417732091912">Премештено је у <ph name="ROW_NUMBER" />. ред</translation>
+<translation id="9015849286924418538">Организујте картице у означене групе кодиране бојом ради лакшег приступа</translation>
 <translation id="901668144954885282">Правите резервне копије на Google диску</translation>
 <translation id="9016827136585652292">укључивање/искључивање екрана за приватност</translation>
 <translation id="90181708067259747">Датум истека: <ph name="CARD" /></translation>

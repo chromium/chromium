@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2371084566192454134">Karty a skupiny karet</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami.}many{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty.}other{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
+<translation id="2476179388576975626">Obraz v obraze</translation>
 <translation id="2498435670446402865">Přejmenovat skupinu karet</translation>
 <translation id="2536366509642644298">Skupiny karet „<ph name="TAB_GROUP_NAME_1" />“ a „<ph name="TAB_GROUP_NAME_2" />“ už nejsou dostupné</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sbalit <ph name="TABS_COUNT_ONE" /> kartu.}few{Sbalit skupinu karet se <ph name="TABS_COUNT_MANY" /> kartami.}many{Sbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> karty.}other{Sbalit skupinu karet s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>

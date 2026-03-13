@@ -211,6 +211,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1323433172918577554">Visa fler</translation>
 <translation id="1329916999021038454">Skicka en rapport</translation>
 <translation id="1330449323196174374">Fönsterfalsning, vänster flik</translation>
+<translation id="133173645041092770">Stäng webbplats</translation>
 <translation id="1333745675627230582">Spela Chrome Dino-spelet</translation>
 <translation id="1333989956347591814">Din aktivitet <ph name="BEGIN_EMPHASIS" />kanske fortfarande är synlig<ph name="END_EMPHASIS" /> för:
         <ph name="BEGIN_LIST" />
@@ -638,6 +639,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2027465737841872819">Plast</translation>
 <translation id="2027707238798802149">Kortet är inte tillgängligt</translation>
 <translation id="2029735183873159415">Förfäder och släktforskning</translation>
+<translation id="2031095660415483845">Sök och fyll i från var som helst …</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />kontrollera proxyn och brandväggen<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Genvägen kan inte vara densamma som standardsökordet hos sökleverantören som definieras av <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Spara ändå</translation>
@@ -939,12 +941,14 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2466004615675155314">Visa information från webben</translation>
 <translation id="2466682894498377850">Fliken skickades från din <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Enhetens hårdvaruspecifikation och statistik som historiken över CPU-/RAM-användning</translation>
+<translation id="2467421459221956357">Vill du använda sensorer?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />att köra nätverksdiagnostik<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1 till N-ordning</translation>
 <translation id="24699311393038040">Papper (bestruket)</translation>
 <translation id="2471632709106952369">Jämförelsetabeller</translation>
 <translation id="2473810985261856484">Juridiska tjänster</translation>
 <translation id="2477607419416067650">Annan Google-data</translation>
+<translation id="247903268499247848">Rörelse- och ljussensorer tillåts inte</translation>
 <translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2479410451996844060">Ogiltig sökadress.</translation>
 <translation id="2480300195898055381">I Google-kontot <ph name="USER_EMAIL" /></translation>
@@ -1069,6 +1073,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2674524144218093528">Målning av hus</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> flikgrupper är inte längre tillgängliga</translation>
 <translation id="2677748264148917807">Lämna</translation>
+<translation id="2679216653373462289">Använd rörelse- och ljussensorer</translation>
 <translation id="2679659833697380">Din information sparas på enheten</translation>
 <translation id="2683195745483370038">Andra resultat hittades</translation>
 <translation id="2686919536310834199">Skicka feedback för Hjälp mig skriva.</translation>
@@ -1150,6 +1155,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2820957248982571256">Söker …</translation>
 <translation id="2824775600643448204">Adress- och sökfält</translation>
 <translation id="2826760142808435982">Anslutningen är krypterad och verifieras med <ph name="CIPHER" /> och använder <ph name="KX" /> som nyckelutbytesmekanism.</translation>
+<translation id="2828797285817981634">Rörelsesensorer tillåts för närvarande</translation>
 <translation id="2833637280516285136">Pratradio</translation>
 <translation id="2835170189407361413">Rensa formuläret</translation>
 <translation id="2835907903001172712">webbläsaröversikt</translation>
@@ -1276,6 +1282,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3030331669969285614">Dessa flaggor förhindrar eller återställer en icke-bakåtkompatibel ändring och är endast tillgängliga under en begränsad tid.</translation>
 <translation id="3030542417256082866">Vill du spara fordonet?</translation>
 <translation id="3033200136993730761">Din hemadress kan hjälpa dig att få saker gjorda i Googles tjänster, till exempel mer relevanta sökresultat och vägbeskrivningar i Google Maps. Du kan redigera eller radera din adress <ph name="BEGIN_LINK" />i Google-kontot <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033777742142108756">Rörelse- och ljussensorer tillåts för närvarande</translation>
 <translation id="3034526003882782781">Scrollning och zoom tillåts</translation>
 <translation id="3036894576201005614">Rengöringsartiklar för hushåll</translation>
 <translation id="3037177537145227281">Bevakar pris</translation>
@@ -2299,6 +2306,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4658638640878098064">Häfta uppe till vänster</translation>
 <translation id="4658801711339831733">Skanningen har sparats i Google Drive</translation>
 <translation id="4660592918803576381">Öppna i Drive</translation>
+<translation id="4660780573807106293">Får begära åtkomst till rörelse- och ljussensorer</translation>
 <translation id="4661556981531699496">Sällskapsdjur och djur</translation>
 <translation id="4661868874067696603">Sök efter fler köpalternativ</translation>
 <translation id="4663373278480897665">Kamera är tillåten</translation>
@@ -2756,6 +2764,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5371425731340848620">Uppdatera kortet</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> ändrade en flik</translation>
 <translation id="5374324662289354619">Interna felsökningssidor är för närvarande inaktiverade.</translation>
+<translation id="5374983318402742558"><ph name="URL" /> vill använda dina rörelsesensorer</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">Klockan går efter, Klockan går före eller &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;</translation>
 <translation id="5379618281582508161">Verifiera din identitet om du vill få tillgång till det här lösenordet på alla dina enheter</translation>
@@ -2805,6 +2814,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
         <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Spara CVC-koden i Google Wallet (<ph name="ACCOUNT_EMAIL" />) så att det går snabbare i kassan</translation>
 <translation id="5436307623797390637">Appar på enheten</translation>
+<translation id="543656192084990644">Rörelsesensorer tillåts inte</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, tidigare <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Omvänd ordning – framsidan uppåt</translation>
 <translation id="5447235695608032700">Tillåt att <ph name="SITE" /> använder uppgifter som webbplatsen har sparat om dig</translation>
@@ -3096,6 +3106,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5918847752193018339">Betala snabbare när du har dina CVC-koder sparade. <ph name="LINK_BEGIN" />Radera sparade säkerhetskoder<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">På</translation>
+<translation id="5921432337686792850">Får begära åtkomst till rörelsesensorer</translation>
 <translation id="5921639886840618607">Vill du spara kortet i Google-kontot?</translation>
 <translation id="5921952831792678223">Pickuper</translation>
 <translation id="5923492272538889093">Vill du använda enhetsupplåsning i stället för CVC?</translation>
@@ -3164,6 +3175,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6028591542479806248">Hantera telefon- och e-postaviseringar</translation>
 <translation id="6028833024483927901">Internationell mat</translation>
 <translation id="603068602130820122">Två häftklamrar till höger</translation>
+<translation id="6031824805267965302">Använd dina rörelsesensorer</translation>
 <translation id="6032524144326295339">Postfack 2</translation>
 <translation id="6032955021262906325">Bindning till vänster</translation>
 <translation id="6034000775414344507">Ljusgrå</translation>
@@ -3245,6 +3257,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6133984428121856852">Filnamnstillägg saknas eller har fel format.</translation>
 <translation id="6139975341602920272">17 x 22 tum</translation>
 <translation id="6143097244789397208">Förstärkt och virtuell verklighet</translation>
+<translation id="614327212146763975">Rörelse- och ljussensorer tillåts</translation>
 <translation id="6146055958333702838">Kontrollera kablar och starta om routrar, modem och andra nätverksenheter
     som används.</translation>
 <translation id="614940544461990577">Testa att</translation>
@@ -3625,6 +3638,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simuleringsspel</translation>
+<translation id="6735589846038045679">Kvalificering krävs för betalningsplaner. <ph name="BEGIN_BOLD" />Innehåll från kassasidan delas med Google för att erbjuda dessa alternativ.<ph name="END_BOLD" /> Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /> om du vill dölja alternativen för att betala senare.</translation>
 <translation id="6737708609449480586">Bageri- och konditorivaror</translation>
 <translation id="6738516213925468394">Din data krypterades med din <ph name="BEGIN_LINK" />lösenfras för synkronisering<ph name="END_LINK" /> den <ph name="TIME" />. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="6740851646645036700">Du har nått gränsen för skrivhjälp. Försök igen senare.</translation>
@@ -3638,6 +3652,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6753434778807740853">Radera post <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6754547388777247439">Sparkonton</translation>
 <translation id="6757797048963528358">Enheten gick i viloläge.</translation>
+<translation id="6758934187792712102"><ph name="URL" /> vill använda dina rörelse- och ljussensorer</translation>
 <translation id="6766558780547452153">Matlagning och recept</translation>
 <translation id="6770747695101757579">Papper (bomull)</translation>
 <translation id="677257480647123231">Säkerhet för barn på internet</translation>
@@ -4401,6 +4416,7 @@ Mer information.
 <translation id="79338296614623784">Ange ett giltigt telefonnummer</translation>
 <translation id="7934414805353235750"><ph name="URL" /> vill spela upp skyddat innehåll. Enhetens identitet verifieras av Google.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">Rörelsesensorer tillåts</translation>
 <translation id="7937163678541954811">Kortets CVC-kod krypteras och sparas på din enhet så det går snabbare i kassan</translation>
 <translation id="7937554595067888181">Upphör att gälla den <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Servercertifikatet är inte giltigt ännu.</translation>
@@ -5029,6 +5045,7 @@ Mer information:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill öppna webbhistoriken i Chrome</translation>
 <translation id="8987663052629670333">Fototryckstjänster</translation>
 <translation id="8987927404178983737">Månad</translation>
+<translation id="8988966534058783995">Vill du använda rörelsesensorer?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> vill veta när du använder enheten aktivt</translation>
 <translation id="8997023839087525404">Servern visade ett certifikat som inte lämnats ut via principen Certifikattransparens. Detta är ett krav för vissa certifikat för att säkerställa att de är pålitliga och skyddar mot hackare.</translation>

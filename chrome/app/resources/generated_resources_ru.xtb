@@ -527,6 +527,7 @@
 <translation id="13392265090583506">Специальные возможности</translation>
 <translation id="1340527397989195812">Создайте резервную копию медиафайлов, размещенных на устройстве, с помощью приложения "Файлы".</translation>
 <translation id="1340839264183302272">Покинуть группу</translation>
+<translation id="1341002693404468853">Скрыть органайзер</translation>
 <translation id="1341701348342335220">Отлично!</translation>
 <translation id="1342886103232377846">Чтобы проверить наличие раскрытых паролей, воспользуйтесь Google Менеджером паролей</translation>
 <translation id="1343920184519992513">Ранее открытые вкладки и заданные страницы</translation>
@@ -2350,6 +2351,7 @@
 <translation id="2555855727505718984">Информация для автозаполнения форм не будет храниться на этом устройстве.</translation>
 <translation id="25568951186001797">Элемент Fenced Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Здесь находятся все ваши закладки</translation>
+<translation id="2563924218974330506">Теперь вы можете управлять группами вкладок здесь. Вы можете открепить эту панель в любое время.</translation>
 <translation id="2564520396658920462">Выполнение JavaScript через AppleScript отключено. Чтобы включить эту функцию, в строке меню выберите "Вид &gt; Разработчикам &gt; Разрешить JavaScript из событий Apple". Подробную информацию можно найти на этой странице: https://support.google.com/chrome/?p=applescript.</translation>
 <translation id="2564653188463346023">Расширенная проверка правописания</translation>
 <translation id="256481480019204378">Идентификатор аккаунта Google</translation>
@@ -5670,6 +5672,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Удалена 1 закладка.}one{Удалена {COUNT} закладка.}few{Удалено {COUNT} закладки.}many{Удалено {COUNT} закладок.}other{Удалено {COUNT} закладки.}}</translation>
 <translation id="481689174647911539">Этот файл может оказаться вирусом или вредоносным ПО.<ph name="LINE_BREAK" />Вы можете отправить его в сервис "Google Безопасный просмотр", чтобы проверить, представляет ли он угрозу. Обычно сканирование занимает несколько секунд.</translation>
 <translation id="4816900689218414104">Создайте ключ доступа на телефоне или планшете</translation>
+<translation id="481852950686014162">Продолжайте работу с Gemini и режимом ИИ с того места, где остановились</translation>
 <translation id="4819323978093861656">{0,plural, =0{Браузер закрыт.}=1{Браузер будет закрыт через 1 секунду.}one{Браузер будет закрыт через # секунду.}few{Браузер будет закрыт через # секунды.}many{Браузер будет закрыт через # секунд.}other{Браузер будет закрыт через # секунды.}}</translation>
 <translation id="4819818293886748542">Ссылка для получения инструмента поддержки</translation>
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
@@ -5874,6 +5877,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="495170559598752135">Действия</translation>
 <translation id="4951966678293618079">Никогда не сохранять пароли для этого сайта</translation>
+<translation id="4952580838083306838">Скрыть органайзер</translation>
 <translation id="4953808748584563296">Аватар по умолчанию (оранжевый)</translation>
 <translation id="4954652437333037880">Файл</translation>
 <translation id="4954831709600868883">Задайте вопрос по теме "<ph name="TEXT" />"</translation>
@@ -6291,6 +6295,7 @@
 <translation id="5246282308050205996">Произошел сбой приложения <ph name="APP_NAME" />. Нажмите на это сообщение, чтобы перезапустить его.</translation>
 <translation id="5247051749037287028">Отображаемое название (необязательно)</translation>
 <translation id="5247243947166567755">Выбрать: <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="5248934139541843042">Показать органайзер</translation>
 <translation id="5249624017678798539">В браузере произошел сбой до завершения скачивания.</translation>
 <translation id="5249818097095743806">Используйте электронный ключ</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> предлагает результаты поиска в зависимости от вашего местоположения. Изменить настройки этой функции можно здесь: <ph name="SETTINGS_LINK" />.</translation>
@@ -6932,6 +6937,7 @@
 <translation id="5698878456427040674">Проверьте, поддерживается ли выбранный аккаунт.</translation>
 <translation id="5698900765010620315">Тёмная тема, низкая контрастность</translation>
 <translation id="5699227710146832453">С вашего устройства:</translation>
+<translation id="5700024700429259844">Теперь вы можете возобновлять чаты с Gemini и цепочки в режиме ИИ прямо здесь. Вы можете открепить эту панель в любое время.</translation>
 <translation id="570043786759263127">Приложения и сервисы Google Play</translation>
 <translation id="5700761515355162635">Сторонние файлы cookie разрешены</translation>
 <translation id="5700836101007545240">Администратор запретил добавлять подключения</translation>
@@ -8367,6 +8373,7 @@
 <translation id="6686878118106035853">Улучшенная защита отключает оптимизацию JavaScript для всех сайтов</translation>
 <translation id="6687008241368170505">Изменить PIN-код Google Менеджера паролей</translation>
 <translation id="6687079240787935001">Скрыть <ph name="MODULE_TITLE" /></translation>
+<translation id="6689092196793298127">Органайзер</translation>
 <translation id="6689948774466767379">Клавиши управления указателем</translation>
 <translation id="6690659332373509948">Не удалось проанализировать файл <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Вперед</translation>
@@ -9691,6 +9698,7 @@
 <translation id="760197030861754408">Чтобы подключиться, перейдите на страницу <ph name="LANDING_PAGE" />.</translation>
 <translation id="7602079150116086782">Нет вкладок с других устройств.</translation>
 <translation id="7602173054665172958">Управление печатью</translation>
+<translation id="7602805861133750578">Теперь вы можете управлять группами вкладок, чатами с Gemini и цепочками сообщений в режиме ИИ на одной странице. Вы можете открепить эту панель в любое время.</translation>
 <translation id="7602868996817972616">Спросить Google об этой странице</translation>
 <translation id="7603785829538808504">Для указанных ниже сайтов действуют специальные настройки.</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 пароль не импортирован}one{{NUM_PASSWORDS} пароль не импортирован}few{{NUM_PASSWORDS} пароля не импортированы}many{{NUM_PASSWORDS} паролей не импортированы}other{{NUM_PASSWORDS} пароля не импортированы}}</translation>
@@ -10398,6 +10406,7 @@
 <translation id="8054609631325628928">Эти коды можно использовать для активации сервиса.</translation>
 <translation id="8054883179223321715">Совместимо только с определенными сайтами</translation>
 <translation id="8054921503121346576">USB-клавиатура подключена</translation>
+<translation id="8055975688427973864">Показать кнопку органайзера</translation>
 <translation id="8058655154417507695">Срок действия: год</translation>
 <translation id="8058986560951482265">Нестабильное</translation>
 <translation id="8059417245945632445">&amp;Проверка устройств</translation>
@@ -11381,6 +11390,7 @@
 <translation id="871515167518607670">Выберите устройство. Чтобы посмотреть страницу, откройте на нем браузер Chrome.</translation>
 <translation id="8715480913140015283">На фоновой вкладке используется камера.</translation>
 <translation id="8716050156658570300">Сайты могут запрашивать доступ к датчикам движения и освещенности</translation>
+<translation id="8716067129332848360">Показать органайзер</translation>
 <translation id="8716931980467311658">Удалить с устройства <ph name="DEVICE_TYPE" /> все приложения для Linux, а также данные из папки "Файлы Linux"?</translation>
 <translation id="8717864919010420084">Скопировать ссылку</translation>
 <translation id="8718994464069323380">Обнаружен сенсорный экран.</translation>
@@ -11845,6 +11855,7 @@
 <translation id="9013037634206938463">Для установки Linux требуется <ph name="INSTALL_SIZE" /> свободного пространства. Удалите с устройства файлы, которые больше не нужны.</translation>
 <translation id="9014206344398081366">Руководство по ChromeVox</translation>
 <translation id="9014674417732091912">Перенесено на строку под номером <ph name="ROW_NUMBER" /></translation>
+<translation id="9015849286924418538">Упорядочивайте вкладки, объединяя их в группы с названиями и цветовыми маркерами.</translation>
 <translation id="901668144954885282">Резервное копирование на Google Диск</translation>
 <translation id="9016827136585652292">Включить или отключить экран конфиденциальности</translation>
 <translation id="90181708067259747">Дата окончания срока действия: <ph name="CARD" /></translation>

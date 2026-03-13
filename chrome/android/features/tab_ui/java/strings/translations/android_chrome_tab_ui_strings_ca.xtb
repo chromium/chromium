@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2371084566192454134">Pestanyes i grups de pestanyes</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Replega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
+<translation id="2476179388576975626">Imatge sobre imatge</translation>
 <translation id="2498435670446402865">Canvia nom grup pestanyes</translation>
 <translation id="2536366509642644298">Els grups de pestanyes "<ph name="TAB_GROUP_NAME_1" />" i "<ph name="TAB_GROUP_NAME_2" />" ja no estan disponibles</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>

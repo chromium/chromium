@@ -269,6 +269,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="3658847490588580244">Full inferior del navegador predeterminat</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> lloc web al grup de llocs web de <ph name="RWS_OWNER" /> que poden veure la teva activitat al grup}other{<ph name="RWS_MEMBERS_COUNT" /> llocs web al grup de llocs web de <ph name="RWS_OWNER" /> que poden veure la teva activitat al grup}}</translation>
 <translation id="3676777756440746804">Els llocs web no poden demanar-te permís per utilitzar la informació que han desat sobre tu</translation>
+<translation id="3677897809642449131">Els llocs web poden demanar permís per utilitzar els sensors de moviment</translation>
 <translation id="3678318839615834650">Full inferior de les targetes de la pàgina Pestanya nova obert a alçada completa</translation>
 <translation id="3697164069658504920">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius USB. Quan aquesta opció està desactivada, els llocs web no poden fer servir dispositius USB.</translation>
 <translation id="3703430731944883733">Gestiona el teu feed</translation>
@@ -748,6 +749,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:
 <translation id="8707904142362025782">El lloc web pot demanar permís per utilitzar la càmera</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8715862698998036666">Arrossega des de la part superior i llisca des de la vora esquerra o dreta per sortir de la pantalla completa.</translation>
+<translation id="8716050156658570300">Els llocs web poden demanar permís per utilitzar sensors de moviment i de llum</translation>
 <translation id="8719283222052720129">Activa el permís per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Quan aquesta opció està activada, els llocs web poden demanar permís per cercar dispositius Bluetooth. Quan aquesta opció està desactivada, els llocs web no poden cercar dispositius Bluetooth.</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>

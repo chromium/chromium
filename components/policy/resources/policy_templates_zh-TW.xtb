@@ -1327,6 +1327,13 @@ Attribution Reporting API 已淘汰，因此這項政策也已在 <ph name="PROD
 <translation id="1954612656043024615">啟用剪貼簿共用功能</translation>
 <translation id="1955063069502242812">啟用低電量音效</translation>
 <translation id="1955806069704957172">控管桌面連接器 API 的設定。</translation>
+<translation id="1956346847126765379">如果設定 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策，系統就不會載入網址已遭禁止的網頁。管理員可以指定要封鎖的網址模式清單。如果未設定，瀏覽器將不會封鎖任何網址。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 中最多可定義 1,000 個例外網址。如要瞭解網址模式的格式規定，請前往 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+
+注意：這項政策不會套用至含有動態載入資料的網頁內 JavaScript 網址。如果封鎖 example.com/abc，example.com 仍可使用 XMLHTTPRequest 載入內容。此外，這項政策也無法阻止網頁使用 JavaScript History API 將網址列顯示的網址更新為已封鎖的網址。從 <ph name="PRODUCT_NAME" /> 73 版開始，你可以封鎖 javascript://* 網址，但這麼做只會影響在網址列輸入的 JavaScript，或是像書籤小程式這類項目。自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也支援這項政策。自 <ph name="PRODUCT_NAME" /> 147 版起，單獨使用萬用字元「*」不會套用至內部 chrome:// 網址。如要封鎖這些網址，必須明確使用 chrome://* 模式。
+
+注意：封鎖內部 chrome://* 和 chrome-untrusted://* 網址可能導致非預期的錯誤，使用者也可能會在某些情況下突破封鎖。在不封鎖特定內部網址的情況下，看看是否可以使用其他更合適的政策。例如：
+
+- 不封鎖 chrome://settings/certificates，改用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />。- 不封鎖 chrome-untrusted://crosh，改用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />。- 不封鎖 devtools://*，改用 <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />、<ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> 或 <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> 政策。</translation>
 <translation id="1957093168333856467">停用無障礙虛擬鍵盤</translation>
 <translation id="1958110911685486719">已啟用 PDF XFA 表單支援功能</translation>
 <translation id="1960059835237529462">允許向使用者顯示 <ph name="IOS_NAME" /> App Store 評分宣傳</translation>

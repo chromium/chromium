@@ -269,6 +269,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="3658847490588580244">Spodní panel výchozího prohlížeče</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}few{<ph name="RWS_MEMBERS_COUNT" /> weby ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}many{<ph name="RWS_MEMBERS_COUNT" /> webu ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}other{<ph name="RWS_MEMBERS_COUNT" /> webů ve skupině webů vlastníka <ph name="RWS_OWNER" />, které vidí vaši aktivitu ve skupině}}</translation>
 <translation id="3676777756440746804">Weby nemohou žádat o použití informací, které o vás uložily</translation>
+<translation id="3677897809642449131">Weby mohou žádat o použití senzorů pohybu</translation>
 <translation id="3678318839615834650">Spodní panel Karty na stránce Nová karta otevřený na celou výšku</translation>
 <translation id="3697164069658504920">Když je tato možnost zapnutá, weby mohou žádat o použití zařízení USB. Když je vypnutá, weby zařízení USB používat nemohou.</translation>
 <translation id="3703430731944883733">Spravovat feed</translation>
@@ -748,6 +749,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:
 <translation id="8707904142362025782">Web může požádat o přístup ke kameře</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8715862698998036666">Celou obrazovku ukončíte přetažením shora a přejetím z levého nebo pravého okraje.</translation>
+<translation id="8716050156658570300">Weby mohou žádat o použití senzorů pohybu a světla</translation>
 <translation id="8719283222052720129">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="8721719390026067591">Když je tato možnost zapnutá, weby mohou žádat o vyhledání zařízení Bluetooth. Když je vypnutá, weby zařízení Bluetooth vyhledávat nemohou.</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>

@@ -31,6 +31,7 @@
 <translation id="1108214977745280468">Afficher les statistiques au sujet de la page</translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'afficheront ici.</translation>
+<translation id="1123537484474186311"><ph name="TAB_TITLE" />, onglet en mode Incrustation d'image</translation>
 <translation id="1126696498560056882">Gérer les comptes sur cet appareil</translation>
 <translation id="1135018701024399762">Le mode Navigation privée préserve la confidentialité de votre navigation des autres personnes qui utilisent votre appareil</translation>
 <translation id="113752097246673894">Pour accéder à vos favoris et plus encore sur tous vos appareils, connectez-vous à Chrome au moyen de l'adresse <ph name="EMAIL" /></translation>
@@ -321,6 +322,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2390510615457643724">Voulez-vous télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de nouveau?</translation>
 <translation id="2392369802118427583">Activer</translation>
+<translation id="2393980685134835044"><ph name="TAB_TITLE" />, onglet de navigation privée sélectionné en mode Incrustation d'image</translation>
 <translation id="2397175985681716533"><ph name="TAB_TITLE" />, onglet de navigation privée avec enregistrement en cours</translation>
 <translation id="2410754283952462441">Choisir un compte</translation>
 <translation id="2411239243988279592"><ph name="TAB_TITLE" />, onglet sélectionné avec son</translation>
@@ -381,6 +383,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2604446170045642109">Vous pouvez désactiver le thème sombre des sites dans vos paramètres.</translation>
 <translation id="2605017215201958293">Écoutez cette page avec l'IA</translation>
 <translation id="2607441479295509868">Déconnecté. Reconnectez-vous pour utiliser les favoris, les mots de passe et plus dans votre compte.</translation>
+<translation id="2616989802003447151">{COUNT,plural, =1{1 élément}one{# élément}other{# éléments}}</translation>
 <translation id="2620314865574742210"><ph name="NAME" /> vous a invité à accéder à un élément partagé.</translation>
 <translation id="2634393460268044753">Envoie les URL de sites que vous visitez et des échantillons du contenu de la page, des téléchargements, des activités des extensions et des données système à la navigation sécurisée Google pour qu'elle vérifie s'ils sont dangereux.</translation>
 <translation id="2643064289437760082">Vous pouvez toujours supprimer les données de la mesure des annonces en supprimant vos données de navigation</translation>
@@ -535,6 +538,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3268048651973962414">Faites glisser le panneau vers le haut pour afficher les résultats de recherche</translation>
 <translation id="3269093882174072735">Charger l'image</translation>
 <translation id="3280562213547448728">Recherche vocale</translation>
+<translation id="3282801380074962248">Développer la section</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{# mot de passe est enregistré uniquement sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{# mots de passe sont enregistrés uniquement sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="3293181007446299124">Votre historique de navigation est privé sur votre appareil et il y a un retard d’envoi des rapports pour protéger votre identité</translation>
@@ -667,6 +671,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3863527519275151528">Traitement de la notification en cours…</translation>
 <translation id="3866863539038222107">Inspecter</translation>
+<translation id="3870538285500327859"><ph name="TAB_TITLE" />, onglet sélectionné en mode Incrustation d'image</translation>
 <translation id="3870908470613821006">Tous les utilisateurs perdront immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> », et il sera supprimé de tous les appareils.</translation>
 <translation id="3873174561423636563">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre <ph name="FIELDS_STRING" /> avec ce site. Consultez les <ph name="BEGIN_LINK1" />conditions d'utilisation<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
@@ -682,6 +687,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3927692899758076493">Sans empattement</translation>
 <translation id="3931947361983910192">des 4 dernières semaines</translation>
 <translation id="393697183122708255">Aucune recherche vocale activée</translation>
+<translation id="3943322906274039960"><ph name="TAB_TITLE" />, onglet épinglé en mode Incrustation d'image</translation>
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="395377504920307820">Utiliser sans compte</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome chargera la page lorsque l'appareil sera en ligne}one{Chrome chargera la page lorsque l'appareil sera en ligne}other{Chrome chargera les pages lorsque l'appareil sera en ligne}}</translation>
@@ -748,6 +754,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4214315110991671325">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement.</translation>
 <translation id="421517251707893998">Touchez Épingler ce raccourci</translation>
 <translation id="4216511743389425832">Écouter cette page</translation>
+<translation id="4217657297368492684"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé et sélectionné en mode Incrustation d'image</translation>
 <translation id="4225725533026049334">Suivi</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
 <translation id="4232376164796433044">Mots passe et rempli. automa.</translation>
@@ -762,6 +769,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4277529130885813215">Utiliser un autre appareil</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4282440837784183472">Votre organisation, <ph name="MANAGED_DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chrome peut être utilisé. Votre administrateur peut configurer ou restreindre certaines fonctionnalités.</translation>
+<translation id="4283234489712362947"><ph name="TAB_TITLE" />, onglet de navigation privée en mode Incrustation d'image</translation>
 <translation id="4285498937028063278">Annuler l'épinglage</translation>
 <translation id="4285846616383034558">Témoins, cache et autres données relatives aux sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage d'écran dans les paramètres Android<ph name="END_LINK" /></translation>
@@ -801,6 +809,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4408965460206576430">Ce fichier contient un logiciel malveillant ou provient d'un site suspect</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> et <ph name="TAB_COUNT" /> autres onglets</translation>
 <translation id="441100617989818073">Onglets/Groupes double/inutilis.</translation>
+<translation id="4412123112245770507">Réduire la section</translation>
 <translation id="4414179633735763985"><ph name="TAB_GROUPS_AND_TABS_PART" /> supprimé</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
@@ -1049,6 +1058,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5415871492522952905">Vous aurez accès à votre historique et à vos onglets sur tous vos appareils de sorte que vous pourrez reprendre le cours de vos activités</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdra immédiatement l'accès au groupe d'onglets « <ph name="GROUP_NAME" /> ».</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> Go disponible(s)</translation>
+<translation id="543271133149552180"><ph name="TAB_TITLE" />, onglet de navigation privée multisélectionné en mode Incrustation d'image</translation>
 <translation id="5436928407363358055">Pour reprendre facilement là où vous en étiez, synchronisez votre historique et vos onglets</translation>
 <translation id="5438292632479953702">Télécharger de nouveau</translation>
 <translation id="5439191312780166229">Vous avertit des sites dangereux, même ceux que Google ne connaissait pas auparavant, en analysant plus de données provenant des sites que la protection standard. Vous pouvez choisir d'ignorer les avertissements de Chrome.</translation>
@@ -1063,6 +1073,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5471273988133666918">L'onglet <ph name="TAB_TITLE" /> ne peut pas être déplacé</translation>
 <translation id="548278423535722844">Ouvrir dans l'application Maps</translation>
 <translation id="5489222148748465285">Laisser Chrome cont. à chercher?</translation>
+<translation id="5490848366863949315"><ph name="TAB_TITLE" />, onglet multisélectionné en mode Incrustation d'image</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="549660026907543296">Se joindre en tant que <ph name="MEMBER_FULL_NAME" /></translation>
 <translation id="5517326820028369152">Zone de contenu dans le bas de l'écran concernant l'activité récente</translation>
@@ -1488,6 +1499,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7063106218165698546">Personnalisez le groupe d'onglets et touchez Terminé</translation>
 <translation id="7071521146534760487">Gérer le compte</translation>
 <translation id="707155805709242880">Choisissez les éléments à synchroniser ci-dessous</translation>
+<translation id="7072949719501323344"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé et multisélectionné en mode Incrustation d'image</translation>
 <translation id="7077143737582773186">Carte SD</translation>
 <translation id="7078916049958741685">Supprimer également vos données Chrome de cet appareil</translation>
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, onglet épinglé et sélectionné avec son désactivé</translation>
@@ -1874,6 +1886,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8512053371384421952">Vous ne recevrez plus de notifications de <ph name="DOMAIN" />.</translation>
 <translation id="8516012719330875537">Éditeur d'image</translation>
 <translation id="8533670235862049797">Navigation sécuritaire activée</translation>
+<translation id="8538291624121505885"><ph name="TAB_TITLE" />, onglet épinglé et multisélectionné en mode Incrustation d'image</translation>
 <translation id="8540136935098276800">Entrez une URL au format correct</translation>
 <translation id="854522910157234410">Ouvrir cette page</translation>
 <translation id="8547466829003330976">Réviser le fichier PDF avec l'IA</translation>
@@ -1987,6 +2000,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9050666287014529139">Phrase de passe</translation>
 <translation id="9055497320631373736">Site rajouté aux sites potentiels</translation>
 <translation id="9057030985451135243">En savoir plus sur les groupes d'onglets partagés</translation>
+<translation id="905722970894408436"><ph name="TAB_TITLE" />, onglet épinglé et sélectionné en mode Incrustation d'image</translation>
 <translation id="9063400323119781058">Désabonné</translation>
 <translation id="9063523880881406963">Désactiver l’option Demander site pour ordinateurs de bureau</translation>
 <translation id="9065203028668620118">Modifier</translation>
@@ -2045,6 +2059,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="930834144334005936">Réinitialiser le mode actuel <ph name="MODE_NAME" /> à Recherche</translation>
 <translation id="938850635132480979">Erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Entrer la phrase de passe</translation>
+<translation id="94161319503679839"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé en mode Incrustation d'image</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="95817756606698420">Google Chrome peut faire appel à <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour effectuer des recherches en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>

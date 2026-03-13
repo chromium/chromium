@@ -155,6 +155,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="263447411082773721">Keep your passwords, bookmarks and history perfectly synced across devices. Easily access the features that you know and love by updating your default browser to Chrome. Chrome will be pinned to your taskbar for quick access.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
@@ -233,6 +234,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3327226547491422998">Later, Chrome can ask if you want to use saved info to autofill forms for you</translation>
 <translation id="3352986031709923790">top-right corner of search area: right <ph name="RIGHT" />%, top <ph name="TOP" />%</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
+<translation id="3373752068427117404">Some Chrome features and extensions come with shortcuts. You can choose to turn them back on.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome will relaunch now}=1{Chrome will relaunch in 1 second}other{Chrome will relaunch in # seconds}}</translation>
 <translation id="3380249972812870825">To open Gemini in Chrome, press <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">An operating system error occurred during installation. Please download Google Chrome again.</translation>
@@ -699,6 +701,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8064965390968184078">1. Click <ph name="BUTTON_LABEL" /> below
 2. Click <ph name="BUTTON_2" /> in your Windows settings
 3. Click <ph name="BUTTON_3" /> in the Windows notification to pin Chrome to your taskbar for quick access</translation>
+<translation id="8074398340364918139">To search a specific Chrome feature or extension, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="8077579734294125741">Other Chrome profiles</translation>
 <translation id="8086881907087796310">Installation failed because your computer does not meet the minimum hardware requirements.</translation>
 <translation id="8113883687556086139">Verify that it's you to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -707,6 +710,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8162006532256575008">Use Chrome without an account</translation>
+<translation id="8172231188687329735">Get the Chrome app to save passwords on the go</translation>
 <translation id="8177472873527554730">Can't find content in page</translation>
 <translation id="8221491193165283816">You usually block notifications. To let this site notify you, click here.</translation>
 <translation id="8253851811470049684">Open links in Chrome from any app and keep the browser accessible on your taskbar</translation>
@@ -734,6 +738,7 @@ Google Chrome is unable to recover your settings.</translation>
 
 New bookmarks can't be saved in your account until you delete some. If you sign out now, unsaved bookmarks will be deleted.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
+<translation id="8458117863387545390">Get Chrome on your phone</translation>
 <translation id="8496177819998570653">Google P&amp;assword Manager</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>

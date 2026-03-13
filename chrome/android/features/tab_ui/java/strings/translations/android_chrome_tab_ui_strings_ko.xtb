@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="2371084566192454134">탭 및 탭 그룹</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}}</translation>
+<translation id="2476179388576975626">PIP 모드</translation>
 <translation id="2498435670446402865">탭 그룹 이름 바꾸기</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" 및 "<ph name="TAB_GROUP_NAME_2" />" 탭 그룹을 더 이상 사용할 수 없음</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 탭 그룹을 접습니다.}}</translation>

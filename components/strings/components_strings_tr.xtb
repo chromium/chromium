@@ -211,6 +211,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1323433172918577554">Daha Fazla Göster</translation>
 <translation id="1329916999021038454">Rapor gönder</translation>
 <translation id="1330449323196174374">Sola doğru iki kırımlı katlama</translation>
+<translation id="133173645041092770">Web sitesini kapat</translation>
 <translation id="1333745675627230582">Chrome Dinozor Oyununu Oyna</translation>
 <translation id="1333989956347591814">Etkinliğiniz şunlar tarafından <ph name="BEGIN_EMPHASIS" />yine de görülebilir<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
@@ -353,7 +354,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1555191101192706055">Ziyaret etmeye çalıştığınız sitedeki saldırganlar, internette gezinme şeklinizi etkileyen (ör. ana sayfanızı değiştirme veya ziyaret ettiğiniz sitelerde eksta reklam gösterme) zararlı yazılımlar yüklemeniz için sizi kandırabilir.</translation>
 <translation id="1559231233244409191">Karton (Üç Duvarlı)</translation>
 <translation id="1559447966090556585">Bildirim alınsın mı?</translation>
-<translation id="1559486004335285648">Ödeme bilgilerini otomatik doldur</translation>
+<translation id="1559486004335285648">Ödeme bilgilerini otomatik doldurun</translation>
 <translation id="1559528461873125649">Belirtilen dosya veya dizin yok</translation>
 <translation id="1559572115229829303">&lt;p&gt;Cihazınızın tarih ve saati (<ph name="DATE_AND_TIME" />) yanlış olduğundan <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> alan adına gizli bir bağlantı kurulamadı.&lt;/p&gt;
 
@@ -638,6 +639,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2027465737841872819">Plastik</translation>
 <translation id="2027707238798802149">Kart kullanılamıyor</translation>
 <translation id="2029735183873159415">Soy ve Genealoji</translation>
+<translation id="2031095660415483845">İstediğiniz yerden arama yapın ve doldurun...</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Proxy'yi ve güvenlik duvarını kontrol etme<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">Kısayol, <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> tarafından tanımlanan varsayılan arama sağlayıcı anahtar kelimesiyle aynı olamaz: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">Yine de kaydet</translation>
@@ -939,12 +941,14 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2466004615675155314">Web'den alınan bilgileri göster</translation>
 <translation id="2466682894498377850">Sekme <ph name="DEVICE_NAME" /> cihazınızdan gönderildi</translation>
 <translation id="2467272921457885625">CPU/RAM kullanım geçmişi gibi cihaz donanım spesifikasyonları ve istatistikleri</translation>
+<translation id="2467421459221956357">Sensörler kullanılsın mı?</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />Ağ Teşhislerini Çalıştırma<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">1'den N'ye sıralı</translation>
 <translation id="24699311393038040">Kağıt (Kaplanmış)</translation>
 <translation id="2471632709106952369">Karşılaştırma tabloları</translation>
 <translation id="2473810985261856484">Hukuki Hizmetler</translation>
 <translation id="2477607419416067650">Diğer Google verileri</translation>
+<translation id="247903268499247848">Hareket ve ışık sensörlerine izin verilmiyor</translation>
 <translation id="2479148705183875116">Ayarlar'a git</translation>
 <translation id="2479410451996844060">Geçersiz arama URL'si.</translation>
 <translation id="2480300195898055381">Google Hesabınızda, <ph name="USER_EMAIL" /></translation>
@@ -1069,6 +1073,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2674524144218093528">Ev Boyama ve Perdahlama</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> sekme grubu artık kullanılamıyor</translation>
 <translation id="2677748264148917807">Çık</translation>
+<translation id="2679216653373462289">Hareket ve ışık sensörlerinizi kullanma</translation>
 <translation id="2679659833697380">Bilgileriniz cihazınıza kaydedilir</translation>
 <translation id="2683195745483370038">Diğer sonuç bulundu</translation>
 <translation id="2686919536310834199">Yazmama yardım et özelliği hakkında geri bildirim gönderin.</translation>
@@ -1150,6 +1155,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2820957248982571256">Taranıyor...</translation>
 <translation id="2824775600643448204">Adres ve arama çubuğu</translation>
 <translation id="2826760142808435982">Bağlantı <ph name="CIPHER" /> kullanılarak şifrelenmiş ve kimliği doğrulanmıştır. Anahtar değişim mekanizması olarak <ph name="KX" /> kullanılır.</translation>
+<translation id="2828797285817981634">Şu an için hareket sensörlerine izin veriliyor</translation>
 <translation id="2833637280516285136">Radyo Sohbet Programları</translation>
 <translation id="2835170189407361413">Formu temizle</translation>
 <translation id="2835907903001172712">Tarayıcıyla ilgili genel bilgiler</translation>
@@ -1276,6 +1282,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3030331669969285614">Zarar veren bir değişikliği önleyen ya da geri alan bu flag'ler yalnızca sınırlı bir süre boyunca kullanılabilir.</translation>
 <translation id="3030542417256082866">Araç kaydedilsin mi?</translation>
 <translation id="3033200136993730761">Ev adresiniz, Google hizmetlerinde işlerinizi halletmenize yardımcı olabilir. Örneğin, daha alakalı Arama sonuçları ve Google Haritalar'da daha doğru yol tarifleri alabilirsiniz. Adresinizi <ph name="BEGIN_LINK" />Google Hesabınızda (<ph name="ACCOUNT" />)<ph name="END_LINK" /> düzenleyebilir veya silebilirsiniz.</translation>
+<translation id="3033777742142108756">Şu anda hareket ve ışık sensörlerine izin veriliyor</translation>
 <translation id="3034526003882782781">Kaydırma ve yakınlaştırmaya izin veriliyor</translation>
 <translation id="3036894576201005614">Ev Temizlik Malzemeleri</translation>
 <translation id="3037177537145227281">Fiyat takip ediliyor</translation>
@@ -2299,6 +2306,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4658638640878098064">Sol üstte tel zımba</translation>
 <translation id="4658801711339831733">Tarama, Google Drive'a kaydedildi</translation>
 <translation id="4660592918803576381">Drive'da aç</translation>
+<translation id="4660780573807106293">Hareket ve ışık sensörlerinizi kullanmak için izin isteyebilir</translation>
 <translation id="4661556981531699496">Evcil ve Yabani Hayvanlar</translation>
 <translation id="4661868874067696603">Daha fazla satın alma seçeneği arayın</translation>
 <translation id="4663373278480897665">Kameraya izin veriliyor</translation>
@@ -2756,6 +2764,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5371425731340848620">Kartı güncelle</translation>
 <translation id="537425196847960924"><ph name="USER_DISPLAY_NAME" /> bir sekmeyi değiştirdi</translation>
 <translation id="5374324662289354619">Dahili hata ayıklama sayfaları şu anda devre dışı.</translation>
+<translation id="5374983318402742558"><ph name="URL" />, hareket sensörlerinizi kullanmak istiyor</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Saatiniz geri", "Saatiniz ileri" veya "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">Bu şifreyi tüm cihazlarınızda kullanmak için kimliğinizi doğrulayın</translation>
@@ -2805,6 +2814,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Daha hızlı ödeme yapmak için bu CVC'yi Google Cüzdan'a (<ph name="ACCOUNT_EMAIL" />) kaydedin</translation>
 <translation id="5436307623797390637">Cihazdaki uygulamalar</translation>
+<translation id="543656192084990644">Hareket sensörlerine izin verilmiyor</translation>
 <translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, (önceki <ph name="PREVIOUS_VALUE" />)</translation>
 <translation id="5443468954631487277">Ters sırada ön yüz yukarı bakacak şekilde</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> sitesinin sizinle ilgili kaydettiği bilgileri kullanmasına izin verin</translation>
@@ -3096,6 +3106,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5918847752193018339">CVC'leriniz kaydedildiğinde daha hızlı ödeme yapabilirsiniz. <ph name="LINK_BEGIN" />Kayıtlı güvenlik kodlarını silme<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">Açık</translation>
+<translation id="5921432337686792850">Hareket sensörlerinizi kullanmak için izin isteyebilir</translation>
 <translation id="5921639886840618607">Kart Google Hesabı'na kaydedilsin mi?</translation>
 <translation id="5921952831792678223">Pikap Kamyonetler</translation>
 <translation id="5923492272538889093">CVC yerine cihazda kilit açma kullanılsın mı?</translation>
@@ -3164,6 +3175,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6028591542479806248">Mobil bildirimleri ve e-posta bildirimlerini yönetin</translation>
 <translation id="6028833024483927901">Dünya Mutfağı</translation>
 <translation id="603068602130820122">Sağ üstte tel zımba</translation>
+<translation id="6031824805267965302">Hareket sensörlerinizi kullanma</translation>
 <translation id="6032524144326295339">Posta kutusu 2</translation>
 <translation id="6032955021262906325">Soldan bağlı</translation>
 <translation id="6034000775414344507">Açık Gri</translation>
@@ -3245,6 +3257,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6133984428121856852">Dosya uzantısı boş veya bozuk.</translation>
 <translation id="6139975341602920272">17 x 22 inç</translation>
 <translation id="6143097244789397208">Artırılmış ve Sanal Gerçeklik</translation>
+<translation id="614327212146763975">Hareket ve ışık sensörlerine izin veriliyor</translation>
 <translation id="6146055958333702838">Kabloları kontrol edin ve kullandığınız yönlendiricileri, modemleri
     veya diğer ağ cihazlarını yeniden başlatın.</translation>
 <translation id="614940544461990577">Aşağıdakileri deneyin:</translation>
@@ -3625,6 +3638,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6734506549556896534">Simülasyon Oyunları</translation>
+<translation id="6735589846038045679">Ödeme planları, uygunluk durumuna bağlıdır. <ph name="BEGIN_BOLD" />Bu seçenekleri sunmak için ödeme sayfasındaki sayfa içeriği Google ile paylaşılır.<ph name="END_BOLD" /> Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarlarına<ph name="END_LINK" /> gidin.</translation>
 <translation id="6737708609449480586">Hamur İşleri</translation>
 <translation id="6738516213925468394">Verileriniz <ph name="TIME" /> tarihinde <ph name="BEGIN_LINK" />senkronizasyon parolanızla<ph name="END_LINK" /> şifrelendi. Senkronizasyonu başlatmak için senkronizasyon parolanızı girin.</translation>
 <translation id="6740851646645036700">Şu an için yazma yardımı sınırına ulaştınız. Daha sonra tekrar deneyin.</translation>
@@ -3638,6 +3652,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6753434778807740853"><ph name="ENTRY_VOICEOVER" /> girişini sil</translation>
 <translation id="6754547388777247439">Vadeli Hesaplar</translation>
 <translation id="6757797048963528358">Cihazınız uyku moduna geçti.</translation>
+<translation id="6758934187792712102"><ph name="URL" />, hareket ve ışık sensörlerinizi kullanmak istiyor</translation>
 <translation id="6766558780547452153">Aşçılık ve Yemek Tarifleri</translation>
 <translation id="6770747695101757579">Kağıt (Pamuk)</translation>
 <translation id="677257480647123231">Çocuklar İçin İnternet Güvenliği</translation>
@@ -4401,6 +4416,7 @@ Ek ayrıntılar:
 <translation id="79338296614623784">Geçerli bir telefon numarası girin</translation>
 <translation id="7934414805353235750"><ph name="URL" />, korumalı içeriği oynatmak istiyor. Cihazınızın kimliği Google tarafından doğrulanacak.</translation>
 <translation id="7935318582918952113">DOM Ayrıştırıcı</translation>
+<translation id="7935520077478121175">Hareket sensörlerine izin veriliyor</translation>
 <translation id="7937163678541954811">Daha hızlı ödeme için bu kartın CVC'si şifrelenip cihazınıza kaydedilir</translation>
 <translation id="7937554595067888181">Süre sonu: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">Sunucunun sertifikası henüz geçerli değil.</translation>
@@ -5029,6 +5045,7 @@ Ek ayrıntılar:
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'daki tarama geçmişinizi görmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="8987663052629670333">Fotoğraf Baskısı Hizmetleri</translation>
 <translation id="8987927404178983737">Ay</translation>
+<translation id="8988966534058783995">Hareket sensörleri kullanılsın mı?</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" /> [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742"><ph name="URL" /> sitesi, bu cihazı etkin olarak kullandığınızda bilgilendirilmek istiyor</translation>
 <translation id="8997023839087525404">Sunucu, Sertifika Şeffaflığı politikası kullanılarak herkese açık bir şekilde açıklanmayan bir sertifika sundu. Güvenilir olduklarından emin olmak ve saldırganlara karşı koruma sağlamak için bazı sertifikalarda bu zorunludur.</translation>

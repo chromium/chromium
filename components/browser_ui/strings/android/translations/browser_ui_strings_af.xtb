@@ -269,6 +269,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="3658847490588580244">Onderste blad van verstekblaaier</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> werf in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}other{<ph name="RWS_MEMBERS_COUNT" /> werwe in <ph name="RWS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien}}</translation>
 <translation id="3676777756440746804">Werwe word geblokkeer om jou te vra om inligting te gebruik wat hulle oor jou gestoor het</translation>
+<translation id="3677897809642449131">Werwe kan vra om bewegingsensors te gebruik</translation>
 <translation id="3678318839615834650">Onderste blad van Nuwe Oortjie-bladsykaarte is teen volle hoogte oopgemaak</translation>
 <translation id="3697164069658504920">Wanneer dit aan is, kan werwe vra om USB-toestelle te gebruik. Wanneer dit af is, kan werwe nie USB-toestelle gebruik nie.</translation>
 <translation id="3703430731944883733">Bestuur jou stroom</translation>
@@ -748,6 +749,7 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:
 <translation id="8707904142362025782">Werwe kan vir jou kamera vra</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="8715862698998036666">Sleep van bo af en swiep van die linker- of regterrand af om volskerm te verlaat.</translation>
+<translation id="8716050156658570300">Werwe kan vra om beweging- en ligsensors te gebruik</translation>
 <translation id="8719283222052720129">Skakel toestemming vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="8721719390026067591">Wanneer dit aan is, kan werwe vra om Bluetooth-toestelle te soek. Wanneer dit af is, kan werwe nie Bluetooth-toestelle soek nie.</translation>
 <translation id="8725066075913043281">Probeer weer</translation>

@@ -269,6 +269,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="3658847490588580244">Zone de contenu dans le bas de l'écran du navigateur par défaut</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}one{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}other{<ph name="RWS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}}</translation>
 <translation id="3676777756440746804">Les sites ne sont pas autorisés à vous demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
+<translation id="3677897809642449131">Les sites peuvent demander à utiliser les capteurs de mouvement</translation>
 <translation id="3678318839615834650">Zone de contenu dans le bas de l'écran concernant les cartes de la page Nouvel onglet ouverte à pleine hauteur</translation>
 <translation id="3697164069658504920">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils USB. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser d'appareils USB.</translation>
 <translation id="3703430731944883733">Gérer votre flux</translation>
@@ -748,6 +749,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="8707904142362025782">Le site peut demander d'accéder à votre caméra</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715862698998036666">Faites glisser à partir du haut et balayez à partir du bord gauche ou droit pour quitter le plein écran.</translation>
+<translation id="8716050156658570300">Les sites peuvent demander à utiliser les capteurs de mouvement et de luminosité</translation>
 <translation id="8719283222052720129">Vous pouvez activer l'autorisation pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Lorsque cette option est activée, les sites peuvent demander à rechercher des appareils Bluetooth. Lorsqu'elle est désactivée, les sites ne peuvent pas rechercher d'appareils Bluetooth.</translation>
 <translation id="8725066075913043281">Réessayer</translation>

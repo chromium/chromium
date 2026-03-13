@@ -211,6 +211,7 @@
 <translation id="1323433172918577554">إظهار مزيد من الأقسام</translation>
 <translation id="1329916999021038454">إرسال تقرير</translation>
 <translation id="1330449323196174374">الطي على شكل بوابة يسارًا</translation>
+<translation id="133173645041092770">إغلاق الموقع الإلكتروني</translation>
 <translation id="1333745675627230582">‏تشغيل لعبة الديناصور في Chrome</translation>
 <translation id="1333989956347591814">قد يظل <ph name="BEGIN_EMPHASIS" />نشاطك مرئيًا<ph name="END_EMPHASIS" /> للجهات التالية:
         <ph name="BEGIN_LIST" />
@@ -638,6 +639,7 @@
 <translation id="2027465737841872819">بلاستيك</translation>
 <translation id="2027707238798802149">البطاقة غير متوفّرة</translation>
 <translation id="2029735183873159415">الأصل وعلم الأنساب</translation>
+<translation id="2031095660415483845">يمكنك البحث وملء البيانات من أي مكان…</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />التحقق من الخادم الوكيل والجدار الناري<ph name="END_LINK" /></translation>
 <translation id="2033900728810589426">لا يمكن أن يكون الاختصار مطابقًا للكلمة الرئيسية لمزوِّد البحث التلقائي المحددة من قِبل <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />‏: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="2034971124472263449">الحفظ على أي حال</translation>
@@ -939,12 +941,14 @@
 <translation id="2466004615675155314">عرض معلومات من الويب</translation>
 <translation id="2466682894498377850">تم إرسال علامة التبويب من "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2467272921457885625">مواصفات الأجهزة وإحصاءاتها، مثل سجلّ استخدام وحدة المعالجة المركزية/ذاكرة الوصول العشوائي</translation>
+<translation id="2467421459221956357">استخدام أدوات الاستشعار؟</translation>
 <translation id="2467694685043708798"><ph name="BEGIN_LINK" />تشغيل بيانات تشخيص الشبكة<ph name="END_LINK" /></translation>
 <translation id="2469153820345007638">طباعة الصفحات بالترتيب الأساسي</translation>
 <translation id="24699311393038040">ورق (مطلي)</translation>
 <translation id="2471632709106952369">جداول المقارنة</translation>
 <translation id="2473810985261856484">خدمات قانونية</translation>
 <translation id="2477607419416067650">‏بيانات المستخدم الأخرى على Google</translation>
+<translation id="247903268499247848">لا يُسمح باستخدام أدوات استشعار الإضاءة والحركة</translation>
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
 <translation id="2479410451996844060">‏عنوان URL للبحث غير صالح.</translation>
 <translation id="2480300195898055381">‏سيتم الحفظ في حسابك على Google‏، <ph name="USER_EMAIL" />.</translation>
@@ -1069,6 +1073,7 @@
 <translation id="2674524144218093528">دهان وتشطيبات منازل</translation>
 <translation id="26774279487328902">لم تعُد مجموعات علامات التبويب البالغ عددها <ph name="GROUP_COUNT" /> متوفّرة</translation>
 <translation id="2677748264148917807">الخروج</translation>
+<translation id="2679216653373462289">استخدام أدوات استشعار الإضاءة والحركة</translation>
 <translation id="2679659833697380">يتم حفظ معلوماتك على جهازك</translation>
 <translation id="2683195745483370038">النتائج الأخرى التي تم العثور عليها</translation>
 <translation id="2686919536310834199">يمكنك إرسال ملاحظات حول ميزة "مساعدة في الكتابة".</translation>
@@ -1150,6 +1155,7 @@
 <translation id="2820957248982571256">جارٍ الفحص...</translation>
 <translation id="2824775600643448204">شريط العناوين والبحث</translation>
 <translation id="2826760142808435982">تم ترميز الاتصال ومصادقته باستخدام <ph name="CIPHER" />، ويستخدم <ph name="KX" /> كآلية التبادل الرئيسية.</translation>
+<translation id="2828797285817981634">تم السماح باستخدام أدوات استشعار الحركة في الوقت الحالي</translation>
 <translation id="2833637280516285136">برامج حوارية على الراديو</translation>
 <translation id="2835170189407361413">محو النموذج</translation>
 <translation id="2835907903001172712">نظرة عامة على المتصفِّح</translation>
@@ -1276,6 +1282,7 @@
 <translation id="3030331669969285614">تمنع هذه الميزات التجريبية حدوث أي تغيير قد يؤدي إلى عطل أو أو تُبطله، ولن تتوفّر إلا لفترة محدودة.</translation>
 <translation id="3030542417256082866">هل المطلوب حفظ بيانات المركبة؟</translation>
 <translation id="3033200136993730761">‏يمكن أن يساعدك عنوان منزلك في إنجاز المزيد على مختلف خدمات Google، كالحصول على نتائج بحث واتجاهات في "خرائط Google" أكثر صلة باهتماماتك. ويمكنك تعديل عنوانك أو حذفه<ph name="BEGIN_LINK" /> في حسابك على Google ‏(<ph name="ACCOUNT" />)‏<ph name="END_LINK" />.</translation>
+<translation id="3033777742142108756">تم السماح باستخدام أدوات استشعار الإضاءة والحركة في الوقت الحالي</translation>
 <translation id="3034526003882782781">يُسمح بالانتقال للأعلى أو للأسفل في المحتوى وتكبيره أو تصغيره</translation>
 <translation id="3036894576201005614">مستلزمات تنظيف منزلية</translation>
 <translation id="3037177537145227281">تتبُّع السعر</translation>
@@ -2299,6 +2306,7 @@
 <translation id="4658638640878098064">وضع دبوس أعلى اليسار</translation>
 <translation id="4658801711339831733">‏تم حفظ الصورة الممسوحة ضوئيًا في Google Drive</translation>
 <translation id="4660592918803576381">‏الفتح في Drive</translation>
+<translation id="4660780573807106293">يمكن أن تطلب المواقع الإلكترونية استخدام أدوات استشعار الإضاءة والحركة</translation>
 <translation id="4661556981531699496">حيوانات أليفة وحيوانات برية</translation>
 <translation id="4661868874067696603">البحث عن المزيد من خيارات الشراء</translation>
 <translation id="4663373278480897665">تم السماح باستخدام الكاميرا</translation>
@@ -2756,6 +2764,7 @@
 <translation id="5371425731340848620">تحديث البطاقة</translation>
 <translation id="537425196847960924">تم تغيير علامة تبويب من قِبل "<ph name="USER_DISPLAY_NAME" />"</translation>
 <translation id="5374324662289354619">صفحات تصحيح الأخطاء الداخلية غير مفعَّلة حاليًا</translation>
+<translation id="5374983318402742558">يريد "<ph name="URL" />" استخدام أدوات استشعار الحركة</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">‏""توقيت ساعتك متأخِّر" أو "توقيت ساعتك متقدِّم" أو "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">لحفظ كلمة المرور هذه على جميع أجهزتك، يُرجى إثبات هويتك</translation>
@@ -2805,6 +2814,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">‏لإتمام عملية الدفع بشكل أسرع، يمكنك حفظ رمز التحقق من البطاقة (CVC) هذا في "محفظة Google" (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">التطبيقات على الجهاز</translation>
+<translation id="543656192084990644">غير مسموح باستخدام أدوات استشعار الحركة</translation>
 <translation id="5441409130426352029">‏‫‎<ph name="ATTRIBUTE_VALUE" />، كان سابقًا ‎<ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">ترتيب عكسي والوجه للأعلى</translation>
 <translation id="5447235695608032700">السماح للموقع الإلكتروني <ph name="SITE" /> باستخدام معلوماتك المحفوظة عليه</translation>
@@ -3096,6 +3106,7 @@
 <translation id="5918847752193018339">‏يمكنك الدفع بشكل أسرع بعد حفظ رموز التحقُّق من البطاقة (CVC). <ph name="LINK_BEGIN" />حذف رموز الأمان المحفوظة<ph name="LINK_END" /></translation>
 <translation id="5919090499915321845">B10</translation>
 <translation id="5921185718311485855">مفعّل</translation>
+<translation id="5921432337686792850">يمكن للموقع الإلكتروني أن يطلب استخدام أدوات استشعار الحركة</translation>
 <translation id="5921639886840618607">‏هل تريد حفظ البطاقة في حساب Google؟</translation>
 <translation id="5921952831792678223">شاحنات نقل</translation>
 <translation id="5923492272538889093">‏هل تريد استخدام فتح قفل الجهاز بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
@@ -3164,6 +3175,7 @@
 <translation id="6028591542479806248">يمكنك إدارة الإشعارات التي تصلك عبر البريد الإلكتروني أو الأجهزة الجوّالة.</translation>
 <translation id="6028833024483927901">وصفات من مطابخ عالمية</translation>
 <translation id="603068602130820122">وضع دبوسَين يمينًا</translation>
+<translation id="6031824805267965302">استخدام أدوات استشعار الحركة</translation>
 <translation id="6032524144326295339">صندوق البريد الإلكتروني 2</translation>
 <translation id="6032955021262906325">التجليد يسارًا</translation>
 <translation id="6034000775414344507">رمادي فاتح</translation>
@@ -3245,6 +3257,7 @@
 <translation id="6133984428121856852">امتداد الملف فارغ أو غير صالح.</translation>
 <translation id="6139975341602920272">17 × 22 بوصة</translation>
 <translation id="6143097244789397208">الواقع الافتراضي والواقع المعزّز</translation>
+<translation id="614327212146763975">تم السماح باستخدام أدوات استشعار الإضاءة والحركة</translation>
 <translation id="6146055958333702838">تحقق من أي كابلات وأعد تشغيل أي أجهزة توجيه أو أجهزة مودم أو أجهزة شبكة
         أخرى ربما تستخدمها.</translation>
 <translation id="614940544461990577">يمكنك محاولة:</translation>
@@ -3625,6 +3638,7 @@
 <translation id="6727094998759448074">SRA4</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6734506549556896534">ألعاب محاكاة</translation>
+<translation id="6735589846038045679">‏تخضع خطط الدفع لمتطلبات الأهلية. <ph name="BEGIN_BOLD" />تتم مشاركة محتوى صفحة الدفع مع Google لتقديم هذه الخيارات.<ph name="END_BOLD" /> لإخفاء خيارات "الدفع لاحقًا"، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />إعدادات الدفع<ph name="END_LINK" /></translation>
 <translation id="6737708609449480586">مخبوزات</translation>
 <translation id="6738516213925468394">تم ترميز بياناتك باستخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> في <ph name="TIME" />. يُرجى إدخالها لبدء المزامنة.</translation>
 <translation id="6740851646645036700">لقد وصلت إلى الحد الأقصى لاستخدام ميزة "مساعدة في الكتابة". يُرجى إعادة المحاولة لاحقًا.</translation>
@@ -3638,6 +3652,7 @@
 <translation id="6753434778807740853">حذف إدخال "<ph name="ENTRY_VOICEOVER" />"</translation>
 <translation id="6754547388777247439">حسابات توفير</translation>
 <translation id="6757797048963528358">خضع جهازك إلى وضع السكون.</translation>
+<translation id="6758934187792712102">يريد "<ph name="URL" />" استخدام أدوات استشعار الإضاءة والحركة</translation>
 <translation id="6766558780547452153">طهي ووصفات طعام</translation>
 <translation id="6770747695101757579">ورق (قطني)</translation>
 <translation id="677257480647123231">سلامة الأطفال على الإنترنت</translation>
@@ -4401,6 +4416,7 @@
 <translation id="79338296614623784">أدخِل رقم هاتف صحيحًا</translation>
 <translation id="7934414805353235750">‏يريد عنوان <ph name="URL" /> تشغيل محتوى محمٍ، لذلك ستتحقَّق Google من هوية جهازك.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
+<translation id="7935520077478121175">تم السماح باستخدام أدوات استشعار الحركة</translation>
 <translation id="7937163678541954811">‏سيتم تشفير رمز التحقق من هذه البطاقة (CVC) وحفظه في جهازك للدفع بشكل أسرع.</translation>
 <translation id="7937554595067888181">تنتهي الصلاحية في <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="7938958445268990899">شهادة الخادم ليست صالحة بعد.</translation>
@@ -5031,6 +5047,7 @@
 <translation id="8987245424886630962">‏<ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لعرض سجلّ التصفُّح في Chrome.</translation>
 <translation id="8987663052629670333">خدمات طباعة صور</translation>
 <translation id="8987927404178983737">شهر</translation>
+<translation id="8988966534058783995">استخدام أدوات استشعار الحركة؟</translation>
 <translation id="8989148748219918422"><ph name="ORGANIZATION" />‏ [<ph name="COUNTRY" />]</translation>
 <translation id="899688752321268742">يريد الموقع الإلكتروني <ph name="URL" /> رصد استخدامك النشط لهذا الجهاز.</translation>
 <translation id="8997023839087525404">قدم الخادم شهادة لم يتم الكشف عنها علنًا باستخدام سياسة شهادة الشفافية. وهذا ضروري لبعض الشهادات، لضمان أنها جديرة بالثقة ومحمية من المهاجمين.</translation>

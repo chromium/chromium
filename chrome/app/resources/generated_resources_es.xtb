@@ -524,6 +524,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="13392265090583506">Ajustes de accesibilidad</translation>
 <translation id="1340527397989195812">Realiza una copia de seguridad de los archivos multimedia desde el dispositivo con la aplicación Archivos.</translation>
 <translation id="1340839264183302272">Salir del grupo</translation>
+<translation id="1341002693404468853">Ocultar organizador</translation>
 <translation id="1341701348342335220">¡Bien hecho!</translation>
 <translation id="1342886103232377846">Para comprobar si hay contraseñas vulneradas, ve al Gestor de contraseñas de Google</translation>
 <translation id="1343920184519992513">Seguir por donde lo dejaste y abrir un conjunto concreto de páginas</translation>
@@ -2349,6 +2350,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2555855727505718984">Autocompletar no tendrá esta información en este dispositivo para ayudarte a rellenar formularios</translation>
 <translation id="25568951186001797">Marco delimitado: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Consulta todos tus marcadores aquí</translation>
+<translation id="2563924218974330506">Ahora puedes gestionar tus grupos de pestañas aquí. Puedes desfijarlo en cualquier momento.</translation>
 <translation id="2564520396658920462">La ejecución de JavaScript a través de AppleScript está desactivada. Para activarla, en la barra de menú, accede a Ver &gt; Opciones para desarrolladores &gt; Permitir JavaScript desde Eventos de Apple. Puedes consultar más información en la página https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Corrector ortográfico mejorado</translation>
 <translation id="256481480019204378">ID de cuenta de Google</translation>
@@ -5668,6 +5670,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
 <translation id="481689174647911539">Este archivo podría ser un virus o malware.<ph name="LINE_BREAK" />Puedes enviarlo a Navegación segura de Google para comprobar su seguridad. Los análisis suelen tardar unos segundos.</translation>
 <translation id="4816900689218414104">Crear una llave de acceso en un teléfono o tablet</translation>
+<translation id="481852950686014162">Sigue donde lo dejaste en Gemini y el Modo IA</translation>
 <translation id="4819323978093861656">{0,plural, =0{Cerrando}=1{Se cerrarán en 1 segundo}other{Se cerrarán en # segundos}}</translation>
 <translation id="4819818293886748542">Obtén un enlace a la herramienta de asistencia</translation>
 <translation id="4820236583224459650">Definir como ticket activo</translation>
@@ -5872,6 +5875,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un archivo}other{# archivos}}</translation>
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4951966678293618079">Nunca guardar contraseñas de este sitio</translation>
+<translation id="4952580838083306838">Ocultar organizador</translation>
 <translation id="4953808748584563296">Avatar naranja predeterminado</translation>
 <translation id="4954652437333037880">Archivo</translation>
 <translation id="4954831709600868883">Preguntar sobre <ph name="TEXT" /></translation>
@@ -6289,6 +6293,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5246282308050205996"><ph name="APP_NAME" /> ha dejado de funcionar. Haz clic en este globo para reiniciar la aplicación.</translation>
 <translation id="5247051749037287028">Nombre visible (opcional)</translation>
 <translation id="5247243947166567755">Seleccionar <ph name="BOOKMARK_TITLE" /></translation>
+<translation id="5248934139541843042">Ver organizador</translation>
 <translation id="5249624017678798539">Se ha producido un fallo en el navegador antes de que se completara la descarga.</translation>
 <translation id="5249818097095743806">Usar tu llave de seguridad</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utiliza tu ubicación para ofrecerte contenido local. Puedes cambiar esta opción en <ph name="SETTINGS_LINK" />.</translation>
@@ -6929,6 +6934,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5698878456427040674">Comprueba que la cuenta seleccionada es compatible.</translation>
 <translation id="5698900765010620315">Oscuro de bajo contraste</translation>
 <translation id="5699227710146832453">De tu</translation>
+<translation id="5700024700429259844">Ahora puedes reanudar directamente las interacciones con Gemini y las conversaciones del Modo IA aquí. Puedes desfijarlo en cualquier momento.</translation>
 <translation id="570043786759263127">Servicios y aplicaciones de Google Play</translation>
 <translation id="5700761515355162635">Cookies de terceros permitidas</translation>
 <translation id="5700836101007545240">El administrador ha inhabilitado la opción Añadir conexión</translation>
@@ -8358,6 +8364,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6686878118106035853">La protección mejorada personalizada desactiva la optimización de JavaScript en todos los sitios</translation>
 <translation id="6687008241368170505">Cambiar PIN del Gestor de contraseñas de Google</translation>
 <translation id="6687079240787935001">Ocultar <ph name="MODULE_TITLE" /></translation>
+<translation id="6689092196793298127">Organizador</translation>
 <translation id="6689948774466767379">Teclas del ratón</translation>
 <translation id="6690659332373509948">No se puede analizar el archivo: <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Reenviar</translation>
@@ -9683,6 +9690,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="760197030861754408">Accede a <ph name="LANDING_PAGE" /> para establecer conexión.</translation>
 <translation id="7602079150116086782">No hay pestañas de otros dispositivos.</translation>
 <translation id="7602173054665172958">Gestión de impresión</translation>
+<translation id="7602805861133750578">Ahora puedes gestionar tus grupos de pestañas, interacciones con Gemini y conversaciones del Modo IA en un solo lugar. Puedes desfijarlo en cualquier momento.</translation>
 <translation id="7602868996817972616">Preguntar a Google sobre esta página</translation>
 <translation id="7603785829538808504">Los sitios que se indican a continuación tienen una configuración personalizada.</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 contraseña no importada}other{{NUM_PASSWORDS} contraseñas no importadas}}</translation>
@@ -10390,6 +10398,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8054609631325628928">Estos números se pueden usar para activar el servicio</translation>
 <translation id="8054883179223321715">Disponible para algunos sitios de vídeo</translation>
 <translation id="8054921503121346576">Teclado USB conectado</translation>
+<translation id="8055975688427973864">Mostrar botón del organizador</translation>
 <translation id="8058655154417507695">Año de caducidad</translation>
 <translation id="8058986560951482265">Entrecortada</translation>
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>
@@ -11373,6 +11382,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="871515167518607670">Selecciona un dispositivo. En el dispositivo, abre Chrome para ver la página.</translation>
 <translation id="8715480913140015283">La pestaña en segundo plano está usando la cámara</translation>
 <translation id="8716050156658570300">Los sitios pueden solicitar permiso para usar sensores de luz y movimiento</translation>
+<translation id="8716067129332848360">Ver organizador</translation>
 <translation id="8716931980467311658">¿Eliminar todos los datos y aplicaciones de Linux de la carpeta Archivos de Linux del <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copiar enlace</translation>
 <translation id="8718994464069323380">Pantalla táctil detectada</translation>
@@ -11834,6 +11844,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9013037634206938463">Se requiere <ph name="INSTALL_SIZE" /> de espacio disponible para instalar Linux. Para liberar espacio, elimina archivos de tu dispositivo.</translation>
 <translation id="9014206344398081366">Tutorial de ChromeVox</translation>
 <translation id="9014674417732091912">Se ha movido a la fila <ph name="ROW_NUMBER" /></translation>
+<translation id="9015849286924418538">Organiza las pestañas en grupos con etiquetas y colores para acceder a ellas fácilmente</translation>
 <translation id="901668144954885282">Crear copia de seguridad en Google Drive</translation>
 <translation id="9016827136585652292">activar o desactivar pantalla de privacidad</translation>
 <translation id="90181708067259747">Fecha de vencimiento: <ph name="CARD" /></translation>

@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">Bottom Sheet ของเบราว์เซอร์เริ่มต้น</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{เว็บไซต์ <ph name="RWS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="RWS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}other{เว็บไซต์ <ph name="RWS_MEMBERS_COUNT" /> รายการในกลุ่มเว็บไซต์ของ <ph name="RWS_OWNER" /> ที่ดูกิจกรรมของคุณในกลุ่มได้}}</translation>
 <translation id="3676777756440746804">เว็บไซต์ถูกบล็อกไม่ให้ขออนุญาตคุณในการใช้ข้อมูลที่บันทึกไว้เกี่ยวกับตัวคุณ</translation>
+<translation id="3677897809642449131">เว็บไซต์ขอใช้เซ็นเซอร์ตรวจจับความเคลื่อนไหวได้</translation>
 <translation id="3678318839615834650">Bottom Sheet ของการ์ดหน้าแท็บใหม่เปิดอยู่แบบเต็มความสูง</translation>
 <translation id="3697164069658504920">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์ USB ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์ USB ไม่ได้</translation>
 <translation id="3703430731944883733">จัดการฟีด</translation>
@@ -748,6 +749,7 @@
 <translation id="8707904142362025782">เว็บไซต์ขอใช้กล้องของคุณได้</translation>
 <translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8715862698998036666">ลากจากด้านบนแล้วปัดจากขอบด้านซ้ายหรือขวาเพื่อออกจากโหมดเต็มหน้าจอ</translation>
+<translation id="8716050156658570300">เว็บไซต์ขอใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวและเซ็นเซอร์แสงได้</translation>
 <translation id="8719283222052720129">เปิดการใช้สิทธิ์สำหรับ <ph name="APP_NAME" /> ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="8721719390026067591">เมื่อเปิด เว็บไซต์จะขอค้นหาอุปกรณ์บลูทูธได้ เมื่อปิด เว็บไซต์จะค้นหาอุปกรณ์บลูทูธไม่ได้</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>

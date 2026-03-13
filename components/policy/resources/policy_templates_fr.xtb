@@ -1357,6 +1357,23 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ferme l'onglet apr�
 <translation id="1954612656043024615">Activer la fonctionnalité de presse-papiers partagé</translation>
 <translation id="1955063069502242812">Activer le son de batterie faible</translation>
 <translation id="1955806069704957172">Contrôle les paramètres de l'API du connecteur de bureau.</translation>
+<translation id="1956346847126765379">Si vous définissez la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />, les pages Web dont les URL sont interdites ne peuvent pas se charger. Les administrateurs peuvent spécifier la liste des formats d'URL à bloquer. Si cette règle n'est pas configurée, aucune URL n'est bloquée dans le navigateur. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Remarque : Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages dont les données sont chargées dynamiquement. Si vous bloquez example.com/abc, example.com pourra toujours la charger à l'aide de XMLHTTPRequest. En outre, cette règle n'empêche pas les pages Web de remplacer l'URL affichée dans l'omnibox par une URL bloquée à l'aide de l'API JavaScript History.
+
+À partir de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse ou, par exemple, les favoris intelligents.
+
+À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode headless.
+
+À partir de la version 147 de <ph name="PRODUCT_NAME" />, le caractère générique * seul ne s'applique pas aux URL chrome:// internes. Pour les bloquer, vous devez utiliser explicitement le format chrome://*.
+
+Remarque : Bloquer des URL internes chrome://* et chrome-untrusted://* peut entraîner des erreurs inattendues ou être contourné dans certains cas. Au lieu de bloquer certaines URL internes, vérifiez si des règles plus spécifiques sont disponibles. Par exemple :
+
+– Au lieu de bloquer chrome://settings/certificates, utilisez <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />.
+
+– Au lieu de bloquer chrome-untrusted://crosh, utilisez <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.
+
+– Au lieu de bloquer devtools://*, utilisez l'une des règles <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> ou <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="1957093168333856467">Désactiver le clavier virtuel d'accessibilité</translation>
 <translation id="1958110911685486719">Prise en charge des formulaires XFA dans les PDF activée</translation>
 <translation id="1960059835237529462">Permet aux utilisateurs de voir la promo concernant la note sur l'App Store <ph name="IOS_NAME" /></translation>

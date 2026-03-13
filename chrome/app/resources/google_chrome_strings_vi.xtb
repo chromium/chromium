@@ -153,6 +153,7 @@
 <translation id="2586406160782125153">Thao tác này sẽ xóa dữ liệu duyệt web của bạn khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Không thể lưu trình cài đặt đã tải xuống vào bộ nhớ đệm. Lỗi: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
+<translation id="263447411082773721">Mật khẩu, dấu trang và nhật ký của bạn sẽ được đồng bộ hoá liền mạch trên mọi thiết bị. Hãy cập nhật trình duyệt mặc định thành Chrome để dễ dàng sử dụng các tính năng bạn quen thuộc và yêu thích. Chrome sẽ được ghim vào thanh tác vụ để bạn có thể truy cập nhanh chóng.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome thường xuyên kiểm tra để đảm bảo trình duyệt của bạn có các chế độ cài đặt an toàn nhất. Chúng tôi sẽ thông báo cho bạn biết nếu có nội dung nào cần bạn xem xét.</translation>
 <translation id="2652691236519827073">Mở đường liên kết trong &amp;tab mới của Chrome</translation>
@@ -231,6 +232,7 @@
 <translation id="3327226547491422998">Sau đó, Chrome có thể hỏi xem bạn có muốn sử dụng thông tin đã lưu để tự động điền vào biểu mẫu hay không</translation>
 <translation id="3352986031709923790">góc trên cùng bên phải của khu vực tìm kiếm: <ph name="RIGHT" />% từ bên phải sang, <ph name="TOP" />% từ trên cùng xuống</translation>
 <translation id="3360895254066713204">Trình trợ giúp của Chrome</translation>
+<translation id="3373752068427117404">Một số tính năng và tiện ích của Chrome đi kèm lối tắt. Bạn có thể chọn bật lại các lối tắt này.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sẽ khởi động lại ngay bây giờ}=1{Chrome sẽ khởi động lại sau 1 giây}other{Chrome sẽ khởi động lại sau # giây}}</translation>
 <translation id="3380249972812870825">Để mở Gemini trong Chrome, hãy nhấn <ph name="GLOBAL_HOTKEY" /></translation>
 <translation id="3396977131400919238">Đã xảy ra lỗi hệ điều hành trong quá trình cài đặt. Vui lòng tải xuống lại Google Chrome.</translation>
@@ -695,6 +697,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8064965390968184078">1. Nhấp vào <ph name="BUTTON_LABEL" /> bên dưới
 2. Nhấp vào <ph name="BUTTON_2" /> trong phần cài đặt Windows
 3. Nhấp vào <ph name="BUTTON_3" /> trong thông báo của Windows để ghim Chrome vào thanh tác vụ giúp truy cập nhanh</translation>
+<translation id="8074398340364918139">Để tìm kiếm một tính năng hoặc tiện ích cụ thể của Chrome, hãy nhập lối tắt của tính năng hoặc tiện ích đó vào thanh địa chỉ, sau đó nhấn phím bạn chọn trên bàn phím</translation>
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>
 <translation id="8086881907087796310">Cài đặt không thành công vì máy tính của bạn không đáp ứng được các yêu cầu tối thiểu về phần cứng.</translation>
 <translation id="8113883687556086139">Xác minh danh tính của bạn để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
@@ -703,6 +706,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8129812357326543296">Giới thiệu về &amp;Google Chrome</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8162006532256575008">Dùng Chrome mà không cần tài khoản</translation>
+<translation id="8172231188687329735">Tải ứng dụng Chrome để lưu mật khẩu mọi lúc, mọi nơi</translation>
 <translation id="8177472873527554730">Không tìm thấy nội dung trong trang</translation>
 <translation id="8221491193165283816">Bạn thường chặn các thông báo. Để cho phép trang web này thông báo cho bạn, hãy nhấp vào đây.</translation>
 <translation id="8253851811470049684">Mở đường liên kết trong Chrome từ ứng dụng bất kỳ và giữ cho trình duyệt luôn có thể truy cập được trên thanh tác vụ</translation>
@@ -730,6 +734,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 
 Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu trang mới vào tài khoản. Nếu bạn đăng xuất ngay bây giờ, các dấu trang chưa lưu sẽ bị xoá.</translation>
 <translation id="8433638294851456451">Để gửi số điện thoại từ thiết bị này đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
+<translation id="8458117863387545390">Tải Chrome về điện thoại</translation>
 <translation id="8496177819998570653">Trình quản lý mật khẩu của Google</translation>
 <translation id="8498858610309223613">Google Chrome vừa áp dụng một bản cập nhật bảo mật đặc biệt. Vui lòng khởi động lại ngay bây giờ và chúng tôi sẽ khôi phục các thẻ của bạn.</translation>
 <translation id="8516431725144212809">Mối quan tâm của bạn theo ước đoán của Chrome</translation>

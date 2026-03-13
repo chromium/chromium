@@ -10,6 +10,7 @@
 
 Some features may be unavailable and changes to preferences won't be saved.</translation>
 <translation id="1083934481477628225">Your parent has turned off 'Permissions for sites, apps and extensions' for Chromium.</translation>
+<translation id="1090946077924227754">To search a specific Chromium feature or extension, type its shortcut in the address bar, followed by your selected keyboard key</translation>
 <translation id="1104942323762546749">Chromium wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="112640046208448578">Identify things or places and copy or translate text. When you use image search, a screenshot of the page is sent to the server. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium is your default browser</translation>
@@ -27,6 +28,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1262876892872089030">While this tab was inactive, memory was freed up to keep Chromium fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="1265577313130862557">Chromium blocked this download because the file is dangerous</translation>
 <translation id="126567311906253476">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chromium with the same account</translation>
+<translation id="1287534462498555020">Get Chromium on your phone</translation>
 <translation id="1290883685122687410">Setup error: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Set up your new Chromium profile</translation>
 <translation id="132092532143527429">Try with Gemini in Chromium</translation>
@@ -382,6 +384,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5231355151045086930">Sign out of Chromium</translation>
 <translation id="5234764350956374838">Dismiss</translation>
 <translation id="5254739261293693943">Ask about this video</translation>
+<translation id="5276305953263010518">Get the Chromium app to save passwords on the go</translation>
 <translation id="5277894862589591112">To apply your changes, relaunch Chromium</translation>
 <translation id="5286907366254680517">Detected</translation>
 <translation id="5289287148052354622">Get the Chromium app</translation>
@@ -695,6 +698,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8522801943730206384">Chromium can check your passwords when you save them</translation>
 <translation id="8548787790260785208">Get warned if Chromium finds one of your passwords in a public data breach</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
+<translation id="8556055872671007529">Some Chromium features and extensions come with shortcuts. You can choose to turn them back on.</translation>
 <translation id="8556420416730706394">You can pin image search for easy access; click the Pin button at the top of the side panel</translation>
 <translation id="856656450041460113">Search language list</translation>
 <translation id="8568283329061645092">Chromium can check your passwords when you sign in with your Google Account</translation>
@@ -730,6 +734,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8988036198400390003">Manage Chromium profiles</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="904366664621834601">Chromium blocked this download because the archive file includes other files that may hide malware</translation>
+<translation id="9053882453960391422">Keep your passwords, bookmarks and history perfectly synced across devices. Easily access the features that you know and love by updating your default browser to Chromium. Chromium will be pinned to your taskbar for quick access.</translation>
 <translation id="9062666675513499497">Sign in to Chromium when you sign in to other Google services</translation>
 <translation id="9078733879136747090">Chromium was automatically closed</translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>

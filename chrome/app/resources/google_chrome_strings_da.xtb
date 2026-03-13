@@ -151,6 +151,7 @@
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Det downloadede installationsprogram kunne ikke gemmes i cache. Fejl: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
 <translation id="2620436844016719705">System</translation>
+<translation id="263447411082773721">Hold dine adgangskoder, bogmærker og din historik perfekt synkroniseret på alle enheder. Få nem adgang til de funktioner, du kender og elsker, ved at opdatere din standardbrowser til Chrome. Chrome fastgøres til proceslinjen, så du hurtigt kan tilgå browseren.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome tjekker jævnligt, om din browser har de sikreste indstillinger. Vi giver dig besked, hvis der er noget, du skal gennemgå.</translation>
 <translation id="2652691236519827073">Åbn linket i en ny Chrome-&amp;fane</translation>
@@ -229,6 +230,7 @@
 <translation id="3327226547491422998">Senere kan Chrome spørge, om du vil bruge gemte oplysninger til automatisk at udfylde formularer</translation>
 <translation id="3352986031709923790">øverste højre hjørne af søgeområdet: højre <ph name="RIGHT" /> %, øverste <ph name="TOP" /> %</translation>
 <translation id="3360895254066713204">Hjælp til Chrome</translation>
+<translation id="3373752068427117404">Nogle Chrome-funktioner og -udvidelser har genveje. Du kan vælge at aktivere dem igen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome genstarter nu}=1{Chrome genstarter om 1 sekund}one{Chrome genstarter om # sekund}other{Chrome genstarter om # sekunder}}</translation>
 <translation id="3380249972812870825">Tryk på <ph name="GLOBAL_HOTKEY" /> for at åbne Gemini i Chrome</translation>
 <translation id="3396977131400919238">Der opstod en fejl ved operativsystemet under installation. Download Google Chrome igen.</translation>
@@ -691,6 +693,7 @@
 <translation id="8064965390968184078">1. Klik på <ph name="BUTTON_LABEL" /> nedenfor
 2. Klik på <ph name="BUTTON_2" /> i dine Windows-indstillinger
 3. Klik på <ph name="BUTTON_3" /> i Windows-notifikationen for at fastgøre Chrome til proceslinjen, så du hurtigt kan tilgå browseren</translation>
+<translation id="8074398340364918139">Hvis du vil søge efter en bestemt Chrome-funktion eller -udvidelse, skal du angive genvejen til den i adresselinjen efterfulgt af din valgte tastaturtast</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen mislykkedes, fordi din computer ikke opfylder minimumskravene til hardware.</translation>
 <translation id="8113883687556086139">Verificer din identitet for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -699,6 +702,7 @@
 <translation id="8129812357326543296">Om &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8162006532256575008">Brug Chrome uden en konto</translation>
+<translation id="8172231188687329735">Hent Chrome-appen for at gemme adgangskoder på farten</translation>
 <translation id="8177472873527554730">Der blev ikke fundet indhold på siden</translation>
 <translation id="8221491193165283816">Du blokerer som regel notifikationer. Klik her for at give websitet tilladelse til at sende notifikationer.</translation>
 <translation id="8253851811470049684">Åbn links i Chrome fra en hvilken som helst app, og sørg for, at browseren altid er tilgængelig på proceslinjen</translation>
@@ -726,6 +730,7 @@
 
 Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du logger ud nu, slettes bogmærker, der ikke er gemt.</translation>
 <translation id="8433638294851456451">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
+<translation id="8458117863387545390">Få Chrome på din telefon</translation>
 <translation id="8496177819998570653">Google Adgangs­kode­admin­istrator</translation>
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
 <translation id="8516431725144212809">Dine interesser, som de er estimeret af Chrome</translation>

@@ -269,6 +269,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="3658847490588580244">Felt i bunden med standardbrowser</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="RWS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="3676777756440746804">Websites kan ikke anmode om at bruge oplysninger, de har gemt om dig</translation>
+<translation id="3677897809642449131">Websites kan anmode om tilladelse til at bruge bevægelsessensorer</translation>
 <translation id="3678318839615834650">Feltet i bunden med kort på siden Ny fane er åbnet i fuld højde</translation>
 <translation id="3697164069658504920">Når dette er slået til, kan websites anmode om tilladelse til at bruge USB-enheder. Når dette er slået fra, kan websites ikke anvende USB-enheder.</translation>
 <translation id="3703430731944883733">Administrer dit feed</translation>
@@ -748,6 +749,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:
 <translation id="8707904142362025782">Websitet kan anmode om adgang til dit kamera</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="8715862698998036666">Træk fra toppen af skærmen, og stryg fra venstre eller højre kant for at afslutte fuld skærm.</translation>
+<translation id="8716050156658570300">Websites kan anmode om tilladelse til at bruge bevægelses- og lyssensorer</translation>
 <translation id="8719283222052720129">Aktivér tilladelse for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="8721719390026067591">Når dette er slået til, kan websites anmode om tilladelse til at søge efter Bluetooth-enheder. Når dette er slået fra, kan websites ikke søge efter Bluetooth-enheder.</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>

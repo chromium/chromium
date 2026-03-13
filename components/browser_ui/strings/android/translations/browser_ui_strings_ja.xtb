@@ -269,6 +269,7 @@
 <translation id="3658847490588580244">デフォルトのブラウザのボトムシート</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}other{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}}</translation>
 <translation id="3676777756440746804">サイトがあなたに関する保存済みの情報の使用を要求できないようにする</translation>
+<translation id="3677897809642449131">サイトがモーション センサーの使用を要求できるようにする</translation>
 <translation id="3678318839615834650">新しいタブページのカードのボトムシートが画面全体に表示されています</translation>
 <translation id="3697164069658504920">オンにすると、サイトは USB デバイスの使用を要求できます。オフにすると、サイトは USB デバイスを使用できません。</translation>
 <translation id="3703430731944883733">フィードを管理</translation>
@@ -748,6 +749,7 @@
 <translation id="8707904142362025782">サイトがカメラへのアクセスを要求できるようにする</translation>
 <translation id="8712637175834984815">理解しました</translation>
 <translation id="8715862698998036666">全画面表示を終了するには、上からドラッグして、左端または右端からスワイプします。</translation>
+<translation id="8716050156658570300">サイトがモーション センサーと光センサーの使用を要求できるようにする</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="8721719390026067591">オンにすると、サイトは Bluetooth デバイスの検出を要求できます。オフにすると、サイトは Bluetooth デバイスを検出できません。</translation>
 <translation id="8725066075913043281">もう一度試す</translation>

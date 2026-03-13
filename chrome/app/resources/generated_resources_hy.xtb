@@ -526,6 +526,7 @@
 <translation id="13392265090583506">Հատուկ գործառույթներ</translation>
 <translation id="1340527397989195812">Պահուստավորել սարքի վրայի մեդիա ֆայլերը Ֆայլեր հավելվածի միջոցով:</translation>
 <translation id="1340839264183302272">Լքել խումբը</translation>
+<translation id="1341002693404468853">Թաքցնել կազմակերպչին</translation>
 <translation id="1341701348342335220">Հրաշալի է</translation>
 <translation id="1342886103232377846">Կոտրված գաղտնաբառեր հայտնաբերելու համար անցեք Google գաղտնաբառերի կառավարիչ</translation>
 <translation id="1343920184519992513">Շարունակել այն պահից, որտեղ կանգ եմ առել, և բացել էջերի որոշակի խումբ</translation>
@@ -2348,6 +2349,7 @@
 <translation id="2555855727505718984">Ինքնալրացումն այս սարքում չի ունենալու այս տեղեկությունը՝ ձևերը լրացնելու համար</translation>
 <translation id="25568951186001797">Fenced Frame տարր՝ <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Ձեր բոլոր էջանիշներն այստեղ են</translation>
+<translation id="2563924218974330506">Այժմ դուք կարող եք կառավարել ձեր ներդիրների խմբերն այստեղ։ Ցանկացած ժամանակ կարող եք ապամրացնել սա։</translation>
 <translation id="2564520396658920462">AppleScript-ի միջոցով JavaScript-ի օգտագործումն անջատված է: Միացնելու համար ցանկագոտուց անցեք Դիտում &gt; Մշակող &gt; Թույլատրել JavaScript-ը Apple-ի իրադարձություններից: Լրացուցիչ տեղեկությունների համար անցեք https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Ուղղագրության ընդլայնված ստուգում</translation>
 <translation id="256481480019204378">Google հաշվի նույնացուցիչ</translation>
@@ -5666,6 +5668,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{1 էջանիշ ջնջվեց}one{{COUNT} էջանիշ ջնջվեց}other{{COUNT} էջանիշ ջնջվեց}}</translation>
 <translation id="481689174647911539">Այս ֆայլը կարող է վիրուս կամ վնասագիր լինել։<ph name="LINE_BREAK" />Ուղարկեք այն «Google Ապահով դիտարկում» ծառայությանը՝ ստուգելու, թե արդյոք ֆայլն անվտանգ է։ Սկանավորումը սովորաբար մի քանի վայրկյան է տևում։</translation>
 <translation id="4816900689218414104">Ստեղծեք մուտքի բանալի ձեր հեռախոսում կամ պլանշետում</translation>
+<translation id="481852950686014162">Շարունակեք այնտեղից, որտեղ կանգ էիք առել Gemini-ում և ԱԲ ռեժիմում</translation>
 <translation id="4819323978093861656">{0,plural, =0{Փակում է հիմա}=1{Կփակի 1 վայրկյանից}one{Կփակի # վայրկյանից}other{Կփակի # վայրկյանից}}</translation>
 <translation id="4819818293886748542">Ստանալ աջակցման գործիքի հղում</translation>
 <translation id="4820236583224459650">Նշել որպես ակտիվ տոմս</translation>
@@ -5871,6 +5874,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{ֆայլ}one{# ֆայլ}other{# ֆայլ}}</translation>
 <translation id="495170559598752135">Գործողություններ</translation>
 <translation id="4951966678293618079">Երբեք չպահել գաղտնաբառեր այս կայքի համար</translation>
+<translation id="4952580838083306838">Թաքցնել կազմակերպչին</translation>
 <translation id="4953808748584563296">Կանխադրված նարնջագույն ավատար</translation>
 <translation id="4954652437333037880">Ֆայլ</translation>
 <translation id="4954831709600868883">Հարցրեք <ph name="TEXT" /> ապրանքանիշի մասին</translation>
@@ -6288,6 +6292,7 @@
 <translation id="5246282308050205996"><ph name="APP_NAME" />-ը խափանվել է: Հավելվածը վերագործարկելու համար սեղմեք այս փուչիկի վրա:</translation>
 <translation id="5247051749037287028">Ցուցադրվող անունը (կամընտիր)</translation>
 <translation id="5247243947166567755">Ընտրել <ph name="BOOKMARK_TITLE" /> տարրը</translation>
+<translation id="5248934139541843042">Դիտել կազմակերպչին</translation>
 <translation id="5249624017678798539">Դիտարկիչը խափանվեց և ներբեռնումը չավարտվեց:</translation>
 <translation id="5249818097095743806">Օգտագործեք ձեր անվտանգության բանալին</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />-ն օգտագործում է ձեր գտնվելու վայրը՝ ձեզ տեղային բովանդակություն տրամադրելու համար: Սա կարող եք փոխել <ph name="SETTINGS_LINK" />-ում:</translation>
@@ -6926,6 +6931,7 @@
 <translation id="5698878456427040674">Ստուգեք՝ արդյոք ընտրված հաշիվն աջակցվում է։</translation>
 <translation id="5698900765010620315">Ցածր կոնտրաստով մուգ թեմա</translation>
 <translation id="5699227710146832453">Այստեղից՝</translation>
+<translation id="5700024700429259844">Այժմ դուք կարող եք անմիջապես շարունակել Gemini զրույցները և ԱԲ ռեժիմի նամակագրություններն այստեղ։ Ցանկացած ժամանակ կարող եք ապամրացնել սա։</translation>
 <translation id="570043786759263127">Google Play հավելվածներ և ծառայություններ</translation>
 <translation id="5700761515355162635">Երրորդ կողմի քուքիները թույլատրված են</translation>
 <translation id="5700836101007545240">Ձեր ադմինիստրատորն անջատել է կապ ավելացնելու գործառույթը</translation>
@@ -8356,6 +8362,7 @@
 <translation id="6686878118106035853">Բարելավված պաշտպանության հատուկ կարգավորումն անջատում է JavaScript-ի օպտիմալացումը բոլոր կայքերի համար</translation>
 <translation id="6687008241368170505">Փոխել Google գաղտնաբառերի կառավարչի PIN կոդը</translation>
 <translation id="6687079240787935001">Թաքցնել «<ph name="MODULE_TITLE" />» զամբյուղը</translation>
+<translation id="6689092196793298127">Կազմակերպիչ</translation>
 <translation id="6689948774466767379">Մկնիկի ստեղներ</translation>
 <translation id="6690659332373509948">Հնարավոր չէ վերլուծել ֆայլը՝ <ph name="FILE_NAME" /></translation>
 <translation id="6691936601825168937">&amp;Առաջ</translation>
@@ -9680,6 +9687,7 @@
 <translation id="760197030861754408">Անցեք <ph name="LANDING_PAGE" />՝ միանալու համար:</translation>
 <translation id="7602079150116086782">Այլ սարքերից ներդիրներ չկան</translation>
 <translation id="7602173054665172958">Տպելու առաջադրանքների կառավարում</translation>
+<translation id="7602805861133750578">Այժմ դուք կարող եք կառավարել ձեր ներդիրների խմբերը, Gemini զրույցները և ԱԲ ռեժիմի նամակագրությունները մեկ տեղում։ Ցանկացած ժամանակ կարող եք ապամրացնել սա։</translation>
 <translation id="7602868996817972616">Հարցրեք Google-ին այս էջի մասին</translation>
 <translation id="7603785829538808504">Նշված կայքերի համար գործում են հատուկ կարգավորումներ</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 գաղտնաբառ չի ներմուծվել}one{{NUM_PASSWORDS} գաղտնաբառ չի ներմուծվել}other{{NUM_PASSWORDS} գաղտնաբառ չի ներմուծվել}}</translation>
@@ -10386,6 +10394,7 @@
 <translation id="8054609631325628928">Այս համարների միջոցով կարող եք ակտիվացնել ծառայությունը</translation>
 <translation id="8054883179223321715">Սարքը համատեղելի է միայն որոշակի կայքերի հետ</translation>
 <translation id="8054921503121346576">USB ստեղնաշարը միացված է</translation>
+<translation id="8055975688427973864">«Ցույց տալ կազմակերպչին» կոճակ</translation>
 <translation id="8058655154417507695">Ժամկետի սպառման տարեթիվը</translation>
 <translation id="8058986560951482265">Ցնցվող</translation>
 <translation id="8059417245945632445">&amp;Հետազոտել սարքերը</translation>
@@ -11369,6 +11378,7 @@
 <translation id="871515167518607670">Ընտրեք որևէ սարք։ Այնուհետև, էջը տեսնելու համար այնտեղ բացեք Chrome-ը։</translation>
 <translation id="8715480913140015283">Ֆոնային ներդիրն օգտագործում է ձեր տեսախցիկը</translation>
 <translation id="8716050156658570300">Կայքերը կարող են շարժման և լուսավորության սենսորներն օգտագործելու թույլտվություն հայցել</translation>
+<translation id="8716067129332848360">Դիտել կազմակերպչին</translation>
 <translation id="8716931980467311658">Ջնջե՞լ բոլոր Լինուքս հավելվածները, ինչպես նաև «Լինուքսի ֆայլեր» պանակի տվյալները <ph name="DEVICE_TYPE" /> սարքից:</translation>
 <translation id="8717864919010420084">Պատճենել հղումը</translation>
 <translation id="8718994464069323380">Հայտնաբերվել է հպէկրան</translation>
@@ -11831,6 +11841,7 @@
 <translation id="9013037634206938463">Լինուքսը տեղադրելու համար անհրաժեշտ է նվազագույնը <ph name="INSTALL_SIZE" /> ազատ տարածք։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="9014206344398081366">ChromeVox-ի ուղեցույց</translation>
 <translation id="9014674417732091912">Տեղափոխվեց տող <ph name="ROW_NUMBER" /></translation>
+<translation id="9015849286924418538">Կազմակերպեք ներդիրները գունանշված խմբերում՝ հեշտությամբ բացելու համար</translation>
 <translation id="901668144954885282">Կրկնօրինակ Google Drive-ում</translation>
 <translation id="9016827136585652292">գաղտնիության էկրանի փոխանջատիչ</translation>
 <translation id="90181708067259747">Սպառման ամսաթիվը՝ <ph name="CARD" /></translation>

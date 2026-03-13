@@ -527,6 +527,7 @@
 <translation id="13392265090583506">Даступнасць</translation>
 <translation id="1340527397989195812">Стварыце рэзервовыя копіі файлаў мультымедыя з прылады з дапамогай праграмы "Файлы".</translation>
 <translation id="1340839264183302272">Пакінуць групу</translation>
+<translation id="1341002693404468853">Схаваць сродак упарадкавання ўкладак</translation>
 <translation id="1341701348342335220">Выдатна!</translation>
 <translation id="1342886103232377846">Каб праверыць наяўнасць раскрытых пароляў, перайдзіце ў Менеджар пароляў Google</translation>
 <translation id="1343920184519992513">Працягваць з месца, на якім вы спыніліся, і адкрываць пэўны набор старонак</translation>
@@ -2348,6 +2349,7 @@
 <translation id="2555855727505718984">Функцыя аўтазапаўнення форм больш не зможа выкарыстоўваць гэту інфармацыю на гэтай прыладзе</translation>
 <translation id="25568951186001797">Акно fenced frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2561211427862644160">Тут знаходзяцца ўсе вашы закладкі</translation>
+<translation id="2563924218974330506">Цяпер вы можаце кіраваць групамі ўкладак тут. Адмацаваць можна ў любы час.</translation>
 <translation id="2564520396658920462">Выкананне JavaScript праз AppleScript выключана. Каб уключыць яго, перайдзіце з панэлі меню ў "Прагляд &gt; Распрацоўшчык &gt; Дазволіць JavaScript з падзей Apple". Падрабязную інфармацыю глядзіце тут: https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2564653188463346023">Палепшаная праверка правапісу</translation>
 <translation id="256481480019204378">Ідэнтыфікатар Уліковага запісу Google</translation>
@@ -5666,6 +5668,7 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Выдалена 1 закладка}one{Выдалена {COUNT} закладка}few{Выдалена {COUNT} закладкі}many{Выдалена {COUNT} закладак}other{Выдалена {COUNT} закладкі}}</translation>
 <translation id="481689174647911539">Гэты файл можа быць вірусам або шкоднай праграмай.<ph name="LINE_BREAK" />Вы можаце адправіць яго на праверку ў Google Бяспечны прагляд. Сканіраванне звычайна займае некалькі секунд.</translation>
 <translation id="4816900689218414104">Стварыце ключ доступу на тэлефоне або планшэце</translation>
+<translation id="481852950686014162">Працягвайце з месца, дзе спыніліся, у Gemini і рэжыме AI</translation>
 <translation id="4819323978093861656">{0,plural, =0{Браўзер закрываецца}=1{Браўзер будзе закрыты праз 1 секунду}one{Браўзер будзе закрыты праз # секунду}few{Браўзер будзе закрыты праз # секунды}many{Браўзер будзе закрыты праз # секунд}other{Браўзер будзе закрыты праз # секунды}}</translation>
 <translation id="4819818293886748542">Атрымаць спасылку на інструмент падтрымкі</translation>
 <translation id="4820236583224459650">Задаць білет у якасці актыўнага</translation>
@@ -5871,6 +5874,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="495170559598752135">Дзеянні</translation>
 <translation id="4951966678293618079">Не захоўваць паролі для гэтага сайта</translation>
+<translation id="4952580838083306838">Схаваць сродак упарадкавання ўкладак</translation>
 <translation id="4953808748584563296">Стандартны аранжавы аватар</translation>
 <translation id="4954652437333037880">Файл</translation>
 <translation id="4954831709600868883">Спытаць пра наступнае: <ph name="TEXT" /></translation>
@@ -6288,6 +6292,7 @@
 <translation id="5246282308050205996">Збой праграмы "<ph name="APP_NAME" />". Націсніце на гэта ўсплывальнае папярэджанне, каб перазапусціць праграму.</translation>
 <translation id="5247051749037287028">Бачная назва (неабавязкова)</translation>
 <translation id="5247243947166567755">Выбраць "<ph name="BOOKMARK_TITLE" />"</translation>
+<translation id="5248934139541843042">Паказаць сродак упарадкавання ўкладак</translation>
 <translation id="5249624017678798539">У браўзеры адбыўся збой пры незавершанай спампоўцы.</translation>
 <translation id="5249818097095743806">Выкарыстайце свой ключ бяспекі</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> выкарыстоўвае даныя месцазнаходжання, каб падбіраць для вас мясцовае змесціва. Гэта можна змяніць у меню "<ph name="SETTINGS_LINK" />".</translation>
@@ -6928,6 +6933,7 @@
 <translation id="5698878456427040674">Праверце, ці падтрымліваецца выбраны ўліковы запіс.</translation>
 <translation id="5698900765010620315">Нізкакантрасная цёмная</translation>
 <translation id="5699227710146832453">Са старонкі</translation>
+<translation id="5700024700429259844">Тут вы можаце адразу ўзнаўляць чаты з Gemini і ланцужкі размоў у рэжыме AI. Адмацаваць можна ў любы час.</translation>
 <translation id="570043786759263127">Праграмы і сэрвісы Google Play</translation>
 <translation id="5700761515355162635">Староннія файлы cookie дазволены</translation>
 <translation id="5700836101007545240">Дадаванне падключэнняў забаронена адміністратарам</translation>
@@ -8363,6 +8369,7 @@
 <translation id="6686878118106035853">Пры выкарыстанні карыстальніцкай палепшанай абароны аптымізацыя JavaScript адключаецца для ўсіх сайтаў</translation>
 <translation id="6687008241368170505">Змяніць PIN-код Менеджара пароляў Google</translation>
 <translation id="6687079240787935001">Схаваць: <ph name="MODULE_TITLE" /></translation>
+<translation id="6689092196793298127">Упарадкаванне ўкладак</translation>
 <translation id="6689948774466767379">Клавішы кіравання мышшу</translation>
 <translation id="6690659332373509948">Не ўдалося прааналізаваць файл: "<ph name="FILE_NAME" />"</translation>
 <translation id="6691936601825168937">&amp;Наперад</translation>
@@ -9687,6 +9694,7 @@
 <translation id="760197030861754408">Каб падключыцца, перайдзіце на старонку <ph name="LANDING_PAGE" />.</translation>
 <translation id="7602079150116086782">Няма ўкладак з іншых прылад</translation>
 <translation id="7602173054665172958">Кіраванне друкам</translation>
+<translation id="7602805861133750578">Цяпер вы можаце кіраваць групамі ўкладак, чатамі Gemini і ланцужкамі ў рэжыме AI ў адным раздзеле. Адмацаваць можна ў любы час.</translation>
 <translation id="7602868996817972616">Спытаць Google пра гэту старонку</translation>
 <translation id="7603785829538808504">Да пералічаных ніжэй сайтаў прымяняецца карыстальніцкая налада</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{Не ўдалося імпартаваць 1 пароль}one{Не ўдалося імпартаваць {NUM_PASSWORDS} пароль}few{Не ўдалося імпартаваць {NUM_PASSWORDS} паролі}many{Не ўдалося імпартаваць {NUM_PASSWORDS} пароляў}other{Не ўдалося імпартаваць {NUM_PASSWORDS} пароля}}</translation>
@@ -10393,6 +10401,7 @@
 <translation id="8054609631325628928">Гэтыя нумары можна выкарыстаць для актывацыі сэрвісу</translation>
 <translation id="8054883179223321715">Даступна для канкрэтных сайтаў з відэа</translation>
 <translation id="8054921503121346576">Падключана USB-клавіятура</translation>
+<translation id="8055975688427973864">Паказваць кнопку ўпарадкавання ўкладак</translation>
 <translation id="8058655154417507695">Год заканчэння тэрміну дзеяння</translation>
 <translation id="8058986560951482265">Адрывістая</translation>
 <translation id="8059417245945632445">&amp;Праверыць прылады</translation>
@@ -11376,6 +11385,7 @@
 <translation id="871515167518607670">Выберыце прыладу. Каб праглядзець старонку, адкрыйце на гэтай прыладзе Chrome.</translation>
 <translation id="8715480913140015283">Фонавая ўкладка выкарыстоўвае камеру</translation>
 <translation id="8716050156658570300">Сайты могуць запытваць дазвол на выкарыстанне датчыкаў руху і святла</translation>
+<translation id="8716067129332848360">Паказаць сродак упарадкавання ўкладак</translation>
 <translation id="8716931980467311658">Выдаліць усе праграмы Linux і даныя ў папцы файлаў Linux з гэтай прылады <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Скапіраваць спасылку</translation>
 <translation id="8718994464069323380">Быў выяўлены сэнсарны экран</translation>
@@ -11840,6 +11850,7 @@
 <translation id="9013037634206938463">Для ўсталявання Linux неабходна мець як мінімум <ph name="INSTALL_SIZE" />. Каб вызваліць месца, выдаліце файлы з прылады.</translation>
 <translation id="9014206344398081366">Дапаможнік па ChromeVox</translation>
 <translation id="9014674417732091912">Перамешчана на радок <ph name="ROW_NUMBER" /></translation>
+<translation id="9015849286924418538">Упарадкоўвайце ўкладкі ў групы з меткамі і колеравым кадзіраваннем для спрашчэння доступу</translation>
 <translation id="901668144954885282">Рэзервовае капіраванне на Google Дыск</translation>
 <translation id="9016827136585652292">уключыць/выключыць Экран прыватнасці</translation>
 <translation id="90181708067259747">Тэрмін дзеяння: <ph name="CARD" /></translation>

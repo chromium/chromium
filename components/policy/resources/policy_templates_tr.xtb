@@ -1385,6 +1385,23 @@ Politika, Devre dışı değerine ayarlanırsa alternatif tarayıcıya son sekme
 <translation id="1954612656043024615">Paylaşılan pano özelliğini etkinleştir</translation>
 <translation id="1955063069502242812">Düşük pil seviyesi sesini etkinleştir</translation>
 <translation id="1955806069704957172">Desk connector API ile ilgili ayarları kontrol eder.</translation>
+<translation id="1956346847126765379"><ph name="URL_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa yasaklı URL'leri olan web sayfalarının yüklenmesi durdurulur. Yöneticiler engellenecek URL kalıplarının listesini belirtebilir. Politika ayarlanmadan bırakılırsa tarayıcıda hiçbir URL engellenmez. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikasında en çok 1.000 istisna tanımlanabilir. URL kalıbının nasıl biçimlendirileceğine göz atın (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Not: Bu politika, dinamik olarak yüklenmiş verilere sahip sayfa içi JavaScript URL'leri için geçerli değildir. example.com/abc URL'sini engellediyseniz example.com bunu XMLHTTPRequest kullanarak yine yükleyebilir. Ayrıca bu politika, web sayfalarının, çok amaçlı adres çubuğunda gösterilen URL'yi JavaScript History API'yi kullanarak engellenen bir URL'ye güncellemesini de engellemez.
+
+<ph name="PRODUCT_NAME" /> sürüm 73'ten itibaren javascript://* URL'lerini engelleyebilirsiniz. Ancak bu engelleme yalnızca adres çubuğuna girilen JavaScript'i veya örneğin yer işareti uygulamalarını etkiler.
+
+Bu politika, <ph name="PRODUCT_NAME" /> 92 sürümünden itibaren gözetimsiz modda da desteklenir.
+
+<ph name="PRODUCT_NAME" /> sürüm 147'den itibaren tek başına kullanılan * joker karakteri, dahili chrome:// URL'leri için geçerli değildir. Bunları engellemek için chrome://* kalıbını açıkça kullanmanız gerekir.
+
+Not: Dahili chrome://* ile chrome-untrusted://* URL'lerinin engellenmesi beklenmeyen hatalara yol açabilir ve bazı durumlarda bunu yapmanız engellenebilir. Belirli dahili URL'leri engellemek yerine kullanabileceğiniz daha spesifik politikalar olup olmadığını kontrol edin. Örneğin:
+
+- chrome://settings/certificates URL'sini engellemek yerine <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> politikasını kullanın.
+
+- chrome-untrusted://crosh URL'sini engellemek yerine <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> politikasını kullanın.
+
+- devtools://* URL'sini engellemek yerine <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> veya <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> politikalarından birini kullanın.</translation>
 <translation id="1957093168333856467">Erişilebilirlik sanal klavyesini devre dışı bırak</translation>
 <translation id="1958110911685486719">PDF XFA Formları desteği etkinleştirildi</translation>
 <translation id="1960059835237529462">Kullanıcılara <ph name="IOS_NAME" /> App Store puan promosyonunun gösterilmesine olanak tanır</translation>

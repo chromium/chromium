@@ -48,6 +48,7 @@
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2371084566192454134">Tabs und Tabgruppen</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab minimieren.}other{Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren.}}</translation>
+<translation id="2476179388576975626">Bild im Bild</translation>
 <translation id="2498435670446402865">Tabgruppe umbenennen</translation>
 <translation id="2536366509642644298">Die Tabgruppen „<ph name="TAB_GROUP_NAME_1" />“ und „<ph name="TAB_GROUP_NAME_2" />“ sind nicht mehr verfügbar</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
