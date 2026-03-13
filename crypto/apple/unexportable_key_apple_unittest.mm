@@ -4,9 +4,12 @@
 
 #include "crypto/unexportable_key.h"
 
+#include <Security/SecBase.h>
+
 #include <cstdint>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "crypto/apple/fake_keychain_v2.h"
@@ -218,9 +221,14 @@ TEST_F(UnexportableKeyMacTest, FromWrappedSigningKeyRepairsKey) {
 TEST_F(UnexportableKeyMacTest, FromWrappedSigningKeyForNonExistentKey) {
   // Verify that trying to load a completely non-existent key still returns null
   // and doesn't crash or create phantom entries.
+  base::HistogramTester histograms;
   std::vector<uint8_t> bogus_wrapped_key = {1, 2, 3, 4, 5};
   auto key = provider_->FromWrappedSigningKeySlowly(bogus_wrapped_key);
   EXPECT_EQ(key, nullptr);
+
+  histograms.ExpectUniqueSample(
+      "Crypto.SecureEnclaveOperation.Apple.WrappedKeyExport.Error",
+      errSecItemNotFound, 1);
 }
 
 TEST_F(UnexportableKeyMacTest, GetKeyTag) {
