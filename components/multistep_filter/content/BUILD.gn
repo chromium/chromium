@@ -4,6 +4,8 @@
 
 source_set("content") {
   sources = [
+    "filter_initiated_navigation_marker.cc",
+    "filter_initiated_navigation_marker.h",
     "filter_navigation_observer.cc",
     "filter_navigation_observer.h",
   ]

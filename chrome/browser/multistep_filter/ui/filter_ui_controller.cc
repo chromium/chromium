@@ -6,7 +6,9 @@
 
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
+#include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
@@ -79,7 +81,10 @@ void FilterUiController::NavigateTo(const GURL& url) {
                                 WindowOpenDisposition::CURRENT_TAB,
                                 ui::PAGE_TRANSITION_GENERATED,
                                 /*is_renderer_initiated=*/false);
-  web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
+  web_contents->OpenURL(
+      params, base::BindOnce([](content::NavigationHandle& handle) {
+        FilterInitiatedNavigationMarker::CreateForNavigationHandle(handle);
+      }));
 }
 
 }  // namespace multistep_filter

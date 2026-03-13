@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -13,10 +14,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace multistep_filter {
@@ -229,7 +230,18 @@ TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
               OpenURLFromTab(web_contents(),
                              testing::Field(&content::OpenURLParams::url, url),
                              testing::_))
-      .WillOnce(testing::Return(web_contents()));
+      .WillOnce(
+          [&](content::WebContents* source,
+              const content::OpenURLParams& params,
+              base::OnceCallback<void(content::NavigationHandle&)> callback) {
+            EXPECT_FALSE(callback.is_null());
+            content::MockNavigationHandle handle;
+            std::move(callback).Run(handle);
+            EXPECT_NE(multistep_filter::FilterInitiatedNavigationMarker::
+                          GetForNavigationHandle(handle),
+                      nullptr);
+            return web_contents();
+          });
 
   controller->NavigateTo(url);
 }

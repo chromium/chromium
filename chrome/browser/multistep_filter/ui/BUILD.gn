@@ -23,6 +23,7 @@ source_set("ui") {
     ]
 
     deps += [
+      "//components/multistep_filter/content",
       "//components/tabs:public",
       "//content/public/browser",
       "//ui/base",
@@ -43,6 +44,7 @@ source_set("unit_tests") {
       "//base/test:test_support",
       "//chrome/browser/multistep_filter/core",
       "//chrome/test:test_support",
+      "//components/multistep_filter/content",
       "//components/multistep_filter/core",
       "//components/multistep_filter/core:features",
       "//components/tabs:test_support",

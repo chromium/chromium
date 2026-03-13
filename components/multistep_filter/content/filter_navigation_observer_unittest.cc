@@ -5,6 +5,7 @@
 #include "components/multistep_filter/content/filter_navigation_observer.h"
 
 #include "base/functional/callback_helpers.h"
+#include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -230,6 +231,20 @@ TEST_F(FilterNavigationObserverTest, ReferenceFragmentNavigation) {
   EXPECT_CALL(mock_service(), GenerateFilterSuggestions(url));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              url);
+}
+
+TEST_F(FilterNavigationObserverTest,
+       DoesNotRequestSuggestionForFilterInitiatedNavigation) {
+  const GURL url("https://www.example.com");
+  EXPECT_CALL(delegate(), ClearSuggestion());
+  EXPECT_CALL(mock_service(), GenerateFilterSuggestions(testing::_)).Times(0);
+
+  auto navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
+  navigation->Start();
+  FilterInitiatedNavigationMarker::CreateForNavigationHandle(
+      *navigation->GetNavigationHandle());
+  navigation->Commit();
 }
 
 }  // namespace

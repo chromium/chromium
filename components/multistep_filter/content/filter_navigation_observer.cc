@@ -4,6 +4,8 @@
 
 #include "components/multistep_filter/content/filter_navigation_observer.h"
 
+#include "base/check.h"
+#include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
 #include "components/multistep_filter/core/multistep_filter_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -17,7 +19,9 @@ FilterNavigationObserver::FilterNavigationObserver(
     std::unique_ptr<UiDelegate> delegate)
     : content::WebContentsObserver(web_contents),
       service_(service),
-      delegate_(std::move(delegate)) {}
+      delegate_(std::move(delegate)) {
+  CHECK(delegate_);
+}
 
 FilterNavigationObserver::~FilterNavigationObserver() = default;
 
@@ -36,6 +40,13 @@ void FilterNavigationObserver::DidFinishNavigation(
   if (navigation_handle->GetReloadType() != content::ReloadType::NONE ||
       navigation_handle->IsErrorPage() ||
       !navigation_handle->GetWebContents()) {
+    return;
+  }
+
+  // If this navigation was triggered by the user accepting a suggestion,
+  // do not generate a new suggestion for the resulting page.
+  if (FilterInitiatedNavigationMarker::GetForNavigationHandle(
+          *navigation_handle)) {
     return;
   }
 
