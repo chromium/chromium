@@ -530,10 +530,10 @@ void AudioHandler::PrintNodeCounts() {
 #endif  // DEBUG_AUDIONODE_REFERENCES
 
 #if DEBUG_AUDIONODE_REFERENCES > 1
-void AudioHandler::TailProcessingDebug(const char* note, bool flag) {
-  UNSAFE_TODO(fprintf(stderr, "[%16p]: %16p: %2d: %s %d @%.15g flag=%d",
-                      Context(), this, GetNodeType(), note,
-                      connection_ref_count_, Context()->currentTime(), flag));
+void AudioHandler::TailProcessingDebug(String note, bool flag) {
+  fprintf(stderr, "[%16p]: %16p: %2d: %s %d @%.15g flag=%d", Context(), this,
+          GetNodeType(), note.Utf8().c_str(), connection_ref_count_,
+          Context()->currentTime(), flag);
 
   // If we're on the audio thread, we can print out the tail and
   // latency times (because these methods can only be called from the

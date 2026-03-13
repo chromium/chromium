@@ -190,7 +190,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   static void PrintNodeCounts();
 #endif
 #if DEBUG_AUDIONODE_REFERENCES > 1
-  void TailProcessingDebug(const char* debug_note, bool flag);
+  void TailProcessingDebug(String note, bool flag);
   void AddTailProcessingDebug();
   void RemoveTailProcessingDebug(bool disable_outputs);
 #endif
