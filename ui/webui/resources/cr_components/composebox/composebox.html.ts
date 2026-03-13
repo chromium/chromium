@@ -9,7 +9,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComposeboxElement} from './composebox.js';
 import {getHtml as getContextMenuHtml} from './composebox_context_menu.html.js';
 import {getHtml as getSubmitButtonHtml} from './composebox_submit_button.html.js';
-import {getHtml as getToolChipsHtml} from './composebox_tool_chips.html.js';
 
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
@@ -109,7 +108,13 @@ export function getHtml(this: ComposeboxElement) {
                 ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ && !this.showDropdown_ ? html`
                 <div class="context-menu-container" id="toolChipsContainer"
                     part="tool-chips-container">
-                  ${getToolChipsHtml.bind(this)()}
+                  ${this.inToolMode_ ? html`
+                    <cr-composebox-tool-chip
+                      exportparts="tool-chip-label"
+                      .inputState="${this.inputState_}"
+                      @tool-click="${this.onToolClick_}">
+                    </cr-composebox-tool-chip>
+                  `: ''}
                 </div>
                 ` : ''}
             </div>
@@ -141,7 +146,13 @@ export function getHtml(this: ComposeboxElement) {
           ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ && this.showDropdown_ ? html`
             <div class="context-menu-container" id="toolChipsContainer"
                 part="tool-chips-container">
-              ${getToolChipsHtml.bind(this)()}
+              ${this.inToolMode_ ? html`
+                <cr-composebox-tool-chip
+                  exportparts="tool-chip-label"
+                  .inputState="${this.inputState_}"
+                  @tool-click="${this.onToolClick_}">
+                </cr-composebox-tool-chip>
+              `: ''}
             </div>
           ` : ''}
           ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`

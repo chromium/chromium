@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {ComposeboxElement} from './composebox.js';
 import {getHtml as getSubmitButtonHtml} from './composebox_submit_button.html.js';
-import {getHtml as getToolChipsHtml} from './composebox_tool_chips.html.js';
 
 export function getHtml(this: ComposeboxElement) {
   // clang-format off
@@ -25,8 +24,6 @@ export function getHtml(this: ComposeboxElement) {
         @add-tab-context="${this.onAddTabContext_}"
         @delete-tab-context="${this.onDeleteTabContext_}"
         @tool-click="${this.onToolClick_}"
-        @deep-search-click="${this.onDeepSearchClick_}"
-        @create-image-click="${this.onCreateImageClick_}"
         @model-click="${this.onModelClick_}"
         @get-tab-preview="${this.onGetTabPreview_}"
         @context-menu-closed="${this.onContextMenuClosed_ }"
@@ -61,7 +58,15 @@ export function getHtml(this: ComposeboxElement) {
         title="${this.i18n('voiceSearchButtonLabel')}">
     </cr-icon-button>
   ` : ''}
-  ${this.searchboxLayoutMode !== 'Compact' ? getToolChipsHtml.bind(this)() : ''}
+  ${this.searchboxLayoutMode !== 'Compact' ? html`
+    ${this.inToolMode_ ? html`
+      <cr-composebox-tool-chip
+        exportparts="tool-chip-label"
+        .inputState="${this.inputState_}"
+        @tool-click="${this.onToolClick_}">
+      </cr-composebox-tool-chip>
+    ` : ''}
+  ` : ''}
   ${this.searchboxLayoutMode === 'TallTopContext' ? html`
     ${this.shouldShowVoiceSearch_() ? html`
       <cr-icon-button id="voiceSearchButton" class="voice-icon"
