@@ -10372,6 +10372,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_SPLIT_VIEW_DRAG_ENTRYPOINT_LABEL" desc="A label for the drag entrypoint indicating it can create a split view.">
         Create split view
       </message>
+      <message name="IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true" desc="Accessible alert announced after resizing a split view.">
+        <ph name="VIEW_ONE_ORIENTATION">$1<ex>Left</ex></ph> View now <ph name="VIEW_ONE_PERCENT">$2<ex>50%</ex></ph> wide, <ph name="VIEW_TWO_ORIENTATION">$3<ex>Right</ex></ph> View now <ph name="VIEW_TWO_PERCENT">$4<ex>50%</ex></ph> wide.
+      </message>
+      <message name="IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true"
+               desc="Accessible alert text used in IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
+               Left
+      </message>
+      <message name="IDS_SPLIT_VIEW_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true"
+               desc="Accessible alert text used in IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT for which side the window/pane is seen on.">
+               Right
+      </message>
 
       <!-- Vertical Tab Strings -->
       <if expr="use_titlecase">

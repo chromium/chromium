@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
 
+#include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,10 +24,11 @@
 #include "ui/views/layout/flex_layout.h"
 
 namespace {
-const int kHandleCornerRadius = 2;
-const int kHandleHeight = 24;
-const int kHandlePadding = 6;
-const int kHandleWidth = 4;
+constexpr int kHandleCornerRadius = 2;
+constexpr int kHandleHeight = 24;
+constexpr int kHandlePadding = 6;
+constexpr int kHandleWidth = 4;
+constexpr int kResizeIncrement = 50;
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsResizeHandle,
@@ -112,17 +115,38 @@ void MultiContentsResizeArea::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 bool MultiContentsResizeArea::OnKeyPressed(const ui::KeyEvent& event) {
-  const int resize_increment = 50;
+  int resize_amount = 0;
   if (event.key_code() == ui::VKEY_LEFT) {
-    multi_contents_view_->OnResize(
-        base::i18n::IsRTL() ? resize_increment : -resize_increment, true);
-    return true;
+    resize_amount = base::i18n::IsRTL() ? kResizeIncrement : -kResizeIncrement;
   } else if (event.key_code() == ui::VKEY_RIGHT) {
-    multi_contents_view_->OnResize(
-        base::i18n::IsRTL() ? -resize_increment : resize_increment, true);
-    return true;
+    resize_amount = base::i18n::IsRTL() ? -kResizeIncrement : kResizeIncrement;
   }
-  return false;
+
+  if (resize_amount == 0) {
+    return false;
+  }
+
+  multi_contents_view_->OnResize(resize_amount, true);
+
+  if (multi_contents_view_->width() > 0) {
+    const int left_percent =
+        base::ClampRound(multi_contents_view_->GetSplitRatio() * 100);
+    const int right_percent = 100 - left_percent;
+
+    bool is_rtl = base::i18n::IsRTL();
+    std::u16string first_label = l10n_util::GetStringUTF16(
+        is_rtl ? IDS_SPLIT_VIEW_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT
+               : IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT);
+    std::u16string second_label = l10n_util::GetStringUTF16(
+        is_rtl ? IDS_SPLIT_VIEW_RESIZE_LEFT_SIDE_ACCESSIBLE_ALERT
+               : IDS_SPLIT_VIEW_RESIZE_RIGHT_SIDE_ACCESSIBLE_ALERT);
+
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringFUTF16(
+        IDS_SPLIT_VIEW_RESIZE_ACCESSIBLE_ALERT, first_label,
+        base::FormatPercent(left_percent), second_label,
+        base::FormatPercent(right_percent)));
+  }
+  return true;
 }
 
 void MultiContentsResizeArea::OnMouseMoved(const ui::MouseEvent& event) {
