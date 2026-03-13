@@ -184,6 +184,14 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
         // We shouldn't use mTrackingTab, which can be set to null in removeObservers(), and it
         // won't be updated if mTabSupplierObserver is removed.
         Tab currentTab = mTabSupplier.get();
+        if (currentTab == null
+                && mLayoutStateProvider != null
+                && mLayoutStateProvider.getActiveLayoutType() == LayoutType.TAB_SWITCHER) {
+            // We don't update toolbar's top padding on Tab switcher until tab switches. Thus, we
+            // should keep mConsumeTopInset reflect whether the top inset is consumed on the last
+            // Tab. See https://crbug.com/491888405.
+            return windowInsetsCompat;
+        }
 
         mSystemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars());
 

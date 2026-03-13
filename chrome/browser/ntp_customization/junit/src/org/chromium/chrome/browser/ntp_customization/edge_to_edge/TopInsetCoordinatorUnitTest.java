@@ -178,6 +178,21 @@ public class TopInsetCoordinatorUnitTest {
     }
 
     @Test
+    public void testOnApplyWindowInsets_TabSwitcher_ReturnEarly() {
+        // Tab switcher is showing.
+        mTabSupplier.set(null);
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        setBackgroundType(NtpBackgroundType.DEFAULT, NtpBackgroundType.CHROME_COLOR);
+        when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(LayoutType.TAB_SWITCHER);
+        clearInvocations(mObserver);
+
+        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
+
+        // Verify that notifyObservers() is NOT called.
+        verify(mObserver, never()).onToEdgeChange(any(Integer.class), any(Boolean.class), anyInt());
+    }
+
+    @Test
     public void testOnTabSwitched_RetriggerOnApplyWindowInsets() {
         // Verifies that retriggerOnApplyWindowInsets() is called if the new tab is a NTP.
         setCurrentTab(mNtpTab);
