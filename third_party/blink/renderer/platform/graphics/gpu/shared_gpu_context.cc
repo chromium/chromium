@@ -441,12 +441,15 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
   }
 
 #if BUILDFLAG(IS_ANDROID)
+  // Low-latency usage on Android is possible only with SurfaceControl.
   if (!::features::IsAndroidSurfaceControlEnabled()) {
     return false;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Whether WebGL canvases should be given low-latency usage is specified on a
+  // per-board basis by passing (or not) the relevant command-line flag.
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
