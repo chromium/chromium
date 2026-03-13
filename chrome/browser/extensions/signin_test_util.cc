@@ -27,10 +27,12 @@ AccountInfo SimulateExplicitSignIn(
           .WithAccessPoint(signin_metrics::AccessPoint::kExtensionInstallBubble)
           .Build(email.value_or("testy@mctestface.com")));
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   bool has_explicit_sign_in =
       SigninPrefs(*profile->GetPrefs())
           .GetExtensionsExplicitBrowserSignin(account_info.gaia);
   CHECK(has_explicit_sign_in);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   return account_info;
 }
