@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/annotation_reducer/onep_resolver_impl.h"
+#include "components/accessibility_annotator/core/annotation_reducer/one_p_resolver_impl.h"
 
 #include <utility>
 
@@ -17,8 +17,8 @@ OnePResolverImpl::OnePResolverImpl() = default;
 
 OnePResolverImpl::~OnePResolverImpl() = default;
 
-void OnePResolverImpl::RetrieveAll(const std::u16string& query,
-                                   RetrieveCallback callback) {
+void OnePResolverImpl::Query(const std::u16string& query,
+                             QueryCallback callback) {
   if (!base::FeatureList::IsEnabled(
           kAccessibilityAnnotationReducerOnePResolver)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -27,7 +27,7 @@ void OnePResolverImpl::RetrieveAll(const std::u16string& query,
     return;
   }
 
-  // TODO(crbug.com/487416734): Implement real OneP network request.
+  // TODO(crbug.com/487416734): Implement real 1P network request.
   // For now, stub implementation:
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

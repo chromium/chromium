@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("onep_resolver") {
+source_set("one_p_resolver") {
   sources = [
-    "onep_resolver.h",
-    "onep_resolver_impl.cc",
-    "onep_resolver_impl.h",
+    "one_p_resolver.h",
+    "one_p_resolver_impl.cc",
+    "one_p_resolver_impl.h",
   ]
 
   deps = [
@@ -32,13 +32,13 @@ source_set("annotation_reducer") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "onep_resolver_impl_unittest.cc",
+    "one_p_resolver_impl_unittest.cc",
     "query_classifier_unittest.cc",
   ]
 
   deps = [
     ":annotation_reducer",
-    ":onep_resolver",
+    ":one_p_resolver",
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core:features",
