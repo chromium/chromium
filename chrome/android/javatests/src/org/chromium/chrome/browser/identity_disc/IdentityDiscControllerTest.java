@@ -64,7 +64,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -356,7 +355,6 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testIdentityDiscWithErrorBadgeSignedIn() {
         // Fake an identity error.
         ThreadUtils.runOnUiThreadBlocking(
@@ -393,7 +391,6 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     public void testIdentityDiscWithErrorBadgeSignedIn_nonDisplayableEmail() {
         // Fake an identity error.
         ThreadUtils.runOnUiThreadBlocking(
@@ -463,7 +460,6 @@ public class IdentityDiscControllerTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     @UiThreadTest
     public void testPreExistingErrorAtCreation() {
         // Fake an identity error.
@@ -555,13 +551,12 @@ public class IdentityDiscControllerTest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
     // Specifies the test to run only with the GMS Core version greater than or equal to 24w15 which
     // is the min version that supports split stores UPM backend, to avoid
     // UserActionableError.NEEDS_UPM_BACKEND_UPGRADE.
     @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
-    public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_noIdentityError(
-            boolean nightModeEnabled) throws IOException {
+    public void testIdentityDisc_signedIn_noIdentityError(boolean nightModeEnabled)
+            throws IOException {
         // Sign-in and wait for the user profile image to appear.
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         String expectedContentDescription =
@@ -589,9 +584,8 @@ public class IdentityDiscControllerTest {
     @MediumTest
     @Feature("RenderTest")
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @EnableFeatures(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-    public void testIdentityDisc_signedIn_unoPhase2FollowUpEnabled_identityErrorExist(
-            boolean nightModeEnabled) throws IOException {
+    public void testIdentityDisc_signedIn_identityErrorExist(boolean nightModeEnabled)
+            throws IOException {
         // Fake an identity error.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

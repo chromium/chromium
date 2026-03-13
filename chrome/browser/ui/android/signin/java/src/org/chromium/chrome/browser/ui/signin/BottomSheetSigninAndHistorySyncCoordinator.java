@@ -22,7 +22,6 @@ import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -476,8 +475,7 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
     /** Implements {@link SigninBottomSheetCoordinator.Delegate}. */
     @Override
     public void onSignInComplete() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
-                && mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
+        if (mSigninAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER) {
             SyncService syncService =
                     assumeNonNull(SyncServiceFactory.getForProfile(assertNonNull(mProfile)));
             syncService.setSelectedType(UserSelectableType.BOOKMARKS, true);

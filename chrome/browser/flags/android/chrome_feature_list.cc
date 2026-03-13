@@ -513,7 +513,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncEnableNewSyncDashboardUrl,
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
     &syncer::kSyncTrustedVaultErrorMessageDuration,
-    &syncer::kUnoPhase2FollowUp,
     &syncer::kWebApkBackupAndRestoreBackend,
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &variations::kOmniboxAutofocusOnIncognitoNtp,

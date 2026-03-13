@@ -26,9 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -47,7 +45,6 @@ import java.util.Set;
 
 /** Unit tests for {@link BatchUploadCardMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class BatchUploadCardMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

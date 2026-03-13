@@ -73,7 +73,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -116,7 +115,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Integration tests for the sign-in and history sync opt-in flow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
-@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 // TODO(crbug.com/428056054): Test content is blocked by system UI on B+.
 @DisableIf.Build(
         sdk_is_greater_than = Build.VERSION_CODES.VANILLA_ICE_CREAM,

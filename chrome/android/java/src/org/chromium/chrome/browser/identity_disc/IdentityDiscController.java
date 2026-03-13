@@ -25,7 +25,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -359,8 +358,7 @@ public class IdentityDiscController
         }
 
         @UserActionableError int error = SyncSettingsUtils.getSyncError(mProfile);
-        if (error == mIdentityError
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+        if (error == mIdentityError) {
             // Nothing changed.
             return;
         }
