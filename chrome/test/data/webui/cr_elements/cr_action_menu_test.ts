@@ -349,8 +349,8 @@ suite('CrActionMenu', function() {
     // By default, aligns top-left of menu with top-left of anchor.
     menu.showAtPosition(config);
     assertTrue(dialog.open);
-    assertEquals(`${Math.round(config.left)}px`, dialog.style.left);
-    assertEquals(`${Math.round(config.top)}px`, dialog.style.top);
+    assertEquals(`${config.left}px`, dialog.style.left);
+    assertEquals(`${config.top}px`, dialog.style.top);
     assertTrue(menu.getDialog().matches(':modal'));
     menu.close();
 
@@ -361,17 +361,17 @@ suite('CrActionMenu', function() {
     }));
     const menuHeight = dialog.offsetHeight;
     const menuWidth = dialog.offsetWidth;
-    assertEquals(`${Math.round(config.top - menuHeight)}px`, dialog.style.top);
-    assertEquals(`${Math.round(config.left - menuWidth)}px`, dialog.style.left);
+    assertEquals(`${config.top - menuHeight}px`, dialog.style.top);
+    assertEquals(`${config.left - menuWidth}px`, dialog.style.left);
 
     // Center the menu horizontally.
     menu.showAtPosition(Object.assign({}, config, {
       anchorAlignmentX: AnchorAlignment.CENTER,
     }));
     assertEquals(
-        `${Math.round((config.left + config.width / 2) - menuWidth / 2)}px`,
+        `${(config.left + config.width / 2) - menuWidth / 2}px`,
         dialog.style.left);
-    assertEquals(`${Math.round(config.top)}px`, dialog.style.top);
+    assertEquals(`${config.top}px`, dialog.style.top);
     menu.close();
 
     // Center the menu in both axes.
@@ -380,10 +380,10 @@ suite('CrActionMenu', function() {
       anchorAlignmentY: AnchorAlignment.CENTER,
     }));
     assertEquals(
-        `${Math.round((config.left + config.width / 2) - menuWidth / 2)}px`,
+        `${(config.left + config.width / 2) - menuWidth / 2}px`,
         dialog.style.left);
     assertEquals(
-        `${Math.round((config.top + config.height / 2) - menuHeight / 2)}px`,
+        `${(config.top + config.height / 2) - menuHeight / 2}px`,
         dialog.style.top);
     menu.close();
 
@@ -393,11 +393,9 @@ suite('CrActionMenu', function() {
       anchorAlignmentY: AnchorAlignment.BEFORE_END,
     }));
     assertEquals(
-        `${Math.round(config.left + config.width - menuWidth)}px`,
-        dialog.style.left);
+        `${config.left + config.width - menuWidth}px`, dialog.style.left);
     assertEquals(
-        `${Math.round(config.top + config.height - menuHeight)}px`,
-        dialog.style.top);
+        `${config.top + config.height - menuHeight}px`, dialog.style.top);
     menu.close();
 
     // Being left and top aligned at (0, 0) should anchor to the bottom right.
@@ -419,8 +417,8 @@ suite('CrActionMenu', function() {
       maxX: 1000,
       maxY: 2000,
     });
-    assertEquals(`${Math.round(1000 - menuWidth)}px`, dialog.style.left);
-    assertEquals(`${Math.round(2000 - menuHeight)}px`, dialog.style.top);
+    assertEquals(`${1000 - menuWidth}px`, dialog.style.left);
+    assertEquals(`${2000 - menuHeight}px`, dialog.style.top);
     menu.close();
 
     // If the viewport can't fit the menu, align the menu to the viewport.
@@ -431,7 +429,7 @@ suite('CrActionMenu', function() {
       height: 0,
       maxX: menuWidth * 2 - 10,
     });
-    assertEquals(`${Math.round(menuWidth - 10)}px`, dialog.style.left);
+    assertEquals(`${menuWidth - 10}px`, dialog.style.left);
     assertEquals(`0px`, dialog.style.top);
     menu.close();
 
@@ -439,10 +437,8 @@ suite('CrActionMenu', function() {
     document.body.style.direction = 'rtl';
     menu.showAtPosition(config);
     assertTrue(dialog.open);
-    assertTrue(
-        Math.abs(
-            (config.left + config.width - menuWidth) - dialog.offsetLeft) <= 1);
-    assertEquals(`${Math.round(config.top)}px`, dialog.style.top);
+    assertEquals(config.left + config.width - menuWidth, dialog.offsetLeft);
+    assertEquals(`${config.top}px`, dialog.style.top);
     menu.close();
   });
 
@@ -457,10 +453,9 @@ suite('CrActionMenu', function() {
     menu.showAt(dots);
     assertTrue(dialog.open);
     let menuRect = dialog.getBoundingClientRect();
-    assertTrue(
-        Math.abs(
-            Math.round(dotsRect.left + dotsRect.width) -
-            Math.round(menuRect.left + menuRect.width)) <= 1);
+    assertEquals(
+        Math.round(dotsRect.left + dotsRect.width),
+        Math.round(menuRect.left + menuRect.width));
     assertEquals(dotsRect.top, menuRect.top);
 
     const lastMenuLeft = menuRect.left;
@@ -474,10 +469,9 @@ suite('CrActionMenu', function() {
       // Test that menu upper-left moved further left.
       assertTrue(menuRect.left < lastMenuLeft);
       // Test that right and top did not move since it is anchored there.
-      assertTrue(
-          Math.abs(
-              Math.round(dotsRect.left + dotsRect.width) -
-              Math.round(menuRect.left + menuRect.width)) <= 1);
+      assertEquals(
+          Math.round(dotsRect.left + dotsRect.width),
+          Math.round(menuRect.left + menuRect.width));
       assertEquals(dotsRect.top, menuRect.top);
       done();
     });
@@ -487,14 +481,14 @@ suite('CrActionMenu', function() {
     items[0]!.textContent = 'this is a long string to make menu wide';
   }
 
-  // <if expr="is_win or is_macosx or is_android">
+  // <if expr="is_win or is_macosx">
   // TODO(dpapad): Figure out why it fails on windows only and re-enable.
-  // TODO(crbug.com/329266310): Flakes on MacOS and Android.
+  // TODO(crbug.com/329266310): Flakes on MacOS.
   test.skip(
       '[auto-reposition] enables repositioning if content changes',
       autoRepositionTest);
   // </if>
-  // <if expr="not is_win and not is_macosx and not is_android">
+  // <if expr="not is_win and not is_macosx">
   test(
       '[auto-reposition] enables repositioning if content changes',
       autoRepositionTest);
@@ -553,7 +547,7 @@ suite('CrActionMenu', function() {
   });
 
   suite('offscreen scroll positioning', function() {
-    const bodyHeight = 30000;
+    const bodyHeight = 10000;
     const bodyWidth = 20000;
     const containerLeft = 5000;
     const containerTop = 10000;
@@ -566,12 +560,6 @@ suite('CrActionMenu', function() {
 
       static override get styles() {
         return css`
-          :host {
-            display: block;
-            height: 30000px;
-            width: 20000px;
-          }
-
           #container {
             overflow: auto;
             position: absolute;
@@ -614,7 +602,6 @@ suite('CrActionMenu', function() {
       document.body.innerHTML = getTrustedHtml(`
         <style>
           test-dummy {
-            display: block;
             height: ${bodyHeight}px;
             width: ${bodyWidth}px;
           }
@@ -632,8 +619,8 @@ suite('CrActionMenu', function() {
     // Show the menu, scrolling the body to the button.
     test('simple offscreen', function() {
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
-      assertEquals(`${Math.round(containerLeft)}px`, dialog.style.left);
-      assertEquals(`${Math.round(containerTop)}px`, dialog.style.top);
+      assertEquals(`${containerLeft}px`, dialog.style.left);
+      assertEquals(`${containerTop}px`, dialog.style.top);
       menu.close();
     });
 
@@ -647,8 +634,8 @@ suite('CrActionMenu', function() {
       container.scrollTop = containerTop;
 
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
-      assertEquals(`${Math.round(containerLeft)}px`, dialog.style.left);
-      assertEquals(`${Math.round(containerTop)}px`, dialog.style.top);
+      assertEquals(`${containerLeft}px`, dialog.style.left);
+      assertEquals(`${containerTop}px`, dialog.style.top);
       menu.close();
     });
 
@@ -666,14 +653,8 @@ suite('CrActionMenu', function() {
       const buttonHeight = dots.offsetHeight;
       const menuWidth = dialog.offsetWidth;
       const menuHeight = dialog.offsetHeight;
-      assertTrue(
-          Math.abs(
-              (containerLeft - menuWidth + buttonWidth) - dialog.offsetLeft) <=
-          1);
-      assertTrue(
-          Math.abs(
-              (containerTop - menuHeight + buttonHeight) - dialog.offsetTop) <=
-          1);
+      assertEquals(containerLeft - menuWidth + buttonWidth, dialog.offsetLeft);
+      assertEquals(containerTop - menuHeight + buttonHeight, dialog.offsetTop);
       menu.close();
     });
 
@@ -681,8 +662,8 @@ suite('CrActionMenu', function() {
       document.documentElement.scrollLeft = 500;
       document.documentElement.scrollTop = 1000;
       menu.showAtPosition({top: 50, left: 50});
-      assertTrue(Math.abs(550 - dialog.offsetLeft) <= 1);
-      assertTrue(Math.abs(1050 - dialog.offsetTop) <= 1);
+      assertEquals(550, dialog.offsetLeft);
+      assertEquals(1050, dialog.offsetTop);
       menu.close();
     });
 
@@ -691,29 +672,19 @@ suite('CrActionMenu', function() {
       document.body.style.direction = 'rtl';
       menu.showAt(dots, {anchorAlignmentX: AnchorAlignment.AFTER_START});
       const menuWidth = dialog.offsetWidth;
-      assertTrue(
-          Math.abs(
-              (container.offsetLeft + containerWidth - menuWidth) -
-              dialog.offsetLeft) <= 1);
-      assertTrue(Math.abs(containerTop - dialog.offsetTop) <= 1);
+      assertEquals(
+          container.offsetLeft + containerWidth - menuWidth, dialog.offsetLeft);
+      assertEquals(containerTop, dialog.offsetTop);
       menu.close();
     });
 
-    async function focusFirstItemTest() {
+    test('FocusFirstItemWhenOpenedWithKeyboard', async () => {
       FocusOutlineManager.forDocument(document).visible = true;
       menu.showAtPosition({top: 50, left: 50});
       await new Promise(resolve => requestAnimationFrame(resolve));
       assertEquals(
           menu.querySelector('.dropdown-item'), getDeepActiveElement());
-    }
-
-    // <if expr="is_android">
-    // TODO(crbug.com/492150560): Flaky on Android.
-    test.skip('FocusFirstItemWhenOpenedWithKeyboard', focusFirstItemTest);
-    // </if>
-    // <if expr="not is_android">
-    test('FocusFirstItemWhenOpenedWithKeyboard', focusFirstItemTest);
-    // </if>
+    });
   });
 
   suite('NonModal', function() {
@@ -738,8 +709,8 @@ suite('CrActionMenu', function() {
       menu.showAtPosition({top: 100, left: 200});
 
       assertTrue(menu.getDialog().open);
-      assertEquals(`${Math.round(100)}px`, menu.getDialog().style.top);
-      assertEquals(`${Math.round(200)}px`, menu.getDialog().style.left);
+      assertEquals('100px', menu.getDialog().style.top);
+      assertEquals('200px', menu.getDialog().style.left);
       assertFalse(menu.getDialog().matches(':modal'));
     });
 
