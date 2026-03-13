@@ -42,17 +42,9 @@ ModelBrokerState::ModelBrokerState(
     on_device_model::ServiceClient::LaunchFn launch_fn,
     component_updater::ComponentUpdateService* component_update_service)
     : service_client_(std::move(launch_fn)),
-      // Note: tracking multiple components makes the download progress relative
-      // to the total size of all components. Since we only download the
-      // perspective model when it is used, this can result in the progress
-      // jumping if only one model is being downloaded.
-      // TODO(crbug.com/491858797): Clean up observer for classifier model.
       download_progress_manager_(
           component_update_service,
-          classifier_delegate
-              ? std::vector<std::string>{base_delegate->GetComponentId(),
-                                         classifier_delegate->GetComponentId()}
-              : std::vector<std::string>{base_delegate->GetComponentId()}),
+              std::vector<std::string>{base_delegate->GetComponentId()}),
       usage_tracker_(&local_state),
       model_broker_impl_(
           usage_tracker_,
