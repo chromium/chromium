@@ -47,11 +47,11 @@ static const char* const kConsoleErrorUrls[] = {
     // assertion failure because there are no dialog args.
     "chrome://cloud-upload",
     "chrome://crostini-installer",
-    "chrome://office-fallback/",
+    "chrome://office-fallback",
     "chrome://os-feedback",
     "chrome://parent-access",
     "chrome://personalization",
-    "chrome://smb-credentials-dialog/",
+    "chrome://smb-credentials-dialog",
 #else
     "chrome://signin-email-confirmation",
 #endif
@@ -89,9 +89,10 @@ class WebUIUrlNoConsoleErrorsTest : public WebUIAllUrlsBrowserTest {
 };
 
 // Verify that there's no console errors when loading any `kChromeUrls`.
-// TODO(crbug.com/487122203): Fix the issue (see the bug entry for details) and
-// re-enable the test.
-IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, DISABLED_NoConsoleErrors) {
+// Note: If one test case fails, move the failing WebUI URL to the
+// untested list in webui_urls_for_test.h. Do not globally disable
+// all tests in this suite.
+IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, NoConsoleErrors) {
   CheckNoConsoleErrors(GetParam());
   WaitBeforeNavigation();
 }
