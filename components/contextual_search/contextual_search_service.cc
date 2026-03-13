@@ -54,6 +54,9 @@ void ContextualSearchService::Shutdown() {
   // The IdentityManager may be destroyed before this service, so clear the
   // pointer to avoid dangling pointer issues.
   identity_manager_ = nullptr;
+  // Destroy sessions now to invalidate the WeakPtrs held by pending
+  // callbacks (e.g. the cluster-info reset timer in ComposeboxQueryController).
+  sessions_.clear();
 }
 
 // static
