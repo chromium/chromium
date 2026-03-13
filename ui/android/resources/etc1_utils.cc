@@ -274,8 +274,11 @@ bool Etc1::ReadFromFile(base::File* file,
   // Do some simple sanity check validation.  We can't have thumbnails larger
   // than the max display size of the screen.  We also can't have etc1 texture
   // data larger than the next power of 2 up from that.
-  gfx::Size display_size =
-      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
+  auto* screen = display::Screen::Get();
+  if (!screen) {
+    return false;
+  }
+  gfx::Size display_size = screen->GetPrimaryDisplay().GetSizeInPixel();
   int max_dimension = std::max(display_size.width(), display_size.height());
 
   if (content_width > max_dimension || content_height > max_dimension ||
