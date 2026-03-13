@@ -467,8 +467,15 @@ bool SharedGpuContext::UseOverlaysForWebGL() {
   }
 
 #if BUILDFLAG(IS_APPLE)
+  // Delegated compositing on Apple platforms is all-or-nothing as there is no
+  // API for partial delegation. Hence, if delegated compositing is enabled, we
+  // want WebGL canvases to end up in overlays.
+  // We could consider extending this to other platforms that use delegated
+  // compositing (e.g., Windows).
   return IsDelegatedCompositingEnabled();
 #elif BUILDFLAG(IS_CHROMEOS)
+  // Whether WebGL canvases should be placed in overlays is specified on a
+  // per-board basis by passing (or not) the relevant command-line flag.
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
