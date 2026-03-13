@@ -24,7 +24,8 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
           pending_searchbox_handler,
       Profile* profile,
       content::WebContents* web_contents,
-      GetSessionHandleCallback get_session_callback);
+      GetSessionHandleCallback get_session_callback,
+      ClearSessionHandleCallback clear_session_callback);
 
   ~OmniboxComposeboxHandler() override;
 

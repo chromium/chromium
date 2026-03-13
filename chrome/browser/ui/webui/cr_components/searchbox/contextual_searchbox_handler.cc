@@ -811,6 +811,9 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     search_url_request_info->additional_params = additional_params;
     search_url_request_info->aim_entry_point = aim_entry_point;
 
+    file_info_list =
+        contextual_session_handle->GetController()->GetFileInfoList();
+
     contextual_session_handle->CreateSearchUrl(
         std::move(search_url_request_info),
         base::BindOnce(
@@ -821,9 +824,6 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
               }
             },
             weak_ptr_factory_.GetWeakPtr(), disposition));
-
-    file_info_list =
-        contextual_session_handle->GetController()->GetFileInfoList();
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -995,7 +995,10 @@ void ContextualSearchboxHandler::OpenUrl(
       target_web_contents->Focus();
     }
   } else {
-    content::OpenURLParams params(url, content::Referrer(), disposition,
+    // TODO(crbug.com/473009258): Override the window disposition for the
+    // ntp composebox until we correctly clear composebox input.
+    content::OpenURLParams params(url, content::Referrer(),
+                                  WindowOpenDisposition::CURRENT_TAB,
                                   ui::PAGE_TRANSITION_LINK, false);
     web_contents_->OpenURL(params, std::move(navigation_handle_callback));
   }

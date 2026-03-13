@@ -53,6 +53,7 @@ class MockContextualTasksComposeboxHandler
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       GetSessionHandleCallback get_session_callback,
+      ClearSessionHandleCallback clear_session_callback,
       TakeInputStateModelCallback get_inputstatemodel_callback)
       : ContextualTasksComposeboxHandler(
             ui_controller,
@@ -62,6 +63,7 @@ class MockContextualTasksComposeboxHandler
             std::move(pending_page),
             std::move(pending_searchbox_handler),
             std::move(get_session_callback),
+            std::move(clear_session_callback),
             std::move(get_inputstatemodel_callback)) {}
   ~MockContextualTasksComposeboxHandler() override = default;
 
@@ -678,6 +680,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
           base::BindRepeating(
               &ContextualTasksUI::GetOrCreateContextualSessionHandle,
               base::Unretained(ui)),
+          base::DoNothing(),
           base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                               base::Unretained(ui)));
   MockContextualTasksComposeboxHandler* mock_handler =

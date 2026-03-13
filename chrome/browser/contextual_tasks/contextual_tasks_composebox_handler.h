@@ -62,6 +62,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       GetSessionHandleCallback get_session_callback,
+      ClearSessionHandleCallback clear_session_callback,
       TakeInputStateModelCallback take_input_model_callback);
   ~ContextualTasksComposeboxHandler() override;
 
