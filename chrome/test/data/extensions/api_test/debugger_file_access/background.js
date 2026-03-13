@@ -5,7 +5,7 @@
 let openTab;
 
 async function runNotAllowedTest(method, params, expectAllowed) {
-  const NOT_ALLOWED = "Not allowed";
+  const NOT_ALLOWED = 'Not allowed';
   const NOT_FOUND = '\'Browser.setDownloadBehavior\' wasn\'t found';
   const tab = await openTab(chrome.runtime.getURL('dummy.html'));
   const debuggee = {tabId: tab.id};
@@ -14,7 +14,7 @@ async function runNotAllowedTest(method, params, expectAllowed) {
     chrome.debugger.sendCommand(debuggee, method, params, onResponse);
 
     function onResponse() {
-      var message;
+      let message;
       try {
         message = JSON.parse(chrome.runtime.lastError.message).message;
       } catch (e) {

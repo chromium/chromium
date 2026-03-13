@@ -4,7 +4,7 @@
 
 import { openTab } from '/_test_resources/test_util/tabs_util.js';
 
-var protocolVersion = "1.3";
+let protocolVersion = '1.3';
 
 chrome.test.getConfig(config => chrome.test.runTests([
   async function consoleEventOrdering() {
@@ -29,7 +29,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
       debuggee,
       'Runtime.evaluate',
       {
-        expression: 'console.log("Hello World"); "done"',
+        expression: `console.log('Hello World'); 'done'`,
       }
     );
 

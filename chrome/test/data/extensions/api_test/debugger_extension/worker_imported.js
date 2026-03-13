@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 self.addEventListener('connect', function(e) {
-  var port = e.ports[0];
+  let port = e.ports[0];
   port.start();
   port.postMessage({});
 });

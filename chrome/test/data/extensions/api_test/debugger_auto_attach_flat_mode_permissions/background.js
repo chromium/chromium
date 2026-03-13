@@ -81,7 +81,7 @@ chrome.test.getConfig(config => chrome.test.runTests([
     await chrome.debugger.sendCommand(
       childDebuggerSession,
       'Runtime.evaluate',
-      {expression: 'console.log("test")'},
+      {expression: `console.log('test')`},
     );
     const message = await eventPromise;
     chrome.test.assertEq('test', message.params.args[0].value);
