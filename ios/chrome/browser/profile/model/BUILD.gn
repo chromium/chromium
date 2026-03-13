@@ -250,6 +250,8 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/web/model/java_script_console",
     "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/browser/webdata_services/model",
+    "//ios/public/provider/chrome/browser/cobalt:cobalt_api",
+    "//ios/web/common:features",
   ]
 
   if (ios_enable_credential_provider_extension) {

@@ -200,6 +200,8 @@
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+#import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
+#import "ios/web/common/features.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
@@ -423,4 +425,8 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
 
   // Call other "Ensure...FactoriesBuilt" functions as necessary.
   EnsureSessionProtoDBFactoriesBuilt();
+
+  if (web::features::IsCobaltEnabled()) {
+    ios::provider::EnsureCobaltProfileKeyedServiceFactoriesBuilt();
+  }
 }

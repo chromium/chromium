@@ -60,6 +60,8 @@
 #import "ios/chrome/browser/web/model/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
+#import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
+#import "ios/web/common/features.h"
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
@@ -228,6 +230,10 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
   ios::provider::AttachBrowserAgents(browser);
+
+  if (web::features::IsCobaltEnabled()) {
+    ios::provider::AttachCobaltBrowserAgentsForActiveBrowser(browser);
+  }
 }
 
 }  // anonymous namespace
