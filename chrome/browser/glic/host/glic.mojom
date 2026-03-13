@@ -1527,7 +1527,7 @@ enum InvocationSource {
   [MinVersion=14] kAnchoredContextualCue = 22,
 };
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/glic_metrics.h:ResponseSegmentation, //chrome/browser/glic/service/metrics/metrics_types.h:GlicEntrypoint)
 
 // @generate glic_api
 // Mode for specific feature behaviors.
