@@ -1,11 +1,10 @@
 {
   "name" : "Preferences API Test Extension (Events)",
   "version" : "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description" : "Preferences API Test Extension (Events)",
   "permissions": [ "privacy" ],
   "background": {
-    "scripts": [ "test.js" ],
-    "persistent": false
+    "service_worker": "test.js"
   }
 }

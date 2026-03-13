@@ -49,18 +49,14 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using CookieControlsMode = content_settings::CookieControlsMode;
 
-using ContextType = extensions::browser_test_util::ContextType;
-
-class ExtensionPreferenceApiTest
-    : public extensions::ExtensionApiTest,
-      public testing::WithParamInterface<ContextType> {
+class ExtensionPreferenceApiTest : public extensions::ExtensionApiTest {
  public:
   ExtensionPreferenceApiTest(const ExtensionPreferenceApiTest&) = delete;
   ExtensionPreferenceApiTest& operator=(const ExtensionPreferenceApiTest&) =
       delete;
 
  protected:
-  ExtensionPreferenceApiTest() : ExtensionApiTest(GetParam()) {}
+  ExtensionPreferenceApiTest() = default;
   ~ExtensionPreferenceApiTest() override = default;
 
   void SetCookieControlsMode(PrefService* prefs, CookieControlsMode mode) {
@@ -200,18 +196,7 @@ class ExtensionPreferenceApiTest
 #endif
 };
 
-// Desktop Android only supports manifest V3 / service worker.
-#if !BUILDFLAG(IS_ANDROID)
-INSTANTIATE_TEST_SUITE_P(BackgroundPage,
-                         ExtensionPreferenceApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-#endif
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionPreferenceApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Standard) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Standard) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(embedder_support::kAlternateErrorPagesEnabled, false);
   prefs->SetBoolean(autofill::prefs::kAutofillEnabledDeprecated, false);
@@ -286,7 +271,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Standard) {
   CheckPreferencesCleared();
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
                        ThirdPartyCookiesAllowedIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kBlockThirdParty);
@@ -297,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, PersistentIncognito) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, PersistentIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kEnableHyperlinkAuditing, true);
 
@@ -321,14 +306,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, PersistentIncognito) {
   EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableHyperlinkAuditing));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, IncognitoDisabled) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, IncognitoDisabled) {
   EXPECT_FALSE(RunExtensionTest("preference/persistent_incognito"));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/371432155): Enable on desktop Android when the chrome.windows
 // API is available.
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kEnableHyperlinkAuditing, true);
 
@@ -352,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, SessionOnlyIncognito) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Clear) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, Clear) {
   PrefService* prefs = profile_->GetPrefs();
   SetCookieControlsMode(prefs, CookieControlsMode::kBlockThirdParty);
 
@@ -365,13 +350,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Clear) {
   EXPECT_EQ(CookieControlsMode::kBlockThirdParty, GetCookieControlsMode(prefs));
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, OnChange) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChange) {
   EXPECT_TRUE(
       RunExtensionTest("preference/onchange", {}, {.allow_in_incognito = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, OnChangeSplit) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
   extensions::ResultCatcher catcher;
   catcher.RestrictToBrowserContext(profile_);
   extensions::ResultCatcher catcher_incognito;
@@ -492,7 +477,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, OnChangeSplit) {
   EXPECT_TRUE(catcher_incognito.GetNextResult()) << catcher_incognito.message();
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
                        OnChangeSplitWithNoOTRProfile) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kEnableHyperlinkAuditing, false);
@@ -515,7 +500,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
   EXPECT_FALSE(profile_->HasPrimaryOTRProfile());
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
                        OnChangeSplitWithoutIncognitoAccess) {
   PrefService* prefs = profile_->GetPrefs();
   prefs->SetBoolean(prefs::kEnableHyperlinkAuditing, false);
@@ -542,7 +527,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest,
 
 // Tests the behavior of the Safe Browsing API as described in
 // crbug.com/1064722.
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {
   ExtensionTestMessageListener listener_true("set to true",
                                              ReplyBehavior::kWillReply);
   ExtensionTestMessageListener listener_clear("cleared",
@@ -608,7 +593,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, SafeBrowsing_SetTrue) {
 // Tests the behavior of the ThirdPartyCookies preference API.
 // kCookieControlsMode should be set to kOff/kBlockThirdParty if
 // ThirdPartyCookiesAllowed is set to true/false by an extension.
-IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
+IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
   ExtensionTestMessageListener listener_true("set to true",
                                              ReplyBehavior::kWillReply);
   ExtensionTestMessageListener listener_clear("cleared",
