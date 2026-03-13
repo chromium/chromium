@@ -103,6 +103,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /** Tests for {@link AutocompleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1539,5 +1540,44 @@ public class AutocompleteMediatorUnitTest {
         verify(mMockCachedZeroSuggestionsManager).readFromCache(anyInt());
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void onKeywordModeEntered_setsSiteSearchData() {
+        int pageClassification = PageClassification.BLANK_VALUE;
+        var session = createSession(JUnitTestGURLs.BLUE_1, "Title", pageClassification);
+        mMediator.beginInput(session);
+
+        ArgumentCaptor<Consumer<SiteSearchData>> callbackCaptor =
+                ArgumentCaptor.forClass(Consumer.class);
+        verify(mOmniboxActionDelegate).setOnKeywordModeEnteredCb(callbackCaptor.capture());
+
+        SiteSearchData data = new SiteSearchData("keyword", "Full Name");
+        callbackCaptor.getValue().accept(data);
+
+        verify(mTextStateProvider).setSiteSearchChip("Full Name");
+        assertEquals("", session.getAutocompleteInput().getUserText());
+        assertEquals(data, session.getAutocompleteInput().getSiteSearchData());
+    }
+
+    @Test
+    @SmallTest
+    public void onRefineSuggestion_stripsKeyword() {
+        int pageClassification = PageClassification.BLANK_VALUE;
+        var session = createSession(JUnitTestGURLs.BLUE_1, "Title", pageClassification);
+        SiteSearchData data = new SiteSearchData("keyword", "Full Name");
+        session.getAutocompleteInput().setSiteSearchData(data);
+        mMediator.beginInput(session);
+
+        AutocompleteMatch match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setDisplayText("keyword query")
+                        .setFillIntoEdit("keyword query")
+                        .build();
+
+        mMediator.onRefineSuggestion(match);
+
+        verify(mAutocompleteDelegate).setOmniboxEditingText("query ");
     }
 }

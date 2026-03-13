@@ -9,7 +9,7 @@ import android.content.Intent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
-import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.url.GURL;
 
 /** An interface for handling interactions for Omnibox Action Chips. */
@@ -55,6 +55,10 @@ public interface OmniboxActionDelegate {
      */
     boolean switchToTab(int tabId, GURL url);
 
-    /** Returns the AutocompleteInput instance that is currently live. */
-    @Nullable AutocompleteInput getAutocompleteInput();
+    /**
+     * Enters the keyword mode (Site Search) for the specified keyword.
+     *
+     * @param siteSearchData the site search data.
+     */
+    void setSiteSearchData(@Nullable SiteSearchData siteSearchData);
 }
