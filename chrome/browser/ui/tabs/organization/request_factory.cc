@@ -21,6 +21,9 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -175,6 +178,43 @@ void PerformTabOrganizationExecution(
 
   if (request->base_tab_id().has_value()) {
     tab_organization_request.set_active_tab_id(request->base_tab_id().value());
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy)) {
+    const int32_t strategy_int = profile->GetPrefs()->GetInteger(
+        tab_search_prefs::kTabOrganizationModelStrategy);
+    auto strategy =
+        static_cast<tab_search::mojom::TabOrganizationModelStrategy>(
+            strategy_int);
+    switch (strategy) {
+      case tab_search::mojom::TabOrganizationModelStrategy::kTopic:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_UNSPECIFIED);
+        break;
+      case tab_search::mojom::TabOrganizationModelStrategy::kTask:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED);
+        break;
+      case tab_search::mojom::TabOrganizationModelStrategy::kDomain:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED);
+        break;
+      default:
+        tab_organization_request.set_model_strategy(
+            optimization_guide::proto::
+                TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_UNSPECIFIED);
+        break;
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kTabOrganizationUserInstruction)) {
+    if (request->user_instruction().has_value()) {
+      tab_organization_request.set_user_command(
+          request->user_instruction().value());
+    }
   }
 
   tab_organization_request.set_allow_reorganizing_existing_groups(true);

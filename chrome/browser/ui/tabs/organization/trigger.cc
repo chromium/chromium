@@ -13,20 +13,18 @@
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "tab_sensitivity_cache.h"
 
 namespace {
-
-constexpr float kTriggerThreshold = 7.0f;
-constexpr float kSensitivityThreshold = 0.5f;
-constexpr base::TimeDelta kTriggerPeriod = base::Hours(6);
-constexpr double kTriggerBackoffBase = 2.0;
 
 // Just counts the number of tabs in the browser.
 float ScoringFunction(float sensitivity_threshold, TabStripModel* const model) {
   // Feature may be disabled in tests, in which case GetForProfile will CHECK.
   const TabOrganizationService* const service =
-      TabOrganizationServiceFactory::GetForProfile(model->profile());
+      base::FeatureList::IsEnabled(features::kTabOrganization)
+          ? TabOrganizationServiceFactory::GetForProfile(model->profile())
+          : nullptr;
 
   int num_eligible_tabs = 0;
   for (tabs::TabInterface* tab_model : *model) {
@@ -72,26 +70,34 @@ TriggerScoringFunction GetTriggerScoringFunction() {
 }
 
 float GetTriggerScoreThreshold() {
-  return kTriggerThreshold;
+  return features::kTabOrganizationTriggerThreshold.Get();
 }
 
 float GetSensitivityThreshold() {
-  return kSensitivityThreshold;
+  return features::kTabOrganizationTriggerSensitivityThreshold.Get();
 }
 
 std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
     BackoffLevelProvider* backoff_level_provider,
     Profile* profile) {
+  if (features::KTabOrganizationTriggerDemoMode.Get()) {
+    return std::make_unique<DemoTriggerPolicy>();
+  }
+
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);
-  if (policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
+  if (!base::FeatureList::IsEnabled(
+          features::kTabOrganizationEnableNudgeForEnterprise) &&
+      policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
       management_service && management_service->IsManaged()) {
     return std::make_unique<NeverTriggerPolicy>();
   }
 
   return std::make_unique<TargetFrequencyTriggerPolicy>(
       std::make_unique<UsageTickClock>(base::DefaultTickClock::GetInstance()),
-      kTriggerPeriod, kTriggerBackoffBase, std::move(backoff_level_provider));
+      features::kTabOrganizationTriggerPeriod.Get(),
+      features::kTabOrganizationTriggerBackoffBase.Get(),
+      std::move(backoff_level_provider));
 }
 
 std::unique_ptr<TabOrganizationTrigger> MakeTrigger(

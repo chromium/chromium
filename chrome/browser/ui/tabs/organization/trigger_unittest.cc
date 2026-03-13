@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,6 +44,10 @@ class TriggerTest : public testing::Test {
                                                              nullptr);
   }
 
+  base::test::ScopedFeatureList& scoped_feature_list() {
+    return scoped_feature_list_;
+  }
+
   content::WebContents* AddTab(GURL url) {
     std::unique_ptr<content::WebContents> contents_unique_ptr =
         CreateWebContents();
@@ -63,6 +68,7 @@ class TriggerTest : public testing::Test {
   const std::unique_ptr<TabStripModel> tab_strip_model_;
   const std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TriggerTest, TriggerHappyPath) {
@@ -84,6 +90,9 @@ TEST_F(TriggerTest, TriggerHappyPath) {
 }
 
 TEST_F(TriggerTest, DoesntTriggerForEnterprise) {
+  scoped_feature_list().InitAndDisableFeature(
+      features::kTabOrganizationEnableNudgeForEnterprise);
+
   auto trigger = std::make_unique<TabOrganizationTrigger>(
       GetTriggerScoringFunction(), GetTriggerScoreThreshold(),
       std::make_unique<DemoTriggerPolicy>());

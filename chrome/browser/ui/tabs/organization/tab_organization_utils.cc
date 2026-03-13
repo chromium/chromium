@@ -8,6 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 
 TabOrganizationUtils::TabOrganizationUtils() = default;
 
@@ -20,23 +21,27 @@ TabOrganizationUtils* TabOrganizationUtils::GetInstance() {
 }
 
 bool TabOrganizationUtils::IsEnabled(Profile* profile) {
+  const bool feature_is_enabled = features::IsTabOrganization();
   if (ignore_opt_guide_for_testing_) {
-    return true;
+    return feature_is_enabled;
   }
   const OptimizationGuideKeyedService* const opt_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return opt_guide_keyed_service != nullptr &&
          opt_guide_keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
-             optimization_guide::UserVisibleFeatureKey::kTabOrganization);
+             optimization_guide::UserVisibleFeatureKey::kTabOrganization) &&
+         feature_is_enabled;
 }
 
 bool TabOrganizationUtils::IsSettingVisible(Profile* profile) {
+  const bool feature_is_enabled = features::IsTabOrganization();
   if (ignore_opt_guide_for_testing_) {
-    return true;
+    return feature_is_enabled;
   }
   const OptimizationGuideKeyedService* const opt_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return opt_guide_keyed_service != nullptr &&
          opt_guide_keyed_service->IsSettingVisible(
-             optimization_guide::UserVisibleFeatureKey::kTabOrganization);
+             optimization_guide::UserVisibleFeatureKey::kTabOrganization) &&
+         feature_is_enabled;
 }

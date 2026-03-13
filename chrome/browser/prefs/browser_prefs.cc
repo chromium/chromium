@@ -1015,10 +1015,6 @@ constexpr char kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref[] =
 constexpr char kBookmarksBubblePromoShownSyntheticTrialGroupNamePref[] =
     "UnoDesktopBookmarksBubblePromoShownGroup";
 
-// Deprecated 03/2026.
-constexpr char kTabOrganizationModelStrategy[] =
-    "tab_organization.model_strategy";
-
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1426,9 +1422,6 @@ void RegisterProfilePrefsForMigration(
       kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref, std::string());
   registry->RegisterStringPref(
       kBookmarksBubblePromoShownSyntheticTrialGroupNamePref, std::string());
-
-  // Deprecated 03/2026.
-  registry->RegisterIntegerPref(kTabOrganizationModelStrategy, 0);
 }
 
 }  // namespace
@@ -2744,9 +2737,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
       kSigninFromBookmarksBubbleSyntheticTrialGroupNamePref);
   profile_prefs->ClearPref(
       kBookmarksBubblePromoShownSyntheticTrialGroupNamePref);
-
-  // Added 03/2026
-  profile_prefs->ClearPref(kTabOrganizationModelStrategy);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

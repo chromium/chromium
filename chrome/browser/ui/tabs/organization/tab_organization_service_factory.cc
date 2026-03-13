@@ -8,6 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 
@@ -33,7 +34,9 @@ std::unique_ptr<KeyedService>
 TabOrganizationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(context);
-  return std::make_unique<TabOrganizationService>(context);
+  return features::IsTabOrganization()
+             ? std::make_unique<TabOrganizationService>(context)
+             : nullptr;
 }
 
 // static

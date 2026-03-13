@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/menu_model_test.h"
@@ -54,6 +55,9 @@ class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
  public:
   TabMenuModelBrowserTest() {
+    // Enable tab organization before KeyedServices are instantiated, otherwise
+    // TabOrganizationServiceFactory::GetForProfile() will return nullptr.
+    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 
@@ -73,6 +77,9 @@ class TabMenuModelBrowserTest : public MenuModelTest,
     submenu->ActivatedAt(static_cast<size_t>(
         submenu->GetIndexOfCommandId(static_cast<int>(command_id)).value()));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, Basics) {
