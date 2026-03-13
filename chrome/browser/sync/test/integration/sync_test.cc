@@ -33,7 +33,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -978,10 +977,9 @@ void SyncTest::OnProfileAdded(Profile* profile) {
   // early, and ProfileImpl's constructor would override it once again when
   // invoking ash::InitializeAccountManager().
   if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    ash::AccountManagerFactory* factory =
-        g_browser_process->platform_part()->GetAccountManagerFactory();
     account_manager::AccountManager* account_manager =
-        factory->GetAccountManager(profile->GetPath().value());
+        ash::AccountManagerFactory::Get()->GetAccountManager(
+            profile->GetPath().value());
     account_manager->SetUrlLoaderFactoryForTests(
         test_url_loader_factory_.GetSafeWeakWrapper());
   }

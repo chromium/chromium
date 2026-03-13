@@ -17,8 +17,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -135,11 +133,11 @@ class SigninHelperTest : public InProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     auto* profile = browser()->profile();
-    auto* factory =
-        g_browser_process->platform_part()->GetAccountManagerFactory();
-    account_manager_ = factory->GetAccountManager(profile->GetPath().value());
+    account_manager_ = AccountManagerFactory::Get()->GetAccountManager(
+        profile->GetPath().value());
     account_manager_mojo_service_ =
-        factory->GetAccountManagerMojoService(profile->GetPath().value());
+        AccountManagerFactory::Get()->GetAccountManagerMojoService(
+            profile->GetPath().value());
     account_manager_->SetUrlLoaderFactoryForTests(shared_url_loader_factory());
     account_manager_->AddObserver(this);
 

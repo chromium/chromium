@@ -29,7 +29,6 @@
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -386,9 +385,8 @@ void TestingProfile::Init(bool is_supervised_profile, CreateMode create_mode) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Initialize |account_manager::AccountManager|.
-  auto* factory =
-      g_browser_process->platform_part()->GetAccountManagerFactory();
-  auto* account_manager = factory->GetAccountManager(profile_path_.value());
+  auto* account_manager = ash::AccountManagerFactory::Get()->GetAccountManager(
+      profile_path_.value());
   account_manager::AccountManager::DelayNetworkCallRunner
       immediate_callback_runner = base::BindRepeating(
           [](base::OnceClosure closure) -> void { std::move(closure).Run(); });

@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -368,14 +367,12 @@ void InlineLoginHandlerImpl::CreateSigninHelper(
     std::unique_ptr<SigninHelper::ArcHelper> arc_helper) {
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  auto* account_manager = g_browser_process->platform_part()
-                              ->GetAccountManagerFactory()
-                              ->GetAccountManager(profile->GetPath().value());
+  auto* account_manager = AccountManagerFactory::Get()->GetAccountManager(
+      profile->GetPath().value());
 
   crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      g_browser_process->platform_part()
-          ->GetAccountManagerFactory()
-          ->GetAccountManagerMojoService(profile->GetPath().value());
+      AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          profile->GetPath().value());
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

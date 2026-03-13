@@ -12,8 +12,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"

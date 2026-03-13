@@ -415,11 +415,6 @@ void BrowserProcessPlatformPart::CreateProfileHelper() {
   profile_helper_ = ash::ProfileHelper::CreateInstance();
 }
 
-ash::AccountManagerFactory*
-BrowserProcessPlatformPart::GetAccountManagerFactory() {
-  return account_manager_factory_.get();
-}
-
 // static
 void BrowserProcessPlatformPart::EnsureFactoryBuilt() {
   PrimaryProfileServicesShutdownNotifierFactory::GetInstance();

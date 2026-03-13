@@ -29,8 +29,6 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -501,9 +499,8 @@ PeopleSection::PeopleSection(Profile* profile,
   // OS and browser settings.
   if (IsAccountManagerAvailable(profile)) {
     // Some Account Manager search tags are added/removed dynamically.
-    auto* factory =
-        g_browser_process->platform_part()->GetAccountManagerFactory();
-    account_manager_ = factory->GetAccountManager(profile->GetPath().value());
+    account_manager_ = AccountManagerFactory::Get()->GetAccountManager(
+        profile->GetPath().value());
     DCHECK(account_manager_);
     account_manager_facade_ =
         AccountManagerFactory::Get()->GetAccountManagerFacade(

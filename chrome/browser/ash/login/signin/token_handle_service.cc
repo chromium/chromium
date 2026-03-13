@@ -8,8 +8,6 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -31,9 +29,8 @@ namespace ash {
 namespace {
 
 account_manager::AccountManager* GetAccountManager(Profile* profile) {
-  return g_browser_process->platform_part()
-      ->GetAccountManagerFactory()
-      ->GetAccountManager(profile->GetPath().value());
+  return AccountManagerFactory::Get()->GetAccountManager(
+      profile->GetPath().value());
 }
 
 }  // namespace

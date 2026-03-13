@@ -1506,9 +1506,8 @@ void UserSessionManager::InitProfilePreferences(
     // 3. Set it as the Primary Account.
 
     account_manager::AccountManager* account_manager =
-        g_browser_process->platform_part()
-            ->GetAccountManagerFactory()
-            ->GetAccountManager(profile->GetPath().value());
+        AccountManagerFactory::Get()->GetAccountManager(
+            profile->GetPath().value());
 
     DCHECK(account_manager->IsInitialized());
 

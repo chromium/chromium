@@ -17,8 +17,6 @@
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -209,9 +207,8 @@ class AccountManagerUIHandlerTest
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                             profile_.get());
 
-    auto* factory =
-        g_browser_process->platform_part()->GetAccountManagerFactory();
-    account_manager_ = factory->GetAccountManager(profile_->GetPath().value());
+    account_manager_ = AccountManagerFactory::Get()->GetAccountManager(
+        profile_->GetPath().value());
 
     account_manager_->UpsertAccount(
         ::account_manager::AccountKey{GetDeviceAccountInfo().id,

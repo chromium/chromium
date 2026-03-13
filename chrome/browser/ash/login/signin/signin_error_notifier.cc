@@ -20,8 +20,6 @@
 #include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -180,9 +178,8 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
     : error_controller_(controller),
       profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
-      account_manager_(g_browser_process->platform_part()
-                           ->GetAccountManagerFactory()
-                           ->GetAccountManager(profile_->GetPath().value())),
+      account_manager_(AccountManagerFactory::Get()->GetAccountManager(
+          profile_->GetPath().value())),
       token_handle_store_(
           TokenHandleStoreFactory::Get()->GetTokenHandleStore()),
       token_handle_fetcher_(
@@ -212,9 +209,8 @@ void SigninErrorNotifier::OnTokenHandleCheck(const AccountId& account_id,
                                              bool reauth_required) {
   if (ash::features::IsUseTokenHandleStoreEnabled()) {
     account_manager::AccountManager* account_manager =
-        g_browser_process->platform_part()
-            ->GetAccountManagerFactory()
-            ->GetAccountManager(profile_->GetPath().value());
+        AccountManagerFactory::Get()->GetAccountManager(
+            profile_->GetPath().value());
 
     token_handle_store_->DiagnoseTokenHandleMapping(
         profile_->GetPrefs(), account_manager, account_id, token);

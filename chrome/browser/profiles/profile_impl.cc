@@ -46,7 +46,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/client_hints/client_hints_factory.h"
@@ -521,9 +520,8 @@ ProfileImpl::ProfileImpl(
         std::move(shared_url_loader_factory), path_,
         base::DoNothing() /* initialization_callback */);
 
-    auto* account_manager = g_browser_process->platform_part()
-                                ->GetAccountManagerFactory()
-                                ->GetAccountManager(path_.value());
+    auto* account_manager =
+        ash::AccountManagerFactory::Get()->GetAccountManager(path_.value());
     account_manager->SetPrefService(GetPrefs());
   }
 #endif

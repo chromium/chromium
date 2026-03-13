@@ -163,7 +163,6 @@
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler.h"
 #include "chrome/common/chrome_switches.h"
@@ -686,10 +685,9 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
   // TODO(jamescook): Sort out how account management is split between Chrome OS
   // and browser settings.
   if (ash::IsAccountManagerAvailable(profile)) {
-    auto* factory =
-        g_browser_process->platform_part()->GetAccountManagerFactory();
     auto* account_manager =
-        factory->GetAccountManager(profile->GetPath().value());
+        ash::AccountManagerFactory::Get()->GetAccountManager(
+            profile->GetPath().value());
     DCHECK(account_manager);
     auto* account_manager_facade =
         ash::AccountManagerFactory::Get()->GetAccountManagerFacade(
