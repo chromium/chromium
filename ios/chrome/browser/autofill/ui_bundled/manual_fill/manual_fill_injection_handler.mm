@@ -27,7 +27,6 @@
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
-#import "ios/chrome/browser/autofill/form_input_accessory/public/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
@@ -130,16 +129,6 @@ bool IsSupportedSuggestion(FormSuggestion* suggestion) {
     _autofillProviderGetter = autofillProviderGetter;
   }
   return self;
-}
-
-#pragma mark - Getters
-
-// Returns the reauthentication module, which can be an override for testing
-// purposes.
-- (ReauthenticationModule*)reauthenticationModule {
-  id<ReauthenticationProtocol> overrideModule =
-      ScopedFormInputAccessoryReauthModuleOverride::Get();
-  return overrideModule ? overrideModule : _reauthenticationModule;
 }
 
 #pragma mark - ManualFillContentInjector

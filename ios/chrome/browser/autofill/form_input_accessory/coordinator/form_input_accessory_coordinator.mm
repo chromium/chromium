@@ -36,7 +36,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
-#import "ios/chrome/browser/autofill/form_input_accessory/public/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
@@ -57,6 +56,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -132,9 +133,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
 // in the forms.
 @property(nonatomic, strong) ManualFillInjectionHandler* injectionHandler;
 
-// Reauthentication Module used for re-authentication.
-@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
-
 // Active Form Input View Controller.
 @property(nonatomic, strong) UIViewController* formInputViewController;
 
@@ -182,7 +180,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
     _brandingCoordinator =
         [[BrandingCoordinator alloc] initWithBaseViewController:viewController
                                                         browser:browser];
-    _reauthenticationModule = [[ReauthenticationModule alloc] init];
   }
   return self;
 }
@@ -205,6 +202,9 @@ const base::Feature* FetchIPHFeatureFromEnum(
   auto accountPasswordStore =
       IOSChromeAccountPasswordStoreFactory::GetForProfile(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS);
+  id<ReauthenticationProtocol> reauthenticationModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
 
   // There is no personal data manager in OTR (incognito). Get the original
   // one for manual fallback.
@@ -222,7 +222,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
         profilePasswordStore:profilePasswordStore
         accountPasswordStore:accountPasswordStore
         securityAlertHandler:securityAlertHandler
-      reauthenticationModule:_reauthenticationModule
+      reauthenticationModule:reauthenticationModule
            engagementTracker:feature_engagement::TrackerFactory::GetForProfile(
                                  self.profile)];
   _formInputAccessoryViewController.formSuggestionClient =
@@ -245,7 +245,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
   _injectionHandler = [[ManualFillInjectionHandler alloc]
         initWithWebStateList:self.browser->GetWebStateList()
         securityAlertHandler:securityAlertHandler
-      reauthenticationModule:self.reauthenticationModule
+      reauthenticationModule:reauthenticationModule
         formSuggestionClient:_formInputAccessoryMediator
       autofillProviderGetter:autofillProviderGetter];
 }
@@ -306,13 +306,16 @@ const base::Feature* FetchIPHFeatureFromEnum(
   manual_fill::ManualFillDataType focusedFieldDataType = [ManualFillUtil
       manualFillDataTypeFromFillingProduct:
           [_formInputAccessoryMediator currentProviderMainFillingProduct]];
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
   ExpandedManualFillCoordinator* expandedManualFillCoordinator =
       [[ExpandedManualFillCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                          forDataType:dataType
                 focusedFieldDataType:focusedFieldDataType
-              reauthenticationModule:self.reauthenticationModule];
+              reauthenticationModule:reauthModule];
 
   expandedManualFillCoordinator.injectionHandler = self.injectionHandler;
   expandedManualFillCoordinator.invokedOnObfuscatedField =
@@ -696,14 +699,6 @@ const base::Feature* FetchIPHFeatureFromEnum(
 }
 
 #pragma mark - Private
-
-// Returns the reauthentication module, which can be an override for testing
-// purposes.
-- (ReauthenticationModule*)reauthenticationModule {
-  id<ReauthenticationProtocol> overrideModule =
-      ScopedFormInputAccessoryReauthModuleOverride::Get();
-  return overrideModule ? overrideModule : _reauthenticationModule;
-}
 
 // Returns the active web state.
 - (web::WebState*)activeWebState {

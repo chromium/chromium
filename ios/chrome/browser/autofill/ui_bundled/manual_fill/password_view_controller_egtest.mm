@@ -1124,7 +1124,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that tapping the "Autofill form" button fills the password form with
 // the right data.
 - (void)testAutofillFormButtonFillsForm {
-  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
@@ -1160,14 +1159,11 @@ void CheckKeyboardIsUpAndNotCovered() {
   // Verify that the acceptance of the password suggestion at index 0 was
   // correctly recorded.
   CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
-
-  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 }
 
 // Tests that tapping the "Autofill form" button doesn't fill the password form
 // if reauth failed.
 - (void)testAutofillFormButtonWithFailedAuth {
-  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kFailure];
 
@@ -1196,8 +1192,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
   // Verify that the page is filled properly.
   [self verifyPasswordInfoHasntBeenFilled];
-
-  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 }
 
 // Tests that tapping the "Autofill form" button in the all password list fills
@@ -1241,7 +1235,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that tapping the "Autofill form" button for a backup credential fills
 // the password form with the right data.
 - (void)testAutofillFormButtonForBackupCredentialFillsForm {
-  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 

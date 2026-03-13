@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/keyboard_accessory_optional_update_scheduler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/public/form_input_accessory_chromium_text_data.h"
-#import "ios/chrome/browser/autofill/form_input_accessory/public/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_consumer.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_view.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
@@ -664,14 +663,6 @@ bool IsStateless() {
 }
 
 #pragma mark - Private
-
-// Returns the reauthentication module, which can be an override for testing
-// purposes.
-- (ReauthenticationModule*)reauthenticationModule {
-  id<ReauthenticationProtocol> overrideModule =
-      ScopedFormInputAccessoryReauthModuleOverride::Get();
-  return overrideModule ? overrideModule : _reauthenticationModule;
-}
 
 - (void)updateSuggestionsIfNeeded {
   if (!_webState || !_webState->IsVisible()) {

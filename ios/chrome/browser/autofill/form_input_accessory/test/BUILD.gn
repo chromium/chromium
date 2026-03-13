@@ -48,6 +48,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/autofill/form_input_accessory/coordinator",
     "//ios/chrome/browser/autofill/form_input_accessory/public",
     "//ios/chrome/browser/autofill/form_input_accessory/ui",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
     "//ios/chrome/test/app:test_support",

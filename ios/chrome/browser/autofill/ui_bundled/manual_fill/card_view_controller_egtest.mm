@@ -902,7 +902,6 @@ void DismissPaymentBottomSheet() {
 // Tests that the "Edit" action of a local card's overflow menu button displays
 // the card's details in edit mode.
 - (void)testEditLocalCardFromOverflowMenu {
-  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
@@ -935,8 +934,6 @@ void DismissPaymentBottomSheet() {
   // Tap Done Button.
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
-
-  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 
   // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
 }
@@ -981,7 +978,6 @@ void DismissPaymentBottomSheet() {
 // Tests the "Show Details" action of the overflow menu button displays the
 // card's details.
 - (void)testShowCardDetailsFromOverflowMenu {
-  [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
 
@@ -1010,8 +1006,6 @@ void DismissPaymentBottomSheet() {
   // Tap the "Done" button to dismiss the view.
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
-
-  [FormInputAccessoryAppInterface removeMockReauthenticationModule];
 
   // TODO(crbug.com/332956674): Check that the expanded view is still visible.
 }

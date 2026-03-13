@@ -12,12 +12,8 @@
 // the app binary and can be called from either app or test code.
 @interface FormInputAccessoryAppInterface : NSObject
 
-// Sets a re-authentication mock (i.e. what asks user for fingerprint to
-// view password) and its options for next test.
-+ (void)setUpMockReauthenticationModule;
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
-+ (void)removeMockReauthenticationModule;
 
 @end
 
