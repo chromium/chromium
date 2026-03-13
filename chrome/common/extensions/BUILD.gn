@@ -10,6 +10,7 @@ assert(enable_extensions_core)
 source_set("extensions") {
   # The files that can be included from other modules.
   public = [
+    "activity_log_policy_util.h",
     "api/notifications/notification_style.h",
     "api/omnibox/omnibox_handler.h",
     "api/storage/storage_schema_manifest_handler.h",
@@ -30,6 +31,7 @@ source_set("extensions") {
 
   # Files that can only be included from here.
   sources = [
+    "activity_log_policy_util.cc",
     "api/notifications/notification_style.cc",
     "api/omnibox/omnibox_handler.cc",
     "api/storage/storage_schema_manifest_handler.cc",
