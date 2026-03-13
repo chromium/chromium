@@ -25,12 +25,21 @@ import node
 
     python3 ui/webui/resources/tools/codemods/lit_migration.py \
         --file ui/webui/resources/cr_components/most_visited/most_visited.ts
+
+    To keep the HTML content in the .html file (but with styles removed and
+    some automated modifications made), instead of putting it into a .html.ts
+    wrapper file, pass the --output-html flag:
+
+    python3 ui/webui/resources/tools/codemods/lit_migration.py \
+        --file ui/webui/resources/cr_components/most_visited/most_visited.ts \
+        --output-html
 """
 
 
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument('--file', required=True)
+  parser.add_argument('--output-html', dest='output_html', action='store_true')
   args = parser.parse_args(argv)
 
   print(f'Migrating {args.file}...')
@@ -47,13 +56,19 @@ def main(argv):
   ])
 
   # Update HTML/CSS file.
-  out = node.RunNode([
-      os.path.join(_HERE_PATH, 'lit_migration_templates.mjs'),
-      '--file=' + args.file,
-  ])
+  if args.output_html:
+    out = node.RunNode([
+        os.path.join(_HERE_PATH, 'lit_migration_templates.mjs'),
+        '--outputHtml',
+        '--file=' + args.file,
+    ])
+  else:
+    out = node.RunNode([
+        os.path.join(_HERE_PATH, 'lit_migration_templates.mjs'),
+        '--file=' + args.file,
+    ])
 
   print('DONE')
-
 
 if __name__ == '__main__':
   main(sys.argv[1:])

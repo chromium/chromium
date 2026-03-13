@@ -22,8 +22,28 @@ const CSS_FILE_HEADER = `/* Copyright 2024 The Chromium Authors
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #scheme=relative
- * #css_wrapper_metadata_end */
 `;
+
+const CSS_FILE_HEADER_END = ` * #css_wrapper_metadata_end */
+`;
+
+const HTML_TS_FILE_HEADER = `// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ELEMENT_TYPE_PLACEHOLDER} from './FILE_PATH_PLACEHOLDER.js';
+
+export function getHtml(this: ELEMENT_TYPE_PLACEHOLDER) {
+  // clang-format off
+  return html\`<!--_html_template_start_-->
+`;
+
+const HTML_TS_FILE_FOOTER = `
+<!--_html_template_end_-->\`;
+  // clang-format on
+}`;
 
 const LISTENER_BINDING_REGEX =
     /on-(?<eventName>[a-zA-Z-]+)="(?<listenerName>[a-zA-Z0-9_]+)"/g;
@@ -39,15 +59,19 @@ const LISTENER_BIDNING_TWO_WAY_REGEX =
 // ${this.foo_(abc)}.
 const TS_REFERENCE_REGEX = /\$\{this\.(?<reference>[^(}]+)(\([^)]*\)){0,1}}/g;
 
+const TS_CLASSNAME_REGEX =
+    /class (?<className>[a-zA-Z0-9]*) extends (PolymerElement|.*ElementBase)/;
+
 // Replaces part of a string with a the provided replacement string.
 function replaceRange(string, start, end, replacement) {
   return string.substring(0, start) + replacement + string.substring(end);
 }
 
-function processFile(file) {
+function processFile(file, outputHtml) {
   const basename = path.basename(file, '.ts');
   const tsFile = path.join(path.dirname(file), basename + '.ts');
   const htmlFile = path.join(path.dirname(file), basename + '.html');
+  const htmlTsFile = path.join(path.dirname(file), basename + '.html.ts');
   const cssFile = path.join(path.dirname(file), basename + '.css');
 
   // Step 1: Extract a standalone CSS file and write to disk.
@@ -55,8 +79,35 @@ function processFile(file) {
   const match = htmlContent.match(CSS_REGEX);
 
   if (match !== null) {
+    // Extract the deps from the <style> tag and convert them to Lit styles.
+    const deps = match.groups['deps'];
+    let litDeps = '';
+    if (deps) {
+      let polymerDeps = deps.slice(deps.indexOf('"') + 1);
+      polymerDeps = polymerDeps.slice(0, polymerDeps.indexOf('"')).trim();
+      litDeps = polymerDeps.split(' ').map(dep => dep + '-lit').join(' ');
+    }
+
+    // Extract any .css.js imports from the .ts file and convert to CSS
+    // metadata import lines.
+    let tsContent = fs.readFileSync(tsFile, 'utf8');
+    const cssImports =
+        Array.from(tsContent.matchAll(/import '(?<path>[^\.]*)\.css\.js'/g));
+    const importStrings = cssImports.map(importMatch => {
+      const path = importMatch.groups['path'];
+      return path.endsWith('vars') ?
+          ` * #import=${path}.css.js` : ` * #import=${path}_lit.css.js`;
+    });
+    let cssHeader = CSS_FILE_HEADER;
+    if (deps) {
+      cssHeader += ` * #include=${litDeps}\n`;
+    }
+    if (importStrings.length > 0) {
+      cssHeader += importStrings.join('\n') + '\n';
+    }
+    cssHeader += CSS_FILE_HEADER_END;
     fs.writeFileSync(
-        cssFile, CSS_FILE_HEADER + match.groups['content'], 'utf8');
+        cssFile, cssHeader + match.groups['content'], 'utf8');
 
     // Step 2: Remove <style>...</style> CSS content from HTML template file.
     htmlContent = htmlContent.substring(match.indices[0][1]);
@@ -100,8 +151,26 @@ function processFile(file) {
         replaceRange(htmlContent, start, end, `${binding} ${listener}`);
   }
 
-  // Step 6: Write updated HTML content to disk
-  fs.writeFileSync(htmlFile, htmlContent, 'utf8');
+  if (outputHtml) {
+    // Step 6: Write .html file with updated HTML content to disk.
+    fs.writeFileSync(htmlFile, htmlContent, 'utf8');
+  } else {
+    // Add the .html.ts file header and footer sections, making replacements
+    // for the import path and class name.
+    let htmlTsHeader =
+        HTML_TS_FILE_HEADER.replace('FILE_PATH_PLACEHOLDER', basename);
+    let tsContent = fs.readFileSync(tsFile, 'utf8');
+    const classNameMatch = tsContent.match(TS_CLASSNAME_REGEX);
+    if (classNameMatch) {
+      htmlTsHeader = htmlTsHeader.replaceAll(
+          'ELEMENT_TYPE_PLACEHOLDER', classNameMatch.groups['className']);
+    }
+
+    // Step 6: Write .html.ts file with updated HTML content and wrapper
+    // file content to disk.
+    fs.writeFileSync(htmlTsFile,
+        htmlTsHeader + htmlContent + HTML_TS_FILE_FOOTER, 'utf8');
+  }
 
   // Step 7: Extract all methods/variables being referenced from the template
   //         and if they are 'private' change them to 'protected'.
@@ -110,7 +179,7 @@ function processFile(file) {
   if (references.length > 0) {
     let tsContent = fs.readFileSync(tsFile, 'utf8');
     for (const ref of references) {
-      tsContent = tsContent.replace(`private ${ref}`, `protected ${ref}`);
+      tsContent = tsContent.replaceAll(`private ${ref}`, `protected ${ref}`);
     }
     // Step 7b: Write updated TS content to disk.
     fs.writeFileSync(tsFile, tsContent, 'utf8');
@@ -123,10 +192,13 @@ function main() {
                    file: {
                      type: 'string',
                    },
+                   outputHtml: {
+                     type: 'boolean',
+                   },
                  },
                }).values;
 
-  processFile(args.file);
+  processFile(args.file, args.outputHtml);
   console.log('DONE');
 }
 main();
