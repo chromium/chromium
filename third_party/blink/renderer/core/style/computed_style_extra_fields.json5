@@ -1117,10 +1117,9 @@
       invalidate: ["layout", "paint"],
     },
     {
-      name: "EffectiveZIndexZero",
+      name: "AllowsZIndex",
       field_template: "primitive",
       type_name: "bool",
-      field_group: "*",
       default_value: "false",
     },
     {

@@ -1195,13 +1195,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   builder.SetForcesStackingContext(false);
 
-  // Make sure our z-index value is only applied if the object is positioned.
-  if (!builder.HasAutoZIndex()) {
-    if (builder.GetPosition() == EPosition::kStatic &&
-        !LayoutParentStyleForcesZIndexToCreateStackingContext(
-            layout_parent_style)) {
-      builder.SetEffectiveZIndexZero(true);
-    } else {
+  // z-index is only applicable if positioned, or if a flex/grid/etc item.
+  if (builder.GetPosition() != EPosition::kStatic ||
+      LayoutParentStyleForcesZIndexToCreateStackingContext(
+          layout_parent_style)) {
+    builder.SetAllowsZIndex(true);
+    if (!builder.HasAutoZIndex()) {
       builder.SetForcesStackingContext(true);
     }
   }

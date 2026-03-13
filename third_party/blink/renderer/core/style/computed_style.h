@@ -786,7 +786,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // the element. `ZIndex()` is still available and returns the value as
   // specified in style (used for e.g. style comparisons and computed style
   // reporting)
-  int EffectiveZIndex() const { return EffectiveZIndexZero() ? 0 : ZIndex(); }
+  int EffectiveZIndex() const { return AllowsZIndex() ? ZIndex() : 0; }
 
   // Mask properties.
   // -webkit-mask-box-image-outset

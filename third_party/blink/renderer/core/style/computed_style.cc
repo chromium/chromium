@@ -1306,7 +1306,8 @@ bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(
 }
 
 static bool HasPropertyThatCreatesStackingContext(
-    const StyleWillChangeData* will_change) {
+    const StyleWillChangeData* will_change,
+    bool allows_z_index) {
   if (!will_change) {
     return false;
   }
@@ -1327,13 +1328,17 @@ static bool HasPropertyThatCreatesStackingContext(
       case CSSPropertyID::kWebkitBoxReflect:
       case CSSPropertyID::kFilter:
       case CSSPropertyID::kBackdropFilter:
-      case CSSPropertyID::kZIndex:
       case CSSPropertyID::kPosition:
       case CSSPropertyID::kMixBlendMode:
       case CSSPropertyID::kIsolation:
       case CSSPropertyID::kContain:
       case CSSPropertyID::kViewTransitionName:
         return true;
+      case CSSPropertyID::kZIndex:
+        if (allows_z_index) {
+          return true;
+        }
+        break;
       default:
         break;
     }
@@ -2938,7 +2943,7 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
   if (GetPosition() == EPosition::kSticky) {
     return true;
   }
-  if (HasPropertyThatCreatesStackingContext(WillChange())) {
+  if (HasPropertyThatCreatesStackingContext(WillChange(), AllowsZIndex())) {
     return true;
   }
   if (ShouldCompositeForCurrentAnimations()) {
