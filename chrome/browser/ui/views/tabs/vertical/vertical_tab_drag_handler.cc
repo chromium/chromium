@@ -479,7 +479,12 @@ TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {
 }
 
 bool VerticalTabDragHandlerImpl::IsDragging() const {
-  return drag_controller_ && drag_controller_->started_drag() &&
+  // We check if the drag controller is attached to this context instead of
+  // `started_drag()` because `started_drag()` only becomes true after the
+  // initial selection reset that occurs when a drag truly begins. If we
+  // relied on `started_drag()`, the vertical tab strip might incorrectly
+  // expand a collapsed group during that initial selection change.
+  return drag_controller_ && drag_controller_->attached_context() == this &&
          drag_controller_->active();
 }
 

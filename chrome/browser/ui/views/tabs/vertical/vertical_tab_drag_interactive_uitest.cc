@@ -204,6 +204,19 @@ class VerticalTabDragTest
     });
   }
 
+  auto CollapseGroup(int group_index) {
+    return Do([&, group_index]() {
+      TabStripModel* model = browser()->tab_strip_model();
+      std::vector<tab_groups::TabGroupId> groups =
+          model->group_model()->ListTabGroups();
+      ASSERT_LT(static_cast<size_t>(group_index), groups.size());
+      TabGroup* group = model->group_model()->GetTabGroup(groups[group_index]);
+      vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
+          group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+      views::test::RunScheduledLayout(&GetBrowserView());
+    });
+  }
+
   BrowserView& GetBrowserView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
@@ -713,6 +726,39 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragGroupHeader) {
                    URLs({url::kAboutBlankURL, chrome::kChromeUIVersionURL,
                          TabGroupURLs({chrome::kChromeUIBookmarksURL,
                                        chrome::kChromeUISettingsURL})})),
+      ReleaseMouse());
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragCollapsedGroup) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      AddInstrumentedTab(kFourthTab, GURL(chrome::kChromeUIVersionURL), 3),
+      AddTabsToNewGroup({0, 1}), CollapseGroup(0), Do([&]() {
+        std::vector<tab_groups::TabGroupId> groups =
+            tab_strip_model->group_model()->ListTabGroups();
+        ASSERT_EQ(1u, groups.size());
+        EXPECT_TRUE(tab_strip_model->group_model()
+                        ->GetTabGroup(groups[0])
+                        ->visual_data()
+                        ->is_collapsed());
+      }),
+      StartDragFromGroupToTab(0, 2),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true),
+      // Dragging a collapsed group should keep it collapsed.
+      Do([&]() {
+        std::vector<tab_groups::TabGroupId> groups =
+            tab_strip_model->group_model()->ListTabGroups();
+        ASSERT_EQ(1u, groups.size());
+        EXPECT_TRUE(tab_strip_model->group_model()
+                        ->GetTabGroup(groups[0])
+                        ->visual_data()
+                        ->is_collapsed());
+      }),
       ReleaseMouse());
 }
 
