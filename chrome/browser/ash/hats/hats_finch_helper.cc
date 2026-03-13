@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/hats/hats_finch_helper.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -91,7 +91,8 @@ HatsFinchHelper::HatsFinchHelper(Profile* profile,
     profile_->GetPrefs()->ClearPref(hats_config.cycle_end_timestamp_pref_name);
     profile_->GetPrefs()->ClearPref(hats_config.is_selected_pref_name);
     if (reset_hats_)
-      profile_->GetPrefs()->ClearPref(prefs::kHatsLastInteractionTimestamp);
+      profile_->GetPrefs()->ClearPref(
+          ash::prefs::kHatsLastInteractionTimestamp);
     return;
   }
 

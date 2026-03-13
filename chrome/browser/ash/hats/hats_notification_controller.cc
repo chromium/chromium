@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -98,7 +99,7 @@ bool DidShowNonPrioritizedHatsToProfileRecently(
     const Profile* profile,
     const base::TimeDelta& threshold_time) {
   int64_t serialized_timestamp =
-      profile->GetPrefs()->GetInt64(prefs::kHatsLastInteractionTimestamp);
+      profile->GetPrefs()->GetInt64(ash::prefs::kHatsLastInteractionTimestamp);
 
   base::Time previous_interaction_timestamp =
       base::Time::FromInternalValue(serialized_timestamp);
@@ -117,7 +118,7 @@ bool DidShowPrioritizedHatsToProfileRecently(
     std::optional<raw_ref<const HatsConfig>> hats_config,
     const base::TimeDelta& prioritized_threshold_time) {
   base::Time prev_prioritized_interaction = profile->GetPrefs()->GetTime(
-      prefs::kHatsPrioritizedLastInteractionTimestamp);
+      ash::prefs::kHatsPrioritizedLastInteractionTimestamp);
   if (prev_prioritized_interaction + prioritized_threshold_time >
       base::Time::Now()) {
     return true;
@@ -484,14 +485,14 @@ void HatsNotificationController::UpdateLastInteractionTime() {
 
   PrefService* pref_service = profile_->GetPrefs();
   if (!hats_config_->prioritized) {
-    pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
+    pref_service->SetInt64(ash::prefs::kHatsLastInteractionTimestamp,
                            base::Time::Now().since_origin().InMicroseconds());
   } else {
     pref_service->SetTime(
         hats_config_->survey_last_interaction_timestamp_pref_name,
         base::Time::Now());
-    pref_service->SetTime(prefs::kHatsPrioritizedLastInteractionTimestamp,
-                           base::Time::Now());
+    pref_service->SetTime(ash::prefs::kHatsPrioritizedLastInteractionTimestamp,
+                          base::Time::Now());
   }
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -59,8 +59,8 @@ const char kBrowserValue1[] = "browser1";
 const ash::HatsConfig kNonPrioritizedTestConfig{
     ash::features::kHappinessTrackingSystem,
     base::Days(7),
-    prefs::kHatsDeviceIsSelected,
-    prefs::kHatsSurveyCycleEndTimestamp,
+    ash::prefs::kHatsDeviceIsSelected,
+    ash::prefs::kHatsSurveyCycleEndTimestamp,
 };
 const char kFeatureNonPrioritizedCommandLine[] =
     "HappinessTrackingSystem:"
@@ -71,9 +71,9 @@ const char kFeatureNonPrioritizedCommandLine[] =
 const ash::HatsConfig kPrioritizedTestConfig{
     ash::features::kHappinessTrackingGeneralCameraPrioritized,
     base::Days(7),
-    prefs::kHatsGeneralCameraPrioritizedIsSelected,
-    prefs::kHatsGeneralCameraPrioritizedSurveyCycleEndTs,
-    prefs::kHatsGeneralCameraPrioritizedLastInteractionTimestamp,
+    ash::prefs::kHatsGeneralCameraPrioritizedIsSelected,
+    ash::prefs::kHatsGeneralCameraPrioritizedSurveyCycleEndTs,
+    ash::prefs::kHatsGeneralCameraPrioritizedLastInteractionTimestamp,
     base::Days(120)};
 const char kFeaturePrioritizedCommandLine[] =
     "HappinessTrackingGeneralCameraPrioritized:"
@@ -240,14 +240,14 @@ TEST_F(HatsNotificationControllerTest, GetFormattedSiteContext) {
 TEST_F(HatsNotificationControllerTest, NewDevice_ShouldNotShowNotification) {
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
   PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
+  pref_service->SetInt64(ash::prefs::kHatsLastInteractionTimestamp,
                          initial_timestamp);
 
   auto hats_notification_controller = InstantiateHatsController();
   hats_notification_controller->Initialize(true);
 
   int64_t current_timestamp =
-      pref_service->GetInt64(prefs::kHatsLastInteractionTimestamp);
+      pref_service->GetInt64(ash::prefs::kHatsLastInteractionTimestamp);
 
   // When the device is new, the controller does not begin initialization and
   // simply updates the timestamp to Time::Now().
@@ -301,7 +301,8 @@ TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
 TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
   int64_t now_timestamp = base::Time::Now().ToInternalValue();
   PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp, now_timestamp);
+  pref_service->SetInt64(ash::prefs::kHatsLastInteractionTimestamp,
+                         now_timestamp);
 
   auto hats_notification_controller = InstantiateHatsController();
 
@@ -309,7 +310,7 @@ TEST_F(HatsNotificationControllerTest, DismissNotification_ShouldUpdatePref) {
   hats_notification_controller->Close(true);
 
   int64_t new_timestamp =
-      pref_service->GetInt64(prefs::kHatsLastInteractionTimestamp);
+      pref_service->GetInt64(ash::prefs::kHatsLastInteractionTimestamp);
   // The flag should be updated to a new timestamp.
   EXPECT_TRUE(base::Time::FromInternalValue(new_timestamp) >
               base::Time::FromInternalValue(now_timestamp));
@@ -319,7 +320,7 @@ TEST_F(HatsNotificationControllerTest,
        DismissNotification_PrioritizedShouldUpdatePref) {
   base::Time now_timestamp = base::Time::Now();
   PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
+  pref_service->SetInt64(ash::prefs::kHatsLastInteractionTimestamp,
                          now_timestamp.ToInternalValue());
 
   // Make sure time has actually advanced
@@ -336,14 +337,14 @@ TEST_F(HatsNotificationControllerTest,
   // The flag should be updated to a new timestamp.
   EXPECT_GT(survey_timestamp, now_timestamp);
 
-  base::Time global_timestamp =
-      pref_service->GetTime(prefs::kHatsPrioritizedLastInteractionTimestamp);
+  base::Time global_timestamp = pref_service->GetTime(
+      ash::prefs::kHatsPrioritizedLastInteractionTimestamp);
   // All prioritized HaTS has its own cooldown timestamp, should be updated.
   EXPECT_GT(global_timestamp, now_timestamp);
 
   // The general HaTS timestamp should not be changed.
   int64_t hats_timestamp =
-      pref_service->GetInt64(prefs::kHatsLastInteractionTimestamp);
+      pref_service->GetInt64(ash::prefs::kHatsLastInteractionTimestamp);
   EXPECT_EQ(base::Time::FromInternalValue(hats_timestamp), now_timestamp);
 }
 
@@ -382,10 +383,10 @@ TEST_F(HatsNotificationControllerTest,
 TEST_P(HatsNotificationControllerTest, ShouldShowSurveyToProfile) {
   // Insert the time values into prefs
   PrefService* pref_service = profile()->GetPrefs();
-  pref_service->SetTime(prefs::kHatsPrioritizedLastInteractionTimestamp,
+  pref_service->SetTime(ash::prefs::kHatsPrioritizedLastInteractionTimestamp,
                         base::Time::Now() - GetParam().prev_prio_hats);
   pref_service->SetInt64(
-      prefs::kHatsLastInteractionTimestamp,
+      ash::prefs::kHatsLastInteractionTimestamp,
       (base::Time::Now() - GetParam().prev_non_prio_hats).ToInternalValue());
 
   // Explanation by example:

@@ -9,10 +9,10 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/hats/hats_config.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -136,8 +136,8 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
   PrefService* pref_service = profile_.GetPrefs();
-  pref_service->SetBoolean(prefs::kHatsDeviceIsSelected, true);
-  pref_service->SetInt64(prefs::kHatsSurveyCycleEndTimestamp,
+  pref_service->SetBoolean(ash::prefs::kHatsDeviceIsSelected, true);
+  pref_service->SetInt64(ash::prefs::kHatsSurveyCycleEndTimestamp,
                          initial_timestamp);
 
   base::Time current_time = base::Time::Now();
@@ -149,8 +149,8 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
                 .InMillisecondsFSinceUnixEpoch(),
             2 * current_time.InMillisecondsFSinceUnixEpoch());
 
-  EXPECT_FALSE(pref_service->GetBoolean(prefs::kHatsDeviceIsSelected));
-  EXPECT_NE(pref_service->GetInt64(prefs::kHatsSurveyCycleEndTimestamp),
+  EXPECT_FALSE(pref_service->GetBoolean(ash::prefs::kHatsDeviceIsSelected));
+  EXPECT_NE(pref_service->GetInt64(ash::prefs::kHatsSurveyCycleEndTimestamp),
             initial_timestamp);
 }
 
@@ -161,10 +161,10 @@ TEST_F(HatsFinchHelperTest, ResetHats) {
 
   int64_t initial_timestamp = base::Time::Now().ToInternalValue();
   PrefService* pref_service = profile_.GetPrefs();
-  pref_service->SetBoolean(prefs::kHatsDeviceIsSelected, true);
-  pref_service->SetInt64(prefs::kHatsSurveyCycleEndTimestamp,
+  pref_service->SetBoolean(ash::prefs::kHatsDeviceIsSelected, true);
+  pref_service->SetInt64(ash::prefs::kHatsSurveyCycleEndTimestamp,
                          initial_timestamp);
-  pref_service->SetInt64(prefs::kHatsLastInteractionTimestamp,
+  pref_service->SetInt64(ash::prefs::kHatsLastInteractionTimestamp,
                          initial_timestamp);
 
   base::Time current_time = base::Time::Now();
@@ -176,10 +176,10 @@ TEST_F(HatsFinchHelperTest, ResetHats) {
                 .InMillisecondsFSinceUnixEpoch(),
             2 * current_time.InMillisecondsFSinceUnixEpoch());
 
-  EXPECT_FALSE(pref_service->GetBoolean(prefs::kHatsDeviceIsSelected));
-  EXPECT_NE(pref_service->GetInt64(prefs::kHatsSurveyCycleEndTimestamp),
+  EXPECT_FALSE(pref_service->GetBoolean(ash::prefs::kHatsDeviceIsSelected));
+  EXPECT_NE(pref_service->GetInt64(ash::prefs::kHatsSurveyCycleEndTimestamp),
             initial_timestamp);
-  EXPECT_NE(pref_service->GetInt64(prefs::kHatsLastInteractionTimestamp),
+  EXPECT_NE(pref_service->GetInt64(ash::prefs::kHatsLastInteractionTimestamp),
             initial_timestamp);
 }
 
