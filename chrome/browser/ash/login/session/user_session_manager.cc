@@ -429,7 +429,7 @@ void LogCustomFeatureFlags(const std::set<std::string>& feature_flags) {
 
 bool IsRunningTest() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ::switches::kTestName) ||
+             ash::switches::kTestName) ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
              ::switches::kTestType);
 }

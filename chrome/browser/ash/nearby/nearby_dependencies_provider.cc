@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/presence/credential_storage/credential_storage_initializer.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole_factory.h"
 #include "chrome/browser/nearby_sharing/mdns/nearby_connections_mdns_manager.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"

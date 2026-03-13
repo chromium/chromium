@@ -14,8 +14,6 @@ source_set("common") {
     "nearby_share_prefs.h",
     "nearby_share_resource_getter.cc",
     "nearby_share_resource_getter.h",
-    "nearby_share_switches.cc",
-    "nearby_share_switches.h",
   ]
 
   public_deps = [ "//base" ]

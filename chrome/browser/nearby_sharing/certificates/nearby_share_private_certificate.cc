@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -22,7 +23,6 @@
 #include "base/strings/string_view_util.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chromeos/ash/components/nearby/common/proto/timestamp.pb.h"
 #include "components/cross_device/logging/logging.h"
 #include "crypto/aead.h"
@@ -130,13 +130,13 @@ StringToSalts(const std::string& str) {
 base::TimeDelta GetCertificateValidityPeriod() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(
-          switches::kNearbyShareCertificateValidityPeriodHours)) {
+          ash::switches::kNearbyShareCertificateValidityPeriodHours)) {
     return kNearbyShareCertificateValidityPeriod;
   }
 
   std::string certificate_validity_period_hours_str =
       command_line->GetSwitchValueASCII(
-          switches::kNearbyShareCertificateValidityPeriodHours);
+          ash::switches::kNearbyShareCertificateValidityPeriodHours);
   int certificate_validity_period_hours = 0;
   if (!base::StringToInt(certificate_validity_period_hours_str,
                          &certificate_validity_period_hours) ||

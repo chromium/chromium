@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
@@ -52,7 +53,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/terminal_private.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/experiences/guest_os/virtual_machines/virtual_machines_util.h"
@@ -300,11 +300,11 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
 
   // Passing --crosh-command overrides any JS process name.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kCroshCommand)) {
+  if (command_line->HasSwitch(ash::switches::kCroshCommand)) {
     OpenProcess(
         user_id_hash,
         base::CommandLine(base::FilePath(
-            command_line->GetSwitchValueASCII(switches::kCroshCommand))));
+            command_line->GetSwitchValueASCII(ash::switches::kCroshCommand))));
 
   } else if (process_name == kCroshName) {
     // Ensure crosh is allowed before starting terminal.

@@ -194,7 +194,7 @@ void StartUserSession(
     const std::string& login_user_id) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
-  bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
+  bool is_running_test = command_line->HasSwitch(ash::switches::kTestName) ||
                          command_line->HasSwitch(::switches::kTestType);
 
   if (command_line->HasSwitch(switches::kLoginUser)) {

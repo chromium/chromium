@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "base/base64url.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_api_call_flow_impl.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "components/cross_device/logging/logging.h"
@@ -46,10 +46,11 @@ const char kSecretIds[] = "secret_ids";
 // |request_path|.
 GURL CreateV1RequestUrl(const std::string& request_path) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  GURL google_apis_url = command_line->HasSwitch(switches::kNearbyShareHTTPHost)
-                             ? GURL(command_line->GetSwitchValueASCII(
-                                   switches::kNearbyShareHTTPHost))
-                             : GURL(kDefaultNearbyShareV1HTTPHost);
+  GURL google_apis_url =
+      command_line->HasSwitch(ash::switches::kNearbyShareHTTPHost)
+          ? GURL(command_line->GetSwitchValueASCII(
+                ash::switches::kNearbyShareHTTPHost))
+          : GURL(kDefaultNearbyShareV1HTTPHost);
   return google_apis_url.Resolve(kNearbyShareV1Path + request_path);
 }
 
