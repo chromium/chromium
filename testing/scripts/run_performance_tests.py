@@ -782,7 +782,7 @@ class CrossbenchTest(object):
     elif self._is_alum():
       self.is_android = True
       # TODO(crbug.com/435031130): Experimenting.
-      self._find_browser('android-system-chrome')
+      self._find_browser('android-trichrome-chrome-google-64-32-bundle')
     else:
       browser_arg = _get_browser_arg(options.passthrough_args)
       self.is_android = _is_android(browser_arg)
