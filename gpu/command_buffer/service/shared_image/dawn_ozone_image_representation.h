@@ -54,6 +54,7 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
   scoped_refptr<gfx::NativePixmap> pixmap_;
   wgpu::Texture texture_;
   bool is_readonly_ = false;
+  wgpu::SharedTextureMemory shared_texture_memory_;
 };
 
 }  // namespace gpu

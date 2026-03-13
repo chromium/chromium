@@ -480,7 +480,8 @@ target(link_target_type, "gles2_sources") {
 
       deps += [ "//ui/ozone" ]
 
-      if (is_chromeos) {
+      if (is_linux || is_chromeos) {
+        deps += [ "//third_party/libsync" ]
         deps += [ "//ui/gfx/linux:drm" ]
       }
     }
