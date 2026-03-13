@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 
 namespace autofill {
@@ -14,6 +15,12 @@ namespace autofill {
 // Returns the default icon for the Autofill AI entity type.
 UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
                                             CGFloat symbol_point_size);
+
+// Returns the display name for the given Autofill AI attribute type. For most
+// attribute types, the display name is the same as the attribute type name.
+// For attribute types with long names, this function returns a localized
+// shorter name.
+NSString* DisplayNameForAutofillAiAttributeType(AttributeType attribute_type);
 
 }  // namespace autofill
 

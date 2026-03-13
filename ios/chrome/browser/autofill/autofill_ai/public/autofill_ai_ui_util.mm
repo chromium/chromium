@@ -4,8 +4,12 @@
 
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -44,6 +48,13 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
       DefaultSymbolWithPointSize(symbol_name, symbol_point_size), @[
         [UIColor colorNamed:kTextPrimaryColor],
       ]);
+}
+
+NSString* DisplayNameForAutofillAiAttributeType(AttributeType attribute_type) {
+  if (attribute_type.name() == AttributeTypeName::kVehicleVin) {
+    return l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_VEHICLE_VIN_NAME);
+  }
+  return base::SysUTF16ToNSString(attribute_type.GetNameForI18n());
 }
 
 }  // namespace autofill

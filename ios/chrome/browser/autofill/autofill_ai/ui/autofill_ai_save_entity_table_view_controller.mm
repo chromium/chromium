@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/autofill_ai/ui/autofill_ai_save_entity_mutator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_edit_profile_button_footer_item.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
@@ -39,7 +40,7 @@ NSArray<TableViewTextEditItem*>* CreateItemsFromEntity(
   for (const auto& attribute : entity.attributes()) {
     TableViewTextEditItem* item = [[TableViewTextEditItem alloc] init];
     item.fieldNameLabelText =
-        base::SysUTF16ToNSString(attribute.type().GetNameForI18n());
+        autofill::DisplayNameForAutofillAiAttributeType(attribute.type());
     item.textFieldValue =
         base::SysUTF16ToNSString(attribute.GetCompleteInfo(locale));
     item.textFieldEnabled = NO;
