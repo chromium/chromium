@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -54,7 +56,9 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -157,6 +161,23 @@ void ClearLockedProfilesFirstBrowserKeepAlive() {
       profile_manager->ClearFirstBrowserWindowKeepAlive(profile);
     }
   }
+}
+
+bool ShouldBuildToolbarWithDontSignInButton(
+    Profile* profile,
+    ProfilePicker::EntryPoint entry_point) {
+  if (entry_point != ProfilePicker::EntryPoint::kFirstRun) {
+    return false;
+  }
+  const bool is_in_search_engine_screen_region =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile))
+          .IsInSearchEngineChoiceScreenRegion();
+  return switches::IsFirstRunDesktopRefreshEnabled(
+             is_in_search_engine_screen_region) &&
+         switches::kFirstRunDesktopSignInPromoVariation.Get() ==
+             switches::FirstRunDesktopSignInPromoVariation::
+                 kDontSignInOnGaiaPage;
 }
 
 }  // namespace
@@ -476,13 +497,28 @@ void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
   }
 
   if (toolbar_->children().empty()) {
+    base::RepeatingClosure dont_sign_in_callback;
+    if (ShouldBuildToolbarWithDontSignInButton(
+            Profile::FromBrowserContext(contents_->GetBrowserContext()),
+            params_.entry_point())) {
+      dont_sign_in_callback = base::BindRepeating(
+          &ProfileManagementFlowController::CancelSigninFlow,
+          // Unretained safe because the `flow_controller_` is owned by `this`
+          // and `this` outlives the `toolbar_` (parent view).
+          base::Unretained(flow_controller_.get()));
+    }
     toolbar_->BuildToolbar(
         base::BindRepeating(&ProfilePickerView::NavigateBack,
                             // Binding as Unretained as `this` is the
                             // `toolbar_`'s parent and outlives it.
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        std::move(dont_sign_in_callback));
   }
   toolbar_->SetVisible(true);
+}
+
+void ProfilePickerView::SetNativeToolbarDontSignInButtonVisible(bool visible) {
+  CHECK_DEREF(toolbar_).SetDontSignInButtonVisible(visible);
 }
 
 bool ProfilePickerView::IsNativeToolbarVisibleForTesting() const {
@@ -828,7 +864,7 @@ bool ProfilePickerView::GetAcceleratorForCommandId(
 void ProfilePickerView::Layout(PassKey) {
   LayoutSuperclass<views::WidgetDelegateView>(this);
   CHECK(toolbar_);
-  toolbar_->SetBoundsRect(gfx::Rect(toolbar_->GetPreferredSize()));
+  toolbar_->SetBounds(0, 0, width(), toolbar_->GetPreferredSize().height());
 }
 
 void ProfilePickerView::BuildLayout() {

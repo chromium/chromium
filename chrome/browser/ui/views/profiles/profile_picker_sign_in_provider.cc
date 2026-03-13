@@ -228,6 +228,12 @@ void ProfilePickerSignInProvider::NavigationStateChanged(
     return;
   }
 
+  // The first Gaia screen has no back history. If CanGoBack() is `false`, we
+  // are on the first screen and the "Don't sign in" button (if exists) should
+  // be visible.
+  host_->SetNativeToolbarDontSignInButtonVisible(
+      !contents_->GetController().CanGoBack());
+
   const GURL& visible_url = contents_->GetVisibleURL();
   auto primary_account =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(

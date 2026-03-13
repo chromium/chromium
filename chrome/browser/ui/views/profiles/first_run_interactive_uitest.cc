@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -103,16 +104,28 @@ enum class SyncButtonsFeatureConfig : int {
   kButtonsStillLoading = 4,
 };
 
-const DeepQuery& GetSignInButtonQuery() {
-  static const base::NoDestructor<DeepQuery> kSignInButton(
-      {"intro-app", "sign-in-promo", "#acceptSignInButton"});
-  return *kSignInButton;
+const DeepQuery& GetSignInButtonQuery(bool use_refreshed_view = false) {
+  if (use_refreshed_view) {
+    static const base::NoDestructor<DeepQuery> kSignInButtonRefreshed(
+        {"sign-in-promo-refresh", "#acceptSignInButton"});
+    return *kSignInButtonRefreshed;
+  } else {
+    static const base::NoDestructor<DeepQuery> kSignInButton(
+        {"intro-app", "sign-in-promo", "#acceptSignInButton"});
+    return *kSignInButton;
+  }
 }
 
-const DeepQuery& GetDontSignInButtonQuery() {
-  static const base::NoDestructor<DeepQuery> kDontSignInButton(
-      {"intro-app", "sign-in-promo", "#declineSignInButton"});
-  return *kDontSignInButton;
+const DeepQuery& GetDontSignInButtonQuery(bool use_refreshed_view = false) {
+  if (use_refreshed_view) {
+    static const base::NoDestructor<DeepQuery> kDontSignInButtonRefreshed(
+        {"sign-in-promo-refresh", "#declineSignInButton"});
+    return *kDontSignInButtonRefreshed;
+  } else {
+    static const base::NoDestructor<DeepQuery> kDontSignInButton(
+        {"intro-app", "sign-in-promo", "#declineSignInButton"});
+    return *kDontSignInButton;
+  }
 }
 
 const DeepQuery& GetAcceptManagementButtonQuery() {
@@ -352,9 +365,10 @@ class FirstRunInteractiveUiTest
 
   // Waits for the intro buttons to be shown and presses to proceed according
   // to the value of `sign_in`.
-  auto CompleteIntroStep(bool sign_in) {
+  auto CompleteIntroStep(bool sign_in, bool use_refreshed_view = false) {
     const DeepQuery& button =
-        sign_in ? GetSignInButtonQuery() : GetDontSignInButtonQuery();
+        sign_in ? GetSignInButtonQuery(use_refreshed_view)
+                : GetDontSignInButtonQuery(use_refreshed_view);
     return Steps(
         WaitForWebContentsReady(kWebContentsId,
                                 GURL(chrome::kChromeUIIntroURL)),
@@ -1719,4 +1733,68 @@ IN_PROC_BROWSER_TEST_F(FirstRunWithHatsInteractiveUiTest,
   EXPECT_TRUE(proceed_future.Get());
   EXPECT_TRUE(GetFirstRunFinishedPrefValue());
   ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
+}
+
+class FirstRunDontSignInOnGaiaPageInteractiveUiTest
+    : public FirstRunWithHatsInteractiveUiTest {
+ public:
+  FirstRunDontSignInOnGaiaPageInteractiveUiTest() {
+    scoped_feature_list_override_.InitWithFeaturesAndParameters(
+        {
+            {switches::kFirstRunDesktopRefresh,
+             {{switches::kFirstRunDesktopSignInPromoVariation.name,
+               "dont-sign-in-on-gaia-page"}}},
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_override_;
+};
+
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DeclineSignInFromNativeToolbar \
+  DISABLED_DeclineSignInFromNativeToolbar
+#else
+#define MAYBE_DeclineSignInFromNativeToolbar DeclineSignInFromNativeToolbar
+#endif
+IN_PROC_BROWSER_TEST_F(FirstRunDontSignInOnGaiaPageInteractiveUiTest,
+                       MAYBE_DeclineSignInFromNativeToolbar) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true, /*use_refreshed_view=*/true),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()),
+      WaitForShow(kProfilePickerSignInToolbarDontSignInButtonElementId),
+      PressButton(kProfilePickerSignInToolbarDontSignInButtonElementId));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/"Signin.SignIn.Offered",
+      /*sample=*/signin_metrics::AccessPoint::kForYouFre,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/"Signin.SignIn.Started",
+      /*sample=*/signin_metrics::AccessPoint::kForYouFre,
+      /*expected_bucket_count=*/1);
+  histogram_tester().ExpectUniqueSample(
+      /*name=*/"ProfilePicker.FirstRun.ExitStatus",
+      /*sample=*/ProfilePicker::FirstRunExitStatus::kCompleted,
+      /*expected_bucket_count=*/1);
+
+  ExpectStepHistograms(Step::kIntro, /*shown=*/true);
+  ExpectStepHistograms(Step::kAccountSelection, /*shown=*/true);
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+  // Sign-in was never completed - step hasn't been attempted.
+  ExpectStepHistograms(Step::kPostSignInFlow, /*shown=*/false,
+                       /*with_exit=*/false, /*count=*/0);
 }

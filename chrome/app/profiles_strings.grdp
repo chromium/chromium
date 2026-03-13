@@ -1113,6 +1113,9 @@
     <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
       Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
     </message>
+    <message name="IDS_FRE_NATIVE_TOOLBAR_DONT_SIGN_IN_BUTTON_LABEL" translateable="false" desc="A label for a button on the native toolbar to decline a prompt to sign in">
+      Don't sign in
+    </message>
 
     <!-- Default Browser Promo -->
     <message name="IDS_FRE_DEFAULT_BROWSER_TITLE_NEW" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">
