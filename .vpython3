@@ -389,29 +389,11 @@ wheel: <
   version: "version:1.0.9"
 >
 
-# Used by:
-#   //chrome/test/chromedriver/test/run_webdriver_tests.py
+# Used by: pytest-py3:7.3.1
 wheel: <
   name: "infra/python/wheels/iniconfig-py3"
   version: "version:1.1.1"
 >
-
-wheel: <
-  name: "infra/python/wheels/packaging-py3"
-  version: "version:25.0"
->
-
-wheel: <
-  name: "infra/python/wheels/pyparsing-py2_py3"
-  version: "version:2.4.7"
->
-
-wheel: <
-  name: "infra/python/wheels/toml-py3"
-  version: "version:0.10.2"
->
-
-# Used by: pytest-py3:7.3.1
 wheel: <
   name: "infra/python/wheels/exceptiongroup-py3"
   version: "version:1.1.2"
@@ -531,6 +513,10 @@ wheel: <
 # Used by:
 #   //tools/perf/core/results_dashboard.py
 wheel: <
+  name: "infra/python/wheels/pyparsing-py2_py3"
+  version: "version:2.4.7"
+>
+wheel: <
   name: "infra/python/wheels/httplib2-py3"
   version: "version:0.19.1"
 >
@@ -649,6 +635,10 @@ wheel: <
 # Used by:
 #   //testing/unexpected_passes_common
 wheel: <
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:25.0"
+>
+wheel: <
   name: "infra/python/wheels/db-dtypes-py2_py3"
   version: "version:1.2.0"
   # No 32-bit Windows wheel available for a dependency (pyarrow)
@@ -690,23 +680,21 @@ wheel: <
   name: "infra/python/wheels/jinja2-py3"
   version: "version:3.1.2"
 >
-
-# Needed by pytype
 wheel: <
   name: "infra/python/wheels/pysocks-py3"
   version: "version:1.7.1"
 >
-
-# Needed by pytype
 wheel: <
   name: "infra/python/wheels/pycnite-py3"
   version: "version:2023.10.11"
 >
-
-# Needed by pytype
 wheel: <
   name: "infra/python/wheels/pydot-py2_py3"
   version: "version:1.4.2"
+>
+wheel: <
+  name: "infra/python/wheels/toml-py3"
+  version: "version:0.10.2"
 >
 
 # Needed by jinja2
