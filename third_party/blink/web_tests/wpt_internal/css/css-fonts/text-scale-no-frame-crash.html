@@ -3,7 +3,7 @@
 <script>
   // 1. Create a document with a frame
   let iframe = document.createElement("iframe");
-  document.documentElement.appendChild(iframe);
+  document.body.appendChild(iframe);
   let doc = iframe.contentDocument;
 
   // 2. Detach the frame (so GetSettings() becomes null)
