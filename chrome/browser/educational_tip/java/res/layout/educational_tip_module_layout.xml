@@ -20,7 +20,6 @@ found in the LICENSE file.
     android:paddingTop="@dimen/single_tab_module_padding_top"
     android:paddingBottom="@dimen/single_tab_module_padding_top"
     android:background="@drawable/home_surface_ui_background"
-    android:foreground="@drawable/single_tab_card_ripple"
     android:orientation="vertical">
 
     <LinearLayout
