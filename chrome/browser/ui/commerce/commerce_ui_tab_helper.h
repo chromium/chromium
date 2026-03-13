@@ -10,10 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "components/commerce/core/commerce_types.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -77,26 +77,14 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // Get the image for the last fetched product URL. A reference to this object
-  // should not be kept directly, if one is needed, a copy should be made.
-  virtual const gfx::Image& GetProductImage();
   // Return whether the DiscountsPageActionIconView is visible.
   virtual bool ShouldShowDiscountsIconView();
-  // Return whether the PriceTrackingIconView is visible.
-  virtual bool ShouldShowPriceTrackingIconView();
   // Return whether the PriceInsightsIconView is visible.
   virtual bool ShouldShowPriceInsightsIconView();
 
   // Return the page action label. If no label should be shown, return
   // PriceInsightsIconLabelType::kNone.
   virtual PriceInsightsIconLabelType GetPriceInsightsIconLabelTypeForPage();
-
-  // The URL for the last fetched product image. A reference to this object
-  // should not be kept directly, if one is needed, a copy should be made.
-  const GURL& GetProductImageURL();
-
-  // Returns whether the current page has a product that is being price tracked.
-  virtual bool IsPriceTracking();
 
   // Returns discounts for the last committed URL. A reference to this object
   // should not be kept directly, if one is needed, a copy should be made.
@@ -150,11 +138,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
                           base::OnceClosure one_bubble_closing_callback);
 
   const DiscountsBubbleCoordinator& GetDiscountsBubbleCoordinator() const;
-
-  PriceTrackingPageActionController* GetPriceTrackingControllerForTesting();
-
-  void SetPriceTrackingControllerForTesting(
-      std::unique_ptr<PriceTrackingPageActionController> controller);
 
  protected:
   const std::optional<bool>& GetPendingTrackingStateForTesting();
@@ -228,7 +211,6 @@ class CommerceUiTabHelper : public tabs::ContentsObservingTabFeature {
   raw_ptr<image_fetcher::ImageFetcher> image_fetcher_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;
 
-  std::unique_ptr<PriceTrackingPageActionController> price_tracking_controller_;
   std::unique_ptr<DiscountsPageActionController>
       discounts_page_action_controller_;
 

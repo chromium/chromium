@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
-#include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -109,16 +108,6 @@ CommerceUiTabHelper::CommerceUiTabHelper(
     CHECK_IS_TEST();
   }
 
-  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
-      web_contents()->GetBrowserContext());
-
-  // TODO(https://crbug.com/485198191): Remove price tracking page action
-  // controller legacy code.
-  price_tracking_controller_ =
-      std::make_unique<PriceTrackingPageActionController>(
-          GetPageActionControllerNotificationCallback(base::DoNothing()),
-          shopping_service_, image_fetcher_, tracker);
-
   discounts_page_action_controller_ =
       std::make_unique<DiscountsPageActionController>(
           GetPageActionControllerNotificationCallback(
@@ -194,9 +183,6 @@ void CommerceUiTabHelper::DidFinishNavigation(
     UpdatePriceInsightsIconView();
   }
 
-  price_tracking_controller_->ResetForNewNavigation(
-      web_contents()->GetLastCommittedURL());
-
   if (is_price_insights_eligible) {
     // Price insights needs product info to get the product cluster title.
     shopping_service_->GetProductInfoForUrl(
@@ -250,10 +236,6 @@ void CommerceUiTabHelper::SetImageFetcherForTesting(
 bool CommerceUiTabHelper::ShouldShowDiscountsIconView() {
   return discounts_page_action_controller_->ShouldShowForNavigation().value_or(
       false);
-}
-
-bool CommerceUiTabHelper::ShouldShowPriceTrackingIconView() {
-  return price_tracking_controller_->ShouldShowForNavigation().value_or(false);
 }
 
 bool CommerceUiTabHelper::ShouldShowPriceInsightsIconView() {
@@ -318,13 +300,9 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
     return;
   }
 
-    if (commerce::IsPriceInsightsEligible(
-            shopping_service_->GetAccountChecker()) &&
-        !got_insights_response_for_page_) {
-      return;
-    }
-
-  if (!price_tracking_controller_->ShouldShowForNavigation().has_value()) {
+  if (commerce::IsPriceInsightsEligible(
+          shopping_service_->GetAccountChecker()) &&
+      !got_insights_response_for_page_) {
     return;
   }
 
@@ -416,19 +394,6 @@ void CommerceUiTabHelper::OnPriceInsightsIconClicked() {
     }
   }
   RecordPriceInsightsIconMetrics(true);
-}
-
-const gfx::Image& CommerceUiTabHelper::GetProductImage() {
-  return price_tracking_controller_->GetLastFetchedImage();
-}
-
-const GURL& CommerceUiTabHelper::GetProductImageURL() {
-  return price_tracking_controller_->GetLastFetchedImageUrl();
-}
-
-bool CommerceUiTabHelper::IsPriceTracking() {
-  return pending_tracking_state_.value_or(
-      price_tracking_controller_->IsPriceTrackingCurrentProduct());
 }
 
 const std::vector<DiscountInfo>& CommerceUiTabHelper::GetDiscounts() {
@@ -625,10 +590,6 @@ bool CommerceUiTabHelper::IsPageActionIconExpanded(PageActionIconType type) {
          type == page_action_expanded_.value();
 }
 
-void CommerceUiTabHelper::OnPriceTrackingIconClicked() {
-  price_tracking_controller_->OnIconClicked();
-}
-
 void CommerceUiTabHelper::OnDiscountsCouponCodeCopied() {
   discounts_page_action_controller_->CouponCodeCopied();
 }
@@ -724,11 +685,6 @@ void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
       .Record(ukm::UkmRecorder::Get());
 }
 
-PriceTrackingPageActionController*
-CommerceUiTabHelper::GetPriceTrackingControllerForTesting() {
-  return price_tracking_controller_.get();
-}
-
 void CommerceUiTabHelper::OnPageActionControllerNotification(
     base::RepeatingClosure page_action_icon_update_callback) {
   MaybeComputePageActionToExpand();
@@ -742,11 +698,6 @@ CommerceUiTabHelper::GetPageActionControllerNotificationCallback(
       &CommerceUiTabHelper::OnPageActionControllerNotification,
       weak_ptr_factory_.GetWeakPtr(),
       std::move(page_action_icon_update_callback));
-}
-
-void CommerceUiTabHelper::SetPriceTrackingControllerForTesting(
-    std::unique_ptr<PriceTrackingPageActionController> controller) {
-  price_tracking_controller_.reset(controller.release());
 }
 
 void CommerceUiTabHelper::UpdatePageActionIconView(PageActionIconType type) {

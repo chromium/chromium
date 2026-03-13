@@ -915,7 +915,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "WebRtcEventLogManagerKeyedService",
     "WebrtcAudioPrivateEventService",
     "WriteQuotaChecker",
-    "feature_engagement::Tracker",
     "feedback::FeedbackUploaderChrome",
     "sct_reporting::Factory",
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -9,7 +9,6 @@ source_set("commerce") {
     "commerce_page_action_controller.h",
     "commerce_ui_tab_helper.h",
     "discounts_page_action_controller.h",
-    "price_tracking_page_action_controller.h",
   ]
   public_deps = [
     "//base",
@@ -36,7 +35,6 @@ source_set("impl") {
     "commerce_page_action_controller.cc",
     "commerce_ui_tab_helper.cc",
     "discounts_page_action_controller.cc",
-    "price_tracking_page_action_controller.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -99,7 +97,6 @@ source_set("unit_tests") {
   sources = [
     "commerce_ui_tab_helper_unittest.cc",
     "discounts_page_action_controller_unittest.cc",
-    "price_tracking_page_action_controller_unittest.cc",
   ]
   deps = [
     ":commerce",
