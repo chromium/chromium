@@ -512,9 +512,39 @@ void ManifestUpdateJob::FinalizeUpdateIfSilentChangesExist() {
   base::Time current_time = clock_->Now();
   bool silent_icon_update_throttled = ThrottleForSilentIconUpdates(
       options_.previous_time_for_silent_icon_update, current_time);
+
+  if (silent_icon_update_throttled) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ManifestUpdateJob::OnImageDiffComputedFinalizeUpdate,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(pending_update_info), old_trusted_icon,
+                       new_trusted_icon, current_time,
+                       /*silent_icon_update_throttled=*/true,
+                       /*more_than_ten_percent_diff=*/true));
+    return;
+  }
+
+  CheckImageDiffMoreThanTenPercent(
+      old_trusted_icon, new_trusted_icon,
+      base::BindOnce(&ManifestUpdateJob::OnImageDiffComputedFinalizeUpdate,
+                     weak_factory_.GetWeakPtr(), std::move(pending_update_info),
+                     old_trusted_icon, new_trusted_icon, current_time,
+                     /*silent_icon_update_throttled=*/false));
+}
+
+void ManifestUpdateJob::OnImageDiffComputedFinalizeUpdate(
+    std::optional<proto::PendingUpdateInfo> pending_update_info,
+    SkBitmap old_trusted_icon,
+    SkBitmap new_trusted_icon,
+    base::Time current_time,
+    bool silent_icon_update_throttled,
+    bool more_than_ten_percent_diff) {
+  const WebApp* web_app = lock_resources_->registrar().GetAppById(app_id_);
+  CHECK(web_app);
+
   bool silent_icon_update =
-      !HasMoreThanTenPercentImageDiff(&old_trusted_icon, &new_trusted_icon) &&
-      !silent_icon_update_throttled;
+      !more_than_ten_percent_diff && !silent_icon_update_throttled;
   if (silent_icon_update) {
     time_for_icon_diff_check_ = current_time;
   }

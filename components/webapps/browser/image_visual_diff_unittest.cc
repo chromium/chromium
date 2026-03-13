@@ -4,6 +4,8 @@
 
 #include "components/webapps/browser/image_visual_diff.h"
 
+#include "base/test/test_future.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -20,36 +22,46 @@ class ImageDiffValueTest : public testing::Test {
     bitmap.eraseColor(color);
     return bitmap;
   }
+
+  bool IsImageDiffMoreThanTenPercent(SkBitmap before, SkBitmap after) {
+    base::test::TestFuture<bool> future;
+    CheckImageDiffMoreThanTenPercent(std::move(before), std::move(after),
+                                     future.GetCallback());
+    return future.Get();
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 const int kWidth = 100;
 const int kHeight = 100;
 
 TEST_F(ImageDiffValueTest, NullImageDiff) {
-  EXPECT_FALSE(HasMoreThanTenPercentImageDiff(nullptr, nullptr));
+  EXPECT_FALSE(IsImageDiffMoreThanTenPercent(SkBitmap(), SkBitmap()));
 
   const SkBitmap bitmap1(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
 
-  EXPECT_TRUE(HasMoreThanTenPercentImageDiff(&bitmap1, nullptr));
+  EXPECT_TRUE(IsImageDiffMoreThanTenPercent(bitmap1, SkBitmap()));
 }
 
 TEST_F(ImageDiffValueTest, TwoIdenticalImageDiff) {
   const SkBitmap bitmap1(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
   const SkBitmap bitmap2(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
 
-  EXPECT_FALSE(HasMoreThanTenPercentImageDiff(&bitmap1, &bitmap2));
+  EXPECT_FALSE(IsImageDiffMoreThanTenPercent(bitmap1, bitmap2));
 }
 
 TEST_F(ImageDiffValueTest, ImageWithMoreThanTenPercentImageDiff) {
   const SkBitmap bitmap1(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
   const SkBitmap bitmap2(CreateBitmap(kWidth, kHeight, SK_ColorWHITE));
 
-  EXPECT_TRUE(HasMoreThanTenPercentImageDiff(&bitmap1, &bitmap2));
+  EXPECT_TRUE(IsImageDiffMoreThanTenPercent(bitmap1, bitmap2));
 }
 
 TEST_F(ImageDiffValueTest, ImageWithLessThanTenPercentImageDiff) {
   const SkBitmap bitmap1(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
-  const SkBitmap bitmap2(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
+  SkBitmap bitmap2(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
 
   // To achieve less than 10% difference, change fewer than 1334 pixels. Change
   // the first 13 rows. 13 rows * 100 columns = 1300 pixels. 1300 pixels * 0.75
@@ -57,13 +69,13 @@ TEST_F(ImageDiffValueTest, ImageWithLessThanTenPercentImageDiff) {
   // = 9.75, which is < 10%.
   bitmap2.eraseArea(SkIRect::MakeXYWH(0, 0, kWidth, 13), SK_ColorWHITE);
 
-  EXPECT_FALSE(HasMoreThanTenPercentImageDiff(&bitmap1, &bitmap2));
+  EXPECT_FALSE(IsImageDiffMoreThanTenPercent(bitmap1, bitmap2));
 }
 
 TEST_F(ImageDiffValueTest, BlackImageComparedWithColoredImageDiff) {
   const SkBitmap bitmap1(CreateBitmap(kWidth, kHeight, SK_ColorBLACK));
   const SkBitmap bitmap2(CreateBitmap(kWidth, kHeight, SK_ColorRED));
 
-  EXPECT_TRUE(HasMoreThanTenPercentImageDiff(&bitmap1, &bitmap2));
+  EXPECT_TRUE(IsImageDiffMoreThanTenPercent(bitmap1, bitmap2));
 }
 }  // namespace web_app

@@ -122,6 +122,13 @@ class ManifestUpdateJob {
   void ContinueToFetchIcons();
   void OnIconsFetched();
   void FinalizeUpdateIfSilentChangesExist();
+  void OnImageDiffComputedFinalizeUpdate(
+      std::optional<proto::PendingUpdateInfo> pending_update_info,
+      SkBitmap old_trusted_icon,
+      SkBitmap new_trusted_icon,
+      base::Time current_time,
+      bool silent_icon_update_throttled,
+      bool more_than_ten_percent_diff);
   void OnInstallUpdateJobFinished(FinalizeUpdateJob* job,
                                   InstallFinalizedCallback callback,
                                   const webapps::AppId& app_id,

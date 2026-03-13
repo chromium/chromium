@@ -149,10 +149,24 @@ void AppMigrationDataReadCommand::OnIconsProcessedCreateIdentity() {
   if (update_.new_icon.has_value()) {
     SkBitmap old_bitmap = update_.old_icon.AsBitmap();
     SkBitmap new_bitmap = update_.new_icon->AsBitmap();
-    update_.icon_diff_is_insignificant =
-        !HasMoreThanTenPercentImageDiff(&old_bitmap, &new_bitmap);
+    CheckImageDiffMoreThanTenPercent(
+        std::move(old_bitmap), std::move(new_bitmap),
+        base::BindOnce(
+            &AppMigrationDataReadCommand::OnImageDiffComputedUpdateIdentity,
+            weak_factory_.GetWeakPtr()));
+    return;
   }
 
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AppMigrationDataReadCommand::OnImageDiffComputedUpdateIdentity,
+          weak_factory_.GetWeakPtr(), /*more_than_ten_percent_diff=*/true));
+}
+
+void AppMigrationDataReadCommand::OnImageDiffComputedUpdateIdentity(
+    bool more_than_ten_percent_diff) {
+  update_.icon_diff_is_insignificant = !more_than_ten_percent_diff;
   CompleteAndSelfDestruct(CommandResult::kSuccess, std::make_optional(update_));
 }
 

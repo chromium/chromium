@@ -42,6 +42,7 @@ class AppMigrationDataReadCommand
   void ReadSingleIcon(const webapps::AppId& app_id,
                       base::OnceCallback<void(SkBitmap)> callback);
   void OnIconsProcessedCreateIdentity();
+  void OnImageDiffComputedUpdateIdentity(bool more_than_ten_percent_diff);
 
   std::unique_ptr<AppLock> lock_;
   const webapps::AppId old_app_id_;

@@ -5,17 +5,24 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_IMAGE_VISUAL_DIFF_H_
 #define COMPONENTS_WEBAPPS_BROWSER_IMAGE_VISUAL_DIFF_H_
 
+#include "base/functional/callback_forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace web_app {
+
 // Returns true if the two bitmaps have more than a 10% difference, or false
 // otherwise. A pixel is considered "different" if any of its RGBA values in the
 // 'after' bitmap does not precisely match its corresponding pixel in the
 // 'before' bitmap.For example, if a pixel changes from grey ([127, 127, 127,
 // 255]) to white ([255, 255, 255, 255]), it counts as a difference. Returns
 // false otherwise.
-bool HasMoreThanTenPercentImageDiff(const SkBitmap* before,
-                                    const SkBitmap* after);
+//
+// This is always called in the threadpool as it is a computationally intensive
+// task.
+void CheckImageDiffMoreThanTenPercent(SkBitmap before,
+                                      SkBitmap after,
+                                      base::OnceCallback<void(bool)> callback);
+
 }  // namespace web_app
 
 #endif  // COMPONENTS_WEBAPPS_BROWSER_IMAGE_VISUAL_DIFF_H_
