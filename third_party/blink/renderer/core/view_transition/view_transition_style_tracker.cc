@@ -147,34 +147,6 @@ CSSPropertyID FromTransitionPropertyId(
   return CSSPropertyID::kInvalid;
 }
 
-const String& StaticUAStyles() {
-  DEFINE_STATIC_LOCAL(
-      String, kStaticUAStyles,
-      (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_CSS)));
-  return kStaticUAStyles;
-}
-
-const String& StaticUAStylesScoped() {
-  DEFINE_STATIC_LOCAL(
-      String, kStaticUAStylesScoped,
-      (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_SCOPED_CSS)));
-  return kStaticUAStylesScoped;
-}
-
-const String& AnimationUAStyles() {
-  DEFINE_STATIC_LOCAL(
-      String, kAnimationUAStyles,
-      (UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS)));
-  return kAnimationUAStyles;
-}
-
-const String& AnimationUAStylesScoped() {
-  DEFINE_STATIC_LOCAL(String, kAnimationUAStyles,
-                      (UncompressResourceAsASCIIString(
-                          IDR_UASTYLE_TRANSITION_ANIMATIONS_SCOPED_CSS)));
-  return kAnimationUAStyles;
-}
-
 // Computes and returns the start offset for element's painting in horizontal or
 // vertical direction.
 // `start` and `end` denote the offset where the element's ink overflow
@@ -2283,14 +2255,10 @@ CSSStyleSheet& ViewTransitionStyleTracker::UAStyleSheet() {
   const bool in_start_phase = state_ == State::kStarted;
 
   ViewTransitionStyleBuilder builder;
-  builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
-                         ? StaticUAStylesScoped()
-                         : StaticUAStyles());
-  if (in_start_phase) {
-    builder.AddUAStyle(RuntimeEnabledFeatures::ScopedViewTransitionsEnabled()
-                           ? AnimationUAStylesScoped()
-                           : AnimationUAStyles());
-  }
+
+  // Default rules that are not specific to the instance of the transition
+  // are loaded via CSSDefaultStyleSheets. Only need to add rules specific
+  // to the active transition here.
 
   // If we started the animation then we always create the full dynamic style
   // sheet. However, before the animation phase, the dynamic sheet should only

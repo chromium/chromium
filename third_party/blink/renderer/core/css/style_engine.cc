@@ -2704,13 +2704,13 @@ void StyleEngine::EnsureUAStyleForForcedColors() {
   }
 }
 
-RuleSet* StyleEngine::DefaultViewTransitionStyle(const Element& element) const {
-  auto* transition = ViewTransitionUtils::GetTransition(element);
+RuleSet* StyleEngine::ActiveViewTransitionStyle(const Element& element) const {
+  ViewTransition* transition = ViewTransitionUtils::GetTransition(element);
   if (!transition) {
     return nullptr;
   }
 
-  auto* css_style_sheet = transition->UAStyleSheet();
+  CSSStyleSheet* css_style_sheet = transition->UAStyleSheet();
   return &css_style_sheet->Contents()->EnsureRuleSet(
       CSSDefaultStyleSheets::ScreenEval(), /*mixins=*/{});
 }

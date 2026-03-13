@@ -23,19 +23,6 @@ Dumping CSS keyframed animations:
 }
 Dumping animations for : ::view-transition-new with id root
 Dumping CSS keyframed animations: 
-@keyframes -ua-view-transition-fade-in {
-    0% {
-        opacity: 0; @[undefined-undefined]
-    }
-}
-@keyframes -ua-mix-blend-mode-plus-lighter {
-    0% {
-        mix-blend-mode: plus-lighter; @[undefined-undefined]
-    }
-    100% {
-        mix-blend-mode: plus-lighter; @[undefined-undefined]
-    }
-}
 Dumping animations for : ::view-transition-group with id shared
 Dumping CSS keyframed animations: 
 @keyframes -ua-view-transition-group-anim-shared {
@@ -58,17 +45,4 @@ Dumping CSS keyframed animations:
 }
 Dumping animations for : ::view-transition-new with id shared
 Dumping CSS keyframed animations: 
-@keyframes -ua-view-transition-fade-in {
-    0% {
-        opacity: 0; @[undefined-undefined]
-    }
-}
-@keyframes -ua-mix-blend-mode-plus-lighter {
-    0% {
-        mix-blend-mode: plus-lighter; @[undefined-undefined]
-    }
-    100% {
-        mix-blend-mode: plus-lighter; @[undefined-undefined]
-    }
-}
 

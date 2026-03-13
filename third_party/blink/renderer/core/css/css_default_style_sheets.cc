@@ -151,6 +151,7 @@ void CSSDefaultStyleSheets::Reset() {
   permission_element_style_sheet_.Clear();
   view_source_style_sheet_.Clear();
   json_style_sheet_.Clear();
+  default_view_transition_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules =
       StrCat({UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS),
@@ -503,6 +504,30 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
+    case kPseudoIdViewTransition:
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionGroupChildren:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew: {
+      if (default_view_transition_style_sheet_) {
+        return false;
+      }
+      // TODO(crbug.com/492098877): Consolidate rules for view-transitions.
+      StringBuilder sb;
+      sb.Append(
+          UncompressResourceAsASCIIString(IDR_UASTYLE_TRANSITION_SCOPED_CSS));
+      sb.Append(UncompressResourceAsASCIIString(
+          IDR_UASTYLE_TRANSITION_ANIMATIONS_SCOPED_CSS));
+      default_view_transition_style_sheet_ = ParseUASheet(sb.ToString());
+      if (!default_pseudo_element_style_) {
+        default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
+      }
+      default_pseudo_element_style_->AddRulesFromSheet(
+          DefaultViewTransitionStyleSheet(), ScreenEval(), /*mixins=*/{});
+      default_pseudo_element_style_->CompactRulesIfNeeded();
+      return true;
+    }
     default:
       return false;
   }
@@ -669,6 +694,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(overscroll_style_sheet_);
   visitor->Trace(view_source_style_sheet_);
   visitor->Trace(json_style_sheet_);
+  visitor->Trace(default_view_transition_style_sheet_);
 
   visitor->Trace(rule_set_group_cache_);
 }

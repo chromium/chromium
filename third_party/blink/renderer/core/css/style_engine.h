@@ -770,7 +770,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void Trace(Visitor*) const override;
   const char* GetHumanReadableName() const override { return "StyleEngine"; }
 
-  RuleSet* DefaultViewTransitionStyle(const Element&) const;
+  RuleSet* ActiveViewTransitionStyle(const Element&) const;
 
   void UpdateViewTransitionOptIn();
 

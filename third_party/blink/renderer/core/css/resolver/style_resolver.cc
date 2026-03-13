@@ -159,6 +159,12 @@ bool IsPseudoElementWithUAStyle(PseudoId pseudo_id) {
     case kPseudoIdScrollButtonBlockEnd:
     case kPseudoIdScrollMarker:
     case kPseudoIdOverscrollAreaParent:
+    case kPseudoIdViewTransition:
+    case kPseudoIdViewTransitionGroup:
+    case kPseudoIdViewTransitionGroupChildren:
+    case kPseudoIdViewTransitionImagePair:
+    case kPseudoIdViewTransitionOld:
+    case kPseudoIdViewTransitionNew:
       return true;
     default:
       return false;
@@ -1129,10 +1135,10 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
       default_style_sheets.DefaultPseudoElementStyleOrNull()) {
     func(default_style_sheets.DefaultPseudoElementStyleOrNull(),
          kPseudoElementUASheet);
-  } else if (IsTransitionPseudoElement(pseudo_id)) {
+  }
+  if (IsTransitionPseudoElement(pseudo_id)) {
     if (auto* rule_set =
-            GetDocument().GetStyleEngine().DefaultViewTransitionStyle(
-                element)) {
+            GetDocument().GetStyleEngine().ActiveViewTransitionStyle(element)) {
       func(rule_set, kViewTransitionUASheet);
     }
   }
