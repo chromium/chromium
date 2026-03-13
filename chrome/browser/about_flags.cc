@@ -10978,10 +10978,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(net::features::kHappyEyeballsV3)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"policy-promotion-banner-flag",
-     flag_descriptions::kEnablePolicyPromotionBannerName,
-     flag_descriptions::kEnablePolicyPromotionBannerDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kEnablePolicyPromotionBanner)},
     {"management-promotion-banner-flag",
      flag_descriptions::kEnableManagementPromotionBannerName,
      flag_descriptions::kEnableManagementPromotionBannerDescription, kOsDesktop,

@@ -8357,10 +8357,6 @@ inline constexpr char
         "(Standard) registers sessions "
         "on Google sites";
 
-inline constexpr char kEnablePolicyPromotionBannerName[] =
-    "Enable Policy Promotion Banner";
-inline constexpr char kEnablePolicyPromotionBannerDescription[] =
-    "Enables showing the policy promotion banner on chrome://policy page.";
 inline constexpr char kEnableManagementPromotionBannerName[] =
     "Enable Management Promotion Banner";
 inline constexpr char kEnableManagementPromotionBannerDescription[] =

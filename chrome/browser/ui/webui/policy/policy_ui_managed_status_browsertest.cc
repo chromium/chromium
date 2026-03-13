@@ -5,7 +5,6 @@
 #include <stddef.h>
 
 #include <memory>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -38,7 +37,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/common/url_constants.h"
@@ -139,9 +137,8 @@ class ScopedLocaleSetter {
   std::string locale_;
 };
 
-class PolicyUIManagedStatusTest
-    : public PlatformBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class PolicyUIManagedStatusTest : public PlatformBrowserTest,
+                                  public ::testing::WithParamInterface<bool> {
  public:
   PolicyUIManagedStatusTest()
       : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTP) {
@@ -157,22 +154,13 @@ class PolicyUIManagedStatusTest
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
 
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    if (is_promotion_feature_enabled()) {
-      enabled_features.push_back(features::kEnablePolicyPromotionBanner);
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          policy::features::kPolicyPageMojoMigration);
     } else {
-      disabled_features.push_back(features::kEnablePolicyPromotionBanner);
+      scoped_feature_list_.InitAndDisableFeature(
+          policy::features::kPolicyPageMojoMigration);
     }
-
-    if (is_mojo_feature_enabled()) {
-      enabled_features.push_back(policy::features::kPolicyPageMojoMigration);
-    } else {
-      disabled_features.push_back(policy::features::kPolicyPageMojoMigration);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   PolicyUIManagedStatusTest(const PolicyUIManagedStatusTest&) = delete;
@@ -181,8 +169,7 @@ class PolicyUIManagedStatusTest
 
   ~PolicyUIManagedStatusTest() override = default;
 
-  bool is_promotion_feature_enabled() const { return std::get<0>(GetParam()); }
-  bool is_mojo_feature_enabled() const { return std::get<1>(GetParam()); }
+  bool is_mojo_feature_enabled() const { return GetParam(); }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
@@ -329,13 +316,11 @@ class PolicyUIManagedStatusTest
     ASSERT_EQ(handlers->size(), 1u);
     auto* handler = static_cast<PolicyUIHandler*>(handlers[0][0].get());
 
-    // Only wait if the feature is enabled AND locale is en-US AND not
-    // dismissed.
+    // Only wait if the locale is en-US AND not dismissed.
     const bool is_dismissed = browser()->profile()->GetPrefs()->GetBoolean(
         policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
-    if (is_promotion_feature_enabled() &&
-        g_browser_process->GetApplicationLocale() == kValidLocale &&
+    if (g_browser_process->GetApplicationLocale() == kValidLocale &&
         !is_dismissed && !handler->HasPromotionBeenChecked()) {
       // Check if the promotion has already been checked before waiting for the
       // observer to avoid racing condition.
@@ -366,11 +351,7 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
 
-  if (is_promotion_feature_enabled()) {
-    EXPECT_EQ(result, kBannerVisible);
-  } else {
-    EXPECT_EQ(result, kBannerHidden);
-  }
+  EXPECT_EQ(result, kBannerVisible);
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
@@ -438,9 +419,8 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
                                            GURL(chrome::kChromeUIPolicyURL)));
   SetupAndListenForPromotion();
 
-  const bool expected_bucket = is_promotion_feature_enabled() ? true : false;
   histogram_tester.ExpectBucketCount(
-      "Enterprise.PolicyPromotionBannerDisplayed", expected_bucket, 1);
+      "Enterprise.PolicyPromotionBannerDisplayed", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
@@ -462,4 +442,4 @@ IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest, PageLoadedInGuestMode) {
 
 INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,
                          PolicyUIManagedStatusTest,
-                         ::testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());

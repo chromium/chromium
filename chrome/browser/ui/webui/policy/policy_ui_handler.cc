@@ -14,7 +14,6 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -110,7 +109,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -530,11 +528,8 @@ void PolicyUIHandler::HandleShouldShowPromotion(const base::ListValue& args) {
   bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
       policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
-  bool feature_enabled =
-      base::FeatureList::IsEnabled(features::kEnablePolicyPromotionBanner);
-
   promotion_eligibility_checker_ = policy::CreatePromotionEligibilityChecker(
-      profile, dismissed_banner_pref, feature_enabled);
+      profile, dismissed_banner_pref, /*feature_enabled=*/true);
   if (!promotion_eligibility_checker_) {
     OnPromotionEligibilityFetched(
         callback_id,
