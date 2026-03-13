@@ -73,7 +73,7 @@ TEST(HeadlessSchedulerStateMachineTest, TestFullPipelineMode) {
   state.SetUpState();
 
   // Start clean and set commit.
-  state.SetNeedsBeginMainFrame();
+  state.SetNeedsBeginMainFrame(false);
 
   // While we are waiting for an main frame or pending tree activation, we
   // should even block while we can't draw.
@@ -192,7 +192,7 @@ TEST(HeadlessSchedulerStateMachineTest, TestFullPipelineMode) {
 
   // Request a redraw on active frame and a main frame.
   state.SetNeedsRedraw(true);
-  state.SetNeedsBeginMainFrame();
+  state.SetNeedsBeginMainFrame(false);
 
   sequence_number++;
   state.IssueBeginImplFrame(sequence_number);
@@ -228,7 +228,7 @@ TEST(HeadlessSchedulerStateMachineTest,
 
   const bool needs_first_draw_on_activation = true;
   state.SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
-  state.SetNeedsBeginMainFrame();
+  state.SetNeedsBeginMainFrame(false);
   state.SetNeedsRedraw(true);
 
   uint64_t sequence_number = 10;
@@ -258,7 +258,7 @@ TEST(HeadlessSchedulerStateMachineTest,
   EXPECT_FALSE(state.ShouldDraw());
 
   // ... then have another commit ...
-  state.SetNeedsBeginMainFrame();
+  state.SetNeedsBeginMainFrame(false);
   sequence_number++;
   state.IssueBeginImplFrame(sequence_number);
   EXPECT_EQ(Action::SEND_BEGIN_MAIN_FRAME, state.NextAction());

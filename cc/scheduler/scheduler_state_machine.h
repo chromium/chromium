@@ -275,7 +275,7 @@ class CC_EXPORT SchedulerStateMachine {
   // of the interval since the last one. This is to be used in cases where
   // `SetThrottleMainFrames()` has been called, and we have an "urgent" update
   // that should not wait more than necessary.
-  void SetNeedsBeginMainFrame(bool now = false);
+  void SetNeedsBeginMainFrame(bool now);
   bool needs_begin_main_frame() const { return needs_begin_main_frame_; }
 
   // Requests a single impl frame (after the current frame if there is one
