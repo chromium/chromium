@@ -32,6 +32,9 @@ ActionTrackerForMetrics::~ActionTrackerForMetrics() {
     }
   }
   base::UmaHistogramCounts100("Actor.Task.SubsequentWaits", total_count);
+
+  base::UmaHistogramCounts100("Autofill.Actor.AutofillAttentionDialogsPerTask",
+                              autofill_attention_dialog_count_);
 }
 
 void ActionTrackerForMetrics::WillMoveToState(ActorTask::State state) {
@@ -74,6 +77,10 @@ void ActionTrackerForMetrics::OnFinishedAct(const mojom::ActionResult& result) {
     last_tool_name_in_previous_sequence_if_succeeded_.clear();
   }
   last_tool_name_in_current_sequence_.clear();
+}
+
+void ActionTrackerForMetrics::OnAutofillAttentionDialogPresented() {
+  autofill_attention_dialog_count_++;
 }
 
 }  // namespace actor

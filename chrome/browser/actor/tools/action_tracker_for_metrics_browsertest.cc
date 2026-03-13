@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/actor/action_tracker_for_metrics.h"
+
 #include <memory>
 #include <optional>
 #include <utility>
@@ -357,6 +359,25 @@ IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
   histogram_tester.ExpectUniqueSample(kActorTaskSubsequentWaitsMetricName,
                                       /*sample=*/1,
                                       /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ActionTrackerForMetricsTest,
+                       AutofillAttentionDialog_Recorded) {
+  base::HistogramTester histogram_tester;
+
+  actor_task()
+      .action_tracker_for_metrics()
+      .OnAutofillAttentionDialogPresented();
+  actor_task()
+      .action_tracker_for_metrics()
+      .OnAutofillAttentionDialogPresented();
+
+  StopAllTasks();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.AutofillAttentionDialogsPerTask",
+      /*sample=*/2,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace
