@@ -55,6 +55,13 @@ public class FaviconHelper {
         private @Nullable Bitmap mIncognitoNtpBitmap;
         private @Nullable Bitmap mDefaultDarkBitmap;
         private @Nullable Bitmap mDefaultLightBitmap;
+        private int mSize = -1;
+
+        public DefaultFaviconHelper() {}
+
+        public DefaultFaviconHelper(int size) {
+            mSize = size;
+        }
 
         private int getResourceId(GURL url, boolean useIncognitoNtpIcon) {
             if (UrlUtilities.isInternalScheme(url)) {
@@ -66,13 +73,11 @@ public class FaviconHelper {
         }
 
         private Bitmap createBitmap(Context context, int resourceId, boolean useDarkIcon) {
-            Resources resources = context.getResources();
+            int size = mSize >= 0 ? mSize : getDefaultFaviconSize(context);
             Drawable drawable = AppCompatResources.getDrawable(context, resourceId);
-            int faviconSize = resources.getDimensionPixelSize(R.dimen.default_favicon_size);
-            Bitmap tintedBitmap =
-                    Bitmap.createBitmap(faviconSize, faviconSize, Bitmap.Config.ARGB_8888);
+            Bitmap tintedBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(tintedBitmap);
-            drawable.setBounds(0, 0, faviconSize, faviconSize);
+            drawable.setBounds(0, 0, size, size);
             final @ColorInt int tintColor =
                     context.getColor(
                             useDarkIcon
@@ -81,6 +86,11 @@ public class FaviconHelper {
             drawable.setTint(tintColor);
             drawable.draw(c);
             return tintedBitmap;
+        }
+
+        private int getDefaultFaviconSize(Context context) {
+            Resources resources = context.getResources();
+            return resources.getDimensionPixelSize(R.dimen.default_favicon_size);
         }
 
         /**
