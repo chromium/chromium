@@ -73,7 +73,6 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadingList" summary="reading list"/>
   <variant name="ShoppingInsights" summary="shopping insights"/>
   <variant name="SideSearch" summary="side search"/>
-  <variant name="UserNotes" summary="user notes"/>
   <variant name="WebView" summary="web view"/>
 </variants>
 

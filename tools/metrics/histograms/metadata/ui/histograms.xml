@@ -103,7 +103,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".ShoppingInsightsSidePanel"/>
   <variant name=".TabSearch"/>
   <variant name=".UserEducation"/>
-  <variant name=".UserNotesSidePanel"/>
 </variants>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:TopChromeWebUIName) -->

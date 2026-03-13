@@ -843,7 +843,6 @@ should be able to be added at any place in this file.
   <variant name="ReadingList" summary="reading list"/>
   <variant name="ShoppingInsights" summary="shopping insights"/>
   <variant name="SideSearch" summary="side search"/>
-  <variant name="UserNotes" summary="user notes"/>
   <variant name="WebView" summary="web view"/>
 </variants>
 
@@ -43977,24 +43976,6 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the new tab button is clicked with the side search side panel
     entry showing.
-  </description>
-</action>
-
-<action name="SidePanel.UserNotes.Pinned.BySidePanelHeaderButton">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the user notes side panel entry is pinned via the pin button
-    in the side panel header.
-  </description>
-</action>
-
-<action name="SidePanel.UserNotes.Unpinned.BySidePanelHeaderButton">
-  <owner>corising@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <description>
-    Recorded when the user notes side panel entry is unpinned via the pin button
-    in the side panel header.
   </description>
 </action>
 

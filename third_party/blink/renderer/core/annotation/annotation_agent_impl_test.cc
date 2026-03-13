@@ -283,18 +283,12 @@ TEST_F(AnnotationAgentImplTest, AgentType) {
       mojom::blink::AnnotationType::kSharedHighlight,
       *MakeGarbageCollected<MockAnnotationSelector>());
 
-  auto* user_note_agent = container->CreateUnboundAgent(
-      mojom::blink::AnnotationType::kUserNote,
-      *MakeGarbageCollected<MockAnnotationSelector>());
-
   auto* glic_highlight_agent = container->CreateUnboundAgent(
       mojom::blink::AnnotationType::kGlic,
       *MakeGarbageCollected<MockAnnotationSelector>());
 
   EXPECT_EQ(GetAgentType(shared_highlight_agent),
             mojom::blink::AnnotationType::kSharedHighlight);
-  EXPECT_EQ(GetAgentType(user_note_agent),
-            mojom::blink::AnnotationType::kUserNote);
   EXPECT_EQ(GetAgentType(glic_highlight_agent),
             mojom::blink::AnnotationType::kGlic);
 }

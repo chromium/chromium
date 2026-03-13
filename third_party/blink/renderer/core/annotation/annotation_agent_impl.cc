@@ -169,7 +169,6 @@ bool ShouldUseIsValidRangeAndMarkable(mojom::blink::AnnotationType type) {
       return true;
     case mojom::blink::AnnotationType::kSharedHighlight:
     case mojom::blink::AnnotationType::kScrollOnly:
-    case mojom::blink::AnnotationType::kUserNote:
       return false;
   }
 }
@@ -188,7 +187,6 @@ std::optional<DocumentMarker::MarkerTypes> GetMarkerTypesForAnnotationType(
     mojom::blink::AnnotationType annotation_type) {
   switch (annotation_type) {
     case mojom::blink::AnnotationType::kSharedHighlight:
-    case mojom::blink::AnnotationType::kUserNote:
       return DocumentMarker::MarkerTypes::TextFragment();
     case mojom::blink::AnnotationType::kGlic:
       return DocumentMarker::MarkerTypes::Glic();
@@ -381,8 +379,9 @@ void AnnotationAgentImpl::Reset(base::PassKey<AnnotationAgentContainerImpl>) {
 void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
   DCHECK(!IsRemoved());
 
-  if (!IsAttached())
+  if (!IsAttached()) {
     return;
+  }
 
   EphemeralRangeInFlatTree range = attached_range_->ToEphemeralRange();
   CHECK(range.Nodes().begin() != range.Nodes().end());
@@ -585,7 +584,6 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     DCHECK(document);
 
     switch (type_) {
-      case mojom::blink::AnnotationType::kUserNote:
       case mojom::blink::AnnotationType::kSharedHighlight: {
         document->Markers().AddTextFragmentMarker(dom_range);
         document->Markers().MergeOverlappingMarkers(
@@ -605,12 +603,10 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
       }
     }
 
-    if (type_ != mojom::blink::AnnotationType::kUserNote) {
-      Node* anchor_node = attached_range_->StartPosition().AnchorNode();
-      CHECK(anchor_node);
-      if (anchor_node->IsInShadowTree()) {
-        UseCounter::Count(document, WebFeature::kTextDirectiveInShadowDOM);
-      }
+    Node* anchor_node = attached_range_->StartPosition().AnchorNode();
+    CHECK(anchor_node);
+    if (anchor_node->IsInShadowTree()) {
+      UseCounter::Count(document, WebFeature::kTextDirectiveInShadowDOM);
     }
   } else {
     TRACE_EVENT_INSTANT("blink", "NotAttached");
@@ -672,7 +668,6 @@ mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
   switch (type_) {
     case AnnotationType::kSharedHighlight:
     case AnnotationType::kTextFinder:
-    case AnnotationType::kUserNote:
       return ScrollBehavior::kAuto;
     case AnnotationType::kScrollOnly:
       // Use kInstant to match the behavior of browser-initiated scroll

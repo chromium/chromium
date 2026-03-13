@@ -35,8 +35,6 @@ const char* ToString(mojom::blink::AnnotationType type) {
   switch (type) {
     case mojom::blink::AnnotationType::kSharedHighlight:
       return "SharedHighlight";
-    case mojom::blink::AnnotationType::kUserNote:
-      return "UserNote";
     case mojom::blink::AnnotationType::kTextFinder:
       return "TextFinder";
     case mojom::blink::AnnotationType::kGlic:

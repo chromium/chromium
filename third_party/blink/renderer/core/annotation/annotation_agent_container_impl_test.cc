@@ -262,7 +262,7 @@ TEST_F(AnnotationAgentContainerImplTest, DeferAttachmentUntilFinishedParsing) {
   container->CreateAgent(
       std::move(remote_receiver_pair.first),
       std::move(remote_receiver_pair.second),
-      mojom::blink::AnnotationType::kUserNote,
+      mojom::blink::AnnotationType::kSharedHighlight,
       mojom::blink::Selector::NewSerializedSelector("MockAnnotationSelector"));
 
   // The agent should be created and bound.
@@ -393,7 +393,7 @@ TEST_F(AnnotationAgentContainerImplTest,
 
   bool did_reply = false;
   container->CreateAgentFromSelection(
-      mojom::blink::AnnotationType::kUserNote,
+      mojom::blink::AnnotationType::kSharedHighlight,
       base::BindLambdaForTesting(
           [&did_reply](
               mojom::blink::SelectorCreationResultPtr selector_creation_result,
@@ -441,7 +441,7 @@ TEST_F(AnnotationAgentContainerImplTest,
 
   bool did_reply = false;
   container->CreateAgentFromSelection(
-      mojom::blink::AnnotationType::kUserNote,
+      mojom::blink::AnnotationType::kSharedHighlight,
       base::BindLambdaForTesting(
           [&did_reply](
               mojom::blink::SelectorCreationResultPtr selector_creation_result,
@@ -499,7 +499,7 @@ TEST_F(AnnotationAgentContainerImplTest,
 
   bool did_reply = false;
   container->CreateAgentFromSelection(
-      mojom::blink::AnnotationType::kUserNote,
+      mojom::blink::AnnotationType::kSharedHighlight,
       base::BindLambdaForTesting(
           [&did_reply, &host](
               mojom::blink::SelectorCreationResultPtr selector_creation_result,
@@ -569,7 +569,7 @@ TEST_F(AnnotationAgentContainerImplTest, CreateAgentFromSelection) {
 
   base::RunLoop run_loop;
   container->CreateAgentFromSelection(
-      mojom::blink::AnnotationType::kUserNote,
+      mojom::blink::AnnotationType::kSharedHighlight,
       base::BindLambdaForTesting(
           [&run_loop, &host](
               mojom::blink::SelectorCreationResultPtr selector_creation_result,
@@ -651,7 +651,7 @@ TEST_F(AnnotationAgentContainerImplTest, ShutdownDocumentWhileGenerating) {
   bool did_finish = false;
 
   container->CreateAgentFromSelection(
-      mojom::blink::AnnotationType::kUserNote,
+      mojom::blink::AnnotationType::kSharedHighlight,
       base::BindLambdaForTesting(
           [&did_finish](
               mojom::blink::SelectorCreationResultPtr selector_creation_result,
