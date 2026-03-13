@@ -171,6 +171,11 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   title_->SetElideBehavior(gfx::FADE_TAIL);
   title_->SetLineHeight(20);
 
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs)) {
+    title_->SetFontList(
+        title_->font_list().DeriveWithWeight(gfx::Font::Weight::SEMIBOLD));
+  }
+
   // Enable keyboard focus.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Install(this);
