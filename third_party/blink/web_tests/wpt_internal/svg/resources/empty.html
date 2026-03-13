@@ -1,1 +1,11 @@
 <!DOCTYPE html>
+<script type=module>
+  import {
+    waitForLoad,
+  } from '/wpt_internal/svg/resources/util.js';
+
+  (async function() {
+    await waitForLoad();
+    window.parent.postMessage({}, '*');
+  })();
+</script>`

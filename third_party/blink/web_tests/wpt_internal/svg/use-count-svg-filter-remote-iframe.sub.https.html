@@ -5,13 +5,14 @@
 
 <div id="remote_outer">
   <div id="remote_inner">
-    <iframe id="remote_iframe" src="https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html"></iframe>
+    <iframe id="remote_iframe"></iframe>
   </div>
 </div>
 
 <script type=module>
   import {
     expectCounters,
+    getIframeResults,
     resetCounters,
     waitForLoad,
     waitForRender,
@@ -26,6 +27,7 @@
 
   promise_test(async (t) => {
     await waitForLoad();
+    await getIframeResults('remote_iframe', 'https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html');
 
     reset();
     await waitForRender();
@@ -49,6 +51,7 @@
 
   promise_test(async (t) => {
     await waitForLoad();
+    await getIframeResults('remote_iframe', 'https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html');
 
     reset();
     await waitForRender();
@@ -72,6 +75,7 @@
 
   promise_test(async (t) => {
     await waitForLoad();
+    await getIframeResults('remote_iframe', 'https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html');
 
     reset();
     await waitForRender();

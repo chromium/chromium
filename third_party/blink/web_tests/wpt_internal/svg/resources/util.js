@@ -17,6 +17,13 @@ export function getCounters() {
   };
 }
 
+export async function getIframeResults(id, url) {
+  document.getElementById(id).setAttribute('src', url);
+  return await new Promise(resolve => window.addEventListener('message', (e) => {
+    resolve(e.data);
+  }, {once: true}));
+}
+
 export function printCounters(local, remote, plugin) {
   return `Local: ${local}, Remote: ${remote}, Plugin: ${plugin}`;
 }

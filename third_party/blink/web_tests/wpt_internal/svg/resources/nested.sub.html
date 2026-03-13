@@ -3,16 +3,23 @@
 <script src="/resources/testharnessreport.js"></script>
 <link rel="stylesheet" href="/wpt_internal/svg/resources/util.css">
 
-<iframe id="iframe_1" src="https://{{host}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html"></iframe>
-<iframe id="iframe_2" src="https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html"></iframe>
+<iframe id="iframe_1"></iframe>
+<iframe id="iframe_2"></iframe>
 <embed id="plugin" type="application/x-webkit-test-webplugin"></embed>
 <script type=module>
   import {
     getCounters,
+    getIframeResults,
     resetCounters,
+    waitForLoad,
+    waitForRender,
   } from '/wpt_internal/svg/resources/util.js';
 
   (async function() {
+    await waitForLoad();
+    await getIframeResults('iframe_1', 'https://{{host}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html');
+    await getIframeResults('iframe_2', 'https://{{hosts[alt][]}}:{{ports[https][0]}}/wpt_internal/svg/resources/empty.html');
+    await waitForRender();
     resetCounters();
 
     if ((new URLSearchParams(window.location.search)).has('filter')) {
@@ -20,9 +27,8 @@
       document.getElementById('iframe_2').className = 'svg-blur';
       document.getElementById('plugin').className = 'svg-blur';
     }
+    await waitForRender();
 
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
-    window.top.postMessage(getCounters(), '*');
+    window.parent.postMessage(getCounters(), '*');
   })();
 </script>`

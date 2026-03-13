@@ -5,13 +5,14 @@
 
 <div id="local_outer">
   <div id="local_inner">
-    <iframe id="local_iframe" src="resources/empty.html"></iframe>
+    <iframe id="local_iframe"></iframe>
   </div>
 </div>
 
 <script type=module>
   import {
     expectCounters,
+    getIframeResults,
     resetCounters,
     waitForLoad,
     waitForRender,
@@ -26,6 +27,7 @@
 
   promise_test(async (t) => {
     await waitForLoad();
+    await getIframeResults('local_iframe', 'resources/empty.html');
 
     reset();
     await waitForRender();
@@ -49,6 +51,7 @@
 
   promise_test(async (t) => {
     await waitForLoad();
+    await getIframeResults('local_iframe', 'resources/empty.html');
 
     reset();
     await waitForRender();
@@ -72,6 +75,7 @@
 
   promise_test(async (t) => {
     await waitForLoad();
+    await getIframeResults('local_iframe', 'resources/empty.html');
 
     reset();
     await waitForRender();
