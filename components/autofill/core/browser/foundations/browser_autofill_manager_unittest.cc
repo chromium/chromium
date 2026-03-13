@@ -2413,9 +2413,6 @@ TEST_F(BrowserAutofillManagerTest,
 #if BUILDFLAG(IS_IOS)
 // Tests that no loyalty card suggestions are shown on iOS.
 TEST_F(BrowserAutofillManagerTest, GetSuggestions_LoyaltyCardsEmpty) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableLoyaltyCardsFilling};
-
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://www.domain.example/"));
 
@@ -2434,9 +2431,6 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_LoyaltyCardsEmpty) {
 // Tests that when both email and loyalty card suggestions are available, no
 // loyalty card suggestions are shown on iOS.
 TEST_F(BrowserAutofillManagerTest, GetSuggestions_EmailAndLoyaltyCards) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://www.domain.example/"));
 
@@ -2503,9 +2497,6 @@ class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
 };
 
 TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableLoyaltyCardsFilling};
-
   SetLoyaltyCards({test::CreateLoyaltyCard()});
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://www.domain.example/"));
@@ -2562,10 +2553,6 @@ TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
 // are shown in the correct order.
 TEST_F(BrowserAutofillManagerTestValuables,
        GetSuggestions_EmailAndLoyaltyCards) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
-
   SetLoyaltyCards({test::CreateLoyaltyCard()});
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://www.domain.example/"));
@@ -2639,10 +2626,6 @@ TEST_F(BrowserAutofillManagerTestValuables,
 // without a submenu.
 TEST_F(BrowserAutofillManagerTestValuables,
        GetSuggestions_EmailAndLoyaltyCards_NoEmails) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
-
   SetLoyaltyCards({test::CreateLoyaltyCard()});
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://www.domain.example/"));
@@ -2681,10 +2664,6 @@ TEST_F(BrowserAutofillManagerTestValuables,
 // reported when an email suggestion is selected.
 TEST_F(BrowserAutofillManagerTestValuables,
        GetSuggestions_EmailAndLoyaltyCardsMetric_EmailSuggestionSelected) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
-
   SetLoyaltyCards({test::CreateLoyaltyCard()});
   autofill_client().set_last_committed_primary_main_frame_url(
       GURL("https://www.domain.example/"));
@@ -2716,9 +2695,6 @@ TEST_F(BrowserAutofillManagerTestValuables,
 TEST_F(
     BrowserAutofillManagerTestValuables,
     GetSuggestions_EmailAndLoyaltyCardsMetric_LoyaltyCardSuggestionSelected) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
 
   SetLoyaltyCards({test::CreateLoyaltyCard()});
 

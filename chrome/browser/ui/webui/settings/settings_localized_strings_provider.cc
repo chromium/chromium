@@ -1713,18 +1713,12 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          autofill::payments::GetManageAddressesUrl().spec());
   html_source->AddString(
       "manageCreditCardsLabel",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableLoyaltyCardsFilling)
-          ? l10n_util::GetStringFUTF16(
-                IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS,
-                base::UTF8ToUTF16(
-                    autofill::payments::GetManageLoyaltyCardsUrl().spec()),
-                base::UTF8ToUTF16(
-                    autofill::payments::GetManageInstrumentsUrl().spec()))
-          : l10n_util::GetStringFUTF16(
-                IDS_SETTINGS_PAYMENTS_MANAGE_CREDIT_CARDS,
-                base::UTF8ToUTF16(
-                    autofill::payments::GetManageInstrumentsUrl().spec())));
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PAYMENTS_MANAGE_LOYALTY_CARDS_AND_PAYMENT_METHODS,
+          base::UTF8ToUTF16(
+              autofill::payments::GetManageLoyaltyCardsUrl().spec()),
+          base::UTF8ToUTF16(
+              autofill::payments::GetManageInstrumentsUrl().spec())));
   html_source->AddString("managePaymentMethodsUrl",
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",

@@ -56,7 +56,6 @@ suite('YourSavedInfoPage', function() {
       enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
-      enableLoyaltyCardsFilling: true,
     });
   });
 
@@ -316,7 +315,6 @@ suite('DataChipsVisibility', function() {
       enableYourSavedInfoSettingsPage: true,
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: true,
-      enableLoyaltyCardsFilling: true,
     });
     await entityDataManager.whenCalled('getWritableEntityTypes');
 
@@ -353,7 +351,6 @@ suite('DataChipsVisibility', function() {
     const yourSavedInfoPage = await setupPage({
       showIbansSettings: false,
       shouldShowPayOverTimeSettings: true,
-      enableLoyaltyCardsFilling: true,
     });
     assertDeepEquals(
         [
@@ -370,7 +367,6 @@ suite('DataChipsVisibility', function() {
     const yourSavedInfoPage = await setupPage({
       showIbansSettings: false,
       shouldShowPayOverTimeSettings: true,
-      enableLoyaltyCardsFilling: true,
     });
     autofillManager.lastCallback.setPersonalDataManagerListener!
         ([], [], [createIbanEntry()], []);
@@ -391,28 +387,12 @@ suite('DataChipsVisibility', function() {
     const yourSavedInfoPage = await setupPage({
       showIbansSettings: true,
       shouldShowPayOverTimeSettings: false,
-      enableLoyaltyCardsFilling: true,
     });
     assertDeepEquals(
         [
           loadTimeData.getString('creditAndDebitCardTitle'),
           loadTimeData.getString('ibanTitle'),
           loadTimeData.getString('loyaltyCardsTitle'),
-        ],
-        getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
-  });
-
-  test('DisabledLoyaltyCards', async function() {
-    const yourSavedInfoPage = await setupPage({
-      showIbansSettings: true,
-      shouldShowPayOverTimeSettings: true,
-      enableLoyaltyCardsFilling: false,
-    });
-    assertDeepEquals(
-        [
-          loadTimeData.getString('creditAndDebitCardTitle'),
-          loadTimeData.getString('ibanTitle'),
-          loadTimeData.getString('autofillPayOverTimeSettingsLabel'),
         ],
         getChipLabels(yourSavedInfoPage, '#paymentManagerButton'));
   });

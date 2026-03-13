@@ -41,10 +41,6 @@ ValuablesDataManagerFactory::~ValuablesDataManagerFactory() = default;
 std::unique_ptr<KeyedService>
 ValuablesDataManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling)) {
-    return nullptr;
-  }
   Profile* profile = Profile::FromBrowserContext(context);
   // The AutofillImageFetcherFactory redirects to the original profile.
   AutofillImageFetcherBase* image_fetcher =

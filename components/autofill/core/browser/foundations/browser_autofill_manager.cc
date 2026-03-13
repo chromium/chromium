@@ -3516,14 +3516,11 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       }
       break;
     case FillingProduct::kLoyaltyCard:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableLoyaltyCardsFilling)) {
-        // Only loyalty card numbers filling is supported.
-        if (autofill_field->Type().GetLoyaltyCardType() ==
-            LOYALTY_MEMBERSHIP_ID) {
-          suggestions = GetLoyaltyCardSuggestions(form, form_structure, field,
-                                                  autofill_field);
-        }
+      // Only loyalty card numbers filling is supported.
+      if (autofill_field->Type().GetLoyaltyCardType() ==
+          LOYALTY_MEMBERSHIP_ID) {
+        suggestions = GetLoyaltyCardSuggestions(form, form_structure, field,
+                                                autofill_field);
       }
       break;
     case FillingProduct::kOneTimePassword:

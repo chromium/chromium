@@ -401,8 +401,7 @@ class DeterminePossibleFieldTypesForUploadTest : public ::testing::Test {
   DeterminePossibleFieldTypesForUploadTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAiWithDataSchema,
-         features::kAutofillAiVoteForFormatStringsForFlightNumbers,
-         features::kAutofillEnableLoyaltyCardsFilling},
+         features::kAutofillAiVoteForFormatStringsForFlightNumbers},
         {});
   }
 
@@ -1314,16 +1313,11 @@ TEST_P(FindDatesAndSetFormatStringsTest_MultipleTextInput, MultipleTextInput) {
 // Test fixture for DetermineAvailableFieldTypes().
 class DetermineAvailableFieldTypesTest : public ::testing::Test {
  public:
-  DetermineAvailableFieldTypesTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
-                              features::kAutofillEnableLoyaltyCardsFilling},
-        /*disabled_features=*/{});
-  }
+  DetermineAvailableFieldTypesTest() = default;
 
  protected:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{features::kAutofillAiWithDataSchema};
 };
 
 // Tests that entities are included in the set of available field types.

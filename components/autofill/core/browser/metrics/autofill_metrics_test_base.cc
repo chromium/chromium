@@ -115,10 +115,7 @@ void TestBrowserAutofillManager::Reset() {
       std::make_unique<NiceMock<MockCreditCardAccessManager>>(this));
 }
 
-AutofillMetricsBaseTest::AutofillMetricsBaseTest() {
-  scoped_features_.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
-}
+AutofillMetricsBaseTest::AutofillMetricsBaseTest() = default;
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 

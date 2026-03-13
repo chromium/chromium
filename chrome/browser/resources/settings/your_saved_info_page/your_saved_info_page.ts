@@ -177,8 +177,7 @@ export class SettingsYourSavedInfoPageElement extends
             id: YourSavedInfoDataChip.LOYALTY_CARDS,
             label: this.i18n('loyaltyCardsTitle'),
             icon: 'settings20:loyalty-programs',
-            computeAvailability: () =>
-                loadTimeData.getBoolean('enableLoyaltyCardsFilling'),
+            computeAvailability: () => true,
           },
         ],
       },

@@ -267,12 +267,9 @@ void FormFieldParser::ParseFormFields(ParsingContext& context,
   ParseFormFieldsPass(PriceFieldParser::Parse, context, fields, &IsRelevant,
                       field_candidates);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling)) {
-    // Loyalty card pass.
-    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, fields, &IsRelevant,
-                        field_candidates);
-  }
+  // Loyalty card pass.
+  ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, fields, &IsRelevant,
+                      field_candidates);
 
   // Name pass.
   ParseFormFieldsPass(NameFieldParser::Parse, context, fields, &IsRelevant,
@@ -343,10 +340,7 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
     permitted_single_field_types.insert(ADDRESS_HOME_ZIP);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling)) {
-    permitted_single_field_types.insert(LOYALTY_MEMBERSHIP_ID);
-  }
+  permitted_single_field_types.insert(LOYALTY_MEMBERSHIP_ID);
 
   permitted_single_field_types.insert(EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
 
@@ -425,12 +419,9 @@ void FormFieldParser::ParseStandaloneLoyaltyCardFields(
     ParsingContext& context,
     base::span<const FormFieldData> fields,
     FieldCandidatesMap& field_candidates) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling)) {
-    // Loyalty Cards pass.
-    ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, fields, &IsRelevant,
-                        field_candidates);
-  }
+  // Loyalty Cards pass.
+  ParseFormFieldsPass(LoyaltyFieldParser::Parse, context, fields, &IsRelevant,
+                      field_candidates);
 }
 
 void FormFieldParser::ParseStandaloneCVCFields(

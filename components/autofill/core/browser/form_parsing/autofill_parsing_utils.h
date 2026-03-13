@@ -53,6 +53,8 @@ constexpr MatchParams kDefaultMatchParams = kDefaultMatchParamsWith<>;
 // separate enum to reduce the memory overhead. They are used to annotate
 // `MatchingPattern`s, so the parsing logic can check at runtime which patterns
 // to apply.
+// Renumbering existing items of this enum is safe because they are only used
+// for gating and not persisted across sessions or server-side.
 enum class RegexFeature : uint8_t {
   // This entry only exists to ensure that the enum never becomes empty as
   // features are added and removed.
@@ -60,14 +62,13 @@ enum class RegexFeature : uint8_t {
   kAutofillGreekRegexes = 1,
   kAutofillSupportPhoneticNameForJP = 2,
   kAutofillSupportLastNamePrefix = 3,
-  kAutofillEnableLoyaltyCardsFilling = 4,
-  kAutofillSupportSplitZipCode = 5,
-  kAutofillDisallowMoreHyphenLikeLabels = 6,
-  kAutofillFixStateCountryMisclassification = 7,
-  kAutofillFixCivilStateMisclassificationForESPT = 8,
-  kAutofillAddressImproveBuildingNumberRegex = 9,
-  kAutofillNewRegexForPhoneCountryCode = 10,
-  kAutofillSupportCombinedZipAndCityFR = 11,
+  kAutofillSupportSplitZipCode = 4,
+  kAutofillDisallowMoreHyphenLikeLabels = 5,
+  kAutofillFixStateCountryMisclassification = 6,
+  kAutofillFixCivilStateMisclassificationForESPT = 7,
+  kAutofillAddressImproveBuildingNumberRegex = 8,
+  kAutofillNewRegexForPhoneCountryCode = 9,
+  kAutofillSupportCombinedZipAndCityFR = 10,
   kMaxValue = kAutofillSupportCombinedZipAndCityFR,
 };
 

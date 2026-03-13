@@ -15,11 +15,7 @@ namespace autofill {
 class EmailFieldParserTest : public FormFieldParserTestBase,
                              public ::testing::Test {
  public:
-  EmailFieldParserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableLoyaltyCardsFilling},
-        /*disabled_features=*/{});
-  }
+  EmailFieldParserTest() = default;
   EmailFieldParserTest(const EmailFieldParserTest&) = delete;
   EmailFieldParserTest& operator=(const EmailFieldParserTest&) = delete;
 

@@ -1,4 +1,4 @@
-UNKNOWN_TYPE | FormUserControl$_mileagePlanNumber$_loyaltyNumber$_loyaltyNumber | Mileage Plan Number |  | FormUserControl$_mileagePlanNumber$_loyaltyNumber$_loyaltyNumber_1
+LOYALTY_MEMBERSHIP_ID | FormUserControl$_mileagePlanNumber$_loyaltyNumber$_loyaltyNumber | Mileage Plan Number |  | FormUserControl$_mileagePlanNumber$_loyaltyNumber$_loyaltyNumber_1
 NAME_FIRST | FormUserControl$_personalIdentification$_firstName$_name | Legal First Name* |  | FormUserControl$_mileagePlanNumber$_loyaltyNumber$_loyaltyNumber_1
 UNKNOWN_TYPE | FormUserControl$_personalIdentification$_title$_title | Title |  | FormUserControl$_mileagePlanNumber$_loyaltyNumber$_loyaltyNumber_1
 NAME_MIDDLE | FormUserControl$_personalIdentification$_middleName$_middleName | Middle Name (if on ID) |  | FormUserControl$_mileagePlanNumber$_loyaltyNumber$_loyaltyNumber_1

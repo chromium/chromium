@@ -243,8 +243,6 @@ TEST_F(FormFieldParserTest, ParseFormFields_SmallFormRequirementIgnored) {
 
 // Tests that loyalty cards are parsed as part of `ParseFormFields`.
 TEST_F(FormFieldParserTest, ParseFormFieldsFieldsLoyaltyCard) {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillEnableLoyaltyCardsFilling};
   AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
   AddTextFormFieldData("", "Frequent Flyer", LOYALTY_MEMBERSHIP_ID);
 
@@ -257,10 +255,6 @@ TEST_F(FormFieldParserTest, ParseFormFieldsFieldsLoyaltyCard) {
 // LOYALTY_MEMBERSHIP_ID is allowlisted to be produced by the field
 // classification even if the form does not have >= 3 recognized field types.
 TEST_F(FormFieldParserTest, ParseStandaloneLoyaltyCardFields) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
-
   // Parse single field loyalty card.
   AddTextFormFieldData("", "frequent-flyer", LOYALTY_MEMBERSHIP_ID);
   EXPECT_EQ(1, ParseStandaloneLoyaltyCardFields());
@@ -277,9 +271,6 @@ TEST_F(FormFieldParserTest, ParseStandaloneLoyaltyCardFields) {
 // Tests that email or loyalty cards fields are parsed as
 // `EMAIL_OR_LOYALTY_MEMBERSHIP_ID`.
 TEST_F(FormFieldParserTest, ParseFormFieldsFieldsEmailOrLoyaltyCard) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {features::kAutofillEnableLoyaltyCardsFilling}, {});
   AddTextFormFieldData("", "Email Or Loyalty Card",
                        EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
   AddTextFormFieldData("", "Password", UNKNOWN_TYPE);

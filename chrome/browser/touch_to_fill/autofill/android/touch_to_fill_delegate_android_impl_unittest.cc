@@ -242,10 +242,8 @@ class TouchToFillDelegateAndroidImplUnitTest
           MockPaymentsAutofillClient> {
  public:
   TouchToFillDelegateAndroidImplUnitTest() {
-    features_.InitWithFeatures(
-        {features::kAutofillEnableLoyaltyCardsFilling,
-         features::kAutofillEnableBuyNowPayLaterSyncing},
-        {});
+    features_.InitAndEnableFeature(
+        features::kAutofillEnableBuyNowPayLaterSyncing);
     // Some date after in the 2000s because Autofill doesn't allow expiration
     // dates before 2000.
     task_environment_.AdvanceClock(base::Days(365 * 50));

@@ -2322,8 +2322,6 @@ TEST_F(FormStructureTestImpl, GetHeuristicPredictions) {
 
 // Tests that loyalty card fields are classified on big forms.
 TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillEnableLoyaltyCardsFilling};
   std::unique_ptr<FormStructure> form_structure;
   FormData form;
   form.set_url(GURL("http://www.foo.com/"));

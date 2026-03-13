@@ -463,9 +463,7 @@ PossibleTypes GetPossibleTypes(
   }
 
   // Do not issue loyalty card votes on values matching the email format.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling) &&
-      !IsValidEmailAddress(value_u16)) {
+  if (!IsValidEmailAddress(value_u16)) {
     const std::string value_u8 = base::UTF16ToUTF8(value_u16);
     for (const LoyaltyCard& card : loyalty_cards) {
       if (value_u8 == card.loyalty_card_number()) {
@@ -621,9 +619,7 @@ FieldTypeSet DetermineAvailableFieldTypes(
     types.insert_all(GetAvailableAutofillAiFieldTypes(entities, app_locale));
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableLoyaltyCardsFilling) &&
-      !loyalty_cards.empty()) {
+  if (!loyalty_cards.empty()) {
     types.insert(LOYALTY_MEMBERSHIP_ID);
   }
 
