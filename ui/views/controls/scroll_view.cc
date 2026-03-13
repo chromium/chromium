@@ -718,6 +718,14 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
   OnPropertyChanged(&draw_focus_indicator_, PropertyEffects::kPaint);
 }
 
+bool ScrollView::IsHorizontalContentOverflowing() const {
+  return contents_->width() > contents_viewport_->width();
+}
+
+bool ScrollView::IsVerticalContentOverflowing() const {
+  return contents_->height() > contents_viewport_->height();
+}
+
 base::CallbackListSubscription ScrollView::AddContentsScrolledCallback(
     ScrollViewCallback callback) {
   return on_contents_scrolled_.Add(std::move(callback));
