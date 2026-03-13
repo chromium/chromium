@@ -10,9 +10,11 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertGE, assertTrue, assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue, loadTimeData} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsAutofillAiEntriesListElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 // clang-format on
@@ -431,6 +433,7 @@ suite('AutofillAiEntriesListUiTest', function() {
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
         storedInWallet: true,
+        walletEntityUrl: 'https://wallet.google.com',
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',
@@ -491,9 +494,13 @@ suite('AutofillAiEntriesListUiTest', function() {
   }
 
   // Tests that walletable entities have an icon button mentionining the wallet
-  // type in its title. Local entities have an actionable button which allows
-  // users editing and deleting.
+  // type in its title and linking to the provided URL.
+  // Local entities have an actionable button which allows users editing and
+  // deleting.
   test('AutofillAiWalletEntitiesHaveWalletPassesIconButton', async function() {
+    const openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+
     await createEntriesList();
 
     const listItems =
@@ -520,6 +527,9 @@ suite('AutofillAiEntriesListUiTest', function() {
         assertEquals(
             loadTimeData.getString('remoteWalletPassesLinkLabel'),
             iconButton.title);
+        iconButton.click();
+        const url = await openWindowProxy.whenCalled('openUrl');
+        assertEquals('https://wallet.google.com', url);
       }
     }
   });

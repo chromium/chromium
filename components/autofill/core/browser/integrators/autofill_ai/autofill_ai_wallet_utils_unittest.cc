@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager_test_utils.h"
@@ -13,6 +14,7 @@
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -213,6 +215,38 @@ TEST_F(AutofillAiWalletUtilsTest, HandleWalletMigrateResponseFailure) {
       edm().GetWeakPtr(), autofill_client().GetWeakPtr(),
       AutofillClient::AutofillAiImportPromptType::kMigrate, /*entity=*/passport,
       /*wallet_response=*/std::nullopt);
+}
+
+TEST_F(AutofillAiWalletUtilsTest, GetWalletManagementURL_PublicPasses) {
+  EntityInstance entity = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  EXPECT_EQ(GetWalletManagementURL(entity),
+            "https://wallet.google.com/wallet/passes");
+}
+
+TEST_F(AutofillAiWalletUtilsTest, GetWalletManagementURL_PrivatePasses) {
+  EntityInstance entity =
+      test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kServerWallet})
+          .CopyWithNewEntityId(EntityInstance::EntityId("123-456:789"));
+  // Deep links disabled.
+  {
+    base::test::ScopedFeatureList feature;
+    feature.InitAndDisableFeature(
+        features::kAutofillAiWalletPrivatePassesDeepLink);
+    EXPECT_EQ(GetWalletManagementURL(entity),
+              "https://wallet.google.com/wallet/passes");
+  }
+  // Deep links enabled.
+  {
+    base::test::ScopedFeatureList feature(
+        features::kAutofillAiWalletPrivatePassesDeepLink);
+    // Expect that the entity ID is URL encoded.
+    EXPECT_EQ(GetWalletManagementURL(entity),
+              "https://wallet.google.com/wallet?p=walletpass&"
+              "ppid=123-456%3A789&utm_source=chrome&utm_medium=settings&"
+              "utm_campaign=enhanced_autofill");
+  }
 }
 
 }  // namespace

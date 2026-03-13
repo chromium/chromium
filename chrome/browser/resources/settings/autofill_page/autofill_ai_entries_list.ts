@@ -469,11 +469,11 @@ export class SettingsAutofillAiEntriesListElement extends
     }
   }
 
-  private onRemoteWalletPassesLinkClick_() {
-    // TODO(crbug.com/477845712): Link out to pass details view instead once
-    // crbug.com/454899556 is fixed.
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('walletPassesPageUrl'));
+  private onRemoteWalletPassesLinkClick_(
+      e: DomRepeatEvent<EntityInstanceWithLabels>) {
+    assert(e.model.item.storedInWallet);
+    assert(e.model.item.walletEntityUrl);
+    OpenWindowProxyImpl.getInstance().openUrl(e.model.item.walletEntityUrl);
   }
 
   private async onOptInStatusChanged_(): Promise<void> {

@@ -291,6 +291,7 @@ declare global {
         entityInstanceLabel: string;
         entityInstanceSubLabel: string;
         storedInWallet: boolean;
+        walletEntityUrl?: string
       }
 
       export interface PayOverTimeIssuerEntry {

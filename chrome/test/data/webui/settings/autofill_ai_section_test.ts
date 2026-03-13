@@ -271,6 +271,7 @@ suite('AutofillAiSectionUiTest', function() {
         entityInstanceLabel: 'Toyota',
         entityInstanceSubLabel: 'Car',
         storedInWallet: true,
+        walletEntityUrl: 'https://wallet.google.com',
       },
       {
         guid: '1fd09cdc-35b8-4367-8f1a-18c8c0733af0',

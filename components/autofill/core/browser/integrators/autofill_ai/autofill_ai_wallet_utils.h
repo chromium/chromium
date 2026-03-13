@@ -34,6 +34,9 @@ void HandleWalletUpsertResponse(
     EntityInstance entity,
     std::optional<EntityInstance> wallet_response);
 
+// Returns the URL of a Wallet `entity`'s management page on wallet.google.com.
+std::string GetWalletManagementURL(const EntityInstance& entity);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_WALLET_UTILS_H_
