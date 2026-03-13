@@ -15306,6 +15306,7 @@ TEST_P(HttpCacheEarlyInitTest, FileExists) {
     transaction.is_shared_resource = true;
     RunTransactionTest(cache.http_cache(), transaction);
   }
+  base::RunLoop().RunUntilIdle();
   disk_cache::FlushCacheThreadForTesting();
 
   EXPECT_TRUE(base::PathExists(temp_dir.GetPath().AppendASCII("index")));
@@ -15326,16 +15327,19 @@ TEST_P(HttpCacheEarlyInitTest, FileExists) {
     factory_ptr->set_create_backend_called_ptr(&create_backend_called);
   }
 
-  MockHttpCache cache(std::move(factory));
+  {
+    MockHttpCache cache(std::move(factory));
 
-  if (GetParam()) {
-    run_loop.Run();
-    backend_creation_loop.Run();
+    if (GetParam()) {
+      run_loop.Run();
+      backend_creation_loop.Run();
+    }
+
+    EXPECT_EQ(GetParam(), create_backend_called);
+    histogram_tester.ExpectBucketCount("HttpCache.CreateBackendEarly", true,
+                                       GetParam() ? 1 : 0);
   }
-
-  EXPECT_EQ(GetParam(), create_backend_called);
-  histogram_tester.ExpectBucketCount("HttpCache.CreateBackendEarly", true,
-                                     GetParam() ? 1 : 0);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_P(HttpCacheEarlyInitTest, NoFile) {
