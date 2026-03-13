@@ -484,6 +484,16 @@ std::optional<base::TimeTicks> WebUIContentsPreloadManager::GetRequestTime(
   return preload_state->request_time;
 }
 
+void WebUIContentsPreloadManager::SetRequestTime(
+    content::WebContents* web_contents,
+    base::TimeTicks time) {
+  auto* preload_state =
+      WebUIContentsPreloadState::FromWebContents(web_contents);
+  if (preload_state) {
+    preload_state->request_time = time;
+  }
+}
+
 bool WebUIContentsPreloadManager::WasPreloaded(
     content::WebContents* web_contents) const {
   if (!web_contents) {

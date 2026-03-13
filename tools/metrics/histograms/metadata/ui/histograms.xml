@@ -933,6 +933,26 @@ features through Chrome Labs. -->
   </token>
 </histogram>
 
+<histogram name="TopChromeUI.{UIName}.RequestToFirstContentfulPaint" units="ms"
+    expires_after="2026-09-12">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webui@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time elapsed from the initiation of a user-initiated request to
+    its first contentful paint for a Top Chrome UI: {UIName}.
+
+    This metric is recorded for both Native and WebUI implementations. To ensure
+    comparative parity, it is recorded at most once per window instance. This
+    aligns the native view lifecycle with the WebUI document lifecycle.
+
+    Only recorded on desktop platforms.
+  </summary>
+  <token key="UIName">
+    <variant name="OmniboxPopup" summary="Omnibox Popup"/>
+  </token>
+</histogram>
+
 <histogram name="Views.ColorProviderCacheSize" units="entries"
     expires_after="2026-01-11">
   <owner>tluk@chromium.org</owner>

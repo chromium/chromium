@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/observers/top_chrome_webui_metrics_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -594,15 +595,29 @@ void OmniboxPopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
     // has been created.
     widget_->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
         base::BindOnce(
-            [](base::TimeTicks popup_create_start_time,
+            [](base::WeakPtr<OmniboxPopupViewViews> self,
+               base::TimeTicks popup_create_start_time,
                const viz::FrameTimingDetails& frame_timing_details) {
+              if (!self) {
+                return;
+              }
               base::TimeTicks presentation_timestamp =
                   frame_timing_details.presentation_feedback.timestamp;
-              base::UmaHistogramTimes(
-                  "Omnibox.Views.PopupFirstPaint",
-                  presentation_timestamp - popup_create_start_time);
+              base::TimeDelta delta =
+                  presentation_timestamp - popup_create_start_time;
+              base::UmaHistogramTimes("Omnibox.Views.PopupFirstPaint", delta);
+
+              // Record metrics via TopChromeWebUIMetricsObserver to allow
+              // comparison between WebUI and Views Omnibox versions.
+              // This is recorded at most once per window (View lifetime) to
+              // align with the WebUI behavior.
+              if (!self->recorded_first_paint_) {
+                self->recorded_first_paint_ = true;
+                TopChromeWebUIMetricsObserver::RecordFirstContentfulPaint(
+                    "OmniboxPopup", delta);
+              }
             },
-            popup_create_start_time_.value()));
+            weak_ptr_factory_.GetWeakPtr(), popup_create_start_time_.value()));
     popup_create_start_time_.reset();
   }
 }

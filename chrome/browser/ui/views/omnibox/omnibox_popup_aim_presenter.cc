@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 
 #include <optional>
 #include <string_view>
@@ -26,7 +27,15 @@ OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
 OmniboxPopupAimPresenter::~OmniboxPopupAimPresenter() = default;
 
 void OmniboxPopupAimPresenter::Show() {
+  const bool was_shown = IsShown();
   OmniboxPopupPresenterBase::Show();
+  if (!was_shown && IsShown()) {
+    // Set the request time to now when the popup is first shown. This ensures
+    // that latency is measured from the user interaction to show, even if the
+    // WebUI was preloaded at startup.
+    WebUIContentsPreloadManager::GetInstance()->SetRequestTime(
+        GetWebUIContent()->GetWebContents(), base::TimeTicks::Now());
+  }
   if (GetWidget() && !widget_observation_.IsObserving()) {
     widget_observation_.Observe(GetWidget());
   }
