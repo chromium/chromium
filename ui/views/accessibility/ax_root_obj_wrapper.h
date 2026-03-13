@@ -26,9 +26,6 @@ class VIEWS_EXPORT AXRootObjWrapper : public views::AXAuraObjWrapper,
   AXRootObjWrapper& operator=(const AXRootObjWrapper&) = delete;
   ~AXRootObjWrapper() override;
 
-  // Convenience method to check for existence of a child.
-  bool HasChild(views::AXAuraObjWrapper* child);
-
   // views::AXAuraObjWrapper overrides.
   views::AXAuraObjWrapper* GetParent() override;
   void GetChildren(

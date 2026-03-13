@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_ACCESSIBILITY_AX_WIDGET_OBJ_WRAPPER_H_
 #define UI_VIEWS_ACCESSIBILITY_AX_WIDGET_OBJ_WRAPPER_H_
 
-#include <stdint.h>
-
 #include <string>
 #include <vector>
 

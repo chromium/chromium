@@ -5,10 +5,8 @@
 #include "ui/views/accessibility/view_accessibility_utils.h"
 
 #include <algorithm>
-#include <set>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/views/view.h"

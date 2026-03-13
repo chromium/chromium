@@ -4,11 +4,6 @@
 
 #include "ui/views/accessibility/ax_root_obj_wrapper.h"
 
-#include <algorithm>
-#include <utility>
-
-#include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -23,12 +18,6 @@ AXRootObjWrapper::AXRootObjWrapper(views::AXAuraObjCache::Delegate* delegate,
     : views::AXAuraObjWrapper(cache), delegate_(delegate) {}
 
 AXRootObjWrapper::~AXRootObjWrapper() = default;
-
-bool AXRootObjWrapper::HasChild(views::AXAuraObjWrapper* child) {
-  std::vector<raw_ptr<views::AXAuraObjWrapper, VectorExperimental>> children;
-  GetChildren(&children);
-  return std::ranges::contains(children, child);
-}
 
 views::AXAuraObjWrapper* AXRootObjWrapper::GetParent() {
   return nullptr;

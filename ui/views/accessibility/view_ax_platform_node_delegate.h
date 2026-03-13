@@ -22,9 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/controls/table/table_view.h"
 #include "ui/views/views_export.h"
-#include "ui/views/widget/widget_observer.h"
 
 namespace ui {
 
@@ -35,6 +33,7 @@ struct AXActionData;
 namespace views {
 
 class AtomicViewAXTreeManager;
+class TableView;
 class View;
 
 // Shared base class for platforms that require an implementation of

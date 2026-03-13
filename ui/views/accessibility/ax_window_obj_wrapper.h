@@ -20,10 +20,6 @@
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 
-namespace ui {
-class InputMethod;
-}
-
 namespace views {
 class AXAuraObjCache;
 
@@ -73,8 +69,6 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
  private:
   // Fires an accessibility event.
   void FireEvent(ax::mojom::Event event_type);
-
-  gfx::Rect GetCaretBounds(const ui::TextInputClient* client);
 
   const raw_ptr<aura::Window> window_;
 

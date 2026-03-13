@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/aura/client/aura_constants.h"

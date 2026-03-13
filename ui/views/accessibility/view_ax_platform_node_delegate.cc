@@ -5,9 +5,7 @@
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
 #include <algorithm>
-#include <map>
 #include <memory>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -22,28 +20,23 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
-#include "ui/accessibility/ax_tree.h"
-#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/base/layout.h"
-#include "ui/events/event_utils.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/native/native_view_host.h"
+#include "ui/views/controls/table/table_view.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 
 namespace views {
 

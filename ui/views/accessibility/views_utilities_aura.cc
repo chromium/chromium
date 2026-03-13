@@ -4,8 +4,6 @@
 
 #include "ui/views/accessibility/views_utilities_aura.h"
 
-#include <algorithm>
-
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/rtl.h"
 #include "ui/aura/window.h"
@@ -13,8 +11,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/render_text.h"
-#include "ui/gfx/selection_model.h"
-#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
 namespace views {
