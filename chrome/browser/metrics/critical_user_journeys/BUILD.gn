@@ -52,3 +52,22 @@ source_set("unit_tests") {
     "//ui/base/interaction:test_support",
   ]
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  sources = [ "critical_user_journey_service_interactive_uitest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":critical_user_journeys",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/keyed_service/content",
+    "//content/test:test_support",
+    "//ui/base/interaction",
+  ]
+}

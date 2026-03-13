@@ -35,6 +35,9 @@ class CriticalUserJourneyService : public KeyedService {
   CriticalUserJourneyService& operator=(const CriticalUserJourneyService&) =
       delete;
 
+  // Initializes the service, registers journeys and sets up triggers.
+  void Initialize();
+
  protected:
   // Registers journeys with the registry. Overridden by platform-specific
   // implementations.

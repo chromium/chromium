@@ -70,6 +70,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/cookie/histograms.xml",
   "//tools/metrics/histograms/metadata/cras/enums.xml",
   "//tools/metrics/histograms/metadata/cras/histograms.xml",
+  "//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml",
+  "//tools/metrics/histograms/metadata/critical_user_journeys/histograms.xml",
   "//tools/metrics/histograms/metadata/cros/enums.xml",
   "//tools/metrics/histograms/metadata/cros/histograms.xml",
   "//tools/metrics/histograms/metadata/cros_audio/enums.xml",

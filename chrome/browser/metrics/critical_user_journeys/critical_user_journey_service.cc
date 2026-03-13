@@ -7,36 +7,63 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
+#include "chrome/browser/metrics/critical_user_journeys/features.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace metrics {
 
 CriticalUserJourneyService::CriticalUserJourneyService(Profile* profile)
     : profile_(profile),
-      registry_(std::make_unique<CriticalUserJourneyRegistry>()) {
+      registry_(std::make_unique<CriticalUserJourneyRegistry>()) {}
+
+CriticalUserJourneyService::~CriticalUserJourneyService() = default;
+
+void CriticalUserJourneyService::Initialize() {
+  if (!base::FeatureList::IsEnabled(kCriticalUserJourneyService)) {
+    return;
+  }
+
   RegisterJourneys(registry_.get());
 
   for (const auto& journey : registry_->journeys()) {
-    // We assume the first step's ID is the trigger for the journey.
-    if (!journey->steps().empty()) {
-      ui::ElementIdentifier trigger_id = journey->steps()[0]->id;
-      subscriptions_.push_back(
-          ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-              trigger_id, ui::ElementContext(),
-              base::BindRepeating(&CriticalUserJourneyService::OnJourneyStarted,
-                                  base::Unretained(this), journey.get())));
+    if (journey->steps().empty()) {
+      continue;
+    }
+
+    const auto& trigger_step = journey->steps()[0];
+    ui::ElementIdentifier trigger_id = trigger_step->id;
+    auto callback =
+        base::BindRepeating(&CriticalUserJourneyService::OnJourneyStarted,
+                            base::Unretained(this), journey.get());
+
+    switch (trigger_step->type) {
+      case ui::InteractionSequence::StepType::kShown:
+        subscriptions_.push_back(ui::ElementTracker::GetElementTracker()
+                                     ->AddElementShownInAnyContextCallback(
+                                         trigger_id, std::move(callback)));
+        break;
+      case ui::InteractionSequence::StepType::kActivated:
+        subscriptions_.push_back(ui::ElementTracker::GetElementTracker()
+                                     ->AddElementActivatedInAnyContextCallback(
+                                         trigger_id, std::move(callback)));
+        break;
+      case ui::InteractionSequence::StepType::kHidden:
+      case ui::InteractionSequence::StepType::kCustomEvent:
+      case ui::InteractionSequence::StepType::kSubsequence:
+        NOTIMPLEMENTED();
+        break;
     }
   }
 }
-
-CriticalUserJourneyService::~CriticalUserJourneyService() = default;
 
 void CriticalUserJourneyService::RegisterJourneys(
     CriticalUserJourneyRegistry* registry) {
   // TODO(crbug.com/488075669): Populate registry with journeys.
 }
+
 void CriticalUserJourneyService::OnJourneyStarted(
     const CriticalUserJourney* journey,
     ui::TrackedElement* element) {
@@ -47,7 +74,7 @@ void CriticalUserJourneyService::OnJourneyStarted(
                      base::Unretained(this), base::Unretained(session_ptr)));
 
   active_sessions_.push_back(std::move(session));
-  session_ptr->Start(element->context());
+  session_ptr->Start(element);
 }
 
 void CriticalUserJourneyService::OnJourneyEnded(

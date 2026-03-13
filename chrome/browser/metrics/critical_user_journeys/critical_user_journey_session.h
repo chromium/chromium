@@ -13,6 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
+namespace ui {
+class TrackedElement;
+}
+
 namespace metrics {
 
 class CriticalUserJourney;
@@ -28,8 +32,9 @@ class CriticalUserJourneySession {
   CriticalUserJourneySession& operator=(const CriticalUserJourneySession&) =
       delete;
 
-  // Starts the journey tracking in the given context.
-  void Start(ui::ElementContext context);
+  // Starts the journey. If |element| is provided, it is treated as the trigger
+  // that already matched the first step of the journey.
+  void Start(ui::TrackedElement* element);
 
   void set_on_done_callback(base::OnceClosure on_done_callback) {
     on_done_callback_ = std::move(on_done_callback);
@@ -41,7 +46,8 @@ class CriticalUserJourneySession {
   ui::InteractionSequence::Builder BuildSequence(
       ui::ElementContext context,
       const CriticalUserJourney* journey,
-      bool is_root);
+      bool is_root,
+      ui::TrackedElement* initial_element = nullptr);
 
   // Callbacks for InteractionSequence events.
   void OnStepStarted(int metric_id);
@@ -51,6 +57,8 @@ class CriticalUserJourneySession {
   const raw_ptr<const CriticalUserJourney> journey_;
   base::OnceClosure on_done_callback_;
   std::unique_ptr<ui::InteractionSequence> sequence_;
+
+  int last_reached_metric_id_ = -1;
 
   base::WeakPtrFactory<CriticalUserJourneySession> weak_factory_{this};
 };

@@ -1,0 +1,23 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file defines enums used in Critical User Journey histograms.
+-->
+
+<histogram-configuration>
+
+<enums>
+
+<enum name="CriticalUserJourneyTestJourneySteps">
+  <int value="1" label="Step 1 Reached"/>
+  <int value="2" label="Step 2 Reached"/>
+  <int value="3" label="Alternative Step Reached"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

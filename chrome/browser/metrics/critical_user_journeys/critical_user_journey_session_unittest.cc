@@ -50,11 +50,11 @@ TEST_F(CriticalUserJourneySessionTest, SimpleJourneyCompletion) {
   session->set_on_done_callback(
       base::BindLambdaForTesting([&]() { done = true; }));
 
-  session->Start(kTestContext);
-
   // Step 1: Show element 1
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
+
+  session->Start(&el1);
 
   // Step 2: Show element 2
   ui::test::TestElement el2(kTestElementId2, kTestContext);
@@ -76,11 +76,11 @@ TEST_F(CriticalUserJourneySessionTest, JourneyAborted) {
   session->set_on_done_callback(
       base::BindLambdaForTesting([&]() { done = true; }));
 
-  session->Start(kTestContext);
-
   // Step 1: Show element 1
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
+
+  session->Start(&el1);
 
   // Abort: Hide element 1 before Step 2 starts
   el1.Hide();
@@ -102,10 +102,10 @@ TEST_F(CriticalUserJourneySessionTest, CompletionCallbackTriggered) {
   session->set_on_done_callback(
       base::BindLambdaForTesting([&]() { session_done = true; }));
 
-  session->Start(kTestContext);
-
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
+
+  session->Start(&el1);
 
   EXPECT_TRUE(base::test::RunUntil([&]() { return session_done; }));
   EXPECT_TRUE(journey_completed);
@@ -129,11 +129,11 @@ TEST_F(CriticalUserJourneySessionTest, BranchingJourneyCompletion) {
   session->set_on_done_callback(
       base::BindLambdaForTesting([&]() { done = true; }));
 
-  session->Start(kTestContext);
-
   // Step 1: Show element 1
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
+
+  session->Start(&el1);
 
   // Step 2: Choose one branch (e.g., show element 2)
   ui::test::TestElement el2(kTestElementId2, kTestContext);

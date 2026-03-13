@@ -26,12 +26,8 @@ CriticalUserJourneyService* CriticalUserJourneyServiceFactory::GetForProfile(
 }
 
 CriticalUserJourneyServiceFactory::CriticalUserJourneyServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "CriticalUserJourneyService",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
-              .Build()) {}
+    : ProfileKeyedServiceFactory("CriticalUserJourneyService",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 CriticalUserJourneyServiceFactory::~CriticalUserJourneyServiceFactory() =
     default;
@@ -43,8 +39,15 @@ CriticalUserJourneyServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<CriticalUserJourneyService>(
+  auto service = std::make_unique<CriticalUserJourneyService>(
       Profile::FromBrowserContext(context));
+  service->Initialize();
+  return service;
+}
+
+bool CriticalUserJourneyServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }
 
 }  // namespace metrics
