@@ -114,8 +114,10 @@ class StubPlatformClipboard : public PlatformClipboard {
       PlatformClipboard::GetMimeTypesClosure callback) override {
     std::move(callback).Run({});
   }
-  bool IsSelectionOwner(ClipboardBuffer buffer) override {
-    return is_owner_[buffer];
+  void IsSelectionOwner(
+      ClipboardBuffer buffer,
+      PlatformClipboard::IsSelectionOwnerClosure callback) override {
+    std::move(callback).Run(is_owner_[buffer]);
   }
   void SetClipboardDataChangedCallback(
       PlatformClipboard::ClipboardDataChangedCallback cb) override {}
@@ -194,7 +196,42 @@ class ClipboardOzone::AsyncClipboardOzone {
       return;
     }
 
-    if (platform_clipboard_->IsSelectionOwner(buffer)) {
+    platform_clipboard_->IsSelectionOwner(
+        buffer, base::BindOnce(
+                    &AsyncClipboardOzone::OnGetAvailableMimeTypesOwner,
+                    weak_factory_.GetWeakPtr(), buffer, std::move(callback)));
+  }
+
+  void ReadClipboardDataAsync(ClipboardBuffer buffer,
+                              const std::string& mime_type,
+                              PlatformClipboard::RequestDataClosure callback) {
+    if (buffer == ClipboardBuffer::kSelection &&
+        !IsSelectionBufferAvailable()) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    platform_clipboard_->IsSelectionOwner(
+        buffer, base::BindOnce(&AsyncClipboardOzone::OnReadClipboardDataOwner,
+                               weak_factory_.GetWeakPtr(), buffer, mime_type,
+                               std::move(callback)));
+  }
+
+  void ReadSourceAsync(
+      ClipboardBuffer buffer,
+      base::OnceCallback<void(std::optional<DataTransferEndpoint>)> callback) {
+    ReadClipboardDataAsync(
+        buffer, kMimeTypeSourceUrl,
+        base::BindOnce(&AsyncClipboardOzone::OnReadSourceAsync,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
+ private:
+  void OnGetAvailableMimeTypesOwner(
+      ClipboardBuffer buffer,
+      PlatformClipboard::GetMimeTypesClosure callback,
+      bool is_owner) {
+    if (is_owner) {
       std::vector<std::string> mime_types;
       mime_types.reserve(offered_data_[buffer].size());
       for (const auto& item : offered_data_[buffer]) {
@@ -207,16 +244,11 @@ class ClipboardOzone::AsyncClipboardOzone {
     platform_clipboard_->GetAvailableMimeTypes(buffer, std::move(callback));
   }
 
-  void ReadClipboardDataAsync(ClipboardBuffer buffer,
-                              const std::string& mime_type,
-                              PlatformClipboard::RequestDataClosure callback) {
-    if (buffer == ClipboardBuffer::kSelection &&
-        !IsSelectionBufferAvailable()) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-
-    if (platform_clipboard_->IsSelectionOwner(buffer)) {
+  void OnReadClipboardDataOwner(ClipboardBuffer buffer,
+                                const std::string& mime_type,
+                                PlatformClipboard::RequestDataClosure callback,
+                                bool is_owner) {
+    if (is_owner) {
       auto it = offered_data_[buffer].find(mime_type);
       if (it == offered_data_[buffer].end()) {
         std::move(callback).Run(nullptr);
@@ -230,16 +262,6 @@ class ClipboardOzone::AsyncClipboardOzone {
                                               std::move(callback));
   }
 
-  void ReadSourceAsync(
-      ClipboardBuffer buffer,
-      base::OnceCallback<void(std::optional<DataTransferEndpoint>)> callback) {
-    ReadClipboardDataAsync(
-        buffer, kMimeTypeSourceUrl,
-        base::BindOnce(&AsyncClipboardOzone::OnReadSourceAsync,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
-
- private:
   void Offer(ClipboardBuffer buffer, PlatformClipboard::DataMap data_map) {
     offered_data_[buffer] = data_map;
     platform_clipboard_->OfferClipboardData(buffer, data_map);

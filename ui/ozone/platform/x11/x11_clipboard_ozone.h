@@ -41,7 +41,8 @@ class X11ClipboardOzone : public PlatformClipboard {
   void GetAvailableMimeTypes(
       ClipboardBuffer buffer,
       PlatformClipboard::GetMimeTypesClosure callback) override;
-  bool IsSelectionOwner(ClipboardBuffer buffer) override;
+  void IsSelectionOwner(ClipboardBuffer buffer,
+                        IsSelectionOwnerClosure callback) override;
   void SetClipboardDataChangedCallback(
       ClipboardDataChangedCallback data_changed_callback) override;
   bool IsSelectionBufferAvailable() const override;

@@ -61,13 +61,15 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformClipboard {
   virtual void GetAvailableMimeTypes(ClipboardBuffer buffer,
                                      GetMimeTypesClosure callback) = 0;
 
-  // Returns true if the current application writing data to the host clipboard
-  // data is this one; false otherwise.
+  // Runs `callback` with whether the current application writing data to the
+  // host clipboard data is this one; false otherwise.
   //
   // It can be relevant to know this information in case the client wants to
   // caches the clipboard data, and wants to know if it is possible to use
   // the cached data in order to reply faster to read-clipboard operations.
-  virtual bool IsSelectionOwner(ClipboardBuffer buffer) = 0;
+  using IsSelectionOwnerClosure = base::OnceCallback<void(bool)>;
+  virtual void IsSelectionOwner(ClipboardBuffer buffer,
+                                IsSelectionOwnerClosure callback) = 0;
 
   // ClipboardDataChangedCallback is used to notify the PlatformClipboard client
   // that the clipboard content for a given |buffer| has changed, so that it can
