@@ -2045,6 +2045,7 @@ if (is_android) {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/plus_addresses:browser_tests",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/unified_consent",
       "//chrome/browser/user_agent:browser_tests",
       "//chrome/browser/visited_url_ranking:browser_tests",
       "//chrome/browser/webaudio:browser_tests",
@@ -2835,6 +2836,8 @@ if (!is_android) {
       "//chrome/browser/ui/webui/webui_toolbar:browser_tests",
       "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
       "//chrome/browser/ui/webui/whats_new",
+      "//chrome/browser/unified_consent",
+      "//chrome/browser/unified_consent:browser_tests",
       "//chrome/browser/usb:browser_tests",
       "//chrome/browser/user_agent:browser_tests",
       "//chrome/browser/visited_url_ranking:browser_tests",
@@ -4730,8 +4733,6 @@ if (!is_android) {
         "../browser/signin/dice_web_signin_interceptor_browsertest.cc",
         "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/ui/webui/bookmarks/bookmarks_message_handler_browsertest.cc",
-        "../browser/unified_consent/unified_consent_browsertest.cc",
-        "../browser/unified_consent/unified_consent_sync_to_signin_browsertest.cc",
       ]
       if (is_win) {
         sources += [ "../browser/signin/signin_util_win_browsertest.cc" ]
@@ -7245,6 +7246,7 @@ test("unit_tests") {
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
+    "//chrome/browser/unified_consent",
     "//chrome/browser/updater",
     "//chrome/browser/updates/announcement_notification:unit_tests",
     "//chrome/browser/upgrade_detector:unit_tests",

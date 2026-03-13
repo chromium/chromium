@@ -1,0 +1,64 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/signin/features.gni")
+
+source_set("unified_consent") {
+  public = [ "unified_consent_service_factory.h" ]
+
+  public_deps = [ "//chrome/browser/profiles" ]
+}
+
+source_set("impl") {
+  sources = [ "unified_consent_service_factory.cc" ]
+
+  deps = [
+    ":unified_consent",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//chrome/common",
+    "//components/commerce/core:pref_names",
+    "//components/embedder_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/spellcheck/browser",
+    "//components/sync_preferences",
+    "//components/unified_consent",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = []
+
+  if (enable_dice_support) {
+    sources += [
+      "unified_consent_browsertest.cc",
+      "unified_consent_sync_to_signin_browsertest.cc",
+    ]
+
+    deps += [
+      ":unified_consent",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/signin",
+      "//chrome/browser/sync/test/integration:sync_integration_test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/common",
+      "//components/prefs",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/sync/base",
+      "//components/sync/service",
+      "//components/unified_consent",
+      "//content/test:test_support",
+    ]
+  }
+}

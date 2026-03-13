@@ -280,6 +280,7 @@ static_library("screens") {
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/browser/unified_consent",
     "//chrome/common",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

@@ -379,6 +379,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/undo",
+    "//chrome/browser/unified_consent",
     "//chrome/browser/updates/announcement_notification",
     "//chrome/browser/usb",
     "//chrome/browser/visited_url_ranking",
