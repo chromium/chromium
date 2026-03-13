@@ -122,8 +122,8 @@ bool CheckHeaderConsistencyForSyntheticResponseImpl(
   bool result = significant_actual_headers == significant_expected_headers;
   base::UmaHistogramBoolean(kHistogramIsHeaderConsistent, result);
   if (!result) {
-    MaybeReportHeaderInconsistency(significant_actual_headers,
-                                   significant_expected_headers);
+    MaybeReportHeaderInconsistency(significant_expected_headers,
+                                   significant_actual_headers);
   }
 
   return result;
