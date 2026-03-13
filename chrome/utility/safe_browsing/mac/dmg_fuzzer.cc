@@ -15,6 +15,7 @@
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 #include "chrome/utility/safe_browsing/mac/udif.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
@@ -25,14 +26,13 @@ extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   return InitLogging(settings);
 }
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // SAFETY: libfuzzer guarantees a valid pointer and size pair.
-  safe_browsing::dmg::MemoryReadStream input(
-      UNSAFE_BUFFERS(base::span(data, size)));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  safe_browsing::dmg::MemoryReadStream input(data);
   safe_browsing::dmg::UDIFParser udif_parser(&input);
 
-  if (!udif_parser.Parse())
+  if (!udif_parser.Parse()) {
     return 0;
+  }
 
   std::vector<uint8_t> buffer(getpagesize(), 0);
 
@@ -41,12 +41,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         udif_parser.GetPartitionReadStream(i));
     safe_browsing::dmg::HFSIterator iterator(partition.get());
 
-    if (!iterator.Open())
+    if (!iterator.Open()) {
       continue;
+    }
 
     while (iterator.Next()) {
-      if (iterator.IsHardLink() ||
-          iterator.IsDecmpfsCompressed() ||
+      if (iterator.IsHardLink() || iterator.IsDecmpfsCompressed() ||
           iterator.IsDirectory()) {
         continue;
       }

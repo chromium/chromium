@@ -9,18 +9,18 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static safe_browsing::BinaryFeatureExtractor* extractor =
       new safe_browsing::BinaryFeatureExtractor();
 
   google::protobuf::RepeatedPtrField<std::string> signed_data;
   safe_browsing::ClientDownloadRequest_ImageHeaders image_headers;
-  // SAFETY: Libfuzzer guarantees `data` has size `size`.
   extractor->ExtractImageFeaturesFromData(
-      UNSAFE_BUFFERS(base::span(data, size)),
-      safe_browsing::BinaryFeatureExtractor::kDefaultOptions, &image_headers,
-      &signed_data);
+      data, safe_browsing::BinaryFeatureExtractor::kDefaultOptions,
+      &image_headers, &signed_data);
   return 0;
 }

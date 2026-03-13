@@ -12946,6 +12946,7 @@ if (is_win) {
       "//chrome/common/safe_browsing:binary_feature_extractor",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//crypto",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
     libs = [ "wintrust.lib" ]
 

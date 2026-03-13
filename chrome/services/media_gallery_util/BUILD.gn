@@ -74,5 +74,6 @@ fuzzer_test("media_metadata_parser_fuzzer") {
     ":lib",
     "//base",
     "//content/test:test_support",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }

@@ -173,6 +173,7 @@ fuzzer_test("caller_validation_fuzzer") {
   deps = [
     ":lib",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 
   dict = "fuzz.dict"

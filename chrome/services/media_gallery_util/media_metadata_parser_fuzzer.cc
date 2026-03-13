@@ -11,9 +11,11 @@
 #include <memory>
 
 #include "base/at_exit.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/filters/memory_data_source.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 class Environment {
  public:
@@ -24,14 +26,11 @@ class Environment {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
   static Environment env;
-  FuzzedDataProvider provider(data, size);
+  FuzzedDataProvider provider(data.data(), data.size());
 
-  // SAFETY: libfuzzer guarantees `data` and `size` are safe.
-  auto bytes = UNSAFE_BUFFERS(base::span(data, size));
-
-  MediaMetadataParser parser(std::make_unique<media::MemoryDataSource>(bytes),
+  MediaMetadataParser parser(std::make_unique<media::MemoryDataSource>(data),
                              /*mime_type=*/"video/webm",
                              /*get_attached_images=*/provider.ConsumeBool());
   parser.Start(base::DoNothing());

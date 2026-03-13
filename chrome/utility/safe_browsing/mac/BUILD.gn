@@ -52,6 +52,7 @@ fuzzer_test("safe_browsing_dmg_fuzzer") {
   deps = [
     ":dmg_common",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
 
@@ -61,6 +62,7 @@ fuzzer_test("safe_browsing_hfs_fuzzer") {
   deps = [
     ":dmg_common",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 
   seed_corpus = rebase_path("//chrome/test/data/safe_browsing/dmg/data")
