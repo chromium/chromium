@@ -12,9 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.context_sharing.R;
+import org.chromium.content_public.browser.WebContents;
 
 /** Class responsible for holding the co-browse view and its respective components. */
 @NullMarked
@@ -88,6 +91,14 @@ public class CoBrowseViews {
         assert peekContainer.getChildCount() == 0;
         mPeekView = peekView;
         peekContainer.addView(mPeekView);
+    }
+
+    /** Sets the WebContents of the WebUi. */
+    @CalledByNative
+    public void setWebContents(@Nullable WebContents webContents) {
+        if (mWebUi != null) {
+            mWebUi.setWebContents(webContents);
+        }
     }
 
     /** Sets the WebUI container's height. */
