@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -50,6 +49,8 @@ class FilterNavigationObserver : public content::WebContentsObserver {
   // content::WebContentsObserver overrides:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
  private:
   // The MultistepFilterService to use for generating suggestions.
@@ -58,8 +59,6 @@ class FilterNavigationObserver : public content::WebContentsObserver {
 
   // Delegate to interact with the UI.
   std::unique_ptr<UiDelegate> delegate_;
-
-  base::WeakPtrFactory<FilterNavigationObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace multistep_filter

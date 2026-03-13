@@ -28,10 +28,11 @@ FilterNavigationObserver::~FilterNavigationObserver() = default;
 void FilterNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Track only committed, primary main frame navigations. Ignore downloads,
-  // subframes, and same-document navigations (e.g. #foo).
+  // subframes, same-document navigations (e.g. #foo), and BFCache restorations.
   if (!navigation_handle->HasCommitted() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
+      navigation_handle->IsSameDocument() ||
+      navigation_handle->IsPageActivation()) {
     return;
   }
 
@@ -59,6 +60,11 @@ void FilterNavigationObserver::DidFinishNavigation(
     service_->GenerateFilterSuggestions(url,
                                         delegate_->GetSuggestionCallback());
   }
+}
+
+void FilterNavigationObserver::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  delegate_->ClearSuggestion();
 }
 
 }  // namespace multistep_filter

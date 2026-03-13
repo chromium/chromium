@@ -233,6 +233,28 @@ TEST_F(FilterNavigationObserverTest, ReferenceFragmentNavigation) {
                                                              url);
 }
 
+TEST_F(FilterNavigationObserverTest, PageActivationNavigation) {
+  content::MockNavigationHandle handle;
+  handle.set_has_committed(true);
+  handle.set_is_in_primary_main_frame(true);
+  handle.set_is_same_document(false);
+  handle.set_is_served_from_bfcache(true);
+  handle.set_reload_type(content::ReloadType::NONE);
+  handle.set_is_error_page(false);
+  handle.set_url(GURL("https://example.com"));
+
+  EXPECT_CALL(delegate(), ClearSuggestion()).Times(0);
+  EXPECT_CALL(mock_service(), GenerateFilterSuggestions(testing::_)).Times(0);
+
+  observer()->DidFinishNavigation(&handle);
+}
+
+TEST_F(FilterNavigationObserverTest, PrimaryMainFrameRenderProcessGone) {
+  EXPECT_CALL(delegate(), ClearSuggestion());
+  observer()->PrimaryMainFrameRenderProcessGone(
+      base::TERMINATION_STATUS_PROCESS_CRASHED);
+}
+
 TEST_F(FilterNavigationObserverTest,
        DoesNotRequestSuggestionForFilterInitiatedNavigation) {
   const GURL url("https://www.example.com");
