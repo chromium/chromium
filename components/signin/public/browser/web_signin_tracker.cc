@@ -108,6 +108,7 @@ void WebSigninTracker::OnStateChanged(
 
       FinishWithResult(is_auth_error ? Result::kAuthError
                                      : Result::kOtherError);
+      return;
     }
   }
 }
