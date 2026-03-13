@@ -73,13 +73,13 @@ bool MobilePromoOnDesktopTypeEnabled(
       (bubble_type == desktop_to_mobile_promos::BubbleType::kQRCode);
 
   switch (type) {
-    case MobilePromoOnDesktopPromoType::kLensPromo:
     case MobilePromoOnDesktopPromoType::kESBPromo:
     case MobilePromoOnDesktopPromoType::kAutofillPromo:
     case MobilePromoOnDesktopPromoType::kAllPromos:
       feature = is_qr_code ? &kMobilePromoOnDesktopWithQRCode
                            : &kMobilePromoOnDesktopWithReminder;
       break;
+    case MobilePromoOnDesktopPromoType::kLensPromo:
     case MobilePromoOnDesktopPromoType::kTabGroups:
     case MobilePromoOnDesktopPromoType::kPriceTracking:
       feature = is_qr_code ? &kMobilePromoOnDesktopWithQRCodeWave1
