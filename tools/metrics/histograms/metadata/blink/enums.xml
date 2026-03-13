@@ -7331,11 +7331,15 @@ Called by update_permissions_policy_enum.py.-->
       label="(Obsolete) Could not use fast path because
              Document::IsDirAttributeDirty() is true"/>
   <int value="24" label="Failed because an attribute name starts with 'on'."/>
-  <int value="25" label="Failed because a deep hierarchy was encountered."/>
-  <int value="26" label="Failed because a long text string was encountered."/>
-  <int value="27"
-      label="Could not use fast path because Document::IsDirAttributeDirty()
-             is true and css-pseudo-dir is enabled."/>
+  <int value="25"
+      label="(Obsolete due to erroneous use with two different errors.)"/>
+  <int value="26"
+      label="(Obsolete) Could not use fast path because
+             Document::IsDirAttributeDirty() is true and css-pseudo-dir is
+             enabled."/>
+  <int value="27" label="(Deliberately skipped due to C++/enums.xml mismatch)"/>
+  <int value="28" label="Failed because a deep hierarchy was encountered."/>
+  <int value="29" label="Failed because a long text string was encountered."/>
 </enum>
 
 <enum name="InnerHTMLFastPathParserUnsupportedTagType">
