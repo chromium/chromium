@@ -192,18 +192,19 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
     LOG(ERROR) << "Cannot connect terminal. Client JID is empty.";
     return;
   }
-  std::string client_email;
-  SplitSignalingIdResource(client_jid, &client_email, /*resource=*/nullptr);
+  std::string client_id;
+  SplitSignalingIdResource(client_jid, &client_id, /*resource=*/nullptr);
 
   mojom::DesktopSessionOptionsPtr options = mojom::DesktopSessionOptions::New();
   options->screen_resolution = resolution;
   options->is_curtained = is_curtained;
   options->required_username = required_username_;
+  options->client_id = client_id;
 
   if (persist_desktop_sessions_) {
     auto it =
-        std::ranges::find_if(connections_, [&client_email](const auto& pair) {
-          return pair.second.client_email == client_email &&
+        std::ranges::find_if(connections_, [&client_id](const auto& pair) {
+          return pair.second.client_id == client_id &&
                  // Find an unused session.
                  !pair.second.desktop_session_proxy;
         });
@@ -220,7 +221,7 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
   bool inserted =
       connections_
           .insert(std::make_pair(
-              id, DesktopConnection{desktop_session_proxy, client_email}))
+              id, DesktopConnection{desktop_session_proxy, client_id}))
           .second;
   CHECK(inserted);
 

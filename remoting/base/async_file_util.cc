@@ -5,13 +5,25 @@
 #include "remoting/base/async_file_util.h"
 
 #include <optional>
+#include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#include "base/posix/eintr_wrapper.h"
+#endif
 
 namespace remoting {
 
@@ -52,6 +64,33 @@ void WriteFileAsync(const base::FilePath& file,
           file, std::string(content)),
       std::move(on_done));
 }
+
+#if BUILDFLAG(IS_POSIX)
+void WriteFileWithPermissionsAsync(
+    const base::FilePath& file,
+    std::string_view content,
+    mode_t permissions,
+    base::OnceCallback<void(base::FileErrorOr<void>)> on_done) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, GetFileTaskTraits(),
+      base::BindOnce(
+          [](base::FilePath file, std::string content,
+             mode_t permissions) -> base::FileErrorOr<void> {
+            int fd = HANDLE_EINTR(creat(file.value().c_str(), permissions));
+            if (fd < 0) {
+              return base::unexpected(base::File::GetLastFileError());
+            }
+
+            bool success = base::WriteFileDescriptor(fd, content);
+            if (IGNORE_EINTR(close(fd)) < 0 || !success) {
+              return base::unexpected(base::File::GetLastFileError());
+            }
+            return base::ok();
+          },
+          file, std::string(content), permissions),
+      std::move(on_done));
+}
+#endif
 
 void ReadFileAsync(
     const base::FilePath& file,

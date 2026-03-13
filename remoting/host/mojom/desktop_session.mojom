@@ -245,6 +245,10 @@ struct DesktopSessionOptions {
 
   // If non-empty, the login user of the desktop session must match `username`.
   string required_username;
+
+  // The identifier of the client connected to the desktop session. This may
+  // be used to recover a desktop session across host process restarts.
+  string client_id;
 };
 
 // Allows the network process to ask the daemon process to create, update, or
