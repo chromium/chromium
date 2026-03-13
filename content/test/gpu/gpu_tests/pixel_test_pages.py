@@ -1829,7 +1829,7 @@ class PixelTestPages():
 
   @staticmethod
   def MeetEffectsPages(base_name: str) -> list[PixelTestPage]:
-    test_cases_path = os.path.join(gpu_path_util.MEET_EFFECTS_VIDEO_DIR,
+    test_cases_path = os.path.join(gpu_path_util.MEET_EFFECTS_ASSETS_DIR,
                                    'test_cases.json')
     video_path = os.path.join(gpu_path_util.MEET_EFFECTS_VIDEO_DIR,
                               'effects-normal-light.y4m')
