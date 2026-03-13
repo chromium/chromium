@@ -8,6 +8,8 @@
 
 #include <windows.h>
 
+#include <winerror.h>
+
 #include <optional>
 #include <utility>
 
@@ -26,13 +28,14 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
+#include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/isolation_support.h"
+#include "components/os_crypt/async/browser/key_provider.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chrome {
 
@@ -59,6 +62,38 @@ base::expected<base::win::RegKey, LONG> GetIsolatedBrowserRegistryKey(
   }
 
   return regkey;
+}
+
+void CompleteRegistryPersistence(
+    IsolationState state,
+    base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
+        completed) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto regkey = GetIsolatedBrowserRegistryKey(KEY_READ | KEY_WRITE);
+  if (!regkey.has_value()) {
+    std::move(completed).Run(
+        base::unexpected(HRESULT_FROM_WIN32(regkey.error())));
+    return;
+  }
+
+  LONG result = ERROR_SUCCESS;
+  if (state == IsolationState::kIsolationDisabled) {
+    result = regkey->DeleteValue(kIsolationStateValue);
+    if (result == ERROR_FILE_NOT_FOUND) {
+      // Value never existed in the first place.
+      result = ERROR_SUCCESS;
+    }
+  } else {
+    result =
+        regkey->WriteValue(kIsolationStateValue, static_cast<DWORD>(state));
+  }
+
+  if (result != ERROR_SUCCESS) {
+    std::move(completed).Run(base::unexpected(HRESULT_FROM_WIN32(result)));
+    return;
+  }
+
+  std::move(completed).Run(state);
 }
 
 }  // namespace
@@ -192,48 +227,56 @@ bool IsRunningIsolated() {
 
 void SetIsolationState(
     IsolationState state,
+    PrefService* local_state,
     base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
         completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::optional<base::expected<IsolationState, HRESULT>> return_value;
-
-  absl::Cleanup fire_callback = [&return_value,
-                                 callback = std::move(completed)]() mutable {
-    // Make sure the return value has been set.
-    CHECK(return_value.has_value());
+  if (!install_static::IsSystemInstall()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback), *std::move(return_value)));
-  };
-
-  if (!install_static::IsSystemInstall()) {
-    return_value.emplace(base::unexpected(E_NOTIMPL));
+        base::BindOnce(std::move(completed), base::unexpected(E_NOTIMPL)));
     return;
   }
 
-  auto regkey = GetIsolatedBrowserRegistryKey(KEY_READ | KEY_WRITE);
-  if (!regkey.has_value()) {
-    return_value.emplace(base::unexpected(HRESULT_FROM_WIN32(regkey.error())));
-    return;
+  // Switching from isolated to non-isolated requires re-encrypting the
+  // app-bound key into a non-isolated state.
+  if (IsIsolationEnabled() && state == IsolationState::kIsolationDisabled) {
+    // Force downgrade to PROTECTION_PATH_VALIDATION, which is not bound to the
+    // isolation state of the browser.
+    auto provider = std::make_unique<
+        os_crypt_async::AppBoundEncryptionProviderWin>(
+        local_state,
+        /*force_protection_level=*/ProtectionLevel::PROTECTION_PATH_VALIDATION);
+
+    // Obtaining the key triggers re-encryption of the stored encrypted key. If
+    // there is no previously encrypted key, then there's nothing to do - it
+    // will be stored encrypted correctly after restart.
+    if (provider->IsKeyStored()) {
+      provider->GetKey(base::BindOnce(
+          [](std::unique_ptr<os_crypt_async::AppBoundEncryptionProviderWin>
+                 provider,
+             base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
+                 completed,
+             IsolationState state, const std::string& tag,
+             base::expected<os_crypt_async::Encryptor::Key,
+                            os_crypt_async::KeyProvider::KeyError> result) {
+            if (!result.has_value()) {
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(completed),
+                                            base::unexpected(E_FAIL)));
+              return;
+            }
+            CompleteRegistryPersistence(state, std::move(completed));
+          },
+          std::move(provider), std::move(completed), state));
+      return;
+    }
   }
 
-  LONG result = ERROR_SUCCESS;
-  if (state == IsolationState::kIsolationDisabled) {
-    result = regkey->DeleteValue(kIsolationStateValue);
-  } else {
-    result =
-        regkey->WriteValue(kIsolationStateValue, static_cast<DWORD>(state));
-  }
-
-  if (result != ERROR_SUCCESS) {
-    return_value.emplace(base::unexpected(HRESULT_FROM_WIN32(result)));
-    return;
-  }
-
-  // TODO(crbug.com/433545123): Migrate any encrypted/secured data to/from
-  // isolated environment here.
-  return_value.emplace(state);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&CompleteRegistryPersistence, state,
+                                std::move(completed)));
 }
 
 }  // namespace chrome

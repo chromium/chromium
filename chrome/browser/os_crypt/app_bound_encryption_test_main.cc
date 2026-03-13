@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
@@ -31,6 +32,17 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
 
   auto in_file =
       cmd_line.GetSwitchValuePath(switches::kAppBoundTestInputFilename);
+  ProtectionLevel protection_level = ProtectionLevel::PROTECTION_MAX;
+  CHECK(cmd_line.HasSwitch(switches::kAppBoundTestProtectionLevel));
+
+  {
+    unsigned int cmd_line_protection;
+    CHECK(base::StringToUint(
+        cmd_line.GetSwitchValueASCII(switches::kAppBoundTestProtectionLevel),
+        &cmd_line_protection));
+    CHECK_LT(cmd_line_protection, ProtectionLevel::PROTECTION_MAX);
+    protection_level = static_cast<ProtectionLevel>(cmd_line_protection);
+  }
   CHECK(!in_file.empty()) << "Input file must be specified.";
   std::string input_data;
   CHECK(base::ReadFileToString(in_file, &input_data))
@@ -46,14 +58,21 @@ HRESULT ExecuteTest(const base::CommandLine& cmd_line) {
 
   if (cmd_line.HasSwitch(switches::kAppBoundTestModeEncrypt)) {
     input_data.insert(0, kTestHeader);
-    hr = EncryptAppBoundString(ProtectionLevel::PROTECTION_PATH_VALIDATION,
-                               input_data, output_data, last_error);
+    hr = EncryptAppBoundString(protection_level, input_data, output_data,
+                               last_error);
   } else if (cmd_line.HasSwitch(switches::kAppBoundTestModeDecrypt)) {
     std::optional<std::string> maybe_new_ciphertext;
-    hr = DecryptAppBoundString(input_data, output_data,
-                               ProtectionLevel::PROTECTION_PATH_VALIDATION,
+    hr = DecryptAppBoundString(input_data, output_data, protection_level,
                                maybe_new_ciphertext, last_error);
     if (SUCCEEDED(hr)) {
+      if (maybe_new_ciphertext &&
+          cmd_line.HasSwitch(
+              switches::kAppBoundTestReencryptionOutputFilename)) {
+        CHECK(base::WriteFile(
+            cmd_line.GetSwitchValuePath(
+                switches::kAppBoundTestReencryptionOutputFilename),
+            *maybe_new_ciphertext));
+      }
       CHECK_EQ(output_data.compare(0, kTestHeader.length(), kTestHeader), 0);
       output_data.erase(0, kTestHeader.length());
     }

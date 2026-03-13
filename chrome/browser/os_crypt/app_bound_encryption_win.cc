@@ -42,7 +42,8 @@ ProtectionLevel AddFlags(ProtectionLevel protection_level,
   // Check protection_level fits into 8-bits.
   CHECK_EQ(protection_level, protection_level & 0xFF);
 
-  // Flag value addition goes here. Currently no flags are supported.
+  // Flag value addition goes here. Currently no flags sent to service are
+  // supported.
   uint32_t flag_value = 0;
 
   // Double check flags fits into 24-bits. This is checked elsewhere too by
@@ -164,6 +165,10 @@ HRESULT EncryptAppBoundString(ProtectionLevel protection_level,
                               std::string& ciphertext,
                               DWORD& last_error,
                               elevation_service::EncryptFlags* flags) {
+  elevation_service::EncryptFlags default_flags = {};
+  if (!flags) {
+    flags = &default_flags;
+  }
   if (g_overrides_for_testing) {
     return g_overrides_for_testing->EncryptAppBoundString(
         protection_level, plaintext, ciphertext, last_error, flags);
@@ -191,9 +196,7 @@ HRESULT EncryptAppBoundString(ProtectionLevel protection_level,
                        plaintext.data(), plaintext.length()));
 
   base::win::ScopedBstr encrypted_data;
-  if (flags) {
-    protection_level = AddFlags(protection_level, *flags);
-  }
+  protection_level = AddFlags(protection_level, *flags);
   hr = elevator->EncryptData(protection_level, plaintext_data.Get(),
                              encrypted_data.Receive(), &last_error);
   if (FAILED(hr))
@@ -213,6 +216,11 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::optional<std::string>& new_ciphertext,
                               DWORD& last_error,
                               elevation_service::EncryptFlags* flags) {
+  elevation_service::EncryptFlags default_flags = {};
+  if (!flags) {
+    flags = &default_flags;
+  }
+
   if (g_overrides_for_testing) {
     return g_overrides_for_testing->DecryptAppBoundString(
         ciphertext, plaintext, protection_level, new_ciphertext, last_error,
@@ -251,12 +259,11 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
   new_ciphertext = std::nullopt;
 
   if (base::FeatureList::IsEnabled(features::kAppBoundDataReencrypt) &&
-      hr == elevation_service::Elevator::kSuccessShouldReencrypt) {
+      (hr == elevation_service::Elevator::kSuccessShouldReencrypt ||
+       flags->force_reencrypt)) {
     DWORD encrypt_last_error;
     base::win::ScopedBstr reencrypted_data;
-    if (flags) {
-      protection_level = AddFlags(protection_level, *flags);
-    }
+    protection_level = AddFlags(protection_level, *flags);
     HRESULT encrypt_hr =
         elevator->EncryptData(protection_level, plaintext_data.Get(),
                               reencrypted_data.Receive(), &encrypt_last_error);

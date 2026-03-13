@@ -11,19 +11,6 @@
 
 namespace os_crypt {
 
-namespace switches {
-
-// Encrypt the data in input-filename and place the result in output-filename.
-const char kAppBoundTestModeEncrypt[] = "encrypt";
-// Decrypt the data in input-filename and place the result in output-filename.
-const char kAppBoundTestModeDecrypt[] = "decrypt";
-// The input file for encryption or decryption.
-const char kAppBoundTestInputFilename[] = "input-filename";
-// The output file for encryption or decryption.
-const char kAppBoundTestOutputFilename[] = "output-filename";
-
-}  // namespace switches
-
 FakeInstallDetails::FakeInstallDetails(bool use_old_elevator_interface)
     : constants_(install_static::kInstallModes[0]) {
   // AppGuid determines registry locations, so use a test one.

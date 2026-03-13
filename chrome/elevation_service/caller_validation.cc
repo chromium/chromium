@@ -23,9 +23,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/version.h"
+#include "base/win/access_token.h"
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/elevation_service/elevator.h"
+#include "chrome/installer/util/isolation_support.h"
 
 namespace elevation_service {
 
@@ -158,33 +161,65 @@ HRESULT ValidatePath(const base::Process& process,
   return elevation_service::Elevator::kValidationDidNotPass;
 }
 
+bool IsProcessIsolated(const base::Process& process) {
+  auto process_token = base::win::AccessToken::FromProcess(process.Handle());
+
+  if (!process_token) {
+    return false;
+  }
+
+  auto sa = process_token->GetSecurityAttribute(
+      installer::GetIsolationAttributeName());
+  // The value varies by channel, but existence of the SA means the current
+  // process is isolated.
+  if (sa.has_value()) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 base::expected<std::vector<uint8_t>, HRESULT> GenerateValidationData(
     ProtectionLevel level,
     const base::Process& process) {
+  const auto process_path = GetProcessExecutablePath(process);
+
   switch (level) {
-    case ProtectionLevel::PROTECTION_NONE:
-      return std::vector<uint8_t>{ProtectionLevel::PROTECTION_NONE};
-    case ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD:
+    case PROTECTION_NONE:
+      return std::vector<uint8_t>{PROTECTION_NONE};
+    case PROTECTION_PATH_VALIDATION_OLD:
       return base::unexpected(
           elevation_service::Elevator::kErrorUnsupportedProtectionLevel);
-    case ProtectionLevel::PROTECTION_PATH_VALIDATION: {
-      const auto process_path = GetProcessExecutablePath(process);
+    case PROTECTION_PATH_VALIDATION: {
       if (!process_path.has_value()) {
         return base::unexpected(
             elevation_service::Elevator::kErrorCouldNotObtainPath);
       }
-      auto path_validation_data = GeneratePathValidationData(*process_path);
-      if (path_validation_data.has_value()) {
-        path_validation_data->insert(
-            path_validation_data->cbegin(),
-            ProtectionLevel::PROTECTION_PATH_VALIDATION);
-        return *path_validation_data;
-      }
-      return base::unexpected(path_validation_data.error());
+
+      ASSIGN_OR_RETURN(auto path_validation_data,
+                       GeneratePathValidationData(*process_path));
+      path_validation_data.insert(path_validation_data.cbegin(),
+                                  ProtectionLevel::PROTECTION_PATH_VALIDATION);
+      return path_validation_data;
     }
-    case ProtectionLevel::PROTECTION_MAX:
+    case PROTECTION_PATH_VALIDATION_WITH_ISOLATION: {
+      if (!process_path.has_value()) {
+        return base::unexpected(
+            elevation_service::Elevator::kErrorCouldNotObtainPath);
+      }
+
+      ASSIGN_OR_RETURN(auto validation_data,
+                       GeneratePathValidationData(*process_path));
+      const auto isolated = IsProcessIsolated(process);
+
+      validation_data.insert(
+          validation_data.cbegin(),
+          {PROTECTION_PATH_VALIDATION_WITH_ISOLATION, isolated});
+
+      return validation_data;
+    }
+    case PROTECTION_MAX:
       return base::unexpected(
           elevation_service::Elevator::kErrorUnsupportedProtectionLevel);
   }
@@ -198,18 +233,51 @@ HRESULT ValidateData(const base::Process& process,
 
   ProtectionLevel level = static_cast<ProtectionLevel>(validation_data[0]);
 
-  if (level >= ProtectionLevel::PROTECTION_MAX) {
+  if (level >= PROTECTION_MAX) {
     return E_INVALIDARG;
   }
 
   switch (level) {
-    case ProtectionLevel::PROTECTION_NONE:
+    case PROTECTION_NONE:
       // No validation always returns true.
       return S_OK;
-    case ProtectionLevel::PROTECTION_PATH_VALIDATION_OLD:
-    case ProtectionLevel::PROTECTION_PATH_VALIDATION:
-      return ValidatePath(process, validation_data.subspan<1>());
-    case ProtectionLevel::PROTECTION_MAX:
+    case PROTECTION_PATH_VALIDATION_OLD:
+    case PROTECTION_PATH_VALIDATION: {
+      const HRESULT path_validation_state =
+          ValidatePath(process, validation_data.subspan<1>());
+      if (FAILED(path_validation_state)) {
+        return path_validation_state;
+      }
+      // If basic path validation is being used, but the process is isolated,
+      // hint to the caller that they should upgrade to
+      // PROTECTION_PATH_VALIDATION_WITH_ISOLATION, as it's more secure.
+      return IsProcessIsolated(process)
+                 ? elevation_service::Elevator::kSuccessShouldReencrypt
+                 : path_validation_state;
+    }
+    case PROTECTION_PATH_VALIDATION_WITH_ISOLATION: {
+      if (validation_data.size() < 2) {
+        return E_INVALIDARG;
+      }
+      // Format is {ProtectionLevel, isolation state, path validation data}.
+      const HRESULT path_validation_state =
+          ValidatePath(process, validation_data.subspan<2>());
+      if (FAILED(path_validation_state)) {
+        return path_validation_state;
+      }
+      const bool was_isolated = validation_data[1];
+      const bool is_isolated = IsProcessIsolated(process);
+      if (was_isolated && !is_isolated) {
+        return elevation_service::Elevator::kIsolationStateInvalid;
+      }
+      // If the process was not isolated before, and it's now isolated, then the
+      // data should be re-encrypted to bind it to the isolated state.
+      if (is_isolated && !was_isolated) {
+        return elevation_service::Elevator::kSuccessShouldReencrypt;
+      }
+      return path_validation_state;
+    }
+    case PROTECTION_MAX:
       return E_INVALIDARG;
   }
 }

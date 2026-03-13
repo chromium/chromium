@@ -41,10 +41,12 @@ source_set("isolated_browser_support") {
 
   deps = [
     "//base",
+    "//chrome/browser/os_crypt",
     "//chrome/common:non_code_constants",
     "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:isolation_support",
+    "//components/os_crypt/async/browser:key_provider_interface",
     "//content/public/browser",
   ]
 }

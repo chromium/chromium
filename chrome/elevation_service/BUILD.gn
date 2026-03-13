@@ -63,6 +63,7 @@ source_set("lib") {
     "//chrome/common:non_code_constants",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:constants",
+    "//chrome/installer/util:isolation_support",
     "//chrome/windows_services/service_program:common",
     "//components/crx_file",
     "//content/public/common:static_switches",

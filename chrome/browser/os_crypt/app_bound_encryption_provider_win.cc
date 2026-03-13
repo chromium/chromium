@@ -32,20 +32,6 @@ namespace os_crypt_async {
 
 namespace {
 
-// Pref name for the encrypted key managed by app-bound encryption.
-constexpr char kEncryptedKeyPrefName[] = "os_crypt.app_bound_encrypted_key";
-
-// Key prefix for a key encrypted with app-bound Encryption. This is used to
-// validate that the encrypted key data retrieved from the pref is valid.
-constexpr uint8_t kCryptAppBoundKeyPrefix[] = {'A', 'P', 'P', 'B'};
-
-// Tag for data encrypted with app-bound encryption key. This is used by
-// OSCryptAsync to identify that data has been encrypted with this key.
-constexpr char kAppBoundDataPrefix[] = "v20";
-
-constexpr ProtectionLevel kCurrentProtectionLevel =
-    ProtectionLevel::PROTECTION_PATH_VALIDATION;
-
 // Determines whether or not a particular `error` and `last_error` pair is which
 // type of `KeyError`. Returns std::nullopt if it has no opinion.
 std::optional<KeyProvider::KeyError> DetermineErrorType(HRESULT error,
@@ -72,16 +58,25 @@ std::optional<KeyProvider::KeyError> DetermineErrorType(HRESULT error,
   return std::nullopt;
 }
 
+ProtectionLevel GetCurrentProtectionLevel() {
+  return base::FeatureList::IsEnabled(features::kEncryptWithIsolatedState)
+             ? PROTECTION_PATH_VALIDATION_WITH_ISOLATION
+             : PROTECTION_PATH_VALIDATION;
+}
+
 }  // namespace
 
 namespace features {
 BASE_FEATURE(kRegenerateKeyForCatastrophicFailures,
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEncryptWithIsolatedState, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 AppBoundEncryptionProviderWin::AppBoundEncryptionProviderWin(
-    PrefService* local_state)
+    PrefService* local_state,
+    std::optional<ProtectionLevel> force_protection_level)
     : local_state_(local_state),
+      force_protection_level_(force_protection_level),
       com_worker_(base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
       support_level_(
           os_crypt::GetAppBoundEncryptionSupportLevel(local_state_)) {}
@@ -90,15 +85,17 @@ AppBoundEncryptionProviderWin::~AppBoundEncryptionProviderWin() = default;
 
 class AppBoundEncryptionProviderWin::COMWorker {
  public:
-  OptionalReadOnlyKeyData EncryptKey(ReadOnlyKeyData& decrypted_key) {
+  OptionalReadOnlyKeyData EncryptKey(
+      ReadOnlyKeyData& decrypted_key,
+      std::optional<ProtectionLevel> force_encrypt_to_protection_level) {
     std::string plaintext_string(decrypted_key.begin(), decrypted_key.end());
     std::string ciphertext;
     DWORD last_error;
 
     elevation_service::EncryptFlags flags;
-    HRESULT res = os_crypt::EncryptAppBoundString(kCurrentProtectionLevel,
-                                                  plaintext_string, ciphertext,
-                                                  last_error, &flags);
+    HRESULT res = os_crypt::EncryptAppBoundString(
+        force_encrypt_to_protection_level.value_or(GetCurrentProtectionLevel()),
+        plaintext_string, ciphertext, last_error, &flags);
 
     base::UmaHistogramSparse("OSCrypt.AppBoundProvider.Encrypt.ResultCode",
                              res);
@@ -117,15 +114,20 @@ class AppBoundEncryptionProviderWin::COMWorker {
 
   base::expected<std::pair<ReadWriteKeyData, OptionalReadOnlyKeyData>,
                  KeyProvider::KeyError>
-  DecryptKey(ReadOnlyKeyData& encrypted_key) {
+  DecryptKey(
+      ReadOnlyKeyData& encrypted_key,
+      std::optional<ProtectionLevel> force_reencrypt_to_protection_level) {
     DWORD last_error;
     std::string encrypted_key_string(encrypted_key.begin(),
                                      encrypted_key.end());
     std::string decrypted_key_string;
     std::optional<std::string> maybe_new_ciphertext;
-    elevation_service::EncryptFlags flags;
+    elevation_service::EncryptFlags flags{
+        .force_reencrypt = force_reencrypt_to_protection_level.has_value()};
     HRESULT res = os_crypt::DecryptAppBoundString(
-        encrypted_key_string, decrypted_key_string, kCurrentProtectionLevel,
+        encrypted_key_string, decrypted_key_string,
+        force_reencrypt_to_protection_level.value_or(
+            GetCurrentProtectionLevel()),
         maybe_new_ciphertext, last_error, &flags);
 
     base::UmaHistogramSparse("OSCrypt.AppBoundProvider.Decrypt.ResultCode",
@@ -164,7 +166,12 @@ class AppBoundEncryptionProviderWin::COMWorker {
 // static
 void AppBoundEncryptionProviderWin::RegisterLocalPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(kEncryptedKeyPrefName, std::string());
+  registry->RegisterStringPref(kAppBoundEncryptedKeyPrefName, std::string());
+}
+
+bool AppBoundEncryptionProviderWin::IsKeyStored() const {
+  const auto maybe_key = RetrieveEncryptedKey();
+  return maybe_key.has_value();
 }
 
 void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
@@ -199,7 +206,8 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   if (encrypted_key_data.has_value()) {
     // There is a key, perform the decryption on the background worker.
     com_worker_.AsyncCall(&AppBoundEncryptionProviderWin::COMWorker::DecryptKey)
-        .WithArgs(std::move(encrypted_key_data.value()))
+        .WithArgs(std::move(encrypted_key_data.value()),
+                  force_protection_level_)
         .Then(
             base::BindOnce(&AppBoundEncryptionProviderWin::StoreAndReplyWithKey,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -216,7 +224,7 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
     case KeyRetrievalStatus::kKeyDecodeFailure:
     case KeyRetrievalStatus::kInvalidKeyHeader:
     case KeyRetrievalStatus::kKeyTooShort:
-      local_state_->ClearPref(kEncryptedKeyPrefName);
+      local_state_->ClearPref(kAppBoundEncryptedKeyPrefName);
       break;
   }
 
@@ -244,7 +252,7 @@ void AppBoundEncryptionProviderWin::GenerateAndPersistNewKeyInternal(
   ReadWriteKeyData decrypted_key(random_key.cbegin(), random_key.cend());
   // Perform the encryption on the background worker.
   com_worker_.AsyncCall(&AppBoundEncryptionProviderWin::COMWorker::EncryptKey)
-      .WithArgs(std::move(random_key))
+      .WithArgs(std::move(random_key), force_protection_level_)
       .Then(base::BindOnce(&AppBoundEncryptionProviderWin::HandleEncryptedKey,
                            weak_factory_.GetWeakPtr(), std::move(decrypted_key),
                            std::move(callback)));
@@ -261,14 +269,14 @@ bool AppBoundEncryptionProviderWin::IsCompatibleWithOsCryptSync() {
 
 base::expected<AppBoundEncryptionProviderWin::ReadWriteKeyData,
                AppBoundEncryptionProviderWin::KeyRetrievalStatus>
-AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {
+AppBoundEncryptionProviderWin::RetrieveEncryptedKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!local_state_->HasPrefPath(kEncryptedKeyPrefName)) {
+  if (!local_state_->HasPrefPath(kAppBoundEncryptedKeyPrefName)) {
     return base::unexpected(KeyRetrievalStatus::kKeyNotFound);
   }
 
   const std::string base64_encrypted_key =
-      local_state_->GetString(kEncryptedKeyPrefName);
+      local_state_->GetString(kAppBoundEncryptedKeyPrefName);
 
   std::optional<ReadWriteKeyData> encrypted_key_with_header =
       base::Base64Decode(base64_encrypted_key);
@@ -309,7 +317,7 @@ void AppBoundEncryptionProviderWin::StoreKey(
       .copy_from_nonoverlapping(encrypted_key);
   std::string base64_key = base::Base64Encode(key);
   // Store key.
-  local_state_->SetString(kEncryptedKeyPrefName, base64_key);
+  local_state_->SetString(kAppBoundEncryptedKeyPrefName, base64_key);
 }
 
 void AppBoundEncryptionProviderWin::HandleEncryptedKey(

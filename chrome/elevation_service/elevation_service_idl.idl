@@ -15,8 +15,14 @@ typedef enum ProtectionLevel {
   // it. This should only be used for executables in trusted paths e.g.
   // C:\Program Files, otherwise anyone could pretend to be your executable.
   PROTECTION_PATH_VALIDATION = 2,
+  // The same as `PROTECTION_PATH_VALIDATION` except it also encloses into the
+  // path validation data whether or not the caller is running isolated. A
+  // non-isolated caller cannot decrypt data previously encrypted by an isolated
+  // caller, however an isolated caller is allowed to decrypt any data that
+  // meets the path validation criteria.
+  PROTECTION_PATH_VALIDATION_WITH_ISOLATION = 3,
   // Keep at the end.
-  PROTECTION_MAX = 3,
+  PROTECTION_MAX = 4,
 } ProtectionLevel;
 
 [

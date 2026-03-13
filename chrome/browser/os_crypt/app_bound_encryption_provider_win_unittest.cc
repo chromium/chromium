@@ -159,14 +159,13 @@ TEST_F(AppBoundEncryptionProviderTest, InvalidKeyRegenerated) {
   ON_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel)
       .WillByDefault(::testing::Return(SupportLevel::kSupported));
 
-  const char* kPrefName = "os_crypt.app_bound_encrypted_key";
-
   TestingPrefServiceSimple prefs;
   MockPrefChangeCallback pref_observer(&prefs);
   PrefChangeRegistrar registrar;
   base::HistogramTester histograms;
   registrar.Init(&prefs);
-  registrar.Add(kPrefName, pref_observer.GetCallback());
+  registrar.Add(os_crypt_async::kAppBoundEncryptedKeyPrefName,
+                pref_observer.GetCallback());
   os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(
       prefs.registry());
 
@@ -181,9 +180,10 @@ TEST_F(AppBoundEncryptionProviderTest, InvalidKeyRegenerated) {
 
   // base64 encoded "APPB" with a zero length key. This simulates the state
   // users are in for https://crbug.com/415979068.
-  prefs.SetString(kPrefName, "QVBQQg==");
+  prefs.SetString(os_crypt_async::kAppBoundEncryptedKeyPrefName, "QVBQQg==");
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*force_protection_level=*/std::nullopt);
     base::test::TestFuture<
         const std::string&,
         base::expected<os_crypt_async::Encryptor::Key,
@@ -191,11 +191,12 @@ TEST_F(AppBoundEncryptionProviderTest, InvalidKeyRegenerated) {
         future;
     GetKey(provider, future.GetCallback());
     auto [tag, key] = future.Take();
-    EXPECT_EQ(tag, "v20");
+    EXPECT_EQ(tag, os_crypt_async::kAppBoundDataPrefix);
     EXPECT_TRUE(key.has_value());
   }
 
-  const auto& pref = prefs.GetString(kPrefName);
+  const auto& pref =
+      prefs.GetString(os_crypt_async::kAppBoundEncryptedKeyPrefName);
   // Very basic extra tests: Check key length and that it's not a sequence of
   // nulls or poisoned memory.
   EXPECT_GT(pref.size(), os_crypt_async::Encryptor::Key::kAES256GCMKeySize);
@@ -216,13 +217,12 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   ON_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel)
       .WillByDefault(::testing::Return(SupportLevel::kSupported));
 
-  const char* kPrefName = "os_crypt.app_bound_encrypted_key";
-
   TestingPrefServiceSimple prefs;
   MockPrefChangeCallback pref_observer(&prefs);
   PrefChangeRegistrar registrar;
   registrar.Init(&prefs);
-  registrar.Add(kPrefName, pref_observer.GetCallback());
+  registrar.Add(os_crypt_async::kAppBoundEncryptedKeyPrefName,
+                pref_observer.GetCallback());
   // Part 1: Generate and store a new encrypted key into the prefs. The provider
   // should generate a random key, encrypt it with the app-bound mocks, then
   // persist the encrypted key to store.
@@ -238,7 +238,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   EXPECT_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel).Times(1);
   EXPECT_CALL(mock_app_bound, EncryptAppBoundString).Times(1);
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*force_protection_level=*/std::nullopt);
     base::test::TestFuture<
         const std::string&,
         base::expected<os_crypt_async::Encryptor::Key,
@@ -246,10 +247,11 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
         future;
     GetKey(provider, future.GetCallback());
     auto [tag, key] = future.Take();
-    EXPECT_EQ(tag, "v20");
+    EXPECT_EQ(tag, os_crypt_async::kAppBoundDataPrefix);
     ASSERT_TRUE(key.has_value());
     encryption_key.emplace(std::move(*key));
-    encrypted_key = prefs.GetString(kPrefName);
+    encrypted_key =
+        prefs.GetString(os_crypt_async::kAppBoundEncryptedKeyPrefName);
     EXPECT_FALSE(encrypted_key.empty());
   }
 
@@ -263,7 +265,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   EXPECT_CALL(mock_app_bound, GetAppBoundEncryptionSupportLevel).Times(1);
   EXPECT_CALL(mock_app_bound, DecryptAppBoundString).Times(1);
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*force_protection_level=*/std::nullopt);
     base::test::TestFuture<
         const std::string&,
         base::expected<os_crypt_async::Encryptor::Key,
@@ -275,7 +278,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
     // The key returned should be the same as before.
     EXPECT_EQ(*key, *encryption_key);
 
-    EXPECT_EQ(prefs.GetString(kPrefName), encrypted_key);
+    EXPECT_EQ(prefs.GetString(os_crypt_async::kAppBoundEncryptedKeyPrefName),
+              encrypted_key);
   }
 
   ::testing::Mock::VerifyAndClearExpectations(&mock_app_bound);
@@ -290,7 +294,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   EXPECT_CALL(pref_observer, OnPreferenceChanged).Times(0);
 
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*force_protection_level=*/std::nullopt);
     base::test::TestFuture<
         const std::string&,
         base::expected<os_crypt_async::Encryptor::Key,
@@ -305,7 +310,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
               key.error());
 
     // Pref is not modified or deleted.
-    EXPECT_EQ(prefs.GetString(kPrefName), encrypted_key);
+    EXPECT_EQ(prefs.GetString(os_crypt_async::kAppBoundEncryptedKeyPrefName),
+              encrypted_key);
   }
 
   ::testing::Mock::VerifyAndClearExpectations(&mock_app_bound);
@@ -324,7 +330,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   std::optional<os_crypt_async::Encryptor::Key> new_encryption_key;
   std::string new_encrypted_key;
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*force_protection_level=*/std::nullopt);
     base::test::TestFuture<
         const std::string&,
         base::expected<os_crypt_async::Encryptor::Key,
@@ -339,7 +346,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
     new_encryption_key.emplace(std::move(*key));
 
     // Pref is present, but different from before (as key was regenerated).
-    new_encrypted_key = prefs.GetString(kPrefName);
+    new_encrypted_key =
+        prefs.GetString(os_crypt_async::kAppBoundEncryptedKeyPrefName);
     EXPECT_FALSE(new_encrypted_key.empty());
     EXPECT_NE(new_encrypted_key, encrypted_key);
   }
@@ -354,7 +362,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   EXPECT_CALL(pref_observer, OnPreferenceChanged).Times(0);
 
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*force_protection_level=*/std::nullopt);
     base::test::TestFuture<
         const std::string&,
         base::expected<os_crypt_async::Encryptor::Key,
@@ -383,7 +392,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
     EXPECT_CALL(pref_observer, OnPreferenceChanged).Times(0);
 
     {
-      os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+      os_crypt_async::AppBoundEncryptionProviderWin provider(
+          &prefs, /*force_protection_level=*/std::nullopt);
       base::test::TestFuture<
           const std::string&,
           base::expected<os_crypt_async::Encryptor::Key,
@@ -398,7 +408,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
                 key.error());
 
       // Pref is not modified or deleted.
-      EXPECT_EQ(prefs.GetString(kPrefName), new_encrypted_key);
+      EXPECT_EQ(prefs.GetString(os_crypt_async::kAppBoundEncryptedKeyPrefName),
+                new_encrypted_key);
     }
   }
 
@@ -413,7 +424,8 @@ TEST_F(AppBoundEncryptionProviderTest, Basic) {
   EXPECT_CALL(pref_observer, OnPreferenceChanged).Times(0);
 
   {
-    os_crypt_async::AppBoundEncryptionProviderWin provider(&prefs);
+    os_crypt_async::AppBoundEncryptionProviderWin provider(
+        &prefs, /*force_protection_level=*/std::nullopt);
     base::test::TestFuture<
         const std::string&,
         base::expected<os_crypt_async::Encryptor::Key,

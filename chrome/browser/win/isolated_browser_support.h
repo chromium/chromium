@@ -14,6 +14,8 @@ namespace base {
 class CommandLine;
 }  // namespace base
 
+class PrefService;
+
 namespace chrome {
 
 // Attempt to launch an isolated browser process with the command line
@@ -38,13 +40,15 @@ enum class IsolationState {
   kMaxValue = kProcessIsolation,
 };
 
-// Sets the isolation state to `state`. Once the operation has been completed
-// successfully then the new isolation state is returned in the callback,
-// otherwise an HRESULT containing an error is returned. If successful, the new
-// state only applies on the next browser restart. Only call after browser
-// initialization has completed on the UI sequence.
+// Sets the isolation state to `state`. Re-encrypted prefs are written to
+// `local_state` if needed. Once the operation has been completed successfully
+// then the new isolation state is returned in the callback, otherwise an
+// HRESULT containing an error is returned. If successful, the new state only
+// applies on the next browser restart. Only call after browser initialization
+// has completed on the UI sequence.
 void SetIsolationState(
     IsolationState state,
+    PrefService* local_state,
     base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
         completed);
 
