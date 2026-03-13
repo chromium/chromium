@@ -299,10 +299,10 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // This is set based on the event modifiers. In scenarios like scrolling or
   // layout, the element that the cursor is over can change without the cursor
   // itself moving. In these cases, a "fake" mouse move may be dispatched (see
-  // MouseEventManager::RecomputeMouseHoverState) in order to apply hover etc.
-  // Such mouse events do not have the modifier set and hence, maintaining this
-  // additional state is necessary.
-  bool scrollbar_manipulation_in_progress_on_cc_thread_;
+  // MouseEventManager::RecomputeMouseHoverStateIfNeeded) in order to apply
+  // hover etc. Such mouse events do not have the modifier set and hence,
+  // maintaining this additional state is necessary.
+  bool scrollbar_manipulation_in_progress_on_cc_thread_ = false;
 
   gfx::Rect frame_rect_;
   WeakMember<const LayoutObject> style_source_;
@@ -311,7 +311,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // GestureScrollUpdate but hasn't yet updated the scroll position on main.
   // Scrollbar::MouseMoved needs this to calculate deltas during thumb drags.
   // In particular we often process two mousemoves in the same frame thanks to
-  // MouseEventManager::RecomputeMouseHoverState sending fake ones.
+  // MouseEventManager::RecomputeMouseHoverStateIfNeeded sending fake ones.
   ScrollOffset pending_injected_delta_;
 };
 

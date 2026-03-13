@@ -168,7 +168,6 @@ class CORE_EXPORT MouseEventManager final
   bool MouseDownMayStartDrag();
 
   void RecomputeMouseHoverStateIfNeeded();
-  void RecomputeMouseHoverState();
 
   void MarkHoverStateDirty();
   void ReportDragEnd();

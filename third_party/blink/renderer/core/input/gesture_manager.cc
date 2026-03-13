@@ -253,8 +253,8 @@ WebInputEventResult GestureManager::HandleGestureTap(
     // (if the user scrolls for example).
     //
     // TODO(crbug.com/368256331): When we've applied a tap-based hover state, we
-    // should actually suppress RecomputeMouseHoverState until the user moves
-    // the mouse or navigates away.
+    // should actually suppress RecomputeMouseHoverStateIfNeeded until the user
+    // moves the mouse or navigates away.
     mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
         current_hit_test.InnerPossiblyPseudoElement(),
         event_type_names::kMousemove, fake_mouse_move);

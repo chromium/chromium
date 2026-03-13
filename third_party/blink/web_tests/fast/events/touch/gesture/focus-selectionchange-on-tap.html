@@ -48,8 +48,8 @@ function doTap(targetNode, expectHandled) {
         }
 
         // Move mouse to target first to ensure we do not get a mousemove event
-        // to (0,0) from MouseEventManager::RecomputeMouseHoverState, which may
-        // arrive with unpredictable timing.
+        // to (0,0) from MouseEventManager::RecomputeMouseHoverStateIfNeeded,
+        // which may arrive with unpredictable timing.
         debug('Sending MouseMove');
         eventSender.mouseMoveTo(targetX, targetY);
         debug('Sending GestureTapDown');

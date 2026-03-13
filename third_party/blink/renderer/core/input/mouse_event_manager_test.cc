@@ -51,9 +51,9 @@ class MouseEventManagerTest : public SimTest {
 TEST_F(MouseEventManagerTest, HoverEffectAfterNav) {
   LocalFrame* frame = MainFrame().GetFrame();
 
-  // With this feature enabled, RecomputeMouseHoverState() fires synthetic
-  // mouse events for inactive pages. The SetFocused call remains as a fallback
-  // in case the feature needs to be disabled.
+  // With this feature enabled, RecomputeMouseHoverStateIfNeeded() fires
+  // synthetic mouse events for inactive pages. The SetFocused call remains as
+  // a fallback in case the feature needs to be disabled.
   // See crbug.com/385474535 for more details.
   if (!RuntimeEnabledFeatures::SyntheticMouseHoverOverInactivePageEnabled()) {
     GetPage().SetFocused(true);

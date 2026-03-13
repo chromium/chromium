@@ -372,14 +372,14 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
 }
 
 void MouseEventManager::RecomputeMouseHoverStateIfNeeded() {
-  // |RecomputeMouseHoverState| may set |hover_state_dirty_| to be true.
-  if (HoverStateDirty()) {
-    hover_state_dirty_ = false;
-    RecomputeMouseHoverState();
+  if (!HoverStateDirty()) {
+    return;
   }
-}
+  // JS listeners for this fake mouse event could force a re-layout, which calls
+  // `PerformPostLayoutTasks()` on completion, which unconditionally calls
+  // `MarkHoverStateDirty()` and sets `hover_state_dirty_` back to to `true`.
+  hover_state_dirty_ = false;
 
-void MouseEventManager::RecomputeMouseHoverState() {
   if (is_mouse_position_unknown_)
     return;
 
