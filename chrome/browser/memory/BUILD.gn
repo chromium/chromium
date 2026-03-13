@@ -1,0 +1,100 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("memory") {
+  public = [
+    "chrome_browser_main_extra_parts_memory.h",
+    "enterprise_memory_limit_evaluator.h",
+    "enterprise_memory_limit_pref_observer.h",
+  ]
+
+  if (!is_android) {
+    public += [ "oom_memory_details.h" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//chrome/browser:main_extra_parts",
+    "//components/memory_pressure",
+    "//components/performance_manager",
+    "//components/prefs",
+  ]
+
+  if (is_chromeos) {
+    public += [
+      "memory_kills_monitor.h",
+      "oom_kills_monitor.h",
+    ]
+    public_deps += [ "//components/metrics" ]
+  }
+
+  if (is_chromeos_ash) {
+    public_deps += [ "//chromeos/ash/components/login/login_state" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_browser_main_extra_parts_memory.cc",
+    "enterprise_memory_limit_evaluator.cc",
+    "enterprise_memory_limit_pref_observer.cc",
+  ]
+
+  if (!is_android) {
+    sources += [ "oom_memory_details.cc" ]
+  }
+
+  deps = [
+    ":memory",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//components/heap_profiling/in_process",
+    "//components/heap_profiling/in_process:mojom",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+
+  if (is_chromeos) {
+    sources += [
+      "memory_kills_histogram.h",
+      "memory_kills_monitor.cc",
+      "oom_kills_monitor.cc",
+    ]
+  }
+  if (is_chromeos_ash) {
+    deps += [
+      "//chromeos/ash/components/dbus/resourced",
+      "//chromeos/ash/components/memory",
+      "//dbus",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "enterprise_memory_limit_evaluator_unittest.cc" ]
+
+  if (is_chromeos) {
+    sources += [
+      "memory_kills_monitor_unittest.cc",
+      "oom_kills_monitor_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":impl",
+    ":memory",
+    "//base",
+    "//base/test:test_support",
+    "//components/memory_pressure",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

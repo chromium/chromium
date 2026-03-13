@@ -18,6 +18,7 @@ static_library("memory_pressure") {
 
   deps = [
     "//base",
+    "//chrome/browser/memory",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/resourced",
     "//chromeos/ash/experiences/arc",
@@ -39,6 +40,7 @@ source_set("unit_tests") {
   deps = [
     ":memory_pressure",
     "//base",
+    "//chrome/browser/memory",
     "//chromeos/ash/experiences/arc/mojom",
     "//content/public/common",
     "//content/test:test_support",

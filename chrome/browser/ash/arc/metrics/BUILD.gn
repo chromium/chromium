@@ -20,6 +20,7 @@ static_library("metrics") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/memory",
     "//chromeos/ash/experiences/arc",
     "//components/keyed_service/core",
   ]

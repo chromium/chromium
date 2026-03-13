@@ -16,6 +16,7 @@ static_library("main_parts") {
   public_deps = [
     "//base",
     "//chrome/browser/ash/external_metrics",
+    "//chrome/browser/memory",
     "//chromeos/ash/components/pcie_peripheral",
   ]
 
@@ -97,6 +98,7 @@ static_library("main_parts") {
     "//chrome/browser/chromeos/video_conference",
     "//chrome/browser/device_identity",
     "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/memory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
     "//chrome/browser/tracing",

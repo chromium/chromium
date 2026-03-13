@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "chrome/browser/memory_details.h"
+#include "chrome/browser/memory_details.h"  // nogncheck crbug.com/490408287
 
 namespace memory {
 
@@ -25,7 +25,7 @@ class OomMemoryDetails : public MemoryDetails {
   static void Log(const std::string& title);
 
  private:
-  OomMemoryDetails(const std::string& title);
+  explicit OomMemoryDetails(const std::string& title);
   ~OomMemoryDetails() override;
 
   // MemoryDetails overrides:

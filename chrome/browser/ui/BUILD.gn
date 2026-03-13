@@ -242,6 +242,7 @@ static_library("ui") {
     "//chrome/browser/feedback",
     "//chrome/browser/headless",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/memory",
     "//chrome/browser/search",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/dialogs",
@@ -761,6 +762,7 @@ static_library("ui") {
 
     # TODO(crbug.com/353284909): Remove this circular dependency.
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/memory",
 
     # TODO(crbug.com/360599255): Remove this circular dependency.
     # - chrome_popup_navigation_delegate.cc includes //c/b/ui/browser_navigator.h.

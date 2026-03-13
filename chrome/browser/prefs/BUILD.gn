@@ -74,6 +74,7 @@ source_set("impl") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/memory",
     "//chrome/browser/metrics",
     "//chrome/browser/permissions",
     "//chrome/browser/platform_experience:prefs",
