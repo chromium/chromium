@@ -419,6 +419,9 @@ class ExtensionsBrowserClient {
   // Returns true if activity logging is enabled for the given `context`.
   virtual bool IsActivityLoggingEnabled(content::BrowserContext* context);
 
+  // Returns true if telemetry logging is enabled for the given `context`.
+  virtual bool IsTelemetryLoggingEnabled(content::BrowserContext* context);
+
   // Retrives the embedder's notion of tab and window ID for a given
   // WebContents. May return -1 for either or both values if the embedder does
   // not implement any such concepts. This is used to support the WebRequest API

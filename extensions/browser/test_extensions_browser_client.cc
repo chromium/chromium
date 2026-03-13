@@ -320,4 +320,13 @@ std::string TestExtensionsBrowserClient::GetApplicationLocale() {
   return l10n_util::GetApplicationLocale(std::string());
 }
 
+bool TestExtensionsBrowserClient::IsTelemetryLoggingEnabled(
+    content::BrowserContext* context) {
+  return telemetry_logging_enabled_;
+}
+
+void TestExtensionsBrowserClient::SetTelemetryLoggingEnabled(bool enabled) {
+  telemetry_logging_enabled_ = enabled;
+}
+
 }  // namespace extensions

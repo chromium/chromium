@@ -331,6 +331,12 @@ void RendererStartupHelper::InitializeProcess(
     renderer->SetActivityLoggingEnabled(activity_logging_enabled);
   }
 
+  bool telemetry_logging_enabled =
+      client->IsTelemetryLoggingEnabled(process->GetBrowserContext());
+  if (telemetry_logging_enabled) {
+    renderer->SetPolicyActivityLoggingEnabled(telemetry_logging_enabled);
+  }
+
   // extensions need to know the developer mode value for api restrictions.
   renderer->SetDeveloperMode(
       GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_)));

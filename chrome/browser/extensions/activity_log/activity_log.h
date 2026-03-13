@@ -53,6 +53,7 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // observer: the activityLogPrivate API.
   class Observer {
    public:
+    virtual ~Observer() = default;
     virtual void OnExtensionActivity(scoped_refptr<Action> activity) = 0;
   };
 
@@ -79,6 +80,21 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // ActivityLog extension is registered for an event.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
+
+  // Controls enterprise telemetry logging.
+  // If enabled, all active renderers are notified to send telemetry
+  // events. The `callback` is stored and invoked for each extension
+  // activity received from a renderer.
+  // If disabled, all active renderers are notified to stop sending
+  // telemetry events and the stored `callback` is cleared.
+  // Note that the `callback` parameter is ignored when `enabled` is
+  // false.
+  using TelemetryCallback =
+      base::RepeatingCallback<void(scoped_refptr<Action>)>;
+  void SetTelemetryLoggingEnabled(bool enabled, TelemetryCallback callback);
+
+  // Returns true if the telemetry service is currently active.
+  bool IsTelemetryLoggingActive() const;
 
   // Logs an extension action: passes it to any installed policy to be logged
   // to the database, to any observers, and logs to the console if in testing
@@ -235,6 +251,12 @@ class ActivityLog : public BrowserContextKeyedAPI,
   // While inactive, the activity log will not store any actions for performance
   // reasons.
   bool is_active_;
+
+  // A callback that is notified of extension activity even if the
+  // standard activity log is inactive.
+  TelemetryCallback telemetry_callback_;
+
+  void NotifyRenderersOfTelemetryLogging();
 
   base::WeakPtrFactory<ActivityLog> weak_factory_{this};
 

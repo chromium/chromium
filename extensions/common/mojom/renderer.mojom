@@ -89,6 +89,9 @@ interface Renderer {
   // otherwise.
   SetActivityLoggingEnabled(bool enabled);
 
+  // Tells the renderer whether or not policy activity logging is enabled.
+  SetPolicyActivityLoggingEnabled(bool enabled);
+
   // Notifies the renderer that extensions were loaded in the browser.
   LoadExtensions(array<ExtensionLoadedParams> params);
 

@@ -195,6 +195,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   std::unique_ptr<ScopedBrowserContextKeepAlive> CreateCrxInstallerKeepAlive(
       content::BrowserContext* context) override;
   bool IsActivityLoggingEnabled(content::BrowserContext* context) override;
+  bool IsTelemetryLoggingEnabled(content::BrowserContext* context) override;
   void GetTabAndWindowIdForWebContents(content::WebContents* web_contents,
                                        int* tab_id,
                                        int* window_id) override;

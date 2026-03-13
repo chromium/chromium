@@ -46,6 +46,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/hashed_extension_id.h"
@@ -682,6 +683,31 @@ void ActivityLog::RemoveObserver(ActivityLog::Observer* observer) {
   observers_->RemoveObserver(observer);
 }
 
+void ActivityLog::SetTelemetryLoggingEnabled(bool enabled,
+                                             TelemetryCallback callback) {
+  if (enabled) {
+    CHECK(!callback.is_null());
+  }
+
+  bool was_active = IsTelemetryLoggingActive();
+
+  if (enabled &&
+      base::FeatureList::IsEnabled(
+          extensions_features::kEnterpriseExtensionDOMActivityTelemetry)) {
+    telemetry_callback_ = std::move(callback);
+  } else {
+    telemetry_callback_.Reset();
+  }
+
+  if (was_active != IsTelemetryLoggingActive()) {
+    NotifyRenderersOfTelemetryLogging();
+  }
+}
+
+bool ActivityLog::IsTelemetryLoggingActive() const {
+  return !telemetry_callback_.is_null();
+}
+
 // static
 void ActivityLog::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -711,6 +737,9 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
     database_policy_->ProcessAction(action);
   if (has_listeners_)
     observers_->Notify(FROM_HERE, &Observer::OnExtensionActivity, action);
+  if (!telemetry_callback_.is_null()) {
+    telemetry_callback_.Run(action);
+  }
   if (testing_mode_)
     VLOG(1) << action->PrintForDebug();
 }
@@ -718,7 +747,7 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
 bool ActivityLog::ShouldLog(const std::string& extension_id) const {
   // Do not log for activities from the browser/WebUI, which is indicated by an
   // empty extension ID.
-  return is_active_ && !extension_id.empty() &&
+  return (is_active_ || IsTelemetryLoggingActive()) && !extension_id.empty() &&
          !IsExtensionAllowlisted(extension_id);
 }
 
@@ -870,6 +899,29 @@ void ActivityLog::OnExtensionSystemReady() {
   if (active_consumers_ != cached_consumer_count_) {
     CheckActive(false);
     UpdateCachedConsumerCount();
+  }
+}
+
+void ActivityLog::NotifyRenderersOfTelemetryLogging() {
+  for (content::RenderProcessHost::iterator iter(
+           content::RenderProcessHost::AllHostsIterator());
+       !iter.IsAtEnd(); iter.Advance()) {
+    content::RenderProcessHost* host = iter.GetCurrentValue();
+    if (host->IsInitializedAndNotDead()) {
+      Profile* host_profile =
+          Profile::FromBrowserContext(host->GetBrowserContext());
+      // Don't gather telemetry from incognito profiles.
+      if (!host_profile->IsOffTheRecord() &&
+          profile_->IsSameOrParent(host_profile)) {
+        mojom::Renderer* renderer =
+            RendererStartupHelperFactory::GetForBrowserContext(
+                host->GetBrowserContext())
+                ->GetRenderer(host);
+        if (renderer) {
+          renderer->SetPolicyActivityLoggingEnabled(IsTelemetryLoggingActive());
+        }
+      }
+    }
   }
 }
 

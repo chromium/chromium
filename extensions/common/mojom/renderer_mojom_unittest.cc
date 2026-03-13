@@ -59,6 +59,7 @@ class TestRendererImpl : public mojom::Renderer {
 
   // mojom::Renderer (other methods):
   void SetActivityLoggingEnabled(bool enabled) override {}
+  void SetPolicyActivityLoggingEnabled(bool enabled) override {}
   void LoadExtensions(
       std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override {
   }

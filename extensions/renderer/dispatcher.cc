@@ -1361,13 +1361,26 @@ void Dispatcher::UpdatePermissions(const ExtensionId& extension_id,
 void Dispatcher::SetActivityLoggingEnabled(bool enabled) {
   activity_logging_enabled_ = enabled;
   if (enabled) {
-    for (const ExtensionId& id : active_extension_ids_) {
-      DOMActivityLogger::AttachToWorldIfEnabled(DOMActivityLogger::kMainWorldId,
-                                                id);
-    }
+    UpdateDOMActivityLogging();
   }
+  // TODO(crbug.com/490650360): Remove these setter calls as the activity
+  // logging state no longer needs to be managed in these objects.
   script_injection_manager_->set_activity_logging_enabled(enabled);
   user_script_set_manager_->set_activity_logging_enabled(enabled);
+}
+
+void Dispatcher::SetPolicyActivityLoggingEnabled(bool enabled) {
+  ExtensionsRendererClient::Get()->SetPolicyActivityLoggingEnabled(enabled);
+  if (enabled) {
+    UpdateDOMActivityLogging();
+  }
+}
+
+void Dispatcher::UpdateDOMActivityLogging() {
+  for (const ExtensionId& id : active_extension_ids_) {
+    DOMActivityLogger::AttachToWorldIfEnabled(DOMActivityLogger::kMainWorldId,
+                                              id);
+  }
 }
 
 void Dispatcher::OnUserScriptsUpdated(const mojom::HostID& changed_host) {

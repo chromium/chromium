@@ -172,6 +172,9 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
   std::string GetApplicationLocale() override;
 
+  bool IsTelemetryLoggingEnabled(content::BrowserContext* context) override;
+  void SetTelemetryLoggingEnabled(bool enabled);
+
   ExtensionSystemProvider* extension_system_factory() {
     return extension_system_factory_;
   }
@@ -201,6 +204,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       set_pref_service_for_context_;
 
   std::unique_ptr<ExtensionCache> extension_cache_;
+
+  bool telemetry_logging_enabled_ = false;
 
   base::RepeatingCallback<update_client::UpdateClient*(void)>
       update_client_factory_;

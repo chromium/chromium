@@ -94,6 +94,11 @@ bool ExtensionsBrowserClient::IsActivityLoggingEnabled(
   return false;
 }
 
+bool ExtensionsBrowserClient::IsTelemetryLoggingEnabled(
+    content::BrowserContext* context) {
+  return false;
+}
+
 void ExtensionsBrowserClient::GetTabAndWindowIdForWebContents(
     content::WebContents* web_contents,
     int* tab_id,

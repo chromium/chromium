@@ -82,6 +82,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
     activated_extensions_.push_back(extension_id);
   }
   void SetActivityLoggingEnabled(bool enabled) override {}
+  void SetPolicyActivityLoggingEnabled(bool enabled) override {}
 
   void LoadExtensions(
       std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override {
