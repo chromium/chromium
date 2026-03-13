@@ -817,11 +817,13 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
 void StoreMetricsReporter::OnGetPasswordStoreResultsOrErrorFrom(
     PasswordStoreInterface* store,
     LoginsResultOrError results_or_error) {
+  const bool has_error =
+      std::holds_alternative<PasswordStoreBackendError>(results_or_error);
   PasswordStoreResults password_store_results{
       password_manager::ConvertPasswordToUniquePtr(
           password_manager::GetLoginsOrEmptyListOnFailure(
               std::move(results_or_error))),
-      std::holds_alternative<PasswordStoreBackendError>(results_or_error)};
+      has_error};
 
   ProcessPasswordResults(store, std::move(password_store_results));
 }
