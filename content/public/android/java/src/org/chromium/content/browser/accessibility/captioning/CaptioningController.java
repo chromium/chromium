@@ -4,32 +4,54 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** Sends notification when platform closed caption settings have changed. */
 @JNINamespace("content")
 @NullMarked
-public class CaptioningController implements SystemCaptioningBridge.SystemCaptioningBridgeListener {
+public class CaptioningController
+        implements SystemCaptioningBridge.SystemCaptioningBridgeListener, UserData {
+    private static final Class<CaptioningController> USER_DATA_KEY = CaptioningController.class;
+
     private final SystemCaptioningBridge mSystemCaptioningBridge;
     private long mNativeCaptioningController;
 
-    public CaptioningController(WebContents webContents) {
-        mSystemCaptioningBridge = CaptioningBridge.getInstance();
-        mNativeCaptioningController = CaptioningControllerJni.get().init(this, webContents);
+    /** Returns the CaptioningController for the given WebContents. */
+    public static CaptioningController fromWebContents(WebContents webContents) {
+        return assertNonNull(
+                webContents.getOrSetUserData(USER_DATA_KEY, CaptioningController::new));
     }
 
-    @SuppressWarnings("unused")
     @CalledByNative
-    private void onDestroy() {
-        mNativeCaptioningController = 0;
+    private static @Nullable CaptioningController getFromWebContents(
+            @JniType("content::WebContents*") WebContents webContents) {
+        if (webContents == null) return null;
+        return webContents.getOrSetUserData(USER_DATA_KEY, /* userDataFactory= */ null);
     }
 
-    @SuppressWarnings("unused")
+    private CaptioningController(WebContents webContents) {
+        mSystemCaptioningBridge = CaptioningBridge.getInstance();
+        mNativeCaptioningController = CaptioningControllerJni.get().init(webContents);
+    }
+
+    @Override
+    public void destroy() {
+        if (mNativeCaptioningController != 0) {
+            CaptioningControllerJni.get().destroy(mNativeCaptioningController);
+            mNativeCaptioningController = 0;
+        }
+    }
+
     @CalledByNative
     private void onRenderProcessChange() {
         // Immediately sync closed caption settings to the new render process.
@@ -62,7 +84,9 @@ public class CaptioningController implements SystemCaptioningBridge.SystemCaptio
 
     @NativeMethods
     interface Natives {
-        long init(CaptioningController self, WebContents webContents);
+        long init(@JniType("content::WebContents*") WebContents webContents);
+
+        void destroy(long nativeCaptioningController);
 
         void setTextTrackSettings(
                 long nativeCaptioningController,

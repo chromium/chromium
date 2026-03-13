@@ -30,17 +30,13 @@ std::string AddCSSImportant(std::string css_string) {
 
 }  // namespace
 
-CaptioningController::CaptioningController(JNIEnv* env,
-                                           const JavaRef<jobject>& obj,
-                                           WebContents* web_contents)
-    : WebContentsObserver(web_contents), java_ref_(env, obj) {}
+CaptioningController::CaptioningController(WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
 
-CaptioningController::~CaptioningController() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (!obj.is_null()) {
-    Java_CaptioningController_onDestroy(env, obj);
-  }
+CaptioningController::~CaptioningController() = default;
+
+void CaptioningController::Destroy(JNIEnv* env) {
+  delete this;
 }
 
 void CaptioningController::PrimaryPageChanged(Page& page) {
@@ -49,14 +45,10 @@ void CaptioningController::PrimaryPageChanged(Page& page) {
 
 void CaptioningController::RenderViewReady() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetFromWebContents(env, web_contents());
   if (!obj.is_null()) {
     Java_CaptioningController_onRenderProcessChange(env, obj);
   }
-}
-
-void CaptioningController::WebContentsDestroyed() {
-  delete this;
 }
 
 void CaptioningController::SetTextTrackSettings(
@@ -88,15 +80,16 @@ void CaptioningController::SetTextTrackSettings(
   web_contents()->SetWebPreferences(web_prefs);
 }
 
-static int64_t JNI_CaptioningController_Init(
+ScopedJavaLocalRef<jobject> CaptioningController::GetFromWebContents(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& jweb_contents) {
-  WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromJavaWebContents(jweb_contents));
+    WebContents* web_contents) {
+  return Java_CaptioningController_getFromWebContents(env, web_contents);
+}
+
+static int64_t JNI_CaptioningController_Init(JNIEnv* env,
+                                             WebContents* web_contents) {
   CHECK(web_contents);
-  return reinterpret_cast<intptr_t>(
-      new CaptioningController(env, obj, web_contents));
+  return reinterpret_cast<intptr_t>(new CaptioningController(web_contents));
 }
 
 }  // namespace content
