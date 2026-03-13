@@ -3500,6 +3500,7 @@
       // forcedLayoutDuration to PerformanceScriptTiming
       name: "LongAnimationFrameStyleDuration",
       origin_trial_feature_name: "LongAnimationFrameStyleDuration",
+      origin_trial_allows_third_party: true,
       status: "experimental",
     },
     {
