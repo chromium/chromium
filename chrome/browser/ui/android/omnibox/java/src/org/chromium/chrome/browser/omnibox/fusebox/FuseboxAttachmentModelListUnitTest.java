@@ -71,7 +71,8 @@ public class FuseboxAttachmentModelListUnitTest {
         mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
         mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
                 mComposeboxQueryControllerBridge);
-        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(mFuseboxAttachmentModelList);
+        verify(mComposeboxQueryControllerBridge)
+                .setContextUploadObserver(mFuseboxAttachmentModelList);
         mResources = ContextUtils.getApplicationContext().getResources();
         mFuseboxAttachmentModelList.addAttachmentChangeListener(mListener);
     }
@@ -151,7 +152,7 @@ public class FuseboxAttachmentModelListUnitTest {
         FuseboxAttachment attachment = createTestAttachment("test");
 
         mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(null);
-        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(null);
+        verify(mComposeboxQueryControllerBridge).setContextUploadObserver(null);
 
         assertFalse(mFuseboxAttachmentModelList.isSessionStarted());
         mFuseboxAttachmentModelList.add(attachment);
@@ -266,7 +267,7 @@ public class FuseboxAttachmentModelListUnitTest {
         assertEquals(1, mFuseboxAttachmentModelList.size());
 
         mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(null);
-        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(null);
+        verify(mComposeboxQueryControllerBridge).setContextUploadObserver(null);
 
         assertEquals(0, mFuseboxAttachmentModelList.size());
         verify(mComposeboxQueryControllerBridge).notifySessionStarted();
@@ -286,7 +287,7 @@ public class FuseboxAttachmentModelListUnitTest {
         assertEquals(1, mFuseboxAttachmentModelList.size());
 
         mFuseboxAttachmentModelList.destroy();
-        verify(mComposeboxQueryControllerBridge).setFileUploadObserver(null);
+        verify(mComposeboxQueryControllerBridge).setContextUploadObserver(null);
 
         assertEquals(0, mFuseboxAttachmentModelList.size());
         verify(mComposeboxQueryControllerBridge).notifySessionStarted();

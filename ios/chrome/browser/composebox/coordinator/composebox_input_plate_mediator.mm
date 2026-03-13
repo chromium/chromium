@@ -38,7 +38,7 @@
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
-#import "components/omnibox/composebox/ios/composebox_file_upload_observer_bridge.h"
+#import "components/omnibox/composebox/ios/composebox_context_upload_observer_bridge.h"
 #import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
 #import "components/prefs/pref_service.h"
 #import "components/search/search.h"
@@ -250,8 +250,9 @@ CreateInputDataFromAnnotatedPageContent(
   // The C++ session handle for this feature.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       _contextualSearchSession;
-  // The observer bridge for file upload status.
-  std::unique_ptr<ComposeboxFileUploadObserverBridge> _composeboxObserverBridge;
+  // The observer bridge for context upload status.
+  std::unique_ptr<ComposeboxContextUploadObserverBridge>
+      _composeboxObserverBridge;
   // The different modes for the composebox.
   ComposeboxModeHolder* _modeHolder;
   // The web state list.
@@ -329,7 +330,7 @@ CreateInputDataFromAnnotatedPageContent(
       _contextualSearchSession->NotifySessionStarted();
       CHECK(_contextualSearchSession->GetController());
       _composeboxObserverBridge =
-          std::make_unique<ComposeboxFileUploadObserverBridge>(
+          std::make_unique<ComposeboxContextUploadObserverBridge>(
               self, _contextualSearchSession->GetController());
     }
     _webStateList = webStateList;
@@ -1060,7 +1061,7 @@ CreateInputDataFromAnnotatedPageContent(
   [self commitUIUpdates];
 }
 
-#pragma mark - ComposeboxFileUploadObserver
+#pragma mark - ComposeboxContextUploadObserver
 
 - (void)onContextUploadStatusChanged:(const base::UnguessableToken&)contextToken
                             mimeType:(lens::MimeType)mimeType

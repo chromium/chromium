@@ -36,17 +36,17 @@ public class ComposeboxQueryControllerBridge {
     @SuppressWarnings("NullableOptional")
     private static @Nullable Optional<ComposeboxQueryControllerBridge> sInstanceForTesting;
 
-    /** Observer for file upload status changes. */
-    interface FileUploadObserver {
+    /** Observer for context upload status changes. */
+    interface ContextUploadObserver {
         /**
-         * @param token Unique string identifier for the file.
-         * @param status The status of the file's upload.
+         * @param token Unique string identifier for the context.
+         * @param status The status of the context's upload.
          */
         void onContextUploadStatusChanged(String token, @ContextUploadStatus int status);
     }
 
     private long mNativeInstance;
-    private @Nullable FileUploadObserver mFileUploadObserver;
+    private @Nullable ContextUploadObserver mContextUploadObserver;
     private final SettableMonotonicObservableSupplier<InputState> mInputStateSupplier =
             ObservableSuppliers.createMonotonic();
 
@@ -66,7 +66,7 @@ public class ComposeboxQueryControllerBridge {
     public void destroy() {
         ComposeboxQueryControllerBridgeJni.get().destroy(mNativeInstance);
         mNativeInstance = 0;
-        mFileUploadObserver = null;
+        mContextUploadObserver = null;
     }
 
     public long getNativeInstance() {
@@ -74,19 +74,19 @@ public class ComposeboxQueryControllerBridge {
     }
 
     /**
-     * Set the current file upload observer. If non-null, the observer will be notified of file
-     * upload status changes for all files, identified by token. Note that there are intermediate
-     * statuses (neither success nor failure), there is no guarantee of ordering between files, but
-     * a file upload will either succeed/fail at most once.
+     * Set the current context upload observer. If non-null, the observer will be notified of
+     * context upload status changes for all contexts, identified by token. Note that there are
+     * intermediate statuses (neither success nor failure), there is no guarantee of ordering
+     * between contexts, but a context upload will either succeed/fail at most once.
      */
-    void setFileUploadObserver(@Nullable FileUploadObserver observer) {
-        mFileUploadObserver = observer;
+    void setContextUploadObserver(@Nullable ContextUploadObserver observer) {
+        mContextUploadObserver = observer;
     }
 
     @CalledByNative
     void onContextUploadStatusChanged(String token, @ContextUploadStatus int contextUploadStatus) {
-        if (mFileUploadObserver != null) {
-            mFileUploadObserver.onContextUploadStatusChanged(token, contextUploadStatus);
+        if (mContextUploadObserver != null) {
+            mContextUploadObserver.onContextUploadStatusChanged(token, contextUploadStatus);
         }
     }
 
