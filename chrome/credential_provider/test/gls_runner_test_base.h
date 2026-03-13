@@ -55,6 +55,9 @@ class GlsRunnerTestBase : public ::testing::Test {
   void TearDown() override;
 
   FakeOSUserManager* fake_os_user_manager() { return &fake_os_user_manager_; }
+  FakeOSDeviceManager* fake_os_device_manager() {
+    return &fake_os_device_manager_;
+  }
   FakeWinHttpUrlFetcherFactory* fake_http_url_fetcher_factory() {
     return &fake_http_url_fetcher_factory_;
   }
@@ -198,6 +201,7 @@ class GlsRunnerTestBase : public ::testing::Test {
 
   FakeOSProcessManager fake_os_process_manager_;
   FakeOSUserManager fake_os_user_manager_;
+  FakeOSDeviceManager fake_os_device_manager_;
   FakeScopedLsaPolicyFactory fake_scoped_lsa_policy_factory_;
   FakeScopedUserProfileFactory fake_scoped_user_profile_factory_;
   FakeInternetAvailabilityChecker fake_internet_checker_;

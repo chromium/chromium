@@ -20,7 +20,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -30,11 +32,13 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/uuid.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gaia_resources.h"
 #include "chrome/credential_provider/gaiacp/gcpw_strings.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
+#include "chrome/credential_provider/gaiacp/os_device_manager.h"
 #include "chrome/credential_provider/gaiacp/password_recovery_manager.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
 #include "chrome/credential_provider/gaiacp/user_policies_manager.h"
@@ -42,6 +46,8 @@
 #include "chrome/credential_provider/test/test_credential.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "services/device/public/mojom/hid.mojom.h"
+#include "services/device/public/proto/hid_gcpw.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -100,6 +106,174 @@ TEST_F(GcpGaiaCredentialBaseTest, Advise) {
 
   // Release the provider. This should unadvise the credential.
   ASSERT_EQ(S_OK, ReleaseProvider());
+}
+
+TEST_F(GcpGaiaCredentialBaseTest, HandleOpenDeviceRequests) {
+  // Use a fake OSDeviceManager to avoid file system access.
+  FakeOSDeviceManager fake_os_device_manager;
+  OSDeviceManager::SetInstanceForTesting(&fake_os_device_manager);
+  fake_os_device_manager.SetUsagePage(device::mojom::kPageFido);
+
+  base::win::ScopedHandle fake_device_handle(
+      ::CreateEvent(nullptr, true, true, nullptr));
+  fake_os_device_manager.SetExpectedDevicePath(L"test-device-path");
+  fake_os_device_manager.SetOpenDeviceResult(std::move(fake_device_handle));
+
+  // 1. Set up the named pipe for IPC.
+  std::wstring pipe_name =
+      base::StrCat({L"\\\\.\\pipe\\hid_test_pipe-",
+                    base::NumberToWString(base::RandUint64())});
+  SECURITY_ATTRIBUTES sa = {sizeof(sa), nullptr, TRUE};
+  base::win::ScopedHandle server_pipe(::CreateNamedPipe(
+      pipe_name.c_str(), PIPE_ACCESS_DUPLEX,
+      PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 0, 0, 0, &sa));
+  ASSERT_TRUE(server_pipe.is_valid());
+
+  base::win::ScopedHandle client_pipe(
+      ::CreateFile(pipe_name.c_str(), GENERIC_READ | GENERIC_WRITE, 0, &sa,
+                   OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL));
+  ASSERT_TRUE(client_pipe.is_valid());
+
+  // 2. Pass the server-side of the pipe to the credential, which will start
+  //    the thread to listen on it.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
+
+  ASSERT_EQ(S_OK, test->InitializeThreadForNamedPipe(std::move(server_pipe)));
+
+  // 3. From the client-side of the pipe, send a request.
+  device::gcpw::HidOpenDeviceGcpwRequest request;
+  request.set_device_path(base::WideToUTF8(L"test-device-path"));
+  std::vector<uint8_t> request_buffer(request.ByteSizeLong());
+  request.SerializeToArray(request_buffer.data(), request_buffer.size());
+
+  DWORD request_size = request_buffer.size();
+  DWORD bytes_written;
+  ASSERT_TRUE(::WriteFile(client_pipe.Get(), &request_size,
+                          sizeof(request_size), &bytes_written, nullptr));
+  ASSERT_EQ(sizeof(request_size), bytes_written);
+  if (request_size > 0) {
+    ASSERT_TRUE(::WriteFile(client_pipe.Get(), request_buffer.data(),
+                            request_size, &bytes_written, nullptr));
+    ASSERT_EQ(request_size, bytes_written);
+  }
+
+  // 4. Read the response from the server.
+  DWORD response_size;
+  DWORD bytes_read;
+  ASSERT_TRUE(::ReadFile(client_pipe.Get(), &response_size,
+                         sizeof(response_size), &bytes_read, nullptr));
+  ASSERT_EQ(sizeof(response_size), bytes_read);
+
+  std::vector<uint8_t> response_buffer(response_size);
+  if (response_size > 0) {
+    ASSERT_TRUE(::ReadFile(client_pipe.Get(), response_buffer.data(),
+                           response_size, &bytes_read, nullptr));
+    ASSERT_EQ(response_size, bytes_read);
+  }
+
+  device::gcpw::HidOpenDeviceGcpwResponse response;
+  ASSERT_TRUE(
+      response.ParseFromArray(response_buffer.data(), response_buffer.size()));
+
+  // 5. Verify the response.
+  ASSERT_TRUE(response.has_device_handle());
+  HANDLE returned_handle = base::win::Uint32ToHandle(response.device_handle());
+  ASSERT_NE(returned_handle, nullptr);
+  ASSERT_NE(returned_handle, INVALID_HANDLE_VALUE);
+
+  // Also verify that the handle is valid.
+  DWORD flags;
+  ASSERT_TRUE(::GetHandleInformation(returned_handle, &flags));
+
+  // Wrap the returned handle so it is safely closed when the test ends!
+  // This guarantees no resource leaks regardless of whether the server
+  // used .Get() or .Take() to pack the payload.
+  base::win::ScopedHandle safe_cleanup_handle(returned_handle);
+
+  // The CGaiaCredentialBase owns the ipc_thread_ and will join it upon
+  // destruction. Releasing the credential here will trigger its destructor.
+  cred.Reset();
+}
+
+TEST_F(GcpGaiaCredentialBaseTest, HandleOpenDeviceRequests_NotFido) {
+  // Use a fake OSDeviceManager to avoid file system access.
+  FakeOSDeviceManager fake_os_device_manager;
+  OSDeviceManager::SetInstanceForTesting(&fake_os_device_manager);
+  fake_os_device_manager.SetUsagePage(0x1234);  // Not a FIDO device
+
+  base::win::ScopedHandle fake_device_handle(
+      ::CreateEvent(nullptr, true, true, nullptr));
+  fake_os_device_manager.SetExpectedDevicePath(L"test-device-path");
+  fake_os_device_manager.SetOpenDeviceResult(std::move(fake_device_handle));
+
+  // 1. Set up the named pipe for IPC.
+  std::wstring pipe_name =
+      base::StrCat({L"\\\\.\\pipe\\hid_test_pipe-",
+                    base::NumberToWString(base::RandUint64())});
+  SECURITY_ATTRIBUTES sa = {sizeof(sa), nullptr, TRUE};
+  base::win::ScopedHandle server_pipe(::CreateNamedPipe(
+      pipe_name.c_str(), PIPE_ACCESS_DUPLEX,
+      PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT, 1, 0, 0, 0, &sa));
+  ASSERT_TRUE(server_pipe.is_valid());
+
+  base::win::ScopedHandle client_pipe(
+      ::CreateFile(pipe_name.c_str(), GENERIC_READ | GENERIC_WRITE, 0, &sa,
+                   OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL));
+  ASSERT_TRUE(client_pipe.is_valid());
+
+  // 2. Pass the server-side of the pipe to the credential, which will start
+  //    the thread to listen on it.
+  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
+  ASSERT_EQ(S_OK, InitializeProviderAndGetCredential(0, &cred));
+
+  Microsoft::WRL::ComPtr<ITestCredential> test;
+  ASSERT_EQ(S_OK, cred.As(&test));
+
+  ASSERT_EQ(S_OK, test->InitializeThreadForNamedPipe(std::move(server_pipe)));
+
+  // 3. From the client-side of the pipe, send a request.
+  device::gcpw::HidOpenDeviceGcpwRequest request;
+  request.set_device_path(base::WideToUTF8(L"test-device-path"));
+  std::vector<uint8_t> request_buffer(request.ByteSizeLong());
+  request.SerializeToArray(request_buffer.data(), request_buffer.size());
+
+  DWORD request_size = request_buffer.size();
+  DWORD bytes_written;
+  ASSERT_TRUE(::WriteFile(client_pipe.Get(), &request_size,
+                          sizeof(request_size), &bytes_written, nullptr));
+  ASSERT_EQ(sizeof(request_size), bytes_written);
+  if (request_size > 0) {
+    ASSERT_TRUE(::WriteFile(client_pipe.Get(), request_buffer.data(),
+                            request_size, &bytes_written, nullptr));
+    ASSERT_EQ(request_size, bytes_written);
+  }
+
+  // 4. Read the response from the server.
+  DWORD response_size;
+  DWORD bytes_read;
+  ASSERT_TRUE(::ReadFile(client_pipe.Get(), &response_size,
+                         sizeof(response_size), &bytes_read, nullptr));
+  ASSERT_EQ(sizeof(response_size), bytes_read);
+
+  std::vector<uint8_t> response_buffer(response_size);
+  if (response_size > 0) {
+    ASSERT_TRUE(::ReadFile(client_pipe.Get(), response_buffer.data(),
+                           response_size, &bytes_read, nullptr));
+    ASSERT_EQ(response_size, bytes_read);
+  }
+
+  device::gcpw::HidOpenDeviceGcpwResponse response;
+  ASSERT_TRUE(
+      response.ParseFromArray(response_buffer.data(), response_buffer.size()));
+
+  // 5. Verify the response.
+  ASSERT_FALSE(response.has_device_handle());
+
+  cred.Reset();
 }
 
 TEST_F(GcpGaiaCredentialBaseTest, SetSelected) {

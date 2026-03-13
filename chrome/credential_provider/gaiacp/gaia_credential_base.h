@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/threading/thread.h"
 #include "base/values.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
@@ -17,6 +18,7 @@
 #include "chrome/credential_provider/gaiacp/associated_user_validator.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
+#include "chrome/credential_provider/gaiacp/os_device_manager.h"
 #include "chrome/credential_provider/gaiacp/scoped_handle.h"
 
 namespace base {
@@ -77,6 +79,9 @@ class ATL_NO_VTABLE CGaiaCredentialBase
 
   // Returns true if "enable_cloud_association" registry key is set to 1.
   static bool IsCloudAssociationEnabled();
+
+  // Returns true if "enable_security_key_support" registry key is set to 1.
+  static bool IsSecurityKeySupportEnabled();
 
  protected:
   CGaiaCredentialBase();
@@ -171,6 +176,8 @@ class ATL_NO_VTABLE CGaiaCredentialBase
   // Gets the full command line to run the Gaia Logon stub (GLS). This
   // function calls GetBaseGlsCommandline.
   HRESULT GetGlsCommandline(base::CommandLine* command_line);
+
+  HRESULT InitializeThreadForNamedPipe(base::win::ScopedHandle hid_read_handle);
 
  private:
   // Called from GetSerialization() to handle auto-logon.  If the credential
@@ -282,6 +289,8 @@ class ATL_NO_VTABLE CGaiaCredentialBase
 
   HRESULT RecoverWindowsPasswordIfPossible(std::wstring* recovered_password);
 
+  void HandleOpenDeviceRequests(base::win::ScopedHandle hid_read_handle);
+
   // Sets the error message in the password field based on the HRESULT returned
   // by NetUserChangePassword win32 function.
   void SetErrorMessageInPasswordField(HRESULT hr);
@@ -335,6 +344,9 @@ class ATL_NO_VTABLE CGaiaCredentialBase
   // sign in.
   std::unique_ptr<AssociatedUserValidator::ScopedBlockDenyAccessUpdate>
       token_update_locker_;
+
+  // Thread for handling IPC with the HID client.
+  std::unique_ptr<base::Thread> ipc_thread_;
 };
 
 }  // namespace credential_provider

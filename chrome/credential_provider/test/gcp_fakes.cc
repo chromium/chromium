@@ -131,6 +131,54 @@ HRESULT FakeOSProcessManager::CreateProcessWithToken(
 
 ///////////////////////////////////////////////////////////////////////////////
 
+FakeOSDeviceManager::FakeOSDeviceManager()
+    : original_manager_(*GetInstanceStorage()) {
+  *GetInstanceStorage() = this;
+}
+
+FakeOSDeviceManager::~FakeOSDeviceManager() {
+  *GetInstanceStorage() = original_manager_;
+}
+
+base::win::ScopedHandle FakeOSDeviceManager::OpenDevice(
+    const std::wstring& device_path) {
+  if (!expected_device_path_.empty()) {
+    EXPECT_EQ(expected_device_path_, device_path);
+  }
+
+  if (open_device_result_.is_valid()) {
+    // Return a duplicate so the fake still owns a valid handle.
+    HANDLE duplicated_handle;
+    if (!::DuplicateHandle(GetCurrentProcess(), open_device_result_.Get(),
+                           GetCurrentProcess(), &duplicated_handle, 0, FALSE,
+                           DUPLICATE_SAME_ACCESS)) {
+      return base::win::ScopedHandle();
+    }
+    return base::win::ScopedHandle(duplicated_handle);
+  }
+
+  return base::win::ScopedHandle();
+}
+
+void FakeOSDeviceManager::SetExpectedDevicePath(
+    const std::wstring& device_path) {
+  expected_device_path_ = device_path;
+}
+
+void FakeOSDeviceManager::SetOpenDeviceResult(base::win::ScopedHandle handle) {
+  open_device_result_ = std::move(handle);
+}
+
+uint16_t FakeOSDeviceManager::GetUsagePage(HANDLE device_handle) {
+  return usage_page_;
+}
+
+void FakeOSDeviceManager::SetUsagePage(uint16_t usage_page) {
+  usage_page_ = usage_page;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 FakeOSUserManager::FakeOSUserManager()
     : original_manager_(*GetInstanceStorage()) {
   *GetInstanceStorage() = this;

@@ -9,4 +9,7 @@ namespace switches {
 // Disable the HID blocklist.
 const char kDisableHidBlocklist[] = "disable-hid-blocklist";
 
+// Enable HID device access for the GCPW sign-in process.
+const char kGcpwSigninSwitch[] = "gcpw-signin";
+
 }  // namespace switches

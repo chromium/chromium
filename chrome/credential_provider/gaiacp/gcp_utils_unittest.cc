@@ -241,8 +241,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ParentToChild) {
   StdParentHandles parent_handles;
 
   ASSERT_EQ(S_OK, InitializeStdHandles(CommDirection::kParentToChildOnly,
-                                       kAllStdHandles, &startupinfo,
-                                       &parent_handles));
+                                       kAllStdHandles,
+                                       /* create_named_pipe_for_stdin=*/false,
+                                       &startupinfo, &parent_handles));
 
   // Check parent handles.
   ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
@@ -266,8 +267,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ChildToParent) {
   StdParentHandles parent_handles;
 
   ASSERT_EQ(S_OK, InitializeStdHandles(CommDirection::kChildToParentOnly,
-                                       kAllStdHandles, &startupinfo,
-                                       &parent_handles));
+                                       kAllStdHandles,
+                                       /* create_named_pipe_for_stdin=*/false,
+                                       &startupinfo, &parent_handles));
 
   // Check parent handles.
   ASSERT_FALSE(parent_handles.hstdin_write.is_valid());
@@ -292,6 +294,7 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ParentChildBirectional) {
 
   ASSERT_EQ(S_OK,
             InitializeStdHandles(CommDirection::kBidirectional, kAllStdHandles,
+                                 /* create_named_pipe_for_stdin=*/false,
                                  &startupinfo, &parent_handles));
 
   // Check parent handles.
@@ -318,8 +321,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesChildToParent) {
   StdParentHandles parent_handles;
 
   ASSERT_EQ(S_OK, InitializeStdHandles(CommDirection::kChildToParentOnly,
-                                       (kStdInput | kStdOutput), &startupinfo,
-                                       &parent_handles));
+                                       (kStdInput | kStdOutput),
+                                       /* create_named_pipe_for_stdin=*/false,
+                                       &startupinfo, &parent_handles));
 
   // Check parent handles.
   ASSERT_FALSE(parent_handles.hstdin_write.is_valid());
@@ -342,8 +346,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesParentToChild) {
   StdParentHandles parent_handles;
 
   ASSERT_EQ(S_OK, InitializeStdHandles(CommDirection::kParentToChildOnly,
-                                       (kStdInput | kStdOutput), &startupinfo,
-                                       &parent_handles));
+                                       (kStdInput | kStdOutput),
+                                       /* create_named_pipe_for_stdin=*/false,
+                                       &startupinfo, &parent_handles));
 
   // Check parent handles.
   ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
@@ -366,8 +371,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesBidirectional) {
   StdParentHandles parent_handles;
 
   ASSERT_EQ(S_OK, InitializeStdHandles(CommDirection::kBidirectional,
-                                       (kStdInput | kStdOutput), &startupinfo,
-                                       &parent_handles));
+                                       (kStdInput | kStdOutput),
+                                       /* create_named_pipe_for_stdin=*/false,
+                                       &startupinfo, &parent_handles));
 
   // Check parent handles.
   ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
@@ -387,12 +393,47 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesBidirectional) {
                        startupinfo.GetInfo()->hStdOutput));
 }
 
+TEST_F(GcpProcHelperTest, InitializeStdHandles_NamedPipe) {
+  ScopedStartupInfo startupinfo;
+  StdParentHandles parent_handles;
+
+  ASSERT_EQ(S_OK,
+            InitializeStdHandles(CommDirection::kBidirectional, kAllStdHandles,
+                                 /*create_named_pipe_for_stdin=*/true,
+                                 &startupinfo, &parent_handles));
+
+  // Check parent handles.
+  ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
+  ASSERT_TRUE(parent_handles.hstdout_read.is_valid());
+  ASSERT_TRUE(parent_handles.hstderr_read.is_valid());
+
+  // Check child handles.
+  ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdInput);
+  ASSERT_NE(INVALID_HANDLE_VALUE, startupinfo.GetInfo()->hStdInput);
+  ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdOutput);
+  ASSERT_NE(INVALID_HANDLE_VALUE, startupinfo.GetInfo()->hStdOutput);
+  ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdError);
+  ASSERT_NE(INVALID_HANDLE_VALUE, startupinfo.GetInfo()->hStdError);
+
+  // The child's stdin should be a handle to a named pipe. The parent
+  // should be able to write to it.
+  EXPECT_TRUE(TestPipe(startupinfo.GetInfo()->hStdInput,
+                       parent_handles.hstdin_write.Get()));
+  EXPECT_TRUE(TestPipe(parent_handles.hstdin_write.Get(),
+                       startupinfo.GetInfo()->hStdInput));
+
+  // stdout and stderr are regular pipes.
+  EXPECT_TRUE(TestPipe(parent_handles.hstdout_read.Get(),
+                       startupinfo.GetInfo()->hStdOutput));
+}
+
 TEST_F(GcpProcHelperTest, WaitForProcess) {
   ScopedStartupInfo startupinfo;
   StdParentHandles parent_handles;
 
   ASSERT_EQ(S_OK,
             InitializeStdHandles(CommDirection::kBidirectional, kAllStdHandles,
+                                 /* create_named_pipe_for_stdin=*/false,
                                  &startupinfo, &parent_handles));
   base::LaunchOptions options;
   options.inherit_mode = base::LaunchOptions::Inherit::kAll;

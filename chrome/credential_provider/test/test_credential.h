@@ -54,6 +54,8 @@ class DECLSPEC_UUID("3710aa3a-13c7-44c2-bc38-09ba137804d8") ITestCredential
   virtual bool STDMETHODCALLTYPE ContainsIsAdJoinedUser() = 0;
   virtual base::CommandLine STDMETHODCALLTYPE GetTestGlsCommandline() = 0;
   virtual std::string STDMETHODCALLTYPE GetShowTosFromCmdLine() = 0;
+  virtual HRESULT STDMETHODCALLTYPE
+  InitializeThreadForNamedPipe(base::win::ScopedHandle hid_read_handle) = 0;
 };
 
 // Test implementation of an ICredentialProviderCredential backed by a Gaia
@@ -125,6 +127,9 @@ class ATL_NO_VTABLE CTestCredentialBase : public T, public ITestCredential {
   // Overrides to directly save to a fake scoped user profile.
   HRESULT ForkPerformPostSigninActionsStub(const base::DictValue& dict,
                                            BSTR* status_text) override;
+
+  HRESULT STDMETHODCALLTYPE InitializeThreadForNamedPipe(
+      base::win::ScopedHandle hid_read_handle) override;
 
   UiExitCodes default_exit_code_ = kUiecSuccess;
   std::string gls_email_;
@@ -391,6 +396,12 @@ void CTestCredentialBase<T>::DisplayErrorInUI(LONG status,
                                               BSTR status_text) {
   error_text_ = status_text;
   T::DisplayErrorInUI(status, substatus, status_text);
+}
+
+template <class T>
+HRESULT CTestCredentialBase<T>::InitializeThreadForNamedPipe(
+    base::win::ScopedHandle hid_read_handle) {
+  return T::InitializeThreadForNamedPipe(std::move(hid_read_handle));
 }
 
 // This class is used to implement a test credential based off a fully

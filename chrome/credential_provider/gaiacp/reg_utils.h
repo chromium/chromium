@@ -23,6 +23,9 @@ extern const wchar_t kGcpUsersRootKeyName[];
 // providers.
 extern const wchar_t kWinlogonUserListRegKey[];
 
+// Enables security key support for authentication.
+extern const wchar_t kRegEnableSecurityKeySupport[];
+
 // Registry key used to determine a user's default credential provider tile.
 extern const wchar_t kLogonUiUserTileRegKey[];
 

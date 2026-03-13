@@ -57,9 +57,12 @@ test("gcp_unittests") {
     "//extensions/common",
     "//google_apis",
     "//net:test_support",
+    "//services/device/public/mojom",
+    "//services/device/public/proto:hid_gcpw_proto",
     "//services/network/public/cpp:flags_and_switches",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   data_deps = [

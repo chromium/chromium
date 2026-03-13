@@ -32,6 +32,7 @@
 #include "chrome/credential_provider/gaiacp/event_logs_upload_manager.h"
 #include "chrome/credential_provider/gaiacp/gem_device_details_manager.h"
 #include "chrome/credential_provider/gaiacp/internet_availability_checker.h"
+#include "chrome/credential_provider/gaiacp/os_device_manager.h"
 #include "chrome/credential_provider/gaiacp/os_process_manager.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
 #include "chrome/credential_provider/gaiacp/password_recovery_manager.h"
@@ -80,6 +81,28 @@ class FakeOSProcessManager : public OSProcessManager {
  private:
   raw_ptr<OSProcessManager> original_manager_;
   DWORD next_rid_ = 0;
+};
+
+///////////////////////////////////////////////////////////////////////////////
+
+class FakeOSDeviceManager : public OSDeviceManager {
+ public:
+  FakeOSDeviceManager();
+  ~FakeOSDeviceManager() override;
+
+  // OSDeviceManager
+  base::win::ScopedHandle OpenDevice(const std::wstring& device_path) override;
+  uint16_t GetUsagePage(HANDLE device_handle) override;
+
+  void SetExpectedDevicePath(const std::wstring& device_path);
+  void SetOpenDeviceResult(base::win::ScopedHandle handle);
+  void SetUsagePage(uint16_t usage_page);
+
+ private:
+  raw_ptr<OSDeviceManager> original_manager_;
+  std::wstring expected_device_path_;
+  base::win::ScopedHandle open_device_result_;
+  uint16_t usage_page_ = 0;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

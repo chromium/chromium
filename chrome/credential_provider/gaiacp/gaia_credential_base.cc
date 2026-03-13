@@ -70,6 +70,7 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/device/public/proto/hid_gcpw.pb.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -805,6 +806,10 @@ bool CGaiaCredentialBase::IsCloudAssociationEnabled() {
   return GetGlobalFlagOrDefault(kRegCloudAssociation, 1);
 }
 
+bool CGaiaCredentialBase::IsSecurityKeySupportEnabled() {
+  return GetGlobalFlagOrDefault(kRegEnableSecurityKeySupport, 0);
+}
+
 // static
 HRESULT CGaiaCredentialBase::OnDllRegisterServer() {
   auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
@@ -939,7 +944,9 @@ HRESULT CGaiaCredentialBase::OnDllUnregisterServer() {
 
 CGaiaCredentialBase::CGaiaCredentialBase() = default;
 
-CGaiaCredentialBase::~CGaiaCredentialBase() = default;
+CGaiaCredentialBase::~CGaiaCredentialBase() {
+  ipc_thread_.reset();
+}
 
 bool CGaiaCredentialBase::AreCredentialsValid() const {
   return CanAttemptWindowsLogon() &&
@@ -1030,6 +1037,7 @@ void CGaiaCredentialBase::ResetInternalState() {
   result_status_ = STATUS_SUCCESS;
 
   TerminateLogonProcess();
+  ipc_thread_.reset();
 
   if (events_) {
     wchar_t* default_status_text = nullptr;
@@ -1081,6 +1089,65 @@ HRESULT CGaiaCredentialBase::GetBaseGlsCommandline(
   command_line->AppendSwitch("enable-logging");
   command_line->AppendSwitchASCII("v", "1");
 
+  if (IsSecurityKeySupportEnabled()) {
+    command_line->AppendSwitchASCII("disable-features",
+                                    "WebAuthenticationUseNativeWinApi");
+  }
+  return S_OK;
+}
+
+void CGaiaCredentialBase::HandleOpenDeviceRequests(
+    base::win::ScopedHandle named_pipe_handle) {
+  // LINT.IfChange
+  while (true) {
+    LOGFN(VERBOSE) << "Waiting for HID open device requests...";
+    std::vector<uint8_t> request_buffer;
+    HRESULT hr = ReadMessageFromPipe(named_pipe_handle, &request_buffer);
+    if (FAILED(hr)) {
+      if (hr != HRESULT_FROM_WIN32(ERROR_BROKEN_PIPE)) {
+        LOGFN(ERROR) << "ReadMessageFromPipe failed: " << putHR(hr);
+      } else {
+        LOGFN(VERBOSE) << "ReadMessageFromPipe failed: " << putHR(hr);
+      }
+      break;
+    }
+
+    device::gcpw::HidOpenDeviceGcpwRequest request;
+    if (!request.ParseFromArray(request_buffer.data(), request_buffer.size())) {
+      LOGFN(ERROR) << L"Failed to deserialize HID request.";
+      break;
+    }
+
+    auto response = ProcessHidOpenDeviceRequest(request, logon_ui_process_);
+
+    std::vector<uint8_t> response_buffer(response.ByteSizeLong());
+    response.SerializeToArray(response_buffer.data(), response_buffer.size());
+    hr = WriteMessageToPipe(named_pipe_handle, response_buffer);
+    if (FAILED(hr)) {
+      LOGFN(ERROR) << "WriteMessageToPipe failed: " << putHR(hr);
+      break;
+    }
+  }
+  // LINT.ThenChange(//services/device/hid/hid_service_win.cc)
+}
+
+HRESULT CGaiaCredentialBase::InitializeThreadForNamedPipe(
+    base::win::ScopedHandle named_pipe_handle) {
+  LOGFN(VERBOSE);
+
+  ipc_thread_ = std::make_unique<base::Thread>("ipc_thread");
+  if (!ipc_thread_->Start()) {
+    LOGFN(ERROR) << "Failed to start ipc_thread";
+    return E_FAIL;
+  }
+
+  // Since ipc_thread_ is a member of CGaiaCredentialBase and is explicitly
+  // joined in the destructor, 'this' will always be valid when the task
+  // executes. Hence we can safely use base::Unretained.
+  ipc_thread_->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CGaiaCredentialBase::HandleOpenDeviceRequests,
+                     base::Unretained(this), std::move(named_pipe_handle)));
   return S_OK;
 }
 
@@ -1663,6 +1730,11 @@ HRESULT CGaiaCredentialBase::CreateAndRunLogonStub() {
     return hr;
   }
 
+  if (IsSecurityKeySupportEnabled()) {
+    InitializeThreadForNamedPipe(
+        std::move(uiprocinfo->parent_handles.hstdin_write));
+  }
+
   // Save the handle to the logon UI process so that it can be killed should
   // the credential be Unadvise()d.
   DCHECK_EQ(logon_ui_process_, INVALID_HANDLE_VALUE);
@@ -1764,13 +1836,15 @@ HRESULT CGaiaCredentialBase::ForkGaiaLogonStub(
 
   ScopedStartupInfo startupinfo(kDesktopFullName);
 
-  // Only create a stdout pipe for the logon stub process. On some machines
-  // Chrome will not startup properly when also given a stderror pipe due
-  // to access restrictions. For the purposes of the credential provider
-  // only the output of stdout matters.
-  HRESULT hr =
-      InitializeStdHandles(CommDirection::kChildToParentOnly, kStdOutput,
-                           &startupinfo, &uiprocinfo->parent_handles);
+  // Create named pipe for stdin if SecurityKeysSupport is enabled. Always
+  // create anonymous pipe for stdout for the logon stub process. On some
+  // machines Chrome will not startup properly when also given a stderror pipe
+  // due to access restrictions. For the purposes of the credential provider
+  // stderror is not used.
+  HRESULT hr = InitializeStdHandles(
+      CommDirection::kChildToParentOnly, kStdOutput | kStdInput,
+      /* create_named_pipe_for_stdin = */ IsSecurityKeySupportEnabled(),
+      &startupinfo, &uiprocinfo->parent_handles);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "InitializeStdHandles hr=" << putHR(hr);
     return hr;
@@ -1827,9 +1901,9 @@ HRESULT CGaiaCredentialBase::ForkPerformPostSigninActionsStub(
 
   ScopedStartupInfo startupinfo;
   StdParentHandles parent_handles;
-  HRESULT hr =
-      InitializeStdHandles(CommDirection::kParentToChildOnly, kAllStdHandles,
-                           &startupinfo, &parent_handles);
+  HRESULT hr = InitializeStdHandles(
+      CommDirection::kParentToChildOnly, kAllStdHandles,
+      /* create_named_pipe_for_stdin = */ false, &startupinfo, &parent_handles);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "InitializeStdHandles hr=" << putHR(hr);
     *status_text = AllocErrorString(IDS_INTERNAL_ERROR_BASE);
@@ -1910,6 +1984,8 @@ unsigned __stdcall CGaiaCredentialBase::WaitForLoginUI(void* param) {
     LOGFN(ERROR) << "ScopedCOMInitializer failed hr=" << putHR(hr);
     return hr;
   }
+
+  DCHECK(uiprocinfo.get());
 
   CComBSTR status_text;
   DWORD exit_code;

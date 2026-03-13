@@ -20,9 +20,9 @@ extern "C" {
 // clang-format on
 
 #include <string>
-#include <string>
 #include <vector>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/win/scoped_handle.h"
@@ -136,6 +136,12 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
   base::WeakPtr<HidService> GetWeakPtr() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(HidServiceWinTest, TestOpenDeviceThroughGcpw);
+  FRIEND_TEST_ALL_PREFIXES(HidServiceWinTest,
+                           TestOpenDeviceThroughGcpw_NoHandle);
+
+  static HANDLE OpenDeviceThroughGcpw(std::wstring_view device_path);
+  static uint16_t GetUsagePage(HANDLE device_handle);
   static void EnumerateBlocking(
       base::WeakPtr<HidServiceWin> service,
       scoped_refptr<base::SequencedTaskRunner> task_runner);

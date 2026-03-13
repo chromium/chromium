@@ -40,6 +40,8 @@ const wchar_t kWinlogonUserListRegKey[] =
     L"SOFTWARE\\Microsoft\\Windows NT"
     L"\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList";
 
+const wchar_t kRegEnableSecurityKeySupport[] = L"enable_security_key_support";
+
 const wchar_t kLogonUiUserTileRegKey[] =
     L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI"
     L"\\UserTile";
