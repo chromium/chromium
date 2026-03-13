@@ -5417,7 +5417,8 @@ public class StripLayoutHelper
         anchorView.getAnchorRect(anchorRectProvider.getRect());
         getAdjustedAnchorRect(anchorRectProvider);
         var activity = assertNonNull(mWindowAndroid.getActivity().get());
-        mGlicButtonContextMenuCoordinator.showMenu(anchorRectProvider, activity);
+        mGlicButtonContextMenuCoordinator.showMenu(
+                anchorRectProvider, activity, mCachedTabWidthSupplier.get());
     }
 
     /**

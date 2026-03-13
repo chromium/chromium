@@ -438,7 +438,6 @@ found in the LICENSE file.
     <dimen name="tab_strip_group_context_menu_max_width">392dp</dimen>
     <dimen name="tab_strip_context_menu_min_width">200dp</dimen>
     <dimen name="tab_strip_context_menu_max_width">300dp</dimen>
-    <dimen name="tab_strip_glic_menu_max_width">144dp</dimen>
 
     <!-- Link Hover Status Bar dimensions. -->
     <dimen name="link_hover_status_bar_max_width">300dp</dimen>

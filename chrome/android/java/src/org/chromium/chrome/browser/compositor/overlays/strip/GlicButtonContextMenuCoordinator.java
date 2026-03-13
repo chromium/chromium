@@ -15,6 +15,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -47,8 +48,9 @@ public class GlicButtonContextMenuCoordinator {
      *
      * @param anchorRectProvider The {@link RectProvider} for the anchor view.
      * @param activity The {@link Activity} in which the menu is shown.
+     * @param menuWidth The width of the menu in dp.
      */
-    public void showMenu(RectProvider anchorViewRectProvider, Activity activity) {
+    public void showMenu(RectProvider anchorViewRectProvider, Activity activity, float menuWidth) {
         ModelList modelList = new ModelList();
         modelList.add(
                 new ListItemBuilder()
@@ -61,10 +63,13 @@ public class GlicButtonContextMenuCoordinator {
                 BrowserUiListMenuUtils.getBasicListMenu(mContext, modelList, getListMenuDelegate());
         View contentView = listMenu.getContentView();
         View decorView = activity.getWindow().getDecorView();
-        int glicButtonMenuWidth =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_strip_glic_menu_max_width);
-
+        var popupWidthPx =
+                MathUtils.clamp(
+                        (int) (menuWidth * mContext.getResources().getDisplayMetrics().density),
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
+                        mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
         AnchoredPopupWindow.Builder builder =
                 new AnchoredPopupWindow.Builder(
                                 mContext,
@@ -77,7 +82,7 @@ public class GlicButtonContextMenuCoordinator {
                         .setHorizontalOverlapAnchor(true)
                         .setVerticalOverlapAnchor(false)
                         .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
-                        .setMaxWidth(glicButtonMenuWidth)
+                        .setDesiredContentWidth(popupWidthPx)
                         .setElevation(
                                 contentView
                                         .getResources()

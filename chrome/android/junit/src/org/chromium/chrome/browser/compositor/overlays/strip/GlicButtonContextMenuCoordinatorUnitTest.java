@@ -65,7 +65,7 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
 
     @Test
     public void testShowAndDismiss() {
-        mCoordinator.showMenu(mRectProvider, mActivity);
+        mCoordinator.showMenu(mRectProvider, mActivity, /* menuWidth= */ 250f);
         assertTrue("Menu should be showing", mCoordinator.isShowing());
 
         mCoordinator.dismiss();
@@ -82,7 +82,7 @@ public class GlicButtonContextMenuCoordinatorUnitTest {
                         .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false));
 
         // Show menu
-        mCoordinator.showMenu(mRectProvider, mActivity);
+        mCoordinator.showMenu(mRectProvider, mActivity, /* menuWidth= */ 250f);
 
         assertNotNull(mCoordinator.getPopupWindow());
         View contentView = mCoordinator.getPopupWindow().getContentView();
