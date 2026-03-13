@@ -1640,8 +1640,9 @@ const char kTabSwitcherOverflowMenuDescription[] =
     "When enabled, the Tab Switcher edit button and edit menu will be replaced "
     "by a three dot button and overflow menu.";
 
-const char kTaiyakiName[] = "Taiyaki";
-const char kTaiyakiDescription[] = "Enables Taiyaki.";
+const char kTaiyakiAllSurfacesName[] = "Taiyaki (all surfaces)";
+const char kTaiyakiAllSurfacesDescription[] =
+    "Enables Taiyaki for all surfaces (including post-FRE).";
 
 const char kUpdatedFRESequenceName[] =
     "Update the sequence of the First Run screens";

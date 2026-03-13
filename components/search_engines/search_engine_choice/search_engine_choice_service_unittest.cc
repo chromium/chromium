@@ -297,8 +297,6 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_ByLocation_Taiyaki) {
     GTEST_SKIP();
   }
 
-  base::test::ScopedFeatureList feature_list{switches::kTaiyaki};
-
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(
       switches::kSearchEngineChoiceCountry);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -565,7 +563,6 @@ TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest, Record_Taiyaki) {
   }
 
   const CountryId kJapanCountryId = CountryId("JP");
-  base::test::ScopedFeatureList feature_list{switches::kTaiyaki};
 
   InitService({.variation_country_id = kJapanCountryId,
                .client_country_id = kJapanCountryId,

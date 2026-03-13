@@ -1170,16 +1170,6 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopWave1Variations[] = {
      kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
 };
 
-const FeatureEntry::FeatureParam kTaiyakiChoiceScreenSurfaceParamAll[] = {
-    {"choice_screen_surface", "all"}};
-const FeatureEntry::FeatureParam kTaiyakiChoiceScreenSurfaceParamFREOnly[] = {
-    {"choice_screen_surface", "fre_only"}};
-
-const FeatureEntry::FeatureVariation kTaiyakiChoiceScreenSurfaceVariations[] = {
-    {"all", kTaiyakiChoiceScreenSurfaceParamAll, nullptr},
-    {"FRE only", kTaiyakiChoiceScreenSurfaceParamFREOnly, nullptr},
-};
-
 // Tips Notifications alternative strings.
 const FeatureEntry::FeatureParam kTipsNotificationsAlternative1[] = {
     {kTipsNotificationsAlternativeStringVersion, "1"}};
@@ -2196,11 +2186,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      commerce::flag_descriptions::kShoppingAlternateServerName,
      commerce::flag_descriptions::kShoppingAlternateServerDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(commerce::kShoppingAlternateServer)},
-    {"taiyaki", flag_descriptions::kTaiyakiName,
-     flag_descriptions::kTaiyakiDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kTaiyaki,
-                                    kTaiyakiChoiceScreenSurfaceVariations,
-                                    "Taiyaki")},
+    {"taiyaki-all-surfaces", flag_descriptions::kTaiyakiAllSurfacesName,
+     flag_descriptions::kTaiyakiAllSurfacesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(switches::kTaiyakiAllSurfaces)},
     {"lens-camera-no-still-output-required",
      flag_descriptions::kLensCameraNoStillOutputRequiredName,
      flag_descriptions::kLensCameraNoStillOutputRequiredDescription,

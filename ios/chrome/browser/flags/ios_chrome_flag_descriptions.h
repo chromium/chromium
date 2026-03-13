@@ -999,8 +999,8 @@ extern const char kTabResumptionDescription[];
 extern const char kTabSwitcherOverflowMenuName[];
 extern const char kTabSwitcherOverflowMenuDescription[];
 
-extern const char kTaiyakiName[];
-extern const char kTaiyakiDescription[];
+extern const char kTaiyakiAllSurfacesName[];
+extern const char kTaiyakiAllSurfacesDescription[];
 
 extern const char kUpdatedFRESequenceName[];
 extern const char kUpdatedFRESequenceDescription[];

@@ -434,8 +434,6 @@ TEST_F(SearchEngineChoiceEligibilityTest,
     GTEST_SKIP();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list{switches::kTaiyaki};
-
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "JP");
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
@@ -491,8 +489,6 @@ TEST_F(SearchEngineChoiceEligibilityTest,
     GTEST_SKIP();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list{switches::kTaiyaki};
-
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "JP");
   static_cast<regional_capabilities::FakeRegionalCapabilitiesServiceClient&>(
@@ -520,8 +516,6 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   if (!kPhoneFormFactors.Has(ui::GetDeviceFormFactor())) {
     GTEST_SKIP();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list{switches::kTaiyaki};
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "JP");
@@ -653,8 +647,6 @@ TEST_F(SearchEngineChoiceEligibilityTest,
   if (!kPhoneFormFactors.Has(ui::GetDeviceFormFactor())) {
     GTEST_SKIP();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list{switches::kTaiyaki};
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kSearchEngineChoiceCountry, "JP");
@@ -959,7 +951,6 @@ struct Spec {
 
   std::string test_name;
   bool restore_feature_enabled;
-  bool taiyaki_feature_enabled;
   base::RepeatingCallback<bool()> check_should_skip;
   std::vector<Run> runs;
 };
@@ -1070,9 +1061,6 @@ TEST_P(SearchEngineChoiceEligibilityOnRestoreTest, Run) {
   scoped_feature_list.InitWithFeatureStates({
       {switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection,
        param.restore_feature_enabled},
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-      {switches::kTaiyaki, param.taiyaki_feature_enabled},
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   });
 
   latest_restore_time_ = std::nullopt;
@@ -1156,7 +1144,6 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_IOS)
          Spec{.test_name = "1pTaiyaki",
               .restore_feature_enabled = true,
-              .taiyaki_feature_enabled = true,
               .check_should_skip = base::BindRepeating([]() {
                 return !kPhoneFormFactors.Has(ui::GetDeviceFormFactor());
               }),

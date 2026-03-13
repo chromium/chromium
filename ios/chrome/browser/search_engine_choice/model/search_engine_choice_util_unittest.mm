@@ -240,36 +240,34 @@ TEST_F(SearchEngineChoiceUtilTest,
       regional_capabilities::FunnelStage::kNotEligible, 1);
 }
 
-struct TayiakiTestParam {
+struct TaiyakiTestParam {
   std::string test_name;
-  // see switches::RegionalCapabilitiesChoiceScreenSurface
-  std::optional<std::string> allowed_surface;
+  // Whether switches::kTaiyakiAllSurfaces is enabled.
+  bool taiyaki_all_surfaces_enabled;
   // Triggering surface that calls ShouldDisplaySearchEngineChoiceScreen
   bool is_first_run_entrypoint;
   // Whether the choice screen is expected to be shown
   bool expected_should_display_choice_screen_output;
 };
 
-// Verifies if the search engine choice screen is shown for Tayiaki in various
+// Verifies if the search engine choice screen is shown for Taiyaki in various
 // flag configurations.
 class SearchEngineChoiceUtilShouldDisplayChoiceScreenTest
     : public SearchEngineChoiceUtilTest,
-      public ::testing::WithParamInterface<TayiakiTestParam> {
+      public ::testing::WithParamInterface<TaiyakiTestParam> {
  public:
   SearchEngineChoiceUtilShouldDisplayChoiceScreenTest()
       : SearchEngineChoiceUtilTest("JP") {
-    if (GetParam().allowed_surface.has_value()) {
-      feature_list_.InitAndEnableFeatureWithParameters(
-          switches::kTaiyaki,
-          {{"choice_screen_surface", *GetParam().allowed_surface}});
+    if (GetParam().taiyaki_all_surfaces_enabled) {
+      feature_list_.InitAndEnableFeature(switches::kTaiyakiAllSurfaces);
     } else {
-      feature_list_.InitAndDisableFeature(switches::kTaiyaki);
+      feature_list_.InitAndDisableFeature(switches::kTaiyakiAllSurfaces);
     }
   }
 
   void SetUp() override {
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-      GTEST_SKIP() << "Tayiaki is only enabled for phone form factors.";
+      GTEST_SKIP() << "Taiyaki is only enabled for phone form factors.";
     }
     SearchEngineChoiceUtilTest::SetUp();
   }
@@ -287,17 +285,9 @@ TEST_P(SearchEngineChoiceUtilShouldDisplayChoiceScreenTest,
 
   // Use histogram tester to verify the exact reason for not showing the
   // choice screen.
-  if (!GetParam().allowed_surface.has_value()) {
-    // Disabled Taiyaki case:
-    histogram_tester().ExpectUniqueSample(
-        "RegionalCapabilities.FunnelStage.Eligibility",
-        SearchEngineChoiceScreenConditions::kNotInRegionalScope, 1);
-    return;
-  }
-
-  if (GetParam().allowed_surface == "fre_only" &&
+  if (!GetParam().taiyaki_all_surfaces_enabled &&
       !GetParam().is_first_run_entrypoint) {
-    // Tayiaki is only enabled for FRE entrypoint, but choice screen was called
+    // Taiyaki is only enabled for FRE entrypoint, but choice screen was called
     // from non-FRE entrypoint.
     histogram_tester().ExpectUniqueSample(
         "RegionalCapabilities.FunnelStage.Triggering",
@@ -308,11 +298,8 @@ TEST_P(SearchEngineChoiceUtilShouldDisplayChoiceScreenTest,
     return;
   }
 
-  // Tayiaki is enabled either everywhere or only for FRE, but the choice screen
+  // Taiyaki is enabled either everywhere or only for FRE, but the choice screen
   // was called from the allowed entrypoint.
-  CHECK(GetParam().allowed_surface == "all" ||
-        (GetParam().allowed_surface == "fre_only" &&
-         GetParam().is_first_run_entrypoint));
   histogram_tester().ExpectUniqueSample(
       "RegionalCapabilities.FunnelStage.Eligibility",
       SearchEngineChoiceScreenConditions::kEligible, 1);
@@ -324,32 +311,24 @@ TEST_P(SearchEngineChoiceUtilShouldDisplayChoiceScreenTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     SearchEngineChoiceUtilShouldDisplayChoiceScreenTest,
-    ::testing::ValuesIn<TayiakiTestParam>({
-        {.test_name = "TayiakiEverywhere_FirstRunSurface",
-         .allowed_surface = "all",
+    ::testing::ValuesIn<TaiyakiTestParam>({
+        {.test_name = "TaiyakiEverywhere_FirstRunSurface",
+         .taiyaki_all_surfaces_enabled = true,
          .is_first_run_entrypoint = true,
          .expected_should_display_choice_screen_output = true},
-        {.test_name = "TayiakiEverywhere_NonFirstRunSurface",
-         .allowed_surface = "all",
+        {.test_name = "TaiyakiEverywhere_NonFirstRunSurface",
+         .taiyaki_all_surfaces_enabled = true,
          .is_first_run_entrypoint = false,
          .expected_should_display_choice_screen_output = true},
         {.test_name = "TaiyakiInFirstRunOnly_FirstRunSurface",
-         .allowed_surface = "fre_only",
+         .taiyaki_all_surfaces_enabled = false,
          .is_first_run_entrypoint = true,
          .expected_should_display_choice_screen_output = true},
         {.test_name = "TaiyakiInFirstRunOnly_NonFirstRunSurface",
-         .allowed_surface = "fre_only",
-         .is_first_run_entrypoint = false,
-         .expected_should_display_choice_screen_output = false},
-        {.test_name = "TayiakiDisabled_FirstRunSurface",
-         .allowed_surface = std::nullopt,
-         .is_first_run_entrypoint = true,
-         .expected_should_display_choice_screen_output = false},
-        {.test_name = "TayiakiDisabled_NonFirstRunSurface",
-         .allowed_surface = std::nullopt,
+         .taiyaki_all_surfaces_enabled = false,
          .is_first_run_entrypoint = false,
          .expected_should_display_choice_screen_output = false},
     }),
-    [](const ::testing::TestParamInfo<TayiakiTestParam>& info) {
+    [](const ::testing::TestParamInfo<TaiyakiTestParam>& info) {
       return info.param.test_name;
     });

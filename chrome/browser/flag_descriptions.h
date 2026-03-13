@@ -4438,9 +4438,6 @@ inline constexpr char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "
     "This flag does not enable experimental JavaScript features.";
 
-inline constexpr char kTaiyakiName[] = "Taiyaki";
-inline constexpr char kTaiyakiDescription[] = "Enables Taiyaki.";
-
 inline constexpr char kGlobalVaapiLockName[] =
     "Global lock on the VA-API wrapper.";
 inline constexpr char kGlobalVaapiLockDescription[] =

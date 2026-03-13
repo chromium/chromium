@@ -495,6 +495,7 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
     case Program::kDefault:
       return std::nullopt;
     case Program::kTaiyaki:
+#if BUILDFLAG(IS_IOS)
       return RegionalCapabilitiesService::ChoiceScreenDesign{
           .title_string_id = IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE,
           .subtitle_1_string_id =
@@ -506,6 +507,9 @@ RegionalCapabilitiesService::GetChoiceScreenDesign() {
           .subtitle_2_string_id =
               IDS_SEARCH_ENGINE_CHOICE_PAGE_SUBTITLE_WITH_DEFINITION2,
       };
+#else
+      NOTREACHED();
+#endif
     case Program::kWaffle:
       return RegionalCapabilitiesService::ChoiceScreenDesign{
           .title_string_id = IDS_SEARCH_ENGINE_CHOICE_PAGE_TITLE,

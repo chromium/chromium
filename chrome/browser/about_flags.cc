@@ -5045,11 +5045,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-future-v8-vm-features", flag_descriptions::kV8VmFutureName,
      flag_descriptions::kV8VmFutureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kV8VmFuture)},
-#if BUILDFLAG(IS_ANDROID)
-    {"taiyaki", flag_descriptions::kTaiyakiName,
-     flag_descriptions::kTaiyakiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kTaiyaki)},
-#endif
     {"enable-gpu-rasterization", flag_descriptions::kGpuRasterizationName,
      flag_descriptions::kGpuRasterizationDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableGpuRasterizationChoices)},

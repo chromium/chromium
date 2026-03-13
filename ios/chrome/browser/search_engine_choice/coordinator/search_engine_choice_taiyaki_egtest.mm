@@ -49,9 +49,7 @@
       "=jp");
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
-  config.features_enabled_and_params.push_back(
-      {switches::kTaiyaki,
-       {{switches::kTaiyakiChoiceScreenSurface.name, "all"}}});
+  config.features_enabled.push_back(switches::kTaiyakiAllSurfaces);
   // Relaunches the app at each test to re-display the choice screen.
   config.relaunch_policy = ForceRelaunchByKilling;
 

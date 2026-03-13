@@ -49,25 +49,12 @@ BASE_DECLARE_FEATURE(kRestrictLegacySearchEnginePromoOnFormFactors);
 BASE_DECLARE_FEATURE(kResolveRegionalCapabilitiesFromDevice);
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-// Describes UI surfaces that can receive the choice screen.
-enum class RegionalCapabilitiesChoiceScreenSurface : int {
-  // The choice screen should always be shown.
-  kAll = 0,
-  // The choice screen should only be shown in FRE.
-  kInFreOnly = 1,
-};
-
+#if BUILDFLAG(IS_IOS)
+// Enables the Taiyaki regional program on all surfaces, including post-FRE
+// surfaces. When disabled, Taiyaki is only enabled on the FRE.
 COMPONENT_EXPORT(REGIONAL_CAPABILITIES_SWITCHES)
-BASE_DECLARE_FEATURE(kTaiyaki);
-
-// For kTaiyaki enabled, defines which UI surfaces the choice screen can be
-// shown on. Only used if kTaiyaki is enabled.
-extern const base::FeatureParam<RegionalCapabilitiesChoiceScreenSurface>
-    kTaiyakiChoiceScreenSurface;
-
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kTaiyakiAllSurfaces);
+#endif  // BUILDFLAG(IS_IOS)
 
 // Updates profile country preference stored in preferences
 // dynamically when the current country does not match the stored value.

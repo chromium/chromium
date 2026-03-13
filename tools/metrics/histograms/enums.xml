@@ -16468,6 +16468,7 @@ from previous Chrome versions.
   <int value="680654836" label="EnableSeamlessSignin:enabled"/>
   <int value="680773835" label="EnablePolicyTestPage:enabled"/>
   <int value="681622885" label="FullscreenExitUI:enabled"/>
+  <int value="681841673" label="TaiyakiAllSurfaces:disabled"/>
   <int value="682549212" label="ash-enable-cursor-motion-blur"/>
   <int value="682563468" label="AutomotiveBackButtonBarStreamline:disabled"/>
   <int value="682916740" label="PdfUnseasoned:disabled"/>
@@ -17495,6 +17496,7 @@ from previous Chrome versions.
   <int value="1033597574" label="disable-layer-squashing"/>
   <int value="1034347979"
       label="OmniboxFocusTriggersContextualWebZeroSuggest:disabled"/>
+  <int value="1034729213" label="TaiyakiAllSurfaces:enabled"/>
   <int value="1034991480" label="ExperimentalOmniboxLabs:disabled"/>
   <int value="1035517284" label="DownloadsMigrateToJobsAPI:disabled"/>
   <int value="1036007454"

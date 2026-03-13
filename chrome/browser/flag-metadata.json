@@ -9284,11 +9284,11 @@
     "expiry_milestone": 150
   },
   {
-    "name": "taiyaki",
+    "name": "taiyaki-all-surfaces",
     "owners": [
       "jlebel@google.com", "dgn@google.com", "chrome-regionalcapabilities@google.com"
     ],
-    "expiry_milestone": 147
+    "expiry_milestone": 153
   },
   {
     "name": "terminal-dev",

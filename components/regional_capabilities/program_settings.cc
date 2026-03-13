@@ -16,8 +16,6 @@
 namespace regional_capabilities {
 namespace {
 
-constexpr country_codes::CountryId kTaiyakiCountry("JP");
-
 constexpr ProgramSettings kWaffleSettings{
     .program = Program::kWaffle,
     .associated_countries = base::raw_span<const country_codes::CountryId>(
@@ -43,6 +41,9 @@ constexpr ProgramSettings kWaffleWithLocationRestrictionSettings = []() {
   return ret;
 }();
 
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+constexpr country_codes::CountryId kTaiyakiCountry("JP");
+
 constexpr ProgramSettings kTaiyakiSettings{
     .program = Program::kTaiyaki,
     .associated_countries =
@@ -60,14 +61,15 @@ constexpr ProgramSettings kTaiyakiSettings{
             .highlight_current_default = true,
         },
 };
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_IOS)
 constexpr ProgramSettings kTaiyakiSettingsFreOnly = []() {
   ProgramSettings ret = kTaiyakiSettings;
   ret.choice_screen_eligibility_config->restrict_surfaces_to_fre_only = true;
   return ret;
 }();
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_IOS)
 
 constexpr ProgramSettings kDefaultSettings{
     .program = Program::kDefault,
@@ -76,16 +78,6 @@ constexpr ProgramSettings kDefaultSettings{
     .selection_from_settings_counts_as_choice_screen_choice = false,
     .choice_screen_eligibility_config = std::nullopt,
 };
-
-// "Fake" program used for baseline checks. Announces itself as Taiyaki, but
-// actually behaves like Default. Used when the `switches::kTaiyaki` feature is
-// disabled.
-constexpr ProgramSettings kNoOpTaiyakiSettings = []() {
-  ProgramSettings ret = kDefaultSettings;
-  ret.program = kTaiyakiSettings.program;
-  ret.associated_countries = kTaiyakiSettings.associated_countries;
-  return ret;
-}();
 
 }  // namespace
 
@@ -141,23 +133,15 @@ bool IsClientCompatibleWithProgram(Program program) {
 const ProgramSettings& GetSettingsForProgram(Program program) {
   switch (program) {
     case Program::kTaiyaki:
+#if BUILDFLAG(IS_IOS)
+      if (!base::FeatureList::IsEnabled(switches::kTaiyakiAllSurfaces)) {
+        return kTaiyakiSettingsFreOnly;
+      }
+#endif
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-      if (!base::FeatureList::IsEnabled(switches::kTaiyaki)) {
-        return kNoOpTaiyakiSettings;
-      }
-
-      switch (switches::kTaiyakiChoiceScreenSurface.Get()) {
-        case switches::RegionalCapabilitiesChoiceScreenSurface::kInFreOnly:
-          return kTaiyakiSettingsFreOnly;
-        case switches::RegionalCapabilitiesChoiceScreenSurface::kAll:
-          return kTaiyakiSettings;
-      }
-      NOTREACHED() << "Unknown choice screen surface: "
-                   << static_cast<int>(
-                          switches::kTaiyakiChoiceScreenSurface.Get());
-
+      return kTaiyakiSettings;
 #else
-      return kNoOpTaiyakiSettings;
+      NOTREACHED();
 #endif
     case Program::kWaffle:
       if (base::FeatureList::IsEnabled(
