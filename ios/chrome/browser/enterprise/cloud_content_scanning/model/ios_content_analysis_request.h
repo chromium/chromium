@@ -5,44 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_CLOUD_CONTENT_SCANNING_MODEL_IOS_CONTENT_ANALYSIS_REQUEST_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_CLOUD_CONTENT_SCANNING_MODEL_IOS_CONTENT_ANALYSIS_REQUEST_H_
 
-#import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#import "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
 
 namespace enterprise_connectors {
 
-// A BinaryUploadRequest implementation that gets the data to scan from a file
-// or a string corresponding to the image data.
-//
-// TODO(crbug.com/482050524): Implement this class and switch to inherit from
-// file_analysis_request_base.
-class IOSContentAnalysisRequest : public BinaryUploadRequest {
+// A FileAnalysisRequestBase implementation that gets the data to scan from a
+// file.
+class IOSContentAnalysisRequest : public FileAnalysisRequestBase {
  public:
   // Creates a IOSContentAnalysisRequest from a file located on disk and the
   // file path is available.
   IOSContentAnalysisRequest(
       const enterprise_connectors::AnalysisSettings& analysis_settings,
       base::FilePath path,
+      base::FilePath file_name,
       std::string mime_type,
-      BinaryUploadRequest::ContentAnalysisCallback callback);
-
-  // Creates a IOSContentAnalysisRequest from data already in memory.
-  IOSContentAnalysisRequest(
-      const enterprise_connectors::AnalysisSettings& analysis_settings,
-      std::string mime_type,
-      std::string data,
+      bool delay_opening_file,
       BinaryUploadRequest::ContentAnalysisCallback callback);
 
   IOSContentAnalysisRequest(const IOSContentAnalysisRequest&) = delete;
   IOSContentAnalysisRequest& operator=(const IOSContentAnalysisRequest&) =
       delete;
   ~IOSContentAnalysisRequest() override;
-
-  // BinaryUploadRequest override.
-  void GetRequestData(DataCallback callback) override;
-
- private:
-  Data data_;
-  ScanRequestUploadResult result_;
 };
 
 }  // namespace enterprise_connectors
