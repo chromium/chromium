@@ -1125,8 +1125,7 @@ bool AttributionStorageSql::RemoveSourcesWithOutdatedScopes(
           break;
         }
 
-        auto [scope_data, _] =
-            scope_datas.try_emplace(std::move(scope), ScopeData());
+        auto [scope_data, _] = scope_datas.try_emplace(std::move(scope));
         scope_data->second.max_source_time =
             std::max(scope_data->second.max_source_time, this_source_time);
 

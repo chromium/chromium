@@ -1357,8 +1357,7 @@ bool AttributionDataHostManagerImpl::
   // received all expected background registrations.
   auto [_, inserted] =
       navigations_waiting_on_background_registrations_.try_emplace(
-          attribution_src_token,
-          NavigationForPendingRegistration(expected_registrations));
+          attribution_src_token, expected_registrations);
   // Failure should only be possible with a misbehaving renderer.
   return inserted;
 }
@@ -1597,8 +1596,7 @@ void AttributionDataHostManagerImpl::NotifyBackgroundRegistrationStarted(
       // have have no guarantee that `RegisterNavigationDataHost` gets be called
       // before `NotifyBackgroundRegistrationStarted`.
       auto [waiting_it, inserted] =
-          background_registrations_waiting_on_navigation_.try_emplace(
-              token, base::flat_set<BackgroundRegistrationsId>());
+          background_registrations_waiting_on_navigation_.try_emplace(token);
       waiting_it->second.emplace(id);
       if (inserted) {
         // Ensures that we don't wait indefinitely. This could happen if:
@@ -2163,8 +2161,7 @@ void AttributionDataHostManagerImpl::MaybeOnRegistrationsFinished(
 
 void AttributionDataHostManagerImpl::MaybeStartNavigation(
     int64_t navigation_id) {
-  if (auto [_, inserted] = deferred_receivers_.try_emplace(
-          navigation_id, std::vector<DeferredReceiver>());
+  if (auto [_, inserted] = deferred_receivers_.try_emplace(navigation_id);
       !inserted) {
     // We already have deferred receivers linked to the navigation.
     return;
@@ -2226,12 +2223,9 @@ bool AttributionDataHostManagerImpl::AddNavigationSourceRegistrationToBatchMap(
     const GlobalRenderFrameHostId& render_frame_id,
     const std::optional<std::string>& devtools_request_id) {
   auto [it, _] = registrations_count_and_set_scopes_per_navigation_.try_emplace(
-      navigation_id,
-      base::flat_map<SuitableOrigin,
-                     ScopesAndCountForReportingOriginPerNavigation>());
+      navigation_id);
 
-  auto [it_inner, inserted_inner] = it->second.try_emplace(
-      reporting_origin, ScopesAndCountForReportingOriginPerNavigation());
+  auto [it_inner, inserted_inner] = it->second.try_emplace(reporting_origin);
 
   std::optional<base::DictValue> invalid_parameter;
 

@@ -421,7 +421,7 @@ void AddDestination(DestinationDataMap& destination_datas,
                     StoredSource::Id source_id,
                     DestinationAttribute attribute) {
   auto [destination_data, _] =
-      destination_datas.try_emplace(std::move(destination), DestinationData());
+      destination_datas.try_emplace(std::move(destination));
   destination_data->second.attribute =
       std::max(attribute, destination_data->second.attribute);
   destination_data->second.sources.push_back(source_id);
