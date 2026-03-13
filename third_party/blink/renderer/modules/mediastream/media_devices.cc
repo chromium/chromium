@@ -1496,6 +1496,11 @@ void MediaDevices::CheckIfEnumerateDevicesTimedOut(
                                      IDLSequence<MediaDeviceInfo>>*
         result_tracker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // If the resolver was garbage collected, the request already completed
+  // (or was cancelled) before the 4-second timeout.
+  if (!result_tracker) {
+    return;
+  }
   if (enumerate_device_requests_.Contains(result_tracker)) {
     SendLogMessage(base::StringPrintf(
         "enumerateDevices() => (ERROR: Promise timed out after %" PRId64
