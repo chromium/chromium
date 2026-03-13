@@ -7,12 +7,12 @@
 // ../enterprise_device_attributes.pem .
 
 chrome.test.getConfig(function(config) {
-  var customArg = JSON.parse(config.customArg);
-  var expectedDirectoryDeviceId = customArg.expectedDirectoryDeviceId;
-  var expectedSerialNumber = customArg.expectedSerialNumber;
-  var expectedAssetId = customArg.expectedAssetId;
-  var expectedAnnotatedLocation = customArg.expectedAnnotatedLocation;
-  var expectedHostname = customArg.expectedHostname;
+  const customArg = JSON.parse(config.customArg);
+  const expectedDirectoryDeviceId = customArg.expectedDirectoryDeviceId;
+  const expectedSerialNumber = customArg.expectedSerialNumber;
+  const expectedAssetId = customArg.expectedAssetId;
+  const expectedAnnotatedLocation = customArg.expectedAnnotatedLocation;
+  const expectedHostname = customArg.expectedHostname;
 
   chrome.test.runTests([
     function testDirectoryDeviceId() {

@@ -4,29 +4,29 @@
 
 'use strict';
 
-var assertEq = chrome.test.assertEq;
-var assertFalse = chrome.test.assertFalse;
-var assertTrue = chrome.test.assertTrue;
-var assertThrows = chrome.test.assertThrows;
-var fail = chrome.test.fail;
-var succeed = chrome.test.succeed;
-var callbackPass = chrome.test.callbackPass;
-var callbackFail = chrome.test.callbackFail;
+const assertEq = chrome.test.assertEq;
+const assertFalse = chrome.test.assertFalse;
+const assertTrue = chrome.test.assertTrue;
+const assertThrows = chrome.test.assertThrows;
+const fail = chrome.test.fail;
+const succeed = chrome.test.succeed;
+const callbackPass = chrome.test.callbackPass;
+const callbackFail = chrome.test.callbackFail;
 
 // True if the C++ side of the test has configured the test to run in a user
 // session.
-var isUserSessionTest;
+let isUserSessionTest;
 // True if the C++ side of the test has enabled a system token for testing.
-var systemTokenEnabled;
+let systemTokenEnabled;
 // True if the C++ side of the test has enabled the `PlatformKeysChangesWave1`
 // feature flag.
-var changesWave1Enabled;
+let changesWave1Enabled;
 
 // openssl req -new -x509 -key privkey.pem \
 //   -outform der -out cert.der -days 36500
 // xxd -i cert.der
 // Based on privateKeyPkcs8User, which is stored in the user's token.
-var cert1a = new Uint8Array([
+const cert1a = new Uint8Array([
   0x30, 0x82, 0x01, 0xd5, 0x30, 0x82, 0x01, 0x7f, 0xa0, 0x03, 0x02, 0x01, 0x02,
   0x02, 0x09, 0x00, 0xd2, 0xcc, 0x76, 0xeb, 0x19, 0xb9, 0x3a, 0x33, 0x30, 0x0d,
   0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x05, 0x05, 0x00,
@@ -67,7 +67,7 @@ var cert1a = new Uint8Array([
 ]);
 
 // Based on privateKeyPkcs8User, different from cert1a.
-var cert1b = new Uint8Array([
+const cert1b = new Uint8Array([
   0x30, 0x82, 0x01, 0xd5, 0x30, 0x82, 0x01, 0x7f, 0xa0, 0x03, 0x02, 0x01, 0x02,
   0x02, 0x09, 0x00, 0xe7, 0x1e, 0x6e, 0xb0, 0x12, 0x87, 0xf5, 0x09, 0x30, 0x0d,
   0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x05, 0x05, 0x00,
@@ -109,7 +109,7 @@ var cert1b = new Uint8Array([
 
 // Based on a private key different than privateKeyPkcs8User or
 // privateKeyPkcs8System.
-var cert2 = new Uint8Array([
+const cert2 = new Uint8Array([
   0x30, 0x82, 0x01, 0xd5, 0x30, 0x82, 0x01, 0x7f, 0xa0, 0x03, 0x02, 0x01, 0x02,
   0x02, 0x09, 0x00, 0x9e, 0x11, 0x7e, 0xff, 0x43, 0x84, 0xd4, 0xe6, 0x30, 0x0d,
   0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x05, 0x05, 0x00,
@@ -150,7 +150,7 @@ var cert2 = new Uint8Array([
 ]);
 
 // Based on privateKeyPkcs8System, which is stored in the system token.
-var certSystem = new Uint8Array([
+const certSystem = new Uint8Array([
   0x30, 0x82, 0x01, 0xd5, 0x30, 0x82, 0x01, 0x7f, 0xa0, 0x03, 0x02, 0x01, 0x02,
   0x02, 0x09, 0x00, 0xf4, 0x3d, 0x9f, 0xd2, 0x1e, 0xa4, 0xf5, 0x82, 0x30, 0x0d,
   0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x05, 0x05, 0x00,
@@ -203,8 +203,8 @@ function runAsyncSequence(funcs) {
   if (funcs.length == 0)
     return;
   function go(i) {
-    var current = funcs[i];
-    console.log('#' + (i + 1) + ' of ' + funcs.length);
+    const current = funcs[i];
+    console.log(`#${i + 1} of ${funcs.length}`);
     if (i == funcs.length - 1) {
       current(callbackPass());
     } else {
@@ -220,7 +220,7 @@ function compareArrays(array1, array2) {
     return -1;
   if (array1.length > array2.length)
     return 1;
-  for (var i = 0; i < array1.length; i++) {
+  for (let i = 0; i < array1.length; i++) {
     if (array1[i] < array2[i])
       return -1;
     if (array1[i] > array2[i])
@@ -259,10 +259,10 @@ function assertCertsStored(token, expectedCerts, callback) {
           });
           actualCerts = sortCerts(actualCerts);
           expectedCerts = sortCerts(expectedCerts);
-          for (var i = 0; i < expectedCerts.length; i++) {
+          for (let i = 0; i < expectedCerts.length; i++) {
             assertTrue(
                 compareArrays(expectedCerts[i], actualCerts[i]) == 0,
-                'Certs at index ' + i + ' differ');
+                `Certs at index ${i} differ`);
           }
         }
         if (callback)
@@ -277,9 +277,9 @@ function assertCertsStored(token, expectedCerts, callback) {
  */
 function getTokens(callback) {
   chrome.enterprise.platformKeys.getTokens(function(tokens) {
-    var userToken = null;
-    var systemToken = null;
-    for (var i = 0; i < tokens.length; i++) {
+    let userToken = null;
+    let systemToken = null;
+    for (let i = 0; i < tokens.length; i++) {
       if (tokens[i].id == 'user')
         userToken = tokens[i];
       else if (tokens[i].id == 'system')
@@ -366,8 +366,8 @@ function beforeLoginScreenTests(changesWave1Enabled, callback) {
 }
 
 function checkRsaAlgorithmIsCopiedOnRead(key) {
-  var algorithm = key.algorithm;
-  var originalAlgorithm = {
+  const algorithm = key.algorithm;
+  const originalAlgorithm = {
     name: algorithm.name,
     modulusLength: algorithm.modulusLength,
     publicExponent: algorithm.publicExponent,
@@ -382,8 +382,8 @@ function checkRsaAlgorithmIsCopiedOnRead(key) {
 }
 
 function checkEcAlgorithmIsCopiedOnRead(key) {
-  var algorithm = key.algorithm;
-  var originalAlgorithm = {
+  const algorithm = key.algorithm;
+  const originalAlgorithm = {
     name: algorithm.name,
     namedCurve: algorithm.namedCurve,
   };
@@ -393,7 +393,7 @@ function checkEcAlgorithmIsCopiedOnRead(key) {
 }
 
 function checkPropertyIsReadOnly(object, key) {
-  var original = object[key];
+  const original = object[key];
   try {
     object[key] = {};
     fail('Expected the property to be read-only and an exception to be thrown');
@@ -404,14 +404,14 @@ function checkPropertyIsReadOnly(object, key) {
 
 function checkRsaKeyPairCommonFormat(keyPair) {
   checkPropertyIsReadOnly(keyPair, 'privateKey');
-  var privateKey = keyPair.privateKey;
+  const privateKey = keyPair.privateKey;
   assertEq('private', privateKey.type);
   assertFalse(privateKey.extractable);
   checkPropertyIsReadOnly(privateKey, 'algorithm');
   checkRsaAlgorithmIsCopiedOnRead(privateKey);
 
   checkPropertyIsReadOnly(keyPair, 'publicKey');
-  var publicKey = keyPair.publicKey;
+  const publicKey = keyPair.publicKey;
   assertEq('public', publicKey.type);
   assertTrue(publicKey.extractable);
   checkPropertyIsReadOnly(publicKey, 'algorithm');
@@ -420,14 +420,14 @@ function checkRsaKeyPairCommonFormat(keyPair) {
 
 function checkEcKeyPairCommonFormat(keyPair) {
   checkPropertyIsReadOnly(keyPair, 'privateKey');
-  var privateKey = keyPair.privateKey;
+  const privateKey = keyPair.privateKey;
   assertEq('private', privateKey.type);
   assertFalse(privateKey.extractable);
   checkPropertyIsReadOnly(privateKey, 'algorithm');
   checkEcAlgorithmIsCopiedOnRead(privateKey);
 
   checkPropertyIsReadOnly(keyPair, 'publicKey');
-  var publicKey = keyPair.publicKey;
+  const publicKey = keyPair.publicKey;
   assertEq('public', publicKey.type);
   assertTrue(publicKey.extractable);
   checkPropertyIsReadOnly(publicKey, 'algorithm');
@@ -444,18 +444,18 @@ async function verifyRsaKeySign(
   try {
     signature = await subtleCrypto.sign(params.sign, keyPair.privateKey, DATA);
   } catch (error) {
-    fail(debugMessage + ': Sign failed: ' + error);
+    fail(`${debugMessage}: Sign failed: ${error}`);
   }
 
-  assertTrue(!!signature, debugMessage + ': No signature.');
-  assertTrue(signature.length != 0, debugMessage + ': Signature is empty.');
+  assertTrue(!!signature, `${debugMessage}: No signature.`);
+  assertTrue(signature.length != 0, `${debugMessage}: Signature is empty.`);
 
   let webCryptoPublicKey;
   try {
     webCryptoPublicKey = await crypto.subtle.importKey(
         'spki', spki, params.importKey, false, ['verify']);
   } catch (error) {
-    fail(debugMessage + ': Import failed: ' + error);
+    fail(`${debugMessage}: Import failed: ${error}`);
   }
 
   // Checks that the imported key has the same `modulusLength` and
@@ -474,10 +474,10 @@ async function verifyRsaKeySign(
     success = await crypto.subtle.verify(
         params.verify, webCryptoPublicKey, signature, DATA);
   } catch (error) {
-    fail(debugMessage + ': Verification failed: ' + error);
+    fail(`${debugMessage}: Verification failed: ${error}`);
   }
 
-  assertEq(true, success, debugMessage + ': Signature invalid.');
+  assertEq(true, success, `${debugMessage}: Signature invalid.`);
   return [keyPair, spki];
 }
 
@@ -490,18 +490,18 @@ async function verifyEcKeySign(
   try {
     signature = await subtleCrypto.sign(params.sign, keyPair.privateKey, DATA);
   } catch (error) {
-    fail(debugMessage + ': Sign failed: ' + error);
+    fail(`${debugMessage}: Sign failed: ${error}`);
   }
 
-  assertTrue(!!signature, debugMessage + ': No signature.');
-  assertTrue(signature.length != 0, debugMessage + ': Signature is empty.');
+  assertTrue(!!signature, `${debugMessage}: No signature.`);
+  assertTrue(signature.length != 0, `${debugMessage}: Signature is empty.`);
 
   let webCryptoPublicKey;
   try {
     webCryptoPublicKey = await crypto.subtle.importKey(
         'spki', spki, params.importKey, false, ['verify']);
   } catch (error) {
-    fail(debugMessage + ': Import failed: ' + error);
+    fail(`${debugMessage}: Import failed: ${error}`);
   }
 
   assertTrue(!!webCryptoPublicKey);
@@ -511,10 +511,10 @@ async function verifyEcKeySign(
     success = await crypto.subtle.verify(
         params.verify, webCryptoPublicKey, signature, DATA);
   } catch (error) {
-    fail(debugMessage + ': Verification failed: ' + error);
+    fail(`${debugMessage}: Verification failed: ${error}`);
   }
 
-  assertEq(true, success, debugMessage + ': Signature invalid.');
+  assertEq(true, success, `${debugMessage}: Signature invalid.`);
   return [keyPair, spki];
 }
 
@@ -534,7 +534,7 @@ async function generateRsaKeyAndVerify(subtleCrypto, params) {
     keyPair =
         await subtleCrypto.generateKey(params.generateKey, false, ['sign']);
   } catch (error) {
-    fail('GenerateKey failed: ' + error);
+    fail(`GenerateKey failed: ${error}`);
   }
   assertTrue(!!keyPair, 'No key pair.');
 
@@ -542,7 +542,7 @@ async function generateRsaKeyAndVerify(subtleCrypto, params) {
   try {
     publicKeySpki = await subtleCrypto.exportKey('spki', keyPair.publicKey);
   } catch (error) {
-    fail('Export failed: ' + error);
+    fail(`Export failed: ${error}`);
   }
 
   // Ensure that the returned key pair has the expected format. Some parameter
@@ -550,11 +550,11 @@ async function generateRsaKeyAndVerify(subtleCrypto, params) {
   checkRsaKeyPairCommonFormat(keyPair);
 
   // Checks depending on the generateKey arguments:
-  var privateKey = keyPair.privateKey;
+  const privateKey = keyPair.privateKey;
   assertEq(['sign'], privateKey.usages);
   assertEq(params.generateKey, privateKey.algorithm);
 
-  var publicKey = keyPair.publicKey;
+  const publicKey = keyPair.publicKey;
   assertEq([], publicKey.usages);
   assertEq(params.generateKey, publicKey.algorithm);
 
@@ -578,7 +578,7 @@ async function generateEcKeyAndVerify(subtleCrypto, params) {
     keyPair =
         await subtleCrypto.generateKey(params.generateKey, false, ['sign']);
   } catch (error) {
-    fail('GenerateKey failed: ' + error);
+    fail(`GenerateKey failed: ${error}`);
   }
   assertTrue(!!keyPair, 'No key pair.');
 
@@ -586,7 +586,7 @@ async function generateEcKeyAndVerify(subtleCrypto, params) {
   try {
     publicKeySpki = await subtleCrypto.exportKey('spki', keyPair.publicKey);
   } catch (error) {
-    fail('Export failed: ' + error);
+    fail(`Export failed: ${error}`);
   }
 
   // Ensure that the returned key pair has the expected format. Some parameter
@@ -594,11 +594,11 @@ async function generateEcKeyAndVerify(subtleCrypto, params) {
   checkEcKeyPairCommonFormat(keyPair);
 
   // Checks depending on the generateKey arguments:
-  var privateKey = keyPair.privateKey;
+  const privateKey = keyPair.privateKey;
   assertEq(['sign'], privateKey.usages);
   assertEq(params.generateKey, privateKey.algorithm);
 
-  var publicKey = keyPair.publicKey;
+  const publicKey = keyPair.publicKey;
   assertEq([], publicKey.usages);
   assertEq(params.generateKey, publicKey.algorithm);
 
@@ -619,7 +619,7 @@ async function generateRsaOaepKey(subtleCrypto, algorithm) {
   try {
     keyPair = await subtleCrypto.generateKey(algorithm, false, ['unwrapKey']);
   } catch (error) {
-    fail('GenerateKey failed: ' + error);
+    fail(`GenerateKey failed: ${error}`);
   }
   assertTrue(!!keyPair, 'No key pair.');
 
@@ -627,7 +627,7 @@ async function generateRsaOaepKey(subtleCrypto, algorithm) {
   try {
     publicKeySpki = await subtleCrypto.exportKey('spki', keyPair.publicKey);
   } catch (error) {
-    fail('Export failed: ' + error);
+    fail(`Export failed: ${error}`);
   }
 
   // Ensure that the returned key pair has the expected format. Some parameter
@@ -635,11 +635,11 @@ async function generateRsaOaepKey(subtleCrypto, algorithm) {
   checkRsaKeyPairCommonFormat(keyPair);
 
   // Checks depending on the generateKey arguments:
-  var privateKey = keyPair.privateKey;
+  const privateKey = keyPair.privateKey;
   assertEq(['unwrapKey'], privateKey.usages);
   assertEq(algorithm, privateKey.algorithm);
 
-  var publicKey = keyPair.publicKey;
+  const publicKey = keyPair.publicKey;
   assertEq([], publicKey.usages);
   assertEq(algorithm, publicKey.algorithm);
 }
@@ -732,7 +732,7 @@ async function testGenerateRsassaKeyAndSignAllowedMultipleTimes(subtleCrypto) {
 // Generates a RSASSA-PKCS1-v1_5 key and signs some data with other algorithm
 // params. Verifies the signature using WebCrypto.
 async function testGenerateRsassaKeyAndSignOtherParams(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     modulusLength: 1024,
     // Equivalent to 65537.
@@ -742,7 +742,7 @@ async function testGenerateRsassaKeyAndSignOtherParams(subtleCrypto) {
     }
   };
 
-  var otherRsassaParams = {
+  const otherRsassaParams = {
     sign: RSASSA_NAME_ALGORITHM,
     verify: RSASSA_NAME_ALGORITHM,
     generateKey: algorithm,
@@ -840,7 +840,7 @@ async function testGenerateRsaOaepKey(subtleCrypto) {
 
 // Generates a RSA-OAEP key with other algorithm params.
 async function testGenerateRsaOaepKeyOtherParams(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'RSA-OAEP',
     modulusLength: 1024,
     // Equivalent to 65537.
@@ -856,7 +856,7 @@ async function testGenerateRsaOaepKeyOtherParams(subtleCrypto) {
 
 // Call generate RSA key with unsupported algorithm name.
 async function testGenerateRsaKeyUnsupportedAlgorithmName(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'RSA-PSS',
     modulusLength: 2048,
     // Equivalent to 65537.
@@ -878,7 +878,7 @@ async function testGenerateRsaKeyUnsupportedAlgorithmName(subtleCrypto) {
 
 // Call generate RSA key with invalid algorithm param, missing modulusLength.
 async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     // Equivalent to 65537.
     publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
@@ -899,7 +899,7 @@ async function testGenerateRsaKeyParamMissingModulusLength(subtleCrypto) {
 
 // Call generate RSA key with invalid algorithm param, missing publicExponent.
 async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     modulusLength: 1024,
     hash: {
@@ -919,7 +919,7 @@ async function testGenerateRsaKeyParamMissingPublicExponent(subtleCrypto) {
 
 // Call generate RSA key with invalid algorithm param, missing hash.
 async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     modulusLength: 1024,
     // Equivalent to 65537.
@@ -939,7 +939,7 @@ async function testGenerateRsaKeyParamMissingHash(subtleCrypto) {
 // Call generate RSA key with invalid algorithm param, unsupported public
 // exponent.
 async function testGenerateRsaKeyParamUnsupportedPublicExponent(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'RSASSA-PKCS1-v1_5',
     modulusLength: 2048,
     // Different from 65537.
@@ -957,7 +957,7 @@ async function testGenerateRsaKeyParamUnsupportedPublicExponent(subtleCrypto) {
 }
 
 async function testGenerateEcKeyUnsupportedAlgorithmName(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'ECDH',
     namedCurve: 'P-256',
   };
@@ -973,7 +973,7 @@ async function testGenerateEcKeyUnsupportedAlgorithmName(subtleCrypto) {
 }
 
 async function testGenerateEcKeyParamMissingNamedCurve(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'ECDSA',
   };
 
@@ -988,7 +988,7 @@ async function testGenerateEcKeyParamMissingNamedCurve(subtleCrypto) {
 }
 
 async function testGenerateEcKeyParamUnsupportedNamedCurve(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'ECDSA',
     namedCurve: 'P-384',
   };
@@ -1005,7 +1005,7 @@ async function testGenerateEcKeyParamUnsupportedNamedCurve(subtleCrypto) {
 
 // Call generate AES key with invalid algorithm param, missing length.
 async function testGenerateAesKeyParamMissingLength(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'AES-CBC',
   };
 
@@ -1021,7 +1021,7 @@ async function testGenerateAesKeyParamMissingLength(subtleCrypto) {
 
 // Call generate AES key with invalid algorithm param, unsupported length.
 async function testGenerateAesKeyParamUnsupportedLength(subtleCrypto) {
-  var algorithm = {
+  const algorithm = {
     name: 'AES-CBC',
     length: 128,
   };
@@ -1113,7 +1113,7 @@ function testHasSubtleCryptoObjects(token) {
 }
 
 function testImportInvalidCert(token) {
-  var invalidCert = new ArrayBuffer(16);
+  const invalidCert = new ArrayBuffer(16);
   chrome.enterprise.platformKeys.importCertificate(
       token.id, invalidCert,
       callbackFail('Certificate is not a valid X.509 certificate.'));
@@ -1125,7 +1125,7 @@ function testRemoveUnknownCert(token) {
 }
 
 function testRemoveInvalidCert(token) {
-  var invalidCert = new ArrayBuffer(16);
+  const invalidCert = new ArrayBuffer(16);
   chrome.enterprise.platformKeys.removeCertificate(
       token.id, invalidCert,
       callbackFail('Certificate is not a valid X.509 certificate.'));
@@ -1133,7 +1133,7 @@ function testRemoveInvalidCert(token) {
 
 function bindTestsToObject(tests, object) {
   return tests.map(function(test) {
-    var bound = test.bind(undefined, object);
+    const bound = test.bind(undefined, object);
     bound.generatedName = test.name;
     return bound;
   });

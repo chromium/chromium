@@ -34,7 +34,7 @@ chrome.test.getConfig(function(config) {
     return testFunc.name === testName;
   });
   if (tests.length !== 1) {
-    chrome.test.notifyFail('Test not found ' + testName);
+    chrome.test.notifyFail(`Test not found ${testName}`);
     return;
   }
 
