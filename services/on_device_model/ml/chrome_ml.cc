@@ -87,6 +87,7 @@ void FatalGpuErrorFn(const char* msg) {
     // Collect crash reports on unknown errors.
     NOTREACHED() << "ChromeML(GPU) Error: " << msg;
   } else {
+    LOG(ERROR) << "Terminating On-Device Model Service: " << msg_str;
     base::Process::TerminateCurrentProcessImmediately(0);
   }
 }
