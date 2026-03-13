@@ -218,6 +218,7 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     service_->OnPageEmbeddingsAvailable(web_contents->GetPrimaryPage());
   }
 
+  base::ScopedTempDir temp_dir_;
   ContentAnnotatorFeatureList feature_list_;
   history::HistoryService history_service_;
   optimization_guide::TestOptimizationGuideModelProvider
@@ -238,7 +239,6 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
       mock_embedder_metadata_provider_;
   std::unique_ptr<TestContentAnnotatorService> service_;
   raw_ptr<testing::StrictMock<MockContentClassifier>> mock_classifier_;
-  base::ScopedTempDir temp_dir_;
 };
 
 TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_ClassificationTriggered) {
