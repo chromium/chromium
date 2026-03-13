@@ -50,7 +50,7 @@ class FakeClient : public PaintManager::Client {
   MOCK_METHOD(void, InvalidatePluginContainer, (), (override));
   MOCK_METHOD(SkBitmap*,
               InstallBuffer,
-              (SkImageInfo image_info, void* data),
+              (SkImageInfo image_info, base::span<uint8_t> data),
               (override));
   MOCK_METHOD(void,
               OnPaint,
@@ -85,8 +85,8 @@ class PaintManagerTest : public testing::TestWithParam<bool> {
   void SetSizeAndInstall(const gfx::Size& new_size, float device_scale) {
     if (GetParam()) {
       EXPECT_CALL(client_, InstallBuffer)
-          .WillOnce([this](SkImageInfo image_info, void* data) {
-            this->client_bitmap_.installPixels(image_info, data,
+          .WillOnce([this](SkImageInfo image_info, base::span<uint8_t> data) {
+            this->client_bitmap_.installPixels(image_info, data.data(),
                                                image_info.minRowBytes());
             return &client_bitmap_;
           });

@@ -69,7 +69,8 @@ class PaintManager {
 
     // Install the image buffer into the backing store used by PDFium for the
     // purposes of the PdfBufferedPaintManager experiment.
-    virtual SkBitmap* InstallBuffer(SkImageInfo image_info, void* data) = 0;
+    virtual SkBitmap* InstallBuffer(SkImageInfo image_info,
+                                    base::span<uint8_t> data) = 0;
 
     // Updates the client with the latest snapshot created by `Flush()`.
     virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;

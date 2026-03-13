@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "pdf/buildflags.h"
 #include "services/screen_ai/buildflags/buildflags.h"
@@ -138,8 +139,7 @@ class PDFiumEngineClient {
 
   // Submit the data using HTTP POST.
   virtual void SubmitForm(const std::string& url,
-                          const void* data,
-                          int length) {}
+                          base::span<const uint8_t> data) {}
 
   // Creates and returns new URL loader for partial document requests.
   virtual std::unique_ptr<UrlLoader> CreateUrlLoader() = 0;

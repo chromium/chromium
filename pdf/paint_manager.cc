@@ -155,7 +155,7 @@ void PaintManager::SetSize(const gfx::Size& new_size,
     }
     engine_buffer_ = GetBuffer();
     engine_bitmap_ =
-        client_->InstallBuffer(image_info_, engine_buffer_->allocation.data());
+        client_->InstallBuffer(image_info_, engine_buffer_->allocation);
 
     client_->UpdateScale(1.0f / device_scale_);
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "pdf/buildflags.h"
@@ -60,8 +61,7 @@ class PreviewModeClient : public PDFiumEngineClient {
              const std::string& body) override;
   void Print() override;
   void SubmitForm(const std::string& url,
-                  const void* data,
-                  int length) override;
+                  base::span<const uint8_t> data) override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   v8::Isolate* GetIsolate() override;
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,

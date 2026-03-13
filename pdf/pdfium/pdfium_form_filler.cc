@@ -11,6 +11,8 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
@@ -698,7 +700,11 @@ void PDFiumFormFiller::Form_SubmitForm(IPDF_JSPLATFORM* param,
   std::string url_str = WideStringToString(url);
   EngineInIsolateScope engine_scope = GetEngineInIsolateScope(param);
   PDFiumEngine* engine = engine_scope.engine();
-  engine->client_->SubmitForm(url_str, form_data, length);
+  CHECK_GE(length, 0);
+  // SAFETY: Requires PDFium to provide a valid pointer and length.
+  engine->client_->SubmitForm(
+      url_str, UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(form_data),
+                                         static_cast<size_t>(length))));
 }
 
 // static

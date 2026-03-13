@@ -2619,7 +2619,7 @@ class PdfViewWebPluginSubmitFormTest
       return associated_loader;
     });
 
-    plugin_->SubmitForm(url, form_data.data(), form_data.size());
+    plugin_->SubmitForm(url, base::as_byte_span(form_data));
   }
 
   void SubmitFailingForm(const std::string& url) {
@@ -2628,7 +2628,7 @@ class PdfViewWebPluginSubmitFormTest
     EXPECT_CALL(*client_ptr_, CreateAssociatedURLLoader).Times(0);
 
     constexpr std::string_view kFormData = "form data";
-    plugin_->SubmitForm(url, kFormData.data(), kFormData.size());
+    plugin_->SubmitForm(url, base::as_byte_span(kFormData));
   }
 
   blink::WebURLRequest request_;

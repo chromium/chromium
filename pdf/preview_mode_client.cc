@@ -119,8 +119,7 @@ void PreviewModeClient::Print() {
 }
 
 void PreviewModeClient::SubmitForm(const std::string& url,
-                                   const void* data,
-                                   int length) {
+                                   base::span<const uint8_t> data) {
   NOTREACHED();
 }
 

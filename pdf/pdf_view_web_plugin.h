@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -387,8 +388,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
              const std::string& body) override;
   void Print() override;
   void SubmitForm(const std::string& url,
-                  const void* data,
-                  int length) override;
+                  base::span<const uint8_t> data) override;
   std::unique_ptr<UrlLoader> CreateUrlLoader() override;
   v8::Isolate* GetIsolate() override;
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,
@@ -450,7 +450,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void OnPaint(const std::vector<gfx::Rect>& paint_rects,
                std::vector<PaintReadyRect>& ready,
                std::vector<gfx::Rect>& pending) override;
-  SkBitmap* InstallBuffer(SkImageInfo image_info, void* data) override;
+  SkBitmap* InstallBuffer(SkImageInfo image_info,
+                          base::span<uint8_t> data) override;
   void UpdateSnapshot(sk_sp<SkImage> snapshot) override;
   void UpdateScale(float scale) override;
   void UpdateLayerTransform(float scale,
