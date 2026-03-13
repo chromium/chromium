@@ -251,13 +251,12 @@ bool KeyUsagesFromWireFormat(uint32_t raw_usages,
                              WebCryptoKeyUsageMask* usages,
                              bool* extractable) {
   // Reminder to update this when adding new key usages.
-  static_assert(kEndOfWebCryptoKeyUsage == (1 << 11) + 1,
+  static_assert(kEndOfWebCryptoKeyUsage == (1 << 7) + 1,
                 "update required when adding new key usages");
   const uint32_t kAllPossibleUsages =
       kExtractableUsage | kEncryptUsage | kDecryptUsage | kSignUsage |
       kVerifyUsage | kDeriveKeyUsage | kWrapKeyUsage | kUnwrapKeyUsage |
-      kDeriveBitsUsage | kEncapsulateKeyUsage | kEncapsulateBitsUsage |
-      kDecapsulateKeyUsage | kDecapsulateBitsUsage;
+      kDeriveBitsUsage;
   if (raw_usages & ~kAllPossibleUsages)
     return false;
 
@@ -279,18 +278,6 @@ bool KeyUsagesFromWireFormat(uint32_t raw_usages,
     *usages |= kWebCryptoKeyUsageUnwrapKey;
   if (raw_usages & kDeriveBitsUsage)
     *usages |= kWebCryptoKeyUsageDeriveBits;
-  if (raw_usages & kEncapsulateKeyUsage) {
-    *usages |= kWebCryptoKeyUsageEncapsulateKey;
-  }
-  if (raw_usages & kEncapsulateBitsUsage) {
-    *usages |= kWebCryptoKeyUsageEncapsulateBits;
-  }
-  if (raw_usages & kDecapsulateKeyUsage) {
-    *usages |= kWebCryptoKeyUsageDecapsulateKey;
-  }
-  if (raw_usages & kDecapsulateBitsUsage) {
-    *usages |= kWebCryptoKeyUsageDecapsulateBits;
-  }
   return true;
 }
 

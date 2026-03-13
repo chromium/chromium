@@ -42,8 +42,6 @@ namespace blink {
 
 class CryptoKey;
 class DOMArrayBuffer;
-class EncapsulatedBits;
-class EncapsulatedKey;
 
 class SubtleCrypto final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -124,38 +122,6 @@ class SubtleCrypto final : public ScriptWrappable {
                                   bool extractable,
                                   const Vector<String>&,
                                   ExceptionState&);
-
-  ScriptPromise<EncapsulatedKey> encapsulateKey(
-      ScriptState*,
-      const V8AlgorithmIdentifier* encapsulation_algorithm,
-      CryptoKey* encapsulation_key,
-      const V8AlgorithmIdentifier* shared_key_algorithm,
-      bool extractable,
-      const Vector<String>& key_usages,
-      ExceptionState&);
-
-  ScriptPromise<EncapsulatedBits> encapsulateBits(
-      ScriptState*,
-      const V8AlgorithmIdentifier* encapsulation_algorithm,
-      CryptoKey* encapsulation_key,
-      ExceptionState&);
-
-  ScriptPromise<CryptoKey> decapsulateKey(
-      ScriptState*,
-      const V8AlgorithmIdentifier* decapsulation_algorithm,
-      CryptoKey* decapsulation_key,
-      const V8BufferSource* ciphertext,
-      const V8AlgorithmIdentifier* shared_key_algorithm,
-      bool extractable,
-      const Vector<String>& key_usages,
-      ExceptionState&);
-
-  ScriptPromise<DOMArrayBuffer> decapsulateBits(
-      ScriptState*,
-      const V8AlgorithmIdentifier* decapsulation_algorithm,
-      CryptoKey* decapsulation_key,
-      const V8BufferSource* ciphertext,
-      ExceptionState&);
 };
 
 }  // namespace blink

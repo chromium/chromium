@@ -1101,14 +1101,6 @@ const char* OperationToString(WebCryptoOperation op) {
       return "wrapKey";
     case kWebCryptoOperationUnwrapKey:
       return "unwrapKey";
-    case kWebCryptoOperationEncapsulateKey:
-      return "encapsulateKey";
-    case kWebCryptoOperationEncapsulateBits:
-      return "encapsulateBits";
-    case kWebCryptoOperationDecapsulateKey:
-      return "decapsulateKey";
-    case kWebCryptoOperationDecapsulateBits:
-      return "decapsulateBits";
   }
   return nullptr;
 }

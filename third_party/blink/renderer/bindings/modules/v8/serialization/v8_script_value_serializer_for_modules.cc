@@ -468,7 +468,7 @@ uint32_t NamedCurveForWireFormat(WebCryptoNamedCurve named_curve) {
 uint32_t KeyUsagesForWireFormat(WebCryptoKeyUsageMask usages,
                                 bool extractable) {
   // Reminder to update this when adding new key usages.
-  static_assert(kEndOfWebCryptoKeyUsage == (1 << 11) + 1,
+  static_assert(kEndOfWebCryptoKeyUsage == (1 << 7) + 1,
                 "update required when adding new key usages");
   uint32_t value = 0;
   if (extractable)
@@ -489,18 +489,6 @@ uint32_t KeyUsagesForWireFormat(WebCryptoKeyUsageMask usages,
     value |= kUnwrapKeyUsage;
   if (usages & kWebCryptoKeyUsageDeriveBits)
     value |= kDeriveBitsUsage;
-  if (usages & kWebCryptoKeyUsageEncapsulateKey) {
-    value |= kEncapsulateKeyUsage;
-  }
-  if (usages & kWebCryptoKeyUsageEncapsulateBits) {
-    value |= kEncapsulateBitsUsage;
-  }
-  if (usages & kWebCryptoKeyUsageDecapsulateKey) {
-    value |= kDecapsulateKeyUsage;
-  }
-  if (usages & kWebCryptoKeyUsageDecapsulateBits) {
-    value |= kDecapsulateBitsUsage;
-  }
   return value;
 }
 

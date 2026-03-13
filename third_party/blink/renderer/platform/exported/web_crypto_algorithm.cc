@@ -59,11 +59,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                // DeriveBits
          kWebCryptoAlgorithmParamsTypeAesCbcParams,         // WrapKey
-         kWebCryptoAlgorithmParamsTypeAesCbcParams,         // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateBits
+         kWebCryptoAlgorithmParamsTypeAesCbcParams          // UnwrapKey
      }},
     {// Index 1
      "HMAC",
@@ -78,11 +74,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeHmacImportParams,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,             // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,             // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,             // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,             // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,             // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,             // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,             // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined              // UnwrapKey
      }},
     {// Index 2
      "RSASSA-PKCS1-v1_5",
@@ -97,11 +89,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,                  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined                   // UnwrapKey
      }},
     {// Index 3
      "SHA-1",
@@ -116,11 +104,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 4
      "SHA-256",
@@ -135,11 +119,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 5
      "SHA-384",
@@ -154,11 +134,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 6
      "SHA-512",
@@ -173,11 +149,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 7
      "AES-GCM",
@@ -192,11 +164,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                // DeriveBits
          kWebCryptoAlgorithmParamsTypeAeadParams,           // WrapKey
-         kWebCryptoAlgorithmParamsTypeAeadParams,           // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateBits
+         kWebCryptoAlgorithmParamsTypeAeadParams            // UnwrapKey
      }},
     {// Index 8
      "RSA-OAEP",
@@ -211,11 +179,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                  // DeriveBits
          kWebCryptoAlgorithmParamsTypeRsaOaepParams,          // WrapKey
-         kWebCryptoAlgorithmParamsTypeRsaOaepParams,          // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // DecapsulateBits
+         kWebCryptoAlgorithmParamsTypeRsaOaepParams           // UnwrapKey
      }},
     {// Index 9
      "AES-CTR",
@@ -230,11 +194,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                // DeriveBits
          kWebCryptoAlgorithmParamsTypeAesCtrParams,         // WrapKey
-         kWebCryptoAlgorithmParamsTypeAesCtrParams,         // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateBits
+         kWebCryptoAlgorithmParamsTypeAesCtrParams          // UnwrapKey
      }},
     {// Index 10
      "AES-KW",
@@ -249,11 +209,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                // DeriveBits
          kWebCryptoAlgorithmParamsTypeNone,                 // WrapKey
-         kWebCryptoAlgorithmParamsTypeNone,                 // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateBits
+         kWebCryptoAlgorithmParamsTypeNone                  // UnwrapKey
      }},
     {// Index 11
      "RSA-PSS",
@@ -268,11 +224,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,                  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,                  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined                   // UnwrapKey
      }},
     {// Index 12
      "ECDSA",
@@ -287,11 +239,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,              // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,              // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,              // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,              // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,              // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,              // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,              // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,              // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined               // UnwrapKey
      }},
     {// Index 13
      "ECDH",
@@ -306,11 +254,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // GetKeyLength
          kWebCryptoAlgorithmParamsTypeEcdhKeyDeriveParams,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,                // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined                 // UnwrapKey
      }},
     {// Index 14
      "HKDF",
@@ -325,11 +269,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,        // GetKeyLength
          kWebCryptoAlgorithmParamsTypeHkdfParams,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,       // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,       // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,       // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,       // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,       // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,       // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined        // UnwrapKey
      }},
     {// Index 15
      "PBKDF2",
@@ -344,11 +284,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,          // GetKeyLength
          kWebCryptoAlgorithmParamsTypePbkdf2Params,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,         // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,         // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,         // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,         // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,         // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,         // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined          // UnwrapKey
      }},
     {// Index 16
      "Ed25519",
@@ -363,11 +299,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 17
      "X25519",
@@ -382,11 +314,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,                // GetKeyLength
          kWebCryptoAlgorithmParamsTypeEcdhKeyDeriveParams,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,                // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,                // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined                 // UnwrapKey
      }},
     {// Index 18
      // TODO(crbug.com/450627018): ChaCha20-Poly1305 is experimental behind
@@ -403,11 +331,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          kWebCryptoAlgorithmParamsTypeNone,        // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,       // DeriveBits
          kWebCryptoAlgorithmParamsTypeAeadParams,  // WrapKey
-         kWebCryptoAlgorithmParamsTypeAeadParams,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,       // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,       // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,       // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,       // DecapsulateBits
+         kWebCryptoAlgorithmParamsTypeAeadParams   // UnwrapKey
      }},
     {// Index 19
      // TODO(crbug.com/450848555): ML-DSA-44 is experimental behind
@@ -425,11 +349,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 20
      // TODO(crbug.com/450848555): ML-DSA-65 is experimental behind
@@ -447,11 +367,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 21
      // TODO(crbug.com/450848555): ML-DSA-87 is experimental behind
@@ -469,11 +385,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 22
      // TODO(crbug.com/450627019): ML-KEM-768 is experimental behind
@@ -491,11 +403,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
     {// Index 23
      // TODO(crbug.com/450627019): ML-KEM-1024 is experimental behind
@@ -513,11 +421,7 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
          WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
          WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
          WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // UnwrapKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // EncapsulateBits
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // DecapsulateBits
+         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
      }},
 });
 
@@ -552,7 +456,7 @@ static_assert(kWebCryptoAlgorithmIdMlKem768 == 22, "ML-KEM-768 id must match");
 static_assert(kWebCryptoAlgorithmIdMlKem1024 == 23,
               "ML-KEM-1024 id must match");
 static_assert(kWebCryptoAlgorithmIdLast == 23, "last id must match");
-static_assert(14 == kWebCryptoOperationLast,
+static_assert(10 == kWebCryptoOperationLast,
               "the parameter mapping needs to be updated");
 
 }  // namespace

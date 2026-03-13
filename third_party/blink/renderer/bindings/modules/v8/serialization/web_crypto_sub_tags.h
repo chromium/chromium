@@ -58,10 +58,6 @@ enum CryptoKeyUsage : uint32_t {
   kWrapKeyUsage = 1 << 6,
   kUnwrapKeyUsage = 1 << 7,
   kDeriveBitsUsage = 1 << 8,
-  kEncapsulateKeyUsage = 1 << 9,
-  kEncapsulateBitsUsage = 1 << 10,
-  kDecapsulateKeyUsage = 1 << 11,
-  kDecapsulateBitsUsage = 1 << 12,
   // Maximum allowed value is 1 << 31
 };
 
