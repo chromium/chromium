@@ -486,7 +486,14 @@ class CORE_EXPORT HTMLSelectElement final
   // element to see which one is selected. When this element has the multiple
   // attribute, last_on_change_option_ is not used.
   Member<HTMLOptionElement> last_on_change_option_;
+
+  // Option to display in the select element without actually changing its
+  // `last_on_change_option_`. This is introduced to be able to display
+  // information on an element without leaking it to JavaScript. Reasons for
+  // that could be previewing a value to be filled before getting explicit user
+  // consent for going ahead and filling.
   Member<HTMLOptionElement> suggested_option_;
+
   Member<SelectType> select_type_;
   Member<SelectMutationObserver> descendants_observer_;
   TreeOrderedList<HTMLSelectedContentElement> descendant_selectedcontents_;

@@ -79,18 +79,20 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // select element it finds the option with value matches the given parameter
   // and make the option as the current selection.
   void SetValue(const WebString&, bool send_events = false);
-  // Sets the autofilled value for input element, textarea element and select
-  // element and sends a sequence of events to the element. The default
-  // parameter for the WebAutofillState will do the right thing (setting
-  // kAutofilled state if the value is non-null) except in two situations:
-  // - When resetting the state of <select> elements the state at page load, the
-  //   passed value parameter is non-null and yet the select element should be
-  //   in non-autofilled state. This is why the autofill state is only
-  //   considered for <select> elements.
-  // - When filling a value from a <datalist> the field should not be labeled
-  //   as autofilled.
-  void SetAutofillValue(const WebString&,
-                        WebAutofillState = WebAutofillState::kAutofilled);
+  // Sets the value of a form element with `value` and updates the
+  // `WebAutofillState` of the field accordingly.
+  //
+  // Also simulates a user's keyboard interaction:
+  // - Input/TextArea: (Focus -> KeyDown -> Value Change -> KeyUp -> Blur).
+  // - Select:         (Focus            -> Value Change          -> Blur).
+  //
+  // NOTE: For WebSelectElement, this will search for the FIRST option matching
+  // `value` in the element's list of options and select it if found. Otherwise,
+  // the value/state are left unchanged and no "Value Change" event is
+  // dispatched.
+  void SetAutofillValue(
+      const WebString& value,
+      WebAutofillState autofill_state = WebAutofillState::kAutofilled);
   // Triggers the emission of a focus event.
   void DispatchFocusEvent();
   // Triggers the emission of a blur event.
@@ -102,10 +104,9 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // is returned. If element doesn't fall into input element, textarea element
   // and select element categories, a null string is returned.
   WebString Value() const;
-  // Sets suggested value for element. For select element it finds the option
-  // with value matches the given parameter and make the option as the suggested
-  // selection. The goal of introducing suggested value is to not leak any
-  // information to JavaScript.
+  // Sets suggested value for element. For select element it finds the FIRST
+  // option with value matches the given parameter and make the option as the
+  // suggested selection.
   // A null value indicates that the suggested value should be hidden.
   void SetSuggestedValue(const WebString&);
   // Returns suggested value of element. If element doesn't fall into input
@@ -114,8 +115,8 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   WebString SuggestedValue() const;
 
   // Returns the non-sanitized, exact value inside the text input field
-  // or insisde the textarea. If neither input element nor textarea element,
-  // a null string is returned.
+  // or inside the textarea. If neither input element nor textarea element, a
+  // null string is returned.
   WebString EditingValue() const;
 
   // The maximum length in terms of text length the form control can hold. Like
