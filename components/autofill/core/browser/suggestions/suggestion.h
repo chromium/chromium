@@ -346,6 +346,7 @@ struct Suggestion {
     kLoyalty,
     kMagic,
     kOfferTag,
+    kPassport,
     kPenSpark,
     kPersonCheck,
     kPlusAddress,

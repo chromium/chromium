@@ -180,6 +180,7 @@ if (current_toolchain == default_toolchain) {
       "notifications_off_chrome_refresh.icon",
       "page_info_content_paste.icon",
       "passkey.icon",
+      "passport.icon",
       "password_manager.icon",
       "password_manager_off.icon",
       "pause.icon",

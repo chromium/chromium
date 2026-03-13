@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -370,7 +371,10 @@ Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
     case EntityTypeName::kOrder:
       return Suggestion::Icon::kNoIcon;
     case EntityTypeName::kPassport:
-      return Suggestion::Icon::kIdCard;
+      return base::FeatureList::IsEnabled(
+                 features::kAutofillAiWalletPrivatePasses)
+                 ? Suggestion::Icon::kPassport
+                 : Suggestion::Icon::kIdCard;
     case EntityTypeName::kKnownTravelerNumber:
       return Suggestion::Icon::kPersonCheck;
     case EntityTypeName::kRedressNumber:
