@@ -71,7 +71,6 @@ class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
   }
 
   void MarkShapeAsDirty() { shape_.reset(); }
-  bool IsShapeDirty() { return !shape_.get(); }
   bool IsComputingShape() const { return is_computing_shape_; }
 
   PhysicalRect ComputedShapePhysicalBoundingBox() const;

@@ -142,8 +142,6 @@ class CORE_EXPORT LineBreaker {
   const String& Text() const { return text_content_; }
   const InlineItems& Items() const { return items_data_->items; }
 
-  String TextContentForLineBreak() const;
-
   InlineItemResult* AddItem(const InlineItem&, unsigned end_offset, LineInfo*);
   InlineItemResult* AddItem(const InlineItem&, LineInfo*);
   InlineItemResult* AddEmptyItem(const InlineItem&, LineInfo*);

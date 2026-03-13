@@ -634,12 +634,6 @@ CORE_EXPORT LayoutUnit LineOffsetForTextAlign(ETextAlign,
                                               TextDirection,
                                               LayoutUnit space_left);
 
-inline LayoutUnit ConstrainByMinMax(LayoutUnit length,
-                                    LayoutUnit min,
-                                    LayoutUnit max) {
-  return std::max(min, std::min(length, max));
-}
-
 CORE_EXPORT FragmentGeometry
 CalculateInitialFragmentGeometry(const ConstraintSpace& space,
                                  const BlockNode& node,

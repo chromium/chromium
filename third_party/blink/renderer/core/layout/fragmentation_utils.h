@@ -172,11 +172,6 @@ inline LayoutUnit ClampedToValidFragmentainerCapacity(
   return std::max(length, minimum);
 }
 
-// Return the logical size of the specified fragmentainer, with
-// clamping block_size.
-LogicalSize FragmentainerLogicalCapacity(
-    const PhysicalBoxFragment& fragmentainer);
-
 // Return the fragmentainer block-size to use during layout. This is normally
 // the same as the block-size we'll give to the fragment itself, but in order to
 // ensure content progression, we need fragmentainers to hold something larger
