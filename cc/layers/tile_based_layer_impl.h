@@ -81,6 +81,8 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
     return produced_tile_last_append_quads_;
   }
 
+  virtual float GetMaximumContentsScaleForUseInAppendQuads() const = 0;
+
  protected:
   TileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
       : LayerImpl(tree_impl, id) {}
@@ -200,8 +202,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       const std::optional<gfx::Rect>& scaled_cull_rect,
       float max_contents_scale,
       AppendQuadsCustomSharedData* custom_data) = 0;
-
-  virtual float GetMaximumContentsScaleForUseInAppendQuads() const = 0;
 
   virtual bool IsDirectlyCompositedImage() const = 0;
 

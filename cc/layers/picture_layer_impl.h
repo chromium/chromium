@@ -101,6 +101,8 @@ class CC_EXPORT PictureLayerImpl
     return gpu_raster_max_texture_size_;
   }
 
+  float GetMaximumContentsScaleForUseInAppendQuads() const override;
+
   void UpdateRasterSource(scoped_refptr<RasterSource> raster_source,
                           Region* new_invalidation);
   void SetRasterSourceForTesting(scoped_refptr<RasterSource> raster_source,
@@ -411,7 +413,6 @@ class CC_EXPORT PictureLayerImpl
   // TileBasedLayerImpl:
   std::unique_ptr<AppendQuadsCustomSharedData> WillAppendQuads(
       float max_contents_scale) override;
-  float GetMaximumContentsScaleForUseInAppendQuads() const override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
       viz::CompositorRenderPass* render_pass,

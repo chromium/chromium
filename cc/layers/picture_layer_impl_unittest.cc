@@ -6490,6 +6490,43 @@ TEST_F(PictureLayerImplTest, ComputeCheckerboardedNeedsRecord_MultipleCases) {
       ->scroll_tree_mutable()
       .SetScrollingContentsCullRect(element_id, gfx::Rect(layer_bounds));
   EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Case 5: scaled_cull_rect DOES contain unoccluded_recorded_visible_rect
+  // with max_contents_scale = 2.5.
+  SetupDrawPropertiesAndUpdateTiles(active_layer(), 2.5f, 1.f, 1.f);
+  ASSERT_EQ(2.5f, active_layer()->GetMaximumContentsScaleForUseInAppendQuads());
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Case 6: scaled_cull_rect does NOT contain unoccluded_recorded_visible_rect
+  // with max_contents_scale = 2.5.
+  host_impl()
+      ->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .SetScrollingContentsCullRect(element_id, gfx::Rect(0, 0, 100, 100));
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Case 7: scaled_cull_rect DOES contain unoccluded_recorded_visible_rect
+  // with max_contents_scale = 0.75.
+  active_layer()->picture_layer_tiling_set()->RemoveAllTilings();
+  SetupDrawPropertiesAndUpdateTiles(active_layer(), 0.75f, 1.f, 1.f);
+  ASSERT_EQ(0.75f,
+            active_layer()->GetMaximumContentsScaleForUseInAppendQuads());
+  host_impl()
+      ->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .SetScrollingContentsCullRect(element_id, gfx::Rect(layer_bounds));
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Case 8: scaled_cull_rect does NOT contain unoccluded_recorded_visible_rect
+  // with max_contents_scale = 0.75.
+  host_impl()
+      ->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .SetScrollingContentsCullRect(element_id, gfx::Rect(0, 0, 100, 100));
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
 }
 
 TEST_F(PictureLayerImplTest,
@@ -6538,6 +6575,33 @@ TEST_F(PictureLayerImplTest,
       gfx::Rect(layer_bounds);
 
   // Initial state: visible_rect is within cull_rect.
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Scroll beyond cull_rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(1001, 0));
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Test again with max_contents_scale = 2.5.
+  active_layer()->picture_layer_tiling_set()->RemoveAllTilings();
+  SetupDrawPropertiesAndUpdateTiles(active_layer(), 2.5f, 1.f, 1.f);
+  ASSERT_EQ(2.5f, active_layer()->GetMaximumContentsScaleForUseInAppendQuads());
+
+  // visible_rect is within cull_rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(0, 0));
+  EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Scroll beyond cull_rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(1001, 0));
+  EXPECT_TRUE(active_layer()->ComputeCheckerboardedNeedsRecord());
+
+  // Test again with max_contents_scale = 0.75.
+  active_layer()->picture_layer_tiling_set()->RemoveAllTilings();
+  SetupDrawPropertiesAndUpdateTiles(active_layer(), 0.75f, 1.f, 1.f);
+  ASSERT_EQ(0.75f,
+            active_layer()->GetMaximumContentsScaleForUseInAppendQuads());
+
+  // visible_rect is within cull_rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(0, 0));
   EXPECT_FALSE(active_layer()->ComputeCheckerboardedNeedsRecord());
 
   // Scroll beyond cull_rect.
