@@ -17,7 +17,6 @@ class ActionItem;
 }  // namespace actions
 
 namespace views {
-class ActionViewController;
 class LabelButton;
 }  // namespace views
 
@@ -28,9 +27,7 @@ class ProjectsPanelControlsView : public views::View,
   METADATA_HEADER(ProjectsPanelControlsView, views::View)
 
  public:
-  ProjectsPanelControlsView(
-      actions::ActionItem* root_action_item,
-      views::ActionViewController* action_view_controller);
+  explicit ProjectsPanelControlsView(actions::ActionItem* root_action_item);
   ProjectsPanelControlsView(const ProjectsPanelControlsView&) = delete;
   ProjectsPanelControlsView& operator=(const ProjectsPanelControlsView&) =
       delete;
@@ -42,8 +39,15 @@ class ProjectsPanelControlsView : public views::View,
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
+  // Should be called when the text of the action item for toggling the panel
+  // state changes.
+  void UpdateTooltipText();
+
  private:
+  void OnCloseButtonPressed();
+
   raw_ptr<views::LabelButton> projects_button_ = nullptr;
+  raw_ptr<actions::ActionItem> toggle_projects_panel_action_item_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_CONTROLS_VIEW_H_
