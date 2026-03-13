@@ -4368,7 +4368,7 @@ shown properly on the user-facing crash UI.
   <int value="43" label="Borealis"/>
   <int value="44" label="Sunfish"/>
   <int value="45" label="Boca App"/>
-  <int value="46" label="Tracking Protections"/>
+  <int value="46" label="DEPRECATED: Tracking Protections"/>
   <int value="47" label="Split View"/>
   <int value="48" label="Vertical Tabs"/>
 </enum>
@@ -14326,7 +14326,6 @@ from previous Chrome versions.
   <int value="-52737423" label="EnableMixedContentDownloadDialog:disabled"/>
   <int value="-52483823" label="disable-new-video-renderer"/>
   <int value="-52241456" label="enable-single-click-autofill"/>
-  <int value="-52011769" label="TrackingProtectionSettingsLaunch:enabled"/>
   <int value="-51567065" label="EnableFeedbackPanel:disabled"/>
   <int value="-51041111" label="OpenXrExtendedFeatureSupport:disabled"/>
   <int value="-50628385"
@@ -14806,7 +14805,6 @@ from previous Chrome versions.
       label="ClearInstanceInfoWhenClosedIntentionally:disabled"/>
   <int value="112131756" label="AndroidSmsOtpFilling:disabled"/>
   <int value="112140177" label="DesktopPWAsUnifiedInstall:disabled"/>
-  <int value="113142558" label="TrackingProtectionOnboardingRollback:enabled"/>
   <int value="114318184" label="AccessibilityFlashScreenFeature:disabled"/>
   <int value="114480372" label="DeprecateAltClick:enabled"/>
   <int value="114541256" label="HomepagePromoCard:disabled"/>
@@ -16612,7 +16610,6 @@ from previous Chrome versions.
   <int value="722313909" label="PriceChangeModule:enabled"/>
   <int value="722334179" label="NoncedPartitionedCookies:disabled"/>
   <int value="722557672" label="AndroidAnimatedProgressBarInBrowser:disabled"/>
-  <int value="722614233" label="TrackingProtectionOnboardingRollback:disabled"/>
   <int value="722651450" label="StorageAccessHeaders:enabled"/>
   <int value="723318188" label="EnableUniveralLinks:disabled"/>
   <int value="723384042" label="RenderDocument:disabled"/>
@@ -17987,7 +17984,6 @@ from previous Chrome versions.
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
   <int value="1195087468" label="ProminentDarkModeActiveTabTitle:enabled"/>
-  <int value="1196343625" label="TrackingProtectionSettingsLaunch:disabled"/>
   <int value="1196407590" label="SmdsDbusMigration:disabled"/>
   <int value="1196644408" label="performance-monitor-gathering"/>
   <int value="1196670943" label="WebAuthFlowInBrowserTab:enabled"/>

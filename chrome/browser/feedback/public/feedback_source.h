@@ -62,7 +62,7 @@ enum FeedbackSource {
   kFeedbackSourceBorealis = 43,
   kFeedbackSourceSunfish = 44,
   kFeedbackSourceBocaApp = 45,
-  kFeedbackSourceTrackingProtections = 46,
+  // kFeedbackSourceTrackingProtections = 46, Obsolete
   kFeedbackSourceSplitView = 47,
   kFeedbackSourceVerticalTabs = 48,
 

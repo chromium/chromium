@@ -785,7 +785,7 @@ should be able to be added at any place in this file.
   <variant name="_TrackingProtectionOffboarding"
       summary="for tracking protection offboarding notice (obsolete)"/>
   <variant name="_TrackingProtectionOnboarding"
-      summary="for tracking protection onboarding notice"/>
+      summary="for tracking protection onboarding notice (obsolete)"/>
   <variant name="_TranslateMenuButton" summary="For translate menu button."/>
   <variant name="_UpdatedConnectionSecurityIndicators"
       summary="For updated omnibox connection security indicators."/>
@@ -52036,6 +52036,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.FppActive.DisableProtections">
+  <obsolete>Deprecated 03/2026 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -52045,6 +52046,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.FppActive.EnableProtections">
+  <obsolete>Deprecated 03/2026 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -52054,6 +52056,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.IppActive.DisableProtections">
+  <obsolete>Deprecated 03/2026 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
@@ -52063,6 +52066,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="TrackingProtections.Bubble.IppActive.EnableProtections">
+  <obsolete>Deprecated 03/2026 because the project was discontinued.</obsolete>
   <owner>michelleabreo@google.com</owner>
   <owner>koilos@google.com</owner>
   <description>
