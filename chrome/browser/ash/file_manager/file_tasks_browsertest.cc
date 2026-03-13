@@ -10,6 +10,7 @@
 #include <string_view>
 #include <unordered_map>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -2957,7 +2958,7 @@ class OfficeDriveHatsSurvey : public DriveTest {
  public:
   OfficeDriveHatsSurvey() {
     feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud,
-                                    ::features::kHappinessTrackingOffice},
+                                    ash::features::kHappinessTrackingOffice},
                                    {});
   }
 
@@ -3007,7 +3008,7 @@ class OfficeMS365HatsSurvey : public OneDriveTest {
  public:
   OfficeMS365HatsSurvey() {
     feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud,
-                                    ::features::kHappinessTrackingOffice},
+                                    ash::features::kHappinessTrackingOffice},
                                    {});
   }
 
@@ -3081,7 +3082,7 @@ class OfficeQuickOfficeHatsSurveyClippyOn : public InProcessBrowserTest {
  public:
   OfficeQuickOfficeHatsSurveyClippyOn() {
     feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud,
-                                    ::features::kHappinessTrackingOffice},
+                                    ash::features::kHappinessTrackingOffice},
                                    {});
   }
 
@@ -3110,7 +3111,7 @@ IN_PROC_BROWSER_TEST_F(OfficeQuickOfficeHatsSurveyClippyOn, OpenInQuickOffice) {
 class OfficeQuickOfficeHatsSurveyClippyOff : public InProcessBrowserTest {
  public:
   OfficeQuickOfficeHatsSurveyClippyOff() {
-    feature_list_.InitWithFeatures({::features::kHappinessTrackingOffice},
+    feature_list_.InitWithFeatures({ash::features::kHappinessTrackingOffice},
                                    {chromeos::features::kUploadOfficeToCloud});
   }
 

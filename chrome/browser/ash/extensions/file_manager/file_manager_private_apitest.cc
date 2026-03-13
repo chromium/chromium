@@ -52,7 +52,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -767,7 +766,7 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
  public:
   FileManagerPrivateApiDlpTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kDataLeakPreventionFilesRestriction);
+        ash::features::kDataLeakPreventionFilesRestriction);
   }
 
   FileManagerPrivateApiDlpTest(const FileManagerPrivateApiDlpTest&) = delete;
@@ -826,8 +825,9 @@ class FileManagerPrivateApiDlpOldUXTest : public FileManagerPrivateApiDlpTest {
   FileManagerPrivateApiDlpOldUXTest() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDataLeakPreventionFilesRestriction},
-        /*disabled_features=*/{features::kNewFilesPolicyUX});
+        /*enabled_features=*/{ash::features::
+                                  kDataLeakPreventionFilesRestriction},
+        /*disabled_features=*/{ash::features::kNewFilesPolicyUX});
   }
 
   FileManagerPrivateApiDlpOldUXTest(const FileManagerPrivateApiDlpOldUXTest&) =

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_rules_manager_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
@@ -366,7 +366,7 @@ TEST_F(DlpRulesManagerImplTest,
        RestrictedComponentsRestrictsAssociatedUrls_Files) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   dlp_test_util::DlpRule rule(kRuleName1, "Block", kRuleId1);
@@ -584,7 +584,7 @@ TEST_F(DlpRulesManagerImplTest, WarnPriority) {
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   EXPECT_EQ(0, chromeos::DlpClient::Get()
@@ -625,7 +625,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
   // Disable feature
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   EXPECT_EQ(0, chromeos::DlpClient::Get()
@@ -760,7 +760,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedDestinations_NoMatch) {
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedDestinations) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   dlp_test_util::DlpRule rule1(kRuleName1, "Block Files", kRuleId1);
@@ -804,7 +804,7 @@ TEST_F(DlpRulesManagerImplTest,
        FilesRestriction_GetAggregatedDestinations_Wildcard) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   dlp_test_util::DlpRule rule(kRuleName1, "Block Files for all destinations",
@@ -913,7 +913,7 @@ TEST_F(DlpRulesManagerImplTest, GetAggregatedComponents_NoMatch) {
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedComponents) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   dlp_test_util::DlpRule rule(kRuleName1, "Block Files", kRuleId1);
@@ -958,7 +958,7 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_GetAggregatedComponents) {
 TEST_F(DlpRulesManagerImplTest, SetFilesPolicyWithOnlyComponents) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   dlp_test_util::DlpRule rule(kRuleName1, "Block Files", kRuleId1);
@@ -1074,7 +1074,7 @@ TEST_F(DlpRulesManagerImplTest, DataTransferDlpController) {
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kDataLeakPreventionFilesRestriction);
+      ash::features::kDataLeakPreventionFilesRestriction);
   chromeos::DlpClient::InitializeFake();
 
   // Set only clipboard restriction, DataTransferDlpController should be

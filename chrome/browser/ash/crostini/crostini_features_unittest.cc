@@ -69,7 +69,7 @@ TEST(CrostiniFeaturesTest, TestRootAccessAllowed) {
   // Set up for success.
   crostini_features.set_is_allowed_now(true);
   scoped_feature_list.InitWithFeatures(
-      {features::kCrostiniAdvancedAccessControls}, {});
+      {ash::features::kCrostiniAdvancedAccessControls}, {});
   profile.GetPrefs()->SetBoolean(
       crostini::prefs::kUserCrostiniRootAccessAllowedByPolicy, true);
 
@@ -85,7 +85,7 @@ TEST(CrostiniFeaturesTest, TestRootAccessAllowed) {
   {
     base::test::ScopedFeatureList feature_list_disabled;
     feature_list_disabled.InitWithFeatures(
-        {}, {features::kCrostiniAdvancedAccessControls});
+        {}, {ash::features::kCrostiniAdvancedAccessControls});
     EXPECT_TRUE(crostini_features.IsRootAccessAllowed(&profile));
   }
 }

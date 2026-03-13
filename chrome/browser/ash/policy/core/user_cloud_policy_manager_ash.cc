@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -134,7 +135,7 @@ class UserCloudPolicyManagerAshNotifierFactory
 // Returns true only if SkyVault TT is enabled, but GA is not.
 bool IsSkyVaultTTEnabled() {
   return base::FeatureList::IsEnabled(features::kSkyVault) &&
-         !base::FeatureList::IsEnabled(features::kSkyVaultV2);
+         !base::FeatureList::IsEnabled(ash::features::kSkyVaultV2);
 }
 
 }  // namespace

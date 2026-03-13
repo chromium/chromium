@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
@@ -58,7 +57,7 @@ class HatsBluetoothRevampTriggerTest : public InProcessBrowserTest {
 
     command_line->AppendSwitchASCII(
         ash::switches::kForceHappinessTrackingSystem,
-        ::features::kHappinessTrackingSystemBluetoothRevamp.name);
+        ash::features::kHappinessTrackingSystemBluetoothRevamp.name);
   }
 
   void TryToShowSurvey() { bluetooth_revamp_trigger_->TryToShowSurvey(); }

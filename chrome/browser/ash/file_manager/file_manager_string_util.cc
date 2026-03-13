@@ -31,7 +31,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -1371,7 +1370,7 @@ void AddFileManagerFeatureStrings(
   dict->Set("CROS_COMPONENTS", chromeos::features::IsCrosComponentsEnabled());
 
   if (base::FeatureList::IsEnabled(
-          features::kDataLeakPreventionFilesRestriction)) {
+          ash::features::kDataLeakPreventionFilesRestriction)) {
     policy::DlpRulesManager* rules_manager =
         policy::DlpRulesManagerFactory::GetForPrimaryProfile();
     dict->Set("DLP_ENABLED",
@@ -1381,7 +1380,7 @@ void AddFileManagerFeatureStrings(
   }
 
   dict->Set("SKYVAULT_V2_ENABLED",
-            base::FeatureList::IsEnabled(features::kSkyVaultV2));
+            base::FeatureList::IsEnabled(ash::features::kSkyVaultV2));
 
   base::ListValue vms;
   auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);

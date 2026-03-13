@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -107,8 +108,8 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
  public:
   LocalFilesMigrationManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkyVault, features::kSkyVaultV2,
-                              features::kSkyVaultV3,
+        /*enabled_features=*/{features::kSkyVault, ash::features::kSkyVaultV2,
+                              ash::features::kSkyVaultV3,
                               chromeos::features::kUploadOfficeToCloud},
         /*disabled_features=*/{});
   }

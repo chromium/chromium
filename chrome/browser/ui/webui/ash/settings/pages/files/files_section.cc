@@ -301,7 +301,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "enableSkyVault",
       base::FeatureList::IsEnabled(::features::kSkyVault) &&
-          base::FeatureList::IsEnabled(::features::kSkyVaultV2));
+          base::FeatureList::IsEnabled(ash::features::kSkyVaultV2));
 
   html_source->AddBoolean("enableDriveFsMirrorSync",
                           drive::util::IsDriveFsMirrorSyncAvailable(profile()));

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -22,7 +23,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -214,7 +214,7 @@ class AvailabilityChecker {
 void GetAvailableUpdateModes(
     base::OnceCallback<void(const std::set<Mode>&)> completion,
     base::TimeDelta timeout) {
-  if (!base::FeatureList::IsEnabled(features::kTPMFirmwareUpdate)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kTPMFirmwareUpdate)) {
     std::move(completion).Run(std::set<Mode>());
     return;
   }

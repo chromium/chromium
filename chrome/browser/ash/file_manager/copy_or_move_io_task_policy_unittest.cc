@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -169,19 +169,21 @@ class CopyOrMoveIOTaskWithScansTest
     profile_ = profile_manager_->CreateTestingProfile("test-profile");
 
     std::vector<base::test::FeatureRef> enabled_features{
-        features::kFileTransferEnterpriseConnector};
+        ash::features::kFileTransferEnterpriseConnector};
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (UseNewPolicyUI()) {
-      enabled_features.push_back(features::kNewFilesPolicyUX);
+      enabled_features.push_back(ash::features::kNewFilesPolicyUX);
     } else {
-      disabled_features.push_back(features::kNewFilesPolicyUX);
+      disabled_features.push_back(ash::features::kNewFilesPolicyUX);
     }
 
     if (UseNewConnectorsUI()) {
-      enabled_features.push_back(features::kFileTransferEnterpriseConnectorUI);
+      enabled_features.push_back(
+          ash::features::kFileTransferEnterpriseConnectorUI);
     } else {
-      disabled_features.push_back(features::kFileTransferEnterpriseConnectorUI);
+      disabled_features.push_back(
+          ash::features::kFileTransferEnterpriseConnectorUI);
     }
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1491,7 +1493,7 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
 
     AccountId account_id = AccountId::FromUserEmailGaiaId(kEmailId, kGaiaId);
     profile_->SetIsNewProfile(true);

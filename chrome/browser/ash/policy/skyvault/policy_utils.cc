@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -71,7 +72,7 @@ bool LocalUserFilesAllowed() {
 
 MigrationDestination GetMigrationDestination() {
   if (!base::FeatureList::IsEnabled(features::kSkyVault) ||
-      !base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+      !base::FeatureList::IsEnabled(ash::features::kSkyVaultV2)) {
     return MigrationDestination::kNotSpecified;
   }
 
@@ -84,7 +85,7 @@ MigrationDestination GetMigrationDestination() {
   if (destination == kMigrationDestinationOneDrive) {
     return MigrationDestination::kOneDrive;
   }
-  if (base::FeatureList::IsEnabled(features::kSkyVaultV3) &&
+  if (base::FeatureList::IsEnabled(ash::features::kSkyVaultV3) &&
       destination == kMigrationDestinationDelete) {
     return MigrationDestination::kDelete;
   }
@@ -119,7 +120,7 @@ base::FilePath GetMyFilesPath(Profile* profile) {
 }
 
 std::optional<base::Time> GetMigrationStartTime(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVaultV3)) {
     return std::nullopt;
   }
   PrefService* pref_service = profile->GetPrefs();

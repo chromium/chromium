@@ -188,7 +188,6 @@
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
@@ -1298,7 +1297,7 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
             *g_browser_process->local_state());
 
     if (base::FeatureList::IsEnabled(
-            ::features::kHappinessTrackingSystemBluetoothRevamp)) {
+            ash::features::kHappinessTrackingSystemBluetoothRevamp)) {
       hats_bluetooth_revamp_trigger_ =
           std::make_unique<ash::HatsBluetoothRevampTriggerImpl>();
     }

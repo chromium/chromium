@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -403,7 +402,7 @@ void ChromeFeaturesServiceProvider::IsCryptohomeDistributedModelEnabled(
     dbus::ExportedObject::ResponseSender response_sender) {
   SendResponse(
       method_call, std::move(response_sender),
-      base::FeatureList::IsEnabled(::features::kCryptohomeDistributedModel));
+      base::FeatureList::IsEnabled(ash::features::kCryptohomeDistributedModel));
 }
 
 void ChromeFeaturesServiceProvider::IsCryptohomeUserDataAuthEnabled(
@@ -411,7 +410,7 @@ void ChromeFeaturesServiceProvider::IsCryptohomeUserDataAuthEnabled(
     dbus::ExportedObject::ResponseSender response_sender) {
   SendResponse(
       method_call, std::move(response_sender),
-      base::FeatureList::IsEnabled(::features::kCryptohomeUserDataAuth));
+      base::FeatureList::IsEnabled(ash::features::kCryptohomeUserDataAuth));
 }
 
 void ChromeFeaturesServiceProvider::IsCryptohomeUserDataAuthKillswitchEnabled(
@@ -419,7 +418,7 @@ void ChromeFeaturesServiceProvider::IsCryptohomeUserDataAuthKillswitchEnabled(
     dbus::ExportedObject::ResponseSender response_sender) {
   SendResponse(method_call, std::move(response_sender),
                base::FeatureList::IsEnabled(
-                   ::features::kCryptohomeUserDataAuthKillswitch));
+                   ash::features::kCryptohomeUserDataAuthKillswitch));
 }
 
 void ChromeFeaturesServiceProvider::IsPluginVmEnabled(

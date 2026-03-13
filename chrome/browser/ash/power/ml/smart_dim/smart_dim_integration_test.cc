@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/power/ml/user_activity_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "components/component_updater/component_updater_service.h"
 #include "net/dns/mock_host_resolver.h"
@@ -23,7 +23,7 @@ namespace ash {
 class SmartDimIntegrationTest : public AshIntegrationTest {
  public:
   SmartDimIntegrationTest() {
-    feature_list_.InitAndEnableFeature(features::kSmartDim);
+    feature_list_.InitAndEnableFeature(ash::features::kSmartDim);
   }
 
   base::test::ScopedFeatureList feature_list_;

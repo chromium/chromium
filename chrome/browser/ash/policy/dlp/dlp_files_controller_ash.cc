@@ -16,6 +16,7 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
@@ -52,7 +53,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
@@ -807,7 +807,7 @@ void DlpFilesControllerAsh::ReturnDisallowedFiles(
     restricted_files_paths.emplace_back(file);
   }
   if (!restricted_files_paths.empty() &&
-      base::FeatureList::IsEnabled(features::kNewFilesPolicyUX) &&
+      base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX) &&
       task_id.has_value()) {
     ::policy::files_controller_ash_utils::ShowDlpBlockedFiles(
         profile_, std::move(task_id), std::move(restricted_files_paths),

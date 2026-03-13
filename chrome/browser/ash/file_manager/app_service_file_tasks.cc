@@ -40,7 +40,6 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/prefs/pref_service.h"
@@ -353,7 +352,7 @@ void ExecuteAppServiceTask(
       apps_util::kIntentActionView, std::move(intent_files));
   intent->activity_name = task.action_id;
 
-  if (base::FeatureList::IsEnabled(::features::kHappinessTrackingOffice) &&
+  if (base::FeatureList::IsEnabled(ash::features::kHappinessTrackingOffice) &&
       task.app_id == extension_misc::kQuickOfficeComponentExtensionId &&
       task.action_id == kActionIdQuickOffice) {
     auto survey_launching_app =

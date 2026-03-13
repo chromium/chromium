@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
@@ -1543,7 +1544,7 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSkyVault, features::kSkyVaultV2}, {});
+        {features::kSkyVault, ash::features::kSkyVaultV2}, {});
     VolumeManagerArcTest::SetUp();
   }
 

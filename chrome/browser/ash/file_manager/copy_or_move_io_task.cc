@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -76,8 +76,8 @@ void CopyOrMoveIOTask::Execute(IOTask::ProgressCallback progress_callback,
       !!policy::DlpFilesControllerAsh::GetForPrimaryProfile();
 
   // Check if scanning is enabled.
-  bool scanning_feature_enabled =
-      base::FeatureList::IsEnabled(features::kFileTransferEnterpriseConnector);
+  bool scanning_feature_enabled = base::FeatureList::IsEnabled(
+      ash::features::kFileTransferEnterpriseConnector);
   std::vector<std::optional<enterprise_connectors::AnalysisSettings>>
       scanning_settings;
   if (scanning_feature_enabled) {

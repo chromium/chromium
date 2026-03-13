@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -143,7 +143,7 @@ class FilesPolicyNotificationManagerTest : public testing::Test {
       const FilesPolicyNotificationManagerTest&) = delete;
   ~FilesPolicyNotificationManagerTest() override = default;
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
 
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");

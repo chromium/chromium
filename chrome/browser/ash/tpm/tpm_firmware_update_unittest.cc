@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
@@ -22,7 +23,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -65,7 +65,7 @@ class TPMFirmwareUpdateTest : public testing::Test {
 
   TPMFirmwareUpdateTest() {
     feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    feature_list_->InitAndEnableFeature(features::kTPMFirmwareUpdate);
+    feature_list_->InitAndEnableFeature(ash::features::kTPMFirmwareUpdate);
     CHECK(temp_dir_.CreateUniqueTempDir());
     base::FilePath update_location_path =
         temp_dir_.GetPath().AppendASCII("tpm_firmware_update_location");
@@ -161,7 +161,7 @@ class TPMFirmwareUpdateModesTest : public TPMFirmwareUpdateTest {
 TEST_F(TPMFirmwareUpdateModesTest, FeatureDisabled) {
   feature_list_.reset();
   feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  feature_list_->InitAndDisableFeature(features::kTPMFirmwareUpdate);
+  feature_list_->InitAndDisableFeature(ash::features::kTPMFirmwareUpdate);
   GetAvailableUpdateModes(std::move(callback_), base::TimeDelta());
   EXPECT_TRUE(callback_received_);
   EXPECT_TRUE(callback_modes_.empty());

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
@@ -134,7 +134,7 @@ void MaybeSendConnectorsBlockedFilesNotification(
   // Blocked files are only added if kFileTransferEnterpriseConnectorUI is
   // enabled.
   CHECK(base::FeatureList::IsEnabled(
-      features::kFileTransferEnterpriseConnectorUI));
+      ash::features::kFileTransferEnterpriseConnectorUI));
 
   auto* files_policy_manager =
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
@@ -233,7 +233,7 @@ void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
   bool has_dlp_errors = !dlp_blocked_files_.empty();
   bool has_connector_errors = !connectors_blocked_files_.empty();
   if ((has_dlp_errors || has_connector_errors) &&
-      base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
+      base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX)) {
     // TODO(b/293425493): Support combined error type (if both dlp and connector
     // errors exist).
     PolicyErrorType error_type = has_dlp_errors
@@ -284,7 +284,7 @@ void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
 
   if (auto* files_controller =
           policy::DlpFilesControllerAsh::GetForPrimaryProfile();
-      base::FeatureList::IsEnabled(features::kNewFilesPolicyUX) &&
+      base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX) &&
       files_controller) {
     std::vector<storage::FileSystemURL> transferred_urls;
     for (const auto& entry : progress_->sources) {
@@ -395,7 +395,7 @@ void CopyOrMoveIOTaskPolicyImpl::ScanningCompleted() {
 
 bool CopyOrMoveIOTaskPolicyImpl::MaybeShowConnectorsWarning() {
   bool connectors_new_ui_enabled = base::FeatureList::IsEnabled(
-      features::kFileTransferEnterpriseConnectorUI);
+      ash::features::kFileTransferEnterpriseConnectorUI);
   if (!connectors_new_ui_enabled) {
     return false;
   }
@@ -507,7 +507,7 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
   DCHECK(result.IsUnknown() || result.IsBlocked());
 
   if (base::FeatureList::IsEnabled(
-          features::kFileTransferEnterpriseConnectorUI)) {
+          ash::features::kFileTransferEnterpriseConnectorUI)) {
     auto& paths = connectors_blocked_files_
         [policy::files_dialog_utils::GetEnterpriseConnectorsBlockReason(
             result)];

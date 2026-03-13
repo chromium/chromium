@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -68,7 +69,8 @@ class LocalFilesMigrationManagerTest : public testing::Test {
     testing::Test::SetUp();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {features::kSkyVault, features::kSkyVaultV2, features::kSkyVaultV3},
+        {features::kSkyVault, ash::features::kSkyVaultV2,
+         ash::features::kSkyVaultV3},
         /*disabled_features=*/{});
 
     scoped_profile_ = std::make_unique<TestingProfile>();

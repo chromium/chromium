@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
@@ -180,7 +180,7 @@ std::u16string FilesPolicyWarnDialog::GetCancelButton() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetTitle() {
-  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
+  if (base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX)) {
     switch (action_) {
       case dlp::FileAction::kDownload:
         return l10n_util::GetStringUTF16(
@@ -234,7 +234,7 @@ std::u16string FilesPolicyWarnDialog::GetTitle() {
 }
 
 std::u16string FilesPolicyWarnDialog::GetMessage() {
-  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
+  if (base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX)) {
     return dialog_info_.GetMessage();
   }
   CHECK(destination_.has_value());

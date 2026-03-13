@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -335,7 +334,7 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "bluetoothRevampHatsSurveyFlag",
       base::FeatureList::IsEnabled(
-          ::features::kHappinessTrackingSystemBluetoothRevamp));
+          ash::features::kHappinessTrackingSystemBluetoothRevamp));
   bluetooth::AddLoadTimeData(html_source);
 }
 

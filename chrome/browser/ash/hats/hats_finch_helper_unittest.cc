@@ -8,10 +8,10 @@
 #include <set>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/hats/hats_config.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -32,7 +32,7 @@ class HatsFinchHelperTest : public testing::Test {
 
   void SetFeatureParams(const base::FieldTrialParams& params) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kHappinessTrackingSystem, params);
+        ash::features::kHappinessTrackingSystem, params);
   }
 
   base::FieldTrialParams CreateParamMap(

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
@@ -1121,7 +1121,7 @@ void FilesPolicyNotificationManager::ShowDlpBlockNotification(
   const std::string notification_id = GetNotificationId(notification_count_++);
   std::unique_ptr<message_center::Notification> notification;
 
-  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
+  if (base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX)) {
     // The notification should stay visible until actioned upon.
     message_center::RichNotificationData optional_fields;
     optional_fields.never_timeout = true;
@@ -1196,7 +1196,7 @@ void FilesPolicyNotificationManager::ShowDlpWarningNotification(
     std::vector<base::FilePath> warning_files,
     const DlpFileDestination& destination,
     dlp::FileAction action) {
-  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
+  if (base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX)) {
     const std::string& notification_id =
         GetNotificationId(notification_count_++);
     // Store the task info.

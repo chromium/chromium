@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -57,7 +57,7 @@ const char kLocaleValue1[] = "locale1";
 const char kBrowserValue1[] = "browser1";
 
 const ash::HatsConfig kNonPrioritizedTestConfig{
-    ::features::kHappinessTrackingSystem,
+    ash::features::kHappinessTrackingSystem,
     base::Days(7),
     prefs::kHatsDeviceIsSelected,
     prefs::kHatsSurveyCycleEndTimestamp,
@@ -69,7 +69,7 @@ const char kFeatureNonPrioritizedCommandLine[] =
     "trigger_id/random_trigger_id_non_prio";
 
 const ash::HatsConfig kPrioritizedTestConfig{
-    ::features::kHappinessTrackingGeneralCameraPrioritized,
+    ash::features::kHappinessTrackingGeneralCameraPrioritized,
     base::Days(7),
     prefs::kHatsGeneralCameraPrioritizedIsSelected,
     prefs::kHatsGeneralCameraPrioritizedSurveyCycleEndTs,

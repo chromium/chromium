@@ -77,7 +77,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chromeos/ash/components/disks/disk.h"
@@ -898,7 +897,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
   if (!base::FeatureList::IsEnabled(
-          features::kDataLeakPreventionFilesRestriction)) {
+          ash::features::kDataLeakPreventionFilesRestriction)) {
     return RespondNow(WithArguments(base::ListValue()));
   }
 
@@ -936,7 +935,7 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
 
   // If the new UX flow is enabled, return an empty list so the copy/move
   // operation can start.
-  if (base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
+  if (base::FeatureList::IsEnabled(ash::features::kNewFilesPolicyUX)) {
     return RespondNow(WithArguments(base::ListValue()));
   }
 
@@ -994,7 +993,7 @@ FileManagerPrivateInternalGetDlpMetadataFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
   if (!base::FeatureList::IsEnabled(
-          features::kDataLeakPreventionFilesRestriction)) {
+          ash::features::kDataLeakPreventionFilesRestriction)) {
     return RespondNow(WithArguments(base::ListValue()));
   }
 
@@ -1076,7 +1075,7 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   if (!base::FeatureList::IsEnabled(
-          features::kDataLeakPreventionFilesRestriction)) {
+          ash::features::kDataLeakPreventionFilesRestriction)) {
     return RespondNow(WithArguments(base::ListValue()));
   }
 
@@ -1127,7 +1126,7 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
   if (!base::FeatureList::IsEnabled(
-          features::kDataLeakPreventionFilesRestriction)) {
+          ash::features::kDataLeakPreventionFilesRestriction)) {
     return RespondNow(WithArguments(base::ListValue()));
   }
 

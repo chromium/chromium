@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/local_files_cleanup.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -26,7 +27,7 @@ class LocalFilesCleanupTest : public policy::PolicyTest {
     // Disable SkyVaultV2 - cleanup doesn't apply for GA.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kSkyVault},
-        /*disabled_features=*/{features::kSkyVaultV2});
+        /*disabled_features=*/{ash::features::kSkyVaultV2});
   }
   ~LocalFilesCleanupTest() override = default;
 

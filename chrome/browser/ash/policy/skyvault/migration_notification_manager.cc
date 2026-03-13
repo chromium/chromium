@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
-#include "chrome/common/chrome_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -128,7 +128,7 @@ void MigrationNotificationManager::ShowMigrationInfoDialog(
     base::Time migration_start_time,
     base::OnceClosure migration_callback) {
   if (destination == MigrationDestination::kDelete &&
-      !base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
+      !base::FeatureList::IsEnabled(ash::features::kSkyVaultV3)) {
     LOG(ERROR) << "Destination set to MigrationDestination::kDelete, but the "
                   "flag is disabled; ignoring.";
     return;

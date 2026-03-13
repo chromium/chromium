@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -194,7 +194,7 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
       coordinator_(std::make_unique<MigrationCoordinator>(
           Profile::FromBrowserContext(context))),
       scheduling_timer_(std::make_unique<base::WallClockTimer>()) {
-  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
+  CHECK(base::FeatureList::IsEnabled(ash::features::kSkyVaultV2));
 
   notification_manager_ =
       MigrationNotificationManagerFactory::GetForBrowserContext(context);
@@ -484,7 +484,7 @@ void LocalFilesMigrationManager::InformUser() {
 
   const base::Time now = base::Time::Now();
   base::Time scheduled_start_time = now + kTotalMigrationTimeout;
-  if (base::FeatureList::IsEnabled(features::kSkyVaultV3)) {
+  if (base::FeatureList::IsEnabled(ash::features::kSkyVaultV3)) {
     PrefService* pref_service =
         Profile::FromBrowserContext(context_)->GetPrefs();
     scheduled_start_time =
@@ -921,7 +921,7 @@ bool LocalFilesMigrationManagerFactory::ServiceIsNULLWhileTesting() const {
 std::unique_ptr<KeyedService>
 LocalFilesMigrationManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+  if (!base::FeatureList::IsEnabled(ash::features::kSkyVaultV2)) {
     return nullptr;
   }
 

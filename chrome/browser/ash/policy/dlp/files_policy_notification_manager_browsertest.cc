@@ -9,6 +9,7 @@
 #include <string>
 #include <tuple>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -47,7 +48,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -186,7 +186,7 @@ class TestNotificationPlatformBridgeDelegator
 class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
  public:
   FilesPolicyNotificationManagerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
   }
   FilesPolicyNotificationManagerBrowserTest(
       const FilesPolicyNotificationManagerBrowserTest&) = delete;

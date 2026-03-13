@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -45,7 +46,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "chromeos/ui/base/file_icon_util.h"
@@ -218,7 +218,7 @@ class DlpFilesControllerAshTest : public DlpFilesTestWithMounts {
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNewFilesPolicyUX);
+  scoped_feature_list.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
 
   std::vector<FileDaemonInfo> files{
       FileDaemonInfo(kInode1, kCrtime1, my_files_dir_.AppendASCII(kFilePath1),
@@ -403,7 +403,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ErrorResponse) {
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kNewFilesPolicyUX);
+  scoped_feature_list.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
 
   base::ScopedTempDir sub_dir1;
   ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));

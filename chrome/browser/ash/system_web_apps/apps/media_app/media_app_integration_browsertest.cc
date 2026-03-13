@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
@@ -1520,7 +1521,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
   // Enable HaTS testing for PDF editing.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ash::switches::kForceHappinessTrackingSystem,
-      features::kHappinessTrackingMediaAppPdf.name);
+      ash::features::kHappinessTrackingMediaAppPdf.name);
 
   content::WebContents* web_ui = LaunchWithOneTestFile(kFilePdfTall);
 
@@ -1549,7 +1550,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
   // Enable HaTS testing for the Photos Experience.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ash::switches::kForceHappinessTrackingSystem,
-      features::kHappinessTrackingPhotosExperience.name);
+      ash::features::kHappinessTrackingPhotosExperience.name);
 
   // Pretend the Gallery is the Android Photos app, so it can be tracked for
   // survey triggers that fire when the app is closed.

@@ -282,7 +282,7 @@ bool IsArcEnabled(Profile* profile) {
 }
 
 bool IsSkyVaultV2Enabled() {
-  return base::FeatureList::IsEnabled(features::kSkyVaultV2);
+  return base::FeatureList::IsEnabled(ash::features::kSkyVaultV2);
 }
 
 }  // namespace

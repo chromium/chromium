@@ -547,7 +547,7 @@ void PopulateChromeWebUIFrameBindersPartsCros(
       new_window_proxy::mojom::NewWindowProxy, ash::EmojiUI>(map);
 
   if (base::FeatureList::IsEnabled(features::kSkyVault) &&
-      base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
+      base::FeatureList::IsEnabled(ash::features::kSkyVaultV2)) {
     RegisterWebUIControllerInterfaceBinder<
         policy::local_user_files::mojom::PageHandlerFactory,
         policy::local_user_files::LocalFilesMigrationUI>(map);

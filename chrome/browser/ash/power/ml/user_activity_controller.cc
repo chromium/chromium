@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/power/ml/user_activity_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -31,8 +31,9 @@ UserActivityController::UserActivityController() {
   CHECK(!g_instance);
   g_instance = this;
 
-  if (!base::FeatureList::IsEnabled(features::kSmartDim))
+  if (!base::FeatureList::IsEnabled(ash::features::kSmartDim)) {
     return;
+  }
 
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();

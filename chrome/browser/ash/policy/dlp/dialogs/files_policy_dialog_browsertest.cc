@@ -7,6 +7,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/rand_util.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
@@ -58,7 +58,7 @@ class FilesPolicyDialogBrowserTest
       public ::testing::WithParamInterface<dlp::FileAction> {
  public:
   FilesPolicyDialogBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kNewFilesPolicyUX);
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kNewFilesPolicyUX);
   }
   FilesPolicyDialogBrowserTest(const FilesPolicyDialogBrowserTest&) = delete;
   FilesPolicyDialogBrowserTest& operator=(const FilesPolicyDialogBrowserTest&) =

@@ -154,7 +154,8 @@ bool CrostiniFeatures::IsExportImportUIAllowed(Profile* profile) const {
 }
 
 bool CrostiniFeatures::IsRootAccessAllowed(Profile* profile) const {
-  if (base::FeatureList::IsEnabled(features::kCrostiniAdvancedAccessControls)) {
+  if (base::FeatureList::IsEnabled(
+          ash::features::kCrostiniAdvancedAccessControls)) {
     return profile->GetPrefs()->GetBoolean(
         crostini::prefs::kUserCrostiniRootAccessAllowedByPolicy);
   }

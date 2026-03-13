@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -48,7 +49,7 @@ class LocalFilesMigrationDialogTest : public InProcessBrowserTest {
  public:
   LocalFilesMigrationDialogTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkyVault, features::kSkyVaultV2},
+        /*enabled_features=*/{features::kSkyVault, ash::features::kSkyVaultV2},
         /*disabled_features=*/{});
   }
   LocalFilesMigrationDialogTest(const LocalFilesMigrationDialogTest&) = delete;

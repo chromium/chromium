@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 #include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
@@ -286,7 +286,7 @@ size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
 
 bool DlpRulesManagerImpl::IsFilesPolicyEnabled() const {
   return base::FeatureList::IsEnabled(
-             features::kDataLeakPreventionFilesRestriction) &&
+             ash::features::kDataLeakPreventionFilesRestriction) &&
          restrictions_map_.contains(DlpRulesManager::Restriction::kFiles) &&
          chromeos::DlpClient::Get() && chromeos::DlpClient::Get()->IsAlive();
 }
@@ -445,7 +445,7 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   dst_url_matcher_->AddConditionSets(dst_conditions_);
   if (restrictions_map_.contains(Restriction::kClipboard) ||
       (base::FeatureList::IsEnabled(
-           features::kDataLeakPreventionFilesRestriction) &&
+           ash::features::kDataLeakPreventionFilesRestriction) &&
        request_to_daemon.rules_size() > 0)) {
     DataTransferDlpController::Init(*this);
   } else {
@@ -453,7 +453,7 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kDataLeakPreventionFilesRestriction)) {
+          ash::features::kDataLeakPreventionFilesRestriction)) {
     if (request_to_daemon.rules_size() > 0) {
       // Start and/or activate the daemon.
       data_controls::DlpBooleanHistogram(

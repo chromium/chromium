@@ -72,7 +72,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/crostini/crostini_update_filesystem_view.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -1215,7 +1214,7 @@ void CrostiniManager::AddStoppingVmForTesting(std::string vm_name) {
 void CrostiniManager::ConfigureForArcSideload() {
   ash::SessionManagerClient* session_manager_client =
       ash::SessionManagerClient::Get();
-  if (!base::FeatureList::IsEnabled(features::kCrostiniArcSideload) ||
+  if (!base::FeatureList::IsEnabled(ash::features::kCrostiniArcSideload) ||
       !session_manager_client) {
     return;
   }

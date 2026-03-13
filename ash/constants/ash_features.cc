@@ -2121,6 +2121,165 @@ BASE_FEATURE(kEnableFastInkForSoftwareCursor, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables fwupd developer mode, disabling all firmware authentication checks.
 BASE_FEATURE(kFwupdDeveloperMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable advanced access controls for Crostini-related features
+// (e.g. restricting VM CLI tools access, restricting Crostini root access).
+BASE_FEATURE(kCrostiniAdvancedAccessControls,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables support for sideloading android apps into Arc via crostini.
+BASE_FEATURE(kCrostiniArcSideload, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables distributed model for TPM1.2, i.e., using tpm_managerd and
+// attestationd.
+BASE_FEATURE(kCryptohomeDistributedModel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables cryptohome UserDataAuth interface, a new dbus interface that is
+// fully protobuf and uses libbrillo for dbus instead of the deprecated
+// glib-dbus.
+BASE_FEATURE(kCryptohomeUserDataAuth, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for cryptohome UserDataAuth interface. UserDataAuth is a new
+// dbus interface that is fully protobuf and uses libbrillo for dbus instead
+// instead of the deprecated glib-dbus.
+BASE_FEATURE(kCryptohomeUserDataAuthKillswitch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables starting of Data Leak Prevention Files Daemon by sending the
+// DLP policy there. The daemon might restrict access to some protected files.
+BASE_FEATURE(kDataLeakPreventionFilesRestriction,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFileTransferEnterpriseConnector,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFileTransferEnterpriseConnectorUI,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for the General survey.
+BASE_FEATURE(kHappinessTrackingSystem, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Bluetooth revamp
+// survey.
+BASE_FEATURE(kHappinessTrackingSystemBluetoothRevamp,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for the Battery life
+// survey.
+BASE_FEATURE(kHappinessTrackingSystemBatteryLife,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for the Peripherals
+// survey.
+BASE_FEATURE(kHappinessTrackingSystemPeripherals,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for the Ent survey.
+BASE_FEATURE(kHappinessTrackingSystemEnt, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for the Stability survey.
+BASE_FEATURE(kHappinessTrackingSystemStability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for the Performance survey.
+BASE_FEATURE(kHappinessTrackingSystemPerformance,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Onboarding Experience.
+BASE_FEATURE(kHappinessTrackingSystemOnboarding,
+             "HappinessTrackingOnboardingExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for ARC Games survey.
+BASE_FEATURE(kHappinessTrackingSystemArcGames,
+             "HappinessTrackingArcGames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Audio survey.
+BASE_FEATURE(kHappinessTrackingSystemAudio,
+             "HappinessTrackingAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Audio Output
+// Processing.
+BASE_FEATURE(kHappinessTrackingSystemAudioOutputProc,
+             "HappinessTrackingAudioOutputProc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Bluetooth Audio survey.
+BASE_FEATURE(kHappinessTrackingSystemBluetoothAudio,
+             "HappinessTrackingBluetoothAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for Personalization Avatar survey.
+BASE_FEATURE(kHappinessTrackingPersonalizationAvatar,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for Personalization Screensaver survey.
+BASE_FEATURE(kHappinessTrackingPersonalizationScreensaver,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for Personalization Wallpaper survey.
+BASE_FEATURE(kHappinessTrackingPersonalizationWallpaper,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for Media App PDF survey.
+BASE_FEATURE(kHappinessTrackingMediaAppPdf, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables the Happiness Tracking System for Camera App survey.
+BASE_FEATURE(kHappinessTrackingSystemCameraApp,
+             "HappinessTrackingCameraApp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for Photos Experience survey.
+BASE_FEATURE(kHappinessTrackingPhotosExperience,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for General Camera survey.
+BASE_FEATURE(kHappinessTrackingGeneralCamera,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for Prioritized General Camera survey.
+BASE_FEATURE(kHappinessTrackingGeneralCameraPrioritized,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for OS Settings Search survey.
+BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for Borealis games survey.
+BASE_FEATURE(kHappinessTrackingBorealisGames,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for ChromeOS Launcher survey. This
+// survey is enabled to 25% of users.
+BASE_FEATURE(kHappinessTrackingLauncherAppsFinding,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for ChromeOS Launcher survey. This
+// survey is enabled to 75% of users.
+BASE_FEATURE(kHappinessTrackingLauncherAppsNeeding,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Happiness Tracking System for the Office integration.
+BASE_FEATURE(kHappinessTrackingOffice, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables new UX for files policy restrictions on ChromeOS.
+BASE_FEATURE(kNewFilesPolicyUX, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the SkyVault V2 changes, which are also controlled by policies:
+// LocalUserFilesAllowed, DownloadDirectory and ScreenCaptureLocation.
+BASE_FEATURE(kSkyVaultV2, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the SkyVault V3 changes, which improve the resilience of file uploads
+// and error handling.
+BASE_FEATURE(kSkyVaultV3, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables or disables SmartDim on Chrome OS.
+BASE_FEATURE(kSmartDim, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables TPM firmware update capability on Chrome OS.
+BASE_FEATURE(kTPMFirmwareUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool AreDesksTemplatesEnabled() {

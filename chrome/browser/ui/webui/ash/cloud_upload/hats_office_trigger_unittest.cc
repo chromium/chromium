@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -47,7 +47,7 @@ class HatsOfficeTriggerTestBase : public testing::Test {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitchASCII(
         ash::switches::kForceHappinessTrackingSystem,
-        ::features::kHappinessTrackingOffice.name);
+        ash::features::kHappinessTrackingOffice.name);
   }
   ~HatsOfficeTriggerTestBase() override = default;
 
