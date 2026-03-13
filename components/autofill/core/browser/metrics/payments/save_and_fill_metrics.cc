@@ -22,6 +22,23 @@ std::string_view GetSaveAndFillServerRequestTypeString(
       return "CreateCard";
   }
 }
+
+std::string_view GetFlowScenarioString(SaveAndFillFlowScenario scenario) {
+  switch (scenario) {
+    case SaveAndFillFlowScenario::kLocalSaveUploadSaveInfeasible:
+      return "LocalSaveUploadSaveInfeasible";
+    case SaveAndFillFlowScenario::kLocalSavePreflightCallFailed:
+      return "LocalSavePreflightCallFailed";
+    case SaveAndFillFlowScenario::kLocalSaveBinRangeNotSupported:
+      return "LocalSaveBinRangeNotSupported";
+    case SaveAndFillFlowScenario::kLocalSaveUploadSaveFailed:
+      return "LocalSaveUploadSaveFailed";
+    case SaveAndFillFlowScenario::kUploadSave:
+      return "UploadSave";
+    case SaveAndFillFlowScenario::kUnknown:
+      NOTREACHED();
+  }
+}
 }  // namespace
 
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event) {
@@ -87,6 +104,19 @@ void LogSaveAndFillFunnelMetrics(bool succeeded,
                     is_for_upload ? ".Upload" : ".Local",
                     succeeded ? ".Success" : ".Failure"}),
       event);
+}
+
+void LogSaveAndFillFunnelSucceeded(SaveAndFillFlowScenario scenario,
+                                   SaveAndFillFunnelSucceededStage stage) {
+  if (scenario == SaveAndFillFlowScenario::kUnknown) {
+    return;
+  }
+  // Aggregate parent histogram.
+  base::UmaHistogramEnumeration("Autofill.SaveAndFill.Funnel.Succeeded", stage);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Autofill.SaveAndFill.Funnel.Succeeded.",
+                    GetFlowScenarioString(scenario)}),
+      stage);
 }
 
 void LogSaveAndFillPaymentsRequestResult(

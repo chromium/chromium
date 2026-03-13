@@ -32,6 +32,22 @@ const std::tuple<PaymentsRpcResult, SaveAndFillPaymentsRequestResult>
         {PaymentsRpcResult::kNone, SaveAndFillPaymentsRequestResult::kFailure},
 };
 
+const std::tuple<SaveAndFillFlowScenario, std::string>
+    kSuccessScenarioTestCases[] = {
+        {SaveAndFillFlowScenario::kLocalSaveUploadSaveInfeasible,
+         "LocalSaveUploadSaveInfeasible"},
+        {SaveAndFillFlowScenario::kLocalSavePreflightCallFailed,
+         "LocalSavePreflightCallFailed"},
+        {SaveAndFillFlowScenario::kLocalSaveBinRangeNotSupported,
+         "LocalSaveBinRangeNotSupported"},
+        {SaveAndFillFlowScenario::kLocalSaveUploadSaveFailed,
+         "LocalSaveUploadSaveFailed"},
+        {SaveAndFillFlowScenario::kUploadSave, "UploadSave"}};
+
+const SaveAndFillFunnelSucceededStage kFunnelStages[] = {
+    SaveAndFillFunnelSucceededStage::kCardSaved,
+    SaveAndFillFunnelSucceededStage::kFormFilled,
+    SaveAndFillFunnelSucceededStage::kFormSubmitted};
 }  // namespace
 
 class SaveAndFillMetricsTest : public AutofillMetricsBaseTest,
@@ -256,6 +272,32 @@ TEST_P(SaveAndFillPaymentsRequestResultMetricsTest,
   histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.CreateCard.Result",
                                       expected_metric_result,
                                       /*expected_bucket_count=*/1);
+}
+
+class SaveAndFillFunnelSucceededMetricsTest
+    : public SaveAndFillMetricsTest,
+      public testing::WithParamInterface<
+          std::tuple<SaveAndFillFlowScenario, std::string>> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SaveAndFillFunnelSucceededMetricsTest,
+                         testing::ValuesIn(kSuccessScenarioTestCases));
+
+TEST_P(SaveAndFillFunnelSucceededMetricsTest, LogSaveAndFillFunnelSucceeded) {
+  auto [scenario, scenario_string] = GetParam();
+
+  for (const auto& stage : kFunnelStages) {
+    base::HistogramTester histogram_tester;
+
+    LogSaveAndFillFunnelSucceeded(scenario, stage);
+
+    histogram_tester.ExpectBucketCount("Autofill.SaveAndFill.Funnel.Succeeded",
+                                       stage, 1);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat(
+            {"Autofill.SaveAndFill.Funnel.Succeeded.", scenario_string}),
+        stage, 1);
+  }
 }
 
 }  // namespace autofill::autofill_metrics

@@ -98,6 +98,36 @@ enum class SaveAndFillServerRequestType {
   kCreateCard,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SaveAndFillFunnelSucceededStage)
+enum class SaveAndFillFunnelSucceededStage {
+  // The card was saved (either locally or to the server).
+  kCardSaved = 0,
+  // The form was filled after Save and Fill finished.
+  kFormFilled = 1,
+  // The form was submitted after Save and Fill finished.
+  kFormSubmitted = 2,
+  kMaxValue = kFormSubmitted,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillFunnelSucceededStage)
+
+enum class SaveAndFillFlowScenario {
+  // Value for uninitialized state.
+  kUnknown = 0,
+  // Local save because upload save was infeasible (e.g. sync disabled).
+  kLocalSaveUploadSaveInfeasible = 1,
+  // Local save because the preflight call failed.
+  kLocalSavePreflightCallFailed = 2,
+  // Local save fallback because the card BIN was not supported for upload save.
+  kLocalSaveBinRangeNotSupported = 3,
+  // Local save fallback because the create card request failed.
+  kLocalSaveUploadSaveFailed = 4,
+  // Successful server save.
+  kUploadSave = 5,
+};
+
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event);
 
 // Logs the reason why the Save and Fill suggestion was not shown.
@@ -130,6 +160,12 @@ void LogSaveAndFillDialogShown(bool is_upload);
 void LogSaveAndFillFunnelMetrics(bool succeeded,
                                  bool is_for_upload,
                                  SaveAndFillFormEvent event);
+
+// Logs the funnel metrics for successful Save and Fill attempts. Logs to the
+// parent aggregate histogram "Autofill.SaveAndFill.Funnel.Succeeded" as well as
+// the scenario-specific sub-histogram.
+void LogSaveAndFillFunnelSucceeded(SaveAndFillFlowScenario scenario,
+                                   SaveAndFillFunnelSucceededStage stage);
 
 // Logs the result of GetDetailsForCreateCard and CreateCard requests when
 // initiated by the Save and Fill flow.

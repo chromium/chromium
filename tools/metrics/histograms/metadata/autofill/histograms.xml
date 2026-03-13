@@ -6941,6 +6941,44 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.SaveAndFill.Funnel.Succeeded"
+    enum="SaveAndFillFunnelSucceededStage" expires_after="2026-08-02">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the conversion funnel for successful Save and Fill attempts,
+    aggregated across all scenarios. Events are logged at the save, fill, and
+    submission stages to measure user retention.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.SaveAndFill.Funnel.Succeeded.{FlowScenario}"
+    enum="SaveAndFillFunnelSucceededStage" expires_after="2026-08-02">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the conversion funnel for successful Save and Fill attempts, for the
+    {FlowScenario} scenario. Events are logged at the save, fill, and submission
+    stages to measure user retention.
+  </summary>
+  <token key="FlowScenario">
+    <variant name="LocalSaveBinRangeNotSupported"
+        summary="when a fallback local save occurs because the card BIN range
+                 is not supported"/>
+    <variant name="LocalSavePreflightCallFailed"
+        summary="when a local save occurs because the preflight call failed"/>
+    <variant name="LocalSaveUploadSaveFailed"
+        summary="when a fallback local save occurs because the server upload
+                 request failed"/>
+    <variant name="LocalSaveUploadSaveInfeasible"
+        summary="when a local save occurs because upload save was infeasible
+                 (e.g., sync disabled)"/>
+    <variant name="UploadSave" summary="for successful server saves"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.SaveAndFill.Funnel.{SaveType}.{Result}"
     enum="SaveAndFillFormEvent" expires_after="2026-08-02">
   <owner>siyua@chromium.org</owner>

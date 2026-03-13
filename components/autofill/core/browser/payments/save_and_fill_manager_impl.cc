@@ -64,6 +64,8 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
                 &SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard,
                 weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   } else {
+    logging_context_.flow_scenario = autofill_metrics::SaveAndFillFlowScenario::
+        kLocalSaveUploadSaveInfeasible;
     OfferLocalSaveAndFill();
   }
 }
@@ -122,6 +124,9 @@ void SaveAndFillManagerImpl::LogCreditCardFormFilled() {
         logging_context_.last_attempt_succeeded.value(),
         logging_context_.last_attempt_was_for_upload.value(),
         autofill_metrics::SaveAndFillFormEvent::kFormFilled);
+    autofill_metrics::LogSaveAndFillFunnelSucceeded(
+        logging_context_.flow_scenario,
+        autofill_metrics::SaveAndFillFunnelSucceededStage::kFormFilled);
     logging_context_.has_logged_form_filled = true;
   }
 }
@@ -129,6 +134,9 @@ void SaveAndFillManagerImpl::LogCreditCardFormFilled() {
 void SaveAndFillManagerImpl::LogCreditCardFormSubmitted() {
   if (!logging_context_.has_logged_form_submitted &&
       logging_context_.has_logged_form_filled) {
+    autofill_metrics::LogSaveAndFillFunnelSucceeded(
+        logging_context_.flow_scenario,
+        autofill_metrics::SaveAndFillFunnelSucceededStage::kFormSubmitted);
     CHECK(logging_context_.last_attempt_succeeded.has_value());
     CHECK(logging_context_.last_attempt_was_for_upload.has_value());
     autofill_metrics::LogSaveAndFillFunnelMetrics(
@@ -171,6 +179,10 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
       payments_autofill_client()
           ->GetPaymentsDataManager()
           .OnAcceptedLocalCreditCardSave(card_save_candidate);
+
+      autofill_metrics::LogSaveAndFillFunnelSucceeded(
+          logging_context_.flow_scenario,
+          autofill_metrics::SaveAndFillFunnelSucceededStage::kCardSaved);
 
       payments_autofill_client()->HideCreditCardSaveAndFillDialog();
       // TODO(crbug.com/435506033): Add local save confirmation as a separate
@@ -268,6 +280,10 @@ void SaveAndFillManagerImpl::OnDidGetDetailsForCreateCard(
     supported_card_bin_ranges_ = std::move(supported_card_bin_ranges);
     OfferUploadSaveAndFill(parsed_legal_message_lines);
   } else {
+    logging_context_.last_attempt_succeeded = false;
+    logging_context_.last_attempt_was_for_upload = false;
+    logging_context_.flow_scenario = autofill_metrics::SaveAndFillFlowScenario::
+        kLocalSavePreflightCallFailed;
     // If the pre-flight call fails, fall back to offering local Save and
     // Fill.
     OfferLocalSaveAndFill();
@@ -347,12 +363,18 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
       if (!supported_card_bin_ranges_.empty() &&
           !payments::IsCreditCardNumberSupported(upload_details_.card.number(),
                                                  supported_card_bin_ranges_)) {
+        logging_context_.flow_scenario = autofill_metrics::
+            SaveAndFillFlowScenario::kLocalSaveBinRangeNotSupported;
         // The card's BIN is not supported for upload save. Fallback to a local
         // save.
         autofill_metrics::LogCreditCardUploadRanLocalSaveFallbackMetric(
             /*new_local_card_added=*/payments_autofill_client()
                 ->GetPaymentsDataManager()
                 .SaveCardLocallyIfNew(upload_details_.card));
+        logging_context_.last_attempt_succeeded = true;
+        autofill_metrics::LogSaveAndFillFunnelSucceeded(
+            logging_context_.flow_scenario,
+            autofill_metrics::SaveAndFillFunnelSucceededStage::kCardSaved);
 
         payments_autofill_client()->HideCreditCardSaveAndFillDialog();
 
@@ -415,14 +437,18 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
       autofill_metrics::SaveAndFillServerRequestType::kCreateCard, result);
   logging_context_.last_attempt_succeeded =
       result == PaymentsRpcResult::kSuccess;
-
   if (result != PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    logging_context_.flow_scenario =
+        autofill_metrics::SaveAndFillFlowScenario::kLocalSaveUploadSaveFailed;
     // If card creation fails, save the card locally instead. All card
     // information should exist, except for the optional CVC.
     autofill_metrics::LogCreditCardUploadRanLocalSaveFallbackMetric(
         /*new_local_card_added=*/payments_autofill_client()
             ->GetPaymentsDataManager()
             .SaveCardLocallyIfNew(upload_details_.card));
+    autofill_metrics::LogSaveAndFillFunnelSucceeded(
+        logging_context_.flow_scenario,
+        autofill_metrics::SaveAndFillFunnelSucceededStage::kCardSaved);
   } else {
     int64_t parsed_instrument_id;
     if (payments_autofill_client()
@@ -433,6 +459,11 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
       payments_autofill_client()->GetPaymentsDataManager().AddServerCvc(
           parsed_instrument_id, upload_details_.card.cvc());
     }
+    logging_context_.flow_scenario =
+        autofill_metrics::SaveAndFillFlowScenario::kUploadSave;
+    autofill_metrics::LogSaveAndFillFunnelSucceeded(
+        logging_context_.flow_scenario,
+        autofill_metrics::SaveAndFillFunnelSucceededStage::kCardSaved);
   }
   if (fill_card_callback_) {
     std::move(fill_card_callback_).Run(upload_details_.card);

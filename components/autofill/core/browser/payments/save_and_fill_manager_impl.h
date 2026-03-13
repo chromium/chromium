@@ -37,6 +37,9 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
     // Ensures that logging occurs only once per page load.
     bool has_logged_form_filled = false;
     bool has_logged_form_submitted = false;
+
+    autofill_metrics::SaveAndFillFlowScenario flow_scenario =
+        autofill_metrics::SaveAndFillFlowScenario::kUnknown;
   };
 
   explicit SaveAndFillManagerImpl(AutofillClient* autofill_client);
