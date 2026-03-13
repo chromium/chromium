@@ -5136,7 +5136,7 @@
       field_group: "*",
       field_size: 3,
       field_template: "primitive",
-      default_value: "InitialPositionVisibilityKeyword()",
+      default_value: "PositionVisibility::kAnchorsVisible",
       getter: "GetPositionVisibility",
       type_name: "PositionVisibility",
       converter: "ConvertPositionVisibility",
