@@ -55,6 +55,7 @@ source_set("tabs_internal") {
     "//components/supervised_user/core/common",
     "//components/webauthn/ios",
     "//components/webauthn/ios:features",
+    "//ios/chrome/browser/aim/model:tab_helper",
     "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model:model_internal",
