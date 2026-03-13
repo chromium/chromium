@@ -287,6 +287,7 @@ if (!is_android) {
       "//chrome/browser/history",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/sharing_hub",
       "//chrome/browser/signin",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",

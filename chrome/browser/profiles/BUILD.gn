@@ -442,6 +442,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/search",
       "//chrome/browser/search_engine_choice",
+      "//chrome/browser/sharing_hub",
       "//chrome/browser/themes",
       "//chrome/browser/ui/desktop_to_mobile_promos:service",
       "//chrome/browser/ui/global_error",

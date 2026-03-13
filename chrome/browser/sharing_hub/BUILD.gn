@@ -19,3 +19,50 @@ source_set("sharing_hub") {
     "//ui/gfx",
   ]
 }
+
+source_set("impl") {
+  sources = [
+    "sharing_hub_features.cc",
+    "sharing_hub_model.cc",
+    "sharing_hub_service.cc",
+    "sharing_hub_service_factory.cc",
+  ]
+  deps = [
+    ":sharing_hub",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:shell_integration",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/send_tab_to_self",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/qrcode_generator",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/tabs:public",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//ui/strings:ui_strings",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+  deps = []
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "sharing_hub_model_unittest.cc" ]
+    deps += [
+      ":sharing_hub",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

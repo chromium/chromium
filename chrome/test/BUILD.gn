@@ -10035,16 +10035,13 @@ test("unit_tests") {
     sources += [
       # Batch upload is only available on Windows, Mac and Linux.
       "../browser/extensions/sync/extension_local_data_batch_uploader_unittest.cc",
-      "../browser/sharing_hub/sharing_hub_model_unittest.cc",
       "../browser/ui/extensions/settings_overridden_dialog_unittest.cc",
       "../browser/ui/views/sharing_hub/preview_view_unittest.cc",
       "../browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc",
     ]
 
     deps += [
-      # TODO(crbug.com/419210492): Remove this dependency when chrome/browser/sharing_hub/sharing_hub_model_unittest.cc
-      # (above) gets componentized.
-      "//chrome/browser/sharing_hub",
+      "//chrome/browser/sharing_hub:unit_tests",
 
       # TODO(crbug.com/419210492): Remove this dependency when chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc
       # (above) gets componentized.
@@ -11683,6 +11680,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/sessions",
+      "//chrome/browser/sharing_hub",
       "//chrome/browser/signin",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/signin/e2e_tests:test_support",

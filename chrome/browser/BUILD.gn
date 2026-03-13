@@ -3934,10 +3934,6 @@ static_library("browser") {
       "sharing/sharing_ui_controller.h",
       "sharing/sms/sms_remote_fetcher_ui_controller.cc",
       "sharing/sms/sms_remote_fetcher_ui_controller.h",
-      "sharing_hub/sharing_hub_features.cc",
-      "sharing_hub/sharing_hub_model.cc",
-      "sharing_hub/sharing_hub_service.cc",
-      "sharing_hub/sharing_hub_service_factory.cc",
       "signin/signin_promo.cc",  # signin_promo.h is included in
                                  # //chrome/browser/signin:signin_promo
       "signin/signin_ui_delegate.cc",
@@ -4099,6 +4095,7 @@ static_library("browser") {
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
       "//chrome/browser/screen_ai/public:optical_character_recognizer",
       "//chrome/browser/sharing_hub",
+      "//chrome/browser/sharing_hub:impl",
       "//chrome/browser/skills",
       "//chrome/browser/smart_card",
       "//chrome/browser/themes",
