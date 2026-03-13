@@ -7,7 +7,7 @@
 namespace blink {
 
 void GridSizingTree::AddToPreorderTraversal(const BlockNode& grid_node) {
-  DCHECK(grid_node.IsGrid());
+  DCHECK(grid_node.IsGrid() || grid_node.IsGridLanes());
 
   const auto* grid_layout_box = grid_node.GetLayoutBox();
   DCHECK(!subgrid_index_lookup_map_.Contains(grid_layout_box));
@@ -18,8 +18,9 @@ void GridSizingTree::AddToPreorderTraversal(const BlockNode& grid_node) {
 
 void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
                                        GridItems* grid_items,
-                                       GridLayoutData* layout_data) {
-  DCHECK(grid_node.IsGrid());
+                                       GridLayoutData* layout_data,
+                                       GridItems* virtual_items) {
+  DCHECK(grid_node.IsGrid() || grid_node.IsGridLanes());
 
   const bool has_standalone_columns =
       !layout_data->HasSubgriddedAxis(kForColumns);
@@ -60,6 +61,7 @@ void GridSizingTree::SetSizingNodeData(const BlockNode& grid_node,
   }
 
   tree_node.grid_items = grid_items;
+  tree_node.virtual_items = virtual_items;
   tree_node.layout_data = layout_data;
   tree_node.writing_mode = grid_node.Style().GetWritingMode();
 }

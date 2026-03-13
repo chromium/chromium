@@ -155,16 +155,6 @@ void GridLanesNode::AppendSubgriddedItems(GridItems* grid_items) const {
   // method between both grid/grid-lanes nodes?
 }
 
-void GridLanesNode::AdjustGridItemSpans(
-    GridItems& grid_lanes_items,
-    const GridLineResolver& line_resolver) const {
-  const GridTrackSizingDirection grid_axis_direction =
-      Style().GridLanesTrackSizingDirection();
-  for (GridItemData& grid_lanes_item : grid_lanes_items) {
-    AdjustGridItemSpan(grid_lanes_item, line_resolver, grid_axis_direction);
-  }
-}
-
 // TODO(almaher): We may be able to optimize this by caching the largest span
 // size when children are added to `LayoutGridLanes`, but this would require
 // extra invalidation logic, which, given that we only need this in certain

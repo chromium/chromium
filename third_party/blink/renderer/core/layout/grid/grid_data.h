@@ -163,9 +163,38 @@ class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
     visitor->Trace(rows_);
   }
 
+  const HashMap<GridTrackSize, LayoutUnit>* IntrinsicRepeatTrackSizes() const {
+    if (intrinsic_repeat_track_sizes_.has_value()) {
+      return &intrinsic_repeat_track_sizes_.value();
+    }
+    return nullptr;
+  }
+
+  void AppendIntrinsicRepeatTrackSize(const GridTrackSize& track_size,
+                                      LayoutUnit size) {
+    if (!intrinsic_repeat_track_sizes_.has_value()) {
+      intrinsic_repeat_track_sizes_.emplace();
+    }
+    auto it = intrinsic_repeat_track_sizes_->find(track_size);
+    if (it == intrinsic_repeat_track_sizes_->end()) {
+      intrinsic_repeat_track_sizes_->Set(track_size, size);
+    } else {
+      // If multiple tracks of the same definition within the repeat() resolve
+      // to different sizes, take the largest size to use when calculating the
+      // final number of auto repetitions.
+      it->value = max(it->value, size);
+    }
+  }
+
  private:
   Member<GridLayoutTrackCollection> columns_;
   Member<GridLayoutTrackCollection> rows_;
+
+  // Intrinsic repeat track sizes for grid-lanes. Used across sizing passes
+  // to store the resolved sizes of intrinsic tracks within a repeat()
+  // definition.
+  std::optional<HashMap<GridTrackSize, LayoutUnit>>
+      intrinsic_repeat_track_sizes_;
 };
 
 // Subgrid layout relies on the root grid to perform the track sizing algorithm

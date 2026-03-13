@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
@@ -19,15 +20,13 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
   void ComputeGeometry(GridLanesLayoutAlgorithm& algorithm) {
     const auto& style = algorithm.Style();
-    const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
+    grid_axis_direction_ = style.GridLanesTrackSizingDirection();
 
-    auto* grid_lanes_items = algorithm.Node().ConstructGridItems(
-        line_resolver, /*must_invalidate_placement_cache=*/nullptr,
-        /*opt_oof_children=*/nullptr);
-    bool needs_intrinsic_track_size = false;
-    grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
-        SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
-        /*should_apply_inline_size_containment=*/false, &grid_lanes_items,
+    GridSizingTree sizing_tree;
+    bool needs_intrinsic_track_size;
+    algorithm.ComputeSizingTreeInGridAxis(
+        SizingConstraint::kLayout,
+        /*should_apply_inline_size_containment=*/false, &sizing_tree,
         needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
@@ -38,28 +37,22 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     //
     // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
     if (needs_intrinsic_track_size) {
-      HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
-          algorithm.GetIntrinsicRepeaterTrackSizes(!grid_lanes_items->IsEmpty(),
-                                                   *grid_axis_tracks_);
-      grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
-          SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
-          /*should_apply_inline_size_containment=*/false, &grid_lanes_items,
+      algorithm.CalculateIntrinsicTrackSizes(sizing_tree);
+      algorithm.ComputeSizingTreeInGridAxis(
+          SizingConstraint::kLayout,
+          /*should_apply_inline_size_containment=*/false, &sizing_tree,
           needs_intrinsic_track_size);
     }
 
-    const auto grid_axis_direction = grid_axis_tracks_->Direction();
-    ASSERT_EQ(grid_axis_direction, style.GridLanesTrackSizingDirection());
+    layout_data_ = &sizing_tree.LayoutData();
 
-    wtf_size_t start_offset = 0;
-    for (const auto& grid_lanes_item : *algorithm.BuildVirtualGridLanesItems(
-             line_resolver, *grid_lanes_items, needs_intrinsic_track_size,
-             SizingConstraint::kLayout,
-             line_resolver.AutoRepetitions(grid_axis_direction),
-             start_offset)) {
+    ASSERT_EQ(grid_axis_direction_, TrackCollection().Direction());
+
+    for (const auto& grid_lanes_item : sizing_tree.GetVirtualItems()) {
       GridLanesItemCachedData item_data;
 
       item_data.resolved_span =
-          grid_lanes_item.resolved_position.Span(grid_axis_direction);
+          grid_lanes_item.resolved_position.Span(grid_axis_direction_);
       if (grid_lanes_item.contribution_sizes) {
         item_data.contribution_sizes = *grid_lanes_item.contribution_sizes;
       }
@@ -68,13 +61,14 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   }
 
   wtf_size_t VirtualItemCount() { return virtual_items_data_.size(); }
-  const GridRangeVector& Ranges() { return grid_axis_tracks_->ranges_; }
+  const GridRangeVector& Ranges() { return TrackCollection().ranges_; }
 
   Vector<LayoutUnit> TrackSizes() {
+    const auto& tracks = TrackCollection();
     Vector<LayoutUnit> track_sizes;
-    for (wtf_size_t i = 0; i < grid_axis_tracks_->GetSetCount(); ++i) {
-      track_sizes.push_back(grid_axis_tracks_->GetSetOffset(i + 1) -
-                            grid_axis_tracks_->GetSetOffset(i));
+    for (wtf_size_t i = 0; i < tracks.GetSetCount(); ++i) {
+      track_sizes.push_back(tracks.GetSetOffset(i + 1) -
+                            tracks.GetSetOffset(i));
     }
     return track_sizes;
   }
@@ -112,6 +106,15 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     running_positions.SetAutoPlacementCursorForTesting(cursor);
   }
 
+  const GridSizingTrackCollection& TrackCollection() {
+    const auto grid_axis_direction =
+        GridLanesLayoutAlgorithmTest::grid_axis_direction_;
+    const auto& track_collection = (grid_axis_direction == kForColumns)
+                                       ? layout_data_->Columns()
+                                       : layout_data_->Rows();
+    return To<GridSizingTrackCollection>(track_collection);
+  }
+
  private:
   struct GridLanesItemCachedData {
     GridItemData::VirtualItemContributions contribution_sizes;
@@ -123,7 +126,8 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return virtual_items_data_[index];
   }
 
-  Persistent<GridSizingTrackCollection> grid_axis_tracks_;
+  Persistent<GridLayoutData> layout_data_;
+  GridTrackSizingDirection grid_axis_direction_ = kForColumns;
 
   // Virtual items represent the contributions of item groups in track sizing
   // and are not directly related to any children of the container.

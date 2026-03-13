@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_line_resolver.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/grid_track_list.h"
@@ -700,19 +701,21 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   const bool has_standalone_columns = subgrid_area.columns.IsIndefinite();
   const bool has_standalone_rows = subgrid_area.rows.IsIndefinite();
 
+  GridItems* virtual_items = MakeGarbageCollected<GridItems>();
   if (has_standalone_columns) {
     algorithm.BuildSizingCollection(kForColumns, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
-                                    needs_intrinsic_track_size);
+                                    needs_intrinsic_track_size, &virtual_items);
   }
   if (has_standalone_rows) {
     algorithm.BuildSizingCollection(kForRows, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
-                                    needs_intrinsic_track_size);
+                                    needs_intrinsic_track_size, &virtual_items);
   }
 
   if (!has_nested_subgrid) {
-    sizing_tree->SetSizingNodeData(node, grid_items, layout_data);
+    sizing_tree->SetSizingNodeData(node, grid_items, layout_data,
+                                   virtual_items);
     return;
   }
 
@@ -788,19 +791,28 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
   if (has_standalone_columns) {
     algorithm.BuildSizingCollection(kForColumns, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
-                                    needs_intrinsic_track_size);
+                                    needs_intrinsic_track_size, &virtual_items);
   }
   if (has_standalone_rows) {
     algorithm.BuildSizingCollection(kForRows, line_resolver, *grid_items,
                                     *layout_data, sizing_constraint,
-                                    needs_intrinsic_track_size);
+                                    needs_intrinsic_track_size, &virtual_items);
   }
 
-  sizing_tree->SetSizingNodeData(node, grid_items, layout_data);
+  sizing_tree->SetSizingNodeData(node, grid_items, layout_data, virtual_items);
 }
 
-// TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
 template void BuildGridSizingSubtree(const GridLayoutAlgorithm&,
+                                     const GridLineResolver&,
+                                     GridSizingTree*,
+                                     HeapVector<Member<LayoutBox>>*,
+                                     const SubgriddedItemData&,
+                                     const GridLineResolver*,
+                                     SizingConstraint,
+                                     bool,
+                                     bool,
+                                     bool);
+template void BuildGridSizingSubtree(const GridLanesLayoutAlgorithm&,
                                      const GridLineResolver&,
                                      GridSizingTree*,
                                      HeapVector<Member<LayoutBox>>*,
@@ -830,9 +842,14 @@ GridSizingTree BuildGridSizingTree(
   return sizing_tree;
 }
 
-// TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
 template CORE_EXPORT GridSizingTree
 BuildGridSizingTree(const GridLayoutAlgorithm&,
+                    const GridLineResolver&,
+                    HeapVector<Member<LayoutBox>>*,
+                    SizingConstraint,
+                    bool);
+template CORE_EXPORT GridSizingTree
+BuildGridSizingTree(const GridLanesLayoutAlgorithm&,
                     const GridLineResolver&,
                     HeapVector<Member<LayoutBox>>*,
                     SizingConstraint,
@@ -857,9 +874,13 @@ GridSizingTree BuildGridSizingTreeIgnoringChildren(
   return sizing_tree;
 }
 
-// TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
 template GridSizingTree BuildGridSizingTreeIgnoringChildren(
     const GridLayoutAlgorithm&,
+    const GridLineResolver&,
+    SizingConstraint,
+    bool);
+template GridSizingTree BuildGridSizingTreeIgnoringChildren(
+    const GridLanesLayoutAlgorithm&,
     const GridLineResolver&,
     SizingConstraint,
     bool);

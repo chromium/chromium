@@ -19,6 +19,7 @@ class GridItems;
 class GridLayoutData;
 class GridLineResolver;
 class GridSizingTrackCollection;
+class GridSizingTree;
 class GridLanesRunningPositions;
 class SubgriddedItemData;
 enum class GridItemContributionType;
@@ -90,15 +91,24 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
     kFinalPlacement,
   };
 
-  // This places all the items stored in `grid_lanes_items` and adjusts
+  // Computes the grid-lanes geometry for layout by running track sizing
+  // (including any intrinsic repeat passes). Returns a `GridSizingTree` with
+  // the grid-lanes items and finalized track sizes. `opt_oof_children` is an
+  // optional vector of out-of-flow direct children of the grid-lanes container
+  // that this method will populate.
+  GridSizingTree ComputeGridLanesGeometry(
+      SizingConstraint sizing_constraint,
+      bool should_apply_inline_size_containment,
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
+
+  // This places all the items in the sizing tree and adjusts
   // `intrinsic_block_size_` based on the placement of the items. Each item's
   // resolved position is translated based on the cached start offset.
   // Placement of the items is finalized within this method. `running_positions`
   // is an output parameter that can be used to find the intrinsic inline size
   // when the stacking axis is the inline axis.
   void PlaceGridLanesItems(
-      GridSizingTrackCollection& track_collection,
-      GridItems& grid_lanes_items,
+      GridSizingTree& sizing_tree,
       GridLanesRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
@@ -114,8 +124,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // `baseline_accumulator` output parameter accumulates container-level
   // baselines from the items.
   void RunGridLanesPlacementPhase(
-      GridSizingTrackCollection& track_collection,
-      GridItems& grid_lanes_items,
+      GridSizingTree& sizing_tree,
       std::optional<SizingConstraint> sizing_constraint,
       LayoutUnit stacking_axis_gap,
       PlacementPhase placement_phase,
@@ -132,31 +141,35 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                            LayoutUnit block_size,
                            HeapVector<Member<LayoutBox>>& oof_children);
 
-  // Returns the track collection given the provided `sizing_constraint`.
-  // If `should_apply_inline_size_containment` is true, build tracks without
-  // using any items. If `intrinsic_repeat_track_sizes` is non-null, this
-  // contains the track size(s) to use for intrinsic sized track(s) inside a
-  // repeat() track definition. The `grid_lanes_items` associated with the
-  // returned track collection are returned via the corresponding output params.
-  // If we hit an intrinsic sized track within a repeat() definition and don't
-  // provide `intrinsic_repeat_track_sizes`, then `needs_intrinsic_track_size`
-  // will be set to true, indicating that another track sizing pass will be
-  // required once we've computed the intrinsic track size. `opt_oof_children`
-  // is an optional vector of out-of-flow direct children of the grid-lanes
-  // container that this method will populate.
-  GridSizingTrackCollection* ComputeGridAxisTracks(
-      const SizingConstraint sizing_constraint,
-      const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
+  // Initializes track sizes for the grid axis stored in `sizing_tree`.
+  void InitializeTrackSizes(GridSizingTree* sizing_tree) const;
+
+  // Creates a sizing tree based on the given `sizing_constraint` and
+  // populates `sizing_tree` with the result. If
+  // `should_apply_inline_size_containment` is true, build tracks without using
+  // any items. `opt_oof_children` is an optional vector of out-of-flow direct
+  // children of the grid-lanes container that this method will populate.
+  // `needs_intrinsic_track_size` is an out parameter set to true if we hit an
+  // intrinsic sized track within a repeat() definition and need to run an
+  // additional track sizing pass to calculate the intrinsic track size.
+  void ComputeSizingTreeInGridAxis(
+      SizingConstraint sizing_constraint,
       const bool should_apply_inline_size_containment,
-      GridItems** grid_lanes_items,
+      GridSizingTree* sizing_tree,
       bool& needs_intrinsic_track_size,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
 
-  GridSizingTrackCollection* BuildGridAxisTracks(
-      const GridLineResolver& line_resolver,
-      const GridItems& grid_lanes_items,
+  // Completes the track sizing algorithm for non-definite tracks.
+  void CompleteTrackSizingAlgorithm(
       SizingConstraint sizing_constraint,
-      bool& needs_intrinsic_track_size);
+      GridSizingTree* sizing_tree,
+      bool needs_intrinsic_track_size,
+      bool* opt_needs_additional_pass = nullptr) const;
+
+  // Populate `sizing_tree` with the track sizes of an auto repeat that has
+  // intrinsic track size(s). This method assumes that such an auto repeat
+  // exists in the sizing tree's track collection.
+  void CalculateIntrinsicTrackSizes(GridSizingTree& sizing_tree) const;
 
   // Given a `track_collection`, return all the track sizes of an auto repeat
   // that has intrinsic track size(s). This method assumes that such an auto
@@ -192,7 +205,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
                                         const bool needs_intrinsic_track_size,
                                         SizingConstraint sizing_constraint,
                                         const wtf_size_t auto_repetition_count,
-                                        wtf_size_t& start_offset) const;
+                                        wtf_size_t& start_offset,
+                                        bool& has_baseline_aligned_items) const;
 
   // Computes the block-axis contribution of a virtual grid-lanes item for track
   // sizing. Also computes a baseline shim for the item and sets `baseline_shim`
@@ -254,14 +268,6 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   LogicalSize grid_lanes_available_size_;
   LogicalSize grid_lanes_min_available_size_;
   LogicalSize grid_lanes_max_available_size_;
-
-  // When true, there is at least one item that is baseline aligned, indicating
-  // that a two-pass placement is needed to compute track baselines and final
-  // item placement.
-  //
-  // TODO(almaher): Marking this as mutable is a temporary workaround - I plan
-  // to remove this member altogether in a follow up CL.
-  mutable bool has_baseline_aligned_items_ = false;
 };
 
 }  // namespace blink
