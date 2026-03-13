@@ -518,6 +518,29 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
+                       ScrollingUnpinnedContainerClosesTabGroupEditorBubble) {
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripBottomContainerElementId), Do([this]() {
+        browser()->tab_strip_model()->ExecuteContextMenuCommand(
+            browser()->tab_strip_model()->active_index(),
+            TabStripModel::ContextMenuCommand::
+                CommandAddToNewGroupFromMenuItem);
+      }),
+      WaitForShow(kTabGroupHeaderElementId),
+      WaitForShow(kTabGroupEditorBubbleId), Do([this]() {
+        views::View* tab_strip_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->vertical_tab_strip_region_view_for_testing()
+                ->GetTabStripView();
+        VerticalTabStripView* vertical_tab_strip_view =
+            views::AsViewClass<VerticalTabStripView>(tab_strip_view);
+        vertical_tab_strip_view->unpinned_tabs_scroll_view_for_testing()
+            ->ScrollByOffset({0, -100});
+      }),
+      WaitForHide(kTabGroupEditorBubbleId));
+}
+
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_MousePressHidesHoverCard DISABLED_MousePressHidesHoverCard
 #else

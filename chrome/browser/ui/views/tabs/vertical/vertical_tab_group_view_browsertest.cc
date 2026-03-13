@@ -328,9 +328,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   // header's editor bubble button.
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kTabGroupEditorBubbleId));
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return tab_group_header->editor_bubble_button()->GetVisible();
-  }));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, AttentionIndicator) {

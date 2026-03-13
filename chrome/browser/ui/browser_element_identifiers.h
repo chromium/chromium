@@ -205,6 +205,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kTabGroupEditorBubbleManageSharedGroupButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kTabGroupEditorBubbleMoveGroupToNewWindowButtonId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleNewTabInGroupButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleRecentActivityButtonId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleShareGroupButtonId);

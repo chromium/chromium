@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
 
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/widget/widget.h"
 
 TabGroupEditorBubbleTracker::TabGroupEditorBubbleTracker(
@@ -23,6 +24,16 @@ TabGroupEditorBubbleTracker::~TabGroupEditorBubbleTracker() {
     on_bubble_closed_callback_list_.Notify();
   }
   CHECK(!IsInObserverList());
+}
+
+void TabGroupEditorBubbleTracker::SetScrollView(
+    views::ScrollView* scroll_view) {
+  scroll_view_subscription_ =
+      scroll_view
+          ? scroll_view->AddContentsScrolledCallback(base::BindRepeating(
+                &TabGroupEditorBubbleTracker::OnContentsScrolled,
+                base::Unretained(this)))
+          : base::CallbackListSubscription();
 }
 
 void TabGroupEditorBubbleTracker::Opened(views::Widget* bubble_widget) {
@@ -59,5 +70,11 @@ void TabGroupEditorBubbleTracker::OnVerticalTabStripModeWillChange(
     tabs::VerticalTabStripStateController* controller) {
   if (widget_) {
     widget_->CloseNow();
+  }
+}
+
+void TabGroupEditorBubbleTracker::OnContentsScrolled() {
+  if (widget_) {
+    widget_->Close();
   }
 }
