@@ -206,7 +206,9 @@ public class EducationalTipModuleMediator {
      * the educational tip module from the magic stack.
      */
     private void removeModule() {
-        mModuleDelegate.removeModule(mModuleType);
+        if (!SetupListModuleUtils.isSetupListModule(mModuleType)) {
+            mModuleDelegate.removeModule(mModuleType);
+        }
         removeDefaultBrowserPromoTriggerStateListener();
     }
 
