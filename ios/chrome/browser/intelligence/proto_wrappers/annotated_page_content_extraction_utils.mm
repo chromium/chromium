@@ -34,6 +34,8 @@ constexpr char kImageInfoKey[] = "imageInfo";
 constexpr char kImageCaptionKey[] = "imageCaption";
 constexpr char kAnnotatedRolesKey[] = "annotatedRoles";
 constexpr char kIframeDataKey[] = "iframeData";
+constexpr char kTableDataKey[] = "tableData";
+constexpr char kTableNameKey[] = "tableName";
 constexpr char kTableRowDataKey[] = "tableRowData";
 constexpr char kRowTypeKey[] = "rowType";
 constexpr char kCanvasDataKey[] = "canvasData";
@@ -345,6 +347,18 @@ void PopulateIframeData(
   }
 }
 
+// Populates the table data of the `destination_node` from the
+// `table_data` content.
+void PopulateTableData(
+    const base::DictValue& table_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (const std::string* table_name = table_data.FindString(kTableNameKey)) {
+    destination_node->mutable_content_attributes()
+        ->mutable_table_data()
+        ->set_table_name(*table_name);
+  }
+}
+
 // Populates the table row data of the `destination_node` from the
 // `table_row_data` content.
 void PopulateTableRowData(
@@ -643,6 +657,14 @@ void PopulateAPCNodeFromContentTree(
           }
         }
         PopulateIframeData(*iframe_data, destination_node, origin);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE: {
+      const base::DictValue* table_data =
+          content_attributes->FindDict(kTableDataKey);
+      if (table_data) {
+        PopulateTableData(*table_data, destination_node);
       }
       break;
     }

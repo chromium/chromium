@@ -3798,6 +3798,47 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_TableRow_NestedSections) {
   EXPECT_TRUE(found_body_row);
 }
 
+// Tests that table captions are extracted correctly.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_Table_Caption) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "TableMetadata", RawHtml("<table>"
+                               "  <caption style=\"text-transform: "
+                               "uppercase;\">My Table Name</caption>"
+                               "  <thead><tr><th>Header</th></tr></thead>"
+                               "  <tbody><tr><td>Body</td></tr></tbody>"
+                               "</table>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& table_node = root_node.children_nodes(0);
+  EXPECT_EQ(table_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
+
+  EXPECT_TRUE(table_node.content_attributes().has_table_data());
+  EXPECT_EQ(table_node.content_attributes().table_data().table_name(),
+            "MY TABLE NAME");
+}
+
 // Tests the extraction of form control attributes (input, textarea, select,
 // button).
 TEST_P(PageContextWrapperTest,

@@ -489,3 +489,111 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   ASSERT_TRUE(color.has_value());
   EXPECT_EQ(static_cast<uint32_t>(*color), 16711935u);
 }
+
+// Test the extraction of the table caption.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_Table_Caption) {
+  const std::string html =
+      "<html><body>"
+      "<table>"
+      "  <caption style=\"text-transform: uppercase;\">My Table Name</caption>"
+      "  <thead><tr><th>Header</th></tr></thead>"
+      "  <tbody><tr><td>Body</td></tr></tbody>"
+      "</table>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::test::TestFuture<base::Value> future;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::Value)> callback,
+             const base::Value* value) {
+            std::move(callback).Run(value ? value->Clone() : base::Value());
+          },
+          future.GetCallback()));
+
+  base::Value result_value = future.Take();
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 1u);
+
+  const base::DictValue& table_node = (*children)[0].GetDict();
+  std::optional<double> attribute_type =
+      table_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(attribute_type.has_value());
+  EXPECT_EQ(
+      static_cast<int>(attribute_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE));
+
+  const std::string* table_name = table_node.FindStringByDottedPath(
+      "contentAttributes.tableData.tableName");
+  ASSERT_TRUE(table_name);
+  EXPECT_EQ(*table_name, "MY TABLE NAME");
+}
+
+// Test the extraction of the table caption when the text is nested inside
+// other tags.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_Table_Caption_Nested) {
+  const std::string html =
+      "<html><body>"
+      "<table>"
+      "  <caption style=\"text-transform: uppercase;\">"
+      "    <span>My <strong>Nested Table</strong> Name</span>"
+      "  </caption>"
+      "  <thead><tr><th>Header</th></tr></thead>"
+      "  <tbody><tr><td>Body</td></tr></tbody>"
+      "</table>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::test::TestFuture<base::Value> future;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::Value)> callback,
+             const base::Value* value) {
+            std::move(callback).Run(value ? value->Clone() : base::Value());
+          },
+          future.GetCallback()));
+
+  base::Value result_value = future.Take();
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 1u);
+
+  const base::DictValue& table_node = (*children)[0].GetDict();
+  std::optional<double> attribute_type =
+      table_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(attribute_type.has_value());
+  EXPECT_EQ(
+      static_cast<int>(attribute_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE));
+
+  const std::string* table_name = table_node.FindStringByDottedPath(
+      "contentAttributes.tableData.tableName");
+  ASSERT_TRUE(table_name);
+
+  // Verifies that text from nested spans and strong tags is correctly extracted
+  // and that the uppercase transformation still applies to the nested text.
+  EXPECT_EQ(*table_name, "MY NESTED TABLE NAME");
+}

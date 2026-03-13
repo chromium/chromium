@@ -6,7 +6,7 @@ import {HAS_BEEN_PASSWORD_SYMBOL} from '//components/autofill/ios/form_util/reso
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
 import {FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
-import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo, PageContentTableData} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
 // Set of DOM Node IDs that are considered interactive (focused, selection
 // start/end). These nodes should be included in the APC tree even if they are
@@ -36,6 +36,7 @@ const TAG_EMBED = 'EMBED';
 const TAG_OBJECT = 'OBJECT';
 const TAG_DATALIST = 'DATALIST';
 const TAG_HEAD = 'HEAD';
+const TAG_CAPTION = 'CAPTION';
 
 // Media tags.
 const TAG_SVG = 'SVG';
@@ -98,6 +99,7 @@ const TAGS_TO_REJECT = [
   TAG_OBJECT,
   TAG_DATALIST,
   TAG_HEAD,
+  TAG_CAPTION,
 ];
 
 // Tags that contain valid content but are not yet extracted.
@@ -1419,6 +1421,25 @@ function getFormControlData(
 }
 
 /**
+ * Extracts table name from a given table DOM Node.
+ *
+ * @param domNode The table element to process.
+ * @return The populated PageContentTableData.
+ */
+function getTableNameForTableNode(domNode: HTMLElement): PageContentTableData {
+  const tableData: PageContentTableData = {};
+  const tableElement = domNode as HTMLTableElement;
+  // NOTE: Table names will appear twice in the APC tree(once as a part of a
+  // table node and once as a part of a text node). This matches Blink's
+  // behavior.
+  const tableName = tableElement.caption?.innerText?.trim();
+  if (tableName) {
+    tableData.tableName = tableName;
+  }
+  return tableData;
+}
+
+/**
  * Returns basic content for an element node that is not a generic
  * container based on its tag name.
  *
@@ -1499,14 +1520,16 @@ function getBasicContentForNonGenericElement(
     }
 
     // 2. Structural & Layout Elements.
-    case TAG_TABLE:
+    case TAG_TABLE: {
       return {
         childrenNodes: [],
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.TABLE,
+          tableData: getTableNameForTableNode(domNode),
         },
       };
+    }
     case TAG_TR: {
       let rowType = PageContentTableRowType.BODY;
       // Use closest to find the nearest table section or table ancestor.
