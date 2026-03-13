@@ -302,6 +302,34 @@ GURL GetSyncConfirmationURL() {
                                            /*is_sync_promo=*/true);
 }
 
+std::string_view GetRejectHistoryOptinScript() {
+  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+    static constexpr std::string_view kScript = R"(
+      (() => {
+        const appElement =
+            document.querySelector('history-sync-optin-app-refresh');
+        const rejectButton =
+            appElement.shadowRoot.querySelector('#rejectButton');
+        rejectButton.click();
+        return true;
+      })();
+    )";
+    return kScript;
+  } else {
+    static constexpr std::string_view kScript = R"(
+      (() => {
+        const appElement =
+            document.querySelector('history-sync-optin-app');
+        const rejectButton =
+            appElement.shadowRoot.querySelector('#rejectButton');
+        rejectButton.click();
+        return true;
+      })();
+    )";
+    return kScript;
+  }
+}
+
 class BrowserAddedWaiter : public BrowserCollectionObserver {
  public:
   explicit BrowserAddedWaiter(size_t total_count) : total_count_(total_count) {
@@ -891,19 +919,10 @@ class ProfilePickerCreationFlowBrowserTest
 
   // TODO(crbug.com/447584795): Add retry logic.
   void RejectHistoryOptin() {
-    ASSERT_TRUE(base::FeatureList::IsEnabled(
+    CHECK(base::FeatureList::IsEnabled(
         syncer::kReplaceSyncPromosWithSignInPromos));
-    constexpr char kRejectHistory[] =
-        "(() => {"
-        "  const historySyncOptinApp = "
-        "      document.querySelector('history-sync-optin-app');"
-        "  const rejectButton = "
-        "      historySyncOptinApp.shadowRoot.querySelector('#rejectButton');"
-        "  rejectButton.click();"
-        "  return true;"
-        "})();";
-
-    EXPECT_EQ(true, content::EvalJs(web_contents(), kRejectHistory));
+    CHECK_EQ(content::EvalJs(web_contents(), GetRejectHistoryOptinScript()),
+             true);
   }
 
   // TODO(crbug.com/447584795): Add retry logic.
