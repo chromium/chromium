@@ -32,6 +32,8 @@
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller.h"
 #import "ios/chrome/browser/data_import/ui/data_import_credential_conflict_resolution_view_controller_delegate.h"
 #import "ios/chrome/browser/data_import/ui/data_import_invalid_credentials_view_controller.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -78,9 +80,6 @@
   // Bridge to the PasskeyKeychainProvider that manages passkey vault keys.
   PasskeyKeychainProviderBridge* _passkeyKeychainProviderBridge;
 
-  // Reauthentication module used in credential import flow.
-  id<ReauthenticationProtocol> _reauthModule;
-
   // Coordinator for blocking credential import until Local Authentication is
   // passed. Used for requiring authentication when the app is
   // backgrounded/foregrounded with credential import opened.
@@ -102,13 +101,10 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                      UUID:(NSUUID*)UUID
-                              reauthModule:
-                                  (id<ReauthenticationProtocol>)reauthModule {
+                                      UUID:(NSUUID*)UUID {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _UUID = UUID;
-    _reauthModule = reauthModule;
   }
   return self;
 }
@@ -207,7 +203,9 @@
               initWithPasswordConflicts:passwords
                        passkeyConflicts:passkeys];
   conflictResolutionViewController.mutator = _mediator;
-  conflictResolutionViewController.reauthModule = _reauthModule;
+  conflictResolutionViewController.reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
   conflictResolutionViewController.delegate = self;
 
   [_navigationController pushViewController:conflictResolutionViewController
@@ -437,10 +435,13 @@
 // while credential import is opened.
 // TODO(crbug.com/458733320): Explore EG test feasibility.
 - (void)startReauthCoordinator {
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
   _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_navigationController
                                browser:self.browser
-                reauthenticationModule:_reauthModule
+                reauthenticationModule:reauthModule
                            authOnStart:NO];
   _reauthCoordinator.delegate = self;
   [_reauthCoordinator start];

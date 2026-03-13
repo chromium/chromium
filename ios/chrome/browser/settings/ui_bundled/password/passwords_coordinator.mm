@@ -706,8 +706,7 @@
   _credentialImportCoordinator = [[CredentialImportCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                            UUID:self.credentialImportUUID
-                    reauthModule:self.reauthModule];
+                            UUID:self.credentialImportUUID];
   self.credentialImportUUID = nil;
   _credentialImportCoordinator.delegate = self;
   [_credentialImportCoordinator start];
