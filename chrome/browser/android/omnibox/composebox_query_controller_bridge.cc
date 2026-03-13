@@ -40,6 +40,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "net/base/url_util.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/android/gurl_android.h"
@@ -252,6 +253,8 @@ ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(GURL url) {
   search_url_request_info->additional_params =
       lens::GetParametersMapWithoutQuery(url);
   search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->aim_entry_point =
+      omnibox::ANDROID_CHROME_FUSEBOX_ENTRY_POINT;
   search_url_request_info->invocation_source =
       lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
   // Read the list of tokens from the fileinfo map in the contextual search

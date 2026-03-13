@@ -498,6 +498,8 @@ CreateInputDataFromAnnotatedPageContent(
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->aim_entry_point =
+      omnibox::IOS_CHROME_FUSEBOX_ENTRY_POINT;
   search_url_request_info->additional_params = additionalParams;
 
   __weak __typeof(self) weakSelf = self;

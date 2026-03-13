@@ -58,4 +58,10 @@ enum ChromeAimEntryPoint {
 
   // AIM is entered from toolbar button to enter cobrowsing mode in Chrome.
   DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON = 130;
+
+  // AIM is entered from the fusebox entrypoint on Chrome iOS.
+  IOS_CHROME_FUSEBOX_ENTRY_POINT = 139;
+
+  // AIM is entered from the fusebox entrypoint on Chrome Android.
+  ANDROID_CHROME_FUSEBOX_ENTRY_POINT = 140;
 }
