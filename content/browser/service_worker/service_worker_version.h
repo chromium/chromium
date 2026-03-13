@@ -485,6 +485,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
     return worker_host_.get();
   }
 
+  const std::optional<blink::ServiceWorkerToken>& start_worker_token() const {
+    return start_worker_token_;
+  }
+
   base::WeakPtr<ServiceWorkerContextCore> context() const { return context_; }
 
   // Adds and removes Observers.
@@ -1212,6 +1216,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // The host for this version's running service worker. |worker_host_| is
   // always valid as long as this version is running.
   std::unique_ptr<content::ServiceWorkerHost> worker_host_;
+
+  // A token that uniquely identifies this running instance of the Service
+  // Worker. It is valid from worker started until stopped.
+  std::optional<blink::ServiceWorkerToken> start_worker_token_;
 
   // |controllee_map_| and |bfcached_controllee_map_| should not share the same
   // controllee.  ServiceWorkerClient in the controllee maps should be

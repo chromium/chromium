@@ -185,8 +185,10 @@ void TestServiceWorkerContextObserver::OnVersionStartedRunning(
   }
 }
 
-void TestServiceWorkerContextObserver::OnStoppingSync(int64_t version_id,
-                                                      const GURL& scope) {
+void TestServiceWorkerContextObserver::OnStoppingSync(
+    int64_t version_id,
+    const GURL& scope,
+    const blink::ServiceWorkerToken& service_worker_token) {
   if (running_version_id_ && running_version_id_ == version_id) {
     stopping_version_id_ = version_id;
     if (stopping_quit_closure_) {
