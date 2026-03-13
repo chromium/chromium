@@ -32,10 +32,8 @@ class X11ClipboardOzone : public PlatformClipboard {
   ~X11ClipboardOzone() override;
 
   // PlatformClipboard:
-  void OfferClipboardData(
-      ClipboardBuffer buffer,
-      const PlatformClipboard::DataMap& data_map,
-      PlatformClipboard::OfferDataClosure callback) override;
+  void OfferClipboardData(ClipboardBuffer buffer,
+                          const PlatformClipboard::DataMap& data_map) override;
   void RequestClipboardData(
       ClipboardBuffer buffer,
       const std::string& mime_type,

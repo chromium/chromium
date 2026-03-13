@@ -238,9 +238,7 @@ class WaylandClipboardTest : public WaylandClipboardTestBase {
     offered_data_[mime_type] = base::MakeRefCounted<base::RefCountedBytes>(
         base::ToVector(base::as_byte_span(data)));
 
-    base::MockCallback<PlatformClipboard::OfferDataClosure> offer_callback;
-    EXPECT_CALL(offer_callback, Run()).Times(1);
-    clipboard_->OfferClipboardData(buffer, offered_data_, offer_callback.Get());
+    clipboard_->OfferClipboardData(buffer, offered_data_);
   }
 
   PlatformClipboard::DataMap offered_data_;
@@ -511,9 +509,7 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
 TEST_P(CopyPasteOnlyClipboardTest, PrimarySelectionRequestsNoop) {
   const auto buffer = ClipboardBuffer::kSelection;
 
-  base::MockCallback<PlatformClipboard::OfferDataClosure> offer_done;
-  EXPECT_CALL(offer_done, Run()).Times(1);
-  clipboard_->OfferClipboardData(buffer, {}, offer_done.Get());
+  clipboard_->OfferClipboardData(buffer, {});
   EXPECT_FALSE(clipboard_->IsSelectionOwner(buffer));
 
   base::MockCallback<PlatformClipboard::RequestDataClosure> got_data;

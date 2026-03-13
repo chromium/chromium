@@ -117,6 +117,12 @@ class ClipboardOzone : public Clipboard {
                         ReadAvailableTypesCallback callback,
                         const PlatformClipboard::Data& data) const;
 
+  void OnGetAllAvailableFormats(
+      ClipboardBuffer buffer,
+      const std::optional<DataTransferEndpoint>& data_dst,
+      base::OnceCallback<void(base::flat_set<ClipboardFormatType>)> callback,
+      std::optional<DataTransferEndpoint> data_src) const;
+
   template <typename Callback, typename ProcessCallback>
   void ReadAsync(ClipboardBuffer buffer,
                  const std::string& mime_type,

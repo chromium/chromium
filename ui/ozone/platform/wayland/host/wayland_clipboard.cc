@@ -293,11 +293,9 @@ WaylandClipboard::~WaylandClipboard() = default;
 
 void WaylandClipboard::OfferClipboardData(
     ClipboardBuffer buffer,
-    const PlatformClipboard::DataMap& data_map,
-    PlatformClipboard::OfferDataClosure callback) {
+    const PlatformClipboard::DataMap& data_map) {
   if (auto* clipboard = GetClipboard(buffer))
     clipboard->Write(&data_map);
-  std::move(callback).Run();
 }
 
 void WaylandClipboard::RequestClipboardData(

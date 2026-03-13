@@ -32,9 +32,7 @@ X11ClipboardOzone::~X11ClipboardOzone() = default;
 
 void X11ClipboardOzone::OfferClipboardData(
     ClipboardBuffer buffer,
-    const PlatformClipboard::DataMap& data_map,
-    PlatformClipboard::OfferDataClosure callback) {
-  DCHECK(!callback.is_null());
+    const PlatformClipboard::DataMap& data_map) {
   helper_->CreateNewClipboardData();
   for (const auto& item : data_map)
     helper_->InsertMapping(item.first, item.second);
@@ -57,7 +55,6 @@ void X11ClipboardOzone::OfferClipboardData(
 #endif
 
   helper_->TakeOwnershipOfSelection(buffer);
-  std::move(callback).Run();
 }
 
 void X11ClipboardOzone::RequestClipboardData(
