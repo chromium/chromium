@@ -27,7 +27,8 @@
 
 @interface SigninAccountCapabilitiesSceneAgent () <
     ProfileStateObserver,
-    SystemIdentityManagerObserving>
+    SystemIdentityManagerObserving,
+    UIBlockerManagerObserver>
 @end
 
 @implementation SigninAccountCapabilitiesSceneAgent {
@@ -58,6 +59,7 @@
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
   [self.sceneState.profileState addObserver:self];
+  [self.sceneState.profileState addUIBlockerManagerObserver:self];
 }
 
 #pragma mark - SceneStateObserver
@@ -68,6 +70,7 @@
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  [self.sceneState.profileState removeUIBlockerManagerObserver:self];
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
   _systemIdentityManagerObserver.reset();
@@ -88,6 +91,12 @@
 #pragma mark - SystemIdentityManagerObserving
 
 - (void)onIdentityListChanged {
+  [self fetchCapabilitiesForUnhandledIdentities];
+}
+
+#pragma mark - UIBlockerManagerObserver
+
+- (void)currentUIBlockerRemoved {
   [self fetchCapabilitiesForUnhandledIdentities];
 }
 

@@ -8,6 +8,9 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
+#import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_target.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -36,14 +39,14 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
     scene_ui_provider_ = OCMProtocolMock(@protocol(SceneUIProvider));
 
+    profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
+    profile_state_.profile = profile_.get();
+    SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+    scene_state_.profileState = profile_state_;
+
     agent_ = [[SigninAccountCapabilitiesSceneAgent alloc]
         initWithSceneUIProvider:scene_ui_provider_];
     agent_.sceneState = scene_state_;
-
-    profile_state_ = OCMClassMock([ProfileState class]);
-    OCMStub([profile_state_ profile]).andReturn(profile_.get());
-    OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
-    scene_state_.profileState = profile_state_;
   }
 
   ~SigninAccountCapabilitiesSceneAgentTest() override {
@@ -145,4 +148,34 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIdentityRemoval) {
   fake_system_identity_manager_->FireSystemIdentityReloaded();
 
   EXPECT_EQ(build_context_calls, 2);
+}
+
+// Tests that the agent fetches capabilities when a UI blocker is removed.
+TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnUIBlockerRemoved) {
+  FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager_->AddIdentity(identity1);
+
+  __block int build_context_calls = 0;
+  fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
+      base::BindRepeating(^(
+          id<SystemIdentity> identity, UIViewController* view_controller,
+          SystemIdentityManager::BuildExternalPrivacyContextCallback callback) {
+        build_context_calls++;
+        std::move(callback).Run(nil);
+      }));
+
+  // Set a UI blocker before becoming active.
+  id<UIBlockerTarget> blocker_target =
+      OCMProtocolMock(@protocol(UIBlockerTarget));
+  [profile_state_ incrementBlockingUICounterForTarget:blocker_target];
+
+  // Activation should not trigger fetch because UI is blocked.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_EQ(build_context_calls, 0);
+
+  // Remove UI blocker.
+  [profile_state_ decrementBlockingUICounterForTarget:blocker_target];
+
+  // The fetch should now be triggered.
+  EXPECT_EQ(build_context_calls, 1);
 }
