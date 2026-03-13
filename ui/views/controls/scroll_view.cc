@@ -957,13 +957,11 @@ void ScrollView::Layout(PassKey) {
     UpdateOverflowIndicatorVisibility(CurrentOffset());
   }
 
-  // If registered, run the post-layout callback. This is used to move the
-  // scroll view contents to the appropriate position that's different from the
-  // position assigned above.
+  // If registered, run the post-layout callback.
   if (post_layout_callback_) {
-    const bool layout_needed = needs_layout();
+    // TODO(tluk): Consider adding a CHECK on needs_layout() once layout
+    // invalidation issues with overflow indicators have been resolved.
     post_layout_callback_.Run(this);
-    CHECK_EQ(layout_needed, needs_layout());
   }
 
   if (next_successful_frame_post_layout_callback_) {
