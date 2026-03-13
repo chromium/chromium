@@ -42,6 +42,9 @@ constexpr static int kMinUnderlineWidth = kSmallUnderlineWidth - 4;
 // The threshold for tab width at which `kMinUnderlineWidth` should be used.
 constexpr static int kMinimumTabWidthThreshold = 42;
 
+// The threshold for tab width above which a glow effect may be used.
+constexpr static int kMinimumTabWidthGlowThreshold = 68;
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabUnderlineView,
@@ -216,18 +219,24 @@ void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
                                   const cc::PaintFlags& flags) {
   int dimension = ComputeDimension();
 
+  const bool is_tab_active =
+      GetTabInterface() && GetTabInterface()->IsActivated();
+
   gfx::Rect effect_bounds;
   const bool use_glow_effect =
       base::FeatureList::IsEnabled(features::kDetachedTabs) &&
-      orientation_ == Orientation::kHorizontal;
+      orientation_ == Orientation::kHorizontal &&
+      size().width() > kMinimumTabWidthGlowThreshold;
 
   if (use_glow_effect) {
     // The detached tab body is inset by the bottom corner radius from
     // the edges of the tab view.
-    const int kDetachedInset = TabStyle::Get()->GetBottomCornerRadius();
+    int inset = TabStyle::Get()->GetBottomCornerRadius();
+    if (!is_tab_active) {
+      inset += 8;
+    }
     effect_bounds =
-        gfx::Rect(kDetachedInset, 0, size().width() - 2 * kDetachedInset,
-                  size().height());
+        gfx::Rect(inset, 0, size().width() - 2 * inset, size().height());
   } else if (orientation_ == Orientation::kHorizontal) {
     int underline_x = (size().width() - dimension + 1) / 2;
     effect_bounds = gfx::Rect(underline_x, size().height() - kEffectThickness,
@@ -245,7 +254,8 @@ void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
 
     // Follow the bottom curve of the tab. For detached tabs, the bottom
     // corner radius is the same as the top corner radius.
-    const float bottom_radius = TabStyle::Get()->GetTopCornerRadius();
+    const float bottom_radius =
+        is_tab_active ? TabStyle::Get()->GetTopCornerRadius() : 0.0f;
     const float glow_height = effect_bounds.height();
     const float target_middle_height = 8.0f;
     const float target_side_height = 4.0f;
@@ -259,42 +269,47 @@ void TabUnderlineView::DrawEffect(gfx::Canvas* canvas,
 
     SkColor4f gradient_colors[5];
     SkScalar pos[5] = {0.0f, 0.37f, 0.65f, 0.84f, 1.0f};
-    gradient_colors[0] = SkColor4f::FromColor(SkColorSetA(color, 0));
+    gradient_colors[0] =
+        SkColor4f::FromColor(SkColorSetA(color, 32));  // 12.5% opacity
     gradient_colors[1] =
-        SkColor4f::FromColor(SkColorSetA(color, 38));  // 15% opacity
+        SkColor4f::FromColor(SkColorSetA(color, 54));  // 21% opacity
     gradient_colors[2] =
-        SkColor4f::FromColor(SkColorSetA(color, 108));  // ~42% opacity
+        SkColor4f::FromColor(SkColorSetA(color, 108));  // 42% opacity
     gradient_colors[3] =
-        SkColor4f::FromColor(SkColorSetA(color, 191));  // 75% opacity
-    gradient_colors[4] = SkColor4f::FromColor(color);
+        SkColor4f::FromColor(SkColorSetA(color, 175));  // 69% opacity
+    gradient_colors[4] =
+        SkColor4f::FromColor(SkColorSetA(color, 223));  // 87.5% opacity
 
     new_flags.setShader(cc::PaintShader::MakeLinearGradient(
         points, gradient_colors, pos, 5, SkTileMode::kClamp));
 
     // Apply a blur filter to the glow to soften the transition at the curved
-    // top edge.
-    const float blur_sigma_x = 1.0f;
+    // top edge and sides.
+    const float blur_sigma_x = is_tab_active ? 1.0f : 4.0f;
     const float blur_sigma_y = 2.0f;
     new_flags.setImageFilter(sk_make_sp<cc::BlurPaintFilter>(
         blur_sigma_x, blur_sigma_y, SkTileMode::kDecal, nullptr));
 
+    // Inset the path from the sides to allow the blur filter to create a
+    // fade-out effect within the clipping bounds.
+    const float side_inset = 2 * blur_sigma_x;
     SkPathBuilder top_curve_builder;
-    top_curve_builder.moveTo(effect_bounds.x(),
+    top_curve_builder.moveTo(effect_bounds.x() + side_inset,
                              effect_bounds.y() + top_padding + top_inset);
-    top_curve_builder.quadTo(
-        effect_bounds.CenterPoint().x(), effect_bounds.y() + top_padding,
-        effect_bounds.right(), effect_bounds.y() + top_padding + top_inset);
+    top_curve_builder.quadTo(effect_bounds.CenterPoint().x(),
+                             effect_bounds.y() + top_padding,
+                             effect_bounds.right() - side_inset,
+                             effect_bounds.y() + top_padding + top_inset);
     // Extend the path downwards so that the blur filter doesn't soften the
     // bottom edge once clipped.
     const float blur_bleed = 6.0f;
-    top_curve_builder.lineTo(effect_bounds.right(),
+    top_curve_builder.lineTo(effect_bounds.right() - side_inset,
                              effect_bounds.bottom() + blur_bleed);
-    top_curve_builder.lineTo(effect_bounds.x(),
+    top_curve_builder.lineTo(effect_bounds.x() + side_inset,
                              effect_bounds.bottom() + blur_bleed);
     top_curve_builder.close();
 
     SkRRect rrect;
-    // Round only the bottom corners.
     SkVector radii[4] = {{0, 0},
                          {0, 0},
                          {bottom_radius, bottom_radius},
