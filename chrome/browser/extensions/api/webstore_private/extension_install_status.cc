@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/webstore_private/extension_install_status.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/prefs/pref_service.h"
@@ -27,6 +29,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "ui/base/l10n/l10n_util.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -200,11 +203,24 @@ ExtensionInstallStatus PerformSynchronousChecks(
 }
 
 void OnCloudPolicyCheckDone(
-    base::OnceCallback<void(ExtensionInstallStatus)> callback,
+    base::OnceCallback<void(ExtensionInstallStatus, std::u16string)> callback,
     bool can_install,
     std::u16string blocked_message) {
-  // TODO(crbug.com/477545527): Also return `blocked_message` via the callback.
-  std::move(callback).Run(can_install ? kInstallable : kBlockedByPolicy);
+  std::move(callback).Run(can_install ? kInstallable : kBlockedByPolicy,
+                          blocked_message);
+}
+
+std::u16string GetBlockedErrorMessage(const ExtensionId& extension_id,
+                                      Profile* profile) {
+  CHECK(profile);
+  std::u16string message_from_admin = base::UTF8ToUTF16(
+      ExtensionManagementFactory::GetForBrowserContext(profile)
+          ->BlockedInstallMessage(extension_id));
+  if (!message_from_admin.empty()) {
+    return l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_MESSAGE_FROM_ADMIN,
+                                      message_from_admin);
+  }
+  return std::u16string();
 }
 
 }  // namespace
@@ -226,12 +242,20 @@ void GetWebstoreExtensionInstallStatus(
     const Manifest::Type manifest_type,
     const PermissionSet& required_permission_set,
     int manifest_version,
-    base::OnceCallback<void(ExtensionInstallStatus)> callback) {
+    base::OnceCallback<void(ExtensionInstallStatus,
+                            std::u16string blocked_message)> callback) {
   ExtensionInstallStatus status =
       PerformSynchronousChecks(extension_id, profile, manifest_type,
                                required_permission_set, manifest_version);
+
+  if (status == kBlockedByPolicy) {
+    std::move(callback).Run(status,
+                            GetBlockedErrorMessage(extension_id, profile));
+    return;
+  }
+
   if (status != kInstallable) {
-    std::move(callback).Run(status);
+    std::move(callback).Run(status, std::u16string());
     return;
   }
 
@@ -247,7 +271,7 @@ void GetWebstoreExtensionInstallStatus(
     }
   }
 
-  std::move(callback).Run(kInstallable);
+  std::move(callback).Run(kInstallable, std::u16string());
 }
 
 }  // namespace extensions

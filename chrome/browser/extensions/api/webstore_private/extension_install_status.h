@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_EXTENSION_INSTALL_STATUS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_EXTENSION_INSTALL_STATUS_H_
 
+#include <string>
+
 #include "base/version.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -74,7 +76,8 @@ void GetWebstoreExtensionInstallStatus(
     const Manifest::Type manifest_type,
     const PermissionSet& required_permission_set,
     int manifest_version,
-    base::OnceCallback<void(ExtensionInstallStatus)> callback);
+    base::OnceCallback<void(ExtensionInstallStatus,
+                            std::u16string blocked_message)> callback);
 
 }  // namespace extensions
 

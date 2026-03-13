@@ -20,6 +20,7 @@
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -38,7 +39,9 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
+#include "extensions/strings/grit/extensions_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -65,6 +68,14 @@ constexpr char kExtensionSettingsWithIdBlocked[] = R"({
     "installation_mode": "blocked"
   }
 })";
+
+struct StatusAndMessage {
+  ExtensionInstallStatus status;
+  std::u16string message;
+
+  // For EXPECT_EQ() comparisons.
+  bool operator==(const StatusAndMessage&) const = default;
+};
 
 }  // namespace
 
@@ -128,6 +139,22 @@ class ExtensionInstallStatusTest : public testing::Test {
 
   // Synchronous wrapper around GetWebstoreExtensionInstallStatus() to avoid
   // callback hell.
+  StatusAndMessage GetInstallStatusAndMessageSynchronously(
+      const ExtensionId& extension_id,
+      Profile* profile,
+      base::Version extension_version,
+      const Manifest::Type manifest_type,
+      const PermissionSet& required_permission_set,
+      int manifest_version = 3) {
+    base::test::TestFuture<ExtensionInstallStatus, std::u16string> future;
+    GetWebstoreExtensionInstallStatus(extension_id, profile, extension_version,
+                                      manifest_type, required_permission_set,
+                                      manifest_version, future.GetCallback());
+    return {future.Get<ExtensionInstallStatus>(), future.Get<std::u16string>()};
+  }
+
+  // GetInstallStatusAndMessageSynchronously() wrapper for callers that don't
+  // care about `blocked_message`.
   ExtensionInstallStatus GetInstallStatusSynchronously(
       const ExtensionId& extension_id,
       Profile* profile,
@@ -135,11 +162,10 @@ class ExtensionInstallStatusTest : public testing::Test {
       const Manifest::Type manifest_type,
       const PermissionSet& required_permission_set,
       int manifest_version = 3) {
-    base::test::TestFuture<ExtensionInstallStatus> future;
-    GetWebstoreExtensionInstallStatus(extension_id, profile, extension_version,
-                                      manifest_type, required_permission_set,
-                                      manifest_version, future.GetCallback());
-    return future.Get();
+    return GetInstallStatusAndMessageSynchronously(
+               extension_id, profile, extension_version, manifest_type,
+               required_permission_set, manifest_version)
+        .status;
   }
 
   TestingProfile* profile() { return profile_; }
@@ -222,6 +248,28 @@ TEST_F(ExtensionInstallStatusTest, ExtensionBlockedById) {
   SetExtensionSettings(kExtensionSettingsWithIdBlocked);
   EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+}
+
+TEST_F(ExtensionInstallStatusTest, ExtensionBlockedWithCustomMessage) {
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+  SetExtensionSettings(R"({
+    "abcdefghijklmnopabcdefghijklmnop": {
+      "installation_mode": "blocked",
+      "blocked_install_message": "Custom Error Message"
+    }
+  })");
+  std::u16string expected_message = l10n_util::GetStringFUTF16(
+      IDS_EXTENSION_PROMPT_MESSAGE_FROM_ADMIN, u"Custom Error Message");
+
+  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
+            GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
+
+  EXPECT_EQ(StatusAndMessage(ExtensionInstallStatus::kBlockedByPolicy,
+                             expected_message),
+            GetInstallStatusAndMessageSynchronously(
+                kExtensionId, profile(), base::Version(),
+                Manifest::Type::TYPE_EXTENSION, PermissionSet()));
 }
 
 TEST_F(ExtensionInstallStatusTest,
@@ -676,12 +724,13 @@ TEST_F(ExtensionInstallStatusTestWithCloudPolicyChecks,
       *mock_extension_install_policy_service(),
       CanInstallExtension(policy::ExtensionIdAndVersion(kExtensionId, "1.0.0"),
                           testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(false, std::u16string()));
-  EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
-            GetInstallStatusSynchronously(
-                kExtensionId, profile(), base::Version("1.0.0"),
-                Manifest::Type::TYPE_EXTENSION, PermissionSet(),
-                /*manifest_version=*/3));
+      .WillOnce(base::test::RunOnceCallback<1>(false, u"risk score"));
+  EXPECT_EQ(
+      StatusAndMessage(ExtensionInstallStatus::kBlockedByPolicy, u"risk score"),
+      GetInstallStatusAndMessageSynchronously(
+          kExtensionId, profile(), base::Version("1.0.0"),
+          Manifest::Type::TYPE_EXTENSION, PermissionSet(),
+          /*manifest_version=*/3));
   // Installable.
   EXPECT_CALL(
       *mock_extension_install_policy_service(),

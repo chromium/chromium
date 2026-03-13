@@ -23,7 +23,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -554,9 +553,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnInstallStatusCheckDone(
-    ExtensionInstallStatus install_status) {
+    ExtensionInstallStatus install_status,
+    std::u16string blocked_message) {
   content::WebContents* web_contents = GetSenderWebContents();
   if (install_status == kBlockedByPolicy) {
+    blocked_by_policy_error_message_ = std::move(blocked_message);
     ShowBlockedByPolicyDialog(
         dummy_extension_.get(), icon_, web_contents,
         base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
@@ -1095,18 +1096,6 @@ void WebstorePrivateBeginInstallWithManifest3Function::
                               content::WebContents* contents,
                               base::OnceClosure done_callback) {
   DCHECK(extension);
-  DCHECK(contents);
-
-  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-
-  std::string message_from_admin =
-      ExtensionManagementFactory::GetForBrowserContext(profile)
-          ->BlockedInstallMessage(extension->id());
-  if (!message_from_admin.empty()) {
-    blocked_by_policy_error_message_ =
-        l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_MESSAGE_FROM_ADMIN,
-                                   base::UTF8ToUTF16(message_from_admin));
-  }
 
   gfx::ImageSkia image = GetIconImage(icon, extension->is_app());
 
@@ -1117,6 +1106,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::
     return;
   }
 
+  // `blocked_by_policy_error_message_` is set by OnInstallStatusCheckDone().
   ShowExtensionInstallBlockedDialog(extension->id(), extension->name(),
                                     blocked_by_policy_error_message_, image,
                                     contents, std::move(done_callback));
@@ -1483,7 +1473,8 @@ void WebstorePrivateGetExtensionStatusFunction::OnManifestParsed(
 }
 
 void WebstorePrivateGetExtensionStatusFunction::OnInstallStatusCheckDone(
-    ExtensionInstallStatus status) {
+    ExtensionInstallStatus status,
+    std::u16string blocked_message) {
   api::webstore_private::ExtensionInstallStatus api_status =
       ConvertExtensionInstallStatusForAPI(status);
   Respond(ArgumentList(GetExtensionStatus::Results::Create(api_status)));
