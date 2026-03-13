@@ -1600,6 +1600,75 @@ TEST_F(AutofillAiManagerImportFormTest, PromptSuppressionMetric) {
       "Autofill.Ai.PromptSuppression.UpdatePrompt.Vehicle", 1, 1);
 }
 
+TEST_F(AutofillAiManagerImportFormTest,
+       SavePublicPassToWalletFallbackToLocalIfIneligible) {
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  std::optional<EntityInstance> entity_to_save;
+  AutofillClient::EntityImportPromptResultCallback save_callback;
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble)
+      .WillOnce(DoAll(SaveArg<0>(&entity_to_save), MoveArg<3>(&save_callback)));
+
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_EQ(entity_to_save->record_type(),
+            EntityInstance::RecordType::kServerWallet);
+
+  // Simulate toggling off Payments Sync while bubble is open.
+  autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
+
+  EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification());
+  EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance).Times(0);
+
+  std::move(save_callback).Run(kAcceptBubble);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetEntityInstances().size() == 1u; }));
+
+  // Verify it fell back to local storage.
+  base::span<const EntityInstance> saved_entities = GetEntityInstances();
+  ASSERT_EQ(saved_entities.size(), 1u);
+  EXPECT_EQ(saved_entities[0].record_type(),
+            EntityInstance::RecordType::kLocal);
+}
+
+TEST_F(AutofillAiManagerImportFormTest,
+       SavePrivatePassToWalletFallbackToLocalIfIneligible) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
+  std::optional<EntityInstance> entity_to_save;
+  AutofillClient::EntityImportPromptResultCallback save_callback;
+
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble)
+      .WillOnce(DoAll(SaveArg<0>(&entity_to_save), MoveArg<3>(&save_callback)));
+
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_EQ(entity_to_save->record_type(),
+            EntityInstance::RecordType::kServerWallet);
+
+  // Simulate toggling off Payments Sync while bubble is open.
+  autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPayments, false);
+
+  EXPECT_CALL(autofill_client(), CloseEntityImportBubble());
+  EXPECT_CALL(autofill_client(), ShowAutofillAiLocalSaveNotification());
+  EXPECT_CALL(wallet_manager(), SaveWalletEntityInstance).Times(0);
+
+  std::move(save_callback).Run(kAcceptBubble);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetEntityInstances().size() == 1u; }));
+
+  // Verify it fell back to local storage.
+  base::span<const EntityInstance> saved_entities = GetEntityInstances();
+  ASSERT_EQ(saved_entities.size(), 1u);
+  EXPECT_EQ(saved_entities[0].record_type(),
+            EntityInstance::RecordType::kLocal);
+}
+
 class AutofillAiManagerUpstreamTest : public AutofillAiManagerTest {
  public:
   AutofillAiManagerUpstreamTest() = default;

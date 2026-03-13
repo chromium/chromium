@@ -192,6 +192,14 @@ class AutofillAiManager {
       AutofillClient::AutofillAiImportPromptType prompt_type,
       AutofillClient::AutofillAiBubbleResult result);
 
+  // Handles the fallback UI and storage logic when a Wallet save is
+  // accepted but the user is no longer eligible. This can happen if eligibility
+  // changes between the time the prompt is shown and when the user accepts it
+  // (e.g., if the user disables Payments Sync in another window).
+  void HandleIneligibleWalletFallback(
+      AutofillClient::AutofillAiImportPromptType prompt_type,
+      EntityInstance entity);
+
   LogManager* GetCurrentLogManager();
 
   // A raw reference to the client, which owns `this` and therefore outlives
