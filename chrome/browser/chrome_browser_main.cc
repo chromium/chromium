@@ -341,6 +341,13 @@
 #include "chrome/browser/chrome_browser_main_extra_parts_ozone.h"
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
+#endif
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
@@ -1493,6 +1500,23 @@ void ChromeBrowserMainParts::PreProfileInit() {
 #endif
 
   media_router::ChromeMediaRouterFactory::DoPlatformInit();
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Start up the platform auth SSO policy observer.
+  if (auto* local_state = g_browser_process->local_state(); local_state) {
+    platform_auth_policy_observer_ =
+        std::make_unique<PlatformAuthPolicyObserver>(local_state);
+  }
+#elif BUILDFLAG(IS_ANDROID)
+  // TODO: b/484014627 - once the feature flag is cleaned-up merge this with the
+  // block above.
+  if (base::FeatureList::IsEnabled(enterprise_auth::kAndroidEntraSSO) &&
+      g_browser_process->local_state()) {
+    platform_auth_policy_observer_ =
+        std::make_unique<PlatformAuthPolicyObserver>(
+            g_browser_process->local_state());
+  }
+#endif
 }
 
 void ChromeBrowserMainParts::CallPostProfileInit(Profile* profile) {
@@ -2157,6 +2181,12 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
   publisher_host_factory_resetter_.reset();
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // The `ProfileManager` has been destroyed, so no new platform authentication
+  // requests will be created.
+  platform_auth_policy_observer_.reset();
+#endif
 }
 
 void ChromeBrowserMainParts::PostDestroyThreads() {

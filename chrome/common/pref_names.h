@@ -2345,6 +2345,12 @@ inline constexpr char
 inline constexpr char kCloudApAuthEnabled[] = "auth.cloud_ap_auth.enabled";
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+// The integer value of the AndroidEntraSSOEnabled policy.
+inline constexpr char kAndroidEntraSSOEnabled[] =
+    "auth.android_entra_sso_enabled";
+#endif
+
 // Boolean that specifies whether to enable revocation checking (best effort)
 // by default.
 inline constexpr char kCertRevocationCheckingEnabled[] =

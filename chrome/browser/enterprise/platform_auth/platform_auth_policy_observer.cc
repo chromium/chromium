@@ -28,6 +28,11 @@
 #include "components/policy/core/common/management/management_service.h"
 #endif  //  BUILFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#endif
+
 PlatformAuthPolicyObserver::PlatformAuthPolicyObserver(
     PrefService* local_state) {
   pref_change_registrar_.Init(local_state);
@@ -56,6 +61,9 @@ void PlatformAuthPolicyObserver::RegisterPrefs(
           GetSupportedIdentityProvidersList());
   enterprise_auth::ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
       pref_registry);
+#elif BUILDFLAG(IS_ANDROID)
+  // TODO: b/484014627 - change the default value to 0 once policy is in place.
+  pref_registry->RegisterIntegerPref(GetPrefName(), 1);
 #else
 #error Unsupported platform
 #endif
@@ -67,6 +75,8 @@ const char* PlatformAuthPolicyObserver::GetPrefName() {
   return prefs::kCloudApAuthEnabled;
 #elif BUILDFLAG(IS_MAC)
   return prefs::kExtensibleEnterpriseSSOEnabled;
+#elif BUILDFLAG(IS_ANDROID)
+  return prefs::kAndroidEntraSSOEnabled;
 #else
 #error Unsupported platform
 #endif
@@ -80,6 +90,8 @@ void PlatformAuthPolicyObserver::OnPrefChanged() {
       base::FeatureList::IsEnabled(
           enterprise_auth::kEnableExtensibleEnterpriseSSO) &&
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged() &&
+#elif BUILDFLAG(IS_ANDROID)
+      base::FeatureList::IsEnabled(enterprise_auth::kAndroidEntraSSO) &&
 #endif
       pref_change_registrar_.prefs()->GetInteger(GetPrefName()) != 0;
 

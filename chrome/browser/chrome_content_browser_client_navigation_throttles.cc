@@ -166,7 +166,7 @@
 #include "chrome/browser/offline_pages/offline_page_navigation_throttle.h"
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/platform_auth/platform_auth_navigation_throttle.h"
 #endif
 
@@ -574,13 +574,13 @@ void CreateAndAddChromeThrottlesForNavigation(
         registry);
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   // Don't perform platform authentication in incognito and guest profiles.
   if (profile && !profile->IsOffTheRecord()) {
     enterprise_auth::PlatformAuthNavigationThrottle::MaybeCreateAndAdd(
         registry);
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b:296844164) Handle captive portal signin properly.

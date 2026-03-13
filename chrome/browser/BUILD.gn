@@ -2858,6 +2858,8 @@ static_library("browser") {
       "download/android/service/download_task_scheduler.cc",
       "download/android/service/download_task_scheduler.h",
       "download/android/string_utils.cc",
+      "enterprise/platform_auth/entra_provider_android.cc",
+      "enterprise/platform_auth/entra_provider_android.h",
       "enterprise/reporting/browser_report_generator_android.cc",
       "enterprise/reporting/browser_report_generator_android.h",
       "enterprise/reporting/profile_report_generator_android.cc",
@@ -6066,7 +6068,7 @@ static_library("browser") {
         [ "//chrome/browser/background/extensions:impl" ]
   }
 
-  if (is_mac || is_win) {
+  if (is_mac || is_win || is_android) {
     sources += [
       "enterprise/platform_auth/platform_auth_navigation_throttle.cc",
       "enterprise/platform_auth/platform_auth_navigation_throttle.h",
@@ -6076,7 +6078,9 @@ static_library("browser") {
       "enterprise/platform_auth/platform_auth_provider_manager.cc",
       "enterprise/platform_auth/platform_auth_provider_manager.h",
     ]
+  }
 
+  if (is_mac || is_win) {
     # Support for the recovery improved component.
     sources += [
       "component_updater/updater_state.cc",
