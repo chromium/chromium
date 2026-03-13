@@ -70,6 +70,8 @@ found in the LICENSE file.
     <dimen name="tab_grid_card_thumbnail_corner_radius_top">12dp</dimen>
     <dimen name="tab_grid_card_thumbnail_corner_radius_bottom">20dp</dimen>
     <dimen name="tab_grid_card_thumbnail_margin">4dp</dimen>
+    <dimen name="tab_grid_thumbnail_fetch_spinner_size">32dp</dimen>
+    <dimen name="tab_grid_thumbnail_fetch_spinner_thickness">2.5dp</dimen>
     <dimen name="tab_list_card_action_button_size">48dp</dimen>
     <dimen name="tab_list_card_action_button_margin">4dp</dimen>
     <dimen name="tab_list_card_action_button_padding">15dp</dimen>
