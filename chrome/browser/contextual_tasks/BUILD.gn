@@ -242,6 +242,7 @@ source_set("ui_impl") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui/contextual_search",

@@ -126,6 +126,7 @@ source_set("impl") {
       "//chrome/browser/favicon",
       "//chrome/browser/feedback:feedback_impl",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/resources:grit",
       "//chrome/browser/glic/resources:grit_grit",
       "//chrome/browser/media/router:media_router_feature",

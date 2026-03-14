@@ -15,10 +15,10 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_prefs.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_request.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/predictors/loading_predictor.h"
-#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -260,7 +260,7 @@ void ContextualCueingService::OnNudgeActivity(
     content::WebContents* web_contents,
     base::TimeTicks document_available_time,
     bool is_dynamic,
-    tabs::GlicNudgeActivity activity) {
+    glic::GlicNudgeActivity activity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::optional<base::TimeTicks> nudge_time =
@@ -269,27 +269,27 @@ void ContextualCueingService::OnNudgeActivity(
   NudgeInteraction interaction;
   bool log_ukm = false;
   switch (activity) {
-    case tabs::GlicNudgeActivity::kNudgeShown:
+    case glic::GlicNudgeActivity::kNudgeShown:
       interaction = NudgeInteraction::kShown;
       CueingNudgeShown(url);
       break;
-    case tabs::GlicNudgeActivity::kNudgeClicked:
+    case glic::GlicNudgeActivity::kNudgeClicked:
       CueingNudgeClicked();
       interaction = NudgeInteraction::kClicked;
       log_ukm = true;
       break;
-    case tabs::GlicNudgeActivity::kNudgeDismissed:
+    case glic::GlicNudgeActivity::kNudgeDismissed:
       interaction = NudgeInteraction::kDismissed;
       CueingNudgeDismissed();
       log_ukm = true;
       break;
-    case tabs::GlicNudgeActivity::kNudgeNotShownWebContents:
+    case glic::GlicNudgeActivity::kNudgeNotShownWebContents:
       interaction = NudgeInteraction::kNudgeNotShownWebContents;
       break;
-    case tabs::GlicNudgeActivity::kNudgeNotShownWindowCallToActionUI:
+    case glic::GlicNudgeActivity::kNudgeNotShownWindowCallToActionUI:
       interaction = NudgeInteraction::kNudgeNotShownWindowCallToActionUI;
       break;
-    case tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
+    case glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged:
       interaction = NudgeInteraction::kIgnoredTabChange;
       // The ActiveTabChanged activity is called very aggresivly and there may
       // not be an actively shown nudge. We should only log this as an action if
@@ -299,15 +299,15 @@ void ContextualCueingService::OnNudgeActivity(
       }
       log_ukm = true;
       break;
-    case tabs::GlicNudgeActivity::kNudgeIgnoredNavigation:
+    case glic::GlicNudgeActivity::kNudgeIgnoredNavigation:
       interaction = NudgeInteraction::kIgnoredNavigation;
       log_ukm = true;
       break;
-    case tabs::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel:
+    case glic::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel:
       interaction = NudgeInteraction::kIgnoredOpenedContextualTasksSidePanel;
       log_ukm = true;
       break;
-    case tabs::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction:
+    case glic::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction:
       interaction = NudgeInteraction::kIgnoredOmniboxContextMenuInteraction;
       log_ukm = true;
       break;

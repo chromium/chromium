@@ -15,6 +15,7 @@
 namespace glic {
 class GlicButtonController;
 class GlicIphController;
+class GlicNudgeController;
 }  // namespace glic
 
 namespace tabs {
@@ -155,10 +156,6 @@ class ActiveTaskContextProvider;
 class ContextualTasksSidePanelCoordinator;
 class EntryPointEligibilityManager;
 }  // namespace contextual_tasks
-
-namespace tabs {
-class GlicNudgeController;
-}  // namespace tabs
 
 namespace enterprise_data_protection {
 class DataProtectionUIController;
@@ -323,7 +320,7 @@ class BrowserWindowFeatures {
     return lens_region_search_controller_.get();
   }
 
-  tabs::GlicNudgeController* glic_nudge_controller() {
+  glic::GlicNudgeController* glic_nudge_controller() {
     return glic_nudge_controller_.get();
   }
 
@@ -652,7 +649,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<ContextualTasksCloseButtonController>
       contextual_tasks_close_button_controller_;
 
-  std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
+  std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
 
   std::unique_ptr<tabs::GlicActorNudgeController> glic_actor_nudge_controller_;
   std::unique_ptr<ActorTaskListBubbleController>

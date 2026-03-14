@@ -4063,6 +4063,7 @@ static_library("browser") {
       "//chrome/browser/direct_sockets:impl",
       "//chrome/browser/error_reporting",
       "//chrome/browser/feedback:feedback_enum",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/media",
       "//chrome/browser/glic/selection",
       "//chrome/browser/hid",

@@ -62,6 +62,7 @@ source_set("internal") {
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/devtools",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",

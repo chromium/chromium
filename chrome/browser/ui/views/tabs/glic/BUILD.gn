@@ -48,6 +48,7 @@ if (!is_android) {
       "//chrome/browser/background/glic",
       "//chrome/browser/glic",
       "//chrome/browser/glic:enum",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/fre",
       "//chrome/browser/ui:browser_element_identifiers",
       "//chrome/browser/ui/browser_window",

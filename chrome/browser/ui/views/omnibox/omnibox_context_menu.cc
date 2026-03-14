@@ -9,10 +9,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
-#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/buildflags.h"
@@ -91,7 +91,7 @@ void OmniboxContextMenu::RunMenuAt(const gfx::Point& point,
   glic_nudge_controller->UpdateNudgeLabel(
       browser_window_interface->GetActiveTabInterface()->GetContents(), "",
       std::nullopt,
-      tabs::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction,
+      glic::GlicNudgeActivity::kNudgeIgnoredOmniboxContextMenuInteraction,
       base::DoNothing());
 }
 

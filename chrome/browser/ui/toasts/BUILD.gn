@@ -52,6 +52,7 @@ source_set("impl") {
     "//chrome/browser/actor/resources:common_resources",
     "//chrome/browser/actor/resources:grit",
     "//chrome/browser/glic",
+    "//chrome/browser/glic/browser_ui",
     "//chrome/browser/multistep_filter/ui",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/skills:ui",

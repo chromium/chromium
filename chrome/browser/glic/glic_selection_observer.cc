@@ -18,7 +18,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/generated_resources.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #endif
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -122,7 +122,7 @@ void GlicSelectionObserver::UpdateSelectionState(
   if (selected_text.empty()) {
     if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
       controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
-                                   tabs::GlicNudgeActivity::kNudgeDismissed,
+                                   GlicNudgeActivity::kNudgeDismissed,
                                    base::DoNothing());
     }
     return;

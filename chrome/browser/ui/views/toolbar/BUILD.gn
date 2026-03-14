@@ -159,6 +159,7 @@ source_set("impl") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/extensions",
     "//chrome/browser/feedback",
+    "//chrome/browser/glic/browser_ui",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/performance_manager/public/user_tuning",
     "//chrome/browser/prefs",

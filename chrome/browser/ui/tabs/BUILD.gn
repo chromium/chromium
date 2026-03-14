@@ -107,6 +107,7 @@ if (!is_android) {
       "//chrome/app/vector_icons",
       "//chrome/browser/commerce",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/ui:ui_features",
@@ -343,8 +344,6 @@ if (!is_android) {
       "glic_actor_nudge_controller.h",
       "glic_actor_task_icon_manager.h",
       "glic_actor_task_icon_manager_factory.h",
-      "glic_nudge_controller.h",
-      "glic_nudge_delegate.h",
     ]
     public_deps = [
       "//base",
@@ -365,8 +364,6 @@ if (!is_android) {
       "glic_actor_nudge_controller.cc",
       "glic_actor_task_icon_manager.cc",
       "glic_actor_task_icon_manager_factory.cc",
-      "glic_nudge_controller.cc",
-      "glic_nudge_delegate.cc",
     ]
     deps = [
       ":glic",
@@ -497,6 +494,7 @@ if (!is_android) {
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/favicon",
       "//chrome/browser/glic",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/indigo",
       "//chrome/browser/media/webrtc",

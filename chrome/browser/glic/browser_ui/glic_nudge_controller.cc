@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -10,12 +10,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/call_to_action/call_to_action_lock.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 
-
-namespace tabs {
+namespace glic {
 
 GlicNudgeController::GlicNudgeController(
     BrowserWindowInterface* browser_window_interface)
@@ -54,9 +52,9 @@ void GlicNudgeController::UpdateNudgeLabel(
   }
 
   if (activity &&
-      (activity == tabs::GlicNudgeActivity::
+      (activity == glic::GlicNudgeActivity::
                        kNudgeIgnoredOpenedContextualTasksSidePanel ||
-       activity == tabs::GlicNudgeActivity::
+       activity == glic::GlicNudgeActivity::
                        kNudgeIgnoredOmniboxContextMenuInteraction) &&
       delegate_ && delegate_->GetIsShowingGlicNudge()) {
     delegate_->OnHideGlicNudgeUI();
@@ -81,7 +79,7 @@ void GlicNudgeController::UpdateNudgeLabel(
     CHECK(activity);
     OnNudgeActivity(*activity);
   } else {
-    OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeShown);
+    OnNudgeActivity(glic::GlicNudgeActivity::kNudgeShown);
   }
 
   prompt_suggestion_ = prompt_suggestion;
@@ -130,8 +128,8 @@ void GlicNudgeController::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
   if (delegate_ && delegate_->GetIsShowingGlicNudge()) {
     delegate_->OnHideGlicNudgeUI();
-    OnNudgeActivity(tabs::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
+    OnNudgeActivity(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
   }
 }
 
-}  // namespace tabs
+}  // namespace glic
