@@ -253,7 +253,9 @@ class Type(object):
             'Inline enum "%s" found in namespace "%s". These are not allowed. '
             'See crbug.com/472279' % (name, namespace.name))
       self.property_type = PropertyType.ENUM
-      self.enum_values = [EnumValue(value, namespace) for value in json['enum']]
+      self.enum_values = [
+          EnumValue(self, value, namespace) for value in json['enum']
+      ]
     elif json_type == 'any':
       self.property_type = PropertyType.ANY
     elif json_type == 'binary':
@@ -529,13 +531,19 @@ class EnumValue(object):
   - |description| a description of the property (if provided)
   """
 
-  def __init__(self, json, namespace):
+  def __init__(self, parent, json, namespace):
+    # Note: We set the `parent` here for better error messaging from any
+    # potential ParseExceptions triggered when calling `_GetTypedProperty`,
+    # which rely on `parent` references when printing the hierarchy.
+    self.parent = parent
     if isinstance(json, dict):
       self.name = json['name']
       self.description = json.get('description')
+      self.nodoc = _GetTypedProperty(self, json, 'nodoc', bool, False)
     else:
       self.name = json
       self.description = None
+      self.nodoc = False
 
     # Using empty string values as enum key is only allowed in a few namespaces,
     # as an exception to the rule, and we should not add more.

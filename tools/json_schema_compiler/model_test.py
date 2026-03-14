@@ -68,8 +68,17 @@ class ModelTest(unittest.TestCase):
     self.function_platform_win_linux = self.model.namespaces.get(
         'function_platform_win_linux')
 
+    self.enum_value_nodoc_json = CachedLoad('test/enum_value_nodoc.json')
+    self.model.AddNamespace(self.enum_value_nodoc_json[0],
+                            'path/to/enum_value_nodoc.json')
+    self.enum_value_nodoc = self.model.namespaces.get('enum_value_nodoc')
+
+    self.idl_basics_idl = Load('test/idl_basics.idl')
+    self.model.AddNamespace(self.idl_basics_idl[0], 'path/to/idl_basics.idl')
+    self.idl_basics = self.model.namespaces.get('idl_basics')
+
   def testNamespaces(self):
-    self.assertEqual(12, len(self.model.namespaces))
+    self.assertEqual(14, len(self.model.namespaces))
     self.assertTrue(self.permissions)
 
   def testHasFunctions(self):
@@ -129,11 +138,11 @@ class ModelTest(unittest.TestCase):
     test_json = CachedLoad('test/redundant_default_attribute.json')
     self.assertRaisesRegex(
         model.ParseException,
-        'Model parse exception at:\nredundantDefaultAttribute\noptionalFalse\n'
-        '  in path/to/redundant_default_attribute.json\n'
-        'The attribute "optional" is specified as "False", but this is the '
-        'default value if the attribute is not included\. It should be '
-        'removed\.', self.model.AddNamespace, test_json[0],
+        r'Model parse exception at:\nredundantDefaultAttribute\noptionalFalse\n'
+        r'  in path/to/redundant_default_attribute.json\n'
+        r'The attribute "optional" is specified as "False", but this is the '
+        r'default value if the attribute is not included\. It should be '
+        r'removed\.', self.model.AddNamespace, test_json[0],
         'path/to/redundant_default_attribute.json')
 
   def testReturnsAsyncMissingParametersKey(self):
@@ -275,6 +284,26 @@ class ModelTest(unittest.TestCase):
     self.assertTrue(self.nodoc.nodoc, 'Namespace should also be marked nodoc')
     nodoc_ValidType = self.nodoc.types['ValidType']
     self.assertFalse(nodoc_ValidType.nodoc)
+
+    window_state = self.windows.types['WindowState']
+    self.assertFalse(window_state.enum_values[0].nodoc)
+    self.assertTrue(window_state.enum_values[4].nodoc)
+
+  def testEnumValueHasNoDoc(self):
+    enum_type = self.enum_value_nodoc.types['EnumTypeWithNoDocValue']
+    self.assertFalse(enum_type.enum_values[0].nodoc)
+    self.assertTrue(enum_type.enum_values[1].nodoc)
+
+    mixed_enum_type = self.enum_value_nodoc.types['MixedEnumType']
+    self.assertEqual(3, len(mixed_enum_type.enum_values))
+    self.assertFalse(mixed_enum_type.enum_values[0].nodoc)
+    self.assertTrue(mixed_enum_type.enum_values[1].nodoc)
+    self.assertFalse(mixed_enum_type.enum_values[2].nodoc)
+
+    idl_enum_type = self.idl_basics.types['EnumTypeWithNoDocValue']
+    self.assertFalse(idl_enum_type.enum_values[0].nodoc)
+    self.assertTrue(idl_enum_type.enum_values[1].nodoc)
+    self.assertFalse(idl_enum_type.enum_values[2].nodoc)
 
   def testInvalidNamespacePlatform(self):
     invalid_namespace_platform = CachedLoad('test/invalid_empty_enum_key.json')
