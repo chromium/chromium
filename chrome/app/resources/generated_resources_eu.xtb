@@ -1672,7 +1672,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2114326799768592691">&amp;Kargatu markoa berriro</translation>
 <translation id="2114995631896158695">Ez da sartu SIM txartelik</translation>
 <translation id="2115808389282428160">Ez eman gailuko beste aplikazio eta zerbitzu batzuk erabiltzeko baimena webguneei</translation>
-<translation id="2116619964159595185">Webguneak Bluetooth bidezko gailuetara konektatu ohi dira kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-gailu bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
+<translation id="2116619964159595185">Webguneak Bluetooth bidezko gailuetara konektatu ohi dira kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-tresna bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="2117655453726830283">Hurrengo diapositiba</translation>
 <translation id="211803431539496924">Segurtasun-eguneratze hedatuak berretsi nahi dituzu?</translation>
 <translation id="2118594521750010466">Konpondu</translation>
@@ -2816,7 +2816,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2876556152483133018">Webgune-bilaketa</translation>
 <translation id="2877467134191447552">Zure gainerako kontuak ere gehi ditzakezu webgune eta aplikazioak atzitu ahal izateko.</translation>
 <translation id="2878889940310164513">Gehitu sare mugikorra…</translation>
-<translation id="288042212351694283">Atzitu Universal 2nd Factor gailuak</translation>
+<translation id="288042212351694283">Atzitu 2 faktoreko autentifikazio unibertsaleko gailuak</translation>
 <translation id="2881076733170862447">Luzapena sakatzen duzunean</translation>
 <translation id="2882301808122022326">Omaha protokoloaren erantzuna</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> berrabiarazi eta berrezarri egingo da</translation>
@@ -8716,7 +8716,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6960507406838246615">Linux eguneratu egin behar da</translation>
 <translation id="6960648667961844909">Ezin izan dira deskargatu hizketa-fitxategiak (<ph name="LANGUAGE" />). Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaltzen da prozesatzeko, deskarga amaitu arte.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> gailuan gordeta zeuden erabiltzaile guztien fitxategi eta gailuko datu guztiak betiko ezabatu dira.</translation>
-<translation id="6961327401577924850">Webguneek Bluetooth bidezko gailuak bilatu ohi dituzte, kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipena egiteko gailu bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
+<translation id="6961327401577924850">Webguneek Bluetooth bidezko gailuak bilatu ohi dituzte, kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-tresna bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="6963772203726867701">Ez da hauteman</translation>
 <translation id="6963872466817251924">Testu-kurtsorea nabarmentzeko eginbidea</translation>
 <translation id="6964239097707154771">gauza gehiago egiten laguntzen dizuten Chrome-rako gehigarriak dira</translation>
