@@ -8194,7 +8194,7 @@ def CheckSettingsChanges(input_api, output_api):
     )
     class_name_re = input_api.re.compile(r'class\s+(\w+)')
     provider_field_re = input_api.re.compile(
-        r'public\s+static\s+final\s+.*SearchIndexProvider\s+SEARCH_INDEX_DATA_PROVIDER'
+        r'public\s+static\s+final\s+.*IndexProvider\s+SEARCH_INDEX_DATA_PROVIDER'
     )
 
     # If a line in ChangedContents() matches a trigger, the provider block must
@@ -8343,4 +8343,3 @@ def CheckSettingsChanges(input_api, output_api):
             '  Detailed issues found in your changes:\n',
             problems)
     ]
-
