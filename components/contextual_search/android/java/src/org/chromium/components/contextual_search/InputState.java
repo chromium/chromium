@@ -156,6 +156,38 @@ public class InputState {
                 modelSectionConfig);
     }
 
+    /**
+     * @param toolMode The tool mode to check.
+     * @return Whether the tool should be visible in the UI.
+     */
+    public boolean isToolVisible(int toolMode) {
+        return activeTool == toolMode || allowedTools.contains(toolMode);
+    }
+
+    /**
+     * @param toolMode The tool mode to check.
+     * @return Whether the tool should be enabled in the UI.
+     */
+    public boolean isToolEnabled(int toolMode) {
+        return activeTool == toolMode || !disabledTools.contains(toolMode);
+    }
+
+    /**
+     * @param modelMode The model mode to check.
+     * @return Whether the model should be visible in the UI.
+     */
+    public boolean isModelVisible(int modelMode) {
+        return activeModel == modelMode || allowedModels.contains(modelMode);
+    }
+
+    /**
+     * @param modelMode The model mode to check.
+     * @return Whether the model should be enabled in the UI.
+     */
+    public boolean isModelEnabled(int modelMode) {
+        return activeModel == modelMode || !disabledModels.contains(modelMode);
+    }
+
     private static List<Integer> toList(int @Nullable [] array) {
         if (array == null) return Collections.emptyList();
         List<Integer> list = new ArrayList<>(array.length);
