@@ -38,7 +38,7 @@ PdfInkUndoRedoModel::PdfInkUndoRedoModel() = default;
 
 PdfInkUndoRedoModel::~PdfInkUndoRedoModel() = default;
 
-base::expected<std::optional<InkStrokeId>, std::monostate>
+base::expected<std::optional<IdType>, std::monostate>
 PdfInkUndoRedoModel::StartAdd() {
   return StartImpl<AddCommands>();
 }
@@ -99,7 +99,7 @@ bool PdfInkUndoRedoModel::FinishAdd() {
   return true;
 }
 
-base::expected<std::optional<InkStrokeId>, std::monostate>
+base::expected<std::optional<IdType>, std::monostate>
 PdfInkUndoRedoModel::StartRemove() {
   return StartImpl<RemoveCommands>();
 }
@@ -227,12 +227,12 @@ PdfInkUndoRedoModel::GetRemoveCommands(const Commands& commands) {
 }
 
 template <typename T>
-base::expected<std::optional<InkStrokeId>, std::monostate>
+base::expected<std::optional<IdType>, std::monostate>
 PdfInkUndoRedoModel::StartImpl() {
   CHECK(!commands_stack_.empty());
   CHECK_LT(stack_position_, commands_stack_.size());
 
-  std::optional<InkStrokeId> lowest_discard;
+  std::optional<IdType> lowest_discard;
   auto& commands = commands_stack_[stack_position_];
   const bool has_commands = GetCommandsType(commands) != CommandsType::kNone;
   if (stack_position_ == commands_stack_.size() - 1) {
@@ -248,7 +248,7 @@ PdfInkUndoRedoModel::StartImpl() {
       if (GetCommandsType(commands_stack_[i]) == CommandsType::kAdd) {
         const IdSet& id_set = GetAddCommands(commands).value();
         if (!id_set.empty()) {
-          lowest_discard = std::get<InkStrokeId>(*id_set.begin());
+          lowest_discard = *id_set.begin();
           break;
         }
       }

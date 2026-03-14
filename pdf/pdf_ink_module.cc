@@ -452,7 +452,7 @@ bool PdfInkModule::OnKeyDown(const blink::WebKeyboardEvent& event) {
     client_->StrokeStarted();
     current_tool_state_.emplace<TextHighlightState>();
     text_highlight_state().initiated_by_keyboard = true;
-    base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
+    base::expected<std::optional<IdType>, std::monostate> lowest_discard =
         undo_redo_model_.StartAdd();
     CHECK(lowest_discard.has_value());
     ApplyUndoRedoDiscards(lowest_discard.value());
@@ -783,7 +783,7 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   // Invalidate area around this one point.
   client_->Invalidate(GetDrawingBrush().GetInvalidateArea(position, position));
 
-  base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
+  base::expected<std::optional<IdType>, std::monostate> lowest_discard =
       undo_redo_model_.StartAdd();
   CHECK(lowest_discard.has_value());
   ApplyUndoRedoDiscards(lowest_discard.value());
@@ -955,7 +955,7 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position,
   CHECK(!state.erasing);
   state.erasing = true;
 
-  base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
+  base::expected<std::optional<IdType>, std::monostate> lowest_discard =
       undo_redo_model_.StartRemove();
   CHECK(lowest_discard.has_value());
   ApplyUndoRedoDiscards(lowest_discard.value());
@@ -1141,7 +1141,7 @@ bool PdfInkModule::StartTextHighlight(const gfx::PointF& position,
     ApplyUndoRedoCommands(undo_redo_model_.Undo());
   }
 
-  base::expected<std::optional<InkStrokeId>, std::monostate> lowest_discard =
+  base::expected<std::optional<IdType>, std::monostate> lowest_discard =
       undo_redo_model_.StartAdd();
   CHECK(lowest_discard.has_value());
   ApplyUndoRedoDiscards(lowest_discard.value());
@@ -1775,20 +1775,23 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
       /*pdf_updates=*/page_indices_with_pdf_thumbnail_updates);
 }
 
-void PdfInkModule::ApplyUndoRedoDiscards(
-    std::optional<InkStrokeId> lowest_discard) {
+void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
   if (!lowest_discard.has_value()) {
     return;
   }
+
+  // TODO(crbug.com/408976048): Support discarding text objects.
+  CHECK(std::holds_alternative<InkStrokeId>(lowest_discard.value()));
+  InkStrokeId lowest_stroke_id = std::get<InkStrokeId>(lowest_discard.value());
 
   // `page_ink_strokes` values in `strokes_` are in sorted order, so all
   // elements in `page_ink_strokes` with the start ID or larger IDs can be
   // discarded.
   for (auto& [page_index, page_ink_strokes] : strokes_) {
     // Find the first element in `page_ink_strokes` whose ID >=
-    // `lowest_discard.value()`.
+    // `lowest_stroke_id`.
     auto start = std::ranges::lower_bound(
-        page_ink_strokes, lowest_discard.value(), {},
+        page_ink_strokes, lowest_stroke_id, {},
         [](const FinishedStrokeState& state) { return state.id; });
     auto end = page_ink_strokes.end();
     for (auto it = start; it < end; ++it) {

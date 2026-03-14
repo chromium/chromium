@@ -61,11 +61,9 @@ class PdfInkUndoRedoModel {
   // all elements with the same ID or larger IDs can be discarded. This does not
   // return `InkModeledShapeId`, because model shapes are pre-existing and
   // cannot be discarded.
-  // TODO(crbug.com/408976048): Use a different ID type to support text
-  // annotations.
   // Must be called before Add().
   // Must not be called while another add/remove has been started.
-  [[nodiscard]] base::expected<std::optional<InkStrokeId>, std::monostate>
+  [[nodiscard]] base::expected<std::optional<IdType>, std::monostate>
   StartAdd();
   // Records adding an annotation identified by `id`.
   // Must be called between StartAdd() and FinishAdd().
@@ -84,11 +82,9 @@ class PdfInkUndoRedoModel {
   // all elements with the same ID or larger IDs can be discarded. This does not
   // return `InkModeledShapeId`, because model shapes are pre-existing and
   // cannot be discarded.
-  // TODO(crbug.com/408976048): Use a different ID type to support text
-  // annotations.
   // Must be called before Remove().
   // Must not be called while another add/remove has been started.
-  [[nodiscard]] base::expected<std::optional<InkStrokeId>, std::monostate>
+  [[nodiscard]] base::expected<std::optional<IdType>, std::monostate>
   StartRemove();
   // Records erasing an annotation identified by `id`.
   // Must be called between StartRemove() and FinishRemove().
@@ -114,7 +110,7 @@ class PdfInkUndoRedoModel {
 
  private:
   template <typename T>
-  base::expected<std::optional<InkStrokeId>, std::monostate> StartImpl();
+  base::expected<std::optional<IdType>, std::monostate> StartImpl();
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
   bool HasIdInAddCommands(IdType id) const;

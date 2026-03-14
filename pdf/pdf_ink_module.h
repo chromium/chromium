@@ -446,7 +446,7 @@ class PdfInkModule {
   void ApplyUndoRedoCommandsHelper(const PdfInkUndoRedoModel::IdSet& ids,
                                    bool should_draw);
 
-  void ApplyUndoRedoDiscards(std::optional<InkStrokeId> lowest_discard);
+  void ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard);
 
   // Sets the cursor to a drawing/erasing brush cursor when necessary.
   void MaybeSetCursor();
