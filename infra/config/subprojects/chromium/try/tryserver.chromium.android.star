@@ -508,6 +508,7 @@ try_.orchestrator_builder(
             "release_try_builder",
             "android_fastbuild",
             "enable_android_secondary_abi",
+            "enable_rust_clippy",
             "fail_on_android_expectations",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
