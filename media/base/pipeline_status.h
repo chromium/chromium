@@ -61,8 +61,9 @@ enum PipelineStatusCodes : StatusCodeType {
   DEMUXER_ERROR_DETECTED_HLS = 22,
 
   // Used when hardware context is reset (e.g. OS sleep/resume), where we should
-  // recreate the Renderer instead of failing the playback. See
-  // https://crbug.com/1208618
+  // recreate the Renderer instead of failing the playback first. If followed by
+  // another error, we should report as an error since it was not recovered. See
+  // https://crbug.com/474674985 for details.
   PIPELINE_ERROR_HARDWARE_CONTEXT_RESET = 23,
 
   // The remote media component was disconnected unexpectedly, e.g. crash.

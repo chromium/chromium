@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -117,6 +118,14 @@ constexpr char kAudioOnlyTestFile[] = "sfx-opus-441.webm";
 constexpr char kVideoOnlyTestFile[] = "bear-320x240-video-only.webm";
 constexpr char kVideoAudioTestFile[] = "bear-320x240-16x9-aspect.webm";
 constexpr char kEncryptedVideoOnlyTestFile[] = "bear-320x240-av_enc-v.webm";
+
+#if BUILDFLAG(IS_WIN)
+constexpr char kLastPipelineStatusUmaName[] =
+    "Media.PipelineStatus.HardwareContextResetRecovery.LastPipelineStatus";
+constexpr char kTimeDeltaSinceLastHardwareContextResetUmaName[] =
+    "Media.PipelineStatus.HardwareContextResetRecovery."
+    "TimeDeltaSinceLastHardwareContextReset";
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr base::TimeDelta kAudioOnlyTestFileDuration = base::Milliseconds(296);
 
@@ -404,6 +413,11 @@ class WebMediaPlayerImplTest
  protected:
   void InitializeWebMediaPlayerImpl(
       std::unique_ptr<media::Demuxer> demuxer_override = nullptr) {
+    // We want to avoid the "Uninteresting mock function call" warning.
+    EXPECT_CALL(*this, IsShuttingDown())
+        .Times(AnyNumber())
+        .WillRepeatedly(Return(false));
+
     auto media_log = std::make_unique<NiceMock<media::MockMediaLog>>();
     InitializeSurfaceLayerBridge();
 
@@ -2069,8 +2083,10 @@ TEST_F(WebMediaPlayerImplTest, PipelineErrorHardwareContextReset) {
 }
 
 // Same as above, but tests that when PIPELINE_ERROR_HARDWARE_CONTEXT_RESET
-// happens twice, the pipeline will always suspend/resume the pipeline, which
-// will create new Renderers. See https://crbug.com/40272221 for the context.
+// happens twice, the pipeline will suspend/resume the pipeline only for the
+// first one, which will create a new Renderer. For the second one, we will
+// stop and fail with PIPELINE_ERROR_HARDWARE_CONTEXT_RESET error code. See
+// https://crbug.com/40272221 for the context.
 TEST_F(WebMediaPlayerImplTest, PipelineErrorHardwareContextReset_Twice) {
   InitializeWebMediaPlayerImpl();
   // To avoid PreloadMetadataLazyLoad.
@@ -2078,19 +2094,12 @@ TEST_F(WebMediaPlayerImplTest, PipelineErrorHardwareContextReset_Twice) {
 
   base::RunLoop run_loop;
 
-  // Use MockRendererFactory which will create three Renderers. The first two
+  // Use MockRendererFactory which will create two Renderers. The first one
   // will report a PIPELINE_ERROR_HARDWARE_CONTEXT_RESET after initialization.
-  // The third one will initialize normally and quit the loop to complete the
-  // test.
+  // The second one will report the same error again after initialization, but
+  // this time we will stop and quit the loop to complete the test.
   auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
   EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
-      .WillOnce(testing::WithoutArgs([]() {
-        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
-        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
-            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
-                            WithArg<1>(ReportHardwareContextReset())));
-        return mock_renderer;
-      }))
       .WillOnce(testing::WithoutArgs([]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
@@ -2101,7 +2110,9 @@ TEST_F(WebMediaPlayerImplTest, PipelineErrorHardwareContextReset_Twice) {
       .WillOnce(testing::WithoutArgs([&]() {
         auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>();
         EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
-            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
+            .WillOnce(DoAll(RunOnceCallback<2>(
+                                media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET),
+                            WithArg<1>(ReportHardwareContextReset()),
                             RunClosure(run_loop.QuitClosure())));
         return mock_renderer;
       }));
@@ -2161,9 +2172,551 @@ TEST_F(WebMediaPlayerImplTest,
   SetCdm();
 
   Load(kEncryptedVideoOnlyTestFile);
+
+  // Load encrypted media and expect encrypted event.
+  EXPECT_CALL(encrypted_client_,
+              Encrypted(media::EmeInitDataType::WEBM, NonNullNonEmptySpan()));
+
   run_loop.Run();
 }
 
+// Test the case where a hardware context reset happens first, the video is
+// playing, and the video is not recovered by a subsequent error after resuming
+// from the hardware context reset. Steps: a) A hardware context reset happens
+// -> b) Playing video -> c) A pipeline decode error happens -> d) The video is
+// not recovered and terminated.
+TEST_F(WebMediaPlayerImplTest,
+       PipelineErrorHardwareContextReset_PlayingVideo_NotRecovered) {
+  base::HistogramTester histogram_tester;
+  // To avoid PreloadMetadataLazyLoad.
+  InitializeWebMediaPlayerImpl();
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
+
+  base::RunLoop run_loop_1st_renderer;
+  base::RunLoop run_loop_2nd_renderer;
+  base::RunLoop init_loop;
+
+  media::RendererClient* renderer_client = nullptr;
+  // Shared time variable to capture the seek time in the mock.
+  auto current_time = std::make_shared<base::TimeDelta>(base::Seconds(0));
+
+  auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
+  EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
+      .WillOnce(testing::WithoutArgs([&]() {
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        EXPECT_CALL(*mock_renderer, OnSetCdm(_, _))
+            .WillOnce(RunOnceCallback<1>(true));
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
+                            testing::SaveArg<1>(&renderer_client),
+                            RunClosure(init_loop.QuitClosure())));
+        return mock_renderer;
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
+        run_loop_1st_renderer.Quit();
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        // Capture the seek time so GetMediaTime returns the updated value
+        // when the pipeline suspends (which saves the resume time).
+        EXPECT_CALL(*mock_renderer, StartPlayingFrom(_))
+            .WillOnce(DoAll(
+                [current_time](base::TimeDelta time) { *current_time = time; },
+                base::test::RunClosure(
+                    run_loop_2nd_renderer.QuitWhenIdleClosure())));
+        EXPECT_CALL(*mock_renderer, GetMediaTime())
+            .WillRepeatedly([current_time]() { return *current_time; });
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(RunOnceCallback<2>(media::PIPELINE_OK));
+        return mock_renderer;
+      }));
+
+  renderer_factory_selector_->AddFactory(media::RendererType::kMediaFoundation,
+                                         std::move(mock_renderer_factory));
+
+  // Create and set CDM. The CDM doesn't support a Decryptor and requires Media
+  // Foundation Renderer.
+  EXPECT_CALL(mock_cdm_context_, GetDecryptor())
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(mock_cdm_context_, RequiresMediaFoundationRenderer())
+      .WillRepeatedly(Return(true));
+
+  CreateCdm();
+  SetCdm();
+
+  Load(kEncryptedVideoOnlyTestFile);
+
+  // Load encrypted media and expect encrypted event.
+  EXPECT_CALL(encrypted_client_,
+              Encrypted(media::EmeInitDataType::WEBM, NonNullNonEmptySpan()));
+
+  // Wait for the first renderer to initialize so we have the client.
+  init_loop.Run();
+  ASSERT_TRUE(renderer_client);
+
+  // Now trigger the hardware context reset error.
+  base::RunLoop run_loop_hardware_context_reset;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+        run_loop_hardware_context_reset.Quit();
+      }));
+  run_loop_hardware_context_reset.Run();
+
+  // Wait for the first renderer loop to finish (triggered by 2nd creation).
+  run_loop_1st_renderer.Run();
+
+  // Cycle threads to ensure 'OnStartDone' runs on main thread and pipeline
+  // state transitions to PLAYING (stable).
+  CycleThreads();
+
+  // Simulate user interaction to put the player in a playing state.
+  wmpi_->Seek(0.5);
+  wmpi_->Play();
+  wmpi_->OnTimeUpdate();
+
+  // Cycle threads to ensure the Seek task runs on the media thread.
+  // This triggers mock_renderer->StartPlayingFrom(0.5), updating *current_time.
+  CycleThreads();
+
+  // Wait for the second renderer to fail and complete the test.
+  run_loop_2nd_renderer.Run();
+
+  // Now trigger the pipeline decode error.
+  base::RunLoop run_loop_decode_error;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_DECODE);
+        run_loop_decode_error.Quit();
+      }));
+  run_loop_decode_error.Run();
+
+  CycleThreads();
+
+  // Destroy wmpi_ to ensure destructor metrics are recorded.
+  EXPECT_CALL(client_, SetCcLayer(testing::_)).Times(1).RetiresOnSaturation();
+  wmpi_->Shutdown();
+  wmpi_.reset();
+  CycleThreads();
+
+  histogram_tester.ExpectBucketCount(kLastPipelineStatusUmaName,
+                                     media::PIPELINE_ERROR_DECODE, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      kTimeDeltaSinceLastHardwareContextResetUmaName, base::Milliseconds(500),
+      1);
+}
+
+// Test the case where a hardware context reset happens first, the video is
+// playing, and the video is recovered without any subsequent errors after
+// resuming from the hardware context reset. Steps: a) A hardware context reset
+// happens -> b) Playing video -> c) The video is recovered and terminated.
+TEST_F(WebMediaPlayerImplTest,
+       PipelineErrorHardwareContextReset_PlayingVideo_Recovered) {
+  base::HistogramTester histogram_tester;
+  // To avoid PreloadMetadataLazyLoad.
+  InitializeWebMediaPlayerImpl();
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
+
+  base::RunLoop run_loop_1st_renderer;
+  base::RunLoop run_loop_2nd_renderer;
+  base::RunLoop init_loop;
+
+  media::RendererClient* renderer_client = nullptr;
+  // Shared time variable to capture the seek time in the mock.
+  auto current_time = std::make_shared<base::TimeDelta>(base::Seconds(0));
+
+  auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
+  EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
+      .WillOnce(testing::WithoutArgs([&]() {
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        EXPECT_CALL(*mock_renderer, OnSetCdm(_, _))
+            .WillOnce(RunOnceCallback<1>(true));
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
+                            testing::SaveArg<1>(&renderer_client),
+                            RunClosure(init_loop.QuitClosure())));
+        return mock_renderer;
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
+        run_loop_1st_renderer.Quit();
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        // Capture the seek time so GetMediaTime returns the updated value
+        // when the pipeline suspends (which saves the resume time).
+        EXPECT_CALL(*mock_renderer, StartPlayingFrom(_))
+            .WillOnce(DoAll(
+                [current_time](base::TimeDelta time) { *current_time = time; },
+                base::test::RunClosure(
+                    run_loop_2nd_renderer.QuitWhenIdleClosure())));
+        EXPECT_CALL(*mock_renderer, GetMediaTime())
+            .WillRepeatedly([current_time]() { return *current_time; });
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(RunOnceCallback<2>(media::PIPELINE_OK));
+        return mock_renderer;
+      }));
+
+  renderer_factory_selector_->AddFactory(media::RendererType::kMediaFoundation,
+                                         std::move(mock_renderer_factory));
+
+  // Create and set CDM. The CDM doesn't support a Decryptor and requires Media
+  // Foundation Renderer.
+  EXPECT_CALL(mock_cdm_context_, GetDecryptor())
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(mock_cdm_context_, RequiresMediaFoundationRenderer())
+      .WillRepeatedly(Return(true));
+
+  CreateCdm();
+  SetCdm();
+
+  Load(kEncryptedVideoOnlyTestFile);
+
+  // Load encrypted media and expect encrypted event.
+  EXPECT_CALL(encrypted_client_,
+              Encrypted(media::EmeInitDataType::WEBM, NonNullNonEmptySpan()));
+
+  // Wait for the first renderer to initialize so we have the client.
+  init_loop.Run();
+  ASSERT_TRUE(renderer_client);
+
+  // Now trigger the hardware context reset error.
+  base::RunLoop run_loop_hardware_context_reset;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+        run_loop_hardware_context_reset.Quit();
+      }));
+  run_loop_hardware_context_reset.Run();
+
+  // Wait for the first renderer loop to finish (triggered by 2nd creation).
+  run_loop_1st_renderer.Run();
+
+  // Cycle threads to ensure 'OnStartDone' runs on main thread and pipeline
+  // state transitions to PLAYING (stable).
+  CycleThreads();
+
+  // Simulate user interaction to put the player in a playing state.
+  wmpi_->Seek(0.5);
+  wmpi_->Play();
+  wmpi_->OnTimeUpdate();
+
+  // Cycle threads to ensure the Seek task runs on the media thread.
+  // This triggers mock_renderer->StartPlayingFrom(0.5), updating *current_time.
+  CycleThreads();
+
+  // Wait for the second renderer to fail and complete the test.
+  run_loop_2nd_renderer.Run();
+
+  CycleThreads();
+
+  // Destroy wmpi_ to ensure destructor metrics are recorded.
+  EXPECT_CALL(client_, SetCcLayer(testing::_)).Times(1).RetiresOnSaturation();
+  wmpi_->Shutdown();
+  wmpi_.reset();
+  CycleThreads();
+
+  histogram_tester.ExpectBucketCount(kLastPipelineStatusUmaName,
+                                     media::PIPELINE_OK, 1);
+  histogram_tester.ExpectTotalCount(
+      kTimeDeltaSinceLastHardwareContextResetUmaName, 0);
+}
+
+// Test the case where a hardware context reset happens first, the video is not
+// recovered by a subsequent hardware context reset after resuming from the
+// hardware context reset while the video is paused, and then terminated without
+// any additional error. Steps: a) A hardware context reset happens
+// -> b) Paused video -> c) Another hardware context reset happens (we can't
+// conclude whether it is failed to recover or not since the video is paused) ->
+// d) The video is not recovered but terminated.
+TEST_F(WebMediaPlayerImplTest,
+       PipelineErrorHardwareContextReset_PausedVideo_InconclusiveRecovery) {
+  base::HistogramTester histogram_tester;
+  // To avoid PreloadMetadataLazyLoad.
+  InitializeWebMediaPlayerImpl();
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
+
+  base::RunLoop run_loop_1st_renderer;
+  base::RunLoop run_loop_2nd_renderer;
+  base::RunLoop run_loop_3rd_renderer;
+  base::RunLoop init_loop;
+
+  media::RendererClient* renderer_client = nullptr;
+  // Shared time variable to capture the seek time in the mock.
+  auto current_time = std::make_shared<base::TimeDelta>(base::Seconds(0));
+
+  auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
+  EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
+      .WillOnce(testing::WithoutArgs([&]() {
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        EXPECT_CALL(*mock_renderer, OnSetCdm(_, _))
+            .WillOnce(RunOnceCallback<1>(true));
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
+                            testing::SaveArg<1>(&renderer_client),
+                            RunClosure(init_loop.QuitClosure())));
+        return mock_renderer;
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
+        run_loop_1st_renderer.Quit();
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
+                            RunClosure(run_loop_2nd_renderer.QuitClosure())));
+        return mock_renderer;
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
+                            RunClosure(run_loop_3rd_renderer.QuitClosure())));
+        return mock_renderer;
+      }));
+
+  renderer_factory_selector_->AddFactory(media::RendererType::kMediaFoundation,
+                                         std::move(mock_renderer_factory));
+
+  // Create and set CDM. The CDM doesn't support a Decryptor and requires Media
+  // Foundation Renderer.
+  EXPECT_CALL(mock_cdm_context_, GetDecryptor())
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(mock_cdm_context_, RequiresMediaFoundationRenderer())
+      .WillRepeatedly(Return(true));
+
+  CreateCdm();
+  SetCdm();
+
+  Load(kEncryptedVideoOnlyTestFile);
+
+  // Load encrypted media and expect encrypted event.
+  EXPECT_CALL(encrypted_client_,
+              Encrypted(media::EmeInitDataType::WEBM, NonNullNonEmptySpan()));
+
+  // Wait for the first renderer to initialize so we have the client.
+  init_loop.Run();
+  ASSERT_TRUE(renderer_client);
+
+  // Now trigger the hardware context reset error.
+  base::RunLoop run_loop_hardware_context_reset;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+        run_loop_hardware_context_reset.Quit();
+      }));
+  run_loop_hardware_context_reset.Run();
+
+  // Wait for the first renderer loop to finish (triggered by 2nd creation).
+  run_loop_1st_renderer.Run();
+
+  // Simulate user interaction to put the player in pause state.
+  CycleThreads();
+  wmpi_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
+  CycleThreads();
+
+  // Wait for the second renderer to fail.
+  run_loop_2nd_renderer.Run();
+
+  // Now trigger the 2nd hardware context reset error while the video is paused.
+  base::RunLoop run_loop_hardware_context_reset_2nd;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+        run_loop_hardware_context_reset_2nd.Quit();
+      }));
+  run_loop_hardware_context_reset_2nd.Run();
+
+  // Wait for the third renderer to complete the test.
+  run_loop_3rd_renderer.Run();
+
+  CycleThreads();
+
+  // Destroy wmpi_ to ensure destructor metrics are recorded.
+  EXPECT_CALL(client_, SetCcLayer(testing::_)).Times(1).RetiresOnSaturation();
+  wmpi_->Shutdown();
+  wmpi_.reset();
+  CycleThreads();
+
+  // Since the video is paused when the 2nd hardware context reset happens, we
+  // can't conclude whether it is failed to recover or not. So we will just
+  // record PIPELINE_OK for the last pipeline status.
+  histogram_tester.ExpectBucketCount(kLastPipelineStatusUmaName,
+                                     media::PIPELINE_OK, 1);
+  histogram_tester.ExpectTotalCount(
+      kTimeDeltaSinceLastHardwareContextResetUmaName, 0);
+}
+
+// Test the case where a hardware context reset happens first, the video is not
+// recovered by a subsequent hardware context reset after resuming from the
+// hardware context reset while the video is paused, and then the video is
+// playing (only 1 ms advanced) but another hardware context reset happens.
+// Steps: a) A hardware context reset happens -> b) Paused video -> c) Another
+// hardware context reset happens (we can't conclude whether it is failed to
+// recover or not since the video is paused) -> d) The video is playing (only 1
+// ms advanced) -> e) Another hardware context reset happens -> f) The video is
+// not recovered but terminated.
+TEST_F(WebMediaPlayerImplTest,
+       PipelineErrorHardwareContextReset_PausedVideo_NotRecovered) {
+  base::HistogramTester histogram_tester;
+  // To avoid PreloadMetadataLazyLoad.
+  InitializeWebMediaPlayerImpl();
+  wmpi_->SetPreload(WebMediaPlayer::kPreloadAuto);
+
+  base::RunLoop run_loop_1st_renderer;
+  base::RunLoop run_loop_2nd_renderer;
+  base::RunLoop run_loop_3rd_renderer;
+  base::RunLoop init_loop;
+
+  media::RendererClient* renderer_client = nullptr;
+  // Shared time variable to capture the seek time in the mock.
+  auto current_time = std::make_shared<base::TimeDelta>(base::Seconds(0));
+
+  auto mock_renderer_factory = std::make_unique<media::MockRendererFactory>();
+  EXPECT_CALL(*mock_renderer_factory, CreateRenderer(_, _, _, _, _, _))
+      .WillOnce(testing::WithoutArgs([&]() {
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        EXPECT_CALL(*mock_renderer, OnSetCdm(_, _))
+            .WillOnce(RunOnceCallback<1>(true));
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(DoAll(RunOnceCallback<2>(media::PIPELINE_OK),
+                            testing::SaveArg<1>(&renderer_client),
+                            RunClosure(init_loop.QuitClosure())));
+        return mock_renderer;
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
+        run_loop_1st_renderer.Quit();
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        // Capture the seek time so GetMediaTime returns the updated value
+        // when the pipeline suspends (which saves the resume time).
+        EXPECT_CALL(*mock_renderer, StartPlayingFrom(_))
+            .WillOnce(DoAll(
+                [current_time](base::TimeDelta time) { *current_time = time; },
+                base::test::RunClosure(
+                    run_loop_2nd_renderer.QuitWhenIdleClosure())));
+        EXPECT_CALL(*mock_renderer, GetMediaTime())
+            .WillRepeatedly([current_time]() { return *current_time; });
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(RunOnceCallback<2>(media::PIPELINE_OK));
+        return mock_renderer;
+      }))
+      .WillOnce(testing::WithoutArgs([&]() {
+        run_loop_2nd_renderer.Quit();
+        auto mock_renderer = std::make_unique<NiceMock<media::MockRenderer>>(
+            media::RendererType::kMediaFoundation);
+        // Capture the seek time so GetMediaTime returns the updated value
+        // when the pipeline suspends (which saves the resume time).
+        EXPECT_CALL(*mock_renderer, StartPlayingFrom(_))
+            .WillOnce(DoAll(
+                [current_time](base::TimeDelta time) { *current_time = time; },
+                base::test::RunClosure(
+                    run_loop_3rd_renderer.QuitWhenIdleClosure())));
+        EXPECT_CALL(*mock_renderer, GetMediaTime())
+            .WillRepeatedly([current_time]() { return *current_time; });
+        EXPECT_CALL(*mock_renderer, OnInitialize(_, _, _))
+            .WillOnce(RunOnceCallback<2>(media::PIPELINE_OK));
+        return mock_renderer;
+      }));
+
+  renderer_factory_selector_->AddFactory(media::RendererType::kMediaFoundation,
+                                         std::move(mock_renderer_factory));
+
+  // Create and set CDM. The CDM doesn't support a Decryptor and requires Media
+  // Foundation Renderer.
+  EXPECT_CALL(mock_cdm_context_, GetDecryptor())
+      .WillRepeatedly(Return(nullptr));
+  EXPECT_CALL(mock_cdm_context_, RequiresMediaFoundationRenderer())
+      .WillRepeatedly(Return(true));
+
+  CreateCdm();
+  SetCdm();
+
+  Load(kEncryptedVideoOnlyTestFile);
+
+  // Load encrypted media and expect encrypted event.
+  EXPECT_CALL(encrypted_client_,
+              Encrypted(media::EmeInitDataType::WEBM, NonNullNonEmptySpan()));
+
+  // Wait for the first renderer to initialize so we have the client.
+  init_loop.Run();
+  ASSERT_TRUE(renderer_client);
+
+  // Now trigger the hardware context reset error.
+  base::RunLoop run_loop_hardware_context_reset;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+        run_loop_hardware_context_reset.Quit();
+      }));
+  run_loop_hardware_context_reset.Run();
+
+  // Wait for the first renderer loop to finish (triggered by 2nd creation).
+  run_loop_1st_renderer.Run();
+
+  // Simulate user interaction to put the player in pause state.
+  CycleThreads();
+  wmpi_->Pause(WebMediaPlayer::PauseReason::kPauseCalled);
+  CycleThreads();
+
+  // Wait for the second renderer to fail.
+  run_loop_2nd_renderer.Run();
+
+  // Now trigger the 2nd hardware context reset error while the video is paused.
+  base::RunLoop run_loop_hardware_context_reset_2nd;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+        run_loop_hardware_context_reset_2nd.Quit();
+      }));
+  run_loop_hardware_context_reset_2nd.Run();
+
+  // Cycle threads to ensure 'OnStartDone' runs on main thread and pipeline
+  // state transitions to PLAYING (stable).
+  CycleThreads();
+
+  // Simulate user interaction to put the player in a playing state.
+  wmpi_->Seek(0.001);
+  wmpi_->Play();
+  wmpi_->OnTimeUpdate();
+
+  // Cycle threads to ensure the Seek task runs on the media thread.
+  // This triggers mock_renderer->StartPlayingFrom(0.001), updating
+  // *current_time.
+  CycleThreads();
+
+  // Wait for the third renderer to complete the test.
+  run_loop_3rd_renderer.Run();
+
+  // Now trigger the 3rd hardware context reset error while the video is
+  // playing.
+  base::RunLoop run_loop_hardware_context_reset_3rd;
+  media_thread_.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        renderer_client->OnError(media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET);
+        run_loop_hardware_context_reset_3rd.Quit();
+      }));
+  run_loop_hardware_context_reset_3rd.Run();
+
+  CycleThreads();
+
+  // Destroy wmpi_ to ensure destructor metrics are recorded.
+  EXPECT_CALL(client_, SetCcLayer(testing::_)).Times(1).RetiresOnSaturation();
+  wmpi_->Shutdown();
+  wmpi_.reset();
+  CycleThreads();
+
+  // Since the video is playing (unpaused) when the 3rd hardware context reset
+  // happens, we can conclude as unrecoverable. So we will record
+  // PIPELINE_ERROR_HARDWARE_CONTEXT_RESET for the last pipeline status with the
+  // time delta.
+  histogram_tester.ExpectBucketCount(
+      kLastPipelineStatusUmaName, media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET,
+      1);
+  histogram_tester.ExpectTimeBucketCount(
+      kTimeDeltaSinceLastHardwareContextResetUmaName, base::Milliseconds(1), 1);
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(WebMediaPlayerImplTest, VideoConfigChange) {

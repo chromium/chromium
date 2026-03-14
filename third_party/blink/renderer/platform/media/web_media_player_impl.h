@@ -1127,6 +1127,13 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Count the number of times a video frame is being readback.
   unsigned video_frame_readback_count_ = 0;
 
+#if BUILDFLAG(IS_WIN)
+  // The media time when a hardware context reset occurs. Used to prevent having
+  // an infinite loop of the same error.
+  std::optional<base::TimeDelta> media_time_on_last_hardware_context_reset_;
+  bool has_reported_hardware_context_reset_recovery_umas_ = false;
+#endif  // BUILDFLAG(IS_WIN)
+
   base::WeakPtr<WebMediaPlayerImpl> weak_this_;
   base::WeakPtrFactory<WebMediaPlayerImpl> weak_factory_{this};
 };

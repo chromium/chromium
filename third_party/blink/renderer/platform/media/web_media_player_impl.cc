@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -405,6 +406,31 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
   }
   return WebMediaPlayer::kNetworkStateFormatError;
 }
+
+#if BUILDFLAG(IS_WIN)
+bool HasMediaTimeSufficentlyElapsed(base::TimeDelta previous_media_time,
+                                    base::TimeDelta current_media_time) {
+  const auto kTimeDifferenceTolerance = base::Milliseconds(100);
+  const auto time_difference = current_media_time - previous_media_time;
+  return time_difference > kTimeDifferenceTolerance;
+}
+
+void ReportLastPipelineStatusForHardwareContextResetRecoveryUMAs(
+    media::PipelineStatus last_status,
+    std::optional<base::TimeDelta> media_time_diff) {
+  DVLOG(1) << __func__ << ":status=" << last_status << ", media_time_diff="
+           << media_time_diff.value_or(base::TimeDelta());
+  base::UmaHistogramExactLinear(
+      "Media.PipelineStatus.HardwareContextResetRecovery.LastPipelineStatus",
+      last_status.code(), media::PIPELINE_STATUS_MAX + 1);
+  if (media_time_diff.has_value()) {
+    base::UmaHistogramTimes(
+        "Media.PipelineStatus.HardwareContextResetRecovery."
+        "TimeDeltaSinceLastHardwareContextReset",
+        media_time_diff.value());
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -1974,12 +2000,40 @@ void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
     return;
 
 #if BUILDFLAG(IS_WIN)
-  // Hardware context reset is not an error. Restart to recover.
-  // TODO(crbug.com/40181810): Find a way to break the potential infinite loop
-  // of restart -> PIPELINE_ERROR_HARDWARE_CONTEXT_RESET -> restart.
-  if (status == media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET) {
+  // An error or another hardware context reset (HCR) occurred within a very
+  // short media time window from the previous HCR and the video is not paused
+  // (playing). In this case we consider the recovery attempt from the previous
+  // HCR failed. To avoid infinite loop of retrying, we will trigger an error
+  // and will not ScheduleRestart(). We gate the logic on short elapsed media
+  // time to have more confidence that the error (or another HCR) are related to
+  // the previous HCR. We check the paused state because if the video is paused,
+  // the media time can't advance.
+  if (media_time_on_last_hardware_context_reset_.has_value() && !paused_ &&
+      !HasMediaTimeSufficentlyElapsed(
+          media_time_on_last_hardware_context_reset_.value(),
+          pipeline_controller_->GetMediaTime())) {
+    DVLOG(1) << __func__
+             << ": Consider this error as an unrecoverable hardware context "
+                "reset error, so giving up!";
+    status = media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
+  } else if (status == media::PIPELINE_ERROR_HARDWARE_CONTEXT_RESET) {
+    media_time_on_last_hardware_context_reset_ =
+        pipeline_controller_->GetMediaTime();
+
+    // Hardware context reset is not an error. Restart to recover.
     ScheduleRestart();
     return;
+  }
+
+  // If there was a hardware context reset but we haven't reported the last
+  // pipeline status, we consider this as the unsuccessful recovery from the
+  // hardware context reset.
+  if (media_time_on_last_hardware_context_reset_.has_value() &&
+      !has_reported_hardware_context_reset_recovery_umas_) {
+    ReportLastPipelineStatusForHardwareContextResetRecoveryUMAs(
+        status, pipeline_controller_->GetMediaTime() -
+                    media_time_on_last_hardware_context_reset_.value());
+    has_reported_hardware_context_reset_recovery_umas_ = true;
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -2718,6 +2772,7 @@ void WebMediaPlayerImpl::SetPowerExperimentState(bool state) {
 }
 
 void WebMediaPlayerImpl::ScheduleRestart() {
+  DVLOG(1) << __func__;
   // TODO(watk): All restart logic should be moved into PipelineController.
   if (pipeline_controller_->IsPipelineRunning() &&
       !pipeline_controller_->IsPipelineSuspended()) {
@@ -4133,6 +4188,17 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
     uma_name = "Media.EME." + key_system_name_for_uma + ".WaitingForKey";
     base::UmaHistogramBoolean(uma_name, has_waiting_for_key_);
   }
+
+#if BUILDFLAG(IS_WIN)
+  // If there was a hardware context reset but we haven't reported the last
+  // pipeline status, we consider this as the successful recovery from the
+  // hardware context reset.
+  if (media_time_on_last_hardware_context_reset_.has_value() &&
+      !has_reported_hardware_context_reset_recovery_umas_) {
+    ReportLastPipelineStatusForHardwareContextResetRecoveryUMAs(
+        media::PIPELINE_OK, std::nullopt);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void WebMediaPlayerImpl::DidMediaMetadataChange() {
