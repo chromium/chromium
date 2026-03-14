@@ -172,7 +172,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
 
     @Test
     public void testRemoveTemplateUrl_DialogNotNeeded() {
-        when(mTemplateUrl.requiresDeletionConfirmation()).thenReturn(false);
+        when(mTemplateUrl.requiresRemovalConfirmation()).thenReturn(false);
 
         mCoordinator.removeTemplateUrl(mTemplateUrl);
 
@@ -183,7 +183,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
 
     @Test
     public void testRemoveTemplateUrl_DialogShowAndConfirm() {
-        when(mTemplateUrl.requiresDeletionConfirmation()).thenReturn(true);
+        when(mTemplateUrl.requiresRemovalConfirmation()).thenReturn(true);
 
         mCoordinator.removeTemplateUrl(mTemplateUrl);
 
@@ -217,7 +217,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
 
     @Test
     public void testRemoveTemplateUrl_DialogCancel() {
-        when(mTemplateUrl.requiresDeletionConfirmation()).thenReturn(true);
+        when(mTemplateUrl.requiresRemovalConfirmation()).thenReturn(true);
 
         mCoordinator.removeTemplateUrl(mTemplateUrl);
 

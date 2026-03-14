@@ -98,9 +98,9 @@ bool KeywordEditorController::CanDeactivate(const TemplateURL* url) const {
           url->CanPolicyBeOverridden());
 }
 
-bool KeywordEditorController::ShouldConfirmDeletion(
+bool KeywordEditorController::ShouldConfirmRemoval(
     const TemplateURL* url) const {
-  return url->RequiresDeletionConfirmation();
+  return url->RequiresRemovalConfirmation();
 }
 
 bool KeywordEditorController::IsManaged(const TemplateURL* url) const {

@@ -2195,7 +2195,7 @@ bool TemplateURL::CreatedByRegulatoryProgram() const {
   return data().CreatedByRegulatoryProgram();
 }
 
-bool TemplateURL::RequiresDeletionConfirmation() const {
+bool TemplateURL::RequiresRemovalConfirmation() const {
   return prepopulate_id() != 0 || CreatedByNonDefaultSearchProviderPolicy();
 }
 

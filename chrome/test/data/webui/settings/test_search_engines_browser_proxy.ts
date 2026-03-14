@@ -125,7 +125,7 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         keyword: 'google.com',
         modelIndex: 0,
         name: 'Google',
-        shouldConfirmDeletion: false,
+        shouldConfirmRemoval: false,
         url: 'https://search.foo.com/search?p=%s',
         urlLocked: false,
       },
@@ -156,7 +156,7 @@ export function createSampleOmniboxExtension(): SearchEngine {
     keyword: 'oe',
     modelIndex: 6,
     name: 'Omnibox extension',
-    shouldConfirmDeletion: false,
+    shouldConfirmRemoval: false,
     url: 'chrome-extension://dummyextensionid/?q=%s',
     urlLocked: false,
   };

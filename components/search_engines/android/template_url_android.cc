@@ -87,11 +87,11 @@ static int32_t JNI_TemplateUrl_GetStarterPackId(JNIEnv* env,
   return static_cast<int>(template_url->starter_pack_id());
 }
 
-static bool JNI_TemplateUrl_RequiresDeletionConfirmation(
+static bool JNI_TemplateUrl_RequiresRemovalConfirmation(
     JNIEnv* env,
     int64_t template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
-  return template_url->RequiresDeletionConfirmation();
+  return template_url->RequiresRemovalConfirmation();
 }
 
 ScopedJavaLocalRef<jobject> CreateTemplateUrlAndroid(

@@ -401,7 +401,7 @@ suite('EnterpriseSiteSearchEntryTests', function() {
           canBeDeactivated: true,
           displayName: 'Recommended',
           isManaged: true,
-          shouldConfirmDeletion: true,
+          shouldConfirmRemoval: true,
         });
       };
 

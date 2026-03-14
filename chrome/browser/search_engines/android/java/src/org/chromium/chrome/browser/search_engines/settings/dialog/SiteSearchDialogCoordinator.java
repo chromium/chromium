@@ -74,7 +74,7 @@ public class SiteSearchDialogCoordinator {
     }
 
     public void removeTemplateUrl(TemplateUrl templateUrl) {
-        if (!templateUrl.requiresDeletionConfirmation()) {
+        if (!templateUrl.requiresRemovalConfirmation()) {
             mTemplateUrlService.removeSearchEngine(templateUrl.getKeyword());
             return;
         }

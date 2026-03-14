@@ -122,12 +122,12 @@ public class TemplateUrl {
     }
 
     /**
-     * @return true if the user should be asked to confirm before deleting this engine. Currently,
+     * @return Whether the user should be asked to confirm before removing this engine. Currently,
      *     only built-in search engines and non default search engines created by policy require
-     *     confirmation before deletion.
+     *     confirmation before removal.
      */
-    public boolean requiresDeletionConfirmation() {
-        return TemplateUrlJni.get().requiresDeletionConfirmation(mTemplateUrlPtr);
+    public boolean requiresRemovalConfirmation() {
+        return TemplateUrlJni.get().requiresRemovalConfirmation(mTemplateUrlPtr);
     }
 
     public long getNativePtr() {
@@ -174,7 +174,7 @@ public class TemplateUrl {
 
         GURL getFaviconURL(long templateUrlPtr);
 
-        boolean requiresDeletionConfirmation(long templateUrlPtr);
+        boolean requiresRemovalConfirmation(long templateUrlPtr);
 
         byte @Nullable [] getBuiltInSearchEngineIcon(long templateUrlPtr);
     }

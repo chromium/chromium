@@ -302,8 +302,8 @@ base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(
   dict.Set("canBeEdited", list_controller_.CanEdit(template_url));
   dict.Set("canBeActivated", list_controller_.CanActivate(template_url));
   dict.Set("canBeDeactivated", list_controller_.CanDeactivate(template_url));
-  dict.Set("shouldConfirmDeletion",
-           list_controller_.ShouldConfirmDeletion(template_url));
+  dict.Set("shouldConfirmRemoval",
+           list_controller_.ShouldConfirmRemoval(template_url));
   dict.Set("isManaged", list_controller_.IsManaged(template_url));
   TemplateURL::Type type = template_url->type();
   dict.Set("isOmniboxExtension", type == TemplateURL::OMNIBOX_API_EXTENSION);

@@ -146,7 +146,7 @@ export class SettingsSearchEngineEntryElement extends
     e.preventDefault();
     this.closePopupMenu_();
 
-    if (!this.engine.shouldConfirmDeletion) {
+    if (!this.engine.shouldConfirmRemoval) {
       this.browserProxy_.removeSearchEngine(this.engine.modelIndex);
       return;
     }

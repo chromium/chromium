@@ -62,9 +62,9 @@ class KeywordEditorController {
   // the current default search engine.
   bool CanDeactivate(const TemplateURL* url) const;
 
-  // Return true if the user should be asked to confirm before deleting the
+  // Return true if the user should be asked to confirm before removing the
   // given `url`.
-  bool ShouldConfirmDeletion(const TemplateURL* url) const;
+  bool ShouldConfirmRemoval(const TemplateURL* url) const;
 
   // Return true if a search engine is managed by policy.
   bool IsManaged(const TemplateURL* url) const;

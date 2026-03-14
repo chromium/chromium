@@ -33,7 +33,7 @@ export interface SearchEngine {
   keyword: string;
   modelIndex: number;
   name: string;
-  shouldConfirmDeletion: boolean;
+  shouldConfirmRemoval: boolean;
   url: string;
   urlLocked: boolean;
 }
