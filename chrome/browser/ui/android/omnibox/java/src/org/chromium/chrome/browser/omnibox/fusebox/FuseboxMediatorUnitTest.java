@@ -723,6 +723,20 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void onRequestTypeButtonClicked_fromDeepSearch_activatesSearchMode() {
+        mInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
+        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
+    }
+
+    @Test
+    public void onRequestTypeButtonClicked_fromCanvas_activatesSearchMode() {
+        mInput.setRequestType(AutocompleteRequestType.CANVAS);
+        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+        assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
+    }
+
+    @Test
     public void testUploadAndAddAttachment_integrationFlow_noCasting() {
         // Setup: Mock successful file upload
         when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any(byte[].class)))
