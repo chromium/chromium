@@ -689,9 +689,9 @@ public class FuseboxMediatorUnitTest {
     public void popupModelAutoClicked_setsModelMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED).run();
-        assertEquals(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE, mInput.getModelMode());
+        assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
-                .setActiveTool(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE);
+                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
     }
 
     @Test
@@ -700,7 +700,7 @@ public class FuseboxMediatorUnitTest {
         mModel.get(FuseboxProperties.POPUP_MODEL_PRO_CLICKED).run();
         assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
-                .setActiveTool(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+                .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
     }
 
     @Test
@@ -1131,7 +1131,40 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_ENABLED));
 
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE));
+    }
+
+    @Test
+    public void testOnInputStateChange_Selection() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        InputState state =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_REGULAR_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .build();
+        mInputStateSupplier.set(state);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED));
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+
+        state =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withDefaultModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE)
+                        .withAllowedModels(
+                                ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE,
+                                ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .build();
+        mInputStateSupplier.set(state);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_SELECTED));
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
     }
 }

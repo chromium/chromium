@@ -143,6 +143,10 @@ class FuseboxProperties {
     public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** Whether the auto model button in the popup is selected. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_SELECTED =
+            new WritableBooleanPropertyKey();
+
     /** Whether the auto model button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_MODEL_AUTO_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -161,6 +165,10 @@ class FuseboxProperties {
 
     /** Whether the pro model button in the popup is enabled. */
     public static final WritableBooleanPropertyKey POPUP_MODEL_PRO_ENABLED =
+            new WritableBooleanPropertyKey();
+
+    /** Whether the pro model button in the popup is selected. */
+    public static final WritableBooleanPropertyKey POPUP_MODEL_PRO_SELECTED =
             new WritableBooleanPropertyKey();
 
     /** Whether the pro model button in the popup is visible. */
@@ -259,11 +267,13 @@ class FuseboxProperties {
         POPUP_ATTACH_TAB_PICKER_VISIBLE,
         POPUP_MODEL_AUTO_CLICKED,
         POPUP_MODEL_AUTO_ENABLED,
+        POPUP_MODEL_AUTO_SELECTED,
         POPUP_MODEL_AUTO_VISIBLE,
         POPUP_MODEL_DIVIDER_VISIBLE,
         POPUP_MODEL_HEADER_VISIBLE,
         POPUP_MODEL_PRO_CLICKED,
         POPUP_MODEL_PRO_ENABLED,
+        POPUP_MODEL_PRO_SELECTED,
         POPUP_MODEL_PRO_VISIBLE,
         POPUP_TOOL_AI_MODE_CLICKED,
         POPUP_TOOL_AI_MODE_ENABLED,

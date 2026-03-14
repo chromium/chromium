@@ -183,6 +183,18 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, view.popup.mProButton);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_AUTO_SELECTED) {
+            updateModelButtonDrawables(
+                    model,
+                    view.popup.mAutoButton,
+                    FuseboxProperties.POPUP_MODEL_AUTO_SELECTED,
+                    R.drawable.autorenew_24dp);
+        } else if (propertyKey == FuseboxProperties.POPUP_MODEL_PRO_SELECTED) {
+            updateModelButtonDrawables(
+                    model,
+                    view.popup.mProButton,
+                    FuseboxProperties.POPUP_MODEL_PRO_SELECTED,
+                    R.drawable.ic_timer);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run());
@@ -289,7 +301,7 @@ class FuseboxViewBinder {
         Drawable canvasEndDrawable = null;
         if (autocompleteRequestType != AutocompleteRequestType.SEARCH
                 && autocompleteRequestType != AutocompleteRequestType.SEARCH_PREFETCH) {
-            Drawable checkmark = assumeNonNull(context.getDrawable(R.drawable.m3_ic_check_24px));
+            Drawable checkmark = context.getDrawable(R.drawable.m3_ic_check_24px);
             switch (autocompleteRequestType) {
                 case AutocompleteRequestType.AI_MODE -> {
                     aiModeButtonEndDrawable = checkmark;
@@ -326,6 +338,19 @@ class FuseboxViewBinder {
         Drawable canvasStartDrawable = context.getDrawable(R.drawable.draft_spark_24dp);
         view.popup.mCanvasButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 canvasStartDrawable, null, canvasEndDrawable, null);
+    }
+
+    private static void updateModelButtonDrawables(
+            PropertyModel model,
+            Button button,
+            ReadableBooleanPropertyKey selectedKey,
+            @DrawableRes int startDrawableRes) {
+        Context context = button.getContext();
+        Drawable checkmark =
+                model.get(selectedKey) ? context.getDrawable(R.drawable.m3_ic_check_24px) : null;
+        Drawable startDrawable = context.getDrawable(startDrawableRes);
+        button.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                startDrawable, null, checkmark, null);
     }
 
     private static void updateButtonsA11yAnnouncements(
