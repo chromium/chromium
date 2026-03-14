@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -42,11 +44,15 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
 
+import java.util.Locale;
+
 /** Unit tests for {@link CirclePagerIndicatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CirclePagerIndicatorDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+
     @Mock private Canvas mCanvas;
     @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.Adapter mAdapter;
@@ -141,6 +147,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
     @SmallTest
     public void testScrollTheRecyclerView_Phone() {
         mDecoration = create(/* isTablet= */ false);
+        assertTrue(mDecoration.getIsLTRForTesting());
 
         int count = 3;
         when(mAdapter.getItemCount()).thenReturn(count);
@@ -373,6 +380,87 @@ public class CirclePagerIndicatorDecorationUnitTest {
         displayStyle =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         assertEquals(1, getItemPerScreen(displayStyle));
+    }
+
+    @Test
+    @SmallTest
+    public void testNoScrolling_RTL() {
+        Locale.setDefault(new Locale("ar"));
+        mDecoration = create(/* isTablet= */ false);
+        assertFalse(mDecoration.getIsLTRForTesting());
+
+        int count = 3;
+        when(mAdapter.getItemCount()).thenReturn(count);
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
+        when(mLayoutManager.findViewByPosition(0)).thenReturn(mView1);
+        when(mView1.getRight()).thenReturn(mParentViewWidth);
+
+        float dotsTotalLength = mIndicatorItemDiameter * count;
+        float paddingBetweenItems = (count - 1) * mIndicatorItemPadding;
+        float indicatorTotalWidth = dotsTotalLength + paddingBetweenItems;
+        float indicatorStartX = (mParentViewWidth - indicatorTotalWidth) / 2f;
+        float indicatorStartY = mParentHeight - mIndicatorItemDiameter;
+        float itemWidth = mIndicatorItemDiameter + mIndicatorItemPadding;
+
+        // In RTL, the first item (position 0) is on the right.
+        // So the highlighted dot should be the rightmost one (index 2 for 3 items).
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+
+        // Verifies that it draws the highlighted dot at the rightmost position.
+        // It is drawn once in drawInactiveIndicators and once in drawHighlights.
+        verify(mCanvas, times(2))
+                .drawCircle(
+                        eq(indicatorStartX + itemWidth * 2),
+                        eq(indicatorStartY),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        Locale.setDefault(DEFAULT_LOCALE);
+    }
+
+    @Test
+    @SmallTest
+    public void testScrollTheRecyclerView_RTL() {
+        Locale.setDefault(new Locale("ar"));
+        mDecoration = create(/* isTablet= */ false);
+        assertFalse(mDecoration.getIsLTRForTesting());
+
+        int count = 3;
+        when(mAdapter.getItemCount()).thenReturn(count);
+        float dotsTotalLength = mIndicatorItemDiameter * count;
+        float paddingBetweenItems = (count - 1) * mIndicatorItemPadding;
+        float indicatorTotalWidth = dotsTotalLength + paddingBetweenItems;
+        float indicatorStartX = (mParentViewWidth - indicatorTotalWidth) / 2f;
+        float itemWidth = mIndicatorItemDiameter + mIndicatorItemPadding;
+        float indicatorStartY = mParentHeight - mIndicatorItemDiameter;
+
+        // Begin to scroll the recyclerview.
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(0);
+        when(mLayoutManager.findViewByPosition(0)).thenReturn(mView1);
+        // In RTL, if it scrolls to the left, the right edge of the first item (position 0)
+        // will move to the right, beyond the parent width.
+        // offset = activeChild.getRight() - parent.getWidth() + mStartMarginPx;
+        // If it scrolls 10 pixels to the left, the right edge is at parentWidth + 10.
+        when(mView1.getRight()).thenReturn(mParentViewWidth + 10);
+
+        // Verifies that the animation (round rectangle) is drawn.
+        // In RTL, visual index for position 0 is 2.
+        // highlightStart = indicatorStartX + itemWidth * 2.
+        // highlightEnd = highlightStart - itemWidth = indicatorStartX + itemWidth.
+        mDecoration.onDrawOver(mCanvas, mRecyclerView, mState);
+        float highlightStart = indicatorStartX + itemWidth * 2;
+        float highlightEnd = highlightStart - itemWidth;
+        verify(mCanvas)
+                .drawRoundRect(
+                        eq(highlightEnd - mIndicatorRadius),
+                        eq(indicatorStartY - mIndicatorRadius),
+                        eq(highlightStart + mIndicatorRadius),
+                        eq(indicatorStartY + mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        eq(mIndicatorRadius),
+                        any(Paint.class));
+
+        Locale.setDefault(DEFAULT_LOCALE);
     }
 
     private CirclePagerIndicatorDecoration create(boolean isTablet) {
