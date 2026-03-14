@@ -22,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -36,9 +37,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -363,5 +367,19 @@ public class OmniboxSuggestionsDropdownUnitTest {
                                 KeyEvent.KEYCODE_TAB,
                                 0,
                                 KeyEvent.META_ALT_ON)));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL)
+    public void testOnLayoutChildren_flagEnabled_scrolledToTop() {
+        mListener.onLayoutChildren(null, new RecyclerView.State());
+        verify(mListener).scrollToPositionWithOffset(0, 0);
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL)
+    public void testOnLayoutChildren_flagDisabled_noScroll() {
+        mListener.onLayoutChildren(null, new RecyclerView.State());
+        verify(mListener, times(0)).scrollToPositionWithOffset(anyInt(), anyInt());
     }
 }

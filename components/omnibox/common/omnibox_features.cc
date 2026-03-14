@@ -373,6 +373,10 @@ BASE_FEATURE(kUrlBarWithoutLigatures, ENABLED);
 // The cached ZPS made sense on sub-4GB Android Go devices
 BASE_FEATURE(kServeJavaCachedZeroSuggest, ENABLED);
 
+// If enabled, OmniboxSuggestionsDropdown will force reset the scroll position
+// of the Omnibox suggestion list to the top during any re-layout.
+BASE_FEATURE(kResetSuggestionsScroll, DISABLED);
+
 namespace android {
 static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
@@ -392,7 +396,8 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kMultilineEditField,
       &kOmniboxImprovementForLFF,
       &kServeJavaCachedZeroSuggest,
-      &kRemoveSearchReadyOmnibox};
+      &kRemoveSearchReadyOmnibox,
+      &kResetSuggestionsScroll};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());

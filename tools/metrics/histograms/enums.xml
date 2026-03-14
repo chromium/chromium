@@ -10640,6 +10640,7 @@ from previous Chrome versions.
   <int value="-1307702398" label="HelpAppHomePageAppArticles:enabled"/>
   <int value="-1306581260" label="AutofillParsingPatternProvider:enabled"/>
   <int value="-1305690805" label="PrecompileInlineScripts:enabled"/>
+  <int value="-1305092278" label="ResetSuggestionsScroll:enabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
   <int value="-1304666215" label="UseMLKEM:enabled"/>
@@ -13672,6 +13673,7 @@ from previous Chrome versions.
   <int value="-276260362" label="GamepadVibration:enabled"/>
   <int value="-276196379" label="ShimlessRMASkuDescription:enabled"/>
   <int value="-276042128" label="ShortcutsNotApps:disabled"/>
+  <int value="-275914198" label="ResetSuggestionsScroll:disabled"/>
   <int value="-275870837"
       label="OmniboxUIExperimentHideSuggestionUrlPath:enabled"/>
   <int value="-275638251" label="CCTAuthTabEnableHttpsRedirects:enabled"/>

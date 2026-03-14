@@ -112,8 +112,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         }
 
         @Override
+        @VisibleForTesting
         public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
-            scrollToPositionWithOffset(0, 0);
+            if (OmniboxFeatures.sResetSuggestionsScroll.isEnabled()) {
+                scrollToPositionWithOffset(0, 0);
+            }
             super.onLayoutChildren(recycler, state);
         }
 
