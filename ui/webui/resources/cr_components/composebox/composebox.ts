@@ -52,13 +52,6 @@ import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 import {WindowProxy} from './window_proxy.js';
 
-export interface ComposeboxState {
-  text?: string;
-  files?: ContextualUpload[];
-  mode?: ComposeboxToolMode;
-  model?: ModelMode;
-}
-
 export enum VoiceSearchAction {
   ACTIVATE = 0,
   QUERY_SUBMITTED = 1,
@@ -133,7 +126,6 @@ export class ComposeboxElement extends I18nMixinLit
 
   static override get properties() {
     return {
-      state: {type: Object},
       showLensButton: {type: Boolean},
       suggestionActivityEnabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
@@ -274,7 +266,6 @@ export class ComposeboxElement extends I18nMixinLit
     };
   }
 
-  accessor state: ComposeboxState|null = null;
   accessor enableFileHint: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor inputPlaceholderOverride: string = '';
@@ -496,6 +487,10 @@ export class ComposeboxElement extends I18nMixinLit
       if (inputState) {
         this.inputState_ = inputState.state;
     }
+    await this.updateComplete;
+    this.fire('composebox-initialized', {
+      initializeComposeboxState: this.initializeState_.bind(this),
+    });
 
     this.setupResizeObservers_();
   }
@@ -568,17 +563,6 @@ export class ComposeboxElement extends I18nMixinLit
           (this.inputState_.allowedModels.length > 0 ||
            this.inputState_.allowedTools.length > 0 ||
            this.inputState_.allowedInputTypes.length > 0);
-    }
-
-    if (changedProperties.has('state') && this.state) {
-      this.updateState_(this.state);
-    }
-
-    const entrypointAndMenu =
-        this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
-            '#contextEntrypoint');
-    if (entrypointAndMenu && this.state) {
-      entrypointAndMenu.openMenuForMultiSelection();
     }
 
     if (changedPrivateProperties.has('inputPlaceholderOverride') ||
@@ -756,12 +740,10 @@ export class ComposeboxElement extends I18nMixinLit
     return this.selectedMatchIndex_;
   }
 
-  protected async updateState_(state: ComposeboxState) {
-    const text = state.text || '';
-    const files = state.files || [];
-    const mode = state.mode ?? ComposeboxToolMode.kUnspecified;
-    let model = state.model ?? ModelMode.kUnspecified;
-
+  protected async initializeState_(
+      text: string = '', files: ContextualUpload[] = [],
+      mode: ComposeboxToolMode = ComposeboxToolMode.kUnspecified,
+      model: ModelMode = ModelMode.kUnspecified) {
     if (text) {
       this.input_ = text;
       this.lastQueriedInput_ = text;
@@ -773,6 +755,16 @@ export class ComposeboxElement extends I18nMixinLit
       const dataTransfer = new DataTransfer();
       for (const file of files) {
         if ('tabId' in file) {
+          // If the composebox is being initialized with tab context from the
+          // context menu, we want to keep the context menu open to allow for
+          // multi-tab selection.
+          const entrypointAndMenu =
+              this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+                  '#contextEntrypoint');
+          if (entrypointAndMenu &&
+              file.origin === TabUploadOrigin.CONTEXT_MENU) {
+            entrypointAndMenu.openMenuForMultiSelection();
+          }
           this.addTabContextHandleCallback_({
             tabId: file.tabId,
             title: file.title,

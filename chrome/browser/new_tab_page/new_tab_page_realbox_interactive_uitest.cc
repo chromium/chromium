@@ -294,28 +294,6 @@ class NtpRealboxUiTestBase
     ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindOnce(BuildMockContextualSearchServiceInstance));
   }
-
-  auto ExecuteJsClickAt(ui::ElementIdentifier webcontents_id,
-                        const DeepQuery& where) {
-    return ExecuteJsAt(webcontents_id, where, "(el) => el.click()");
-  }
-
-  auto ExecuteJsKeyPressAt(ui::ElementIdentifier webcontents_id,
-                           const DeepQuery& where,
-                           ui::KeyboardCode key_code) {
-    std::string key;
-    std::string code;
-    if (key_code == ui::VKEY_ESCAPE) {
-      key = "Escape";
-      code = "Escape";
-    }
-    std::string script =
-        "(el) => el.dispatchEvent(new KeyboardEvent('keydown', "
-        "{key: '" + key + "', code: '" + code + "', keyCode: " +
-        base::NumberToString(key_code) + ", which: " +
-        base::NumberToString(key_code) + ", bubbles: true, composed: true}))";
-    return ExecuteJsAt(webcontents_id, where, script);
-  }
 };
 
 class NtpRealboxUiScreenshotTest
@@ -490,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, AimButtonOpensComposebox) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxInputClearedEvent);
 
   const DeepQuery kComposeButton = {"ntp-app", "cr-searchbox",
-                                    "#composeButton", "#composeButton"};
+                                    "#composeButton"};
 
   WebContentsInteractionTestUtil::StateChange composebox_dialog_open;
   composebox_dialog_open.event = kComposeboxDialogOpenEvent;
@@ -498,17 +476,10 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, AimButtonOpensComposebox) {
   composebox_dialog_open.test_function =
       "(el) => el && el.hasAttribute('open')";
 
-  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxInputHasTextEvent);
-
   WebContentsInteractionTestUtil::StateChange composebox_input_cleared;
   composebox_input_cleared.event = kComposeboxInputClearedEvent;
   composebox_input_cleared.where = kComposeboxInput;
   composebox_input_cleared.test_function = "(el) => el && el.value === ''";
-
-  WebContentsInteractionTestUtil::StateChange composebox_input_has_text;
-  composebox_input_has_text.event = kComposeboxInputHasTextEvent;
-  composebox_input_has_text.where = kComposeboxInput;
-  composebox_input_has_text.test_function = "(el) => el && el.value === 'hello'";
 
   RunTestSequence(
       // 1. Open a site.
@@ -520,21 +491,19 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, AimButtonOpensComposebox) {
       WaitForElementToRender(kNtpElementId, kRealbox),
       WaitForElementToRender(kNtpElementId, kComposeButton),
       // 4. Click on the compose button.
-      ExecuteJsClickAt(kNtpElementId, kComposeButton),
+      ClickElement(kNtpElementId, kComposeButton),
       // 5. Observe/assert that the composebox dialog is open.
       WaitForStateChange(kNtpElementId, composebox_dialog_open),
       // 6. Insert text into composebox.
       ExecuteJsAt(kNtpElementId, kComposeboxInput,
-                  "(el) => { el.focus(); el.value = 'hello'; el.dispatchEvent(new "
+                  "(el) => { el.value = 'hello'; el.dispatchEvent(new "
                   "Event('input', {bubbles: true, composed: true})); }"),
-      // Wait for the input to actually have text, ensuring it is registered
-      WaitForStateChange(kNtpElementId, composebox_input_has_text),
       // 7. Hit ESC.
-      ExecuteJsKeyPressAt(kNtpElementId, kComposeboxInput, ui::VKEY_ESCAPE),
+      SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE),
       // 8. Wait for composebox input to clear.
       WaitForStateChange(kNtpElementId, composebox_input_cleared),
       // 9. Hit ESC again.
-      ExecuteJsKeyPressAt(kNtpElementId, kComposeboxInput, ui::VKEY_ESCAPE),
+      SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE),
       // 10. Check that composebox dialog has been removed.
       EnsureNotPresent(kNtpElementId, kComposeboxDialog));
 }
@@ -658,7 +627,7 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
           "Event('input', {bubbles: true, composed: true})); }"),
       // 12. Wait for submit button to be enabled and click it.
       WaitForStateChange(kNtpElementId, submit_enabled),
-      ExecuteJsClickAt(kNtpElementId, kComposeboxSubmitButton),
+      ClickElement(kNtpElementId, kComposeboxSubmitButton),
       // 13. Wait for navigation.
       WaitForWebContentsNavigation(kNtpElementId),
       // 14. Ensure tab navigates to a Google search results page.

@@ -34,15 +34,20 @@ suite('ComposeboxInputPlaceholder', () => {
 
     composebox = document.createElement('cr-composebox');
     composebox.ntpRealboxNextEnabled = true;
-    composebox.state = {
-      text: '',
-      files: [],
-      mode: ComposeboxToolMode.kUnspecified,
-      model: ModelMode.kUnspecified,
-    };
+
+    // We need to wait for the event to be fired when the element is connected.
+    const whenInitialized = new Promise<CustomEvent>((resolve) => {
+      composebox.addEventListener('composebox-initialized', (e: Event) => {
+        resolve(e as CustomEvent);
+      }, {once: true});
+    });
 
     document.body.appendChild(composebox);
+    const event = await whenInitialized;
 
+    // Call the callback to initialize state.
+    event.detail.initializeComposeboxState(
+        '', [], ComposeboxToolMode.kUnspecified, ModelMode.kUnspecified);
     await microtasksFinished();
   }
 

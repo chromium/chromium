@@ -66,26 +66,4 @@ suite('ContextualEntrypointAndMenu', () => {
     assertTrue(!!(await closeEventPromise));
     assertFalse(entrypointButton.classList.contains('menu-open'));
   });
-
-  test(
-      'context menu does not open if multi-tab selection is disabled',
-      async () => {
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        loadTimeData.overrideValues({
-          composeboxContextMenuEnableMultiTabSelection: false,
-        });
-        entrypointAndMenu = document.createElement(
-            'cr-composebox-contextual-entrypoint-and-menu');
-        Object.assign(entrypointAndMenu, {
-          inputState: createValidInputState(),
-          showModelPicker: true,
-        });
-        document.body.appendChild(entrypointAndMenu);
-        await microtasksFinished();
-
-        entrypointAndMenu.openMenuForMultiSelection();
-        await microtasksFinished();
-
-        assertFalse(entrypointAndMenu.$.menu.open);
-      });
 });
