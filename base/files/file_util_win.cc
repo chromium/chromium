@@ -34,6 +34,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
@@ -67,6 +68,86 @@ int g_extra_allowed_path_for_no_execute = 0;
 constexpr DWORD kFileShareAll =
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
 constexpr std::wstring_view kDefaultTempDirPrefix = L"ChromiumTemp";
+
+// Result of ReplaceFile for logging histograms. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+enum class ReplaceFileResult {
+  // ::ReplaceFile succeeded.
+  kSuccess = 0,
+  // Fail to find a valid backup file path for ::ReplaceFile to use.
+  kUnableToFindValidBackupFilePath = 1,
+  // ::ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT and the fallback
+  // ::MoveFile operation also failed.
+  kUnableToMoveReplacementMoveFailed = 2,
+  // ::ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT but the fallback
+  // ::MoveFile operation succeeded. It's treated as success for ReplaceFile.
+  kUnableToMoveReplacementMoveSuccess = 3,
+  // ::ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 and the
+  // following recovery of the replaced file using backup with ::MoveFile failed
+  // either.
+  kUnableToMoveReplacement2RecoveryFailed = 4,
+  // ::ReplaceFile failed with ERROR_UNABLE_TO_MOVE_REPLACEMENT_2 but the
+  // following recovery of the replaced file using backup with ::MoveFile
+  // succeeded. It's treated as a failure for ReplaceFile.
+  kUnableToMoveReplacement2RecoverySuccess = 5,
+  // ::ReplaceFile failed with ERROR_FILE_NOT_FOUND and the fallback
+  // ::MoveFile operation also failed.
+  kFileNotFoundMoveFailed = 6,
+  // ::ReplaceFile failed with ERROR_FILE_NOT_FOUND but the fallback
+  // ::MoveFile operation succeeded. It's treated as success for ReplaceFile.
+  kFileNotFoundMoveSuccess = 7,
+  // ::ReplaceFile failed with other errors and the fallback ::MoveFile
+  // operation also failed.
+  kOtherErrorsMoveFailed = 8,
+  // ::ReplaceFile failed with other errors but the fallback ::MoveFile
+  // operation succeeded. It's treated as success for ReplaceFile.
+  kOtherErrorsMoveSuccess = 9,
+  kMaxValue = kOtherErrorsMoveSuccess,
+};
+
+// Records histogram for the ReplaceFile result. |is_backup_path_valid|
+// indicates whether a valid backup file path is found. |replace_result| is the
+// result of ::ReplaceFile which can be ERROR_SUCCESS or the error code from
+// ::GetLastError() and is optional. |is_move_success| indicates if the fallback
+// ::MoveFile operation succeeded and is optional.
+void RecordReplaceFileResult(bool is_backup_path_valid,
+                             std::optional<DWORD> replace_result,
+                             std::optional<bool> is_move_success) {
+  if (!is_backup_path_valid) {
+    UmaHistogramEnumeration(
+        "Windows.ReplaceFileResult",
+        ReplaceFileResult::kUnableToFindValidBackupFilePath);
+    return;
+  }
+
+  ReplaceFileResult result = ReplaceFileResult::kSuccess;
+  switch (replace_result.value()) {
+    case ERROR_SUCCESS:
+      break;
+    case ERROR_FILE_NOT_FOUND:
+      result = is_move_success.value()
+                   ? ReplaceFileResult::kFileNotFoundMoveSuccess
+                   : ReplaceFileResult::kFileNotFoundMoveFailed;
+      break;
+    case ERROR_UNABLE_TO_MOVE_REPLACEMENT:
+      result = is_move_success.value()
+                   ? ReplaceFileResult::kUnableToMoveReplacementMoveSuccess
+                   : ReplaceFileResult::kUnableToMoveReplacementMoveFailed;
+      break;
+    case ERROR_UNABLE_TO_MOVE_REPLACEMENT_2:
+      result = is_move_success.value()
+                   ? ReplaceFileResult::kUnableToMoveReplacement2RecoverySuccess
+                   : ReplaceFileResult::kUnableToMoveReplacement2RecoveryFailed;
+      break;
+    default:
+      result = is_move_success.value()
+                   ? ReplaceFileResult::kOtherErrorsMoveSuccess
+                   : ReplaceFileResult::kOtherErrorsMoveFailed;
+      break;
+  }
+  UmaHistogramEnumeration("Windows.ReplaceFileResult", result);
+}
 
 // Returns the Win32 last error code or ERROR_SUCCESS if the last error code is
 // ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND. This is useful in cases where
@@ -516,27 +597,74 @@ bool ReplaceFile(const FilePath& from_path,
                  File::Error* error) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
+  // Try to find a valid path for the backup file in the same directory as the
+  // destination file.
+  FilePath backup_path;
+  if (File temp_file =
+          CreateAndOpenTemporaryFileInDir(to_path.DirName(), &backup_path);
+      temp_file.IsValid()) {
+    // A valid backup file path is found. Delete the file that was just created.
+    temp_file.DeleteOnClose(true);
+  } else {
+    // Can't devise a path to a backup file.
+    RecordReplaceFileResult(/*is_backup_path_valid=*/false,
+                            /*replace_result=*/std::nullopt,
+                            /*is_move_success=*/std::nullopt);
+    if (error) {
+      *error = temp_file.error_details();
+    }
+    return false;
+  }
+
   // Assume that |to_path| already exists and try the normal replace. This will
   // fail with ERROR_FILE_NOT_FOUND if |to_path| does not exist. When writing to
   // a network share, we may not be able to change the ACLs. Ignore ACL errors
   // then (REPLACEFILE_IGNORE_MERGE_ERRORS).
-  if (::ReplaceFile(to_path.value().c_str(), from_path.value().c_str(), NULL,
+  if (::ReplaceFile(to_path.value().c_str(), from_path.value().c_str(),
+                    backup_path.value().c_str(),
                     REPLACEFILE_IGNORE_MERGE_ERRORS, NULL, NULL)) {
+    // ReplaceFile succeeded. The backup file is no longer needed.
+    DeleteFile(backup_path);
+    RecordReplaceFileResult(/*is_backup_path_valid=*/true,
+                            /*replace_result=*/ERROR_SUCCESS,
+                            /*is_move_success=*/std::nullopt);
     return true;
   }
 
-  File::Error replace_error = File::OSErrorToFileError(GetLastError());
+  const DWORD replace_error_code = GetLastError();
+  if (replace_error_code == ERROR_UNABLE_TO_MOVE_REPLACEMENT_2) {
+    // In the case of ERROR_UNABLE_TO_MOVE_REPLACEMENT_2, the replace operation
+    // failed and |to_path| file is lost. The |backup_path| now points to the
+    // original |to_path| file. Try to recover the |to_path| file by moving the
+    // backup file back to it.
+    const bool is_move_success =
+        ::MoveFile(backup_path.value().c_str(), to_path.value().c_str());
+    RecordReplaceFileResult(/*is_backup_path_valid=*/true, replace_error_code,
+                            is_move_success);
+  } else {
+    // For other errors, we still try to move the |from_path| file to |to_path|
+    // to see if we can complete this. It will only succeed when |to_path|
+    // doesn't already exist.
+    const bool is_move_success =
+        ::MoveFile(from_path.value().c_str(), to_path.value().c_str());
+    RecordReplaceFileResult(/*is_backup_path_valid=*/true, replace_error_code,
+                            is_move_success);
 
-  // Try a simple move next. It will only succeed when |to_path| doesn't already
-  // exist.
-  if (::MoveFile(from_path.value().c_str(), to_path.value().c_str())) {
-    return true;
+    if (is_move_success) {
+      // Though ::ReplaceFile failed, we were able to move the file to the
+      // destination. The backup file is no longer needed. This is treated as
+      // success for ReplaceFile.
+      DeleteFile(backup_path);
+      return true;
+    }
   }
 
   // In the case of FILE_ERROR_NOT_FOUND from ReplaceFile, it is likely that
   // |to_path| does not exist. In this case, the more relevant error comes
   // from the call to MoveFile.
   if (error) {
+    const File::Error replace_error =
+        File::OSErrorToFileError(replace_error_code);
     *error = replace_error == File::FILE_ERROR_NOT_FOUND
                  ? File::GetLastFileError()
                  : replace_error;

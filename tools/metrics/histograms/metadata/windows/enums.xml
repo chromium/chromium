@@ -2618,6 +2618,19 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Unknown"/>
 </enum>
 
+<enum name="ReplaceFileResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kUnableToFindValidBackupFilePath"/>
+  <int value="2" label="kUnableToMoveReplacementMoveFailed"/>
+  <int value="3" label="kUnableToMoveReplacementMoveSuccess"/>
+  <int value="4" label="kUnableToMoveReplacement2RecoveryFailed"/>
+  <int value="5" label="kUnableToMoveReplacement2RecoverySuccess"/>
+  <int value="6" label="kFileNotFoundMoveFailed"/>
+  <int value="7" label="kFileNotFoundMoveSuccess"/>
+  <int value="8" label="kOtherErrorsMoveFailed"/>
+  <int value="9" label="kOtherErrorsMoveSuccess"/>
+</enum>
+
 <!-- LINT.IfChange(SystemInstallerLaunchStatus) -->
 
 <enum name="SystemInstallerLaunchStatus">

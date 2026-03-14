@@ -431,6 +431,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.ReplaceFileResult" enum="ReplaceFileResult"
+    expires_after="2027-03-02">
+  <owner>grt@chromium.org</owner>
+  <owner>tingshao@microsoft.com</owner>
+  <summary>
+    The result of a call to base::ReplaceFile. Logged every time when
+    base::ReplaceFile is called.
+  </summary>
+</histogram>
+
 <histogram name="Windows.ShouldPinToTaskbarResult{PinAppToTaskbarChannel}"
     enum="TaskbarPinResult" expires_after="2026-08-09">
   <owner>davidbienvenu@chromium.org</owner>
