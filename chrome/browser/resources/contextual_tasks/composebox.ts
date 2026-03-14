@@ -5,7 +5,6 @@
 import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox.js';
 import '//resources/cr_components/localized_link/localized_link.js';
-import './onboarding_tooltip.js';
 
 import type {ComposeboxElement} from '//resources/cr_components/composebox/composebox.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
@@ -26,7 +25,6 @@ import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import {VoiceSearchState} from './constants.js';
 import {IconType} from './contextual_tasks.mojom-webui.js';
-import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 
 const ICON_TYPE_TO_NAME: {[id: number]: string} = {
   [IconType.kUnspecified]: 'unspecified',
@@ -61,7 +59,6 @@ export interface ContextualTasksComposeboxElement {
   $: {
     composebox: ComposeboxElement,
     composeboxContainer: HTMLElement,
-    onboardingTooltip: ContextualTasksOnboardingTooltipElement,
     contextualTasksSuggestionsContainer: ComposeboxDropdownElement,
   };
 }
@@ -109,10 +106,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         value: loadTimeData.getBoolean('composeboxShowContextMenu'),
       },
-      showOnboardingTooltip_: {
-        type: Boolean,
-        value: loadTimeData.getBoolean('showOnboardingTooltip'),
-      },
       zeroStateSuggestions_: {type: Object},
       activeToolMode_: {
         type: Number,
@@ -158,8 +151,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor isComposeboxFocused_: boolean = false;
   protected accessor showContextMenu_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenu');
-  protected accessor showOnboardingTooltip_: boolean =
-      loadTimeData.getBoolean('showOnboardingTooltip');
   protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
   protected accessor showSuggestionsActivityLink_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
@@ -168,21 +159,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxListenerIds_: number[] = [];
-  private onboardingTooltipIsVisible_: boolean = false;
-  private numberOfTimesTooltipShown_: number = 0;
-  private readonly maximumTimesTooltipShown_: number = loadTimeData.getInteger(
-      'composeboxShowOnboardingTooltipSessionImpressionCap');
-  private isOnboardingTooltipDismissCountBelowCap_: boolean =
-      loadTimeData.getBoolean('isOnboardingTooltipDismissCountBelowCap');
-  private userDismissedTooltip_: boolean = false;
   // Tracks the resize of the composebox to provide height updates.
   private resizeObserver_: ResizeObserver|null = null;
-  // Tracks the resize of the composebox and the auto added chip to provide
-  // position updates to the tooltip.
-  private tooltipResizeObserver_: ResizeObserver|null = null;
-  private tooltipImpressionTimer_: number|null = null;
-  private readonly tooltipImpressionDelay_: number =
-      loadTimeData.getInteger('composeboxShowOnboardingTooltipImpressionDelay');
   protected caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
 
@@ -211,7 +189,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         composebox.animationState = GlowAnimationState.NONE;
       });
       this.eventTracker_.add(composebox, 'composebox-submit', () => {
-
         this.clearInputAndFocus(/* querySubmitted= */ true);
       });
       this.eventTracker_.add(
@@ -219,7 +196,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
             if (e.detail.height !== undefined) {
               composebox.style.setProperty(
                   '--carousel-height', `${e.detail.height}px`);
-              this.updateTooltipVisibility_();
+              this.fire('update-tooltip-visibility');
             }
           });
       this.eventTracker_.add(
@@ -231,7 +208,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
       this.eventTracker_.add(
           composebox.getDropTarget(), 'on-context-files-changed', () => {
-            this.updateTooltipVisibility_();
+            this.fire('update-tooltip-visibility');
           });
 
       this.eventTracker_.add(
@@ -263,9 +240,9 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
           composebox, 'composebox-voice-search-user-canceled', () => {
             recordVoiceSearchAction(VoiceSearchState.VOICE_SEARCH_CANCELED);
           });
-      // Initial check.
-      this.updateTooltipVisibility_();
       this.activeToolMode_ = composebox.activeToolMode;
+
+      this.fire('update-tooltip-visibility', {height: composebox.offsetHeight});
 
       this.resizeObserver_ = new ResizeObserver(() => {
         this.composeboxHeight_ = composebox.offsetHeight;
@@ -281,8 +258,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.clearTooltipImpressionTimer_();
-    this.stopObservingTooltipResize_();
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
       this.resizeObserver_ = null;
@@ -313,7 +288,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   get showLensButton_() {
-    //Lens should be hidden in the side panel if deep search is enabled.
+    // Lens should be hidden in the side panel if deep search is enabled.
     return this.isSidePanel && this.activeToolMode_ !== ToolMode.kDeepSearch;
   }
 
@@ -328,63 +303,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   // `showDropdown_`.
   protected onShowSuggestionActivityLink_(e: CustomEvent<boolean>) {
     this.showSuggestionsActivityLink_ = e.detail;
-  }
-
-  private updateTooltipVisibility_() {
-    if (!loadTimeData.getBoolean('showOnboardingTooltip')) {
-      return;
-    }
-
-    const tooltip = this.$.onboardingTooltip;
-    if (!tooltip) {
-      return;
-    }
-
-    if (this.onboardingTooltipIsVisible_ &&
-        !this.$.composebox.getHasAutomaticActiveTabChipToken()) {
-      tooltip.hide();
-      this.onboardingTooltipIsVisible_ = false;
-      this.stopObservingTooltipResize_();
-      // Clear the timer if the tooltip is hidden. This will prevent it being
-      // count as an impression if the chip only showed up briefly.
-      this.clearTooltipImpressionTimer_();
-    } else if (this.$.composebox.getHasAutomaticActiveTabChipToken()) {
-      const target = this.$.composebox.getAutomaticActiveTabChipElement();
-      if (target) {
-        tooltip.target = target;
-      }
-
-      if (this.onboardingTooltipIsVisible_) {
-        tooltip.updatePosition();
-      } else if (this.shouldShowOnboardingTooltip()) {
-        tooltip.show();
-        this.startObservingTooltipResize_(target);
-        this.onboardingTooltipIsVisible_ = true;
-
-        // Start the impression timer if the tooltip is newly shown.
-        this.tooltipImpressionTimer_ = setTimeout(() => {
-          // If the timer is not cleared, that means the delay passed since the
-          // tooltip was shown. Increment the impression count.
-          this.numberOfTimesTooltipShown_++;
-          this.tooltipImpressionTimer_ = null;
-        }, this.tooltipImpressionDelay_);
-      }
-    }
-    tooltip.shouldShow = this.onboardingTooltipIsVisible_;
-  }
-
-  private shouldShowOnboardingTooltip(): boolean {
-    return this.showOnboardingTooltip_ &&
-        this.numberOfTimesTooltipShown_ < this.maximumTimesTooltipShown_ &&
-        this.isOnboardingTooltipDismissCountBelowCap_ &&
-        !this.userDismissedTooltip_;
-  }
-
-  protected onTooltipDismissed_() {
-    this.userDismissedTooltip_ = true;
-    this.onboardingTooltipIsVisible_ = false;
-    this.stopObservingTooltipResize_();
-    this.clearTooltipImpressionTimer_();
   }
 
   protected onSuggestionsResultReceived_(e: CustomEvent<AutocompleteResult>) {
@@ -427,13 +345,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.selectedMatchIndex_ = -1;
   }
 
-  private clearTooltipImpressionTimer_() {
-    if (this.tooltipImpressionTimer_) {
-      clearTimeout(this.tooltipImpressionTimer_);
-      this.tooltipImpressionTimer_ = null;
-    }
-  }
-
   clearInputAndFocus(querySubmitted: boolean = false): void {
     // Clear text from composebox and focus.
     this.$.composebox.clearAllInputs(
@@ -459,29 +370,6 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.pageHandler_.handleFileUpload(false);
   }
 
-  private startObservingTooltipResize_(target: Element|null) {
-    if (this.tooltipResizeObserver_) {
-      this.tooltipResizeObserver_.disconnect();
-    }
-    this.tooltipResizeObserver_ = new ResizeObserver(() => {
-      const tooltip = this.$.onboardingTooltip;
-      if (tooltip && tooltip.target) {
-        tooltip.updatePosition();
-      }
-    });
-    this.tooltipResizeObserver_.observe(this.$.composebox);
-    if (target) {
-      this.tooltipResizeObserver_.observe(target);
-    }
-  }
-
-  private stopObservingTooltipResize_() {
-    if (this.tooltipResizeObserver_) {
-      this.tooltipResizeObserver_.disconnect();
-      this.tooltipResizeObserver_ = null;
-    }
-  }
-
   injectInput(
       title: string, thumbnail: string, fileToken: UnguessableToken,
       supportsUnimodal: boolean) {
@@ -501,6 +389,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.$.composebox.deleteFile(fileToken);
   }
 
+  getComposebox() {
+    return this.$.composebox;
+  }
+
   get isComposeboxFocusedForTesting() {
     return this.isComposeboxFocused_;
   }
@@ -509,28 +401,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     return this.composeboxHeight_;
   }
 
-  get numberOfTimesTooltipShownForTesting() {
-    return this.numberOfTimesTooltipShown_;
-  }
-
-  set numberOfTimesTooltipShownForTesting(n: number) {
-    this.numberOfTimesTooltipShown_ = n;
-  }
-
-  set userDismissedTooltipForTesting(dismissed: boolean) {
-    this.userDismissedTooltip_ = dismissed;
-  }
-
-  updateTooltipVisibilityForTesting() {
-    this.updateTooltipVisibility_();
-  }
-
   get resizeObserverForTesting() {
     return this.resizeObserver_;
-  }
-
-  get tooltipResizeObserverForTesting() {
-    return this.tooltipResizeObserver_;
   }
 }
 

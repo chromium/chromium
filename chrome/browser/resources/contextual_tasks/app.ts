@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './composebox.js';
+import './onboarding_tooltip.js';
 import './error_dialog.js';
 import './error_page.js';
 import './ghost_loader.js';
@@ -19,6 +20,7 @@ import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.moj
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {ContextualTasksComposeboxElement} from './composebox.js';
+import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 import type {ComposeboxPosition, IconType} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
@@ -54,11 +56,12 @@ const OCCLUDER_EXTRA_PADDING_PX = 15;
 export interface ContextualTasksAppElement {
   $: {
     threadFrame: chrome.webviewTag.WebView,
-    composebox: ContextualTasksComposeboxElement,
     composeboxHeaderWrapper: HTMLElement,
     composeboxHeader: HTMLElement,
     flexCenterContainer: HTMLElement,
     nameShimmer: HTMLElement,
+    composebox: ContextualTasksComposeboxElement,
+    onboardingTooltip?: ContextualTasksOnboardingTooltipElement,
   };
 }
 
@@ -191,8 +194,15 @@ export class ContextualTasksAppElement extends CrLitElement {
       friendlyZeroStateTitleBeforeName_: {type: String},
       friendlyZeroStateTitleAfterName_: {type: String},
       occluders_: {type: Array},
+      showOnboardingTooltip_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('showOnboardingTooltip'),
+      },
     };
   }
+
+  protected accessor showOnboardingTooltip_: boolean =
+      loadTimeData.getBoolean('showOnboardingTooltip');
 
   protected accessor friendlyZeroStateGaiaName_: string =
       loadTimeData.getString('friendlyZeroStateGaiaName');
@@ -387,6 +397,11 @@ export class ContextualTasksAppElement extends CrLitElement {
       }),
     ];
 
+    // Track the tooltip visibility events fired from the composebox.
+    this.eventTracker_.add(
+        window, 'update-tooltip-visibility',
+        () => this.updateTooltipVisibility_());
+
     this.eventTracker_.add(window, 'popstate', async () => {
       // The back button may pop state that was pushed by a task change. If that
       // is the case, fetch the URL for the task ID and load that in the frame.
@@ -497,6 +512,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   override firstUpdated() {
     this.postMessageHandler_ =
         new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
+
+    this.updateTooltipVisibility_();
+
     this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
         this.onInputPlateBoundsUpdate_.bind(this));
 
@@ -532,6 +550,20 @@ export class ContextualTasksAppElement extends CrLitElement {
     // TODO(crbug.com/463729504): Add checking to see if dark mode changed.
     if (changedPrivateProperties.has('isShownInTab_')) {
       this.updateCommonSearchParams();
+    }
+  }
+
+  private updateTooltipVisibility_() {
+    // Tooltip not supported on Android. Therefore, make calls to this method
+    // a no-op.
+    const tooltip = this.$.onboardingTooltip;
+    const composeboxContainer = this.$.composebox;
+    if (!composeboxContainer) {
+      return;
+    }
+    const crComposebox = this.$.composebox.getComposebox();
+    if (tooltip && crComposebox) {
+      tooltip.updateTooltipVisibility(composeboxContainer, crComposebox);
     }
   }
 
@@ -908,6 +940,31 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   protected onErrorDialogClose_() {
     this.isErrorDialogVisible_ = false;
+  }
+
+  updateTooltipVisibilityForTesting() {
+    this.updateTooltipVisibility_();
+  }
+
+  // Onboarding tooltip is not supported on Android.
+  get numberOfTimesTooltipShownForTesting() {
+    return this.$.onboardingTooltip?.numberOfTimesTooltipShownForTesting ?? 0;
+  }
+
+  set numberOfTimesTooltipShownForTesting(n: number) {
+    if (this.$.onboardingTooltip) {
+      this.$.onboardingTooltip.numberOfTimesTooltipShownForTesting = n;
+    }
+  }
+
+  set userDismissedTooltipForTesting(dismissed: boolean) {
+    if (this.$.onboardingTooltip) {
+      this.$.onboardingTooltip.userDismissedTooltipForTesting = dismissed;
+    }
+  }
+
+  get tooltipResizeObserverForTesting() {
+    return this.$.onboardingTooltip?.tooltipResizeObserverForTesting ?? null;
   }
 
   private updateBasicModeAfterNavigation() {

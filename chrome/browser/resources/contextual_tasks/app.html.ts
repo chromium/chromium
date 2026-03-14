@@ -43,6 +43,10 @@ export function getHtml(this: ContextualTasksAppElement) {
               ${this.friendlyZeroStateSubtitle}` : ''}
       </h1>
     </div>
+    ${this.showOnboardingTooltip_ ? html`
+      <contextual-tasks-onboarding-tooltip id="onboardingTooltip">
+      </contextual-tasks-onboarding-tooltip>
+    ` : ''}
     <contextual-tasks-composebox id="composebox"
           style="${this.getComposeboxBoundsStyles()}"
           ?hidden="${this.enableBasicMode_ && this.isInBasicMode_ && !this.enableBasicModeZOrder_}"

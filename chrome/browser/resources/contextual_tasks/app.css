@@ -647,6 +647,11 @@ error-page {
   padding-inline-end: 2px;
 }
 
+
+#onboardingTooltip {
+  pointer-events: all;
+}
+
 .name-shimmer-dark {
   --bg-gradient: linear-gradient(
     to bottom,

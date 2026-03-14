@@ -178,10 +178,6 @@
   font-family: var(--google-sans-font);
 }
 
-#onboardingTooltip {
-  pointer-events: all;
-}
-
 #composebox::part(input-container) {
   --input-bottom-spacing: 12px;
   transition: padding-top var(--emphasized-curve);
