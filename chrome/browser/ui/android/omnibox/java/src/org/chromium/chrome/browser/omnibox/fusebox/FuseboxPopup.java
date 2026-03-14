@@ -48,6 +48,7 @@ class FuseboxPopup {
     /* package */ final Button mProButton;
     /* package */ final List<Button> mButtons;
     /* package */ final List<View> mDividers;
+    /* package */ final List<TextView> mHeaders;
 
     FuseboxPopup(Context context, AnchoredPopupWindow popupWindow, View contentView) {
         mPopupWindow = popupWindow;
@@ -95,6 +96,7 @@ class FuseboxPopup {
                         mAutoButton,
                         mProButton);
         mDividers = List.of(mToolsDivider, mModelsDivider);
+        mHeaders = List.of(mToolsHeader, mModelsHeader);
     }
 
     void show() {

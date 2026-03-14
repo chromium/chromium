@@ -17,6 +17,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -570,6 +571,13 @@ class FuseboxViewBinder {
             button.setTextAppearance(textAppearance);
             // Color filters applied to drawables will take precedence over this tint.
             button.setCompoundDrawableTintList(iconTint);
+        }
+
+        @StyleRes
+        int headerTextAppearance =
+                OmniboxResourceProvider.getPopupHeaderVisibilityTextRes(brandedColorScheme);
+        for (TextView header : view.popup.mHeaders) {
+            header.setTextAppearance(headerTextAppearance);
         }
 
         @ColorInt
