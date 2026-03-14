@@ -245,8 +245,9 @@ PdfInkUndoRedoModel::StartImpl() {
 
     // Find the lowest add command to discard.
     for (size_t i = stack_position_; i < commands_stack_.size(); ++i) {
-      if (GetCommandsType(commands_stack_[i]) == CommandsType::kAdd) {
-        const IdSet& id_set = GetAddCommands(commands).value();
+      const auto& current_commands = commands_stack_[i];
+      if (GetCommandsType(current_commands) == CommandsType::kAdd) {
+        const IdSet& id_set = GetAddCommands(current_commands).value();
         if (!id_set.empty()) {
           lowest_discard = *id_set.begin();
           break;

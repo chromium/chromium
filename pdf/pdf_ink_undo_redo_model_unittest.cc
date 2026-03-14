@@ -451,6 +451,27 @@ TEST(PdfInkUndoRedoModelTest, AddAddRemoveStrokesAndShapesUndoRedo) {
       ElementsAre(InkModeledShapeId(0), InkModeledShapeId(1), InkStrokeId(6)));
 }
 
+TEST(PdfInkUndoRedoModelTest, AddRemoveAddUndoUndoStartAdd) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkStrokeId(1)});
+
+  ASSERT_TRUE(undo_redo.StartRemove().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(1)));
+  ASSERT_TRUE(undo_redo.FinishRemove());
+
+  DoAddCommandsCycle(undo_redo, {InkStrokeId(2)});
+
+  ASSERT_EQ(kRemove, PdfInkUndoRedoModel::GetCommandsType(undo_redo.Undo()));
+  ASSERT_EQ(kAdd, PdfInkUndoRedoModel::GetCommandsType(undo_redo.Undo()));
+
+  // Discarded commands should be Remove(1), Add(2). The lowest discarded stroke
+  // ID is 2.
+  base::expected<std::optional<IdType>, std::monostate> lowest_discard =
+      undo_redo.StartAdd();
+  ASSERT_TRUE(lowest_discard.has_value());
+  EXPECT_THAT(lowest_discard.value(), Optional(InkStrokeId(2)));
+}
+
 TEST(PdfInkUndoRedoModelTest, Stress) {
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||         \
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
