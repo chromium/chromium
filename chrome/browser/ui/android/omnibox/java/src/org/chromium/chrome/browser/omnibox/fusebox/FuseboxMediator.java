@@ -57,6 +57,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -850,7 +851,40 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
     private void onInputStateChange(InputState inputState) {
         assert OmniboxFeatures.sShowModelPicker.getValue();
-        // TODO(https://crbug.com/480976526): Implement updates in response to input state.
+
+        boolean deepSearchVisible =
+                inputState.allowedTools.contains(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE);
+        boolean canvasVisible = inputState.allowedTools.contains(ToolMode.TOOL_MODE_CANVAS_VALUE);
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_VISIBLE, deepSearchVisible);
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_ENABLED,
+                !inputState.disabledTools.contains(ToolMode.TOOL_MODE_DEEP_SEARCH_VALUE));
+
+        mModel.set(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE, canvasVisible);
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_CANVAS_ENABLED,
+                !inputState.disabledTools.contains(ToolMode.TOOL_MODE_CANVAS_VALUE));
+
+        boolean autoVisible =
+                inputState.allowedModels.contains(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
+        boolean proVisible =
+                inputState.allowedModels.contains(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_AUTO_VISIBLE, autoVisible);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_AUTO_ENABLED,
+                !inputState.disabledModels.contains(
+                        ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE));
+
+        mModel.set(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE, proVisible);
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_PRO_ENABLED,
+                !inputState.disabledModels.contains(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE));
+
+        boolean anyModels = autoVisible || proVisible;
+        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, anyModels);
+        mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, anyModels);
     }
 
     private boolean trySetRequestType(@AutocompleteRequestType int requestType) {
