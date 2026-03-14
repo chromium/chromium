@@ -73,7 +73,12 @@ public class SiteSearchDialogCoordinator {
         mMediator.show(dialogModel);
     }
 
-    public void showRemoveDialog(TemplateUrl templateUrl) {
+    public void removeTemplateUrl(TemplateUrl templateUrl) {
+        if (!templateUrl.requiresDeletionConfirmation()) {
+            mTemplateUrlService.removeSearchEngine(templateUrl.getKeyword());
+            return;
+        }
+
         ModalDialogProperties.Controller dialogController =
                 createRemoveDialogController(templateUrl);
         PropertyModel dialogModel = createRemoveDialogModel(dialogController, templateUrl);

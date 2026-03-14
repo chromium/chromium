@@ -27,14 +27,17 @@ import java.util.List;
 @NullMarked
 public class CustomSearchEngineListMediator extends BaseSiteSearchMediator {
     private final Callback<TemplateUrl> mOnEditSearchEngine;
+    private final Callback<TemplateUrl> mOnRemoveSearchEngine;
 
     public CustomSearchEngineListMediator(
             Context context,
             ModelList modelList,
             Profile profile,
-            Callback<TemplateUrl> onEditSearchEngine) {
+            Callback<TemplateUrl> onEditSearchEngine,
+            Callback<TemplateUrl> onRemoveSearchEngine) {
         super(context, modelList, profile);
         mOnEditSearchEngine = onEditSearchEngine;
+        mOnRemoveSearchEngine = onRemoveSearchEngine;
 
         initializeTemplateUrlService();
     }
@@ -89,7 +92,7 @@ public class CustomSearchEngineListMediator extends BaseSiteSearchMediator {
         } else if (R.string.site_search_list_menu_make_default == textId) {
             mTemplateUrlService.setSearchEngine(url.getKeyword());
         } else if (R.string.site_search_list_menu_delete == textId) {
-            mTemplateUrlService.removeSearchEngine(url.getKeyword());
+            mOnRemoveSearchEngine.onResult(url);
         }
     }
 }

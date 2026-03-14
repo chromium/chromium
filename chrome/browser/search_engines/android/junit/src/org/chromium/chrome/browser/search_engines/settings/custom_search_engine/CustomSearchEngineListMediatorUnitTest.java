@@ -62,6 +62,7 @@ public class CustomSearchEngineListMediatorUnitTest {
     @Mock private TemplateUrl mTemplateUrl;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
+    @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
 
     private CustomSearchEngineListMediator mMediator;
 
@@ -90,7 +91,7 @@ public class CustomSearchEngineListMediatorUnitTest {
 
         mMediator =
                 new CustomSearchEngineListMediator(
-                        mContext, mModelList, mProfile, mOnEditSearchEngine);
+                        mContext, mModelList, mProfile, mOnEditSearchEngine, mOnRemoveSearchEngine);
     }
 
     @Test
@@ -161,7 +162,7 @@ public class CustomSearchEngineListMediatorUnitTest {
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, mTemplateUrl);
 
-        verify(mTemplateUrlService).removeSearchEngine(keyword);
+        verify(mOnRemoveSearchEngine).onResult(mTemplateUrl);
     }
 
     @Test

@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineLi
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
 import org.chromium.chrome.browser.search_engines.settings.dialog.SiteSearchDialogCoordinator;
-import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -63,7 +62,12 @@ public class CustomSearchEngineListCoordinator {
 
         mMediator =
                 new CustomSearchEngineListMediator(
-                        context, mModelList, profile, this::openEditDialog);
+                        context,
+                        mModelList,
+                        profile,
+                        /* onEditSearchEngine= */ mSiteSearchDialogCoordinator::showEditDialog,
+                        /* onRemoveSearchEngine= */ mSiteSearchDialogCoordinator
+                                ::removeTemplateUrl);
 
         mModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
@@ -81,9 +85,5 @@ public class CustomSearchEngineListCoordinator {
         mPropertyModelChangeProcessor.destroy();
         mMediator.destroy();
         mAdapter.destroy();
-    }
-
-    private void openEditDialog(TemplateUrl templateUrl) {
-        mSiteSearchDialogCoordinator.showEditDialog(templateUrl);
     }
 }

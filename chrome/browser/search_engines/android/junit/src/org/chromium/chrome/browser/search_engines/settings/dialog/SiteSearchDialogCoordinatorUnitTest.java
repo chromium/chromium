@@ -171,13 +171,21 @@ public class SiteSearchDialogCoordinatorUnitTest {
     }
 
     @Test
-    public void testShowRemoveDialog_Confirm() {
-        when(mTemplateUrl.getKeyword()).thenReturn("keyword");
-        when(mTemplateUrl.getShortName()).thenReturn("name");
-        when(mTemplateUrl.getURL()).thenReturn("https://test.com");
-        when(mTemplateUrl.getPrepopulatedId()).thenReturn(0);
+    public void testRemoveTemplateUrl_DialogNotNeeded() {
+        when(mTemplateUrl.requiresDeletionConfirmation()).thenReturn(false);
 
-        mCoordinator.showRemoveDialog(mTemplateUrl);
+        mCoordinator.removeTemplateUrl(mTemplateUrl);
+
+        verify(mModalDialogManager, never())
+                .showDialog(
+                        mDialogModelCaptor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+    }
+
+    @Test
+    public void testRemoveTemplateUrl_DialogShowAndConfirm() {
+        when(mTemplateUrl.requiresDeletionConfirmation()).thenReturn(true);
+
+        mCoordinator.removeTemplateUrl(mTemplateUrl);
 
         verify(mModalDialogManager)
                 .showDialog(
@@ -208,13 +216,10 @@ public class SiteSearchDialogCoordinatorUnitTest {
     }
 
     @Test
-    public void testShowRemoveDialog_Cancel() {
-        when(mTemplateUrl.getKeyword()).thenReturn("keyword");
-        when(mTemplateUrl.getShortName()).thenReturn("name");
-        when(mTemplateUrl.getURL()).thenReturn("https://test.com");
-        when(mTemplateUrl.getPrepopulatedId()).thenReturn(0);
+    public void testRemoveTemplateUrl_DialogCancel() {
+        when(mTemplateUrl.requiresDeletionConfirmation()).thenReturn(true);
 
-        mCoordinator.showRemoveDialog(mTemplateUrl);
+        mCoordinator.removeTemplateUrl(mTemplateUrl);
 
         verify(mModalDialogManager)
                 .showDialog(

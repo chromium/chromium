@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineLi
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
 import org.chromium.chrome.browser.search_engines.settings.dialog.SiteSearchDialogCoordinator;
-import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -36,19 +35,22 @@ public class CustomSiteSearchCoordinator {
             ModalDialogManager modalDialogManager) {
         mModelList = new ModelList();
         mAdapter = new CustomSiteSearchAdapter(context, mModelList);
-        mMediator =
-                new CustomSiteSearchMediator(
-                        context,
-                        mModelList,
-                        profile,
-                        this::openAddSearchEngineDialog,
-                        this::openEditSearchEngineDialog);
 
         mSiteSearchDialogCoordinator =
                 new SiteSearchDialogCoordinator(
                         context,
                         modalDialogManager,
                         TemplateUrlServiceFactory.getForProfile(profile));
+
+        mMediator =
+                new CustomSiteSearchMediator(
+                        context,
+                        mModelList,
+                        profile,
+                        /* onAddSearchEngine= */ mSiteSearchDialogCoordinator::showAddDialog,
+                        /* onEditSearchEngine= */ mSiteSearchDialogCoordinator::showEditDialog,
+                        /* onRemoveSearchEngine= */ mSiteSearchDialogCoordinator
+                                ::removeTemplateUrl);
 
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
@@ -66,13 +68,5 @@ public class CustomSiteSearchCoordinator {
         mPropertyModelChangeProcessor.destroy();
         mAdapter.destroy();
         mMediator.destroy();
-    }
-
-    private void openAddSearchEngineDialog() {
-        mSiteSearchDialogCoordinator.showAddDialog();
-    }
-
-    private void openEditSearchEngineDialog(TemplateUrl templateUrl) {
-        mSiteSearchDialogCoordinator.showEditDialog(templateUrl);
     }
 }

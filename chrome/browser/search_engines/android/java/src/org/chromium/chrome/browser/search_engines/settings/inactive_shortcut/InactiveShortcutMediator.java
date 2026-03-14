@@ -104,11 +104,11 @@ public class InactiveShortcutMediator extends ExpandableSiteSearchMediator {
 
     @VisibleForTesting
     void onMenuItemClicked(int textId, TemplateUrl url) {
-        if (textId == R.string.site_search_list_menu_activate) {
+        if (R.string.site_search_list_menu_activate == textId) {
             mTemplateUrlService.activateSearchEngine(url.getKeyword());
-        } else if (textId == R.string.site_search_list_menu_make_default) {
+        } else if (R.string.site_search_list_menu_make_default == textId) {
             mTemplateUrlService.setSearchEngine(url.getKeyword());
-        } else if (textId == R.string.site_search_list_menu_delete) {
+        } else if (R.string.site_search_list_menu_delete == textId) {
             mTemplateUrlService.removeSearchEngine(url.getKeyword());
         }
     }

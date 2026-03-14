@@ -31,16 +31,19 @@ import java.util.List;
 public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
     private final Runnable mOnAddSearchEngine;
     private final Callback<TemplateUrl> mOnEditSearchEngine;
+    private final Callback<TemplateUrl> mOnRemoveSearchEngine;
 
     public CustomSiteSearchMediator(
             Context context,
             ModelList modelList,
             Profile profile,
             Runnable onAddSearchEngine,
-            Callback<TemplateUrl> onEditSearchEngine) {
+            Callback<TemplateUrl> onEditSearchEngine,
+            Callback<TemplateUrl> onRemoveSearchEngine) {
         super(context, modelList, profile);
         mOnAddSearchEngine = onAddSearchEngine;
         mOnEditSearchEngine = onEditSearchEngine;
+        mOnRemoveSearchEngine = onRemoveSearchEngine;
 
         initializeTemplateUrlService();
     }
@@ -121,14 +124,14 @@ public class CustomSiteSearchMediator extends ExpandableSiteSearchMediator {
 
     @VisibleForTesting
     void onMenuItemClicked(int textId, TemplateUrl url) {
-        if (textId == R.string.site_search_list_menu_edit) {
+        if (R.string.site_search_list_menu_edit == textId) {
             mOnEditSearchEngine.onResult(url);
-        } else if (textId == R.string.site_search_list_menu_make_default) {
+        } else if (R.string.site_search_list_menu_make_default == textId) {
             mTemplateUrlService.setSearchEngine(url.getKeyword());
-        } else if (textId == R.string.site_search_list_menu_deactivate) {
+        } else if (R.string.site_search_list_menu_deactivate == textId) {
             mTemplateUrlService.deactivateSearchEngine(url.getKeyword());
-        } else if (textId == R.string.site_search_list_menu_delete) {
-            mTemplateUrlService.removeSearchEngine(url.getKeyword());
+        } else if (R.string.site_search_list_menu_delete == textId) {
+            mOnRemoveSearchEngine.onResult(url);
         }
     }
 
