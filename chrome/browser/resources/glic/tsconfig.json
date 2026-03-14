@@ -1,0 +1,18 @@
+{
+  // This configuration is for editors, not for building.
+  // Note, you can use a symlink to point Default to your preferred directory.
+  "extends": "../../../../out/Default/gen/chrome/browser/resources/glic/tsconfig_build_ts.json",
+  "compilerOptions": {
+    "rootDir": "../../../..",
+    "rootDirs": [
+      ".",
+      "../../../../out/Default/gen/chrome/browser/resources/glic/preprocessed"
+    ],
+    "noEmit": true
+  },
+  "include": [
+    "./**/*.ts",
+    "../../../../tools/typescript/definitions/*.d.ts"
+  ],
+  "files": []
+}

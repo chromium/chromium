@@ -1,0 +1,24 @@
+{
+  // This config is for text editors, not building.
+  // Note, you can use a symlink to point Default to your preferred directory.
+  "extends": "../../../../../out/Default/gen/chrome/test/data/webui/glic/tsconfig_build_extra_ts.json",
+   "compilerOptions": {
+    "rootDir": "../../../../..",
+    "rootDirs": [
+      ".",
+      "../../../../../out/Default/gen/chrome/test/data/webui/glic/preprocessed",
+    ],
+    "paths": {
+      "/glic/*": [
+        "../../../../../chrome/browser/resources/glic/*"
+      ]
+    },
+    "noEmit": true
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "./unit_tests/**/*.ts"
+  ]
+}
