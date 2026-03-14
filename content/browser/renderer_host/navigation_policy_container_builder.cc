@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
@@ -122,6 +123,17 @@ void NavigationPolicyContainerBuilder::SetIsOriginPotentiallyTrustworthy(
 void NavigationPolicyContainerBuilder::SetCrossOriginIsolationEnabledByDIP() {
   DCHECK(HasComputedPolicies());
   host_->SetCrossOriginIsolationEnabledByDIP();
+}
+
+void NavigationPolicyContainerBuilder::SetCrossOriginIsolationKeyOverride(
+    const AgentClusterKey::CrossOriginIsolationKey& coi_key) {
+  // This should only be used after having computed policies and when no
+  // SiteIsolation is available, nor SiteInstanceGroups.
+  DCHECK(HasComputedPolicies());
+  CHECK(!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
+        !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+        !ShouldUseDefaultSiteInstanceGroup());
+  host_->set_cross_origin_isolation_key_override(coi_key);
 }
 
 void NavigationPolicyContainerBuilder::AddContentSecurityPolicy(

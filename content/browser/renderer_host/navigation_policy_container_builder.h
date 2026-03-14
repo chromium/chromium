@@ -135,6 +135,14 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called after `ComputePolicies()`.
   void SetCrossOriginIsolationEnabledByDIP();
 
+  // Sets an override of the CrossOriginIsolationKey for the context. This
+  // should only be used when no form of SiteInstance switching is available
+  // (i.e. on Android WebView) and after `ComputePolicies()` has been called.
+  // TODO(crbug.com/419595581): Remove this once default SiteInstanceGroups
+  // ships on Android WebView.
+  void SetCrossOriginIsolationKeyOverride(
+      const AgentClusterKey::CrossOriginIsolationKey& coi_key);
+
   // Records an additional Content Security Policy that will apply to the new
   // document. `policy` must not be null. Policies added this way are ignored
   // for failed navigations and history navigations.

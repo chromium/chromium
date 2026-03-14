@@ -140,7 +140,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     network::mojom::WebSandboxFlags sandbox_flags,
     bool is_credentialless,
     bool can_navigate_top_without_user_gesture,
-    bool cross_origin_isolation_enabled_by_dip)
+    bool cross_origin_isolation_enabled_by_dip,
+    const std::optional<AgentClusterKey::CrossOriginIsolationKey>& coi_key)
     : referrer_policy(referrer_policy),
       ip_address_space(ip_address_space),
       allow_non_secure_local_network_access(
@@ -151,6 +152,7 @@ PolicyContainerPolicies::PolicyContainerPolicies(
       cross_origin_opener_policy(cross_origin_opener_policy),
       cross_origin_embedder_policy(cross_origin_embedder_policy),
       document_isolation_policy(document_isolation_policy),
+      cross_origin_isolation_key_override(coi_key),
       integrity_policy(std::move(integrity_policy)),
       integrity_policy_report_only(std::move(integrity_policy_report_only)),
       sandbox_flags(sandbox_flags),
@@ -177,7 +179,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
                               policies.sandbox_flags,
                               policies.is_credentialless,
                               policies.can_navigate_top_without_user_gesture,
-                              policies.cross_origin_isolation_enabled_by_dip) {}
+                              policies.cross_origin_isolation_enabled_by_dip,
+                              /*coi_key=*/std::nullopt) {}
 
 PolicyContainerPolicies::PolicyContainerPolicies(
     const GURL& url,
@@ -198,7 +201,8 @@ PolicyContainerPolicies::PolicyContainerPolicies(
           network::mojom::WebSandboxFlags::kNone,
           /*is_credentialless=*/false,
           /*can_navigate_top_without_user_gesture=*/true,
-          /*cross_origin_isolation_enabled_by_dip=*/false) {
+          /*cross_origin_isolation_enabled_by_dip=*/false,
+          /*coi_key=*/std::nullopt) {
   for (auto& content_security_policy :
        response_head->parsed_headers->content_security_policy) {
     sandbox_flags |= content_security_policy->sandbox;
@@ -221,7 +225,8 @@ PolicyContainerPolicies PolicyContainerPolicies::Clone() const {
       cross_origin_embedder_policy, mojo::Clone(document_isolation_policy),
       integrity_policy, integrity_policy_report_only, sandbox_flags,
       is_credentialless, can_navigate_top_without_user_gesture,
-      cross_origin_isolation_enabled_by_dip);
+      cross_origin_isolation_enabled_by_dip,
+      cross_origin_isolation_key_override);
 }
 
 std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::ClonePtr()

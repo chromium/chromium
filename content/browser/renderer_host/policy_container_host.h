@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "content/browser/agent_cluster_key.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -51,7 +52,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       network::mojom::WebSandboxFlags sandbox_flags,
       bool is_credentialless,
       bool can_navigate_top_without_user_gesture,
-      bool cross_origin_isolation_enabled_by_dip);
+      bool cross_origin_isolation_enabled_by_dip,
+      const std::optional<AgentClusterKey::CrossOriginIsolationKey>& coi_key);
 
   explicit PolicyContainerPolicies(
       const blink::mojom::PolicyContainerPolicies& policies,
@@ -141,6 +143,16 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // See:
   // https://github.com/explainers-by-googlers/document-isolation-policy
   network::DocumentIsolationPolicy document_isolation_policy;
+
+  // This is used on Android WebView, as Android WebView currently does not
+  // support any kind of SiteInstance switching. So we cannot rely on the
+  // AgentClusterKey in the SiteInstance to properly track the cross-origin
+  // isolation state, and instead rely on an override stored in the
+  // PolicyContainer.
+  // TODO(crbug.com/419595581): Remove this once default SiteInstanceGroups
+  // ships on Android WebView.
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+      cross_origin_isolation_key_override;
 
   network::IntegrityPolicy integrity_policy;
   network::IntegrityPolicy integrity_policy_report_only;
@@ -286,6 +298,13 @@ class CONTENT_EXPORT PolicyContainerHost
 
   void SetCrossOriginIsolationEnabledByDIP() {
     policies_.cross_origin_isolation_enabled_by_dip = true;
+  }
+
+  // TODO(crbug.com/419595581): Remove this once default SiteInstanceGroups
+  // ships on Android WebView.
+  void set_cross_origin_isolation_key_override(
+      const AgentClusterKey::CrossOriginIsolationKey& coi_key) {
+    policies_.cross_origin_isolation_key_override = coi_key;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending

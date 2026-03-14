@@ -4149,6 +4149,17 @@ void NavigationRequest::DetermineAgentClusterKeyForCommit() {
         /*cross_origin_isolated_through_dip=*/false);
   }
 
+  // If the PolicyContainer has an override for the CrossOriginIsolationKey,
+  // apply it. This happens on Android WebView, where it is currently impossible
+  // to switch SiteInstances and we cannot rely on SiteInstances to track the
+  // cross-origin isolation state.
+  // TODO(crbug.com/419595581): Remove this once default SiteInstanceGroups
+  // ships on Android WebView.
+  if (const auto& override_key = policy_container_builder_->FinalPolicies()
+                                     .cross_origin_isolation_key_override) {
+    coi_key = *override_key;
+  }
+
   // Update the AgentClusterKey in CommitNavigationParams to the correct
   // AgentClusterKey to use for navigation. Unfortunately, we cannot use the
   // AgentClusterKey of the SiteInstance directly, as there are many edge cases
@@ -4327,10 +4338,6 @@ UrlInfo NavigationRequest::GetUrlInfo() {
                 IsProcessIsolationForOriginAgentClusterEnabled());
   }
 
-  // Compute the CrossOriginIsolationKey for the navigation.
-  std::optional<AgentClusterKey::CrossOriginIsolationKey>
-      cross_origin_isolation_key = ComputeCrossOriginIsolationKey();
-
   // Compute the WebExposedIsolationInfo that will be bundled into UrlInfo.
   auto web_exposed_isolation_info = ComputeWebExposedIsolationInfo();
 
@@ -4338,8 +4345,27 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   url_info_init.WithOACHeaderRequest(oac_header_request)
       .WithCOOPSiteIsolation(ShouldRequestSiteIsolationForCOOP())
       .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-      .WithCrossOriginIsolationKey(cross_origin_isolation_key)
       .WithIsPdf(is_pdf_);
+
+  // Compute the CrossOriginIsolationKey for the navigation.
+  std::optional<AgentClusterKey::CrossOriginIsolationKey>
+      cross_origin_isolation_key = ComputeCrossOriginIsolationKey();
+
+  // If the process model supports SiteInstance switching, pass the
+  // CrossOriginIsolationKey to the URLinfo.
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
+      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
+      ShouldUseDefaultSiteInstanceGroup()) {
+    url_info_init.WithCrossOriginIsolationKey(cross_origin_isolation_key);
+  } else if (cross_origin_isolation_key.has_value()) {
+    // On Android WebView, we cannot switch SiteInstances. Instead of passing
+    // the CrossOriginIsolationKey to URLInfo to have it be used to select a
+    // SiteInstance, we store it in the PolicyContainer. It will be picked up in
+    // DetermineCrossOriginIsolationKey for commit, and sent to the renderer
+    // process.
+    policy_container_builder_->SetCrossOriginIsolationKeyOverride(
+        cross_origin_isolation_key.value());
+  }
 
   // Navigations with SiteInstances which have fixed storage partition (e.g.
   // <webview> tags) should always stay in the current StoragePartition.
@@ -11154,6 +11180,12 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
   // if the navigation is same-origin.
   if (!policy_container_builder_->HasComputedPolicies()) {
     if (origin.IsSameOriginWith(frame_tree_node_->current_origin())) {
+      // Note: we do not return the override CrossOriginIsolationKey of the
+      // PolicyContainer here because it is only set in contexts where
+      // SiteInstance switching is impossible (Android WebView). In those cases,
+      // spurious speculative RFHs are never created, and it is fine to just
+      // return the CrossOriginIsolationKey of the SiteInstance, which should
+      // always be null.
       return frame_tree_node_->current_frame_host()
           ->GetSiteInstance()
           ->GetSiteInfo()
@@ -12203,20 +12235,13 @@ void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
       SiteIsolationPolicy::UseDedicatedProcessesForAllSites();
 
   // When kDocumentIsolationPolicyWithoutSiteIsolation is enabled,
-  // DocumentIsolationPolicy is also supported in some modes without full
-  // SiteIsolation.
+  // DocumentIsolationPolicy is also supported without full SiteIsolation.
   if (base::FeatureList::IsEnabled(
           features::kDocumentIsolationPolicyWithoutSiteIsolation)) {
-    // DocumentIsolationPolicy is supported in partial SiteIsolation mode.
-    document_isolation_policy_supported |=
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled();
-
-    // DocumentIsolationPolicy is supported in no-SiteIsolation mode iff
-    // default SiteInstanceGroups are enabled.
-    document_isolation_policy_supported |= ShouldUseDefaultSiteInstanceGroup();
+    document_isolation_policy_supported = true;
   }
 
-  // If the process model cannot support DocumentIoslationPolicy, set the header
+  // If the process model cannot support DocumentIsolationPolicy, set the header
   // to its default value.
   if (!document_isolation_policy_supported) {
     response_head_->parsed_headers->document_isolation_policy =
