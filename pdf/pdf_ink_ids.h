@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <variant>
+
 #include "base/types/strong_alias.h"
 
 // Defines various IDs used for PDF Ink Signatures. The IDs use
@@ -19,6 +21,25 @@ using InkModeledShapeId = base::StrongAlias<class InkModeledShapeIdTag, size_t>;
 
 // Identifies ink::Stroke objects.
 using InkStrokeId = base::StrongAlias<class InkStrokeIdTag, size_t>;
+
+// Set of all IDs.
+using IdType = std::variant<InkStrokeId, InkModeledShapeId>;
+
+// Returns the underlying value of an IdType.
+size_t GetIdTypeValue(const IdType& id);
+
+// Compares IdTypes by their underlying values, breaking ties by comparing their
+// index.
+struct IdTypeComparator {
+  bool operator()(const IdType& lhs, const IdType& rhs) const {
+    const size_t lhs_value = GetIdTypeValue(lhs);
+    const size_t rhs_value = GetIdTypeValue(rhs);
+    if (lhs_value != rhs_value) {
+      return lhs_value < rhs_value;
+    }
+    return lhs.index() < rhs.index();
+  }
+};
 
 }  // namespace chrome_pdf
 

@@ -31,30 +31,6 @@ class PdfInkUndoRedoModel {
     kRemove,
   };
 
-  // Set of IDs to add/remove. There are multiple types of IDs:
-  // - `InkStrokeId` is for strokes that are first drawn, and maybe removed
-  //   later.
-  // - `InkModeledShapeId` is for modeled shapes that are pre-existing and can
-  //   be removed.
-  using IdType = std::variant<InkStrokeId, InkModeledShapeId>;
-
-  // Used to enforce adding IDs in increasing order.
-  struct IdTypeComparator {
-    bool operator()(const IdType& lhs, const IdType& rhs) const {
-      const size_t lhs_value = GetValue(lhs);
-      const size_t rhs_value = GetValue(rhs);
-      if (lhs_value != rhs_value) {
-        return lhs_value < rhs_value;
-      }
-      return lhs.index() < rhs.index();
-    }
-
-   private:
-    static size_t GetValue(const IdType& id) {
-      return std::visit([](const auto& v) { return v.value(); }, id);
-    }
-  };
-
   using IdSet = std::set<IdType, IdTypeComparator>;
   using AddCommands = base::StrongAlias<class AddCommandsTag, IdSet>;
   using RemoveCommands = base::StrongAlias<class RemoveCommandsTag, IdSet>;

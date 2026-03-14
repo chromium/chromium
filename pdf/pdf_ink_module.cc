@@ -1666,7 +1666,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
 
   std::set<InkStrokeId> stroke_ids;
   std::set<InkModeledShapeId> shape_ids;
-  for (const PdfInkUndoRedoModel::IdType& id : ids) {
+  for (const IdType& id : ids) {
     bool inserted;
     if (std::holds_alternative<InkStrokeId>(id)) {
       inserted = stroke_ids.insert(std::get<InkStrokeId>(id)).second;

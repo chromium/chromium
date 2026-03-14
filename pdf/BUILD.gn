@@ -273,6 +273,7 @@ if (enable_pdf) {
         "pdf_ink_conversions.h",
         "pdf_ink_cursor.cc",
         "pdf_ink_cursor.h",
+        "pdf_ink_ids.cc",
         "pdf_ink_ids.h",
         "pdf_ink_metrics_handler.cc",
         "pdf_ink_metrics_handler.h",
