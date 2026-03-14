@@ -37,7 +37,7 @@ TEST_F(SVGFilterElementSimTest,
   const wtf_size_t cut_offset = document_text.find("<feFlood");
   ASSERT_NE(cut_offset, kNotFound);
 
-  main_resource.Write(document_text.Left(cut_offset));
+  main_resource.Write(document_text.substr(0, cut_offset));
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
@@ -49,7 +49,7 @@ TEST_F(SVGFilterElementSimTest,
   ASSERT_FALSE(target->NeedsPaintPropertyUpdate());
   EXPECT_NE(nullptr, target->FirstFragment().PaintProperties()->Filter());
 
-  main_resource.Complete(document_text.Right(cut_offset));
+  main_resource.Complete(document_text.substr(cut_offset));
 
   ASSERT_TRUE(target->NeedsPaintPropertyUpdate());
 }
