@@ -22,6 +22,9 @@ void MainGap::AddGapSegmentStateRange(
   if (!HasGapSegmentStateRanges()) {
     gap_segment_state_ranges_ = GapSegmentStateRanges();
   }
+  if (gap_segment_state_range.state.HasGapStatus(GapSegmentState::kBlocked)) {
+    has_blocked_range_ = true;
+  }
   gap_segment_state_ranges_->emplace_back(gap_segment_state_range);
 }
 

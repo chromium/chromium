@@ -199,7 +199,10 @@ class CORE_EXPORT GridLayoutTrackCollection
   LayoutUnit MajorBaseline(wtf_size_t set_index) const;
   LayoutUnit MinorBaseline(wtf_size_t set_index) const;
 
-  // Increase by |delta| the offset of every set with index > |set_index|.
+  // Increase by `delta` the offset of the set at `set_index`.
+  void AdjustSingleSetOffset(wtf_size_t set_index, LayoutUnit delta);
+
+  // Increase by `delta` the offset of all sets starting from `set_index`.
   void AdjustSetOffsets(wtf_size_t set_index, LayoutUnit delta);
 
   // Returns the total size of all sets in the collection.

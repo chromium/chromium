@@ -579,11 +579,18 @@ LayoutUnit GridLayoutTrackCollection::MinorBaseline(
   return baselines_->minor[set_index];
 }
 
+void GridLayoutTrackCollection::AdjustSingleSetOffset(wtf_size_t set_index,
+                                                      LayoutUnit delta) {
+  DCHECK_LT(set_index, sets_geometry_.size());
+  sets_geometry_[set_index].offset += delta;
+}
+
 void GridLayoutTrackCollection::AdjustSetOffsets(wtf_size_t set_index,
                                                  LayoutUnit delta) {
   DCHECK_LT(set_index, sets_geometry_.size());
-  for (wtf_size_t i = set_index; i < sets_geometry_.size(); ++i)
-    sets_geometry_[i].offset += delta;
+  for (wtf_size_t i = set_index; i < sets_geometry_.size(); ++i) {
+    AdjustSingleSetOffset(i, delta);
+  }
 }
 
 LayoutUnit GridLayoutTrackCollection::CalculateSetSpanSize() const {

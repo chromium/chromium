@@ -2402,19 +2402,30 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     }
   };
 
-  // Adjust by |delta| the pre-computed item-offset for all grid items with a
-  // row begin index greater or equal than |row_index|.
-  auto AdjustItemOffsets = [&](wtf_size_t row_index, LayoutUnit delta) {
+  // Adjust by `delta` the pre-computed item-offset for grid items whose row
+  // begin index matches `row_index`. If `exact_match` is true, only items
+  // starting exactly at `row_index` are adjusted; otherwise all items at or
+  // after `row_index` are adjusted.
+  auto AdjustItemOffsets = [&](wtf_size_t row_index, LayoutUnit delta,
+                               bool exact_match = false) {
     auto current_item = grid_items.begin();
 
     for (auto& item_placement_data : *grid_items_placement_data) {
-      if (row_index <= (current_item++)->SetIndices(kForRows).begin)
+      const wtf_size_t item_row = (current_item++)->SetIndices(kForRows).begin;
+      if (exact_match ? (item_row == row_index) : (item_row >= row_index)) {
         item_placement_data.offset.block_offset += delta;
+      }
     }
   };
 
   // Adjust our grid break-token data to accommodate the larger item in the row.
   // Returns true if this function adjusted the break-token data in any way.
+  //
+  // TODO(crbug.com/491881353): The expansion logic and changes that may
+  // occur as a result are not currently propagated to subgrids, which means
+  // we may end up breaking the alignment contract for the subgrid if the
+  // parent's track sizes/positions change. Figure out a way to propagate this
+  // information to subgrids.
   auto ExpandRow = [&]() -> bool {
     if (max_row_expansion == 0)
       return false;
@@ -2501,8 +2512,15 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
     // Determines whether the last placed gap needs to be suppressed because it
     // crosses the fragmentainer boundary or is the last content.
+    //
+    // TODO(crbug.com/491881353): The expansion due to suppression logic and
+    // changes that may occur as a result are not currently propagated to
+    // subgrids, which means we may end up breaking the alignment contract for
+    // the subgrid if the parent's track sizes/positions change. Figure out a
+    // way to propagate this information to subgrids.
     auto MaybeSuppressLastGap = [&](wtf_size_t row_set_idx_for_gap) {
       CHECK(!fragment_main_gaps.empty());
+
       LayoutUnit last_gap_end_offset =
           fragment_main_gaps.back().GetGapOffset() + half_row_gap_size;
 
@@ -2525,14 +2543,32 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       // the fragmentainer space.
       if (next_row_offset >= fragmentainer_space ||
           last_gap_end_offset >= fragmentainer_space) {
-        fragment_main_gaps.pop_back();
         LayoutUnit spillover_delta =
             (last_gap_end_offset - fragmentainer_space).ClampNegativeToZero();
+
         if (spillover_delta > LayoutUnit()) {
-          *cumulative_gap_offset_adjustment -= spillover_delta;
-          *intrinsic_block_size -= spillover_delta;
-          AdjustItemOffsets(row_set_idx_for_gap + 1, -spillover_delta);
+          const wtf_size_t target_row = row_set_idx_for_gap + 1;
+          bool suppression_affects_single_row = false;
+
+          // When a spanning item crosses this gap, we can't suppress it by
+          // removing the gap space, since that means taking a chunk of the
+          // spanning item. Instead, we suppress the gap by expanding the next
+          // row upward to consume the spillover gutter above it, keeping a 0px
+          // gap while preserving the spanning item's geometry.
+          if (fragment_main_gaps.back().HasBlockedRange()) {
+            suppression_affects_single_row = true;
+            layout_data.Rows().AdjustSingleSetOffset(target_row,
+                                                     -spillover_delta);
+          } else {
+            // No spanning item (i.e. normal suppression), so remove the gap
+            // space.
+            *cumulative_gap_offset_adjustment -= spillover_delta;
+            *intrinsic_block_size -= spillover_delta;
+          }
+          AdjustItemOffsets(row_set_idx_for_gap + 1, -spillover_delta,
+                            suppression_affects_single_row);
         }
+        fragment_main_gaps.pop_back();
       }
     };
 
