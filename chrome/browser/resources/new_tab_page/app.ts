@@ -1471,6 +1471,11 @@ export class AppElement extends AppElementBase {
     this.showUndoToast_(undoToastContext);
   }
 
+  protected onActionChipsDisabled_(
+      undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
+    this.showUndoToast_(undoToastContext);
+  }
+
   protected showUndoToast_(
       undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
     this.pendingUndoToasts_.push(undoToastContext.detail);

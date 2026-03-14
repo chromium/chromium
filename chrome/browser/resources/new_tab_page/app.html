@@ -91,7 +91,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     <ntp-action-chips
         ?show-background="${this.showActionChipsBackground_()}"
         @action-chip-click="${this.onActionChipClick_}"
-        @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}">
+        @action-chips-retrieval-state-changed="${this.onActionChipsRetrievalStateChanged_}"
+        @action-chips-disabled="${this.onActionChipsDisabled_}">
     </ntp-action-chips>
   ` : ''}
   ${this.lazyRender_ ? html`
@@ -129,7 +130,8 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         </ntp-modules>
       `}
     ` : ''}
-    ${this.shortcutsEnabled_ || this.modulesEnabled_ ? html`
+    ${this.shortcutsEnabled_ || this.modulesEnabled_ ||
+      this.ntpNextFeaturesEnabled_ ? html`
       <cr-toast id="undoToast" duration="10000">
         <div id="undoToastMessage">${this.undoToastMessage_ || ''}</div>
         <cr-button id="undoButton"
