@@ -573,6 +573,18 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_DIALOG_INPUT_NOT_VALID_ERROR" desc="Error message shown when a required field is not valid in the Edit Site Search dialog.">
         Not valid
       </message>
+      <message name="IDS_DELETE_SEARCH_ENGINE_DIALOG_TITLE" desc="Title for the delete search engine dialog.">
+        Delete search engine
+      </message>
+      <message name="IDS_DELETE_SEARCH_ENGINE_DIALOG_MESSAGE" desc="Message for the delete search engine dialog.">
+        Are you sure you want to delete this search engine?
+      </message>
+      <message name="IDS_DELETE_SEARCH_ENGINE_DIALOG_DELETE" desc="Label used on a button to delete the search engine.">
+        Delete
+      </message>
+      <message name="IDS_DELETE_SEARCH_ENGINE_DIALOG_CANCEL" desc="Label used on a button to cancel action">
+        Cancel
+      </message>
 
 
 
