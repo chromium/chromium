@@ -15,10 +15,13 @@ namespace blink {
 WebGLSync::WebGLSync(WebGLContextObjectSupport* ctx,
                      GLuint object,
                      GLenum object_type)
-    : WebGLObject(ctx),
-      sync_status_(GL_UNSIGNALED),
-      object_type_(object_type),
-      task_runner_(ctx->GetContextTaskRunner()) {
+    : WebGLObject(ctx), sync_status_(GL_UNSIGNALED), object_type_(object_type) {
+  if (!ctx || ctx->IsLost()) {
+    return;
+  }
+
+  task_runner_ = ctx->GetContextTaskRunner();
+
   SetObject(object);
   ScheduleAllowCacheUpdate();
 }

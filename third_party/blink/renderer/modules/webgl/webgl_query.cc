@@ -17,13 +17,16 @@ WebGLQuery::WebGLQuery(WebGLContextObjectSupport* ctx)
       target_(0),
       can_update_availability_(false),
       query_result_available_(false),
-      query_result_(0),
-      task_runner_(ctx->GetContextTaskRunner()) {
-  if (!ctx->IsLost()) {
-    GLuint query;
-    ctx->ContextGL()->GenQueriesEXT(1, &query);
-    SetObject(query);
+      query_result_(0) {
+  if (!ctx || ctx->IsLost()) {
+    return;
   }
+
+  task_runner_ = ctx->GetContextTaskRunner();
+
+  GLuint query;
+  ctx->ContextGL()->GenQueriesEXT(1, &query);
+  SetObject(query);
 }
 
 WebGLQuery::~WebGLQuery() = default;
