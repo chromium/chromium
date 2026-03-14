@@ -74,19 +74,19 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   const size_t remainder = fifo_length_ - index_write_;
 
   for (unsigned i = 0; i < fifo_bus_->NumberOfChannels(); ++i) {
-    float* fifo_bus_channel = fifo_bus_->Channel(i)->MutableData();
-    const float* input_bus_channel = input_bus->Channel(i)->Data();
+    base::span<float> fifo_bus_channel = fifo_bus_->Channel(i)->MutableSpan();
+    base::span<const float> input_bus_channel = input_bus->Channel(i)->Span();
     if (remainder >= input_bus_length) {
       // The remainder is big enough for the input data.
-      UNSAFE_TODO(memcpy(fifo_bus_channel + index_write_, input_bus_channel,
-                         input_bus_length * sizeof(*fifo_bus_channel)));
+      fifo_bus_channel.subspan(index_write_, input_bus_length)
+          .copy_from(input_bus_channel.first(input_bus_length));
     } else {
       // The input data overflows the remainder size. Wrap around the index.
-      UNSAFE_TODO(memcpy(fifo_bus_channel + index_write_, input_bus_channel,
-                         remainder * sizeof(*fifo_bus_channel)));
-      UNSAFE_TODO(
-          memcpy(fifo_bus_channel, input_bus_channel + remainder,
-                 (input_bus_length - remainder) * sizeof(*fifo_bus_channel)));
+      fifo_bus_channel.subspan(index_write_, remainder)
+          .copy_from(input_bus_channel.first(remainder));
+      fifo_bus_channel.first(input_bus_length - remainder)
+          .copy_from(input_bus_channel.subspan(remainder,
+                                               input_bus_length - remainder));
     }
   }
 
@@ -163,30 +163,30 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
   const size_t frames_to_fill = std::min(frames_available_, frames_requested);
 
   for (unsigned i = 0; i < fifo_bus_->NumberOfChannels(); ++i) {
-    const float* fifo_bus_channel = fifo_bus_->Channel(i)->Data();
-    float* output_bus_channel = output_bus->Channel(i)->MutableData();
+    base::span<const float> fifo_bus_channel = fifo_bus_->Channel(i)->Span();
+    base::span<float> output_bus_channel =
+        output_bus->Channel(i)->MutableSpan();
 
     // Fill up the output bus with the available frames first.
     if (remainder >= frames_to_fill) {
       // The remainder is big enough for the frames to pull.
-      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-                         frames_to_fill * sizeof(*fifo_bus_channel)));
+      output_bus_channel.first(frames_to_fill)
+          .copy_from(fifo_bus_channel.subspan(index_read_, frames_to_fill));
     } else {
       // The frames to pull is bigger than the remainder size.
       // Wrap around the index.
-      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-                         remainder * sizeof(*fifo_bus_channel)));
-      UNSAFE_TODO(
-          memcpy(output_bus_channel + remainder, fifo_bus_channel,
-                 (frames_to_fill - remainder) * sizeof(*fifo_bus_channel)));
+      output_bus_channel.first(remainder).copy_from(
+          fifo_bus_channel.subspan(index_read_, remainder));
+      output_bus_channel.subspan(remainder, frames_to_fill - remainder)
+          .copy_from(fifo_bus_channel.first(frames_to_fill - remainder));
     }
 
     // The frames available was not enough to fulfill the requested frames. Fill
     // the rest of the channel with silence.
     if (frames_requested > frames_to_fill) {
-      UNSAFE_TODO(memset(
-          output_bus_channel + frames_to_fill, 0,
-          (frames_requested - frames_to_fill) * sizeof(*output_bus_channel)));
+      std::ranges::fill(output_bus_channel.subspan(
+                            frames_to_fill, frames_requested - frames_to_fill),
+                        0.0f);
     }
   }
 
@@ -271,9 +271,9 @@ PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmark(
     // Note that it silences when underrun happens now, and ship the remaining
     // frames in subsequent callbacks without silence in between.
     for (unsigned i = 0; i < fifo_bus_->NumberOfChannels(); ++i) {
-      float* output_bus_channel = output_bus->Channel(i)->MutableData();
-      UNSAFE_TODO(memset(output_bus_channel, 0,
-                         frames_requested * sizeof(*output_bus_channel)));
+      base::span<float> output_bus_channel =
+          output_bus->Channel(i)->MutableSpan();
+      std::ranges::fill(output_bus_channel.first(frames_requested), 0.0f);
     }
 
     // No frames were pulled; the producer (WebAudio) needs to prepare the next
@@ -286,22 +286,22 @@ PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmark(
   const uint32_t frames_to_fill = std::min(frames_available_, frames_requested);
 
   for (unsigned i = 0; i < fifo_bus_->NumberOfChannels(); ++i) {
-    const float* fifo_bus_channel = fifo_bus_->Channel(i)->Data();
-    float* output_bus_channel = output_bus->Channel(i)->MutableData();
+    base::span<const float> fifo_bus_channel = fifo_bus_->Channel(i)->Span();
+    base::span<float> output_bus_channel =
+        output_bus->Channel(i)->MutableSpan();
 
     // Fill up the output bus with the available frames first.
     if (remainder >= frames_to_fill) {
       // The remainder is big enough for the frames to pull.
-      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-                         frames_to_fill * sizeof(*fifo_bus_channel)));
+      output_bus_channel.first(frames_to_fill)
+          .copy_from(fifo_bus_channel.subspan(index_read_, frames_to_fill));
     } else {
       // The frames to pull is bigger than the remainder size.
       // Wrap around the index.
-      UNSAFE_TODO(memcpy(output_bus_channel, fifo_bus_channel + index_read_,
-                         remainder * sizeof(*fifo_bus_channel)));
-      UNSAFE_TODO(
-          memcpy(output_bus_channel + remainder, fifo_bus_channel,
-                 (frames_to_fill - remainder) * sizeof(*fifo_bus_channel)));
+      output_bus_channel.first(remainder).copy_from(
+          fifo_bus_channel.subspan(index_read_, remainder));
+      output_bus_channel.subspan(remainder, frames_to_fill - remainder)
+          .copy_from(fifo_bus_channel.first(frames_to_fill - remainder));
     }
   }
 
