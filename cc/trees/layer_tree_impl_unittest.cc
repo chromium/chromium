@@ -2222,6 +2222,190 @@ TEST_F(LayerTreeImplTest, SelectionBoundsForCaretLayer) {
   EXPECT_EQ(output.end, output.start);
 }
 
+class LayerTreeImplSelectionFullEdgeTest : public LayerTreeImplTest {
+ public:
+  LayerTreeImplSelectionFullEdgeTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSelectionEdgeVisibilityUsesFullEdge);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Regression test for crbug.com/451833352. When line-height > height on an
+// input, the selection edge_end overflows the clip but edge_start is still
+// visible. With selection_edge_visibility_uses_full_edge, the handle should
+// be visible because part of the edge is within the visible area.
+TEST_F(LayerTreeImplSelectionFullEdgeTest,
+       SelectionBoundsVisibleWithPartialEdgeOverflow) {
+  LayerImpl* root = root_layer();
+  root->SetDrawsContent(true);
+  root->SetBounds(gfx::Size(100, 100));
+
+  gfx::Vector2dF clipping_offset(10, 10);
+
+  LayerImpl* clipping_layer = AddLayerInActiveTree<LayerImpl>();
+  // Create a 50x40 clipping region.
+  clipping_layer->SetBounds(gfx::Size(50, 40));
+  CopyProperties(root, clipping_layer);
+  clipping_layer->SetOffsetToTransformParent(clipping_offset);
+  CreateClipNode(clipping_layer);
+
+  LayerImpl* clipped_layer = AddLayerInActiveTree<LayerImpl>();
+  clipped_layer->SetBounds(gfx::Size(100, 100));
+  clipped_layer->SetDrawsContent(true);
+  CopyProperties(clipping_layer, clipped_layer);
+  clipped_layer->SetOffsetToTransformParent(
+      clipping_layer->offset_to_transform_parent());
+
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  LayerSelection input;
+
+  // Case 1: edge_start is inside the clip, edge_end overflows below.
+  // The clipping region is 40px tall, so visible area is y=[0,40).
+  // edge_start at y=5 is inside, edge_end at y=55 is outside.
+  // With full-edge visibility, the handle should be visible.
+  input.start.type = gfx::SelectionBound::LEFT;
+  input.start.edge_start = gfx::Point(10, 5);
+  input.start.edge_end = gfx::Point(10, 55);
+  input.start.layer_id = clipped_layer->id();
+
+  input.end.type = gfx::SelectionBound::RIGHT;
+  input.end.edge_start = gfx::Point(30, 5);
+  input.end.edge_end = gfx::Point(30, 55);
+  input.end.layer_id = clipped_layer->id();
+
+  host_impl().active_tree()->RegisterSelection(input);
+
+  viz::Selection<gfx::SelectionBound> output;
+  host_impl().active_tree()->GetViewportSelection(&output);
+
+  // Both bounds should be visible because edge_start is within the clip.
+  EXPECT_TRUE(output.start.visible());
+  EXPECT_TRUE(output.end.visible());
+
+  // Case 2: The entire edge is outside the clip - should be hidden.
+  input.start.edge_start = gfx::Point(10, 45);
+  input.start.edge_end = gfx::Point(10, 95);
+  input.end.edge_start = gfx::Point(30, 45);
+  input.end.edge_end = gfx::Point(30, 95);
+  host_impl().active_tree()->RegisterSelection(input);
+  host_impl().active_tree()->GetViewportSelection(&output);
+  EXPECT_FALSE(output.start.visible());
+  EXPECT_FALSE(output.end.visible());
+
+  // Case 3: edge_end is inside the clip, edge_start overflows above.
+  // This is the scenario that already worked with the old code.
+  input.start.edge_start = gfx::Point(10, -15);
+  input.start.edge_end = gfx::Point(10, 35);
+  input.end.edge_start = gfx::Point(30, -15);
+  input.end.edge_end = gfx::Point(30, 35);
+  host_impl().active_tree()->RegisterSelection(input);
+  host_impl().active_tree()->GetViewportSelection(&output);
+  EXPECT_TRUE(output.start.visible());
+  EXPECT_TRUE(output.end.visible());
+}
+
+// With the feature disabled, the legacy point-based visibility test should
+// hide handles when edge_end is outside the clip even if edge_start is
+// visible.
+TEST_F(LayerTreeImplTest, SelectionBoundsHiddenWithPartialEdgeOverflowLegacy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kSelectionEdgeVisibilityUsesFullEdge);
+
+  LayerImpl* root = root_layer();
+  root->SetDrawsContent(true);
+  root->SetBounds(gfx::Size(100, 100));
+
+  gfx::Vector2dF clipping_offset(10, 10);
+
+  LayerImpl* clipping_layer = AddLayerInActiveTree<LayerImpl>();
+  clipping_layer->SetBounds(gfx::Size(50, 40));
+  CopyProperties(root, clipping_layer);
+  clipping_layer->SetOffsetToTransformParent(clipping_offset);
+  CreateClipNode(clipping_layer);
+
+  LayerImpl* clipped_layer = AddLayerInActiveTree<LayerImpl>();
+  clipped_layer->SetBounds(gfx::Size(100, 100));
+  clipped_layer->SetDrawsContent(true);
+  CopyProperties(clipping_layer, clipped_layer);
+  clipped_layer->SetOffsetToTransformParent(
+      clipping_layer->offset_to_transform_parent());
+
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  LayerSelection input;
+  // edge_start at y=5 is inside the clip, edge_end at y=55 is outside.
+  // With the legacy code, the handle should be hidden because the point
+  // near edge_end doesn't hit the layer.
+  input.start.type = gfx::SelectionBound::LEFT;
+  input.start.edge_start = gfx::Point(10, 5);
+  input.start.edge_end = gfx::Point(10, 55);
+  input.start.layer_id = clipped_layer->id();
+
+  input.end.type = gfx::SelectionBound::RIGHT;
+  input.end.edge_start = gfx::Point(30, 5);
+  input.end.edge_end = gfx::Point(30, 55);
+  input.end.layer_id = clipped_layer->id();
+
+  host_impl().active_tree()->RegisterSelection(input);
+
+  viz::Selection<gfx::SelectionBound> output;
+  host_impl().active_tree()->GetViewportSelection(&output);
+
+  // Legacy behavior: hidden because edge_end is clipped.
+  EXPECT_FALSE(output.start.visible());
+  EXPECT_FALSE(output.end.visible());
+}
+
+// When will-change:transform is on the input itself, the input IS the
+// composited layer. With line-height > height, both edge endpoints can be
+// outside the layer bounds but the middle passes through.
+TEST_F(LayerTreeImplSelectionFullEdgeTest,
+       SelectionBoundsVisibleWhenBothEndpointsOutsideLayer) {
+  LayerImpl* root = root_layer();
+  root->SetDrawsContent(true);
+  root->SetBounds(gfx::Size(400, 400));
+
+  // Simulate a composited input with height=40px where line-height causes the
+  // selection edge to extend from y=-5 to y=45 (both outside 0-40 bounds).
+  LayerImpl* input_layer = AddLayerInActiveTree<LayerImpl>();
+  input_layer->SetBounds(gfx::Size(200, 40));
+  input_layer->SetDrawsContent(true);
+  CopyProperties(root, input_layer);
+  input_layer->SetOffsetToTransformParent(gfx::Vector2dF(10, 50));
+
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(host_impl().active_tree());
+
+  LayerSelection input;
+  // Edge extends from y=-5 (above layer) to y=45 (below layer).
+  // The layer is 40px tall, so the middle portion (y=0 to y=40) is visible.
+  input.start.type = gfx::SelectionBound::LEFT;
+  input.start.edge_start = gfx::Point(10, -5);
+  input.start.edge_end = gfx::Point(10, 45);
+  input.start.layer_id = input_layer->id();
+
+  input.end.type = gfx::SelectionBound::RIGHT;
+  input.end.edge_start = gfx::Point(100, -5);
+  input.end.edge_end = gfx::Point(100, 45);
+  input.end.layer_id = input_layer->id();
+
+  host_impl().active_tree()->RegisterSelection(input);
+
+  viz::Selection<gfx::SelectionBound> output;
+  host_impl().active_tree()->GetViewportSelection(&output);
+
+  // Both bounds should be visible because the edge passes through the layer.
+  EXPECT_TRUE(output.start.visible());
+  EXPECT_TRUE(output.end.visible());
+}
+
 TEST_F(LayerTreeImplTest, NumLayersTestOne) {
   // Root is created by the test harness.
   EXPECT_EQ(1u, host_impl().active_tree()->NumLayers());

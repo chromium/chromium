@@ -3003,22 +3003,48 @@ static gfx::SelectionBound ComputeViewportSelectionBound(
   if (layer_bound.hidden) {
     viewport_bound.set_visible(false);
   } else {
-    // The bottom edge point is used for visibility testing as it is the logical
-    // focal point for bound selection handles (this may change in the future).
-    // Shifting the visibility point fractionally inward ensures that
-    // neighboring or logically coincident layers aligned to integral DPI
-    // coordinates will not spuriously occlude the bound.
-    gfx::Vector2dF visibility_offset = layer_start - layer_end;
-    visibility_offset.Scale(device_scale_factor / visibility_offset.Length());
-    gfx::PointF visibility_point = layer_end + visibility_offset;
-    if (visibility_point.x() < 0)
-      visibility_point.set_x(visibility_point.x() + device_scale_factor);
-    visibility_point =
-        MathUtil::MapPoint(screen_space_transform, visibility_point, &clipped);
+    const bool selection_edge_visibility_uses_full_edge =
+        base::FeatureList::IsEnabled(
+            features::kSelectionEdgeVisibilityUsesFullEdge);
+    auto is_visible = [&](const gfx::PointF& point) {
+      bool point_clipped = false;
+      gfx::PointF test_point =
+          MathUtil::MapPoint(screen_space_transform, point, &point_clipped);
+      return PointHitsLayer(layer, test_point, nullptr);
+    };
 
-    float intersect_distance = 0.f;
-    viewport_bound.set_visible(
-        PointHitsLayer(layer, visibility_point, &intersect_distance));
+    bool visible = false;
+    if (selection_edge_visibility_uses_full_edge) {
+      // Check whether start/end points of the edge are hit-test visible.
+      visible = is_visible(layer_end) || is_visible(layer_start);
+      if (!visible) {
+        // Both endpoints missed the layer. Check whether any part of the edge
+        // intersects the layer bounds, then sample the overlap center. This
+        // catches cases where both endpoints overflow but the middle passes
+        // through the layer (e.g. will-change:transform input with
+        // line-height > height, crbug.com/451833352).
+        gfx::RectF edge_rect = gfx::BoundingRect(layer_start, layer_end);
+        gfx::RectF layer_rect(gfx::SizeF(layer->bounds()));
+        if (edge_rect.InclusiveIntersect(layer_rect)) {
+          visible = is_visible(edge_rect.CenterPoint());
+        }
+      }
+    } else {
+      // The bottom edge point is used for visibility testing as it is the
+      // logical focal point for bound selection handles (this may change in
+      // the future). Shifting the visibility point fractionally inward ensures
+      // that neighboring or logically coincident layers aligned to integral
+      // DPI coordinates will not spuriously occlude the bound.
+      gfx::Vector2dF visibility_offset = layer_start - layer_end;
+      visibility_offset.Scale(device_scale_factor / visibility_offset.Length());
+      gfx::PointF visibility_point = layer_end + visibility_offset;
+      if (visibility_point.x() < 0) {
+        visibility_point.set_x(visibility_point.x() + device_scale_factor);
+      }
+      visible = is_visible(visibility_point);
+    }
+
+    viewport_bound.set_visible(visible);
   }
 
   if (viewport_bound.visible()) {

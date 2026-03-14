@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -300,6 +302,10 @@ TEST_F(SelectionBoundsRecorderTest, InvalidationForEmptyBounds) {
 }
 
 TEST_F(SelectionBoundsRecorderTest, BoundsHidden) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kSelectionEdgeVisibilityUsesFullEdge);
+
   LocalFrame* local_frame = GetDocument().GetFrame();
   LoadAhem(*local_frame);
   SetBodyInnerHTML(R"HTML(
@@ -319,7 +325,9 @@ TEST_F(SelectionBoundsRecorderTest, BoundsHidden) {
   EXPECT_EQ(gfx::SelectionBound::LEFT, host->selection().start.type);
   EXPECT_EQ(gfx::Point(), host->selection().start.edge_start);
   EXPECT_EQ(gfx::Point(0, 80), host->selection().start.edge_end);
-  EXPECT_TRUE(host->selection().end.hidden);
+  // End bound's edge_start is at y=80 (inside the 100px clip), so the handle
+  // is visible even though edge_end at y=160 is outside the clip.
+  EXPECT_FALSE(host->selection().end.hidden);
   EXPECT_EQ(gfx::SelectionBound::RIGHT, host->selection().end.type);
   EXPECT_EQ(gfx::Point(80, 80), host->selection().end.edge_start);
   EXPECT_EQ(gfx::Point(80, 160), host->selection().end.edge_end);
@@ -331,11 +339,10 @@ TEST_F(SelectionBoundsRecorderTest, BoundsHidden) {
   EXPECT_EQ(gfx::SelectionBound::LEFT, host->selection().start.type);
   EXPECT_EQ(gfx::Point(0, -59), host->selection().start.edge_start);
   EXPECT_EQ(gfx::Point(0, 21), host->selection().start.edge_end);
-  if (RuntimeEnabledFeatures::SelectionHandleWithBottomClippedEnabled()) {
-    EXPECT_FALSE(host->selection().end.hidden);
-  } else {
-    EXPECT_TRUE(host->selection().end.hidden);
-  }
+  // The end bound's edge_end is at y=101 (1px below the 100px clip), but
+  // edge_start is at y=21 (inside the clip). The full edge is used for
+  // visibility testing, so the handle should be visible.
+  EXPECT_FALSE(host->selection().end.hidden);
   EXPECT_EQ(gfx::SelectionBound::RIGHT, host->selection().end.type);
   EXPECT_EQ(gfx::Point(80, 21), host->selection().end.edge_start);
   EXPECT_EQ(gfx::Point(80, 101), host->selection().end.edge_end);
@@ -350,6 +357,45 @@ TEST_F(SelectionBoundsRecorderTest, BoundsHidden) {
   EXPECT_EQ(gfx::SelectionBound::RIGHT, host->selection().end.type);
   EXPECT_EQ(gfx::Point(80, 20), host->selection().end.edge_start);
   EXPECT_EQ(gfx::Point(80, 100), host->selection().end.edge_end);
+}
+
+// Regression test for crbug.com/451833352. When line-height > height on an
+// input, the selection edge_end overflows the clip by several pixels. The
+// selection handles should still be visible because part of the edge is within
+// the clip.
+TEST_F(SelectionBoundsRecorderTest, BoundsVisibleWithLineHeightOverflow) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ::features::kSelectionEdgeVisibilityUsesFullEdge);
+
+  LocalFrame* local_frame = GetDocument().GetFrame();
+  LoadAhem(*local_frame);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      input {
+        font: 10px/50px Ahem;
+        height: 40px;
+        padding: 0;
+        border: 0;
+        box-sizing: border-box;
+      }
+    </style>
+    <input id="input" type="text" value="XXXX">
+  )HTML");
+
+  auto* input = GetDocument().getElementById(AtomicString("input"));
+  input->Focus();
+  local_frame->Selection().SetHandleVisibleForTesting();
+  local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);
+  local_frame->Selection().SelectAll();
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host = local_frame->View()->RootCcLayer()->layer_tree_host();
+  // Both start and end handles should be visible even though the edge_end
+  // extends below the input's clip due to line-height > height.
+  EXPECT_FALSE(host->selection().start.hidden);
+  EXPECT_FALSE(host->selection().end.hidden);
 }
 
 }  // namespace blink

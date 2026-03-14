@@ -291,6 +291,11 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWebviewSchedulerStateMachine);
 // positions on scroll instead of moving exactly by the scroll delta.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsScrollSnapAnimation);
 
+// When enabled, selection handle visibility checks use the full selection edge
+// instead of a point sample near edge_end. This is a kill switch for
+// crbug.com/451833352.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSelectionEdgeVisibilityUsesFullEdge);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
