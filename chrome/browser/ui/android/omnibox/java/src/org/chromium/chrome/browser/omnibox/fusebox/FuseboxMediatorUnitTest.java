@@ -697,10 +697,12 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void popupModelAutoClicked_setsModelMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
         mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED).run();
 
         verify(mPopup).dismiss();
+        assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
         assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
                 .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
@@ -709,10 +711,12 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void popupModelProClicked_setsModelMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mInput.setRequestType(AutocompleteRequestType.DEEP_SEARCH);
 
         mModel.get(FuseboxProperties.POPUP_MODEL_PRO_CLICKED).run();
 
         verify(mPopup).dismiss();
+        assertEquals(AutocompleteRequestType.DEEP_SEARCH, mInput.getRequestType());
         assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
                 .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);
@@ -1119,6 +1123,7 @@ public class FuseboxMediatorUnitTest {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         recreateMediator();
 
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         InputState state =
                 new InputState.Builder()
                         .withAllowedTools(
@@ -1157,6 +1162,7 @@ public class FuseboxMediatorUnitTest {
     public void testOnInputStateChange_Selection() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         recreateMediator();
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
         InputState state =
                 new InputState.Builder()
@@ -1219,5 +1225,23 @@ public class FuseboxMediatorUnitTest {
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_VISIBLE));
+    }
+
+    @Test
+    public void modelSelectionProperties_conditionalOnRequestType() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        InputState inputState =
+                new InputState.Builder()
+                        .withActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE)
+                        .build();
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        mInputStateSupplier.set(inputState);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        assertTrue(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
+
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        assertFalse(mModel.get(FuseboxProperties.POPUP_MODEL_PRO_SELECTED));
     }
 }
