@@ -20,7 +20,7 @@ export function getHtml(this: ActionChipsElement) {
           this.actionChips_.map(
               (chip: ActionChip, index: number) => html`
         <div class="chip-button-wrapper">
-          <button id="${this.getId_(chip, index) || nothing}"
+          <button
             class="action-chip ${
                     this.isDeepDiveChip_(chip) ? 'deep-dive-chip' : ''}"
             data-index="${index}"
