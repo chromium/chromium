@@ -5,9 +5,9 @@
 // Font settings API test
 // Run with browser_tests --gtest_filter=ExtensionApiTest.FontSettings
 
-var fs = chrome.fontSettings;
-var CONTROLLED_BY_THIS_EXTENSION = 'controlled_by_this_extension';
-var CONTROLLABLE_BY_THIS_EXTENSION = 'controllable_by_this_extension';
+const fs = chrome.fontSettings;
+const CONTROLLED_BY_THIS_EXTENSION = 'controlled_by_this_extension';
+const CONTROLLABLE_BY_THIS_EXTENSION = 'controllable_by_this_extension';
 
 function expect(expected, message) {
   return chrome.test.callbackPass(function(value) {
@@ -17,9 +17,9 @@ function expect(expected, message) {
 
 chrome.test.runTests([
   function setPerScriptFont() {
-    var script = 'Hang';
-    var genericFamily = 'standard';
-    var fontId = 'Verdana';
+    const script = 'Hang';
+    const genericFamily = 'standard';
+    const fontId = 'Verdana';
 
     chrome.test.listenOnce(fs.onFontChanged, function(details) {
       chrome.test.assertEq({
@@ -38,8 +38,8 @@ chrome.test.runTests([
   },
 
   function setGlobalFontName() {
-    var genericFamily = 'sansserif';
-    var fontId = 'Tahoma';
+    const genericFamily = 'sansserif';
+    const fontId = 'Tahoma';
 
     chrome.test.listenOnce(fs.onFontChanged, function(details) {
       chrome.test.assertEq({
@@ -57,7 +57,7 @@ chrome.test.runTests([
   },
 
   function setDefaultFontSize() {
-    var pixelSize = 22;
+    const pixelSize = 22;
     chrome.test.listenOnce(fs.onDefaultFontSizeChanged, function(details) {
       chrome.test.assertEq({
         pixelSize: pixelSize,
@@ -71,7 +71,7 @@ chrome.test.runTests([
   },
 
   function setDefaultFixedFontSize() {
-    var pixelSize = 42;
+    const pixelSize = 42;
     chrome.test.listenOnce(fs.onDefaultFixedFontSizeChanged, function(details) {
       chrome.test.assertEq({
         pixelSize: pixelSize,
@@ -85,7 +85,7 @@ chrome.test.runTests([
   },
 
   function setMinimumFontSize() {
-    var pixelSize = 7;
+    const pixelSize = 7;
     chrome.test.listenOnce(fs.onMinimumFontSizeChanged, function(details) {
       chrome.test.assertEq({
         pixelSize: pixelSize,
@@ -99,7 +99,7 @@ chrome.test.runTests([
   },
 
   function getFontList() {
-    var message = 'getFontList should return an array of objects with ' +
+    const message = 'getFontList should return an array of objects with ' +
         'fontId and displayName properties.';
     const getPlatformInfo = new Promise((resolve) => {
       chrome.runtime.getPlatformInfo(info => resolve(info.os == 'android'));
@@ -170,9 +170,9 @@ chrome.test.runTests([
   },
 
   function clearPerScriptFont() {
-    var script = 'Hang';
-    var genericFamily = 'standard';
-    var fontId = 'Tahoma';
+    const script = 'Hang';
+    const genericFamily = 'standard';
+    const fontId = 'Tahoma';
 
     chrome.test.listenOnce(fs.onFontChanged, function(details) {
       chrome.test.assertEq({
@@ -190,9 +190,9 @@ chrome.test.runTests([
   },
 
   function clearGlobalFont() {
-    var script = 'Zyyy';
-    var genericFamily = 'sansserif';
-    var fontId = 'Arial';
+    const script = 'Zyyy';
+    const genericFamily = 'sansserif';
+    const fontId = 'Arial';
 
     chrome.test.listenOnce(fs.onFontChanged, function(details) {
       chrome.test.assertEq({
@@ -209,7 +209,7 @@ chrome.test.runTests([
   },
 
   function clearDefaultFontSize() {
-    var pixelSize = 16;
+    const pixelSize = 16;
     chrome.test.listenOnce(fs.onDefaultFontSizeChanged, function(details) {
       chrome.test.assertEq({
         pixelSize: pixelSize,
@@ -221,7 +221,7 @@ chrome.test.runTests([
   },
 
   function clearDefaultFixedFontSize() {
-    var pixelSize = 14;
+    const pixelSize = 14;
     chrome.test.listenOnce(fs.onDefaultFixedFontSizeChanged, function(details) {
       chrome.test.assertEq({
         pixelSize: pixelSize,
@@ -233,7 +233,7 @@ chrome.test.runTests([
   },
 
   function clearMinimumFontSize() {
-    var pixelSize = 8;
+    const pixelSize = 8;
     chrome.test.listenOnce(fs.onMinimumFontSizeChanged, function(details) {
       chrome.test.assertEq({
         pixelSize: pixelSize,
