@@ -5,3 +5,22 @@
 source_set("installable") {
   sources = [ "installable_utils.h" ]
 }
+
+source_set("impl") {
+  sources = [ "installable_utils.cc" ]
+
+  deps = [
+    ":installable",
+    "//url",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser:browser_public_dependencies" ]
+  } else {
+    deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications/proto",
+    ]
+  }
+}

@@ -1261,11 +1261,6 @@ static_library("browser") {
     "universal_web_contents_observers.h",
     "visibility_timer_tab_helper.cc",
     "visibility_timer_tab_helper.h",
-    "webapps/chrome_webapps_client.cc",
-    "webapps/chrome_webapps_client.h",
-    "webapps/installable/installable_utils.cc",
-    "webapps/web_app_offline.cc",
-    "webapps/web_app_offline.h",
     "webauthn/credential_sorter.h",
     "webauthn/password_credential_fetcher.cc",
     "webauthn/password_credential_fetcher.h",
@@ -1864,7 +1859,10 @@ static_library("browser") {
     "//chrome/browser/usb:impl",
     "//chrome/browser/v8_compile_hints",
     "//chrome/browser/v8_compile_hints:impl",
+    "//chrome/browser/webapps",
+    "//chrome/browser/webapps:impl",
     "//chrome/browser/webapps/installable",
+    "//chrome/browser/webapps/installable:impl",
     "//chrome/browser/webauthn",
     "//chrome/browser/webauthn:chrome_web_authentication_delegate",
     "//chrome/browser/webdata_services",
@@ -3089,17 +3087,6 @@ static_library("browser") {
       "wallet/android/boarding_pass_bridge.cc",
       "wallet/android/boarding_pass_detector.cc",
       "wallet/android/boarding_pass_detector.h",
-      "webapps/installable/installed_webapp_bridge.cc",
-      "webapps/installable/installed_webapp_bridge.h",
-      "webapps/installable/installed_webapp_geolocation_bridge.cc",
-      "webapps/installable/installed_webapp_geolocation_bridge.h",
-      "webapps/installable/installed_webapp_geolocation_context.cc",
-      "webapps/installable/installed_webapp_geolocation_context.h",
-      "webapps/installable/installed_webapp_provider.cc",
-      "webapps/installable/installed_webapp_provider.h",
-      "webapps/web_app_offline_android.cc",
-      "webapps/webapps_client_android.cc",
-      "webapps/webapps_client_android.h",
       "webauthn/android/cable_module_android.cc",
       "webauthn/android/cable_registration_state.cc",
       "webauthn/android/cable_registration_state.h",
@@ -3256,6 +3243,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/ui/webui/notifications_internals:impl",
       "//chrome/browser/wallet/android:jni_headers",
+      "//chrome/browser/webapps:android",
       "//chrome/common:non_code_constants",
       "//chrome/common/wallet:mojo_bindings",
       "//chrome/services/media_gallery_util/public/cpp",
@@ -3413,12 +3401,6 @@ static_library("browser") {
       "//chrome/browser/ui/android/tab_model:impl",
     ]
 
-    deps += [
-      # TODO(crbug.com/353332589): Remove this circular dependency when
-      # c/b/webapps/installable/installed_webapp_bridge.h gets modularized.
-      "//chrome/browser/geolocation:impl",
-    ]
-
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [
@@ -3430,12 +3412,17 @@ static_library("browser") {
       "//chrome/browser/bookmarks/android:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
-      # c/b/webapps/installable/installed_webapp_bridge.h gets modularized.
-      "//chrome/browser/geolocation:impl",
-
-      # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/net/qwac_web_contents_observer.h gets modularized.
       "//chrome/browser/android:tabs_impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following Android browser headers get modularized.
+      # - c/b/android/shortcut_helper.h
+      # - c/b/android/tab_web_contents_delegate_android.h
+      # - c/b/android/webapk/webapk_install_service.h
+      # - c/b/android/webapk/webapk_install_service_factory.h
+      "//chrome/browser/webapps:android",
+      "//chrome/browser/webapps/installable:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/android/resource_mapper.h gets modularized.
@@ -3980,8 +3967,6 @@ static_library("browser") {
       "support_tool/system_log_source_data_collector_adaptor.h",
       "tab_contents/form_interaction_tab_helper.cc",
       "tab_contents/form_interaction_tab_helper.h",
-      "webapps/webapps_client_desktop.cc",
-      "webapps/webapps_client_desktop.h",
       "webauthn/authenticator_list_observer.h",
       "webauthn/authenticator_reference.cc",
       "webauthn/authenticator_reference.h",
@@ -4219,6 +4204,7 @@ static_library("browser") {
       "//chrome/browser/web_applications:sub_apps_service",
       "//chrome/browser/web_applications:web_applications_metrics",
       "//chrome/browser/web_applications/app_service",
+      "//chrome/browser/webapps:desktop",
       "//chrome/browser/webauthn:local_credential_management",
       "//chrome/browser/webauthn:unexportable_key_utils",
       "//chrome/common/importer:interfaces",

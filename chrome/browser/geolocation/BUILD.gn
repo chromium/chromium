@@ -53,13 +53,12 @@ source_set("impl") {
     deps += [
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/search_engines",
+      "//chrome/browser/webapps:android",
       "//components/search_engines",
     ]
   }
 
-  # Standard for impl targets; on Android also provides access to browser
-  # headers (e.g. installed_webapp_bridge.h) via allow_circular_includes_from
-  # set in chrome/browser/BUILD.gn.
+  # Standard for impl targets.
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
