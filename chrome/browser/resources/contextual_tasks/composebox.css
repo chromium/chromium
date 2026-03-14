@@ -120,7 +120,12 @@
   border-radius: var(--composebox-border-radius);
   box-sizing: border-box;
   pointer-events: none;
+  transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 2;
+}
+
+:host([in-voice-search-mode_]) #composebox::after {
+  opacity: 0;
 }
 
 #composebox {

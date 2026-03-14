@@ -129,6 +129,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      inVoiceSearchMode_: {
+        type: Boolean,
+        reflect: true,
+      },
       selectedMatchIndex_: {type: Number},
       enableFileHint_: {type: Boolean},
     };
@@ -161,6 +165,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('showOnboardingTooltip');
   protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
   protected accessor showSuggestionsActivityLink_: boolean = false;
+  protected accessor inVoiceSearchMode_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
   protected accessor enableFileHint_: boolean =
       loadTimeData.getBoolean('enableFileHint');
@@ -238,12 +243,14 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
       this.eventTracker_.add(
           composebox, 'composebox-voice-search-start', () => {
+            this.startVoiceSearch();
             recordVoiceSearchAction(
                 VoiceSearchState.VOICE_SEARCH_BUTTON_CLICKED);
           });
 
       this.eventTracker_.add(
           composebox, 'composebox-voice-search-transcription-success', () => {
+            this.endVoiceSearch();
             recordVoiceSearchAction(VoiceSearchState.SUCCESSFUL_TRANSCRIPT);
           });
 
@@ -253,6 +260,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
           });
       this.eventTracker_.add(
           composebox, 'composebox-voice-search-error-and-canceled', () => {
+            this.endVoiceSearch();
             recordVoiceSearchAction(
                 VoiceSearchState.VOICE_SEARCH_ERROR_AND_CANCELED);
           });
@@ -263,6 +271,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
           });
       this.eventTracker_.add(
           composebox, 'composebox-voice-search-user-canceled', () => {
+            this.endVoiceSearch();
             recordVoiceSearchAction(VoiceSearchState.VOICE_SEARCH_CANCELED);
           });
       // Initial check.
@@ -304,6 +313,14 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         this.$.composebox.queryAutocomplete(/*clearMatches=*/ false);
       }
     }
+  }
+
+  protected startVoiceSearch() {
+    this.inVoiceSearchMode_ = true;
+  }
+
+  protected endVoiceSearch() {
+    this.inVoiceSearchMode_ = false;
   }
 
   protected get showSuggestions_() {
