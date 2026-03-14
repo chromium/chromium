@@ -131,10 +131,10 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
     ` : ''}
     ${this.shortcutsEnabled_ || this.modulesEnabled_ ? html`
       <cr-toast id="undoToast" duration="10000">
-        <div id="undoToastMessage">${this.undoAutoRemovalMessage_ || ''}</div>
+        <div id="undoToastMessage">${this.undoToastMessage_ || ''}</div>
         <cr-button id="undoButton"
             aria-label="$i18n{undoDescription}"
-            @click="${this.onAutoRemovalUndoClick_}">
+            @click="${this.onUndoButtonClick_}">
           $i18n{undo}
         </cr-button>
       </cr-toast>

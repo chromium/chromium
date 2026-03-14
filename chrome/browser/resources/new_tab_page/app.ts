@@ -327,8 +327,8 @@ export class AppElement extends AppElementBase {
       showScrim_: {type: Boolean, reflect: true},
 
       contextMenuGlifAnimationState_: {type: String},
-      undoAutoRemovalCallback_: {type: Object},
-      undoAutoRemovalMessage_: {type: Object},
+      undoToastCallback_: {type: Object},
+      undoToastMessage_: {type: Object},
 
       /**
        * Whether to show the AIM threads rail when composebox is open.
@@ -427,8 +427,8 @@ export class AppElement extends AppElementBase {
       this.ntpNextFeaturesEnabled_ && this.isActionChipsVisible_ ?
       GlifAnimationState.SPINNER_ONLY :
       GlifAnimationState.INELIGIBLE;
-  protected accessor undoAutoRemovalCallback_: (() => void)|null = null;
-  protected accessor undoAutoRemovalMessage_: string|null = null;
+  protected accessor undoToastCallback_: (() => void)|null = null;
+  protected accessor undoToastMessage_: string|null = null;
   protected ephemeralContextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('enableEphemeralContextMenuDescription') ?? false;
   protected showContextMenuDescription_: boolean =
@@ -453,8 +453,7 @@ export class AppElement extends AppElementBase {
   private backgroundImageLoadStartEpoch_: number = 0;
   private backgroundImageLoadStart_: number = 0;
   private showWebstoreToastListenerId_: number|null = null;
-  private pendingAutoRemovalToasts_:
-      Array<{message: string, undo: () => void}> = [];
+  private pendingUndoToasts_: Array<{message: string, undo: () => void}> = [];
 
   constructor() {
     performance.mark('app-creation-start');
@@ -790,8 +789,8 @@ export class AppElement extends AppElementBase {
   // Called to update the OGB of relevant NTP state changes.
   private updateOneGoogleBarAppearance_() {
     if (this.oneGoogleBarLoaded_) {
-      const isNtpDarkTheme = this.theme_ &&
-            (!!this.theme_.backgroundImage || this.theme_.isDark);
+      const isNtpDarkTheme =
+          this.theme_ && (!!this.theme_.backgroundImage || this.theme_.isDark);
       $$<IframeElement>(this, '#oneGoogleBar')!.postMessage({
         type: 'updateAppearance',
         // We should be using a light OGB for dark themes and vice versa.
@@ -1464,18 +1463,18 @@ export class AppElement extends AppElementBase {
    */
   protected onMostVisitedAutoRemoved_(
       undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
-    this.showAutoRemovedToast_(undoToastContext);
+    this.showUndoToast_(undoToastContext);
   }
 
   protected onModulesAutoRemoved_(
       undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
-    this.showAutoRemovedToast_(undoToastContext);
+    this.showUndoToast_(undoToastContext);
   }
 
-  protected showAutoRemovedToast_(
+  protected showUndoToast_(
       undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
-    this.pendingAutoRemovalToasts_.push(undoToastContext.detail);
-    this.processPendingAutoRemovalToasts_();
+    this.pendingUndoToasts_.push(undoToastContext.detail);
+    this.processPendingUndoToasts_();
   }
 
   /**
@@ -1487,8 +1486,8 @@ export class AppElement extends AppElementBase {
    * multiple toasts at the same time. Otherwise, the first pending toast is
    * popped and shown.
    */
-  private processPendingAutoRemovalToasts_() {
-    if (this.pendingAutoRemovalToasts_.length === 0) {
+  private processPendingUndoToasts_() {
+    if (this.pendingUndoToasts_.length === 0) {
       return;
     }
 
@@ -1496,9 +1495,9 @@ export class AppElement extends AppElementBase {
       return;
     }
 
-    const undoToastContext = this.pendingAutoRemovalToasts_.shift()!;
-    this.undoAutoRemovalCallback_ = undoToastContext.undo;
-    this.undoAutoRemovalMessage_ = undoToastContext.message;
+    const undoToastContext = this.pendingUndoToasts_.shift()!;
+    this.undoToastCallback_ = undoToastContext.undo;
+    this.undoToastMessage_ = undoToastContext.message;
     this.$.undoToast.show();
   }
 
@@ -1507,12 +1506,12 @@ export class AppElement extends AppElementBase {
    * undo callback, and call the processing function to handle the next queued
    * toast (if any).
    */
-  protected onAutoRemovalUndoClick_() {
+  protected onUndoButtonClick_() {
     this.$.undoToast.hide();
-    this.undoAutoRemovalCallback_?.();
-    this.undoAutoRemovalCallback_ = null;
-    this.undoAutoRemovalMessage_ = null;
-    this.processPendingAutoRemovalToasts_();
+    this.undoToastCallback_?.();
+    this.undoToastCallback_ = null;
+    this.undoToastMessage_ = null;
+    this.processPendingUndoToasts_();
   }
 }
 
