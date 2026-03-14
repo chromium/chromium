@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- In addition to some AA-related drift, there are also platform font rendering differences.
+       Rather than fixing up this ancient test for a non-standard feature, just tolerate small
+       diffs even if the channel diff is large -->
+  <meta name="fuzzy" content="0-255;0-500"/>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <script src="../../resources/run-after-layout-and-paint.js"></script>
   <style>
@@ -25,7 +29,7 @@
   }
   
   .changed {
-    -webkit-transform-origin: top left;
+    transform-origin: top left;
   }
   </style>
   <script type="text/javascript" charset="utf-8">

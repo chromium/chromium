@@ -5744,10 +5744,6 @@ crbug.com/979336 [ Mac ] fast/dynamic/anonymous-block-orphaned-lines.html [ Fail
 #   - WebRtcBrowserTest.EstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks
 crbug.com/988432 external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html [ Pass Timeout ]
 
-#Sherrif 2019-08-16
-crbug.com/994692 [ Linux ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
-crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.html [ Failure Pass ]
-
 crbug.com/1000051 media/controls/volume-slider.html [ Failure Pass Timeout ]
 
 # Sheriff 2019-09-04
@@ -5915,7 +5911,6 @@ crbug.com/333787228 http/tests/devtools/elements/styles/stylesheet-tracking.js [
 
 # Sheriff 2020-05-29
 crbug.com/1084637 compositing/video/video-reflection.html [ Failure Pass ]
-crbug.com/1083362 compositing/reflections/load-video-in-reflection.html [ Failure Pass ]
 
 # Sheriff 2020-06-17
 crbug.com/1092975 http/tests/inspector-protocol/target/target-expose-devtools-protocol.js [ Failure Pass ]

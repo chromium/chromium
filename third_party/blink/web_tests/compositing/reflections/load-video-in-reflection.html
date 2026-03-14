@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-
 <html>
 <head>
+  <!-- In addition to some AA-related drift, there are also platform font rendering differences.
+       Rather than fixing up this ancient test for a non-standard feature, just tolerate small
+       diffs even if the channel diff is large -->
+  <meta name="fuzzy" content="0-255;0-500"/>
   <style type="text/css" media="screen">
 
     .container {
       width: 300px;
-      -webkit-animation: spin 18s infinite linear;
+      animation: spin 18s infinite linear;
     }
 
     video {
@@ -14,7 +17,7 @@
       background-color: red;
     }
 
-    @-webkit-keyframes spin {
+    @keyframes spin {
       from { transform: rotate(0); }
       to   { transform: rotate(0); }
     }
