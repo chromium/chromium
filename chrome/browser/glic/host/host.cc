@@ -931,7 +931,7 @@ void HostManager::WebUIPageHandlerRemoved(GlicPageHandler* page_handler) {
   for (Host* host : GetAllHosts()) {
     if (host->page_handler() == page_handler) {
       host->WebUIPageHandlerRemoved(page_handler);
-      if (std::ranges::contains(instance_hosts, host)) {
+      if (!std::ranges::contains(instance_hosts, host)) {
         std::erase_if(tab_hosts_, [host](std::unique_ptr<Host>& h) {
           return h.get() == host;
         });

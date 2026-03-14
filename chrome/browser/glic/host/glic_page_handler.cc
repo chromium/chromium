@@ -2491,12 +2491,12 @@ GlicPageHandler::GlicPageHandler(
     Host* host,
     mojo::PendingReceiver<glic::mojom::PageHandler> receiver,
     mojo::PendingRemote<mojom::Page> page)
-    : host_(*host),
+    : host_(host),
       webui_contents_(webui_contents),
       browser_context_(webui_contents->GetBrowserContext()),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
-  GetGlicService()->host_manager().WebUIPageHandlerAdded(this, &host_.get());
+  GetGlicService()->host_manager().WebUIPageHandlerAdded(this, host_.get());
   host_->AddPanelStateObserver(this);
   UpdatePageState(host_->GetPanelState(web_client_handler_.get()).kind);
   if (!base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
@@ -2513,6 +2513,9 @@ GlicPageHandler::~GlicPageHandler() {
   WebUiStateChanged(glic::mojom::WebUiState::kUninitialized);
   // `GlicWebClientHandler` holds a pointer back to us, so delete it first.
   web_client_handler_.reset();
+  // Clear `host_` before unregistering so the Host can be deleted
+  // synchronously without leaving a dangling raw_ptr during teardown.
+  host_ = nullptr;
   GetGlicService()->host_manager().WebUIPageHandlerRemoved(this);
 }
 
