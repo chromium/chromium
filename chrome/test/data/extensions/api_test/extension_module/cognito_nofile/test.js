@@ -9,7 +9,7 @@ chrome.test.runTests([
   function testUpdateUrlData() {
     // Data string must not be too long.
     try {
-      var data =
+      const data =
           '01234567890123456789012345678901234567890123456789' +
           '01234567890123456789012345678901234567890123456789' +  // 100
           '01234567890123456789012345678901234567890123456789' +
