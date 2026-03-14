@@ -686,12 +686,10 @@ VerticalTabView::CalculateChildVisibilities() const {
 
   if (pinned_) {
     child_visibility_map[close_button_] = false;
-  } else if (active_) {
-    child_visibility_map[close_button_] = true;
   } else if (collapsed_) {
-    child_visibility_map[close_button_] = false;
+    child_visibility_map[close_button_] = active_ && hovered_;
   } else {
-    child_visibility_map[close_button_] = hovered_;
+    child_visibility_map[close_button_] = active_ || hovered_;
   }
 
   return child_visibility_map;
