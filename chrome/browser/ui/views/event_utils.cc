@@ -27,6 +27,18 @@ std::optional<ReorderDirection> GetReorderCommandForKeyboardEvent(
 #else
       ui::EF_CONTROL_DOWN;
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  if (event.IsShiftDown()) {
+    if (event.key_code() == ui::VKEY_HOME) {
+      return ReorderDirection::kPrevious;
+    }
+    if (event.key_code() == ui::VKEY_END) {
+      return ReorderDirection::kNext;
+    }
+  }
+#endif
+
   if (event.type() != ui::EventType::kKeyPressed ||
       (event.flags() & kModifierFlag) == 0) {
     return std::nullopt;
