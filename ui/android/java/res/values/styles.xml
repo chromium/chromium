@@ -118,6 +118,11 @@ found in the LICENSE file.
         <item name="leading">@dimen/text_size_medium_leading</item>
     </style>
 
+    <style name="TextAppearance.TextSmallThick" parent="TextAppearance.MediumStyle">
+        <item name="android:textSize">@dimen/text_size_small</item>
+        <item name="leading">@dimen/text_size_small_leading</item>
+    </style>
+
     <style name="TextAppearance.TextSmall">
         <item name="android:textSize">@dimen/text_size_small</item>
         <item name="leading">@dimen/text_size_small_leading</item>

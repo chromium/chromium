@@ -298,12 +298,21 @@ public class LayerTitleCache {
      * @param titleString The title to measure.
      * @return The width in px of the title.
      */
-    public int getTitleWidth(boolean incognito, String titleString) {
+    public int getTitleWidth(boolean incognito, @Nullable String titleString) {
         if (titleString == null) return 0;
 
         TitleBitmapFactory titleBitmapFactory =
                 incognito ? mDarkTitleBitmapFactory : mStandardTitleBitmapFactory;
         return titleBitmapFactory.getTitleWidth(titleString);
+    }
+
+    /**
+     * @param titleString The button text to measure.
+     * @return The width in px of the button text.
+     */
+    public int getButtonTextWidth(@Nullable String titleString) {
+        if (titleString == null) return 0;
+        return mStandardTitleBitmapFactory.getButtonTextWidth(titleString);
     }
 
     /**

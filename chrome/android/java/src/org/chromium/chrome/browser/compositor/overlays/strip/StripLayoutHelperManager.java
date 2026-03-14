@@ -206,6 +206,8 @@ public class StripLayoutHelperManager
     private static final float GLIC_BUTTON_UNFOCUSED_OPACITY = 0.65f;
     private static final float GLIC_BUTTON_CLICK_SLOP_DP =
             (BUTTON_DESIRED_TOUCH_TARGET_SIZE - GLIC_BUTTON_BACKGROUND_WIDTH_DP) / 2;
+    // Total vertical margin (Tab Strip Height(40dp) - Glic Background Height(28dp) = 12dp).
+    public static final float GLIC_BUTTON_MARGIN_HEIGHT_DP = 12.f;
     private static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
     private static final float GLIC_ICON_WIDTH_DP = 16.f;
     private static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
@@ -980,8 +982,7 @@ public class StripLayoutHelperManager
         if (!TextUtils.isEmpty(glicButtonText)) {
             LayerTitleCache titleCache = mLayerTitleCacheSupplier.get();
             if (titleCache != null) {
-                float textWidthDp =
-                        titleCache.getTitleWidth(/* incognito= */ false, glicButtonText) / mDensity;
+                float textWidthDp = titleCache.getButtonTextWidth(glicButtonText) / mDensity;
                 width =
                         GLIC_BUTTON_START_PADDING_DP
                                 + GLIC_ICON_WIDTH_DP
@@ -2132,10 +2133,6 @@ public class StripLayoutHelperManager
 
     ViewStub getTabHoverCardViewStubForTesting() {
         return mTabHoverCardViewStub;
-    }
-
-    boolean isAppHeaderCustomizationSupportedForTesting() {
-        return mIsHeaderCustomizationSupported;
     }
 
     public @Nullable TabStripDragHandler getTabStripDragHandlerForTesting() {

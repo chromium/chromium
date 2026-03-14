@@ -249,6 +249,10 @@ found in the LICENSE file.
         <item name="android:textColor">@color/default_text_color_on_accent1_container_list</item>
     </style>
 
+    <style name="TextAppearance.TextSmallThick.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
     <style name="TextAppearance.TextSmall.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>
     </style>
