@@ -18,26 +18,11 @@ import node_modules
 
 _ESLINT_CONFIG_TEMPLATE = """import path from 'path';
 
-import {defaultConfig} from '%(config_base)s';
+import {defaultConfig, %(extraConfigs)s} from '%(config_base)s';
 
 export default [
   ...defaultConfig,
-  {
-    languageOptions: {
-      parserOptions: {
-        'project': [path.join(import.meta.dirname, './%(tsconfig)s')],
-      },
-    },
-  },
-];"""
-
-_ESLINT_CONFIG_WITH_WEBUI_MISSING_DEPS_TEMPLATE = """import path from 'path';
-
-import {defaultConfig, webComponentMissingDepsConfig} from '%(config_base)s';
-
-export default [
-  ...defaultConfig,
-  webComponentMissingDepsConfig,
+  %(extraConfigs)s
   {
     languageOptions: {
       parserOptions: {
@@ -58,13 +43,22 @@ _TOKEN_TO_STRIP = 'potentially fixable with the `--fix` option'
 def _generate_config_file(args):
   config_file = os.path.join(args.out_folder, 'eslint.config.mjs')
   with open(config_file, 'w', newline='', encoding='utf-8') as f:
-    template = _ESLINT_CONFIG_TEMPLATE
+    extra_configs = []
     if args.enable_web_component_missing_deps:
-      template = _ESLINT_CONFIG_WITH_WEBUI_MISSING_DEPS_TEMPLATE
-    f.write(template % {
-        'config_base': args.config_base,
-        'tsconfig': args.tsconfig
-    })
+      extra_configs.append('webComponentMissingDepsConfig')
+    if args.enable_no_chrome_send:
+      extra_configs.append('noChromeSendConfig')
+
+    f.write(
+        _ESLINT_CONFIG_TEMPLATE % {
+            'config_base':
+                args.config_base,
+            'tsconfig':
+                args.tsconfig,
+            'extraConfigs':
+                '' if len(extra_configs) == 0 else ', '.join(extra_configs) +
+                ',',
+        })
     return config_file
 
 
@@ -76,6 +70,7 @@ def main(argv):
   parser.add_argument('--tsconfig', required=True)
   parser.add_argument(
       '--enable_web_component_missing_deps', action='store_true')
+  parser.add_argument('--enable_no_chrome_send', action='store_true')
   parser.add_argument('--in_files', nargs='*', required=True)
 
   args = parser.parse_args(argv)

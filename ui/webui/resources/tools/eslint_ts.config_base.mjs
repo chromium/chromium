@@ -78,3 +78,31 @@ export const webComponentMissingDepsConfig = {
     '@webui-eslint/web-component-missing-deps': 'error',
   },
 };
+
+export const noChromeSendConfig = {
+  files: ['**/*.ts'],
+  rules: {
+    'no-restricted-properties': [
+      'error',
+      {
+        object: 'chrome',
+        property: 'send',
+        message: 'Use Mojo instead.',
+      },
+    ],
+    'no-restricted-imports': [
+      'error', {
+        paths: [
+          {
+            name: '//resources/js/cr.js',
+            message: 'Use Mojo instead.',
+          },
+          {
+            name: 'chrome://resources/js/cr.js',
+            message: 'Use Mojo instead.',
+          },
+        ],
+      },
+    ],
+  },
+};

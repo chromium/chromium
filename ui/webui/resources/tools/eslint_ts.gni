@@ -20,6 +20,7 @@ template("eslint_ts") {
                              "in_files",
                              "tsconfig",
                              "enable_web_component_missing_deps",
+                             "enable_no_chrome_send",
                              "visibility",
                            ])
 
@@ -64,6 +65,10 @@ template("eslint_ts") {
     if (defined(enable_web_component_missing_deps) &&
         enable_web_component_missing_deps) {
       args += [ "--enable_web_component_missing_deps" ]
+    }
+
+    if (defined(enable_no_chrome_send) && enable_no_chrome_send) {
+      args += [ "--enable_no_chrome_send" ]
     }
   }
 }

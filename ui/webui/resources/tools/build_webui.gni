@@ -550,6 +550,72 @@ template("build_webui") {
         enable_web_component_missing_deps =
             invoker.eslint_enable_web_component_missing_deps
       }
+
+      legacy_chrome_send_users = [
+        # Note: DO NOT add new entries to the list below. All new WebUIs should
+        # use Mojo instead, see https://chromium.googlesource.com/chromium/src/+/main/docs/webui/webui_explainer.md#Pre_Mojo-alternative_chrome_send_WebUIMessageHandler
+        "//ios/chrome/app/resources/profile_internals",
+        "//chrome/browser/resources/about_sys",
+        "//chrome/browser/resources/access_code_cast",
+        "//chrome/browser/resources/accessibility",
+        "//chrome/browser/resources/bookmarks",
+        "//chrome/browser/resources/browser_switch",
+        "//chrome/browser/resources/certificate_manager",
+        "//chrome/browser/resources/certificate_viewer",
+        "//chrome/browser/resources/components",
+        "//chrome/browser/resources/device_log",
+        "//chrome/browser/resources/downloads",
+        "//chrome/browser/resources/family_link_user_internals",
+        "//chrome/browser/resources/feedback",
+        "//chrome/browser/resources/history",
+        "//chrome/browser/resources/inline_login",
+        "//chrome/browser/resources/intro",
+        "//chrome/browser/resources/management",
+        "//chrome/browser/resources/media",
+        "//chrome/browser/resources/media_router/cast_feedback",
+        "//chrome/browser/resources/media_router/internals",
+        "//chrome/browser/resources/memory_internals",
+        "//chrome/browser/resources/omnibox",
+        "//chrome/browser/resources/password_manager",
+        "//chrome/browser/resources/predictors",
+        "//chrome/browser/resources/print_preview",
+        "//chrome/browser/resources/profile_internals",
+        "//chrome/browser/resources/sandbox_internals",
+        "//chrome/browser/resources/settings",
+        "//chrome/browser/resources/settings_shared",
+        "//chrome/browser/resources/side_panel/customize_chrome",
+        "//chrome/browser/resources/signin",
+        "//chrome/browser/resources/signin/profile_picker",
+        "//chrome/browser/resources/support_tool",
+        "//chrome/browser/resources/tab_search",
+        "//chrome/browser/resources/webapks",
+        "//chrome/browser/resources/webui_toolbar",
+        "//components/autofill/core/browser/autofill_and_password_manager_internals",
+        "//components/crash/core/browser/resources",
+        "//components/download/resources/download_internals",
+        "//components/gcm_driver/resources",
+        "//components/metrics/debug",
+        "//components/ntp_tiles/webui/resources",
+        "//components/policy/resources/webui",
+        "//components/signin/core/browser/resources",
+        "//components/sync/service/resources",
+        "//components/ukm/debug",
+        "//components/webui/flags/resources",
+        "//components/webui/safe_browsing/resources",
+        "//components/webui/user_actions/resources",
+        "//components/webui/version/resources",
+        "//content/browser/resources/gpu",
+        "//content/browser/resources/histograms",
+        "//content/browser/resources/service_worker",
+        "//ui/webui/resources/cr_components/managed_footnote",
+        "//ui/webui/resources/cr_elements",
+        "//ui/webui/resources/js",
+      ]
+
+      if (filter_include([ get_label_info(":lint_ts", "dir") ],
+                         legacy_chrome_send_users) == [] && !is_ash_webui) {
+        enable_no_chrome_send = true
+      }
     }
   }
 
