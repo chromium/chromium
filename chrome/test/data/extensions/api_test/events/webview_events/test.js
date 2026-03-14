@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 chrome.app.runtime.onLaunched.addListener(function() {
-  var webview = document.createElement('webview');
+  const webview = document.createElement('webview');
   webview.src = 'data:text/html,<html><body>hello world</body></html>';
   webview.addEventListener('close', function() {});
   webview.contextMenus.onClicked.addListener(function() {});

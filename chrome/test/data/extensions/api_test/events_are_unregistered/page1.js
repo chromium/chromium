@@ -19,15 +19,15 @@ chrome.runtime.onStartup.addListener(function() {});
 chrome.runtime.onStartup.addListener(function() {});
 // A single listener, which previously had multiple listeners.
 {
-  let singleListener = function() {};
+  const singleListener = function() {};
   chrome.runtime.onSuspend.addListener(singleListener);
   chrome.runtime.onSuspend.addListener(function() {});
   chrome.runtime.onSuspend.removeListener(singleListener);
 }
 // No listeners, which previously had listeners (all were removed).
 {
-  let listener1 = function() {};
-  let listener2 = function() {};
+  const listener1 = function() {};
+  const listener2 = function() {};
   chrome.runtime.onInstalled.addListener(listener1);
   chrome.runtime.onInstalled.addListener(listener2);
   chrome.runtime.onInstalled.removeListener(listener1);
@@ -54,7 +54,7 @@ chrome.webNavigation.onDOMContentLoaded.addListener(
     function() {}, filterPort(80));
 // Different listeners with different filters, same event added twice.
 {
-  let singleListener = function() {};
+  const singleListener = function() {};
   chrome.webNavigation.onCompleted.addListener(
       function() {}, filterPort(80));
   chrome.webNavigation.onCompleted.addListener(
