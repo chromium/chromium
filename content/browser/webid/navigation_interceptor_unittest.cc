@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
@@ -192,8 +193,13 @@ class NavigationFinishObserver : public WebContentsObserver {
 
 class NavigationInterceptorTest : public RenderViewHostTestHarness {
  public:
-  NavigationInterceptorTest() = default;
+  NavigationInterceptorTest() {
+    features_.InitAndEnableFeature(features::kFedCmNavigationInterception);
+  }
   ~NavigationInterceptorTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(NavigationInterceptorTest, SerializedHeaderFormat) {

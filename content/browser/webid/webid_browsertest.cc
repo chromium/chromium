@@ -40,6 +40,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/webid/autofill_source.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/common/content_client.h"
@@ -2666,6 +2668,126 @@ IN_PROC_BROWSER_TEST_F(WebIdNavigationInterceptionTest, redirectPOST) {
   LoadStopObserver stop_observer(shell()->web_contents());
   EXPECT_TRUE(content::ExecJs(shell(), script,
                               content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait for the redirect to load.
+  stop_observer.Wait();
+
+  EXPECT_EQ("/title3.html",
+            shell()->web_contents()->GetLastCommittedURL().GetPath());
+
+  content::NavigationEntry* entry = shell()
+                                        ->web_contents()
+                                        ->GetPrimaryMainFrame()
+                                        ->GetController()
+                                        .GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_TRUE(entry->GetHasPostData());
+}
+
+class WebIdEmbedderInitiatedLoginTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFedCmEmbedderInitiatedLogin);
+  }
+};
+
+// Verify that embedder initiated login works correctly, especially in
+// connection with redirects.
+IN_PROC_BROWSER_TEST_F(WebIdEmbedderInitiatedLoginTest,
+                       EmbedderInitiatedLogin) {
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+
+  const GURL config_url(BaseIdpUrl());
+
+  // Add a servlet to serve a response for the interception.
+  config_details.servlets["/intercept"] = base::BindRepeating(
+      [](const GURL& config_url,
+         const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+        auto response = std::make_unique<BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->set_content_type("text/html");
+        response->set_content("<html><body>Interception</body></html>");
+        response->AddCustomHeader(
+            "FedCM-Intercept-Navigation",
+            base::StringPrintf("config_url=\"%s\", client_id=\"client_id_1\"",
+                               config_url.spec().c_str()));
+        return response;
+      },
+      config_url);
+
+  // Add a servlet to serve a response for the id assertion endpoint.
+  config_details.servlets["/authz/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            std::string content;
+            content += "client_id=client_id_1&";
+            content += "account_id=not_real_account&";
+            content += "disclosure_text_shown=false&";
+            content += "is_auto_selected=false&";
+            content += "mode=active&";
+            content += "fields=name,email,picture";
+
+            EXPECT_EQ(request.content, content);
+
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/json");
+            static constexpr char body[] =
+                R"({"redirect_to": {"url": "/title3.html",
+            "method": "POST", "body": "body"}})";
+            response->set_content(body);
+            DCHECK(request.headers.contains("Origin"));
+            response->AddCustomHeader(
+                network::cors::header_names::kAccessControlAllowOrigin,
+                request.headers.at("Origin"));
+            response->AddCustomHeader(
+                network::cors::header_names::kAccessControlAllowCredentials,
+                "true");
+            return response;
+          });
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  // Create a WebContents that represents the modal dialog, specifically
+  // the structure that the Identity Registry hangs to.
+  Shell* modal = CreateBrowser();
+
+  modal->LoadURL(config_url);
+  EXPECT_TRUE(WaitForLoadStop(modal->web_contents()));
+
+  auto mock = std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  ON_CALL(*controller, ShowLoadingDialog).WillByDefault(Return(true));
+
+  // Expects the account chooser to be opened. Selects the first account.
+  EXPECT_CALL(*controller, ShowAccountsDialog)
+      .WillOnce(WithArg<5>([&config_url](auto on_selected) {
+        // In the production code, the account autoselection is done in the
+        // ShowAccountsDialog implementation. Because we can't use that here,
+        // we still need to explicitly select the account.
+        std::move(on_selected)
+            .Run(config_url,
+                 /* account_id=*/"not_real_account",
+                 /* is_sign_in= */ true);
+        return true;
+      }));
+
+  webid::FederatedEmbedderLoginRequest::Set(
+      shell()->web_contents(), url::Origin::Create(config_url),
+      "not_real_account", base::DoNothing());
+
+  // Kick off the identity credential request via a navigation.
+  LoadStopObserver stop_observer(shell()->web_contents());
+  shell()->LoadURL(config_url.Resolve("/intercept"));
 
   // Wait for the redirect to load.
   stop_observer.Wait();

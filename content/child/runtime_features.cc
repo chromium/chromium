@@ -194,8 +194,12 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kFedCmIdPRegistration), kDefault},
           {wf::EnableFedCmLightweightMode,
            raw_ref(features::kFedCmLightweightMode), kDefault},
+          // We want to enable interception when either of these two flags is
+          // enabled because interception can happen with either flag.
           {wf::EnableFedCmNavigationInterception,
            raw_ref(features::kFedCmNavigationInterception), kDefault},
+          {wf::EnableFedCmNavigationInterception,
+           raw_ref(features::kFedCmEmbedderInitiatedLogin), kDefault},
           {wf::EnableFedCmErrorAttribute,
            raw_ref(features::kFedCmErrorAttribute), kDefault},
           {wf::EnableFedCmNonStringToken,

@@ -36,7 +36,8 @@ namespace content::webid {
 // static
 void NavigationInterceptor::MaybeCreateAndAdd(
     NavigationThrottleRegistry& registry) {
-  if (!IsNavigationInterceptionEnabled()) {
+  if (!IsNavigationInterceptionEnabled() &&
+      !IsEmbedderInitiatedLoginEnabled()) {
     return;
   }
   registry.AddThrottle(std::make_unique<NavigationInterceptor>(registry));
@@ -120,6 +121,14 @@ NavigationInterceptor::ProcessRequest() {
   content::RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
 
   if (!rfh) {
+    return PROCEED;
+  }
+
+  // We intercept if the user explicitly enabled interception, or if there is
+  // an active embedder login request.
+  if (!IsNavigationInterceptionEnabled() &&
+      !FederatedEmbedderLoginRequest::Get(
+          WebContents::FromRenderFrameHost(rfh))) {
     return PROCEED;
   }
 

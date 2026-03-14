@@ -345,9 +345,14 @@ void RequestService::RequestToken(
     return;
   }
 
+  bool has_embedder_login_request =
+      FederatedEmbedderLoginRequest::Get(
+          WebContents::FromRenderFrameHost(&render_frame_host())) != nullptr;
+
   can_accept_redirect_to_ =
       force_allow_redirect_to_for_testing_ ||
-      (IsNavigationInterceptionEnabled() && navigation_handle != nullptr);
+      ((IsNavigationInterceptionEnabled() || has_embedder_login_request) &&
+       navigation_handle != nullptr);
 
   had_transient_user_activation_ =
       (navigation_handle &&
@@ -1562,7 +1567,7 @@ void RequestService::OnAccountSelected(const GURL& idp_config_url,
       weak_ptr_factory_.GetWeakPtr(), idp_info.provider->Clone());
 
   IdpNetworkRequestManager::RedirectToCallback redirect_to;
-  if (IsNavigationInterceptionEnabled()) {
+  if (can_accept_redirect_to_) {
     redirect_to = base::BindOnce(&RequestService::OnRedirectToResponseReceived,
                                  weak_ptr_factory_.GetWeakPtr(),
                                  idp_info.provider->Clone());
@@ -2423,7 +2428,7 @@ bool RequestService::OnResolve(GURL idp_config_url,
       idp_infos_[idp_config_url]->provider;
   DCHECK(provider);
 
-  if (params->is_redirect_to() && IsNavigationInterceptionEnabled()) {
+  if (params->is_redirect_to() && can_accept_redirect_to_) {
     const auto& redirect_to = params->get_redirect_to();
     if (redirect_to->is_get()) {
       RedirectTo(idp_config_url, blink::mojom::RedirectParams::Tag::kGet,
@@ -2439,8 +2444,7 @@ bool RequestService::OnResolve(GURL idp_config_url,
 
   if (!params->is_token()) {
     // This could happen if we get a redirect request but interception is
-    // disabled. This should only be possible with a compromised renderer.
-    ReportBadMessage("redirect requested but interception disabled");
+    // disabled, for example when we have no active embedder initiated login.
     return false;
   }
 
