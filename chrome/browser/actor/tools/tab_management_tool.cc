@@ -222,8 +222,8 @@ void TabManagementTool::OnTabStripModelChanged(
       return;
     }
     // Our single tab should have been deleted, rather than moved elsewhere.
-    if (change.GetRemove()->contents[0].remove_reason !=
-        TabRemovedReason::kDeleted) {
+    if (!TabRemoveReasonUtils::WillDeleteTab(
+            change.GetRemove()->contents[0].remove_reason)) {
       PostResponseTask(std::move(callback_),
                        MakeResult(mojom::ActionResultCode::kTabWentAway));
       return;

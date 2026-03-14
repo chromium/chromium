@@ -669,7 +669,9 @@ void BrowserTabStripController::OnTabStripModelChanged(
         tabstrip_->RemoveTabAt(contents.contents, contents.index,
                                contents.contents == selection.old_contents);
         if (contents.remove_reason ==
-            TabRemovedReason::kInsertedIntoSidePanel) {
+                TabRemovedReason::kInsertedIntoSidePanel ||
+            contents.remove_reason ==
+                TabRemovedReason::kDeletedAndExpandSidePanel) {
           tabstrip_->StopAnimating();
         }
       }

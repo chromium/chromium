@@ -1533,7 +1533,7 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
     }
     case TabStripModelChange::kRemoved: {
       for (const auto& contents : change.GetRemove()->contents) {
-        if (contents.remove_reason == TabRemovedReason::kDeleted) {
+        if (TabRemoveReasonUtils::WillDeleteTab(contents.remove_reason)) {
           OnTabClosing(contents.contents);
         }
         OnTabDetached(contents.contents,
@@ -3062,8 +3062,8 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
           selection.old_contents, selection.new_contents,
           /*tab_removed_for_deletion=*/
           (change.type() == TabStripModelChange::kRemoved) &&
-              (change.GetRemove()->contents[0].remove_reason ==
-               TabRemovedReason::kDeleted));
+              (TabRemoveReasonUtils::WillDeleteTab(
+                  change.GetRemove()->contents[0].remove_reason)));
     }
   }
 

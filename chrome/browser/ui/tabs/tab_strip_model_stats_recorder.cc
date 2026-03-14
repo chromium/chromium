@@ -129,7 +129,7 @@ void TabStripModelStatsRecorder::OnTabStripModelChanged(
     const TabStripSelectionChange& selection) {
   if (change.type() == TabStripModelChange::kRemoved) {
     for (const auto& contents : change.GetRemove()->contents) {
-      if (contents.remove_reason == TabRemovedReason::kDeleted) {
+      if (TabRemoveReasonUtils::WillDeleteTab(contents.remove_reason)) {
         OnTabClosing(contents.contents);
       }
     }

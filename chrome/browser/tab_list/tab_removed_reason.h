@@ -15,6 +15,15 @@ enum class TabRemovedReason {
 
   // Insert the WebContents into side panel.
   kInsertedIntoSidePanel,
+
+  // Tab will be deleted and side panel will be expanded.
+  kDeletedAndExpandSidePanel,
+};
+
+class TabRemoveReasonUtils {
+ public:
+  static bool WillDeleteTab(TabRemovedReason removed_reason);
+  static bool WillDeleteWebContents(TabRemovedReason removed_reason);
 };
 
 #endif  // CHROME_BROWSER_TAB_LIST_TAB_REMOVED_REASON_H_

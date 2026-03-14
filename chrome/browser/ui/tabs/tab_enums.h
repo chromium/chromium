@@ -34,6 +34,8 @@ enum TabCloseTypes {
   // almost always want to set this.
   CLOSE_CREATE_HISTORICAL_TAB = 1 << 1,
 
+  // If true the side panel is expanded when the tab is closed.
+  CLOSE_EXPAND_SIDE_PANEL = 1 << 2,
 };
 
 // Constants used when adding tabs.

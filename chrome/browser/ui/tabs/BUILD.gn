@@ -263,6 +263,7 @@ if (!is_android) {
 
   source_set("tab_strip") {
     sources = [
+      "tab_close_types_data.h",
       "tab_strip_model.h",
       "tab_strip_model_delegate.h",
       "tab_strip_model_selection_state.h",
@@ -289,6 +290,7 @@ if (!is_android) {
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
     sources = [
+      "tab_close_types_data.cc",
       "tab_strip_model.cc",
       "tab_strip_model_delegate.cc",
       "tab_strip_model_selection_state.cc",

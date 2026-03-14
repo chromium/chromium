@@ -278,29 +278,25 @@ void BrowserStatusMonitor::OnTabStripModelChanged(
   } else if (change.type() == TabStripModelChange::kRemoved) {
     auto* remove = change.GetRemove();
     for (const auto& contents : remove->contents) {
-      switch (contents.remove_reason) {
-        case TabRemovedReason::kDeleted:
-        case TabRemovedReason::kInsertedIntoSidePanel:
+      if (TabRemoveReasonUtils::WillDeleteTab(contents.remove_reason)) {
 #if DCHECK_IS_ON()
-          DCHECK(!tabs_in_transit_.contains(contents.contents));
+        DCHECK(!tabs_in_transit_.contains(contents.contents));
 #endif
+        OnTabClosing(contents.contents);
+      } else {
+        // The tab will be reinserted immediately into another browser, so
+        // this event is ignored.
+        if (browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {
+          // TODO(crbug.com/40773744): when a dev tools window is docked, and
+          // its WebContents is removed, it will not be reinserted into
+          // another tab strip, so it should be treated as closed.
           OnTabClosing(contents.contents);
-          break;
-        case TabRemovedReason::kInsertedIntoOtherTabStrip:
-          // The tab will be reinserted immediately into another browser, so
-          // this event is ignored.
-          if (browser->GetType() == BrowserWindowInterface::TYPE_DEVTOOLS) {
-            // TODO(crbug.com/40773744): when a dev tools window is docked, and
-            // its WebContents is removed, it will not be reinserted into
-            // another tab strip, so it should be treated as closed.
-            OnTabClosing(contents.contents);
-          } else {
+        } else {
 #if DCHECK_IS_ON()
-            // The tab must not be already in the set of tabs in transit.
-            DCHECK(tabs_in_transit_.insert(contents.contents).second);
+          // The tab must not be already in the set of tabs in transit.
+          DCHECK(tabs_in_transit_.insert(contents.contents).second);
 #endif
-          }
-          break;
+        }
       }
     }
   } else if (change.type() == TabStripModelChange::kReplaced) {

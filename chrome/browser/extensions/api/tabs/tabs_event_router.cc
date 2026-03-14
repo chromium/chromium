@@ -496,14 +496,10 @@ void TabsEventRouter::OnTabRemoved(TabListInterface& tab_list,
   // list. Update them.
   UpdateTabIndices(tab_list);
 
-  switch (removed_reason) {
-    case TabRemovedReason::kDeleted:
-    case TabRemovedReason::kInsertedIntoSidePanel:
-      DispatchTabRemovedEvent(*web_contents, tab_list.IsClosingAllTabs());
-      break;
-    case TabRemovedReason::kInsertedIntoOtherTabStrip:
-      DispatchTabDetachedEvent(*web_contents);
-      break;
+  if (TabRemoveReasonUtils::WillDeleteTab(removed_reason)) {
+    DispatchTabRemovedEvent(*web_contents, tab_list.IsClosingAllTabs());
+  } else {
+    DispatchTabDetachedEvent(*web_contents);
   }
 }
 

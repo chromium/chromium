@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
 
 DEFINE_USER_DATA(ContextualTasksCloseButtonController);
@@ -114,6 +116,9 @@ void ContextualTasksCloseButtonController::MaybeCloseTabExpandSidePanel() {
   // closed since beforeunload event handler can intercept the close tab
   // action.
   controller->MoveTaskUiToNewTab();
-  // TODO(b/487328229): Disable the close tab animation in this case.
-  active_tab->Close();
+  auto* tab_strip_model = browser_window_interface_->GetTabStripModel();
+  CHECK(tab_strip_model);
+  tab_strip_model->CloseWebContentsAt(
+      tab_strip_model->GetIndexOfTab(active_tab),
+      TabCloseTypes::CLOSE_EXPAND_SIDE_PANEL);
 }

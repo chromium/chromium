@@ -7,6 +7,7 @@ source_set("tab_list") {
     "tab_list_interface.cc",
     "tab_list_interface.h",
     "tab_list_interface_observer.h",
+    "tab_removed_reason.cc",
     "tab_removed_reason.h",
   ]
 

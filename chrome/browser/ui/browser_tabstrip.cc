@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_close_types_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -120,9 +121,17 @@ void CloseWebContents(Browser* browser,
     return;
   }
 
-  browser->tab_strip_model()->CloseWebContentsAt(
-      index, add_to_history ? TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB
-                            : TabCloseTypes::CLOSE_NONE);
+  uint32_t close_types = TabCloseTypes::CLOSE_NONE;
+  if (auto* data = TabCloseTypesData::FromWebContents(contents)) {
+    close_types = data->close_types();
+    contents->RemoveUserData(TabCloseTypesData::UserDataKey());
+  }
+
+  if (add_to_history) {
+    close_types |= TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB;
+  }
+
+  browser->tab_strip_model()->CloseWebContentsAt(index, close_types);
 }
 
 void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {

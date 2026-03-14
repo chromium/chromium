@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_close_types_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -292,6 +293,7 @@ class MockTabStripModelObserver : public TabStripModelObserver {
         for (const auto& contents : change.GetRemove()->contents) {
           switch (contents.remove_reason) {
             case TabRemovedReason::kDeleted:
+            case TabRemovedReason::kDeletedAndExpandSidePanel:
             case TabRemovedReason::kInsertedIntoSidePanel:
               PushCloseState(contents.contents, contents.index);
               break;
@@ -3732,6 +3734,23 @@ TEST_P(TabStripModelTest, FastShutdown) {
     tabstrip.CloseAllTabs();
     EXPECT_TRUE(tabstrip.empty());
   }
+}
+
+// Tests that close_types are preserved when unload listeners are triggered.
+TEST_P(TabStripModelTest, CloseTypesPreservedAfterUnload) {
+  UnloadListenerTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+
+  std::unique_ptr<WebContents> contents = CreateWebContents();
+  tabstrip.AppendWebContents(std::move(contents), true);
+
+  auto close_types = TabCloseTypes::CLOSE_EXPAND_SIDE_PANEL;
+  delegate.set_run_unload_listener(true);
+  tabstrip.CloseWebContentsAt(0, TabCloseTypes::CLOSE_EXPAND_SIDE_PANEL);
+  EXPECT_EQ(1, tabstrip.count());
+  WebContents* raw_contents = tabstrip.GetWebContentsAt(0);
+  EXPECT_EQ(close_types,
+            TabCloseTypesData::FromWebContents(raw_contents)->close_types());
 }
 
 // Tests various permutations of pinning tabs.
