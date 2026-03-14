@@ -687,6 +687,8 @@ public class MultiWindowUtilsUnitTest {
         MultiWindowUtils.setMaxInstancesForTesting(maxInstances);
 
         // Simulate persistence of instance state for max instances = 3.
+        MultiWindowUtils.setAppTaskIdsForTesting(
+                new HashSet<>(List.of(TASK_ID_5, TASK_ID_6, TASK_ID_7)));
         writeInstanceInfo(
                 INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
         writeInstanceInfo(
@@ -825,6 +827,7 @@ public class MultiWindowUtilsUnitTest {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
         // Simulate persistence of 2 instances, running of 1.
+        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5, TASK_ID_6)));
         writeInstanceInfo(
                 INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
         writeInstanceInfo(
@@ -862,6 +865,7 @@ public class MultiWindowUtilsUnitTest {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
         // Simulate persistence of 2 instances, running of 1.
+        MultiWindowUtils.setAppTaskIdsForTesting(new HashSet<>(List.of(TASK_ID_5, TASK_ID_6)));
         writeInstanceInfo(
                 INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
         writeInstanceInfo(

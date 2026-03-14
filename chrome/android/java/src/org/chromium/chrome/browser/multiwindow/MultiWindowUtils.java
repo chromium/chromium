@@ -594,8 +594,10 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     static boolean isRestorableInstance(int index) {
+        int taskId = ChromeMultiInstancePersistentStore.readTaskId(index);
+        Set<Integer> activeTaskIds = getAllAppTaskIds(ContextUtils.getApplicationContext());
         return ChromeMultiInstancePersistentStore.readNormalTabCount(index) != 0
-                || ChromeMultiInstancePersistentStore.readTaskId(index) != INVALID_TASK_ID;
+                || activeTaskIds.contains(taskId);
     }
 
     @Override
