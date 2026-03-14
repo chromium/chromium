@@ -1997,10 +1997,10 @@
     How it works
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_ONE" desc="First bullet point under the security settings standard bundle section">
-    Provides strong security. You can choose to turn on additional features.
+    Provides strong protection
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_TWO" desc="Second bullet point under the security settings standard bundle section">
-    Sends less data to Google (for example, parts of URLs)
+    Google uses less data (for example, parts of URLs, download information) to detect threats
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_STANDARD_BULLET_THREE" desc="Third bullet point under the security settings standard bundle section">
     Prioritizes site speed
@@ -2011,14 +2011,11 @@
   <message name="IDS_SETTINGS_SECURITY_SAFE_BROWSING_ENHANCED_SUBTITLE" desc="Description of Safe Browsing enhanced protection">
     Real-time, proactive protection by sending more information to Google Safe Browsing
   </message>
-  <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_ONE" desc="First bullet point under the security settings enhanced bundle section">
-    Protects you on the web with Google’s best security
-  </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_TWO" desc="Second bullet point under the security settings enhanced bundle section">
-    Sends more data to Google (for example, URLs, page content, and more)
+    Google uses more data (for example, URLs, samples of page content, system information) to detect threats faster and more accurately
   </message>
   <message name="IDS_SETTINGS_SECURITY_BUNDLE_ENHANCED_BULLET_THREE" desc="Third bullet point under the security settings enhanced bundle section">
-    Slows some unfamiliar sites
+    Some features may slow unfamiliar sites
   </message>
   <message name="IDS_SETTINGS_SECURITY_FEATURE_ROW_STATE_ENHANCED" desc="The state text denoting that a security feature is in the enhanced state.">
     Enhanced
