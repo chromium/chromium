@@ -665,7 +665,10 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void autocompleteRequestTypeClicked_activatesSearchMode() {
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+
         mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+
+        verify(mPopup).dismiss();
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
     }
 
@@ -673,7 +676,10 @@ public class FuseboxMediatorUnitTest {
     public void popupToolCanvasClicked_activatesCanvasMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
+
         mModel.get(FuseboxProperties.POPUP_TOOL_CANVAS_CLICKED).run();
+
+        verify(mPopup).dismiss();
         assertEquals(AutocompleteRequestType.CANVAS, mInput.getRequestType());
     }
 
@@ -681,14 +687,20 @@ public class FuseboxMediatorUnitTest {
     public void popupToolDeepSearchClicked_activatesDeepSearchMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
+
         mModel.get(FuseboxProperties.POPUP_TOOL_DEEP_SEARCH_CLICKED).run();
+
+        verify(mPopup).dismiss();
         assertEquals(AutocompleteRequestType.DEEP_SEARCH, mInput.getRequestType());
     }
 
     @Test
     public void popupModelAutoClicked_setsModelMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+
         mModel.get(FuseboxProperties.POPUP_MODEL_AUTO_CLICKED).run();
+
+        verify(mPopup).dismiss();
         assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
                 .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_AUTOROUTE_VALUE);
@@ -697,7 +709,10 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void popupModelProClicked_setsModelMode() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
+
         mModel.get(FuseboxProperties.POPUP_MODEL_PRO_CLICKED).run();
+
+        verify(mPopup).dismiss();
         assertEquals(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE, mInput.getModelMode());
         verify(mComposeboxQueryControllerBridge)
                 .setActiveModel(ModelMode.MODEL_MODE_GEMINI_PRO_VALUE);

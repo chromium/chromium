@@ -913,6 +913,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
     private void setModelMode(int modelMode) {
         assert OmniboxFeatures.sShowModelPicker.getValue();
+        mPopup.dismiss();
         if (!isInInputSession()) return;
 
         mInput.setModelMode(modelMode);
