@@ -53,6 +53,7 @@ source_set("internal_structs") {
   ]
   deps = [
     "//base",
+    "//remoting/base:authentication_method",
     "//remoting/base:errors",
     "//remoting/base:session_policies",
   ]

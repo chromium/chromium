@@ -36,12 +36,21 @@ source_set("http_status") {
   ]
 }
 
+source_set("authentication_method") {
+  sources = [
+    "authentication_method.cc",
+    "authentication_method.h",
+  ]
+  deps = [
+    ":name_value_map",
+    "//base",
+  ]
+}
+
 source_set("base") {
   sources = [
     "async_file_util.cc",
     "async_file_util.h",
-    "authentication_method.cc",
-    "authentication_method.h",
     "auto_thread.cc",
     "auto_thread.h",
     "auto_thread_task_runner.cc",
@@ -153,6 +162,7 @@ source_set("base") {
   ]
 
   public_deps = [
+    ":authentication_method",
     ":http_status",
     "//base",
     "//net",
