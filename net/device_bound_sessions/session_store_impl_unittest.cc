@@ -5,18 +5,24 @@
 #include "net/device_bound_sessions/session_store_impl.h"
 
 #include <memory>
+#include <string_view>
 
-#include "base/barrier_closure.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/unexportable_keys/background_task_origin.h"
+#include "components/unexportable_keys/features.h"
+#include "components/unexportable_keys/mock_unexportable_key.h"
+#include "components/unexportable_keys/mock_unexportable_key_service.h"
+#include "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -29,14 +35,18 @@
 #include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/session_store.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/test/test_with_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using base::test::ErrorIs;
 
 namespace net::device_bound_sessions {
 
 namespace {
+
+using ::base::test::ErrorIs;
+using ::testing::ElementsAre;
+using ::testing::Return;
 
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
     kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256};
@@ -44,6 +54,7 @@ constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
     unexportable_keys::BackgroundTaskPriority::kUserBlocking;
 constexpr unexportable_keys::BackgroundTaskOrigin kTaskOrigin =
     unexportable_keys::BackgroundTaskOrigin::kDeviceBoundSessionCredentials;
+constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
 
 unexportable_keys::UnexportableKeyId GenerateNewKey(
     unexportable_keys::UnexportableKeyService& key_service) {
@@ -77,23 +88,29 @@ bool SessionMapsAreEqual(const SessionStore::SessionsMap& lhs,
 }
 
 std::unique_ptr<Session> CreateSessionHelper(
-    unexportable_keys::UnexportableKeyService& key_service,
-    const std::string& url_string,
-    const std::string& session_id,
-    const std::string& origin = "https://foo.test") {
+    unexportable_keys::UnexportableKeyId key_id,
+    std::string_view url_string,
+    std::string_view session_id,
+    std::string_view origin = "https://foo.test") {
   SessionParams::Scope scope;
   scope.origin = origin;
   std::string cookie_attr = "Secure; Domain=" + GURL(url_string).GetHost();
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", cookie_attr}});
-  SessionParams params{session_id,
-                       GURL(url_string),
-                       url_string,
-                       std::move(scope),
-                       std::move(cookie_credentials),
-                       GenerateNewKey(key_service),
+  SessionParams params{std::string(session_id),          GURL(url_string),
+                       std::string(url_string),          std::move(scope),
+                       std::move(cookie_credentials),    key_id,
                        /*allowed_refresh_initiators=*/{}};
   return *Session::CreateIfValid(params);
+}
+
+std::unique_ptr<Session> CreateSessionHelper(
+    unexportable_keys::UnexportableKeyService& key_service,
+    std::string_view url_string,
+    std::string_view session_id,
+    std::string_view origin = "https://foo.test") {
+  return CreateSessionHelper(GenerateNewKey(key_service), url_string,
+                             session_id, origin);
 }
 
 proto::Session CreateSessionProto(
@@ -137,9 +154,13 @@ SessionStore::SessionsMap CreateAndSaveSessions(
 
 }  // namespace
 
-class SessionStoreImplTest : public testing::Test {
+class SessionStoreImplTest : public net::TestWithTaskEnvironment {
  public:
-  SessionStoreImplTest() { EXPECT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  SessionStoreImplTest()
+      : net::TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    CHECK(temp_dir_.CreateUniqueTempDir());
+  }
 
   ~SessionStoreImplTest() override = default;
 
@@ -206,18 +227,26 @@ class SessionStoreImplTest : public testing::Test {
                        unexportable_keys::UnexportableKeyId> key_id_or_error) {
               session->set_unexportable_key_id(key_id_or_error);
               run_loop.Quit();
-            }),
-        SessionStore::RestoreSessionBindingKeyCallbackPriority::kHigh);
+            }));
     run_loop.Run();
+  }
+
+  unexportable_keys::ScopedMockUnexportableKeyProvider&
+  SwitchToMockKeyProvider() {
+    // Using `emplace()` to destroy the existing scoped object before
+    // constructing a new one.
+    return scoped_key_provider_
+        .emplace<unexportable_keys::ScopedMockUnexportableKeyProvider>();
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
+  std::variant<crypto::ScopedFakeUnexportableKeyProvider,
+               unexportable_keys::ScopedMockUnexportableKeyProvider>
+      scoped_key_provider_;
   unexportable_keys::UnexportableKeyTaskManager unexportable_key_task_manager_;
   unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
       unexportable_key_task_manager_, kTaskOrigin,
@@ -607,58 +636,103 @@ TEST_F(SessionStoreImplTest, PruneLoadedEntryWithInvalidRefreshInitiator) {
   EXPECT_EQ(keys_to_delete[0], site.Serialize());
 }
 
-TEST_F(SessionStoreImplTest, RestoreSessionBindingKeyPriority) {
+TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
+  base::HistogramTester histograms;
+  feature_list_.InitAndEnableFeature(
+      unexportable_keys::kUnexportableKeyDeletion);
+  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
+      SwitchToMockKeyProvider().mock();
+
   CreateStoreAndLoadSessions();
 
-  // Save a session.
-  std::unique_ptr<Session> session = CreateSessionHelper(
-      unexportable_key_service(), "https://foo.test", "session1");
-  auto site = net::SchemefulSite(GURL("https://foo.test"));
-  store().SaveSession(site, *session);
+  // The first two keys are known to the service, but the third key is stale.
+  const std::vector<uint8_t> kWrappedKey1 = {1, 2, 3};
+  const std::vector<uint8_t> kWrappedKey2 = {4, 5, 6};
+  const std::vector<uint8_t> kStaleWrappedKey = {7, 8, 9};
 
-  // Clear the key service's internal cache. This ensures that the next key
-  // restore posts an asynchronous background task rather than resolving
-  // synchronously.
-  base::test::TestFuture<unexportable_keys::ServiceErrorOr<size_t>>
-      delete_future;
-  unexportable_key_service().DeleteAllKeysSlowlyAsync(
-      delete_future.GetCallback());
-  // DeleteAllKeysSlowlyAsync returns an error on stateless providers (like for
-  // tests), which is fine as long as it clears the in-memory maps.
-  std::ignore = delete_future.Get();
+  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).WillRepeatedly([=] {
+    auto key1 = std::make_unique<unexportable_keys::MockUnexportableKey>();
+    auto key2 = std::make_unique<unexportable_keys::MockUnexportableKey>();
+    auto stale_key = std::make_unique<unexportable_keys::MockUnexportableKey>();
 
-  // We will restore the key twice, once with low priority and once with high
-  // priority. The high priority callback must be executed first.
-  std::vector<int> callback_order;
-  base::RunLoop run_loop;
-  auto barrier_closure = base::BarrierClosure(2, run_loop.QuitClosure());
+    ON_CALL(*key1, GetWrappedKey).WillByDefault(Return(kWrappedKey1));
+    ON_CALL(*key2, GetWrappedKey).WillByDefault(Return(kWrappedKey2));
+    ON_CALL(*stale_key, GetWrappedKey).WillByDefault(Return(kStaleWrappedKey));
 
-  store().RestoreSessionBindingKey(
-      SessionKey{site, session->id()},
-      base::BindLambdaForTesting(
-          [&callback_order, barrier_closure](
-              unexportable_keys::ServiceErrorOr<
-                  unexportable_keys::UnexportableKeyId> key_id_or_error) {
-            callback_order.push_back(1);  // Low priority
-            barrier_closure.Run();
-          }),
-      SessionStore::RestoreSessionBindingKeyCallbackPriority::kLow);
+    return base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
+        std::move(key1),
+        std::move(key2),
+        std::move(stale_key),
+    });
+  });
 
-  store().RestoreSessionBindingKey(
-      SessionKey{site, session->id()},
-      base::BindLambdaForTesting(
-          [&callback_order, barrier_closure](
-              unexportable_keys::ServiceErrorOr<
-                  unexportable_keys::UnexportableKeyId> key_id_or_error) {
-            callback_order.push_back(2);  // High priority
-            barrier_closure.Run();
-          }),
-      SessionStore::RestoreSessionBindingKeyCallbackPriority::kHigh);
+  // Obtain the corresponding key ids.
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      std::vector<unexportable_keys::UnexportableKeyId>>>
+      get_all_keys_future;
+  unexportable_key_service().GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      get_all_keys_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<unexportable_keys::UnexportableKeyId> all_keys_ids,
+      get_all_keys_future.Take());
 
-  // Run the background task loop so the restore operation completes.
-  run_loop.Run();
+  unexportable_keys::UnexportableKeyId key_id_1 = all_keys_ids[0];
+  unexportable_keys::UnexportableKeyId key_id_2 = all_keys_ids[1];
 
-  EXPECT_THAT(callback_order, testing::ElementsAre(2, 1));
+  // Save two new sessions.
+  static constexpr std::string_view kFooSite = "https://foo.test";
+  static constexpr std::string_view kBarSite = "https://bar.test";
+  store().SaveSession(
+      net::SchemefulSite(GURL(kFooSite)),
+      *CreateSessionHelper(key_id_1, kFooSite, "session1", kFooSite));
+  ASSERT_EQ(store().GetAllSessions().size(), 1u);
+
+  store().SaveSession(
+      net::SchemefulSite(GURL(kBarSite)),
+      *CreateSessionHelper(key_id_2, kBarSite, "session2", kBarSite));
+  ASSERT_EQ(store().GetAllSessions().size(), 2u);
+
+  // Finish loading the sessions, and wait for the stale key to be deleted.
+  EXPECT_CALL(mock_key_provider, DeleteSigningKeysSlowly)
+      .WillOnce([&](auto keys) {
+        auto wrapped_keys = base::ToVector(
+            keys, [](auto* key) { return key->GetWrappedKey(); });
+        EXPECT_THAT(wrapped_keys, ElementsAre(kStaleWrappedKey));
+        return wrapped_keys.size();
+      });
+
+  // Advance time to allow StartGarbageCollection to run.
+  FastForwardBy(kGarbageCollectionDelay);
+
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "TotalKeyCount",
+      3, 1);
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "UsedKeyCount",
+      2, 1);
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "ObsoleteKeyCount",
+      1, 1);
+  histograms.ExpectUniqueSample(
+      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
+      "ObsoleteKeyDeletionCount",
+      1, 1);
+}
+
+TEST_F(SessionStoreImplTest, GarbageCollectionDoesNotTriggerIfFeatureDisabled) {
+  feature_list_.InitAndDisableFeature(
+      unexportable_keys::kUnexportableKeyDeletion);
+  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
+      SwitchToMockKeyProvider().mock();
+
+  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).Times(0);
+  EXPECT_CALL(mock_key_provider, DeleteAllSigningKeysSlowly).Times(0);
+
+  CreateStoreAndLoadSessions();
 }
 
 }  // namespace net::device_bound_sessions

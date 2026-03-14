@@ -53,19 +53,9 @@ class NET_EXPORT SessionStore {
   // from its persistent form saved in the store.
   using RestoreSessionBindingKeyCallback = base::OnceCallback<void(
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>)>;
-
-  // The priority of the callback. Needs to be ordered by decreasing
-  // priority (i.e. the highest priority is the lowest value).
-  enum class RestoreSessionBindingKeyCallbackPriority {
-    kHigh = 0,
-    kLow = 1,
-    kMaxValue = kLow,
-  };
-
   virtual void RestoreSessionBindingKey(
       const SessionKey& session_key,
-      RestoreSessionBindingKeyCallback callback,
-      RestoreSessionBindingKeyCallbackPriority priority) = 0;
+      RestoreSessionBindingKeyCallback callback) = 0;
 
  protected:
   SessionStore() = default;
