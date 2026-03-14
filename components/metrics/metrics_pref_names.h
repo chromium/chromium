@@ -130,6 +130,13 @@ inline constexpr char kUsePostFREFixSamplingTrial[] =
 // (NOTE: If within //chrome, use
 // ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled()).
 
+// Integer pref representing the current level of metrics reporting.
+// The value is an integer corresponding to metrics::MetricsReportingLevel.
+// This is part of a new feature being developed to restructure metrics privacy
+// settings.
+inline constexpr char kMetricsReportingLevel[] =
+    "user_experience_metrics.reporting_level";
+
 // Boolean that specifies whether or not crash reporting and metrics reporting
 // are sent over the network for analysis.
 inline constexpr char kMetricsReportingEnabled[] =
