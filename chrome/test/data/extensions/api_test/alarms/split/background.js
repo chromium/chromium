@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let inIncognito = chrome.extension.inIncognitoContext;
-let alarmName = inIncognito ? 'incognito' : 'normal';
+const inIncognito = chrome.extension.inIncognitoContext;
+const alarmName = inIncognito ? 'incognito' : 'normal';
 let alarmTriggered = false;
 let testEventFired = false;
-let createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
+const createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
 
 function checkAndCompleteTest() {
   if (alarmTriggered && testEventFired)
@@ -51,8 +51,8 @@ chrome.test.runTests([
     });
   },
   function clearAlarms() {
-    chrome.alarms.create(alarmName + '-1', createParams);
-    chrome.alarms.create(alarmName + '-2', createParams);
+    chrome.alarms.create(`${alarmName}-1`, createParams);
+    chrome.alarms.create(`${alarmName}-2`, createParams);
     chrome.alarms.clearAll(function(wasCleared) {
       chrome.test.assertTrue(wasCleared);
       chrome.test.succeed();
@@ -62,4 +62,4 @@ chrome.test.runTests([
 
 // Send a message to C++ to let it know that JS has registered event
 // listeners for onAlarm and onMessage.
-chrome.test.sendMessage('ready: ' + inIncognito);
+chrome.test.sendMessage(`ready: ${inIncognito}`);

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let inIncognito = chrome.extension.inIncognitoContext;
-let alarmName = inIncognito ? 'incognito' : 'normal';
-let createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
+const inIncognito = chrome.extension.inIncognitoContext;
+const alarmName = inIncognito ? 'incognito' : 'normal';
+const createParams = {delayInMinutes: 0.001, periodInMinutes: 60};
 
-var alarmFired = false;
-var succeedOnAlarm = false;
+let alarmFired = false;
+let succeedOnAlarm = false;
 
 chrome.alarms.onAlarm.addListener(function(alarm) {
   chrome.test.assertFalse(alarmFired);
@@ -21,7 +21,7 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
 chrome.test.runTests([
   // Creates an alarm with the name of the context it was created in.
   function createAlarm() {
-    isWaitingForAlarm = true;
+    let isWaitingForAlarm = true;
     chrome.alarms.create(alarmName, createParams, () => {
       chrome.test.assertNoLastError();
       // The alarm (which was set for an obscenely short amount of time) could
@@ -54,8 +54,8 @@ chrome.test.runTests([
     });
   },
   function clearAlarms() {
-    chrome.alarms.create(alarmName + '-1', createParams);
-    chrome.alarms.create(alarmName + '-2', createParams);
+    chrome.alarms.create(`${alarmName}-1`, createParams);
+    chrome.alarms.create(`${alarmName}-2`, createParams);
     chrome.alarms.clearAll(function(wasCleared) {
       chrome.test.assertTrue(wasCleared);
       chrome.test.succeed();
