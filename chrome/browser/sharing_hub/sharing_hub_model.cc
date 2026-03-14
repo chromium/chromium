@@ -20,11 +20,11 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,8 +79,10 @@ std::vector<SharingHubAction> SharingHubModel::GetFirstPartyActionList(
         results.push_back(action);
       }
     } else if (action.command_id == IDC_SAVE_PAGE) {
-      if (chrome::CanSavePage(chrome::FindBrowserWithTab(web_contents))) {
-        results.push_back(action);
+      if (auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents)) {
+        if (chrome::CanSavePage(tab->GetBrowserWindowInterface())) {
+          results.push_back(action);
+        }
       }
     } else {
       results.push_back(action);

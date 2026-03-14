@@ -2068,7 +2068,7 @@ void SavePage(Browser* browser) {
   current_tab->OnSavePage();
 }
 
-bool CanSavePage(const Browser* browser) {
+bool CanSavePage(const BrowserWindowInterface* bwi) {
   // LocalState can be NULL in tests.
   if (g_browser_process->local_state() &&
       !g_browser_process->local_state()->GetBoolean(
@@ -2076,13 +2076,13 @@ bool CanSavePage(const Browser* browser) {
     return false;
   }
   if (static_cast<policy::DownloadRestriction>(
-          browser->profile()->GetPrefs()->GetInteger(
+          bwi->GetProfile()->GetPrefs()->GetInteger(
               policy::policy_prefs::kDownloadRestrictions)) ==
       policy::DownloadRestriction::ALL_FILES) {
     return false;
   }
-  return !browser->is_type_devtools() &&
-         !(GetContentRestrictions(browser) & CONTENT_RESTRICTION_SAVE);
+  return (bwi->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS) &&
+         !(GetContentRestrictions(bwi) & CONTENT_RESTRICTION_SAVE);
 }
 
 void Print(BrowserWindowInterface* bwi) {

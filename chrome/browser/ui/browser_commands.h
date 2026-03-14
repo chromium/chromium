@@ -243,7 +243,7 @@ void GenerateQRCode(BrowserWindowInterface* bwi);
 void SharingHub(Browser* browser);
 void ScreenshotCapture(Browser* browser);
 void SavePage(Browser* browser);
-bool CanSavePage(const Browser* browser);
+bool CanSavePage(const BrowserWindowInterface* bwi);
 void Print(BrowserWindowInterface* bwi);
 bool CanPrint(BrowserWindowInterface* bwi);
 #if BUILDFLAG(ENABLE_PRINTING)
