@@ -471,6 +471,13 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "internals/",
       IDR_CONTEXTUAL_TASKS_INTERNALS_CONTEXTUAL_TASKS_INTERNALS_HTML);
 
+  source->AddBoolean(
+      "useStratusDarkModeColors",
+      contextual_tasks::ShouldUseStratusDarkModeColors());
+  source->AddString(
+      "useStratusDarkModeColorsAttr",
+      contextual_tasks::ShouldUseStratusDarkModeColors() ? "true" : "false");
+
   AddZeroStateStrings(source, profile);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
 }
