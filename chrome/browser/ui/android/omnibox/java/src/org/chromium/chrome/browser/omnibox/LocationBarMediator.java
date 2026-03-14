@@ -2204,12 +2204,18 @@ class LocationBarMediator
         // SearchEngineUtils) is available.
         if (mSearchEngineUtils == null) return;
 
+        @AutocompleteRequestType
+        int requestType =
+                mCurrentInput == null
+                        ? AutocompleteRequestType.SEARCH
+                        : mCurrentInput.getRequestType();
+        FuseboxSessionState fuseboxSessionState = null;
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            fuseboxSessionState = FuseboxSessionState.from(mLocationBarDataProvider);
+        }
+
         mUrlCoordinator.setUrlBarHintText(
-                assertNonNull(mSearchEngineUtils)
-                        .getOmniboxHintText(
-                                mCurrentInput == null
-                                        ? AutocompleteRequestType.SEARCH
-                                        : mCurrentInput.getRequestType()));
+                mSearchEngineUtils.getOmniboxHintText(requestType, fuseboxSessionState));
     }
 
     /* package */ ToolbarWidthConsumer getBookmarkButtonToolbarWidthConsumer() {
