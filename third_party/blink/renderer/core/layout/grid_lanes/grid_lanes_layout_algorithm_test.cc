@@ -22,6 +22,17 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto& style = algorithm.Style();
     grid_axis_direction_ = style.GridLanesTrackSizingDirection();
 
+    GridItems* grid_items = nullptr;
+    const GridLayoutSubtree* layout_subtree =
+        algorithm.ComputeGridLanesGeometry(
+            SizingConstraint::kLayout,
+            /*should_apply_inline_size_containment=*/false, &grid_items);
+
+    layout_data_ = layout_subtree->LayoutData();
+
+    ASSERT_EQ(grid_axis_direction_, TrackCollection().Direction());
+
+    // To access virtual items for testing, run a separate sizing pass.
     GridSizingTree sizing_tree;
     bool needs_intrinsic_track_size;
     algorithm.ComputeSizingTreeInGridAxis(
@@ -106,13 +117,11 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     running_positions.SetAutoPlacementCursorForTesting(cursor);
   }
 
-  const GridSizingTrackCollection& TrackCollection() {
+  const GridLayoutTrackCollection& TrackCollection() {
     const auto grid_axis_direction =
         GridLanesLayoutAlgorithmTest::grid_axis_direction_;
-    const auto& track_collection = (grid_axis_direction == kForColumns)
-                                       ? layout_data_->Columns()
-                                       : layout_data_->Rows();
-    return To<GridSizingTrackCollection>(track_collection);
+    return (grid_axis_direction == kForColumns) ? layout_data_->Columns()
+                                                : layout_data_->Rows();
   }
 
  private:
@@ -126,7 +135,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     return virtual_items_data_[index];
   }
 
-  Persistent<GridLayoutData> layout_data_;
+  Persistent<const GridLayoutData> layout_data_;
   GridTrackSizingDirection grid_axis_direction_ = kForColumns;
 
   // Virtual items represent the contributions of item groups in track sizing

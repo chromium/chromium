@@ -91,14 +91,15 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
     kFinalPlacement,
   };
 
-  // Computes the grid-lanes geometry for layout by running track sizing
-  // (including any intrinsic repeat passes). Returns a `GridSizingTree` with
-  // the grid-lanes items and finalized track sizes. `opt_oof_children` is an
-  // optional vector of out-of-flow direct children of the grid-lanes container
-  // that this method will populate.
-  GridSizingTree ComputeGridLanesGeometry(
+  // Computes the grid-lanes geometry by running track sizing (including any
+  // intrinsic repeat passes), baseline alignment, and finalization. Returns
+  // the finalized layout subtree. Grid items are moved out via the
+  // `grid_items` parameter. `opt_oof_children` is an optional vector of
+  // out-of-flow direct children of the grid-lanes container.
+  GridLayoutSubtree* ComputeGridLanesGeometry(
       SizingConstraint sizing_constraint,
       bool should_apply_inline_size_containment,
+      GridItems** grid_items,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
 
   // This places all the items in the sizing tree and adjusts
@@ -108,7 +109,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // is an output parameter that can be used to find the intrinsic inline size
   // when the stacking axis is the inline axis.
   void PlaceGridLanesItems(
-      GridSizingTree& sizing_tree,
+      GridItems& grid_items,
+      const GridLayoutData& layout_data,
       GridLanesRunningPositions& running_positions,
       std::optional<SizingConstraint> sizing_constraint = std::nullopt);
 
@@ -124,7 +126,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // `baseline_accumulator` output parameter accumulates container-level
   // baselines from the items.
   void RunGridLanesPlacementPhase(
-      GridSizingTree& sizing_tree,
+      GridItems& grid_items,
+      const GridLayoutData& layout_data,
       std::optional<SizingConstraint> sizing_constraint,
       LayoutUnit stacking_axis_gap,
       PlacementPhase placement_phase,
