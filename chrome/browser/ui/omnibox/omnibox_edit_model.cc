@@ -780,6 +780,19 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
           : u"";
   RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
 
+  using OEP = metrics::OmniboxEventProto;
+  OEP::PageClassification classification = GetPageClassification();
+  const char* surface = "WebOmnibox";
+  if (omnibox::IsNtpOmnibox(classification)) {
+    surface = "NtpOmnibox";
+  } else if (omnibox::IsSearchResultsPage(classification)) {
+    surface = "SrpOmnibox";
+  }
+  std::string action =
+      base::StrCat({"ContextualSearch.AiModeButtonClick.", surface});
+  base::RecordAction(base::UserMetricsAction(action.c_str()));
+  base::UmaHistogramBoolean(action, true);
+
   bool force_navigation_to_aim =
       !via_context_menu &&
       base::FeatureList::IsEnabled(omnibox::kAiModeEntryPointAlwaysNavigates);

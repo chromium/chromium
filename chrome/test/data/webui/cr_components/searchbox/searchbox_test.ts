@@ -388,6 +388,12 @@ suite('SearchboxTest', () => {
 
     // Assert.
     await whenOpenComposeBox;
+
+    const metricName = 'ContextualSearch.AiModeButtonClick.NtpRealbox';
+    // One histogram and one action metric should be emitted.
+    assertEquals(2, metrics.count(metricName));
+    // Only one histogram should be recorded.
+    assertEquals(1, metrics.count(metricName, true));
   });
 
   test('clicking composebox button with text records user action', async () => {
@@ -414,12 +420,18 @@ suite('SearchboxTest', () => {
     }));
 
     // Assert.
-    const metricName =
+    const submitMetricName =
         'ContextualSearch.UserAction.SubmitQuery.WithoutContext.NewTabPage';
     // One histogram and one action metric should be emitted.
-    assertEquals(2, metrics.count(metricName));
+    assertEquals(2, metrics.count(submitMetricName));
     // Only one histogram should be recorded.
-    assertEquals(1, metrics.count(metricName, true));
+    assertEquals(1, metrics.count(submitMetricName, true));
+
+    const buttonMetricName = 'ContextualSearch.AiModeButtonClick.NtpRealbox';
+    // One histogram and one action metric should be emitted.
+    assertEquals(2, metrics.count(buttonMetricName));
+    // Only one histogram should be recorded.
+    assertEquals(1, metrics.count(buttonMetricName, true));
   });
 
   test('hovering on composebox button plays the animation.', async () => {

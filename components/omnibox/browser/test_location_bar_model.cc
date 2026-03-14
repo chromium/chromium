@@ -61,7 +61,7 @@ TestLocationBarModel::GetPageClassification(bool is_prefetch) const {
 
 metrics::OmniboxEventProto::PageClassification
 TestLocationBarModel::GetOmniboxComposeboxPageClassification() const {
-  return metrics::OmniboxEventProto::OTHER;
+  return page_classification_;
 }
 
 const gfx::VectorIcon& TestLocationBarModel::GetVectorIcon() const {

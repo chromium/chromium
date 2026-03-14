@@ -1019,17 +1019,15 @@ export class SearchboxElement extends SearchboxElementBase implements
     // TODO(crbug.com/463667769): Call submitQuery here since RealboxHandler is
     // now a `ContextualSearchboxHandler`.
     this.pageHandler_.activateMetricsFunnel('AiModeButton');
+
+    chrome.histograms.recordUserAction(
+        'ContextualSearch.AiModeButtonClick.NtpRealbox');
+    chrome.histograms.recordBoolean(
+        'ContextualSearch.AiModeButtonClick.NtpRealbox', true);
+
     if (!this.composeboxEnabled || this.$.input.inputElement.value.trim()) {
-      let source = 'Unknown';
-      if (loadTimeData.getBoolean('isLensSearchbox')) {
-        source = 'Lens';
-      } else if (loadTimeData.getBoolean('isTopChromeSearchbox')) {
-        source = 'Omnibox';
-      } else {
-        source = 'NewTabPage';
-      }
       const metricName =
-          `ContextualSearch.UserAction.SubmitQuery.WithoutContext.${source}`;
+          'ContextualSearch.UserAction.SubmitQuery.WithoutContext.NewTabPage';
       chrome.histograms.recordUserAction(metricName);
       chrome.histograms.recordBoolean(metricName, true);
 
