@@ -66,9 +66,11 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   const int bottom_margin =
       layout_provider->GetDistanceMetric(DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
-  // The last view is a RichHoverButton, which overrides the bottom
-  // dialog inset in favor of its own.
-  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, bottom_margin, 0));
+
+  auto* layout_manager =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager->SetOrientation(views::LayoutOrientation::kVertical);
+  layout_manager->SetInteriorMargin(gfx::Insets::TLBR(0, 0, bottom_margin, 0));
 
   // Use the same insets as buttons and permission rows in the main page for
   // consistency.
@@ -76,10 +78,6 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
   const int controls_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
-
-  auto* layout_manager =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager->SetOrientation(views::LayoutOrientation::kVertical);
 
   auto* permission_info_container =
       AddChildView(std::make_unique<views::View>());
