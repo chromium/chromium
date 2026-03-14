@@ -36,7 +36,8 @@ export function getHtml(this: TopToolbarElement) {
         @click="${this.onThreadHistoryClick_}"
         iron-icon="contextual_tasks:notes_spark"
         class="no-overlap" title="$i18n{threadHistoryTooltip}"
-        aria-label="$i18n{threadHistoryTooltip}">
+        aria-label="$i18n{threadHistoryTooltip}"
+        ?hidden="${!this.isAiPage}">
     </cr-icon-button>
     <contextual-tasks-favicon-group id="sources"
         .contextInfos="${this.contextInfos}"
