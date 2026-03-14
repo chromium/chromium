@@ -190,6 +190,10 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
             float indicatorPosY,
             int highlightPosition,
             boolean drawDot) {
+        if (highlightPosition < 0) {
+            return;
+        }
+
         mPaint.setColor(mColorActive);
 
         // The width of an indicator dot with padding.
