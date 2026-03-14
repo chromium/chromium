@@ -240,7 +240,7 @@
   padding-top: 2px;
 }
 
-:host(:not([show-simplified-ui_])) .deep-dive-chip .action-chip-text-container {
+:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right) .action-chip-text-container {
   padding: 2px 0;
 }
 
@@ -308,7 +308,7 @@
   -webkit-line-clamp: 1;
 }
 
-:host(:not([show-simplified-ui_])) .deep-dive-chip .chip-body {
+:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right) .chip-body {
   -webkit-line-clamp: 2;
 }
 
@@ -320,8 +320,8 @@
   -webkit-line-clamp: 2;
 }
 
-:host(:not([show-simplified-ui_])) .deep-dive-chip:hover .chip-body,
-:host(:not([show-simplified-ui_])) .deep-dive-chip:focus .chip-body {
+:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right):hover .chip-body,
+:host(:not([show-simplified-ui_])) .action-chip:has(.icon-type-sub-arrow-right):focus .chip-body {
   word-break: break-word;
   white-space: normal;
   -webkit-box-orient: vertical;

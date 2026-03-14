@@ -191,7 +191,8 @@ suite('NewTabPageActionChipsTest', () => {
       actionChips: [{
         suggestTemplateInfo: {
           typeIcon: IconType.kSubArrowRight,
-          primaryText: {text: 'Example Tab', a11yText: null},
+          // No primary text for deep dive chip
+          primaryText: null,
           secondaryText: {text: 'Subtitle for deep dive', a11yText: null},
         },
         suggestion: 'Suggestion for deep dive',
