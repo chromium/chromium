@@ -122,6 +122,10 @@ const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
     &kContextualTasks, "contextual-tasks-ai-page-url",
     "https://www.google.com/search?udm=50&sourceid=chrome"};
 
+const base::FeatureParam<std::string> kContextualTasksGeminiBaseUrl{
+    &kContextualTasks, "contextual-tasks-gemini-base-url",
+    "https://gemini.google.com/app/"};
+
 // The host that any URL loaded in the embedded WebUi page will be routed to.
 const base::FeatureParam<std::string> kContextualTasksForcedEmbeddedPageHost{
     &kContextualTasks, "contextual-tasks-forced-embedded-page-host", ""};
@@ -335,6 +339,10 @@ bool ShouldForceCountryCodeUS() {
 
 std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
+}
+
+std::string GetContextualTasksGeminiBaseUrl() {
+  return kContextualTasksGeminiBaseUrl.Get();
 }
 
 std::string GetContextualTasksDisplayUrlScheme() {

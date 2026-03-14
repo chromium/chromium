@@ -1946,14 +1946,12 @@ TEST_F(ContextualTasksServiceImplTest,
   service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
 }
 
-TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId) {
+TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_Aim) {
   ContextualTask task = service_->CreateTask();
 
   const std::string server_id = "1234";
   const std::string title = "title";
   const std::string turn_id = "5678";
-  int64_t last_turn_time = 1;
-  Thread thread(ThreadType::kAiMode, server_id, title, last_turn_time, turn_id);
   service_->UpdateThreadForTask(task.GetTaskId(), ThreadType::kAiMode,
                                 server_id, turn_id, title);
 
@@ -1964,6 +1962,9 @@ TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId) {
       base::BindOnce(
           [](const std::string& server_id, const std::string& turn_id,
              GURL url) {
+            ASSERT_TRUE(base::StartsWith(url.host(), "www.google.com"));
+            ASSERT_EQ("/search", url.path());
+
             std::string mstk;
             net::GetValueForKeyInQuery(url, "mstk", &mstk);
             ASSERT_EQ(mstk, turn_id);
@@ -1974,6 +1975,54 @@ TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId) {
           },
           server_id, turn_id)
           .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_Gemini) {
+  ContextualTask task = service_->CreateTask();
+
+  const std::string server_id = "1234";
+  const std::string title = "title";
+  service_->UpdateThreadForTask(task.GetTaskId(), ThreadType::kGemini,
+                                server_id, std::nullopt, title);
+
+  base::RunLoop run_loop;
+  service_->GetThreadUrlFromTaskId(
+      task.GetTaskId(), "en-us",
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      base::BindOnce(
+          [](const std::string& server_id, GURL url) {
+            ASSERT_TRUE(base::StartsWith(url.host(), "gemini.google.com"));
+            ASSERT_TRUE(base::EndsWith(url.path(), server_id));
+          },
+          server_id)
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_NoThread) {
+  ContextualTask task = service_->CreateTask();
+  base::RunLoop run_loop;
+  service_->GetThreadUrlFromTaskId(
+      task.GetTaskId(), "en-us",
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      base::BindOnce([](GURL url) {
+        // Error case should still return a valid URL.
+        ASSERT_TRUE(url.is_valid());
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId_NoTask) {
+  base::Uuid task_id =
+      base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000000");
+  base::RunLoop run_loop;
+  service_->GetThreadUrlFromTaskId(
+      task_id, "en-us", omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      base::BindOnce([](GURL url) {
+        // Error case should still return a valid URL.
+        ASSERT_TRUE(url.is_valid());
+      }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 

@@ -535,7 +535,10 @@ void ContextualTasksServiceImpl::GetThreadUrlFromTaskId(
             OMNIBOX_LOG("nav_trace")
                 << "ContextualTasks navigation trace: "
                    "GetThreadUrlFromTaskId callback called";
+
+            // AIM is the default if no task or thread is found.
             GURL url = GetDefaultAimUrl(locale, entry_point);
+
             if (!task) {
               OMNIBOX_LOG("nav_trace")
                   << "ContextualTasks navigation trace: "
@@ -547,8 +550,7 @@ void ContextualTasksServiceImpl::GetThreadUrlFromTaskId(
             }
 
             std::optional<Thread> thread = task->GetThread();
-            // Gemini Thread URL generation is not supported yet.
-            if (!thread || thread->type == ThreadType::kGemini) {
+            if (!thread) {
               OMNIBOX_LOG("nav_trace")
                   << "ContextualTasks navigation trace: "
                      "GetThreadUrlFromTaskId returning early, no thread or "
@@ -558,14 +560,28 @@ void ContextualTasksServiceImpl::GetThreadUrlFromTaskId(
               return;
             }
 
-            // Attach the thread ID and the most recent turn ID to the
-            // URL. A query parameter needs to be present, but its
-            // value is not used for continued threads.
-            url = net::AppendQueryParameter(url, "q", thread->title);
-            DCHECK(thread->conversation_turn_id.has_value());
-            url = net::AppendQueryParameter(
-                url, "mstk", thread->conversation_turn_id.value());
-            url = net::AppendQueryParameter(url, "mtid", thread->server_id);
+            if (thread->type == ThreadType::kAiMode) {
+              // Attach the thread ID and the most recent turn ID to the
+              // URL. A query parameter needs to be present, but its
+              // value is not used for continued threads.
+              url = net::AppendQueryParameter(url, "q", thread->title);
+              DCHECK(thread->conversation_turn_id.has_value());
+              url = net::AppendQueryParameter(
+                  url, "mstk", thread->conversation_turn_id.value());
+              url = net::AppendQueryParameter(url, "mtid", thread->server_id);
+
+            } else if (thread->type == ThreadType::kGemini) {
+              url = GURL(GetContextualTasksGeminiBaseUrl());
+              GURL::Replacements replacements;
+              std::string path = url.GetPath();
+              if (path.back() != '/') {
+                path += '/';
+              }
+              path += thread->server_id;
+              replacements.SetPathStr(path);
+
+              url = url.ReplaceComponents(replacements);
+            }
 
             OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
                                         "GetThreadUrlFromTaskId returning URL: "
