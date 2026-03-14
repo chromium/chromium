@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-function contains_all(obj, keys) {
-  for (var i = 0; i < keys.length; ++i) {
+function containsAll(obj, keys) {
+  for (let i = 0; i < keys.length; ++i) {
     if (!obj[keys[i]])
       return false;
   }
   return true;
 }
 
-var contents = [
+const contents = [
   'download', 'search', 'pause', 'resume', 'cancel', 'getFileIcon', 'open',
   'show', 'erase', 'acceptDanger', 'onCreated', 'onChanged', 'onErased',
   'onDeterminingFilename'];
 
 if (!chrome.downloads ||
-    !contains_all(chrome.downloads, contents)) {
+    !containsAll(chrome.downloads, contents)) {
   chrome.test.fail();
 } else {
   chrome.test.succeed();
