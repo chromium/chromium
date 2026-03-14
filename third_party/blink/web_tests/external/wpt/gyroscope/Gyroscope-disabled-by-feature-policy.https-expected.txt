@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Gyroscope: Permissions-Policy header gyroscope=() disallows same-origin iframes.
+  test_feature_availability is not defined
+[FAIL] Gyroscope: Permissions-Policy header gyroscope=() disallows cross-origin iframes.
+  test_feature_availability is not defined
+Harness: the test ran to completion.
+

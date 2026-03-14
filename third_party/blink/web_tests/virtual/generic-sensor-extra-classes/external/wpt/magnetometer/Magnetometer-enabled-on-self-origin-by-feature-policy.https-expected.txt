@@ -1,4 +1,8 @@
 This is a testharness.js-based test.
+[FAIL] Magnetometer: Permissions-Policy header magnetometer=(self) allows same-origin iframes.
+  test_feature_availability is not defined
+[FAIL] Magnetometer: Permissions-Policy header magnetometer=(self) disallows cross-origin iframes.
+  test_feature_availability is not defined
 [FAIL] UncalibratedMagnetometer: Permissions-Policy header magnetometer=(self) allows the top-level document.
   assert_implements: UncalibratedMagnetometer is not supported. undefined
 [FAIL] UncalibratedMagnetometer: Permissions-Policy header magnetometer=(self) allows same-origin iframes.

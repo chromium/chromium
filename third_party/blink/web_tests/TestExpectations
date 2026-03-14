@@ -2785,7 +2785,20 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 # Unstable memory addresses dumped into test output.
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
+virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html [ Crash Failure Timeout ]
+virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-allowed-by-permissions-policy-attribute.https.sub.html [ Crash Failure Timeout ]
+virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-allowed-by-permissions-policy.https.sub.html [ Crash Failure Timeout ]
+virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-default-permissions-policy.https.sub.html [ Crash Failure Timeout ]
+virtual/unified-autoplay/external/wpt/permissions-policy/bluetooth-disabled-by-permissions-policy.https.sub.html [ Crash Failure Timeout ]
+virtual/unified-autoplay/external/wpt/permissions-policy/reporting/bluetooth-report-only.https.html [ Crash Failure Timeout ]
+virtual/unified-autoplay/external/wpt/permissions-policy/reporting/bluetooth-reporting.https.html [ Crash Failure Timeout ]
+
 # ====== New tests from wpt-importer added here ======
+[ Win ] external/wpt/accelerometer/Accelerometer-disabled-by-feature-policy.https.html [ Pass Timeout ]
+external/wpt/css/css-tables/collapsed-border-background-inset.html [ Failure ]
+external/wpt/dom/events/scrolling/scrollend-event-fires-on-visual-viewport.html [ Timeout ]
+[ Win ] external/wpt/gyroscope/Gyroscope-disabled-by-feature-policy.https.html [ Pass Timeout ]
+[ Win ] external/wpt/gyroscope/Gyroscope-enabled-by-feature-policy-attribute-redirect-on-load.https.html [ Pass Timeout ]
 crbug.com/492245077 external/wpt/accelerometer/Accelerometer-disabled-by-permissions-policy.https.html [ Timeout ]
 crbug.com/492245077 external/wpt/accelerometer/Accelerometer-enabled-by-permissions-policy-attribute-redirect-on-load.https.html [ Timeout ]
 crbug.com/492245077 external/wpt/accelerometer/Accelerometer-enabled-by-permissions-policy-attribute.https.html [ Timeout ]
@@ -2802,11 +2815,8 @@ crbug.com/492286056 external/wpt/gyroscope/Gyroscope-enabled-by-permissions-poli
 crbug.com/492286056 external/wpt/gyroscope/Gyroscope-enabled-by-permissions-policy-attribute.https.html [ Timeout ]
 crbug.com/492286056 external/wpt/gyroscope/Gyroscope-enabled-by-permissions-policy.https.html [ Timeout ]
 crbug.com/492286056 external/wpt/gyroscope/Gyroscope-enabled-on-self-origin-by-permissions-policy.https.html [ Timeout ]
-crbug.com/492274862 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/492274862 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-permissions-policy-attribute.https.sub.html [ Timeout ]
 crbug.com/492274862 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-permissions-policy.https.sub.html [ Timeout ]
-crbug.com/492274862 external/wpt/html/semantics/embedded-content/media-elements/autoplay-default-permissions-policy.https.sub.html [ Timeout ]
-crbug.com/492274862 external/wpt/html/semantics/embedded-content/media-elements/autoplay-disabled-by-permissions-policy.https.sub.html [ Timeout ]
 crbug.com/492265586 external/wpt/orientation-sensor/AbsoluteOrientationSensor-disabled-by-permissions-policy.https.html [ Timeout ]
 crbug.com/492265586 external/wpt/orientation-sensor/AbsoluteOrientationSensor-enabled-by-permissions-policy-attribute-redirect-on-load.https.html [ Timeout ]
 crbug.com/492265586 external/wpt/orientation-sensor/AbsoluteOrientationSensor-enabled-by-permissions-policy-attribute.https.html [ Timeout ]
@@ -3137,8 +3147,6 @@ crbug.com/440829301 [ Mac14-arm64 ] external/wpt/content-index/idlharness.https.
 crbug.com/440829301 [ Mac14 ] external/wpt/content-index/idlharness.https.any.html [ Skip Timeout ]
 crbug.com/440829301 [ Mac14-arm64 ] external/wpt/content-index/idlharness.https.any.sharedworker.html [ Skip Timeout ]
 crbug.com/440829301 [ Mac14 ] external/wpt/content-index/idlharness.https.any.sharedworker.html [ Skip Timeout ]
-crbug.com/440898624 [ Mac14-arm64 ] external/wpt/feature-policy/feature-policy-frame-policy-disallowed-for-all.https.sub.html [ Skip Timeout ]
-crbug.com/440898624 [ Mac14 ] external/wpt/feature-policy/feature-policy-frame-policy-disallowed-for-all.https.sub.html [ Skip Timeout ]
 crbug.com/440944749 [ Mac14-arm64 ] external/wpt/html/cross-origin-embedder-policy/none-load-from-cache-storage.https.html [ Timeout ]
 crbug.com/440944749 [ Mac14 ] external/wpt/html/cross-origin-embedder-policy/none-load-from-cache-storage.https.html [ Timeout ]
 crbug.com/440888473 [ Mac14-arm64 ] external/wpt/html/rendering/non-replaced-elements/tables/table-background-print.html [ Failure ]
@@ -3234,7 +3242,6 @@ crbug.com/437806804 [ Mac14 ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/br/big-br-body.https.any.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/br/big-br-body.https.any.serviceworker.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/zstd/big-zstd-body.https.any.html [ Timeout ]
-crbug.com/437855566 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/experimental-features/trust-token-redemption-supported-by-feature-policy.tentative.html [ Timeout ]
 crbug.com/437594843 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/blocklisted-manufacturer-data-in-filter.https.window.html [ Pass Timeout ]
 crbug.com/437594843 [ Win ] external/wpt/bluetooth/bidi/requestDevice/canonicalizeFilter/invalid-companyIdentifier.https.window.html [ Failure Pass Timeout ]
 crbug.com/437594843 [ Win10.20h2 ] external/wpt/bluetooth/bidi/service/getCharacteristic/gen-invalid-characteristic-name.https.window.html [ Pass Timeout ]
@@ -3452,9 +3459,6 @@ crbug.com/425118323 [ Mac14 ] virtual/threaded-preload-scanner/external/wpt/html
 crbug.com/425118323 [ Mac14 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/blob-url-workers.window.html [ Timeout ]
 crbug.com/425118323 [ Mac14 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/blob-url.any.worker.html [ Timeout ]
 crbug.com/425118323 [ Mac14 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/module/import-meta/import-meta-resolve-importmap.html [ Timeout ]
-crbug.com/425145242 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-allowed-for-some-override.https.sub.html [ Skip Timeout ]
-crbug.com/425145242 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/reporting/payment-reporting.https.html [ Timeout ]
-crbug.com/425145242 [ Mac14 ] virtual/unified-autoplay/external/wpt/feature-policy/reporting/xr-reporting.https.html [ Timeout ]
 crbug.com/425041678 [ Mac14 ] virtual/unload-allowed/external/wpt/battery-status/no-leak-on-detached-use.https.html [ Timeout ]
 crbug.com/424597869 [ Mac14 ] virtual/unload-allowed/external/wpt/html/browsers/browsing-the-web/unloading-documents/003.html [ Timeout ]
 crbug.com/424597869 [ Mac14 ] virtual/unload-allowed/external/wpt/html/browsers/browsing-the-web/unloading-documents/unload/unload-main-frame-cross-origin.window.html [ Timeout ]
@@ -5510,9 +5514,9 @@ crbug.com/783154 [ Mac ] media/controls/click-anywhere-to-play-pause.html [ Cras
 crbug.com/831720 media/controls/tap-to-hide-controls.html [ Failure Pass ]
 
 # These tests require Unified Autoplay.
-crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Crash Failure Pass Timeout ]
-crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-default-feature-policy.https.sub.html [ Crash Failure Pass Timeout ]
-crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-disabled-by-feature-policy.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-default-permissions-policy.https.sub.html [ Crash Failure Pass Timeout ]
+crbug.com/779087 external/wpt/html/semantics/embedded-content/media-elements/autoplay-disabled-by-permissions-policy.https.sub.html [ Crash Failure Pass Timeout ]
 
 # Does not work on Mac
 crbug.com/793771 [ Mac ] media/controls/scrubbing.html [ Crash Failure Pass Timeout ]

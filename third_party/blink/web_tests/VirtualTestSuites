@@ -4698,7 +4698,6 @@
       "external/wpt/css/css-overflow/scroll-markers/scroll-markers-updated-by-programmatic-scroll.html",
       "external/wpt/css/cssom-view/overflow-hidden-smooth-scroll-crash.html",
       "external/wpt/css/cssom-view/scroll-behavior-smooth-after-hiding-iframe.html",
-      "external/wpt/feature-policy/experimental-features",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header.tentative.https.html",
       "external/wpt/html/canvas/offscreen/manual/convert-to-blob",
@@ -4740,7 +4739,6 @@
       "external/wpt/trusted-types/trusted-types-reporting.html"
     ],
     "exclusive_tests": [
-      "external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header.tentative.https.html",
       "external/wpt/permissions-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html",
@@ -4887,7 +4885,7 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/feature-policy"
+      "external/wpt/permissions-policy"
     ],
     "args": [
       "--autoplay-policy=document-user-activation-required"

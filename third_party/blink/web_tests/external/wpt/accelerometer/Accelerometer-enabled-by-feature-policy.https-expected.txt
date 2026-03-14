@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Accelerometer: Permissions-Policy header accelerometer=* allows same-origin iframes.
+  test_feature_availability is not defined
+[FAIL] Accelerometer: Permissions-Policy header accelerometer=* allows cross-origin iframes.
+  test_feature_availability is not defined
+[FAIL] LinearAccelerationSensor: Permissions-Policy header accelerometer=* allows same-origin iframes.
+  test_feature_availability is not defined
+[FAIL] LinearAccelerationSensor: Permissions-Policy header accelerometer=* allows cross-origin iframes.
+  test_feature_availability is not defined
+[FAIL] GravitySensor: Permissions-Policy header accelerometer=* allows same-origin iframes.
+  test_feature_availability is not defined
+[FAIL] GravitySensor: Permissions-Policy header accelerometer=* allows cross-origin iframes.
+  test_feature_availability is not defined
+Harness: the test ran to completion.
+
