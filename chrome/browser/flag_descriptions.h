@@ -4191,10 +4191,18 @@ inline constexpr char kStrictOriginIsolationDescription[] =
     "Controls whether site isolation should use origins instead of scheme and "
     "eTLD+1.";
 
+inline constexpr char kSyncAIThreadsName[] = "Sync AI Threads";
+inline constexpr char kSyncAIThreadsDescription[] =
+    "Acquire AI Threads via sync.";
+
 inline constexpr char kSyncAutofillWalletCredentialDataName[] =
     "Sync Autofill Wallet Credential Data";
 inline constexpr char kSyncAutofillWalletCredentialDataDescription[] =
     "When enabled, allows syncing of the autofill wallet credential data type.";
+
+inline constexpr char kSyncGeminiThreadsName[] = "Sync Gemini Threads";
+inline constexpr char kSyncGeminiThreadsDescription[] =
+    "Acquire Gemini Threads via sync.";
 
 inline constexpr char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 inline constexpr char kSyncSandboxDescription[] =
