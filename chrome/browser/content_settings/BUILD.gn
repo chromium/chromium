@@ -179,7 +179,7 @@ source_set("content_settings_factory_impl") {
     deps += [
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/notifications:notifications_java_enum_srcjar",
-      "//chrome/browser/webapps:android",
+      "//chrome/browser/webapps/installable:android",
     ]
   }
 }

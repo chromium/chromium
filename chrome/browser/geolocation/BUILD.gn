@@ -53,7 +53,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/search_engines",
-      "//chrome/browser/webapps:android",
+      "//chrome/browser/webapps/installable:android",
       "//components/search_engines",
     ]
   }

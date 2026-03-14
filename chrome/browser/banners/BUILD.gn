@@ -82,6 +82,7 @@ source_set("test_support") {
       "//base/test:test_support",
       "//chrome/browser",
       "//chrome/browser/webapps:desktop",
+      "//chrome/browser/webapps:desktop_impl",
       "//components/password_manager/content/common",
       "//components/webapps/browser",
       "//components/webapps/browser:webapps_client",

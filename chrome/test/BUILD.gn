@@ -2040,7 +2040,8 @@ if (is_android) {
       "//chrome/browser/unified_consent",
       "//chrome/browser/user_agent:browser_tests",
       "//chrome/browser/visited_url_ranking:browser_tests",
-      "//chrome/browser/webapps:browser_tests",
+      "//chrome/browser/webapps/installable:browser_tests",
+      "//chrome/browser/webapps/web_contents:browser_tests",
       "//chrome/browser/webaudio:browser_tests",
       "//chrome/browser/webauthn",
       "//chrome/browser/webid",
@@ -2840,7 +2841,8 @@ if (!is_android) {
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:prevent_close_test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
-      "//chrome/browser/webapps:browser_tests",
+      "//chrome/browser/webapps/installable:browser_tests",
+      "//chrome/browser/webapps/web_contents:browser_tests",
       "//chrome/browser/webaudio:browser_tests",
       "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webid",
@@ -7628,7 +7630,8 @@ test("unit_tests") {
   if (!is_android) {
     deps += [
       "//chrome/browser/webapps:desktop",
-      "//chrome/browser/webapps:unit_tests",
+      "//chrome/browser/webapps:desktop_impl",
+      "//chrome/browser/webapps/installable:unit_tests",
     ]
   }
 

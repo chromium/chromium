@@ -2456,6 +2456,14 @@ static_library("browser") {
   }
 
   if (is_android) {
+    deps += [
+      "//chrome/browser/webapps:android",
+      "//chrome/browser/webapps:android_impl",
+      "//chrome/browser/webapps/installable:android",
+      "//chrome/browser/webapps/installable:android_impl",
+      "//chrome/browser/webapps/installable:impl",
+    ]
+
     sources += [
       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.cc",
       "accessibility/accessibility_prefs/android/accessibility_prefs_controller.h",
@@ -3421,7 +3429,7 @@ static_library("browser") {
       # - c/b/android/tab_web_contents_delegate_android.h
       # - c/b/android/webapk/webapk_install_service.h
       # - c/b/android/webapk/webapk_install_service_factory.h
-      "//chrome/browser/webapps:android",
+      "//chrome/browser/webapps:android_impl",
       "//chrome/browser/webapps/installable:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
@@ -3504,6 +3512,11 @@ static_library("browser") {
     }
   } else {
     #!is_android
+    deps += [
+      "//chrome/browser/webapps:desktop",
+      "//chrome/browser/webapps:desktop_impl",
+    ]
+
     sources += [
       "accessibility/ax_main_node_annotator_controller.cc",
       "accessibility/ax_main_node_annotator_controller.h",
