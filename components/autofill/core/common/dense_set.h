@@ -313,28 +313,128 @@ struct DenseSetTraits<T>
 // The order of the elements in the container corresponds to their integer
 // representation.
 //
-// Traits::UnderlyingType is the integral representation of the stored types.
-// Traits::to_underlying() and Traits::from_underlying() convert between T and
-// Traits::UnderlyingType.
+// ------------
+//
+// Usage:
+//
+// Example 1: The default bounds are kMinValue and kMaxValue (inclusive):
+//
+//   enum class MyEnum {
+//     kFoo = -1,
+//     kBar = 0,
+//     kQux = 1,
+//     kMinValue = kFoo,
+//     kMaxValue = kQux
+//   };
+//
+//   DenseSet<MyEnum> set;  // Bounds: [MyEnum::kMinValue, MyEnum::kMaxValue].
+//   set.insert(MyEnum::kFoo);
+//   set.insert(MyEnum::kBar);
+//   for (MyEnum x : set) {
+//     ...
+//   }
+//
+// Example 2: If `kMinValue` is not defined, the fallback is `0`:
+//
+//   enum class MyEnum {
+//     kFoo,
+//     kBar,
+//     kQux,
+//     kMaxValue = kQux
+//   };
+//
+//   DenseSet<MyEnum> set;  // Bounds: [MyEnum(0), MyEnum::kMaxValue].
+//
+// Example 3: Custom bounds can be specified in the traits:
+//
+//   enum MyEnum {
+//     kFoo = 0,
+//     kBar = 1,
+//     kQux = 2,
+//   };
+//
+//   using MyEnumSet = DenseSet<MyEnum, EnumDenseSetTraits<MyEnum, kFoo, kQux>>;
+//   MyEnumSet set = MyEnumSet::all();  // Contains {kFoo, kBar, kQux}.
+//
+// Example 4: Invalid values can be excluded by specializing the traits:
+//
+//   enum class MyEnum {
+//     kFoo = 0,
+//     kQux = 2,
+//     kMaxValue = kQux
+//   };
+//
+//   template <>
+//   struct DenseSetTraits<MyEnum>
+//       : public EnumDenseSetTraits<MyEnum, MyEnum(0), MyEnum::kMaxValue> {
+//     static constexpr bool is_valid(MyEnum x) {
+//       return std::to_underlying(x) != 1;
+//     }
+//   };
+//
+//   DenseSet<MyEnum> set = DenseSet<MyEnum>::all();  // Contains {kFoo, kQux}.
+//
+// Example 5: The value type does not need to be an enum -- it suffices if it
+// has an integral representation:
+//
+//   struct MyStruct {
+//     int x = 0;  // Range -5 to 5.
+//   };
+//
+//   template <>
+//   struct DenseSetTraits<MyStruct> {
+//     using UnderlyingType = int;
+//
+//     static constexpr MyStruct from_underlying(UnderlyingType x) {
+//       return {.x = x};
+//     }
+//     static constexpr UnderlyingType to_underlying(MyStruct s) {
+//       return s.x;
+//     }
+//     static constexpr bool is_valid(MyStruct5 x) { return true; }
+//
+//     static constexpr MyStruct kMinValue = {.x = -5};
+//     static constexpr MyStruct kMaxValue = {.x = 5};
+//     static constexpr bool kPacked = false;
+//   };
+//
+//   DenseSet<MyStruct> set;
+//   MyStruct s = {.x = 5};
+//   set.insert(s);
+//
+// ------------
+//
+// Iterators:
+//
+// Iterators are invalidated when the owning container is destructed or moved,
+// or when the element the iterator points to is erased from the container.
+//
+// ------------
+//
+// Traits:
 //
 // The lower and upper bounds of elements storable in a container are
 // [Traits::kMinValue, Traits::kMaxValue].
-// For enums, the default is [T(0), T::kMaxValue].
+//
+// Traits::UnderlyingType is the integral representation of the stored types.
+// Traits::to_underlying() and Traits::from_underlying() convert between T and
+// Traits::UnderlyingType. The set only stores elements for which
+// Traits::is_valid() is true.
 //
 // The `Traits::kPacked` parameter indicates whether the memory consumption of a
 // DenseSet object should be minimized. That comes at the cost of slightly
 // larger code size.
 //
+// ------------
+//
 // Time and space complexity:
+//
 // - insert(), erase(), contains() run in time O(1)
 // - empty(), size(), iteration run in time O(Traits::kMaxValue)
 // - sizeof(DenseSet) is, for N = `Traits::kMaxValue - Traits::kMinValue + 1,
 //   - if `!Traits::kPacked`: the minimum of {1, 2, 4, 8 * ceil(N / 64)} bytes
 //     that has at least N bits;
 //   - if `Traits::kPacked`: ceil(N / 8) bytes.
-//
-// Iterators are invalidated when the owning container is destructed or moved,
-// or when the element the iterator points to is erased from the container.
 template <typename T, typename Traits = DenseSetTraits<T>>
   requires(internal::ValidDenseSetTraits<T, Traits>)
 class DenseSet {

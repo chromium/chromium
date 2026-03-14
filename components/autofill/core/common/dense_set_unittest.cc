@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ElementsAre;
+using ::testing::Field;
 
 namespace autofill {
 
@@ -424,6 +425,102 @@ TEST(DenseSetTest_BitsetTest_Data, Data) {
 }  // namespace internal
 
 namespace {
+
+// The default bounds are kMinValue and kMaxValue (inclusive).
+TEST(DenseSetTest, ExampleUsage1) {
+  enum class MyEnum {
+    kFoo = -1,
+    kBar = 0,
+    kQux = 1,
+    kMinValue = kFoo,
+    kMaxValue = kQux
+  };
+  DenseSet<MyEnum> set;  // Bounds: [MyEnum::kMinValue, MyEnum::kMaxValue].
+  set.insert(MyEnum::kFoo);
+  set.insert(MyEnum::kBar);
+  EXPECT_THAT(set, ElementsAre(MyEnum::kFoo, MyEnum::kBar));
+  set.insert(MyEnum::kQux);
+  EXPECT_THAT(set, ElementsAre(MyEnum::kFoo, MyEnum::kBar, MyEnum::kQux));
+}
+
+// If `kMinValue` is not defined, the fallback is `0`.
+TEST(DenseSetTest, ExampleUsage2) {
+  enum class MyEnum { kFoo, kBar, kQux, kMaxValue = kQux };
+  DenseSet<MyEnum> set = DenseSet<MyEnum>::all();
+  ASSERT_FALSE(set.empty());
+  EXPECT_EQ(*set.begin(), MyEnum::kFoo);
+  EXPECT_EQ(*set.rbegin(), MyEnum::kQux);
+}
+
+// Custom bounds can be specified in the traits.
+TEST(DenseSetTest, ExampleUsage3) {
+  enum MyEnum {
+    kFoo = 0,
+    kBar = 1,
+    kQux = 2,
+  };
+  using MyEnumSet = DenseSet<MyEnum, EnumDenseSetTraits<MyEnum, kFoo, kQux>>;
+  MyEnumSet set = MyEnumSet::all();
+  EXPECT_THAT(set, ElementsAre(kFoo, kBar, kQux));
+  set.erase(kBar);
+  EXPECT_THAT(set, ElementsAre(kFoo, kQux));
+}
+
+// Used by DenseSetTest.ExampleUsage4.
+enum class MyEnum4 { kFoo = 0, kQux = 2, kMaxValue = kQux };
+
+}  // namespace
+
+// Used by DenseSetTest.ExampleUsage4.
+template <>
+struct DenseSetTraits<MyEnum4>
+    : public EnumDenseSetTraits<MyEnum4, MyEnum4(0), MyEnum4::kMaxValue> {
+  static constexpr bool is_valid(MyEnum4 x) {
+    return std::to_underlying(x) != 1;
+  }
+};
+
+namespace {
+
+// Invalid values can be excluded by specializing the traits:
+TEST(DenseSetTest, ExampleUsage4) {
+  DenseSet<MyEnum4> set = DenseSet<MyEnum4>::all();
+  EXPECT_THAT(set, ElementsAre(MyEnum4::kFoo, MyEnum4::kQux));
+}
+
+// Used by DenseSetTest.ExampleUsage5.
+struct MyStruct5 {
+  int x = 0;  // Range -5 to 5.
+};
+
+}  // namespace
+
+// Used by DenseSetTest.ExampleUsage5.
+template <>
+struct DenseSetTraits<MyStruct5> {
+  using UnderlyingType = int;
+
+  static constexpr MyStruct5 from_underlying(UnderlyingType x) {
+    return {.x = x};
+  }
+  static constexpr UnderlyingType to_underlying(MyStruct5 s) { return s.x; }
+  static constexpr bool is_valid(MyStruct5 x) { return true; }
+
+  static constexpr MyStruct5 kMinValue = {.x = -5};
+  static constexpr MyStruct5 kMaxValue = {.x = 5};
+  static constexpr bool kPacked = false;
+};
+
+namespace {
+
+// The value type does not need to be an enum -- it suffices if it has an
+// integral representation:
+TEST(DenseSetTest, ExampleUsage5) {
+  DenseSet<MyStruct5> set;
+  MyStruct5 s = {.x = 5};
+  set.insert(s);
+  EXPECT_THAT(set, ElementsAre(Field(&MyStruct5::x, 5)));
+}
 
 template <typename T, T kMinValue, T kMaxValue>
 using IntDenseSet =
