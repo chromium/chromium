@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.InputState;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -142,6 +143,12 @@ public class ComposeboxQueryControllerBridge {
                 .getImageGenerationUrl(mNativeInstance, url, callback);
     }
 
+    public void getAimUrlFromInputState(GURL url, Callback<GURL> callback) {
+        assert OmniboxFeatures.sShowModelPicker.getValue();
+        ComposeboxQueryControllerBridgeJni.get()
+                .getAimUrlFromInputState(mNativeInstance, url, callback);
+    }
+
     /** Remove the given file from the current session. */
     void removeAttachment(String token) {
         ComposeboxQueryControllerBridgeJni.get().removeAttachment(mNativeInstance, token);
@@ -231,6 +238,11 @@ public class ComposeboxQueryControllerBridge {
                 Callback<@JniType("GURL") GURL> callback);
 
         void getImageGenerationUrl(
+                long nativeComposeboxQueryControllerBridge,
+                @JniType("GURL") GURL url,
+                Callback<@JniType("GURL") GURL> callback);
+
+        void getAimUrlFromInputState(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("GURL") GURL url,
                 Callback<@JniType("GURL") GURL> callback);

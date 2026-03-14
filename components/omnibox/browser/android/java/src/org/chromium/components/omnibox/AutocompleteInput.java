@@ -483,14 +483,8 @@ public class AutocompleteInput implements UserData {
     }
 
     private void updateToolMode() {
-        int mode =
-                switch (mRequestTypeSupplier.get()) {
-                    case AutocompleteRequestType.IMAGE_GENERATION ->
-                            mHasAttachments
-                                    ? ToolMode.TOOL_MODE_IMAGE_GEN_UPLOAD_VALUE
-                                    : ToolMode.TOOL_MODE_IMAGE_GEN_VALUE;
-                    default -> ToolMode.TOOL_MODE_UNSPECIFIED_VALUE;
-                };
-        mToolModeSupplier.set(mode);
+        mToolModeSupplier.set(
+                ToolModeUtils.getToolModeForRequestType(
+                        mRequestTypeSupplier.get(), mHasAttachments));
     }
 }

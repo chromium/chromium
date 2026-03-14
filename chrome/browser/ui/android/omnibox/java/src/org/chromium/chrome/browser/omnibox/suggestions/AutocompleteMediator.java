@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
@@ -65,6 +66,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -1288,14 +1290,26 @@ class AutocompleteMediator
                                 finalTransition);
                     };
 
-            switch (mAutocompleteInput.getRequestType()) {
-                case AutocompleteRequestType.AI_MODE ->
-                        assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                .getAimUrl(url, onUrlReady);
-                case AutocompleteRequestType.IMAGE_GENERATION ->
-                        assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                .getImageGenerationUrl(url, onUrlReady);
-                default -> onUrlReady.onResult(url);
+            if (OmniboxFeatures.sShowModelPicker.getValue()) {
+                @AutocompleteRequestType int requestType = mAutocompleteInput.getRequestType();
+                if (ToolModeUtils.isConventionalRequest(requestType)) {
+                    onUrlReady.onResult(url);
+                } else {
+                    assert ToolModeUtils.isAimRequest(requestType);
+                    ComposeboxQueryControllerBridge bridge =
+                            assumeNonNull(mSessionState.getComposeboxQueryControllerBridge());
+                    bridge.getAimUrlFromInputState(url, onUrlReady);
+                }
+            } else {
+                switch (mAutocompleteInput.getRequestType()) {
+                    case AutocompleteRequestType.AI_MODE ->
+                            assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
+                                    .getAimUrl(url, onUrlReady);
+                    case AutocompleteRequestType.IMAGE_GENERATION ->
+                            assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
+                                    .getImageGenerationUrl(url, onUrlReady);
+                    default -> onUrlReady.onResult(url);
+                }
             }
         }
     }
