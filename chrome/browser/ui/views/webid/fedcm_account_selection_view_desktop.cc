@@ -105,7 +105,8 @@ void FedCmAccountSelectionView::OnPageActionClicked() {
   }
 
   bool is_returning = accounts_.size() == 1u &&
-                      accounts_[0]->browser_trusted_login_state ==
+                      accounts_[0]->idp_claimed_login_state.value_or(
+                          accounts_[0]->browser_trusted_login_state) ==
                           content::IdentityRequestAccount::LoginState::kSignIn;
 
   auto* features = tab_->GetTabFeatures();
@@ -1440,7 +1441,8 @@ bool FedCmAccountSelectionView::ShowPageAction(
     return false;
   }
 
-  bool is_returning = accounts[0]->browser_trusted_login_state ==
+  bool is_returning = accounts[0]->idp_claimed_login_state.value_or(
+                          accounts[0]->browser_trusted_login_state) ==
                       content::IdentityRequestAccount::LoginState::kSignIn;
 
   std::u16string idp_name = base::UTF8ToUTF16(idp_list[0]->idp_for_display);

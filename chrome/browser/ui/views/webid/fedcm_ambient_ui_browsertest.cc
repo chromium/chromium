@@ -77,8 +77,11 @@ class FedCmAmbientUiBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  void ShowAmbientUi(content::IdentityRequestAccount::LoginState login_state,
-                     size_t num_accounts = 1) {
+  void ShowAmbientUi(
+      content::IdentityRequestAccount::LoginState browser_login_state,
+      std::optional<content::IdentityRequestAccount::LoginState>
+          idp_login_state = std::nullopt,
+      size_t num_accounts = 1) {
     idps_ = {base::MakeRefCounted<content::IdentityProviderData>(
         "idp-example.com", content::IdentityProviderMetadata(),
         content::ClientMetadata(GURL(), GURL(), GURL(), gfx::Image()),
@@ -96,7 +99,8 @@ class FedCmAmbientUiBrowserTest : public InProcessBrowserTest {
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>());
       account->identity_provider = idps_[0];
-      account->browser_trusted_login_state = login_state;
+      account->browser_trusted_login_state = browser_login_state;
+      account->idp_claimed_login_state = idp_login_state;
 
       // Provide a dummy decoded picture to avoid image fetching.
       SkBitmap bitmap;
@@ -209,7 +213,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
 
-  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn);
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
+                content::IdentityRequestAccount::LoginState::kSignIn);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
@@ -248,7 +253,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
   page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
 
-  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn);
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
+                content::IdentityRequestAccount::LoginState::kSignIn);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
@@ -294,6 +300,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiAccountFallback) {
   // Show passive UI with 2 accounts.
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
+                /*idp_login_state=*/std::nullopt,
                 /*num_accounts=*/2);
 
   // Currently, passive UI only supports single-account scenarios.
@@ -363,6 +370,61 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, TabSwitching) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
   EXPECT_TRUE(view()->GetDialogWidget());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
+                       IdpMissingApprovedClientsUsesBrowserSignIn) {
+  // Browser thinks it is a sign-in, and IdP is silent.
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
+                /*idp_login_state=*/std::nullopt);
+
+  // Click on the chip.
+  view()->OnPageActionClicked();
+
+  // Anchored message should be shown (no widget yet) because we fallback to
+  // the browser's sign-in state.
+  EXPECT_FALSE(view()->GetDialogWidget());
+
+  auto* features = browser()->GetActiveTabInterface()->GetTabFeatures();
+  auto* controller = features->page_action_controller();
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+  EXPECT_TRUE(observer.GetCurrentPageActionState().anchored_message_showing);
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
+                       IdpClaimedSignUpOverridesBrowserSignIn) {
+  // Browser thinks it is a sign-in, but IdP explicitly says sign-up.
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
+                content::IdentityRequestAccount::LoginState::kSignUp);
+
+  // Click on the chip.
+  view()->OnPageActionClicked();
+
+  // The full UI (modal/bubble) should be shown because it's treated as a
+  // sign-up.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
+  EXPECT_TRUE(view()->GetDialogWidget());
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
+                       IdpClaimedSignInOverridesBrowserSignUp) {
+  // Browser thinks it is a sign-up, but IdP says sign-in.
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
+                content::IdentityRequestAccount::LoginState::kSignIn);
+
+  // Click on the chip.
+  view()->OnPageActionClicked();
+
+  // Anchored message should be shown (no widget yet).
+  EXPECT_FALSE(view()->GetDialogWidget());
+
+  auto* features = browser()->GetActiveTabInterface()->GetTabFeatures();
+  auto* controller = features->page_action_controller();
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+  EXPECT_TRUE(observer.GetCurrentPageActionState().anchored_message_showing);
 }
 
 }  // namespace webid
