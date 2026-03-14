@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var cs = chrome.contentSettings;
-var delegation;
+const cs = chrome.contentSettings;
+let delegation;
 
 chrome.test.runTests([
   function setup() {

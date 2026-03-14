@@ -7,31 +7,31 @@
 //     --gtest_filter=ExtensionApiTest.ContentSettingsGetResourceIdentifiers
 
 Object.prototype.forEach = function(f) {
-  for (key in this) {
+  for (let key in this) {
     if (this.hasOwnProperty(key))
       f(key, this[key]);
   }
 }
 
-var cs = chrome.contentSettings;
+const cs = chrome.contentSettings;
 chrome.test.runTests([
   function getResourceIdentifiers() {
-    var contentTypes = {
-      "cookies": undefined,
-      "images": undefined,
-      "javascript": undefined,
-      "plugins": [
+    const contentTypes = {
+      cookies: undefined,
+      images: undefined,
+      javascript: undefined,
+      plugins: [
         {
-          "description": "Foo",
-          "id": "foo",
+          description: 'Foo',
+          id: 'foo',
         },
         {
-          "description": "Bar Plugin",
-          "id": "bar.plugin",
+          description: 'Bar Plugin',
+          id: 'bar.plugin',
         },
       ],
-      "popups": undefined,
-      "notifications": undefined
+      popups: undefined,
+      notifications: undefined
     };
     contentTypes.forEach(function(type, identifiers) {
       cs[type].getResourceIdentifiers(chrome.test.callbackPass(function(value) {

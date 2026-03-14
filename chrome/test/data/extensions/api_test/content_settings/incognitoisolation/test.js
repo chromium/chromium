@@ -11,11 +11,11 @@
 
 'use strict';
 
-var cs = chrome.contentSettings;
+const cs = chrome.contentSettings;
 
-var givenPermission;
+let givenPermission;
 
-var settings = [
+const settings = [
   'cookies',
   'images',
   'javascript',
@@ -28,7 +28,7 @@ var settings = [
 ];
 
 // Settings that do not support site-specific exceptions.
-var globalOnlySettings = ['autoVerify'];
+const globalOnlySettings = ['autoVerify'];
 
 function expect(expected, message) {
   return chrome.test.callbackPass(function(value) {
@@ -46,10 +46,10 @@ chrome.test.runTests([
   function setContentSettings() {
     settings.forEach(function(type) {
       cs[type].set({
-        'primaryPattern': 'http://*.example.com/*',
-        'secondaryPattern': 'http://*.example.com/*',
-        'setting': givenPermission,
-        'scope': 'incognito_session_only'
+        primaryPattern: 'http://*.example.com/*',
+        secondaryPattern: 'http://*.example.com/*',
+        setting: givenPermission,
+        scope: 'incognito_session_only'
       }, chrome.test.callbackPass());
     });
   },
@@ -57,21 +57,21 @@ chrome.test.runTests([
     globalOnlySettings.forEach(function(type) {
       cs[type].set(
           {
-            'primaryPattern': '<all_urls>',
-            'secondaryPattern': '<all_urls>',
-            'setting': givenPermission,
-            'scope': 'incognito_session_only'
+            primaryPattern: '<all_urls>',
+            secondaryPattern: '<all_urls>',
+            setting: givenPermission,
+            scope: 'incognito_session_only'
           },
           chrome.test.callbackPass());
     });
   },
   function getContentSettings() {
     [...settings, ...globalOnlySettings].forEach(function(type) {
-      var message = 'Setting for ' + type + ' should be ' + givenPermission;
+      let message = `Setting for ${type} should be ${givenPermission}`;
       cs[type].get({
-        'primaryUrl': 'http://www.example.com',
-        'secondaryUrl': 'http://www.example.com'
-      }, expect({'setting':givenPermission}, message));
+        primaryUrl: 'http://www.example.com',
+        secondaryUrl: 'http://www.example.com'
+      }, expect({setting:givenPermission}, message));
     });
   },
 ]);
