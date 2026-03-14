@@ -693,6 +693,7 @@ void WebMediaPlayerImpl::Shutdown() {
   simple_watch_timer_.Stop();
   memory_usage_reporting_timer_.Stop();
   background_pause_timer_.Stop();
+  update_background_status_cb_.Cancel();
   media_log_->OnWebMediaPlayerDestroyed();
 
   demuxer_manager_->StopAndResetClient();
