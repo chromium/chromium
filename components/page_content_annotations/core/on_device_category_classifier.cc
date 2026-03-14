@@ -5,12 +5,16 @@
 #include "components/page_content_annotations/core/on_device_category_classifier.h"
 
 #include "base/barrier_callback.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
+#include "components/page_content_annotations/core/category_classifier_model_handler.h"
 #include "components/page_content_annotations/core/edu_classifier_model_handler.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
+#include "url/gurl.h"
 
 namespace page_content_annotations {
 
@@ -29,8 +33,12 @@ void OnSingleCategoryClassifierComplete(
 
 OnDeviceCategoryClassifier::OnDeviceCategoryClassifier(
     optimization_guide::OptimizationGuideModelProvider*
-        optimization_guide_model_provider)
+        optimization_guide_model_provider,
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider)
     : optimization_guide_model_provider_(optimization_guide_model_provider) {
+  if (embedder_metadata_provider) {
+    embedder_metadata_observation_.Observe(embedder_metadata_provider);
+  }
   category_classifier_model_handlers_[CategoryType::kEducation] =
       std::make_unique<EduClassifierModelHandler>(
           optimization_guide_model_provider_,
@@ -40,19 +48,39 @@ OnDeviceCategoryClassifier::OnDeviceCategoryClassifier(
 
 OnDeviceCategoryClassifier::~OnDeviceCategoryClassifier() = default;
 
+void OnDeviceCategoryClassifier::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void OnDeviceCategoryClassifier::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
     const GURL& url,
-    const passage_embeddings::Embedding& embedding,
-    base::OnceCallback<void(const std::vector<Category>&)> callback) {
+    const passage_embeddings::Embedding& embedding) {
   // Run each of the category classifiers on the returned embedding.
   auto barrier_callback =
       base::BarrierCallback<std::pair<CategoryType, std::optional<float>>>(
           category_classifier_model_handlers_.size(),
           base::BindOnce(
               &OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback), url));
+              weak_ptr_factory_.GetWeakPtr(), url));
   for (const auto& [category_type, model_handler] :
        category_classifier_model_handlers_) {
+    // Check if the model is compatible with the current embedder version.
+    std::optional<int64_t> required_version =
+        model_handler->GetRequiredEmbedderVersion();
+
+    if (!embedder_version_ || !required_version ||
+        *required_version != *embedder_version_) {
+      // Embedder version is unknown, versions mismatch, or required version is
+      // missing. Skip this classifier.
+      OnSingleCategoryClassifierComplete(category_type, barrier_callback,
+                                         std::nullopt);
+      continue;
+    }
+
     model_handler->ExecuteModelWithInput(
         base::BindOnce(&OnSingleCategoryClassifierComplete, category_type,
                        barrier_callback),
@@ -60,8 +88,12 @@ void OnDeviceCategoryClassifier::OnPageEmbeddingAvailable(
   }
 }
 
+void OnDeviceCategoryClassifier::EmbedderMetadataUpdated(
+    passage_embeddings::EmbedderMetadata metadata) {
+  embedder_version_ = metadata.model_version;
+}
+
 void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
-    base::OnceCallback<void(const std::vector<Category>&)> callback,
     const GURL& url,
     const std::vector<std::pair<CategoryType, std::optional<float>>>&
         classifier_outputs) {
@@ -72,8 +104,9 @@ void OnDeviceCategoryClassifier::OnCategoryClassifiersCompleted(
           {.category_type = category_type, .score = *maybe_score});
     }
   }
-  if (!callback.is_null()) {
-    std::move(callback).Run(outputs);
+
+  for (auto& observer : observers_) {
+    observer.OnCategoriesClassified(url, outputs);
   }
 }
 

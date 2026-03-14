@@ -18,6 +18,7 @@ PageCategoryClassifierBridgeImpl::PageCategoryClassifierBridgeImpl(
     : page_embeddings_service_(page_embeddings_service),
       category_classifier_(category_classifier) {
   scoped_observation_.Observe(&*page_embeddings_service_);
+  category_classifier_observation_.Observe(&*category_classifier_);
 }
 
 PageCategoryClassifierBridgeImpl::~PageCategoryClassifierBridgeImpl() = default;
@@ -35,18 +36,18 @@ void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
   for (const auto& embedding : embeddings) {
     if (embedding.passage.second == EmbeddingPassageType::kTitleAndUrl) {
       category_classifier_->OnPageEmbeddingAvailable(
-          page.GetMainDocument().GetLastCommittedURL(), embedding.embedding,
-          base::BindOnce(
-              &PageCategoryClassifierBridgeImpl::OnCategoryClassifiersCompleted,
-              weak_ptr_factory_.GetWeakPtr()));
+          page.GetMainDocument().GetLastCommittedURL(), embedding.embedding);
       return;
     }
   }
 }
 
-void PageCategoryClassifierBridgeImpl::OnCategoryClassifiersCompleted(
-    const std::vector<Category>& outputs) {
-  for (const Category& category : outputs) {
+// TODO - crbug.com/434047312: Move the metrics recording to the actual user of
+// the classifier scores once implemented.
+void PageCategoryClassifierBridgeImpl::OnCategoriesClassified(
+    const GURL& url,
+    const std::vector<Category>& categories) {
+  for (const Category& category : categories) {
     switch (category.category_type) {
       case CategoryType::kEducation:
         base::UmaHistogramPercentage(

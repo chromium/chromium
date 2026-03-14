@@ -104,7 +104,8 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
                   page_content_annotations::
                       PageContentExtractionServiceFactory::GetForProfile(
                           Profile::FromBrowserContext(context)),
-                  passage_embeddings_test_env_.embedder());
+                  passage_embeddings_test_env_.embedder(),
+                  passage_embeddings_test_env_.embedder_metadata_provider());
             }));
   }
 

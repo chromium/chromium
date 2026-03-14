@@ -80,6 +80,7 @@ TestPageContentAnnotationsService::TestPageContentAnnotationsService(
           /*database_dir=*/base::FilePath(),
           /*optimization_guide_logger=*/nullptr,
           /*optimization_guide_decider=*/nullptr,
+          /*embedder_metadata_provider=*/nullptr,
           /*background_task_runner=*/nullptr) {}
 
 }  // namespace page_content_annotations

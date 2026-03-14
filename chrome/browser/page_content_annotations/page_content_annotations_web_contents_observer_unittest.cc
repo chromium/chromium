@@ -117,6 +117,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
                                       base::FilePath(),
                                       nullptr,
                                       nullptr,
+                                      nullptr,
                                       nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 

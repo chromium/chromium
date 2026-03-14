@@ -60,7 +60,7 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
       ios::ZeroSuggestCacheServiceFactory::GetForProfile(profile),
       proto_db_provider, profile_path,
       optimization_guide_keyed_service->GetOptimizationGuideLogger(),
-      optimization_guide_keyed_service,
+      optimization_guide_keyed_service, /*embedder_metadata_provider=*/nullptr,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 }

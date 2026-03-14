@@ -144,21 +144,26 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
     std::string country_code =
         GetCurrentCountryCode(g_browser_process->variations_service());
 
+    page_content_annotations::PageEmbeddingsService* page_embeddings_service =
+        page_content_annotations::PageEmbeddingsServiceFactory::GetForProfile(
+            profile);
+    passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
+        page_embeddings_service
+            ? page_embeddings_service->GetEmbedderMetadataProvider()
+            : nullptr;
+
     auto service = std::make_unique<
         page_content_annotations::PageContentAnnotationsService>(
         g_browser_process->GetApplicationLocale(), country_code,
         optimization_guide_keyed_service, history_service, template_url_service,
         zero_suggest_cache_service, proto_db_provider, profile_path,
         optimization_guide_keyed_service->GetOptimizationGuideLogger(),
-        optimization_guide_keyed_service,
+        optimization_guide_keyed_service, embedder_metadata_provider,
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
 
     page_content_annotations::OnDeviceCategoryClassifier* category_classifier =
         service->on_device_category_classifier();
-    page_content_annotations::PageEmbeddingsService* page_embeddings_service =
-        page_content_annotations::PageEmbeddingsServiceFactory::GetForProfile(
-            profile);
     if (category_classifier && page_embeddings_service) {
       service->SetPageCategoryClassifierBridge(
           std::make_unique<
