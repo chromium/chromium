@@ -545,6 +545,67 @@ public class ExtensionsMenuMediatorTest {
                 .onSiteSettingsToggleChanged(EXTENSIONS_MENU_BRIDGE_POINTER, true);
     }
 
+    @Test
+    public void testOnHostAccessRequestAdded_SectionVisible() {
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
+        List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
+        requests.add(new ExtensionsMenuTypes.HostAccessRequest("id1", "name1", null));
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+
+        mMenuMediator.onHostAccessRequestAdded("id1");
+
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, requests);
+    }
+
+    @Test
+    public void testOnHostAccessRequestAdded_SectionNotVisible() {
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.NONE);
+
+        mMenuMediator.onHostAccessRequestAdded("id1");
+
+        verify(mMenuPropertyModel, org.mockito.Mockito.never())
+                .set(eq(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS), any());
+    }
+
+    @Test
+    public void testOnHostAccessRequestUpdated_SectionVisible() {
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
+        List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
+        requests.add(new ExtensionsMenuTypes.HostAccessRequest("id1", "name1", null));
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+
+        mMenuMediator.onHostAccessRequestUpdated("id1");
+
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, requests);
+    }
+
+    @Test
+    public void testOnHostAccessRequestRemoved_SectionVisible() {
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
+        List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+
+        mMenuMediator.onHostAccessRequestRemoved("id1");
+
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, requests);
+    }
+
+    @Test
+    public void testOnHostAccessRequestsCleared_SectionVisible() {
+        when(mMenuPropertyModel.get(ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE))
+                .thenReturn(ExtensionsMenuTypes.OptionalSectionType.HOST_ACCESS_REQUESTS);
+        List<ExtensionsMenuTypes.HostAccessRequest> requests = new ArrayList<>();
+        when(mExtensionsMenuBridgeJniMock.getHostAccessRequests(anyLong())).thenReturn(requests);
+
+        mMenuMediator.onHostAccessRequestsCleared();
+
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, requests);
+    }
+
     /** Helper to assert that the item at the given index has the correct information. */
     private void assertItemAt(int index, String title, @Nullable Bitmap icon, int contextMenuIcon) {
         ListItem item = mActionModels.get(index);

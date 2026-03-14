@@ -101,6 +101,26 @@ ExtensionsMenuDelegateAndroid::GetMenuEntry(JNIEnv* env, int action_index) {
       CreateJavaControlState(env, state.context_menu_button));
 }
 
+int ExtensionsMenuDelegateAndroid::GetOptionalSection(JNIEnv* env) {
+  return static_cast<int>(menu_model_->GetOptionalSection());
+}
+
+std::vector<base::android::ScopedJavaLocalRef<jobject>>
+ExtensionsMenuDelegateAndroid::GetHostAccessRequests(JNIEnv* env) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_entries;
+
+  const auto& requests = menu_model_->host_access_requests();
+  for (const auto& extension_id : requests) {
+    ExtensionsMenuViewModel::HostAccessRequest request =
+        menu_model_->GetHostAccessRequest(extension_id, kActionIconSize);
+    java_entries.push_back(extensions::Java_HostAccessRequest_Constructor(
+        env, request.extension_id, request.extension_name,
+        ConvertToJavaBitmap(request.extension_icon)));
+  }
+
+  return java_entries;
+}
+
 std::vector<base::android::ScopedJavaLocalRef<jobject>>
 ExtensionsMenuDelegateAndroid::GetMenuEntries(JNIEnv* env) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> java_entries;
@@ -181,22 +201,33 @@ void ExtensionsMenuDelegateAndroid::OnHostAccessRequestAdded(
     const extensions::ExtensionId& extension_id,
     int index) {
   // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onHostAccessRequestAdded(env, java_object_,
+                                                     extension_id);
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestUpdated(
     const extensions::ExtensionId& extension_id,
     int index) {
   // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onHostAccessRequestUpdated(env, java_object_,
+                                                       extension_id);
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestsCleared() {
   // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onHostAccessRequestsCleared(env, java_object_);
 }
 
 void ExtensionsMenuDelegateAndroid::OnHostAccessRequestRemoved(
     const extensions::ExtensionId& extension_id,
     int index) {
   // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onHostAccessRequestRemoved(env, java_object_,
+                                                       extension_id);
 }
 
 void ExtensionsMenuDelegateAndroid::OnShowHostAccessRequestsInToolbarChanged(
@@ -210,7 +241,8 @@ void ExtensionsMenuDelegateAndroid::OnToolbarPinnedActionsChanged() {
 }
 
 void ExtensionsMenuDelegateAndroid::OnUserPermissionsSettingsChanged() {
-  // TODO(crbug.com/473213114)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionsMenuBridge_onModelChanged(env, java_object_);
 }
 
 void ExtensionsMenuDelegateAndroid::CloseBubble() {
@@ -224,12 +256,12 @@ void ExtensionsMenuDelegateAndroid::OnActionButtonClicked(
 
 void ExtensionsMenuDelegateAndroid::OnAllowExtensionClicked(
     const extensions::ExtensionId& extension_id) {
-  // TODO(crbug.com/473213115)
+  menu_model_->AllowHostAccessRequest(extension_id);
 }
 
 void ExtensionsMenuDelegateAndroid::OnDismissExtensionClicked(
     const extensions::ExtensionId& extension_id) {
-  // TODO(crbug.com/473213115)
+  menu_model_->DismissHostAccessRequest(extension_id);
 }
 
 void ExtensionsMenuDelegateAndroid::OnExtensionToggleSelected(

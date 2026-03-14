@@ -119,15 +119,15 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // The type of optional section to display in the menu.
   enum class OptionalSection {
-    // A section alerting the user that a page reload is required for changes to
-    // take effect.
-    kReloadPage,
     // A section listing extensions that have host access requests to the
     // current
     // site.
     kHostAccessRequests,
     // No optional section should be displayed.
-    kNone
+    kNone,
+    // A section alerting the user that a page reload is required for changes to
+    // take effect.
+    kReloadPage
   };
 
   // A generic structure for UI controls (buttons, toggles, radio buttons).

@@ -80,6 +80,30 @@ public class ExtensionsMenuBridge implements Destroyable {
                 .onSiteSettingsToggleChanged(mNativeExtensionsMenuDelegateAndroid, isChecked);
     }
 
+    /** Returns the optional section to display in the menu. */
+    public int getOptionalSection() {
+        return ExtensionsMenuBridgeJni.get()
+                .getOptionalSection(mNativeExtensionsMenuDelegateAndroid);
+    }
+
+    /** Returns the list of host access requests. */
+    public List<ExtensionsMenuTypes.HostAccessRequest> getHostAccessRequests() {
+        return ExtensionsMenuBridgeJni.get()
+                .getHostAccessRequests(mNativeExtensionsMenuDelegateAndroid);
+    }
+
+    /** Called when a host access request for `extension_id` is allowed. */
+    public void onAllowExtensionClicked(String extensionId) {
+        ExtensionsMenuBridgeJni.get()
+                .onAllowExtensionClicked(mNativeExtensionsMenuDelegateAndroid, extensionId);
+    }
+
+    /** Called when a host access request for `extension_id` is dismissed. */
+    public void onDismissExtensionClicked(String extensionId) {
+        ExtensionsMenuBridgeJni.get()
+                .onDismissExtensionClicked(mNativeExtensionsMenuDelegateAndroid, extensionId);
+    }
+
     /** Returns whether the native menu model is ready. */
     public boolean isReady() {
         return ExtensionsMenuBridgeJni.get().isReady(mNativeExtensionsMenuDelegateAndroid);
@@ -144,6 +168,26 @@ public class ExtensionsMenuBridge implements Destroyable {
         }
     }
 
+    @CalledByNative
+    private void onHostAccessRequestAdded(@JniType("std::string") String extensionId) {
+        mObserver.onHostAccessRequestAdded(extensionId);
+    }
+
+    @CalledByNative
+    private void onHostAccessRequestUpdated(@JniType("std::string") String extensionId) {
+        mObserver.onHostAccessRequestUpdated(extensionId);
+    }
+
+    @CalledByNative
+    private void onHostAccessRequestRemoved(@JniType("std::string") String extensionId) {
+        mObserver.onHostAccessRequestRemoved(extensionId);
+    }
+
+    @CalledByNative
+    private void onHostAccessRequestsCleared() {
+        mObserver.onHostAccessRequestsCleared();
+    }
+
     public interface Observer {
         /** Called when an extension icon has been updated on actionIndex. */
         void onActionIconUpdated(int actionIndex);
@@ -166,6 +210,18 @@ public class ExtensionsMenuBridge implements Destroyable {
          * current view.
          */
         void onModelChanged();
+
+        /** Called when a host access request has been added. */
+        void onHostAccessRequestAdded(String extensionId);
+
+        /** Called when a host access request has been updated. */
+        void onHostAccessRequestUpdated(String extensionId);
+
+        /** Called when a host access request has been removed. */
+        void onHostAccessRequestRemoved(String extensionId);
+
+        /** Called when all host access requests have been cleared. */
+        void onHostAccessRequestsCleared();
     }
 
     @NativeMethods
@@ -194,6 +250,27 @@ public class ExtensionsMenuBridge implements Destroyable {
          */
         ExtensionsMenuTypes.MenuEntryState getMenuEntry(
                 long nativeExtensionsMenuDelegateAndroid, int actionIndex);
+
+        /** Returns the optional section to display in the menu. */
+        int getOptionalSection(long nativeExtensionsMenuDelegateAndroid);
+
+        /** Returns the list of host access requests. */
+        @JniType("std::vector<base::android::ScopedJavaLocalRef<jobject>>")
+        List<ExtensionsMenuTypes.HostAccessRequest> getHostAccessRequests(
+                long nativeExtensionsMenuDelegateAndroid);
+
+        /** Called when a host access request for `extension_id` is allowed. */
+        void onAllowExtensionClicked(
+                long nativeExtensionsMenuDelegateAndroid,
+                @JniType("std::string") String extensionId);
+
+        /** Called when a host access request for `extension_id` is dismissed. */
+        void onDismissExtensionClicked(
+                long nativeExtensionsMenuDelegateAndroid,
+                @JniType("std::string") String extensionId);
+
+        /** Tells the native model to reload the page. */
+        void onReloadPageButtonClicked(long nativeExtensionsMenuDelegateAndroid);
 
         /** Returns whether the native menu model is ready. */
         boolean isReady(long nativeExtensionsMenuDelegateAndroid);

@@ -13,6 +13,29 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 @NullMarked
 class ExtensionsMenuProperties {
+    public static final org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<
+                    org.chromium.base.Callback<String>>
+            ALLOW_EXTENSION_CLICK_LISTENER =
+                    new org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<View.OnClickListener> CLOSE_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            DISCOVER_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
+    public static final org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<
+                    org.chromium.base.Callback<String>>
+            DISMISS_EXTENSION_CLICK_LISTENER =
+                    new org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<
+                    java.util.List<
+                            org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes
+                                    .HostAccessRequest>>
+            HOST_ACCESS_REQUESTS =
+                    new org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<>();
+
     /**
      * Whether the menu should display the 'zero state' when there are no actions to be shown in the
      * menu.
@@ -20,12 +43,27 @@ class ExtensionsMenuProperties {
     public static final WritableBooleanPropertyKey IS_ZERO_STATE =
             new WritableBooleanPropertyKey("IS_ZERO_STATE");
 
-    public static final WritableObjectPropertyKey<View.OnClickListener> CLOSE_CLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<View.OnClickListener>
-            DISCOVER_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener>
             MANAGE_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
+    public static final org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey
+            OPTIONAL_SECTION_TYPE =
+                    new org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey();
+
+    public static final org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<
+                    android.view.View.OnClickListener>
+            RELOAD_CLICK_LISTENER =
+                    new org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_LABEL =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_CHECKED =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<
+                    android.widget.CompoundButton.OnCheckedChangeListener>
+            SITE_SETTINGS_TOGGLE_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
     /**
      * Properties for the site settings toggle that allows users to block or allow all extensions
@@ -34,23 +72,20 @@ class ExtensionsMenuProperties {
     public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_CHECKED =
-            new WritableBooleanPropertyKey();
-    public static final WritableObjectPropertyKey<
-                    android.widget.CompoundButton.OnCheckedChangeListener>
-            SITE_SETTINGS_TOGGLE_CLICK_LISTENER = new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_LABEL =
-            new WritableObjectPropertyKey<>();
-
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                ALLOW_EXTENSION_CLICK_LISTENER,
                 CLOSE_CLICK_LISTENER,
                 DISCOVER_EXTENSIONS_CLICK_LISTENER,
+                DISMISS_EXTENSION_CLICK_LISTENER,
+                HOST_ACCESS_REQUESTS,
                 IS_ZERO_STATE,
                 MANAGE_EXTENSIONS_CLICK_LISTENER,
+                OPTIONAL_SECTION_TYPE,
+                RELOAD_CLICK_LISTENER,
                 SITE_SETTINGS_LABEL,
-                SITE_SETTINGS_TOGGLE_VISIBLE,
                 SITE_SETTINGS_TOGGLE_CHECKED,
-                SITE_SETTINGS_TOGGLE_CLICK_LISTENER
+                SITE_SETTINGS_TOGGLE_CLICK_LISTENER,
+                SITE_SETTINGS_TOGGLE_VISIBLE
             };
 }

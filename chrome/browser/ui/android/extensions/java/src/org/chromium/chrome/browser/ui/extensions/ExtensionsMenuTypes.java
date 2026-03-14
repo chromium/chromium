@@ -94,4 +94,34 @@ public class ExtensionsMenuTypes {
             this.toggle = toggle;
         }
     }
+
+    /** Mirrors {@code ExtensionsMenuViewModel::OptionalSection} */
+    @IntDef({
+        OptionalSectionType.HOST_ACCESS_REQUESTS,
+        OptionalSectionType.NONE,
+        OptionalSectionType.RELOAD_PAGE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface OptionalSectionType {
+        int HOST_ACCESS_REQUESTS = 0;
+        int NONE = 1;
+        int RELOAD_PAGE = 2;
+    }
+
+    /** Mirrors {@code ExtensionsMenuViewModel::HostAccessRequest} */
+    public static class HostAccessRequest {
+        public final String extensionId;
+        public final String extensionName;
+        public final @Nullable Bitmap extensionIcon;
+
+        @CalledByNative("HostAccessRequest")
+        public HostAccessRequest(
+                @JniType("std::string") String extensionId,
+                @JniType("std::u16string") String extensionName,
+                @Nullable Bitmap extensionIcon) {
+            this.extensionId = extensionId;
+            this.extensionName = extensionName;
+            this.extensionIcon = extensionIcon;
+        }
+    }
 }
