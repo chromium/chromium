@@ -264,6 +264,9 @@ extern const base::FeatureParam<bool> kNtpNextClientSensitivityCheckParam;
 extern const base::FeatureParam<bool>
     kNtpNextSuggestionsFromNewSearchSuggestionsEndpointParam;
 
+// Parameter determining if the Canvas action chip should be enabled.
+extern const base::FeatureParam<bool> kNtpNextEnableCanvasChipParam;
+
 // Parameter determining if a recent tab chip/row should be generated in the
 // steady state in NTP. If false, one is NOT generated in the steady state,
 // while one is still generated in the deep-dive state.

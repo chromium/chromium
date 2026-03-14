@@ -14,6 +14,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/i18n/char_iterator.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -308,6 +309,35 @@ std::optional<ActionChipPtr> CreateImageCreationChipIfEligible(
   return CreateImageCreationChip(suggestion);
 }
 
+ActionChipPtr CreateCanvasChip(std::string_view suggestion) {
+  ActionChipPtr chip = ActionChip::New();
+  chip->suggestion = std::string();
+  chip->suggest_template_info = SuggestTemplateInfo::New();
+  chip->suggest_template_info->type_icon = IconType::kDraftSpark;
+  chip->suggest_template_info->primary_text =
+      action_chips::mojom::FormattedString::New();
+  chip->suggest_template_info->primary_text->text =
+      l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CANVAS_HEADING);
+  chip->suggest_template_info->secondary_text =
+      action_chips::mojom::FormattedString::New();
+  chip->suggest_template_info->secondary_text->text =
+      !suggestion.empty()
+          ? std::string(suggestion)
+          : l10n_util::GetStringUTF8(IDS_NTP_ACTION_CHIP_CANVAS_BODY);
+  return chip;
+}
+
+std::optional<ActionChipPtr> CreateCanvasChipIfEligible(
+    std::string_view suggestion,
+    const AimEligibilityService* aim_eligibility_service) {
+  if (!ntp_features::kNtpNextEnableCanvasChipParam.Get() ||
+      aim_eligibility_service == nullptr ||
+      !aim_eligibility_service->IsCanvasEligible()) {
+    return std::nullopt;
+  }
+  return CreateCanvasChip(suggestion);
+}
+
 ActionChipPtr CreateDeepDiveChip(TabInfoPtr tab,
                                  const std::u16string_view suggestion) {
   ActionChipPtr chip = ActionChip::New();
@@ -379,23 +409,36 @@ std::vector<ActionChipPtr> CreateChipsForSteadyState(
     TabInfoPtr tab,
     const AimEligibilityService* aim_eligibility_service) {
   std::vector<ActionChipPtr> chips;
+
   if (!tab.is_null() &&
       ntp_features::kNtpNextShowStaticRecentTabChipParam.Get()) {
     chips.push_back(CreateRecentTabChip(std::move(tab), /*suggestion=*/""));
   }
 
-  if (std::optional<ActionChipPtr> deep_search_chip =
-          CreateDeepSearchChipIfEligible(
-              /*suggestion=*/"", aim_eligibility_service);
-      deep_search_chip.has_value()) {
-    chips.push_back(std::move(*deep_search_chip));
-  }
+  using GeneratorFn = const base::FunctionRef<std::optional<ActionChipPtr>(
+      std::string_view, const AimEligibilityService*)>;
+  static const GeneratorFn kNewGenerators[] = {
+      &CreateImageCreationChipIfEligible,
+      &CreateCanvasChipIfEligible,
+      &CreateDeepSearchChipIfEligible,
+  };
+  static const GeneratorFn kOldGenerators[] = {
+      &CreateDeepSearchChipIfEligible,
+      &CreateImageCreationChipIfEligible,
+  };
 
-  if (std::optional<ActionChipPtr> image_creation_chip =
-          CreateImageCreationChipIfEligible(
-              /*suggestion=*/"", aim_eligibility_service);
-      image_creation_chip.has_value()) {
-    chips.push_back(std::move(*image_creation_chip));
+  const base::span<GeneratorFn> generators =
+      ntp_features::kNtpNextEnableCanvasChipParam.Get()
+          ? base::span<GeneratorFn>(kNewGenerators)
+          : base::span<GeneratorFn>(kOldGenerators);
+  for (const GeneratorFn generator : generators) {
+    if (chips.size() >= 3) {
+      break;
+    }
+    if (std::optional<ActionChipPtr> chip =
+            generator("", aim_eligibility_service)) {
+      chips.push_back(std::move(*chip));
+    }
   }
   return chips;
 }

@@ -339,6 +339,10 @@ const base::FeatureParam<bool> kNtpNextShowStaticRecentTabChipParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowStaticRecentTabChipParam",
     true);
+const base::FeatureParam<bool> kNtpNextEnableCanvasChipParam(
+    &ntp_features::kNtpNextFeatures,
+    "NtpNextEnableCanvasChipParam",
+    false);
 const base::FeatureParam<bool> kNtpNextShowSimplificationUIParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowSimplificationUIParam",

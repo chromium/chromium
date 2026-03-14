@@ -27,6 +27,7 @@ generate_grd("build_grdp") {
     "banana.svg",
     "deep_search.svg",
     "suggestion.svg",
+    "canvas.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
   resource_path_prefix = "icons"

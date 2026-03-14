@@ -1649,10 +1649,25 @@ const FeatureEntry::FeatureParam
 };
 
 const FeatureEntry::FeatureParam
+    kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas[] = {
+        {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+        {"NtpNextEnableCanvasChipParam", "true"},
+};
+
+const FeatureEntry::FeatureParam
     kNtpNextShowSimplificationUIWithChromeNtpActionClient[] = {
         {"NtpNextShowSimplificationUIParam", "true"},
         {"NtpNextShowDeepDiveSuggestionsParam", "true"},
         {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowSimplificationUIWithChromeNtpActionClientAndCanvas[] = {
+        {"NtpNextShowSimplificationUIParam", "true"},
+        {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+        {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+        {"NtpNextEnableCanvasChipParam", "true"},
 };
 
 const FeatureEntry::FeatureParam
@@ -1663,12 +1678,31 @@ const FeatureEntry::FeatureParam
 };
 
 const FeatureEntry::FeatureParam
+    kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState
+        [] = {
+            {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+            {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+            {"kNtpNextShowStaticRecentTabChipParam", "false"},
+            {"NtpNextEnableCanvasChipParam", "true"},
+};
+
+const FeatureEntry::FeatureParam
     kNtpNextShowSimplificationUIWithNtpActionClientWithNoRecentTabInSteadyState
         [] = {
             {"NtpNextShowSimplificationUIParam", "true"},
             {"NtpNextShowDeepDiveSuggestionsParam", "true"},
             {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
             {"kNtpNextShowStaticRecentTabChipParam", "false"},
+};
+
+const FeatureEntry::FeatureParam
+    kNtpNextShowSimplificationUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState
+        [] = {
+            {"NtpNextShowSimplificationUIParam", "true"},
+            {"NtpNextShowDeepDiveSuggestionsParam", "true"},
+            {"NtpNextSuggestionsFromNewSearchSuggestionsEndpointParam", "true"},
+            {"kNtpNextShowStaticRecentTabChipParam", "false"},
+            {"NtpNextEnableCanvasChipParam", "true"},
 };
 
 const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
@@ -1690,9 +1724,21 @@ const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
      "State",
      kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState,
      nullptr},
-    {"- Show Row UI with a New Client and  No Recent Tab Chip in the Steady "
+    {"- Show Row UI with a New Client and No Recent Tab Chip in the Steady "
      "State",
      kNtpNextShowSimplificationUIWithNtpActionClientWithNoRecentTabInSteadyState,
+     nullptr},
+    {"- Show Chips UI with a New Suggestions Client and Canvas Chip",
+     kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas, nullptr},
+    {"- Show Row UI with a New Suggestions Client and Canvas Chip",
+     kNtpNextShowSimplificationUIWithChromeNtpActionClientAndCanvas, nullptr},
+    {"- Show Chips UI with a New Client, Canvas Chip, and No Recent Tab Chip "
+     "in the Steady State",
+     kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
+     nullptr},
+    {"- Show Row UI with a New Client, Canvas Chip, and No Recent Tab Chip in "
+     "the Steady State",
+     kNtpNextShowSimplificationUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
      nullptr},
     {"- Show Dismissal UI", kNtpNextShowSimplificationUIWithDismissal, nullptr},
 };
