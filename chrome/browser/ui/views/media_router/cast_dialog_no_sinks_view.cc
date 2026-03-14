@@ -175,6 +175,7 @@ void CastDialogNoSinksView::SetHelpIcon() {
           : IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON);
   icon->GetViewAccessibility().SetName(a11y_text);
   icon->SetTooltipText(a11y_text);
+  icon->GetViewAccessibility().SetRole(ax::mojom::Role::kLink);
   views::InkDrop::Get(icon)->SetMode(views::InkDropHost::InkDropMode::OFF);
   icon_ = icon;
 }

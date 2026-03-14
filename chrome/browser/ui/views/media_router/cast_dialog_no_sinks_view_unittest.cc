@@ -16,6 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace media_router {
 
@@ -70,6 +71,8 @@ TEST_F(CastDialogNoSinksViewTest, SwitchViews) {
   EXPECT_NE(initial_title, get_label_text());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON),
             get_icon()->GetAccessibleName());
+  EXPECT_EQ(ax::mojom::Role::kLink,
+            get_icon()->GetViewAccessibility().GetCachedRole());
 }
 
 class CastDialogNoSinksViewWithPermissionIssueTest
@@ -97,6 +100,8 @@ TEST_F(CastDialogNoSinksViewWithPermissionIssueTest, CreateView) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_BUTTON),
             get_icon()->GetAccessibleName());
+  EXPECT_EQ(ax::mojom::Role::kLink,
+            get_icon()->GetViewAccessibility().GetCachedRole());
 }
 
 }  // namespace media_router
