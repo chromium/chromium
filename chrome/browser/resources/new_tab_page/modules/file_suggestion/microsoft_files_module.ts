@@ -22,7 +22,7 @@ import {MicrosoftFilesProxyImpl} from './microsoft_files_proxy.js';
 
 export interface MicrosoftFilesModuleElement {
   $: {
-    moduleHeaderElementV2: ModuleHeaderElement,
+    moduleHeader: ModuleHeaderElement,
   };
 }
 

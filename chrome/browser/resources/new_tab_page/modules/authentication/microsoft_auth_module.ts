@@ -22,7 +22,7 @@ import {MicrosoftAuthProxyImpl} from './microsoft_auth_module_proxy.js';
 
 export interface MicrosoftAuthModuleElement {
   $: {
-    moduleHeaderElementV2: ModuleHeaderElement,
+    moduleHeader: ModuleHeaderElement,
     signInButton: HTMLButtonElement,
   };
 }

@@ -29,7 +29,7 @@ export const MAX_URL_VISITS = 5;
 
 export interface MostRelevantTabResumptionModuleElement {
   $: {
-    moduleHeaderElementV2: ModuleHeaderElement,
+    moduleHeader: ModuleHeaderElement,
     urlVisits: HTMLElement,
   };
 }

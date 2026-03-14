@@ -56,7 +56,7 @@ suite('MicrosoftAuthModule', () => {
 
     // Act.
     const whenFired = eventToPromise('disable-module', microsoftAuthModule);
-    const disableButton = microsoftAuthModule.$.moduleHeaderElementV2.shadowRoot
+    const disableButton = microsoftAuthModule.$.moduleHeader.shadowRoot
                               .querySelector<HTMLElement>('#disable');
     assertTrue(!!disableButton);
     disableButton.click();
@@ -75,7 +75,7 @@ suite('MicrosoftAuthModule', () => {
     // Act.
     const whenFired =
         eventToPromise('dismiss-module-instance', microsoftAuthModule);
-    microsoftAuthModule.$.moduleHeaderElementV2.dispatchEvent(
+    microsoftAuthModule.$.moduleHeader.dispatchEvent(
         new Event('dismiss-button-click'));
 
     // Assert.

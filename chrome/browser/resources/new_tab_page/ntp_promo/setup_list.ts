@@ -22,7 +22,7 @@ import {getHtml} from './setup_list.html.js';
 
 export interface SetupListElement {
   $: {
-    moduleHeaderElementV2: ModuleHeaderElement,
+    moduleHeader: ModuleHeaderElement,
     promos: HTMLElement,
   };
 }

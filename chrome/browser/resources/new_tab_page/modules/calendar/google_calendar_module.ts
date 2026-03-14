@@ -21,7 +21,7 @@ import {GoogleCalendarProxyImpl} from './google_calendar_proxy.js';
 export interface GoogleCalendarModuleElement {
   $: {
     calendar: CalendarElement,
-    moduleHeaderElementV2: ModuleHeaderElement,
+    moduleHeader: ModuleHeaderElement,
   };
 }
 
