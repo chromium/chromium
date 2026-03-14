@@ -1801,31 +1801,17 @@ void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
   }
 
   // Check the pages with strokes and remove the ones that are now empty.
-  // Also find the maximum stroke ID that is in use.
-  std::optional<InkStrokeId> max_stroke_id;
   for (auto it = strokes_.begin(); it != strokes_.end();) {
-    const auto& page_ink_strokes = it->second;
-    if (page_ink_strokes.empty()) {
+    if (it->second.empty()) {
       it = strokes_.erase(it);
     } else {
-      max_stroke_id = std::max(max_stroke_id.value_or(InkStrokeId(0)),
-                               page_ink_strokes.back().id);
       ++it;
     }
   }
 
-  // Now that some strokes have been discarded, Let the StrokeIdGenerator know
+  // Now that some strokes have been discarded, let the StrokeIdGenerator know
   // there are IDs available for reuse.
-  if (max_stroke_id.has_value()) {
-    // Since some stroke(s) got discarded, the maximum stroke ID value cannot be
-    // the max integer value. Thus adding 1 will not overflow.
-    CHECK_NE(max_stroke_id.value(),
-             InkStrokeId(std::numeric_limits<size_t>::max()));
-    stroke_id_generator_.ResetIdTo(
-        InkStrokeId(max_stroke_id.value().value() + 1));
-  } else {
-    stroke_id_generator_.ResetIdTo(InkStrokeId(0));
-  }
+  stroke_id_generator_.ResetIdTo(lowest_stroke_id);
 }
 
 bool PdfInkModule::MaybeSetDrawingBrush() {
