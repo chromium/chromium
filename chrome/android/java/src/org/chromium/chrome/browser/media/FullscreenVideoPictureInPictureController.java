@@ -23,6 +23,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -50,6 +51,15 @@ import java.util.Set;
 @NullMarked
 public class FullscreenVideoPictureInPictureController {
     private static final String TAG = "VideoPersist";
+
+    @VisibleForTesting
+    public static final String ENTERED_HISTOGRAM =
+            "Media.FullscreenVideoPictureInPicture.Android.Entered";
+
+    @VisibleForTesting
+    public static final String EXIT_REASON_HISTOGRAM =
+            "Media.FullscreenVideoPictureInPicture.Android.ExitReason";
+
     private static final int AUTO_PIP_UPDATE_DELAY = 500 /* msec */;
 
     // Metrics
@@ -65,7 +75,7 @@ public class FullscreenVideoPictureInPictureController {
         MetricsEndReason.START
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface MetricsEndReason {
+    public @interface MetricsEndReason {
         int RESUME = 0;
         // Obsolete: NAVIGATION = 1;
         int CLOSE = 2;
@@ -75,6 +85,20 @@ public class FullscreenVideoPictureInPictureController {
         int LEFT_FULLSCREEN = 6;
         int WEB_CONTENTS_LEFT_FULLSCREEN = 7;
         int START = 8;
+        int COUNT = 9;
+    }
+
+    @IntDef({
+        PipEntered.ENTERED,
+        PipEntered.FAILED_NO_WEB_CONTENTS,
+        PipEntered.FAILED_NO_ACTIVITY_TAB
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PipEntered {
+        int ENTERED = 0;
+        int FAILED_NO_WEB_CONTENTS = 1;
+        int FAILED_NO_ACTIVITY_TAB = 2;
+        int COUNT = 3;
     }
 
     private static final float MIN_ASPECT_RATIO = 1 / 2.39f;
@@ -323,20 +347,23 @@ public class FullscreenVideoPictureInPictureController {
         mLastOnEnteredTimeMillis = SystemClock.elapsedRealtime();
 
         // Inform the WebContents when we enter and when we leave PiP.
-        final WebContents webContents = getWebContents();
-        // If we're closing the tab, just stop here.
+        final Tab activityTab = mActivityTabProvider.get();
+        if (activityTab == null) {
+            Log.i(TAG, "Activity tab is null, not entering Picture-in-picture");
+            RecordHistogram.recordEnumeratedHistogram(
+                    ENTERED_HISTOGRAM, PipEntered.FAILED_NO_ACTIVITY_TAB, PipEntered.COUNT);
+            return;
+        }
+
+        final WebContents webContents = activityTab.getWebContents();
         if (webContents == null) {
             Log.i(TAG, "Tab is closing, not entering Picture-in-picture");
+            RecordHistogram.recordEnumeratedHistogram(
+                    ENTERED_HISTOGRAM, PipEntered.FAILED_NO_WEB_CONTENTS, PipEntered.COUNT);
             return;
         }
 
         webContents.setHasPersistentVideo(true);
-
-        final Tab activityTab = mActivityTabProvider.get();
-        if (activityTab == null) {
-            Log.i(TAG, "Activity tab is null, not entering Picture-in-picture");
-            return;
-        }
 
         // We don't want InfoBars displaying while in PiP, they cover too much content.
         assumeNonNull(getInfoBarContainerForTab(activityTab)).setHidden(true);
@@ -358,6 +385,9 @@ public class FullscreenVideoPictureInPictureController {
         // Setup observers to dismiss the Activity on events that should end PiP.  In auto-enter
         // mode, these might be registered already.
         addObserversIfNeeded();
+
+        RecordHistogram.recordEnumeratedHistogram(
+                ENTERED_HISTOGRAM, PipEntered.ENTERED, PipEntered.COUNT);
     }
 
     /**
@@ -444,6 +474,9 @@ public class FullscreenVideoPictureInPictureController {
         // cleanup call happened while Chrome was not PIP'ing. The early return also avoid recording
         // the reason why the (non-)PIP session ended.
         if (!isPipSessionActive()) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                EXIT_REASON_HISTOGRAM, reason, MetricsEndReason.COUNT);
 
         // This method can be called when we haven't been PiPed. We use Callbacks to ensure we only
         // do cleanup if it is required.

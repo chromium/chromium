@@ -4529,6 +4529,30 @@ chromium-metrics-reviews@google.com.
   <token key="RendererType" variants="RendererType"/>
 </histogram>
 
+<histogram name="Media.FullscreenVideoPictureInPicture.Android.Entered"
+    enum="FullscreenVideoPictureInPictureEntered" expires_after="2027-03-01">
+  <owner>philyan@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when Chrome attempts to enter Picture-in-Picture mode for a
+    fullscreen video on Android.
+
+    Logs `Entered` if PiP is successfully set up. Logs `Failed - No WebContents`
+    if the tab is closing. Logs `Failed - No ActivityTab` if the activity has no
+    active tab.
+  </summary>
+</histogram>
+
+<histogram name="Media.FullscreenVideoPictureInPicture.Android.ExitReason"
+    enum="FullscreenVideoPictureInPictureExitReason" expires_after="2027-03-01">
+  <owner>philyan@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The reason why a fullscreen video Picture-in-Picture session ended on
+    Android. Recorded when the PiP session is exited.
+  </summary>
+</histogram>
+
 <histogram name="Media.GetDisplayMedia.BasicFlow.Win.GetApplicationIdResult"
     enum="GetAppMainProcessIdWinResult" expires_after="2026-05-11">
   <owner>eladalon@chromium.org</owner>

@@ -4721,6 +4721,24 @@ shown properly on the user-facing crash UI.
   <int value="3" label="Keyboard and pointer locked"/>
 </enum>
 
+<enum name="FullscreenVideoPictureInPictureEntered">
+  <int value="0" label="Entered"/>
+  <int value="1" label="Failed - No WebContents"/>
+  <int value="2" label="Failed - No ActivityTab"/>
+</enum>
+
+<enum name="FullscreenVideoPictureInPictureExitReason">
+  <int value="0" label="Resume"/>
+  <int value="1" label="Obsolete: Navigation"/>
+  <int value="2" label="Close"/>
+  <int value="3" label="Crash"/>
+  <int value="4" label="New Tab"/>
+  <int value="5" label="Reparent"/>
+  <int value="6" label="Left Fullscreen"/>
+  <int value="7" label="Web Contents Left Fullscreen"/>
+  <int value="8" label="Start"/>
+</enum>
+
 <enum name="GaiaServiceType">
   <int value="0" label="No Gaia response header"/>
   <int value="1" label="Logout all existing sessions"/>

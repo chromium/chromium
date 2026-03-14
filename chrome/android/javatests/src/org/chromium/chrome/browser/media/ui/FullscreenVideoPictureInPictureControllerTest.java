@@ -25,11 +25,15 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
+import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.MetricsEndReason;
+import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.PipEntered;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -385,5 +389,32 @@ public class FullscreenVideoPictureInPictureControllerTest {
         // exited), we run it now for completion and proceed to ensure we exited Picture in Picture.
         mActivity.onPictureInPictureModeChanged(false, mActivity.getResources().getConfiguration());
         CriteriaHelper.pollUiThread(() -> !mActivity.getLastPictureInPictureModeForTesting());
+    }
+
+    @Test
+    @MediumTest
+    public void testMetricsRecorded() throws Throwable {
+        HistogramWatcher enteredWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FullscreenVideoPictureInPictureController.ENTERED_HISTOGRAM,
+                                PipEntered.ENTERED)
+                        .build();
+
+        enterFullscreen();
+        triggerAutoPiPAndWait();
+
+        enteredWatcher.assertExpected();
+
+        HistogramWatcher exitWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FullscreenVideoPictureInPictureController.EXIT_REASON_HISTOGRAM,
+                                MetricsEndReason.LEFT_FULLSCREEN)
+                        .build();
+
+        exitPipAndFullscreenAndWait();
+
+        exitWatcher.assertExpected();
     }
 }
