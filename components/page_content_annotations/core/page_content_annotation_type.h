@@ -31,6 +31,9 @@ enum class AnnotationType {
   //
   // This is deprecated and should not be used.
   kDeprecatedTextEmbedding,
+
+  // The input will be annotated for category classification.
+  kCategoryClassifier,
 };
 
 std::string AnnotationTypeToString(AnnotationType type);

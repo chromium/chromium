@@ -104,6 +104,10 @@ class PageContentAnnotationsResult {
   static PageContentAnnotationsResult CreateContentVisibilityScoreResult(
       const ContentVisibilityScore& score);
 
+  // Creates a result for category classification.
+  static PageContentAnnotationsResult CreateCategoryResults(
+      std::vector<Category> categories);
+
   PageContentAnnotationsResult(const PageContentAnnotationsResult&);
   PageContentAnnotationsResult& operator=(const PageContentAnnotationsResult&);
   ~PageContentAnnotationsResult();
@@ -112,12 +116,14 @@ class PageContentAnnotationsResult {
   AnnotationType GetType() const;
 
   ContentVisibilityScore GetContentVisibilityScore() const;
+  const std::vector<Category>& GetCategoryResults() const;
 
  private:
   PageContentAnnotationsResult();
 
   // The page content annotation of this result.
-  std::variant<void* /*Unknown*/, ContentVisibilityScore> result_;
+  std::variant<void* /*Unknown*/, ContentVisibilityScore, std::vector<Category>>
+      result_;
 };
 
 }  // namespace page_content_annotations
