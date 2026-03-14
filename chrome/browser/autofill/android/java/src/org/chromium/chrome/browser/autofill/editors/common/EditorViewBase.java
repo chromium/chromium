@@ -651,11 +651,13 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                 };
 
         confirmationDialog.show(
-                res -> confirmationTitle,
-                res -> confirmationText,
-                primaryButtonText,
-                R.string.cancel,
-                /* supportStopShowing= */ false,
+                confirmationDialog
+                        .createDialogParams()
+                        .withTitle(confirmationTitle)
+                        .withDescription(confirmationText)
+                        .withPositiveButton(primaryButtonText)
+                        .withNegativeButton(R.string.cancel)
+                        .withSupportStopShowing(false),
                 confirmationDialogHandler);
 
         if (sObserverForTest != null) {

@@ -14,7 +14,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
@@ -25,7 +24,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Function;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -847,25 +845,24 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      */
     private void showCloseAllArchivedTabsConfirmation(
             int tabCount, List<String> archivedTabGroupSyncIds, Runnable onConfirmRunnable) {
-        Function<Resources, String> titleResolver =
-                (res) -> {
-                    return res.getQuantityString(
-                            R.plurals.archive_dialog_close_all_inactive_tabs_confirmation_title,
-                            tabCount,
-                            tabCount);
-                };
-        Function<Resources, String> descriptionResolver =
-                (res) -> {
-                    return res.getString(
-                            R.string
-                                    .archive_dialog_close_all_inactive_tabs_confirmation_description);
-                };
+        String title =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.archive_dialog_close_all_inactive_tabs_confirmation_title,
+                                tabCount,
+                                tabCount);
         mActionConfirmationDialog.show(
-                titleResolver,
-                descriptionResolver,
-                R.string.archive_dialog_close_all_inactive_tabs_confirmation,
-                R.string.cancel,
-                /* supportStopShowing= */ false,
+                mActionConfirmationDialog
+                        .createDialogParams()
+                        .withTitle(title)
+                        .withDescription(
+                                R.string
+                                        .archive_dialog_close_all_inactive_tabs_confirmation_description)
+                        .withPositiveButton(
+                                R.string.archive_dialog_close_all_inactive_tabs_confirmation)
+                        .withNegativeButton(R.string.cancel)
+                        .withSupportStopShowing(false),
                 (dismissHandler, buttonClickResult, stopShowing) -> {
                     if (buttonClickResult == ButtonClickResult.POSITIVE) {
                         mArchivedTabModel

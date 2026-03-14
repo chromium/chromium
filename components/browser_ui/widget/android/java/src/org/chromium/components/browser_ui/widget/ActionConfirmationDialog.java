@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.widget;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
-import androidx.core.util.Function;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -277,34 +275,86 @@ public class ActionConfirmationDialog {
         mModalDialogManager = modalDialogManager;
     }
 
+    /** Parameters for the confirmation dialog. */
+    public class ConfirmationDialogParams {
+        // The title of the dialog.
+        private String mTitle = "";
+        // The description of the dialog.
+        private CharSequence mDescription = "";
+        // The text for the positive button.
+        private String mPositiveButtonText = "";
+        // The text for the negative button.
+        private String mNegativeButtonText = "";
+        // Whether to show the "don't show again" checkbox.
+        private boolean mSupportStopShowing;
+
+        public ConfirmationDialogParams() {}
+
+        public ConfirmationDialogParams withTitle(String title) {
+            mTitle = title;
+            return this;
+        }
+
+        public ConfirmationDialogParams withTitle(@StringRes int titleRes) {
+            mTitle = mContext.getString(titleRes);
+            return this;
+        }
+
+        public ConfirmationDialogParams withDescription(CharSequence description) {
+            mDescription = description;
+            return this;
+        }
+
+        public ConfirmationDialogParams withDescription(@StringRes int descriptionRes) {
+            mDescription = mContext.getText(descriptionRes);
+            return this;
+        }
+
+        public ConfirmationDialogParams withPositiveButton(String positiveButtonText) {
+            mPositiveButtonText = positiveButtonText;
+            return this;
+        }
+
+        public ConfirmationDialogParams withPositiveButton(@StringRes int positiveButtonRes) {
+            mPositiveButtonText = mContext.getString(positiveButtonRes);
+            return this;
+        }
+
+        public ConfirmationDialogParams withNegativeButton(String negativeButtonText) {
+            mNegativeButtonText = negativeButtonText;
+            return this;
+        }
+
+        public ConfirmationDialogParams withNegativeButton(@StringRes int negativeButtonRes) {
+            mNegativeButtonText = mContext.getString(negativeButtonRes);
+            return this;
+        }
+
+        public ConfirmationDialogParams withSupportStopShowing(boolean supportStopShowing) {
+            mSupportStopShowing = supportStopShowing;
+            return this;
+        }
+    }
+
+    public ConfirmationDialogParams createDialogParams() {
+        return new ConfirmationDialogParams();
+    }
+
     /**
      * Shows an action confirmation dialog.
      *
-     * @param titleResolver Resolves a title for the dialog.
-     * @param descriptionResolver Resolves a description for the dialog.
-     * @param positiveButtonRes The string to show for the positive button.
-     * @param negativeButtonRes The string to show for the negative button.
-     * @param supportStopShowing Whether to show a checkbox to permanently disable the dialog via a
-     *     pref.
+     * @param params The parameters for the dialog.
      * @param confirmationDialogHandler The callback to invoke on exit of the dialog.
      */
     public void show(
-            Function<Resources, String> titleResolver,
-            Function<Resources, ? extends CharSequence> descriptionResolver,
-            @StringRes int positiveButtonRes,
-            @StringRes int negativeButtonRes,
-            boolean supportStopShowing,
-            ConfirmationDialogHandler confirmationDialogHandler) {
-        Resources resources = mContext.getResources();
-
+            ConfirmationDialogParams params, ConfirmationDialogHandler confirmationDialogHandler) {
         View customView =
                 LayoutInflater.from(mContext).inflate(R.layout.action_confirmation_dialog, null);
         TextView descriptionTextView = customView.findViewById(R.id.description_text_view);
         CheckBox stopShowingCheckBox = customView.findViewById(R.id.stop_showing_check_box);
-        stopShowingCheckBox.setVisibility(supportStopShowing ? View.VISIBLE : View.GONE);
+        stopShowingCheckBox.setVisibility(params.mSupportStopShowing ? View.VISIBLE : View.GONE);
 
-        CharSequence descriptionText = descriptionResolver.apply(resources);
-        descriptionTextView.setText(descriptionText);
+        descriptionTextView.setText(params.mDescription);
         descriptionTextView.setMovementMethod(LinkMovementMethod.getInstance());
 
         StopShowingDelegate stopShowingDelegate =
@@ -315,20 +365,20 @@ public class ActionConfirmationDialog {
                             && stopShowingCheckBox.isChecked();
                 };
 
-        String titleText = titleResolver.apply(resources);
-        String positiveText = resources.getString(positiveButtonRes);
-        String negativeText = resources.getString(negativeButtonRes);
-
         DismissHandlerImpl dismissHandler =
                 new DismissHandlerImpl(
                         mModalDialogManager, confirmationDialogHandler, stopShowingDelegate);
         OneshotSupplierImpl<PropertyModel> modelSupplier = new OneshotSupplierImpl<>();
         View buttonBarView =
-                createCustomButtonBarView(mContext, modelSupplier, positiveText, negativeText);
+                createCustomButtonBarView(
+                        mContext,
+                        modelSupplier,
+                        params.mPositiveButtonText,
+                        params.mNegativeButtonText);
         PropertyModel model =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, dismissHandler)
-                        .with(ModalDialogProperties.TITLE, titleText)
+                        .with(ModalDialogProperties.TITLE, params.mTitle)
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                         .with(ModalDialogProperties.CUSTOM_BUTTON_BAR_VIEW, buttonBarView)
