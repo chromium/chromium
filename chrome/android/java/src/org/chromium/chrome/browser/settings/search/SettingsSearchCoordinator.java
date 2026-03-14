@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.DimenRes;
@@ -75,6 +76,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -207,7 +210,7 @@ public class SettingsSearchCoordinator
         mActivity = activity;
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;
-        mFragmentState = FS_SETTINGS;
+        setFragmentState(FS_SETTINGS);
         mItemDecorations = itemDecorations;
         mProfile = profile;
         mUpdateFirstVisibleTitle = updateFirstVisibleTitle;
@@ -286,7 +289,14 @@ public class SettingsSearchCoordinator
             mFirstUiEntered = savedState.getBoolean(KEY_FIRST_UI_ENTERED);
             mResultUpdated = savedState.getBoolean(KEY_RESULT_UPDATED);
             mSearchCompleted = savedState.getBoolean(KEY_SEARCH_COMPLETED);
+            mHandler.post(() -> showTitleTextView(true));
         }
+    }
+
+    private void showTitleTextView(boolean show) {
+        Toolbar actionBar = mActivity.findViewById(R.id.action_bar);
+        assumeNonNull(getTitleTextView(actionBar))
+                .setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     private void onClickSearchBox(View view) {
@@ -351,7 +361,7 @@ public class SettingsSearchCoordinator
 
         if (mMultiColumnSettings != null && mUseMultiColumn && mFragmentState == FS_RESULTS) {
             // If clicked while displaying search results, get out of FS_RESULTS state.
-            mFragmentState = FS_SEARCH;
+            setFragmentState(FS_SEARCH);
             mActivity.findViewById(R.id.search_query_container).setVisibility(View.VISIBLE);
             showBackArrowInSingleColumnMode(false);
             getSettingsFragmentManager()
@@ -610,7 +620,7 @@ public class SettingsSearchCoordinator
                     R.drawable.settings_zero_state, /* addToBackStack= */ true, emptyRunnable());
         }
         KeyboardUtils.showKeyboard(queryEdit);
-        mFragmentState = FS_SEARCH;
+        setFragmentState(FS_SEARCH);
         mBackActionCallback.setEnabled(true);
         if (mMultiColumnSettings != null && isShowingMainSettings()) {
             mMultiColumnSettings.getSlidingPaneLayout().openPane();
@@ -624,6 +634,11 @@ public class SettingsSearchCoordinator
         }
 
         updateHelpMenuVisibility();
+    }
+
+    private void setFragmentState(int state) {
+        mFragmentState = state;
+        if (!mUseMultiColumn) showTitleTextView(state != FS_SEARCH);
     }
 
     private void showBackArrowInSingleColumnMode(boolean show) {
@@ -662,7 +677,7 @@ public class SettingsSearchCoordinator
             mPaneOpenedBySearch = false;
         }
 
-        mFragmentState = FS_SETTINGS;
+        setFragmentState(FS_SETTINGS);
         mBackActionCallback.setEnabled(false);
         if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
         mShowingEmptyFragment = false;
@@ -688,7 +703,7 @@ public class SettingsSearchCoordinator
             // where we display the search results.
             String topStackEntry = fragmentManager.getBackStackEntryAt(stackCount - 1).getName();
             if (TextUtils.equals(RESULT_BACKSTACK, topStackEntry)) {
-                mFragmentState = FS_SEARCH;
+                setFragmentState(FS_SEARCH);
                 mActivity.findViewById(R.id.search_query_container).setVisibility(View.VISIBLE);
                 EditText queryEdit = mActivity.findViewById(R.id.search_query);
                 queryEdit.requestFocus();
@@ -1008,7 +1023,7 @@ public class SettingsSearchCoordinator
                             FragmentManager fragmentManager = getSettingsFragmentManager();
                             fragmentManager.popBackStack(
                                     RESULT_BACKSTACK, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            mFragmentState = FS_SEARCH;
+                            setFragmentState(FS_SEARCH);
                         }
                     }
                 });
@@ -1022,7 +1037,7 @@ public class SettingsSearchCoordinator
 
     public void onTitleTapped(@Nullable String entryName) {
         // Tap on the title 'Search results' should set the state to 'SEARCH'.
-        if (RESULT_BACKSTACK.equals(entryName)) mFragmentState = FS_SEARCH;
+        if (RESULT_BACKSTACK.equals(entryName)) setFragmentState(FS_SEARCH);
     }
 
     /**
@@ -1168,7 +1183,7 @@ public class SettingsSearchCoordinator
     }
 
     private void enterResultState() {
-        mFragmentState = FS_RESULTS;
+        setFragmentState(FS_RESULTS);
         if (mUseMultiColumn) {
             mActivity.findViewById(R.id.search_query).clearFocus();
         } else {
@@ -1368,4 +1383,40 @@ public class SettingsSearchCoordinator
         mHandler.removeCallbacksAndMessages(null);
         mContainmentController = null;
     }
-}
+
+    /**
+     * Finds the title view of a given {@link Toolbar}. {@link Toolbar#getTitleTextView} cannot be
+     * used since it is package-private. This method makes use of its title text to get the matched
+     * view out of multiple {@link TextView} objects inside the given toolbar.
+     *
+     * @param toolbar {@link Toolbar} object.
+     * @return {@link TextView} that contains the toolbar title.
+     * @see <a
+     *     href="https://github.com/material-components/material-components-android/blob/master/lib/java/com/google/android/material/internal/ToolbarUtils.java#L61">material-components</a>
+     */
+    private static @Nullable TextView getTitleTextView(Toolbar toolbar) {
+        List<TextView> textViews = getTextViewsWithText(toolbar, toolbar.getTitle());
+        return textViews.isEmpty() ? null : Collections.min(textViews, VIEW_TOP_COMPARATOR);
+    }
+
+    private static List<TextView> getTextViewsWithText(Toolbar toolbar, CharSequence text) {
+        List<TextView> textViews = new ArrayList<>();
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View child = toolbar.getChildAt(i);
+            if (child instanceof TextView textView) {
+                if (TextUtils.equals(textView.getText(), text)) {
+                    textViews.add(textView);
+                }
+            }
+        }
+        return textViews;
+    }
+
+    private static final Comparator<View> VIEW_TOP_COMPARATOR =
+            new Comparator<View>() {
+                @Override
+                public int compare(View view1, View view2) {
+                    return view1.getTop() - view2.getTop();
+                }
+            };
+    }
