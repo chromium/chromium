@@ -3,6 +3,7 @@ include_rules = [
   "+components/contextual_search",
   "+components/history/core/browser",
   "+components/omnibox/browser",
+  "+components/omnibox/common",
   "+components/signin/public",
   "+components/sync/protocol",
   "+components/sync/test",

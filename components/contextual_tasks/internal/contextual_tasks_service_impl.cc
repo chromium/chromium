@@ -22,7 +22,9 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/common/logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -30,6 +32,7 @@
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/protocol/gemini_thread_specifics.pb.h"
+#include "net/base/url_util.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -515,6 +518,61 @@ void ContextualTasksServiceImpl::GetContextForTask(
   composite_context_decorator_->DecorateContext(
       std::make_unique<ContextualTaskContext>(it->second), sources,
       std::move(params), std::move(context_callback));
+}
+
+void ContextualTasksServiceImpl::GetThreadUrlFromTaskId(
+    const base::Uuid& task_id,
+    const std::string& locale,
+    omnibox::ChromeAimEntryPoint entry_point,
+    base::OnceCallback<void(GURL)> callback) {
+  GetTaskById(
+      task_id,
+      base::BindOnce(
+          [](const base::Uuid& task_id, const std::string& locale,
+             omnibox::ChromeAimEntryPoint entry_point,
+             base::OnceCallback<void(GURL)> callback,
+             std::optional<ContextualTask> task) {
+            OMNIBOX_LOG("nav_trace")
+                << "ContextualTasks navigation trace: "
+                   "GetThreadUrlFromTaskId callback called";
+            GURL url = GetDefaultAimUrl(locale, entry_point);
+            if (!task) {
+              OMNIBOX_LOG("nav_trace")
+                  << "ContextualTasks navigation trace: "
+                     "GetThreadUrlFromTaskId returning early, no task. "
+                     "Returning default: "
+                  << url;
+              std::move(callback).Run(url);
+              return;
+            }
+
+            std::optional<Thread> thread = task->GetThread();
+            // Gemini Thread URL generation is not supported yet.
+            if (!thread || thread->type == ThreadType::kGemini) {
+              OMNIBOX_LOG("nav_trace")
+                  << "ContextualTasks navigation trace: "
+                     "GetThreadUrlFromTaskId returning early, no thread or "
+                     "Gemini thread. Returning default: "
+                  << url;
+              std::move(callback).Run(url);
+              return;
+            }
+
+            // Attach the thread ID and the most recent turn ID to the
+            // URL. A query parameter needs to be present, but its
+            // value is not used for continued threads.
+            url = net::AppendQueryParameter(url, "q", thread->title);
+            DCHECK(thread->conversation_turn_id.has_value());
+            url = net::AppendQueryParameter(
+                url, "mstk", thread->conversation_turn_id.value());
+            url = net::AppendQueryParameter(url, "mtid", thread->server_id);
+
+            OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: "
+                                        "GetThreadUrlFromTaskId returning URL: "
+                                     << url;
+            std::move(callback).Run(url);
+          },
+          task_id, locale, entry_point, std::move(callback)));
 }
 
 void ContextualTasksServiceImpl::AddObserver(

@@ -26,6 +26,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync/model/data_type_store.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 
 class AimEligibilityService;
@@ -102,6 +103,10 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       std::unique_ptr<ContextDecorationParams> params,
       base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
           context_callback) override;
+  void GetThreadUrlFromTaskId(const base::Uuid& task_id,
+                              const std::string& locale,
+                              omnibox::ChromeAimEntryPoint entry_point,
+                              base::OnceCallback<void(GURL)> callback) override;
   void AddObserver(ContextualTasksService::Observer* observer) override;
   void RemoveObserver(ContextualTasksService::Observer* observer) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>

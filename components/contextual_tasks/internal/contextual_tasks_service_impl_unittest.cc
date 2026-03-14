@@ -33,9 +33,11 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -1942,6 +1944,37 @@ TEST_F(ContextualTasksServiceImplTest,
   // Previously, re-associating an empty task triggered a disassociate -> delete
   // cycle while holding an iterator, causing a Use-After-Free.
   service_->AssociateTabWithTask(task.GetTaskId(), tab_id);
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetThreadUrlFromTaskId) {
+  ContextualTask task = service_->CreateTask();
+
+  const std::string server_id = "1234";
+  const std::string title = "title";
+  const std::string turn_id = "5678";
+  int64_t last_turn_time = 1;
+  Thread thread(ThreadType::kAiMode, server_id, title, last_turn_time, turn_id);
+  service_->UpdateThreadForTask(task.GetTaskId(), ThreadType::kAiMode,
+                                server_id, turn_id, title);
+
+  base::RunLoop run_loop;
+  service_->GetThreadUrlFromTaskId(
+      task.GetTaskId(), "en-us",
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      base::BindOnce(
+          [](const std::string& server_id, const std::string& turn_id,
+             GURL url) {
+            std::string mstk;
+            net::GetValueForKeyInQuery(url, "mstk", &mstk);
+            ASSERT_EQ(mstk, turn_id);
+
+            std::string mtid;
+            net::GetValueForKeyInQuery(url, "mtid", &mtid);
+            ASSERT_EQ(mtid, server_id);
+          },
+          server_id, turn_id)
+          .Then(run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 }  // namespace contextual_tasks
