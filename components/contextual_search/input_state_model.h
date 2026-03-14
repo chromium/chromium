@@ -102,6 +102,12 @@ class InputStateModel {
   // user preference from enterprise policy.
   bool IsSearchContentSharingEnabled() const;
 
+  // Returns the rule for a given `model`.
+  const omnibox::ModelRule* GetModelRule(ModelMode model) const;
+
+  // Returns a rule for a given `tool`.
+  const omnibox::ToolRule* GetToolRule(ToolMode tool) const;
+
   InputState state_;
   omnibox::RuleSet rule_set_;
   base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
