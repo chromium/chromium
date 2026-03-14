@@ -249,6 +249,12 @@ concept ValidDenseSetTraits =
     std::same_as<decltype(Traits::kMaxValue), const T> &&
     std::same_as<decltype(Traits::kPacked), const bool>;
 
+template <typename T>
+concept HasMinValue = requires { T::kMinValue; };
+
+template <typename T>
+concept HasMaxValue = requires { T::kMaxValue; };
+
 }  // namespace internal
 
 // Helper for traits for integer DenseSets.
@@ -286,12 +292,19 @@ struct EnumDenseSetTraits {
 };
 
 // The default traits.
-template <typename T, typename = void>
+template <typename T>
 struct DenseSetTraits {};
 
 template <typename T>
-  requires(std::is_enum_v<T>)
+  requires(std::is_enum_v<T> && (!internal::HasMinValue<T>) &&
+           internal::HasMaxValue<T>)
 struct DenseSetTraits<T> : public EnumDenseSetTraits<T, T(0), T::kMaxValue> {};
+
+template <typename T>
+  requires(std::is_enum_v<T> && internal::HasMinValue<T> &&
+           internal::HasMaxValue<T>)
+struct DenseSetTraits<T>
+    : public EnumDenseSetTraits<T, T::kMinValue, T::kMaxValue> {};
 
 // A set container with a std::set<T>-like interface for a type T that has a
 // dense and small integral representation. DenseSet is particularly suited for

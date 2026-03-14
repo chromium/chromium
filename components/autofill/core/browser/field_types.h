@@ -620,7 +620,7 @@ struct DenseSetTraits<FieldType>
 template <>
 struct DenseSetTraits<HtmlFieldType>
     : EnumDenseSetTraits<HtmlFieldType,
-                         HtmlFieldType(0),
+                         HtmlFieldType::kMinValue,
                          HtmlFieldType::kMaxValue> {
   static constexpr bool is_valid(HtmlFieldType x) {
     return x == HtmlFieldType::kUnrecognized ||
