@@ -16,8 +16,7 @@
 namespace metrics {
 
 CriticalUserJourneyService::CriticalUserJourneyService(Profile* profile)
-    : profile_(profile),
-      registry_(std::make_unique<CriticalUserJourneyRegistry>()) {}
+    : profile_(profile) {}
 
 CriticalUserJourneyService::~CriticalUserJourneyService() = default;
 
@@ -26,9 +25,9 @@ void CriticalUserJourneyService::Initialize() {
     return;
   }
 
-  RegisterJourneys(registry_.get());
+  RegisterJourneys(&registry_);
 
-  for (const auto& journey : registry_->journeys()) {
+  for (const auto& journey : registry_.journeys()) {
     if (journey->steps().empty()) {
       continue;
     }

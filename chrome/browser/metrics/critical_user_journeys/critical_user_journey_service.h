@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -20,7 +21,6 @@ class TrackedElement;
 namespace metrics {
 
 class CriticalUserJourney;
-class CriticalUserJourneyRegistry;
 class CriticalUserJourneySession;
 
 // Service responsible for tracking and managing active Critical User Journeys.
@@ -49,7 +49,7 @@ class CriticalUserJourneyService : public KeyedService {
   void OnJourneyEnded(CriticalUserJourneySession* session);
 
   const raw_ptr<Profile> profile_;
-  std::unique_ptr<CriticalUserJourneyRegistry> registry_;
+  CriticalUserJourneyRegistry registry_;
   std::vector<std::unique_ptr<CriticalUserJourneySession>> active_sessions_;
   std::vector<base::CallbackListSubscription> subscriptions_;
 };
