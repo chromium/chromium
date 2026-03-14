@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var fileSystem = null;
+let fileSystem = null;
 
 function errorCallback(error) {
-  chrome.test.fail("Got unexpected error: " + error.code);
+  chrome.test.fail(`Got unexpected error: ${error.code}`);
 }
 
 function successCallback(entry) {
@@ -21,11 +21,11 @@ function successEntryCallback(entry) {
 }
 
 chrome.test.runTests([function tab() {
-  console.log("Requesting a filesystem...");
+  console.log('Requesting a filesystem...');
   webkitRequestFileSystem(window.TEMPORARY, 100, function(fs) {
     fileSystem = fs;
     // See if we get the same filesystem image.
-    console.log("DONE requesting filesystem: " + fileSystem.name);
+    console.log(`DONE requesting filesystem: ${fileSystem.name}`);
     fileSystem.root.getFile('dir/file', {create:false},
                             successEntryCallback, errorCallback);
   }, errorCallback);
