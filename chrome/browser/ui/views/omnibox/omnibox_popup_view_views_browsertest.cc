@@ -60,6 +60,10 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
@@ -1102,3 +1106,36 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
     EXPECT_TRUE(popup_view()->result_view_at(2)->GetVisible());
   }
 }
+
+// Verifies that the TopChromeUI metrics are recorded for native UI.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       EmitTopChromeWebUIMetricsNative) {
+#if BUILDFLAG(IS_OZONE)
+  // TODO(crbug.com/491337216): This is flaky on Wayland because presentation
+  // feedback can be dropped if it arrives before the submission ACK (race
+  // condition in GbmSurfacelessWayland).
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP()
+        << "Flaky on Wayland due to presentation feedback race condition.";
+  }
+#endif
+  base::HistogramTester histogram_tester;
+
+  CreatePopupForTestQuery();
+  popup_view()->UpdatePopupAppearance();
+
+  // For native popup, metrics are recorded via a presentation callback.
+  // Wait for the presentation to be processed.
+  base::RunLoop run_loop;
+  GetPopupWidget()
+      ->GetCompositor()
+      ->RequestSuccessfulPresentationTimeForNextFrame(
+          base::BindOnce(base::IgnoreArgs<const viz::FrameTimingDetails&>(
+              run_loop.QuitClosure())));
+  run_loop.Run();
+
+  // Check consolidated metric.
+  histogram_tester.ExpectTotalCount(
+      "TopChromeUI.OmniboxPopup.RequestToFirstContentfulPaint", 1);
+}
+

@@ -202,6 +202,13 @@ class OmniboxPopupViewViews : public views::View,
   // Used to observe `OmniboxEditModel`.
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
       edit_model_observation_{this};
+
+  // Whether the first paint of this popup has been recorded. This is used to
+  // ensure that we only record metrics for the first time the popup is shown in
+  // its lifetime, which is 1 per window.
+  bool recorded_first_paint_ = false;
+
+  base::WeakPtrFactory<OmniboxPopupViewViews> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_
