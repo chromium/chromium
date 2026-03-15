@@ -67,8 +67,17 @@ struct ResponseSummary {
   uint32 output_token_count;
 };
 
+// Errors yielded by `Generate()`, a `Session` may provide these values as a
+// custom reason when disconnecting the `StreamingResponder` pipe.
+[Stable, Extensible]
+enum GenerateError {
+  [Default] kUnknown = 0,
+  // The constraint is invalid or incompatible with the given assistant prefix.
+  kInvalidConstraint = 1,
+};
+
 // Streams a response from a call to execute a model. Close this pipe to cancel
-// the call to |Generate()|.
+// the call to `Generate()`.
 [Stable]
 interface StreamingResponder {
   // This is called each time a new chunk of text is available.
@@ -91,7 +100,7 @@ interface StreamingResponder {
 };
 
 // Notifies the caller when the model is done processing context. Close this
-// pipe to cancel the call to |AddContext()|.
+// pipe to cancel the call to `AddContext()`.
 [Stable]
 interface ContextClient {
   // Called when the context has finished processing with the number of tokens
@@ -261,13 +270,13 @@ enum Priority {
 [Stable]
 interface Session {
   // Appends input to this session. Any input added here will build off of
-  // previous calls to |Append()|. To cancel, close the |client| pipe.
+  // previous calls to `Append()`. To cancel, close the `client` pipe.
   [MinVersion=1]
   Append@6(AppendOptions options, pending_remote<ContextClient>? client);
 
   // Generates output from the model on top of any input added from Append().
-  // The response will be streamed to |response|. To cancel the request, close
-  // the |response| pipe.
+  // The response will be streamed to `responder`. To cancel the request, close
+  // the `responder` pipe.
   [MinVersion=1]
   Generate@7(
       GenerateOptions options, pending_remote<StreamingResponder> responder);

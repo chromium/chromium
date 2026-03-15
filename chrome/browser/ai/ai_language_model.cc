@@ -232,7 +232,7 @@ class AILanguageModel::PromptState
         safety_checker_(safety_checker),
         logger_(std::move(logger)),
         mode_(mode) {
-    responder_.set_disconnect_handler(
+    responder_.set_disconnect_with_reason_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
   }
 
@@ -305,8 +305,17 @@ class AILanguageModel::PromptState
   Mode mode() const { return mode_; }
 
  private:
-  void OnDisconnect() {
-    OnError(blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+  void OnDisconnect(uint32_t custom_reason, const std::string& description) {
+    auto error = blink::mojom::ModelStreamingResponseStatus::kErrorUnknown;
+    switch (static_cast<on_device_model::mojom::GenerateError>(custom_reason)) {
+      case on_device_model::mojom::GenerateError::kUnknown:
+        break;
+      case on_device_model::mojom::GenerateError::kInvalidConstraint:
+        error =
+            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest;
+        break;
+    }
+    OnError(error);
   }
 
   // on_device_model::mojom::ContextClient:
@@ -396,7 +405,7 @@ class AILanguageModel::PromptState
       return;
     }
     session_.Bind(std::move(session));
-    session_.set_disconnect_handler(
+    session_.set_disconnect_with_reason_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
     // Append() will call the on_device_model::mojom::ContextClient::OnComplete
@@ -405,7 +414,7 @@ class AILanguageModel::PromptState
         MakeAppendOptions(input_.Clone(),
                           on_device_model::mojom::InputSource::kUserInput),
         context_receiver_.BindNewPipeAndPassRemote());
-    context_receiver_.set_disconnect_handler(
+    context_receiver_.set_disconnect_with_reason_handler(
         base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
 
     if (mode_ == Mode::kAppendAndGenerate) {
@@ -414,7 +423,7 @@ class AILanguageModel::PromptState
       generate_options->max_output_tokens = max_output_tokens_;
       session_->Generate(std::move(generate_options),
                          response_receiver_.BindNewPipeAndPassRemote());
-      response_receiver_.set_disconnect_handler(
+      response_receiver_.set_disconnect_with_reason_handler(
           base::BindOnce(&PromptState::OnDisconnect, base::Unretained(this)));
     }
   }

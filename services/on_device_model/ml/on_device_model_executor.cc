@@ -207,10 +207,11 @@ class Responder final {
           break;
         case ChromeMLExecutionStatus::kInvalidConstraint:
           DCHECK(!output->text);
-          // TODO(crbug.com/391919456): Propagate error.
-          if (weak_ptr) {
-            weak_ptr->Cancel();
-          }
+          task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &Responder::OnError, weak_ptr,
+                  on_device_model::mojom::GenerateError::kInvalidConstraint));
           return;
       }
 
@@ -222,6 +223,11 @@ class Responder final {
 
   base::WeakPtr<Responder> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void OnError(on_device_model::mojom::GenerateError error) {
+    responder_.ResetWithReason(static_cast<uint32_t>(error), "Error");
+    Cancel();
   }
 
  private:

@@ -80,6 +80,10 @@ class OnDeviceModelValidator
   void OnToolCalls(
       std::vector<on_device_model::mojom::ToolCallPtr> tool_calls) override;
 
+  // Called on StreamingResponder mojo pipe disconnect.
+  void OnResponderDisconnect(uint32_t custom_reason,
+                             const std::string& description);
+
   void FinishValidation(OnDeviceModelValidationResult result);
 
   std::string current_response_;

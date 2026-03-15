@@ -71,6 +71,13 @@ TEST_F(OnDeviceModelValidatorTest, FailsOnServiceCrash) {
   EXPECT_EQ(OnDeviceModelValidationResult::kServiceCrash, result_future.Get());
 }
 
+TEST_F(OnDeviceModelValidatorTest, FailsOnModelDisconnect) {
+  fake_settings_.set_execute_error(
+      on_device_model::mojom::GenerateError::kUnknown);
+  EXPECT_EQ(OnDeviceModelValidationResult::kServiceCrash,
+            WaitForValidation(WillPassValidationConfig()));
+}
+
 TEST_F(OnDeviceModelValidatorTest, Fails) {
   EXPECT_EQ(OnDeviceModelValidationResult::kNonMatchingOutput,
             WaitForValidation(WillFailValidationConfig()));

@@ -222,6 +222,13 @@ void FakeOnDeviceSession::GenerateImpl(
     mojom::GenerateOptionsPtr options,
     mojo::PendingRemote<mojom::StreamingResponder> responder) {
   mojo::Remote<mojom::StreamingResponder> remote(std::move(responder));
+
+  if (settings_->execute_error) {
+    remote.ResetWithReason(static_cast<uint32_t>(*settings_->execute_error),
+                           "Test error");
+    return;
+  }
+
   if (model_->backend_type() == ml::ModelBackendType::kCpuBackend) {
     auto chunk = mojom::ResponseChunk::New();
     chunk->text = "CPU backend";

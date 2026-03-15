@@ -254,7 +254,7 @@ void OnDeviceExecution::OnRequestSafetyResult(
 void OnDeviceExecution::BeginRequestExecution(
     on_device_model::mojom::GenerateOptionsPtr options) {
   session_->Generate(std::move(options), receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(base::BindOnce(
+  receiver_.set_disconnect_with_reason_handler(base::BindOnce(
       &OnDeviceExecution::OnResponderDisconnect, base::Unretained(this)));
 }
 
@@ -363,13 +363,22 @@ void OnDeviceExecution::OnComplete(uint32_t tokens_processed) {
   MutableLoggedRequest()->set_execution_num_tokens_processed(tokens_processed);
 }
 
-void OnDeviceExecution::OnResponderDisconnect() {
+void OnDeviceExecution::OnResponderDisconnect(uint32_t custom_reason,
+                                              const std::string& description) {
   TRACE_EVENT("optimization_guide", "OnDeviceExecution::OnResponse", "feature",
               base::ToString(feature_));
   // OnComplete resets the receiver, so this implies that the response is
-  // incomplete and there was either a service crash or model eviction.
+  // incomplete and there was either a service crash, error, or model eviction.
   receiver_.reset();
-  CancelPendingResponse(Result::kDisconnectAndCancel);
+  switch (static_cast<on_device_model::mojom::GenerateError>(custom_reason)) {
+    case on_device_model::mojom::GenerateError::kUnknown:
+      CancelPendingResponse(Result::kDisconnectAndCancel);
+      break;
+    case on_device_model::mojom::GenerateError::kInvalidConstraint:
+      CancelPendingResponse(Result::kFailedConstructingMessage,
+                            OnDeviceError::kInvalidRequest);
+      break;
+  }
 }
 
 void OnDeviceExecution::RunRawOutputSafetyCheck(

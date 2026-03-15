@@ -792,6 +792,28 @@ TEST_F(AILanguageModelTest, OutputOverflowsContextMaxTokens) {
               ElementsAreArray(FormatResponses({"UfooEM", "UbazEM"})));
 }
 
+TEST_F(AILanguageModelTest, DisconnectErrorUnknown) {
+  auto session = CreateSession();
+  fake_broker_->settings().set_execute_error(
+      on_device_model::mojom::GenerateError::kUnknown);
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorUnknown);
+}
+
+TEST_F(AILanguageModelTest, DisconnectErrorInvalidConstraint) {
+  auto session = CreateSession();
+  fake_broker_->settings().set_execute_error(
+      on_device_model::mojom::GenerateError::kInvalidConstraint);
+  AITestUtils::TestStreamingResponder responder;
+  session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
+  EXPECT_FALSE(responder.WaitForCompletion());
+  EXPECT_EQ(responder.error_status(),
+            blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+}
+
 TEST_F(AILanguageModelTest, Destroy) {
   auto session = CreateSession();
   base::RunLoop run_loop;

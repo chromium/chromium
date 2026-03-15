@@ -63,6 +63,42 @@ uint32_t MeasureUsage(
   return total;
 }
 
+std::optional<std::string> ExtractAssistantPrefix(
+    const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts) {
+  if (prompts.empty()) {
+    return std::nullopt;
+  }
+  const auto& last_prompt = prompts.back();
+  if (last_prompt->role ==
+          blink::mojom::AILanguageModelPromptRole::kAssistant &&
+      last_prompt->is_prefix) {
+    std::string prefix_text;
+    for (const auto& content : last_prompt->content) {
+      if (content->is_text()) {
+        prefix_text += content->get_text();
+      }
+    }
+    return prefix_text;
+  }
+  return std::nullopt;
+}
+
+// Returns true if the constraint is not obviously invalid for the prefix.
+// This yields false positives, but is sufficient for very basic tests.
+bool IsValidConstraintAndPrefix(
+    const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts,
+    const on_device_model::mojom::ResponseConstraintPtr& constraint) {
+  auto prefix = ExtractAssistantPrefix(prompts);
+  // TODO: Support JSON schema prefix validation.
+  if (!constraint || !constraint->is_regex() || !prefix) {
+    return true;
+  }
+  std::string regex = constraint->get_regex();
+  // Just check if start-anchored plain text regexes *cannot* match the prefix,
+  // since no obvious tools check prospective matching of subject text prefixes.
+  return !(regex.starts_with("^") && !regex.substr(1).starts_with(*prefix));
+}
+
 }  // namespace
 
 EchoAILanguageModel::EchoAILanguageModel(
@@ -83,11 +119,20 @@ EchoAILanguageModel::~EchoAILanguageModel() = default;
 
 void EchoAILanguageModel::DoMockExecution(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    on_device_model::mojom::ResponseConstraintPtr constraint,
     bool generate_response,
     mojo::RemoteSetElementId responder_id) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
   if (!responder) {
+    return;
+  }
+
+  // Basic validation for "assistant" prefix and regex constraint.
+  if (generate_response && !IsValidConstraintAndPrefix(prompts, constraint)) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest,
+        /*quota_error_info=*/nullptr);
     return;
   }
 
@@ -185,7 +230,8 @@ void EchoAILanguageModel::Prompt(
     on_device_model::mojom::ResponseConstraintPtr constraint,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  AppendOrPrompt(std::move(prompts), std::move(pending_responder),
+  AppendOrPrompt(std::move(prompts), std::move(constraint),
+                 std::move(pending_responder),
                  /*generate_response=*/true);
 }
 
@@ -193,12 +239,14 @@ void EchoAILanguageModel::Append(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  AppendOrPrompt(std::move(prompts), std::move(pending_responder),
+  AppendOrPrompt(std::move(prompts), /*constraint=*/nullptr,
+                 std::move(pending_responder),
                  /*generate_response=*/false);
 }
 
 void EchoAILanguageModel::AppendOrPrompt(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    on_device_model::mojom::ResponseConstraintPtr constraint,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder,
     bool generate_response) {
@@ -218,7 +266,7 @@ void EchoAILanguageModel::AppendOrPrompt(
       FROM_HERE,
       base::BindOnce(&EchoAILanguageModel::DoMockExecution,
                      weak_ptr_factory_.GetWeakPtr(), std::move(prompts),
-                     generate_response, responder_id),
+                     std::move(constraint), generate_response, responder_id),
       base::Seconds(1));
 }
 

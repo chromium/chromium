@@ -49,10 +49,12 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
  private:
   void DoMockExecution(
       std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+      on_device_model::mojom::ResponseConstraintPtr constraint,
       bool generate_response,
       mojo::RemoteSetElementId responder_id);
   void AppendOrPrompt(
       std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+      on_device_model::mojom::ResponseConstraintPtr constraint,
       mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
           pending_responder,
       bool generate_response);
