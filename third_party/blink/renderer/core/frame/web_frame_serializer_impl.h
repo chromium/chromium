@@ -136,7 +136,7 @@ class WebFrameSerializerImpl {
   String PostActionAfterSerializeEndTag(const Element*, SerializeDomParam*);
 
   // Save generated html content to data buffer.
-  void SaveHTMLContentToBuffer(const String& content, SerializeDomParam*);
+  void SaveHTMLContentToBuffer(const StringView& content, SerializeDomParam*);
 
   enum FlushOption {
     kForceFlush,
