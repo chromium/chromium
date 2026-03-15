@@ -209,12 +209,12 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    handler_.reset();
     browser1()->tab_strip_model()->CloseAllTabs();
     browser2()->tab_strip_model()->CloseAllTabs();
     browser3()->tab_strip_model()->CloseAllTabs();
     browser4()->tab_strip_model()->CloseAllTabs();
     browser5()->tab_strip_model()->CloseAllTabs();
-    handler_.reset();
     webui_controller_.reset();
     browser5_.reset();
     browser4_.reset();
@@ -320,7 +320,7 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
 
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
   handler()->mock_debounce_timer()->Fire();
 
   int32_t tab_id2 = 0;
@@ -385,7 +385,7 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
 
 TEST_F(TabSearchPageHandlerTest, TabActivationChangedByInteraction) {
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
 
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
@@ -494,7 +494,7 @@ TEST_F(TabSearchPageHandlerTest, TabsAndGroups) {
   handler()->GetProfileData(std::move(callback2));
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }
 
 TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
@@ -517,8 +517,7 @@ TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
           });
   handler()->GetProfileData(std::move(callback));
 
-  // Tab will be removed on tear down.
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
@@ -572,7 +571,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabGroup) {
   handler()->GetProfileData(std::move(callback));
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
@@ -622,7 +621,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
   handler()->GetProfileData(std::move(callback));
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }
 
 // Ensure that repeated tab model changes do not result in repeated calls to
@@ -631,7 +630,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedWindowWithGroupTabs) {
 TEST_F(TabSearchPageHandlerTest, TabsChanged) {
   EXPECT_CALL(page_, TabsChanged(_)).Times(3);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
   FireTimer();  // Will call TabsChanged().
 
   // Add 2 tabs in browser1.
@@ -706,7 +705,7 @@ bool VerifyTabUpdated(
 TEST_F(TabSearchPageHandlerTest, TabUpdated) {
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(Truly(VerifyTabUpdated))).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(0);
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
   // Adding the following tab will trigger TabUpdated() to the first tab
   // since the tab index will change from 0 to 1
@@ -724,7 +723,7 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
   const int tab_id =
       browser2()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
   handler()->CloseTab(tab_id);
   ASSERT_EQ(1, browser1()->tab_strip_model()->count());
   ASSERT_EQ(1, browser2()->tab_strip_model()->count());
@@ -741,6 +740,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
       browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
   browser2()->tab_strip_model()->CloseAllTabs();
+  // Browser 3 is incognito so does not show up in TabsRemoved.
   browser3()->tab_strip_model()->CloseAllTabs();
   tab_search::mojom::PageHandler::GetProfileDataCallback callback =
       base::BindLambdaForTesting(
@@ -753,7 +753,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTab) {
           });
   handler()->GetProfileData(std::move(callback));
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
 }
 
 TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
@@ -789,7 +789,7 @@ TEST_F(TabSearchPageHandlerTest, OpenRecentlyClosedTab) {
           });
   handler()->GetProfileData(std::move(callback2));
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }
 
 TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabsHaveNoRepeatedURLEntry) {
@@ -857,7 +857,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
       browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
 
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
@@ -880,7 +880,7 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
       browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
   handler()->CloseTab(tab_id);
 
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback1 =
@@ -939,7 +939,7 @@ TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
             tabs_in_split_after_replacement[1]->GetContents()->GetURL().spec());
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(3);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }
 
 TEST_F(TabSearchPageHandlerTest, TabSearchUsedPref) {
@@ -981,7 +981,7 @@ TEST_F(TabSearchPageHandlerTest, TabSearchUsedPref) {
   EXPECT_TRUE(prefs->GetBoolean(tab_search_prefs::kTabSearchUsed));
 
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
-  EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
 }
 
 }  // namespace
