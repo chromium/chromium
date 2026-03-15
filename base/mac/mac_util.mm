@@ -450,12 +450,15 @@ void OpenSystemSettingsPane(SystemSettingsPane pane,
   // the query string used to open sub-panes; the ones used below were
   // determined from historical usage, disassembly of related code, and
   // guessing. Clarity was requested from Apple in FB11753405. The current best
-  // guess is to analyze the method named -revealElementForKey:, but because
-  // the extensions are all written in Swift it's hard to confirm this is
-  // correct or to use this knowledge.
+  // guess is to analyze the method named -revealElementForKey:, but because the
+  // extensions are all written in Swift it's hard to confirm this is correct or
+  // to use this knowledge.
   //
   // For macOS 12 and earlier, to determine the `subpane_data`, find a method
   // named -handleOpenParameter: which takes an AEDesc as a parameter.
+  //
+  // These values have been tested on macOS 12, 13, 14, 15, and 26. Be sure to
+  // verify them on new releases of macOS.
   switch (pane) {
     case SystemSettingsPane::kAccessibility_Captions:
       if (MacOSMajorVersion() >= 13) {
@@ -466,12 +469,36 @@ void OpenSystemSettingsPane(SystemSettingsPane pane,
               @"Captioning";
       }
       break;
-    case SystemSettingsPane::kDateTime:
+    case SystemSettingsPane::kGeneral_DateTime:
       if (MacOSMajorVersion() >= 13) {
         url =
             @"x-apple.systempreferences:com.apple.Date-Time-Settings.extension";
       } else {
         pane_file = @"/System/Library/PreferencePanes/DateAndTime.prefPane";
+      }
+      break;
+    case SystemSettingsPane::kGeneral_LoginItems_Extensions_Sharing:
+      if (MacOSMajorVersion() >= 15) {
+        // See ShareKit, -[SHKSharingServicePicker openAppExtensionsPrefpane].
+        url = @"x-apple.systempreferences:com.apple.ExtensionsPreferences?"
+              @"extensionPointIdentifier=com.apple.share-services";
+      } else if (MacOSMajorVersion() >= 13) {
+        // See ShareKit, -[SHKSharingServicePicker openAppExtensionsPrefpane].
+        url = @"x-apple.systempreferences:com.apple.ExtensionsPreferences?"
+              @"Sharing";
+      } else {
+        // This is equivalent to the implementation of AppKit's
+        // +[NSSharingServicePicker openAppExtensionsPrefPane].
+        pane_file = @"/System/Library/PreferencePanes/Extensions.prefPane";
+        NSDictionary* subpane_dict = @{
+          @"action" : @"revealExtensionPoint",
+          @"protocol" : @"com.apple.share-services"
+        };
+        subpane_data = [NSPropertyListSerialization
+            dataWithPropertyList:subpane_dict
+                          format:NSPropertyListXMLFormat_v1_0
+                         options:0
+                           error:nil];
       }
       break;
     case SystemSettingsPane::kNetwork_Proxies:
@@ -547,26 +574,6 @@ void OpenSystemSettingsPane(SystemSettingsPane pane,
               @"Privacy_Camera";
       }
       break;
-    case SystemSettingsPane::kPrivacySecurity_Extensions_Sharing:
-      if (MacOSMajorVersion() >= 13) {
-        // See ShareKit, -[SHKSharingServicePicker openAppExtensionsPrefpane].
-        url = @"x-apple.systempreferences:com.apple.ExtensionsPreferences?"
-              @"Sharing";
-      } else {
-        // This is equivalent to the implementation of AppKit's
-        // +[NSSharingServicePicker openAppExtensionsPrefPane].
-        pane_file = @"/System/Library/PreferencePanes/Extensions.prefPane";
-        NSDictionary* subpane_dict = @{
-          @"action" : @"revealExtensionPoint",
-          @"protocol" : @"com.apple.share-services"
-        };
-        subpane_data = [NSPropertyListSerialization
-            dataWithPropertyList:subpane_dict
-                          format:NSPropertyListXMLFormat_v1_0
-                         options:0
-                           error:nil];
-      }
-      break;
     case SystemSettingsPane::kPrivacySecurity_LocationServices:
       if (MacOSMajorVersion() >= 13) {
         url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
@@ -585,6 +592,12 @@ void OpenSystemSettingsPane(SystemSettingsPane pane,
               @"Privacy_Microphone";
       }
       break;
+    case SystemSettingsPane::kPrivacySecurity_PasteFromOtherApps:
+      // Pasteboard permissions were added in macOS 15.
+      DCHECK_GE(MacOSMajorVersion(), 15);
+      url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
+            @"extension?Privacy_Pasteboard";
+      break;
     case SystemSettingsPane::kPrivacySecurity_ScreenRecording:
       if (MacOSMajorVersion() >= 13) {
         url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
@@ -601,12 +614,6 @@ void OpenSystemSettingsPane(SystemSettingsPane pane,
       } else {
         pane_file = @"/System/Library/PreferencePanes/Trackpad.prefPane";
       }
-      break;
-    case SystemSettingsPane::kPrivacySecurity_Pasteboard:
-      // Pasteboard permissions were added in macOS 15.
-      DCHECK_GE(MacOSMajorVersion(), 15);
-      url = @"x-apple.systempreferences:com.apple.settings.PrivacySecurity."
-            @"extension?Privacy_Pasteboard";
       break;
   }
 

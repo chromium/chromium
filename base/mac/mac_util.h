@@ -97,13 +97,16 @@ BASE_EXPORT std::string GetPlatformSerialNumber();
 
 // System Settings (née System Preferences) pane or subpanes to open via
 // `OpenSystemSettingsPane()`, below. The naming is based on the naming in the
-// System Settings app in the latest macOS release, macOS 13 Ventura.
+// System Settings app in the latest macOS release, macOS 26.
 enum class SystemSettingsPane {
   // Accessibility > Captions
   kAccessibility_Captions,
 
-  // Date & Time
-  kDateTime,
+  // General > Date & Time
+  kGeneral_DateTime,
+
+  // General > Login Items & Extensions > Extensions > Sharing
+  kGeneral_LoginItems_Extensions_Sharing,
 
   // Network > Proxies
   kNetwork_Proxies,
@@ -127,20 +130,17 @@ enum class SystemSettingsPane {
   // Privacy & Security > Camera
   kPrivacySecurity_Camera,
 
-  // Privacy & Security > Extensions > Sharing
-  kPrivacySecurity_Extensions_Sharing,
-
   // Privacy & Security > Location Services
   kPrivacySecurity_LocationServices,
 
   // Privacy & Security > Microphone
   kPrivacySecurity_Microphone,
 
-  // Privacy & Security > Screen Recording
-  kPrivacySecurity_ScreenRecording,
+  // Privacy & Security > Paste from Other Apps
+  kPrivacySecurity_PasteFromOtherApps,
 
-  // Privacy & Security > Pasteboard
-  kPrivacySecurity_Pasteboard,
+  // Privacy & Security > Screen & System Audio Recording
+  kPrivacySecurity_ScreenRecording,
 
   // Trackpad
   kTrackpad,

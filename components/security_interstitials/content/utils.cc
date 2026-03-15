@@ -78,7 +78,8 @@ void LaunchDateAndTimeSettings() {
   base::LaunchProcess(command, options);
 
 #elif BUILDFLAG(IS_MAC)
-  base::mac::OpenSystemSettingsPane(base::mac::SystemSettingsPane::kDateTime);
+  base::mac::OpenSystemSettingsPane(
+      base::mac::SystemSettingsPane::kGeneral_DateTime);
 #elif BUILDFLAG(IS_WIN)
   base::FilePath path;
   base::PathService::Get(base::DIR_SYSTEM, &path);

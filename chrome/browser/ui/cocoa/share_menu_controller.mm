@@ -273,7 +273,7 @@ bool CanShare() {
 // Opens the "Sharing" subpane of the "Extensions" macOS preference pane.
 - (void)openSharingPrefs:(NSMenuItem*)sender {
   base::mac::OpenSystemSettingsPane(
-      base::mac::SystemSettingsPane::kPrivacySecurity_Extensions_Sharing);
+      base::mac::SystemSettingsPane::kGeneral_LoginItems_Extensions_Sharing);
 }
 
 - (void)emailLink:(id)sender {

@@ -139,7 +139,7 @@ class PlatformHandleImpl : public PlatformHandle {
       case ContentSettingsType::CLIPBOARD_READ_WRITE: {
         // Open Privacy & Security settings for clipboard/pasteboard permissions
         base::mac::OpenSystemSettingsPane(
-            base::mac::SystemSettingsPane::kPrivacySecurity_Pasteboard);
+            base::mac::SystemSettingsPane::kPrivacySecurity_PasteFromOtherApps);
         return;
       }
       default:
