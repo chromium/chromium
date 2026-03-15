@@ -226,29 +226,25 @@ void ScheduleNewNotification(
                      base::Unretained(service)));
 }
 
-void OnGetClientOverview(
-    Profile* profile,
-    bool is_bottom_omnibox,
-    notifications::NotificationScheduleService* service,
-    std::unique_ptr<notifications::ClientOverview> overview) {
-  int num_scheduled_notifications = overview->scheduled_notifications.size();
-
+void OnGetClientOverview(Profile* profile,
+                         bool is_bottom_omnibox,
+                         notifications::NotificationScheduleService* service,
+                         notifications::ClientOverview overview) {
   // If there is a scheduled notification, reschedule it.
-  if (num_scheduled_notifications > 0) {
+  if (!overview.scheduled_notifications.empty()) {
     // There will only ever be 1 notification scheduled at a time for tips.
-    DCHECK_EQ(num_scheduled_notifications, 1);
+    DCHECK_EQ(overview.scheduled_notifications.size(), 1u);
+    const auto* entry = overview.scheduled_notifications[0];
+    notifications::NotificationData data = entry->notification_data;
 
-    for (const auto& entry : overview->scheduled_notifications) {
-      notifications::NotificationData data = entry->notification_data;
-      // Use new ScheduleParams to reschedule based on the current time.
-      notifications::ScheduleParams params = GetCurrentScheduleParams();
+    // Use new ScheduleParams to reschedule based on the current time.
+    notifications::ScheduleParams params = GetCurrentScheduleParams();
 
-      // Wipe all pending notifications before rescheduling.
-      service->DeleteNotifications(notifications::SchedulerClientType::kTips);
-      service->Schedule(std::make_unique<notifications::NotificationParams>(
-          notifications::SchedulerClientType::kTips, std::move(data),
-          std::move(params)));
-    }
+    // Wipe all pending notifications before rescheduling.
+    service->DeleteNotifications(notifications::SchedulerClientType::kTips);
+    service->Schedule(std::make_unique<notifications::NotificationParams>(
+        notifications::SchedulerClientType::kTips, std::move(data),
+        std::move(params)));
   } else {
     ScheduleNewNotification(profile, is_bottom_omnibox, service);
   }
@@ -281,8 +277,7 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
              notifications::NotificationScheduleService* service,
              notifications::ClientOverview overview) {
             OnGetClientOverview(profile, is_bottom_omnibox, service,
-                                std::make_unique<notifications::ClientOverview>(
-                                    std::move(overview)));
+                                std::move(overview));
           },
           profile, is_bottom_omnibox, base::Unretained(service)));
 }
