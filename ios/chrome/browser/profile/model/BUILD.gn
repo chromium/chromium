@@ -164,6 +164,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/download/model/background_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/chrome/browser/enterprise/client_certificates",
+    "//ios/chrome/browser/enterprise/cloud_content_scanning/model",
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",

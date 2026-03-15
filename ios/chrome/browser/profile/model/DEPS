@@ -39,6 +39,7 @@ specific_include_rules = {
     "+ios/chrome/browser/download/model",
     "+ios/chrome/browser/drive/model",
     "+ios/chrome/browser/enterprise/client_certificates",
+    "+ios/chrome/browser/enterprise/cloud_content_scanning/model",
     "+ios/chrome/browser/enterprise/connectors",
     "+ios/chrome/browser/enterprise/data_controls",
     "+ios/chrome/browser/enterprise/identifiers",
