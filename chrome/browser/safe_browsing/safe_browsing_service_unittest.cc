@@ -27,6 +27,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/testing_pref_service.h"
@@ -1052,6 +1053,123 @@ TEST_F(
   EXPECT_EQ(
       site_protection::ComputeDefaultJavascriptOptimizerSetting(profile.get()),
       content_settings::JavascriptOptimizerSetting::kBlocked);
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       EsbBundleMigrationDisabledWhenEsbIsEnabledViaPolicy) {
+  // Set the initial pre-migration preference state.
+  auto profile = std::make_unique<TestingProfile>();
+  SetSafeBrowsingState(profile->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSecurityBundleSetting(*profile->GetPrefs(),
+                           SecuritySettingsBundleSetting::STANDARD);
+
+  // Set ESB preference via policy.
+  profile->GetTestingPrefService()->SetManagedPref(prefs::kSafeBrowsingEnhanced,
+                                                   base::Value(true));
+
+  // Verify the pre-migration preference state.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
+
+  // Attempt migration ESB users to the enhanced bundle.
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+
+  // Verify that migration did not run.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       EsbBundleMigrationDisabledWhenDefaultJSOptIsEnabledViaPolicy) {
+  // Set the initial pre-migration preference state.
+  auto profile = std::make_unique<TestingProfile>();
+  SetSafeBrowsingState(profile->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSecurityBundleSetting(*profile->GetPrefs(),
+                           SecuritySettingsBundleSetting::STANDARD);
+  profile->GetPrefs()->SetBoolean(
+      prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, false);
+
+  // Set Javascript Optimizer preference via policy.
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kManagedDefaultJavaScriptOptimizerSetting,
+      base::Value(ContentSetting::CONTENT_SETTING_ALLOW));
+
+  // Verify the pre-migration preference state.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
+
+  // Attempt migration ESB users to the enhanced bundle.
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+
+  // Verify that migration did not run.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       EsbBundleMigrationDisabledWhenJSOptAllowedIsEnabledViaPolicy) {
+  // Set the initial pre-migration preference state.
+  auto profile = std::make_unique<TestingProfile>();
+  SetSafeBrowsingState(profile->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSecurityBundleSetting(*profile->GetPrefs(),
+                           SecuritySettingsBundleSetting::STANDARD);
+  profile->GetPrefs()->SetBoolean(
+      prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, true);
+  HostContentSettingsMapFactory::GetForProfile(profile.get())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                 CONTENT_SETTING_ALLOW);
+
+  // Set Javascript Optimizer preference via policy.
+  base::ListValue allowlist;
+  allowlist.Append("mydomain.com");
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kManagedJavaScriptOptimizerAllowedForSites, std::move(allowlist));
+
+  // Verify the pre-migration preference state.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
+
+  // Attempt migration ESB users to the enhanced bundle.
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+
+  // Verify that migration did not run.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
+}
+
+TEST_F(SafeBrowsingServiceEnhancedSecurityBundleMigrationTest,
+       EsbBundleMigrationDisabledWhenJSOptBlockedIsEnabledViaPolicy) {
+  // Set the initial pre-migration preference state.
+  auto profile = std::make_unique<TestingProfile>();
+  SetSafeBrowsingState(profile->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  SetSecurityBundleSetting(*profile->GetPrefs(),
+                           SecuritySettingsBundleSetting::STANDARD);
+  profile->GetPrefs()->SetBoolean(
+      prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, false);
+  HostContentSettingsMapFactory::GetForProfile(profile.get())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                 CONTENT_SETTING_ALLOW);
+
+  // Set Javascript Optimizer preference via policy.
+  base::ListValue blocklist;
+  blocklist.Append("mydomain.com");
+  profile->GetTestingPrefService()->SetManagedPref(
+      prefs::kManagedJavaScriptOptimizerBlockedForSites, std::move(blocklist));
+
+  // Verify the pre-migration preference state.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
+
+  // Attempt migration ESB users to the enhanced bundle.
+  MigrateUserToEnhancedBundleIfNeeded(profile.get());
+
+  // Verify that migration did not run.
+  EXPECT_EQ(SecuritySettingsBundleSetting::STANDARD,
+            GetSecurityBundleSetting(*profile->GetPrefs()));
 }
 
 class SafeBrowsingServiceEnhancedSecurityBundleMigrationDisabledTest
