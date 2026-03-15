@@ -754,6 +754,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adressen}}</translation>
 <translation id="2188375229972301266">Meerdere perforaties onder</translation>
 <translation id="218940509700321686">Csv-bestanden</translation>
+<translation id="2190094353033916816">Dit beleid heeft verschillende waarden die zijn toegepast op machine- en gebruikersniveau. Het beleid werkt zoals bedoeld.</translation>
 <translation id="2191980191135734720">Ontgrendel je scherm in de volgende stap, meestal met je vingerafdruk. Je kunt ook <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
@@ -3187,6 +3188,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6042308850641462728">Meer</translation>
 <translation id="6043357981274314628">Klaar</translation>
 <translation id="6045164183059402045">Plaatsingstemplate</translation>
+<translation id="6046026831939367176"><ph name="URL" /> wil je geschatte locatie gebruiken</translation>
 <translation id="6046892054959167494">Typ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> om te zoeken of vraag naar <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Deze content probeert je mogelijk te misleiden om software te installeren of persoonlijke informatie openbaar te maken. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Envelop B4</translation>
@@ -4985,6 +4987,7 @@ Aanvullende informatie:
 <translation id="8870700989640064057">Vertrouwelijk bestand afdrukken?</translation>
 <translation id="8871485335898060555">Antiek en verzamelobjecten</translation>
 <translation id="8871553383647848643">Pas de vormgeving van je browser aan</translation>
+<translation id="887350038812854047">Dit beleid heeft dezelfde waarde die is toegepast op machine- en gebruikersniveau. Het beleid werkt zoals bedoeld.</translation>
 <translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
 <translation id="8874824191258364635">Voer een geldig kaartnummer in</translation>
 <translation id="8877780815363510165">Vissen</translation>

@@ -439,6 +439,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Kan ikke åpne filen}other{Kan ikke åpne filene}}</translation>
 <translation id="1282311502488501110">Ikke logg på</translation>
 <translation id="1282436639288565079">Detaljer om fanegruppen</translation>
+<translation id="1282577885428483870">Nettsteder og kontoer</translation>
 <translation id="1283126956823499975">Noe gikk galt under konfigureringen av enheten</translation>
 <translation id="1284277788676816155">Ikke tillat lagring av data</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
@@ -1322,6 +1323,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1885066963699478692">XML-filene som brukes til å angi reglene.</translation>
 <translation id="1885089541024391265">Google Kalender</translation>
 <translation id="1885106732301550621">Diskplass</translation>
+<translation id="188537499764410817">Nettsteder der Gemini kan logge deg på, vises her</translation>
 <translation id="1886996562706621347">Tillat at nettsteder kan be om å bli standardbehandlere for protokoller (anbefales)</translation>
 <translation id="1887210448491286312">Slutt å caste fanen til <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Påloggingsfeil</translation>
@@ -1760,6 +1762,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2183570493397356669">Fortsett-knappen er deaktivert</translation>
 <translation id="2184272387334793084">Logg på for å få blant annet passordene dine på alle enhetene dine</translation>
 <translation id="2184515124301515068">La Chrome velge når nettsteder kan spille av lyd (anbefalt)</translation>
+<translation id="2184754597051264978">Gemini kan ikke logge deg på <ph name="URL" /> lenger</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Start en ny chat med Gemini</translation>
 <translation id="2186711480981247270">En side er delt fra en annen enhet</translation>
@@ -2145,7 +2148,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="244231003699905658">Ugyldig adresse. Kontroller adressen og prøv igjen.</translation>
 <translation id="2442916515643169563">Tekstskygge</translation>
 <translation id="2443487764245141020">Nettsteder trenger kanskje også å gjenkjenne enheten din ved bruk av en identifikator</translation>
-<translation id="2444091518615234627">Sender mindre data til Google (f.eks. deler av nettadresser)</translation>
 <translation id="244475495405467108">Lukk faner til venstre</translation>
 <translation id="2444874983932528148">Fortsett enkelt der du avsluttet</translation>
 <translation id="2445081178310039857">Det kreves en rotkatalog for utvidelsen</translation>
@@ -2424,6 +2426,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2628874386573004005">Start en ny chat med Gemini</translation>
 <translation id="2629227353894235473">Utvikle Android-apper</translation>
 <translation id="2629437048544561682">Tøm lerretet</translation>
+<translation id="2630703150574465936">Du har gitt Gemini tillatelse til å logge deg på disse nettstedene og appene automatisk med kontoene dine</translation>
 <translation id="2631498379019108537">Vis inndataalternativer i hyllen</translation>
 <translation id="2632176111713971407">Nettsteder kan be om å få rulle og zoome på delte faner</translation>
 <translation id="2633212996805280240">Vil du fjerne «<ph name="EXTENSION_NAME" />»?</translation>
@@ -3601,6 +3604,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3443744348829035122"><ph name="BRAND" /> er tidsavbrutt</translation>
 <translation id="3443754338602062261">Du har allerede passord for disse kontoene i <ph name="BRAND" />. Hvis du velger å importere et av passordene nedenfor, erstattes det eksisterende passordet.</translation>
 <translation id="344449859752187052">Informasjonskapsler fra tredjeparter er blokkert</translation>
+<translation id="3445140416168872040">Fjern tillatelsen for <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Organisasjonen din har blokkert denne filen fordi den har sensitivt eller farlig innhold. Be eieren om å fikse dette.</translation>
 <translation id="3445465968953598059">Ansiktskontroll</translation>
@@ -3851,6 +3855,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> skannes.</translation>
 <translation id="3615596877979647433">Tast mangler Trykk på en tastaturtast for å tilpasse</translation>
 <translation id="3616113530831147358">Lyd</translation>
+<translation id="3616658341000358527">La Gemini logge deg på automatisk for å fullføre oppgaver for deg på nettet</translation>
 <translation id="3617062258679844578">For å klikke, berør styreflaten kort i stedet for å trykke som normalt.</translation>
 <translation id="3617891479562106823">Bakgrunner er utilgjengelig. Prøv på nytt senere.</translation>
 <translation id="3618647122592024084">Nå kan <ph name="RECIPIENT_NAME" /> bruke brukernavnet og passordet ditt når hen bruker Google Passordlagring. Be hen om å gå til <ph name="WEBSITE" /> for å logge på.</translation>
@@ -5799,6 +5804,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4940448324259979830">Denne kontoen administreres av <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Reservér diskstørrelse</translation>
 <translation id="4941246025622441835">Bruk denne enhetsrekvisisjonen når du registrerer enheten for bedriftsadministrering.</translation>
+<translation id="4941391011436448776">Nettsteder Gemini kan logge deg på</translation>
 <translation id="4941627891654116707">Skriftstørrelse</translation>
 <translation id="4941963255146903244">Se bildene, mediene og appene på telefonen din</translation>
 <translation id="494286511941020793">Hjelp for konfigurering av proxy-tjenere</translation>
@@ -6524,6 +6530,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5460861858595506978">Inspirasjon</translation>
 <translation id="5461050611724244538">Mistet tilkoblingen til telefonen</translation>
 <translation id="5463275305984126951">Indeks for <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Deaktiver forslag</translation>
 <translation id="5463450804024056231">Meld deg på e-poster om <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Finner enheter …</translation>
 <translation id="5463856536939868464">Meny med skjulte bokmerker</translation>
@@ -6604,7 +6611,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5510775624736435856">Få bildebeskrivelser fra Google</translation>
 <translation id="5511379779384092781">Ekstra liten</translation>
 <translation id="5511823366942919280">Er du sikker på at du ønsker å konfigurere denne enheten som en «hai» («shark»)?</translation>
-<translation id="5512511240775436189">Sender mer data til Google (f.eks. nettadresser, sideinnhold osv.)</translation>
 <translation id="5512739112435045339">Frigjør plass på enheten. Prøv deretter å laste ned filen på nytt</translation>
 <translation id="5513807280330619196">Kalkulator</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6631,7 +6637,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vil</translation>
 <translation id="5533343601674003130">PDF-tjeneste</translation>
 <translation id="5535769176698670170">Bytt med øverste visning</translation>
-<translation id="5537395135310061418">Beskytter deg på nett med Googles beste sikkerhet</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539070192556911367">Får ikke kontakt med Google</translation>
 <translation id="5541091577812545428">Passordet ble ikke endret</translation>
@@ -7991,7 +7996,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6494483173119160146">Det oppsto en ugjenopprettelig feil på enheten. Tilbakestill enheten (dette medfører sletting av alle brukerdata), og prøv på nytt.</translation>
 <translation id="6495266441917713704">Kan ikke overføre wifi</translation>
 <translation id="6495453178162183932">Temaet er oppdatert til standard Chrome</translation>
-<translation id="6496542321576111907">Gir god sikkerhet. Du kan velge å slå på flere funksjoner.</translation>
 <translation id="6496641546298525838">Enheten din</translation>
 <translation id="6497784818439587832">Endre skjermstørrelsen for å gjøre elementer på skjermen mindre eller større</translation>
 <translation id="6497789971060331894">Omvendt rulling med musen</translation>
@@ -9853,6 +9857,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7769709635093101687">Hurtigtast for å sette på pause</translation>
 <translation id="7769748505895274502">Skjul nylig lukkede</translation>
 <translation id="7770072242481632881">Sidepanelvelger</translation>
+<translation id="7770247511810814330">Fjern tillatelsen</translation>
 <translation id="7770612696274572992">Et bilde er kopiert fra en annen enhet</translation>
 <translation id="7770827449915784217">Fastvaren er oppdatert</translation>
 <translation id="7771452384635174008">Layout</translation>
@@ -11395,7 +11400,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8808686172382650546">Katt</translation>
 <translation id="8809147117840417135">Lys blågrønn</translation>
 <translation id="8811862054141704416">Mikrofontilgang for Crostini</translation>
-<translation id="8811881249098640048">Gjør noen ukjente nettsteder tregere</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din. Eventuelle duplikater fjernes også.}other{{PASSWORD_COUNT} passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din. Eventuelle duplikater fjernes også.}}</translation>
 <translation id="8813199641941291474">Kontroll og omprogrammering av MIDI-enheter er blokkert</translation>
 <translation id="8813698869395535039">Kan ikke logge på <ph name="USERNAME" /></translation>

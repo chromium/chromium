@@ -754,6 +754,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adresë}other{# adresa}}</translation>
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
 <translation id="218940509700321686">Vlera të ndara me presje</translation>
+<translation id="2190094353033916816">Kjo politikë ka vlera të ndryshme të zbatuara në nivelin e makinës dhe të përdoruesit. Politika po funksionon siç pritet.</translation>
 <translation id="2191980191135734720">Shkyç ekranin në hapin tjetër, zakonisht duke përdorur gjurmën tënde të gishtit. Gjithashtu, mund <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2198183835992354675">Numri i udhëtarit të njohur</translation>
@@ -3193,6 +3194,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6042308850641462728">Më shumë</translation>
 <translation id="6043357981274314628">U krye!</translation>
 <translation id="6045164183059402045">Shablloni i vendosjes</translation>
+<translation id="6046026831939367176"><ph name="URL" /> dëshiron të përdorë vendndodhjen tënde të përafërt</translation>
 <translation id="6046892054959167494">Shkruaj "<ph name="SEARCH_AGGREGATOR_KEYWORD" />" për të kërkuar ose pyet "<ph name="SEARCH_AGGREGATOR_SHORT_NAME" />"</translation>
 <translation id="6047927260846328439">Kjo përmbajtje mund të përpiqet të të mashtrojë që të instalosh softuerë ose të zbulosh informacionet e tua personale. <ph name="BEGIN_LINK" />Shfaqe gjithsesi<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Zarf B4</translation>
@@ -4990,6 +4992,7 @@ Detaje shtesë:
 <translation id="8870700989640064057">Të printohet skedari konfidencial?</translation>
 <translation id="8871485335898060555">Artikuj antikë dhe të koleksionueshëm</translation>
 <translation id="8871553383647848643">Personalizo pamjen e shfletuesit tënd</translation>
+<translation id="887350038812854047">Kjo politikë ka të njëjtën vlerë të zbatuar në nivelin e makinës dhe të përdoruesit. Politika po funksionon siç pritet.</translation>
 <translation id="8874790741333031443">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë se ka më pak mbrojtje gjatë shfletimit, por veçoritë e sajteve me shumë mundësi mund të funksionojnë siç pritet.</translation>
 <translation id="8874824191258364635">Fut një numër të vlefshëm karte</translation>
 <translation id="8877780815363510165">Peshkimi</translation>

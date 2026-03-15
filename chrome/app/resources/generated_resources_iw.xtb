@@ -441,6 +441,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{לא ניתן לפתוח את הקובץ}one{לא ניתן לפתוח את הקבצים}two{לא ניתן לפתוח את הקבצים}other{לא ניתן לפתוח את הקבצים}}</translation>
 <translation id="1282311502488501110">אני לא רוצה להיכנס</translation>
 <translation id="1282436639288565079">פרטי קבוצת הכרטיסיות</translation>
+<translation id="1282577885428483870">אתרים וחשבונות</translation>
 <translation id="1283126956823499975">משהו השתבש בהגדרת המכשיר</translation>
 <translation id="1284277788676816155">אין לאפשר שמירת נתונים</translation>
 <translation id="1285320974508926690">לא לתרגם את האתר הזה</translation>
@@ -1327,6 +1328,7 @@
 <translation id="1885066963699478692">‏קובצי ה‑XML שמשמשים להגדרת המדיניות.</translation>
 <translation id="1885089541024391265">‏יומן Google</translation>
 <translation id="1885106732301550621">נפח דיסק</translation>
+<translation id="188537499764410817">‏כאן יופיעו אתרים שבהם Gemini יכול להכניס אותך לחשבון</translation>
 <translation id="1886996562706621347">התרה לאתרים לבקש להפוך למטפלי ברירת המחדל עבור פרוטוקולים (מומלץ)</translation>
 <translation id="1887210448491286312">הפסקת ההעברה של הכרטיסייה אל <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">שגיאת כניסה</translation>
@@ -1764,6 +1766,7 @@
 <translation id="2183570493397356669">הכפתור 'המשך' מושבת</translation>
 <translation id="2184272387334793084">כדאי להיכנס לחשבון כדי שהסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך</translation>
 <translation id="2184515124301515068">‏Chrome יקבע מתי אתרים יכולים להפעיל צלילים (מומלץ)</translation>
+<translation id="2184754597051264978">‏מעכשיו Gemini לא יוכל להכניס אותך לחשבון באתר <ph name="URL" /></translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">‏התחלת שיחה חדשה עם Gemini</translation>
 <translation id="2186711480981247270">הדף שותף ממכשיר אחר</translation>
@@ -2149,7 +2152,6 @@
 <translation id="244231003699905658">כתובת לא חוקית. יש לבדוק את הכתובת ולנסות שוב.</translation>
 <translation id="2442916515643169563">צללית טקסט</translation>
 <translation id="2443487764245141020">ייתכן שגם באתרים יהיה צורך לזהות את המכשיר שלך באמצעות מזהה</translation>
-<translation id="2444091518615234627">‏שליחת פחות נתונים אל Google (לדוגמה, חלקים מכתובות URL)</translation>
 <translation id="244475495405467108">סגירת הכרטיסיות משמאל</translation>
 <translation id="2444874983932528148">קל להמשיך מהנקודה שבה הפסקת</translation>
 <translation id="2445081178310039857">ספריית הבסיס של ההרחבה נחוצה.</translation>
@@ -2428,6 +2430,7 @@
 <translation id="2628874386573004005">‏התחלת שיחה חדשה עם Gemini</translation>
 <translation id="2629227353894235473">‏פיתוח אפליקציות ל-Android</translation>
 <translation id="2629437048544561682">ניקוי לוח הציור</translation>
+<translation id="2630703150574465936">‏נתת ל-Gemini הרשאה להשתמש בחשבונות שלך כדי להכניס אותך באופן אוטומטי לאתרים ולאפליקציות האלה</translation>
 <translation id="2631498379019108537">הצגת אפשרויות קלט במדף</translation>
 <translation id="2632176111713971407">אתרים יכולים לבקש הרשאה לגלול בכרטיסיות המשותפות ולשנות את מרחק התצוגה שלהן</translation>
 <translation id="2633212996805280240">להסיר את "<ph name="EXTENSION_NAME" />"?</translation>
@@ -3605,6 +3608,7 @@
 <translation id="3443744348829035122">פג הזמן הקצוב במסגרת <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">כבר שמרת סיסמאות לחשבונות האלה ב<ph name="BRAND" />. אם אחת מהסיסמאות הבאות תיובא, היא תחליף את הסיסמה הקיימת.</translation>
 <translation id="344449859752187052">‏קובצי Cookie של צד שלישי נחסמו</translation>
+<translation id="3445140416168872040">הסרת ההרשאה לאתר <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="344537926140058498">הקובץ הזה כולל תוכן רגיש או מסוכן ולכן הוא נחסם על ידי הארגון שלך. עליך לבקש מהבעלים שלו לתקן אותו.</translation>
 <translation id="3445465968953598059">שליטה באמצעות תנועות הפנים</translation>
@@ -3855,6 +3859,7 @@
 <translation id="3615579745882581859">מתבצעת סריקה בקובץ <ph name="FILE_NAME" />.</translation>
 <translation id="3615596877979647433">המפתח חסר. יש להקיש על מקש מקלדת כלשהו כדי להתאים אישית</translation>
 <translation id="3616113530831147358">אודיו</translation>
+<translation id="3616658341000358527">‏כדי ש-Gemini יוכל לבצע בשבילך משימות באינטרנט, צריך לתת לו הרשאה להכניס אותך לחשבון באופן אוטומטי</translation>
 <translation id="3617062258679844578">כדי להקליק, לוחצים על לוח המגע במקום ללחוץ עליו</translation>
 <translation id="3617891479562106823">רקעים אינם זמינים. צריך לנסות שוב מאוחר יותר.</translation>
 <translation id="3618647122592024084">‏עכשיו <ph name="RECIPIENT_NAME" /> יכול/ה להשתמש בשם המשתמש ובסיסמה שלך במנהל הסיסמאות של Google. יהיה צורך לעבור אל <ph name="WEBSITE" /> כדי להיכנס.</translation>
@@ -5807,6 +5812,7 @@
 <translation id="4940448324259979830">החשבון הזה מנוהל על ידי <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">הקצאת שטח קבוע</translation>
 <translation id="4941246025622441835">יש להשתמש במכשיר זה בעת הרשמת המכשיר לניהול ארגוני:</translation>
+<translation id="4941391011436448776">‏אתרים שבהם Gemini יכול להכניס אותך לחשבון</translation>
 <translation id="4941627891654116707">גודל גופן</translation>
 <translation id="4941963255146903244">הצגת התמונות, המדיה והאפליקציות שבטלפון</translation>
 <translation id="494286511941020793">‏עזרה בנושא תצורת שרת Proxy</translation>
@@ -6534,6 +6540,7 @@
 <translation id="5460861858595506978">להשראה</translation>
 <translation id="5461050611724244538">החיבור עם הטלפון שלך אבד</translation>
 <translation id="5463275305984126951">אינדקס של <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">השבתת הצעות</translation>
 <translation id="5463450804024056231">הרשמה לקבלת אימיילים לגבי <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">מתבצע חיפוש מכשירים…</translation>
 <translation id="5463856536939868464">התפריט מכיל סימניות נסתרות</translation>
@@ -6614,7 +6621,6 @@
 <translation id="5510775624736435856">‏קבלת תיאורי תמונות מ-Google</translation>
 <translation id="5511379779384092781">קטן במיוחד</translation>
 <translation id="5511823366942919280">בטוח שברצונך להגדיר מכשיר זה כ'כריש'?</translation>
-<translation id="5512511240775436189">‏שליחת נתונים נוספים אל Google (לדוגמה, כתובות URL, תוכן דפים ועוד)</translation>
 <translation id="5512739112435045339">אפשר לנסות לפנות מקום במכשיר. לאחר מכן, אפשר לנסות שוב להוריד אותו.</translation>
 <translation id="5513807280330619196">מחשבון</translation>
 <translation id="5514315914873062345">‏מקש Tab</translation>
@@ -6641,7 +6647,6 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> מבקש</translation>
 <translation id="5533343601674003130">‏שירות PDF</translation>
 <translation id="5535769176698670170">החלפה עם התצוגה העליונה</translation>
-<translation id="5537395135310061418">‏הגנה באינטרנט בעזרת אמצעי האבטחה הטובים ביותר של Google</translation>
 <translation id="5537725057119320332">‏הפעלת Cast</translation>
 <translation id="5539070192556911367">‏לא ניתן להתחבר ל-Google</translation>
 <translation id="5541091577812545428">הסיסמה לא השתנתה</translation>
@@ -8001,7 +8006,6 @@
 <translation id="6494483173119160146">אירעה במכשיר שגיאה שבעקבותיה אי אפשר לשחזר אותו. עליך לאפס את המכשיר (בעקבות זאת יימחקו כל נתוני המשתמש) ולנסות שוב.</translation>
 <translation id="6495266441917713704">‏לא ניתן להעביר Wi-Fi</translation>
 <translation id="6495453178162183932">‏העיצוב עודכן לברירת המחדל של Chrome</translation>
-<translation id="6496542321576111907">אבטחה חזקה. אפשר להפעיל תכונות נוספות.</translation>
 <translation id="6496641546298525838">המכשיר שלך</translation>
 <translation id="6497784818439587832">שינוי גודל התצוגה כדי להקטין או להגדיל את הפריטים שמופיעים במסך</translation>
 <translation id="6497789971060331894">גלילה הפוכה עם העכבר</translation>
@@ -9867,6 +9871,7 @@
 <translation id="7769709635093101687">מקש קיצור להשהייה</translation>
 <translation id="7769748505895274502">כיווץ התפריט 'נסגרו לאחרונה'</translation>
 <translation id="7770072242481632881">בורר בחלונית הצדדית</translation>
+<translation id="7770247511810814330">הסרת ההרשאה</translation>
 <translation id="7770612696274572992">התמונה הועתקה ממכשיר אחר</translation>
 <translation id="7770827449915784217">הקושחה מעודכנת</translation>
 <translation id="7771452384635174008">פריסה</translation>
@@ -11413,7 +11418,6 @@
 <translation id="8808686172382650546">חתול</translation>
 <translation id="8809147117840417135">כחול-ירקרק בהיר</translation>
 <translation id="8811862054141704416">‏גישה של Crostini למיקרופון</translation>
-<translation id="8811881249098640048">האטת אתרים לא מוכרים</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{‏סיסמה אחת שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}one{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}two{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}other{‏‫{PASSWORD_COUNT} סיסמאות שמורות רק במכשיר הזה. כדי להשתמש בהן במכשירים אחרים, צריך לשמור אותן בחשבון Google. הפעולה הזו תמחק גם את כל הכפילויות.}}</translation>
 <translation id="8813199641941291474">‏נחסמה האפשרות לשליטה במכשירי MIDI ולתכנות שלהם מחדש</translation>
 <translation id="8813698869395535039">לא ניתן להיכנס עם שם המשתמש <ph name="USERNAME" /></translation>

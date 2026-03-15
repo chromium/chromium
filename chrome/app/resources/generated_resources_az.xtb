@@ -439,6 +439,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Faylı açmaq olmur}other{Faylları açmaq olmur}}</translation>
 <translation id="1282311502488501110">Daxil olmayın</translation>
 <translation id="1282436639288565079">Tab qrupu təfərrüatları</translation>
+<translation id="1282577885428483870">Saytlar və hesablar</translation>
 <translation id="1283126956823499975">Cihazı ayarlayarkən xəta oldu</translation>
 <translation id="1284277788676816155">Datanı saxlamağa icazə verməyin</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
@@ -1318,6 +1319,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1885066963699478692">Siyasətləri ayarlamaq üçün istifadə olunan XML faylları.</translation>
 <translation id="1885089541024391265">Google Calendar</translation>
 <translation id="1885106732301550621">Disk ölçüsü</translation>
+<translation id="188537499764410817">Gemini-ın sizi daxil edə biləcəyi saytlar burada görünəcək</translation>
 <translation id="1886996562706621347">Saytlara defolt protokol icraçıları olmağa icazə verin (tövsiyə olunur)</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> cihazında tab yayımını dayandırın</translation>
 <translation id="1887442540531652736">Giriş xətası</translation>
@@ -1756,6 +1758,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2183570493397356669">"Davam edin" düyməsi deaktivdir</translation>
 <translation id="2184272387334793084">Daxil olaraq bütün cihazlarda parol və s. əldə edin</translation>
 <translation id="2184515124301515068">Saytların avtomatik oxutma vaxtını Chrome'un seçməsinə icazə verin (məsləhətlidir)</translation>
+<translation id="2184754597051264978">Gemini artıq sizi <ph name="URL" /> saytına daxil edə bilməyəcək</translation>
 <translation id="2186206192313702726">Google Linza</translation>
 <translation id="2186539124645132614">Gemini ilə yeni söhbətə başlayın</translation>
 <translation id="2186711480981247270">Səhifə başqa cihazdan paylaşılıb</translation>
@@ -2141,7 +2144,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="244231003699905658">Ünvan yanlışdır. Ünvanı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="2442916515643169563">Mətn kölgəsi</translation>
 <translation id="2443487764245141020">Saytlar ayrıca bir identifikatorla cihazınızı tanımalı ola bilər</translation>
-<translation id="2444091518615234627">Google-a daha az data göndərir (məsələn, URL-lərin bəzi hissələri)</translation>
 <translation id="244475495405467108">Sol Panelləri bağlayın</translation>
 <translation id="2444874983932528148">Qaldığınız yerdən asanlıqla davam edin</translation>
 <translation id="2445081178310039857">Daxili kök kataloq tələb olunur.</translation>
@@ -2420,6 +2422,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2628874386573004005">Gemini ilə Yeni Söhbətə başlayın</translation>
 <translation id="2629227353894235473">Android tətbiqlərini inkişaf etdirin</translation>
 <translation id="2629437048544561682">Kanvası silin</translation>
+<translation id="2630703150574465936">Gemini-a hesablarınızdan istifadə edərək sizi bu sayt və tətbiqlərə avtomatik daxil etmək icazəsi verdiniz</translation>
 <translation id="2631498379019108537">Buferdə daxiletmə seçənəklərini göstərin</translation>
 <translation id="2632176111713971407">Saytlar paylaşılan tabları sürüşdürüb zumlamaq istəyə bilər</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" silinsin?</translation>
@@ -3597,6 +3600,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3443744348829035122"><ph name="BRAND" /> - vaxt bitdi</translation>
 <translation id="3443754338602062261"><ph name="BRAND" /> bölməsində bu hesabların parolları var. Aşağıdan import etsəniz, mövcud parol əvəz ediləcək.</translation>
 <translation id="344449859752187052">Üçüncü tərəf kukiləri bloklandı</translation>
+<translation id="3445140416168872040"><ph name="URL" /> üçün icazəni silin</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
 <translation id="344537926140058498">Təşkilatınız həssas və ya təhlükəli məzmun ehtiva etdiyinə görə bu faylı bloklayıb. Sahibindən onu düzəltməsini istəyin.</translation>
 <translation id="3445465968953598059">Üz nizamlayıcısı</translation>
@@ -3847,6 +3851,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> skan edildi.</translation>
 <translation id="3615596877979647433">Düymə yoxdur. Fərdiləşdirmək üçün klaviatura düyməsini basın</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616658341000358527">Gemini-ın vebdə sizin üçün tapşırıqları tamamlamaq məqsədilə avtomatik olaraq hesaba daxil olmasına icazə verin</translation>
 <translation id="3617062258679844578">Klikləmək üçün taçpedə basmaq əvəzinə toxunun</translation>
 <translation id="3617891479562106823">Arxa fonlar əlçatan deyil. Sonra yenidən cəhd edin.</translation>
 <translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> Google Parol Menecerindən istifadə etdikdə istifadəçi adı və parolunuzdan istifadə edə bilər. Giriş üçün <ph name="WEBSITE" /> veb-saytına daxil olmaq lazımdır.</translation>
@@ -5796,6 +5801,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4940448324259979830">Bu hesab <ph name="PROFILE_NAME" /> tərəfindən idarə olunur</translation>
 <translation id="4940845626435830013">Rezerv disk ölçüsü</translation>
 <translation id="4941246025622441835">Müəssisənin idarə edilməsi üçün cihaz qeydiyyatdan bu cihaz sifarişləri istifadə edin:</translation>
+<translation id="4941391011436448776">Gemini-ın sizi daxil edə biləcəyi saytlar</translation>
 <translation id="4941627891654116707">Şrift ölçüsü</translation>
 <translation id="4941963255146903244">Telefonunuzun fotolarına, mediasına və tətbiqlərinə baxın</translation>
 <translation id="494286511941020793">Proksi Konfiqurasiyası Yardımı</translation>
@@ -6523,6 +6529,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5460861858595506978">İlhamverici nəticələr</translation>
 <translation id="5461050611724244538">Telefonunuzla bağlantı kəsildi</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> indeksi</translation>
+<translation id="5463348003600590648">Təklifləri deaktiv edin</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> e-məktubları üçün qeydiyyatdan keçin</translation>
 <translation id="5463625433003343978">Cihazlar axtarılır...</translation>
 <translation id="5463856536939868464">Gizli əlfəcinlərdən ibarət olan menyu</translation>
@@ -6603,7 +6610,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5510775624736435856">Google'dan Şəkil Təsvirləri əldə edin</translation>
 <translation id="5511379779384092781">Çox kiçik</translation>
 <translation id="5511823366942919280">Bu cihazı "Köpəkbalığı" olaraq quraşdırmaq istəyirsiniz?</translation>
-<translation id="5512511240775436189">Google-a daha çox data göndərir (məsələn, URL-lər, səhifə kontenti və s.)</translation>
 <translation id="5512739112435045339">Cihazınızda yer boşaldın. Sonra yenidən endirməyə cəhd edin</translation>
 <translation id="5513807280330619196">Kalkulyator</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6630,7 +6636,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> bunu etmək istəyir:</translation>
 <translation id="5533343601674003130">PDF xidməti</translation>
 <translation id="5535769176698670170">Üst görünüşlə dəyişin</translation>
-<translation id="5537395135310061418">Google-un ən yaxşı təhlükəsizliyi ilə vebdə sizi qoruyur</translation>
 <translation id="5537725057119320332">Yayım</translation>
 <translation id="5539070192556911367">Google'a daxil olmaq mümkün deyil</translation>
 <translation id="5541091577812545428">Parol dəyişdirilməyib</translation>
@@ -7988,7 +7993,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6494483173119160146">Cihazda düzəldilməyən xəta oldu. Cihazı sıfırlayın (bütün istifadəçi datası silinəcək) və yenidən cəhd edin.</translation>
 <translation id="6495266441917713704">Wi-Fi-ı ötürmək olmur</translation>
 <translation id="6495453178162183932">Tema Defolt Chrome-a yeniləndi</translation>
-<translation id="6496542321576111907">Güclü təhlükəsizlik təmin edir. Əlavə funksiyaları aktiv etməyi seçə bilərsiniz.</translation>
 <translation id="6496641546298525838">Cihazınız</translation>
 <translation id="6497784818439587832">Ekranınızdakı elementləri kiçiltmək və ya böyütmək üçün ekran ölçüsünü dəyişdirin</translation>
 <translation id="6497789971060331894">Siçanın geri sürüşdürməsi</translation>
@@ -9849,6 +9853,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7769709635093101687">Durdurmaq üçün klaviatura qısayolu</translation>
 <translation id="7769748505895274502">Son bağlananı yığcamlaşdırın</translation>
 <translation id="7770072242481632881">Yan Panel Seçicisi</translation>
+<translation id="7770247511810814330">İcazəni silin</translation>
 <translation id="7770612696274572992">Şəkil başqa cihazdan kopyalanıb</translation>
 <translation id="7770827449915784217">Mikroproqram güncəldir</translation>
 <translation id="7771452384635174008">Düzüm</translation>
@@ -11389,7 +11394,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8808686172382650546">Pişik</translation>
 <translation id="8809147117840417135">Açıq-firuzəyi</translation>
 <translation id="8811862054141704416">Crostini mikrofona girişi</translation>
-<translation id="8811881249098640048">Bəzi tanış olmayan saytları yavaşladır</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 parol yalnız bu cihazda yadda saxlanılır. Onu digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın. Bununla bütün dublikatlar da təmizlənəcək.}other{{PASSWORD_COUNT} parol yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın. Bununla bütün dublikatlar da təmizlənəcək.}}</translation>
 <translation id="8813199641941291474">MIDI cihazlarının idarə edilməsi və yenidən proqramlaşdırılması bloklanıb</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" /> istifadəçi adına daxil ola bilməz</translation>

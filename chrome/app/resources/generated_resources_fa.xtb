@@ -440,6 +440,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{فایل باز نمی‌شود}one{فایل باز نمی‌شود}other{فایل‌ها باز نمی‌شود}}</translation>
 <translation id="1282311502488501110">وارد سیستم نشدن</translation>
 <translation id="1282436639288565079">جزئیات گروه زبانه</translation>
+<translation id="1282577885428483870">سایت‌ها و حساب‌ها</translation>
 <translation id="1283126956823499975">هنگام راه‌اندازی دستگاه مشکلی پیش آمد</translation>
 <translation id="1284277788676816155">ذخیره کردن داده مجاز نیست</translation>
 <translation id="1285320974508926690">این سایت هرگز ترجمه نشود</translation>
@@ -1325,6 +1326,7 @@
 <translation id="1885066963699478692">‏فایل‌های XML که برای تنظیم خط‌مشی‌ها استفاده می‌شوند.</translation>
 <translation id="1885089541024391265">‏تقویم Google</translation>
 <translation id="1885106732301550621">فضای دیسک</translation>
+<translation id="188537499764410817">‏سایت‌هایی که می‌توانید با Gemini به سیستم آن‌ها وارد شوید در اینجا نشان داده می‌شود</translation>
 <translation id="1886996562706621347">به سایت‌ها اجازه داده شود درخواست کنند که کنترل‌کننده پیش‌فرض برای پروتکل‌ها شوند (توصیه می‌شود)</translation>
 <translation id="1887210448491286312">توقف پخش محتوای زبانه در <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">خطای ورود به سیستم</translation>
@@ -1763,6 +1765,7 @@
 <translation id="2183570493397356669">دکمه ادامه غیرفعال شد</translation>
 <translation id="2184272387334793084">به سیستم وارد شوید تا گذرواژه‌ها و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="2184515124301515068">‏Chrome انتخاب کند سایت‌ها چه موقع صدا پخش کنند (توصیه می‌شود)</translation>
+<translation id="2184754597051264978">‏Gemini دیگر نمی‌تواند شما را به سیستم <ph name="URL" /> وارد کند</translation>
 <translation id="2186206192313702726">‏لنز Google</translation>
 <translation id="2186539124645132614">‏شروع کردن گپ جدید با Gemini</translation>
 <translation id="2186711480981247270">صفحه از دستگاه دیگری هم‌رسانی شد</translation>
@@ -2148,7 +2151,6 @@
 <translation id="244231003699905658">نشانی نامعتبر است. لطفاً نشانی را بررسی و دوباره امتحان کنید.</translation>
 <translation id="2442916515643169563">سایه نوشتار</translation>
 <translation id="2443487764245141020">شاید لازم باشد سایت‌ها دستگاهتان را بااستفاده از شناسه هم تشخیص دهند</translation>
-<translation id="2444091518615234627">‏داده‌های کمتری به Google ارسال می‌کند (برای مثال، بخش‌هایی از نشانی‌های وب)</translation>
 <translation id="244475495405467108">بستن برگه‌های سمت چپ</translation>
 <translation id="2444874983932528148">به‌راحتی از جایی که رها کردید ادامه دهید</translation>
 <translation id="2445081178310039857">دایرکتوری ریشه برنامهٔ افزودنی لازم است.</translation>
@@ -2427,6 +2429,7 @@
 <translation id="2628874386573004005">‏شروع کردن گپ جدید با Gemini</translation>
 <translation id="2629227353894235473">‏تولید برنامه‌های Android</translation>
 <translation id="2629437048544561682">پاک کردن بوم نقاشی</translation>
+<translation id="2630703150574465936">‏به Gemini اجازه داده‌اید بااستفاده از حساب‌هایتان شما را به‌طور خودکار به سیستم این سایت‌ها و برنامه‌ها وارد کند</translation>
 <translation id="2631498379019108537">نمایش گزینه‌های ورودی در قفسه</translation>
 <translation id="2632176111713971407">سایت‌ها می‌توانند برای پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده درخواست دهند</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" حذف شود؟</translation>
@@ -3604,6 +3607,7 @@
 <translation id="3443744348829035122">مهلت <ph name="BRAND" /> تمام شد</translation>
 <translation id="3443754338602062261">درحال‌حاضر گذرواژه این حساب‌ها را در <ph name="BRAND" /> خود دارید. اگر بخواهید یکی از گذرواژه‌های زیر را وارد کنید، آن گذرواژه جایگزین گذرواژه موجود می‌شود.</translation>
 <translation id="344449859752187052">کوکی‌های طرف سوم مسدود شده است</translation>
+<translation id="3445140416168872040">برداشتن اجازه برای <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="344537926140058498">سازمانتان این فایل را مسدود کرده است زیرا محتوای حساس یا خطرناک دارد. از مالک فایل بخواهید مشکل آن را برطرف کند.</translation>
 <translation id="3445465968953598059">کنترل با چهره</translation>
@@ -3854,6 +3858,7 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> درحال اسکن است.</translation>
 <translation id="3615596877979647433">کلید وجود ندارد. برای سفارشی کردن، یکی از کلیدهای صفحه‌کلید را فشار دهید</translation>
 <translation id="3616113530831147358">صوتی</translation>
+<translation id="3616658341000358527">‏به Gemini اجازه دهید به‌طور خودکار شما را وارد سیستم کند تا تکالیف را برایتان در وب انجام دهد</translation>
 <translation id="3617062258679844578">برای کلیک کردن، به‌جای فشار دادن صفحه لمسی روی آن تک‌ضرب بزنید</translation>
 <translation id="3617891479562106823">پس‌زمینه‌ها دردسترس نیست. بعداً دوباره امتحان کنید.</translation>
 <translation id="3618647122592024084">‏اکنون <ph name="RECIPIENT_NAME" /> می‌تواند نام کاربری و گذرواژه شما را هنگام استفاده از «مدیر گذرواژه Google» به‌کار ببرد. به او بگویید برای ورود به سیستم به <ph name="WEBSITE" /> برود.</translation>
@@ -5805,6 +5810,7 @@
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> این حساب را مدیریت می‌کند</translation>
 <translation id="4940845626435830013">اختصاص حجم دیسک</translation>
 <translation id="4941246025622441835">هنگام ثبت‌نام دستگاه برای مدیریت سازمانی، از این درخواست دستگاه استفاده کنید:</translation>
+<translation id="4941391011436448776">‏سایت‌هایی که Gemini می‌تواند شما را به سیستم آن‌ها وارد کند</translation>
 <translation id="4941627891654116707">اندازه قلم</translation>
 <translation id="4941963255146903244">مشاهده کردن عکس‌ها، رسانه، و برنامه‌های تلفن شما</translation>
 <translation id="494286511941020793">راهنمای پیکربندی پراکسی</translation>
@@ -6532,6 +6538,7 @@
 <translation id="5460861858595506978">الهام‌بخش</translation>
 <translation id="5461050611724244538">اتصال با تلفنتان قطع شد</translation>
 <translation id="5463275305984126951">شاخص <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">غیرفعال کردن پیشنهادها</translation>
 <translation id="5463450804024056231">ثبت‌نام برای ایمیل‌های <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">درحال پیدا کردن دستگاه‌ها…</translation>
 <translation id="5463856536939868464">منوی دارای نشانک‌های مخفی</translation>
@@ -6612,7 +6619,6 @@
 <translation id="5510775624736435856">‏دریافت توضیحات تصویر از Google</translation>
 <translation id="5511379779384092781">بسیار کوچک</translation>
 <translation id="5511823366942919280">‏مطمئنید می‌خواهید این دستگاه را به عنوان «Shark» تنظیم کنید؟</translation>
-<translation id="5512511240775436189">‏داده‌های بیشتری به Google ارسال می‌کند (برای نمونه، نشانی‌های وب، محتوای صفحه، و موارد بیشتر)</translation>
 <translation id="5512739112435045339">فضای ذخیره‌سازی دستگاهتان را آزاد کنید. سپس دوباره بارگیری کنید</translation>
 <translation id="5513807280330619196">ماشین‌حساب</translation>
 <translation id="5514315914873062345">کلید جهش</translation>
@@ -6639,7 +6645,6 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> می‌خواهد</translation>
 <translation id="5533343601674003130">‏سرویس PDF</translation>
 <translation id="5535769176698670170">جابه‌جا کردن با نمای بالا</translation>
-<translation id="5537395135310061418">‏با بهترین راهکار امنیتی Google، از شما در وب محافظت می‌کند</translation>
 <translation id="5537725057119320332">فرستادن</translation>
 <translation id="5539070192556911367">‏دسترسی به Google امکان‌پذیر نیست</translation>
 <translation id="5541091577812545428">گذرواژه تغییر نکرد</translation>
@@ -7999,7 +8004,6 @@
 <translation id="6494483173119160146">دستگاه با خطای غیرقابل‌بازیابی مواجه شده است. لطفاً دستگاهتان را بازنشانی و سپس دوباره امتحان کنید (با این کار همه داده‌های کاربر پاک‌سازی می‌شود).</translation>
 <translation id="6495266441917713704">‏Wi-Fi منتقل نشد</translation>
 <translation id="6495453178162183932">‏زمینه به پیش‌فرض Chrome تغییر کرد</translation>
-<translation id="6496542321576111907">امنیتی قوی ارائه می‌دهد. در صورت تمایل، می‌توانید ویژگی‌های اضافی را روشن کنید.</translation>
 <translation id="6496641546298525838">دستگاه شما</translation>
 <translation id="6497784818439587832">تغییر اندازه نمایش برای کوچک‌تر کردن یا بزرگ‌تر کردن موارد روی صفحه‌نمایش</translation>
 <translation id="6497789971060331894">پیمایش معکوس موشواره</translation>
@@ -9863,6 +9867,7 @@
 <translation id="7769709635093101687">میان‌بر صفحه‌کلید برای توقف موقت</translation>
 <translation id="7769748505895274502">جمع کردن موارد اخیراً بسته‌شده</translation>
 <translation id="7770072242481632881">گزینشگر پانل کناری</translation>
+<translation id="7770247511810814330">برداشتن اجازه</translation>
 <translation id="7770612696274572992">تصویر از دستگاه دیگری کپی شده است</translation>
 <translation id="7770827449915784217">سفت‌افزار به‌روز است</translation>
 <translation id="7771452384635174008">صفحه آرایی</translation>
@@ -11406,7 +11411,6 @@
 <translation id="8808686172382650546">گربه</translation>
 <translation id="8809147117840417135">سبزآبی روشن</translation>
 <translation id="8811862054141704416">‏دسترسی به میکروفون Crostini</translation>
-<translation id="8811881249098640048">سرعت برخی‌از سایت‌های ناآشنا را کاهش می‌دهد</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{‏‫۱ گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، آن را در «حساب Google» خود ذخیره کنید. با این کار موارد تکراری نیز پاک خواهند شد.}one{‏‫{PASSWORD_COUNT} گذرواژه فقط در این دستگاه ذخیره شده است. برای استفاده از آن در سایر دستگاه‌هایتان، آن را در «حساب Google» خود ذخیره کنید. با این کار موارد تکراری نیز پاک خواهند شد.}other{‏‫{PASSWORD_COUNT} گذرواژه فقط در این دستگاه ذخیره شده‌اند. برای استفاده از آن‌ها در سایر دستگاه‌هایتان، آن‌ها را در «حساب Google» خود ذخیره کنید. با این کار موارد تکراری نیز پاک خواهند شد.}}</translation>
 <translation id="8813199641941291474">‏کنترل و برنامه‌ریزی مجدد دستگاه‌های MIDI مسدود شده است</translation>
 <translation id="8813698869395535039">ورود به سیستم <ph name="USERNAME" /> امکان‌پذیر نیست</translation>

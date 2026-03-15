@@ -439,6 +439,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{無法開啟檔案}other{無法開啟檔案}}</translation>
 <translation id="1282311502488501110">不登入</translation>
 <translation id="1282436639288565079">分頁群組詳細資料</translation>
+<translation id="1282577885428483870">網站和帳戶</translation>
 <translation id="1283126956823499975">設定裝置時發生錯誤</translation>
 <translation id="1284277788676816155">不允許儲存資料</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
@@ -1318,6 +1319,7 @@
 <translation id="1885066963699478692">用於設定政策的 XML 檔案。</translation>
 <translation id="1885089541024391265">Google 日曆</translation>
 <translation id="1885106732301550621">磁碟空間</translation>
+<translation id="188537499764410817">這裡會顯示 Gemini 可登入的網站</translation>
 <translation id="1886996562706621347">允許網站要求成為通訊協定的預設處理常式 (建議)</translation>
 <translation id="1887210448491286312">停止將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="1887442540531652736">登入錯誤</translation>
@@ -1756,6 +1758,7 @@
 <translation id="2183570493397356669">已停用「繼續」按鈕</translation>
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
+<translation id="2184754597051264978">Gemini 將無法再登入「<ph name="URL" />」</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2186539124645132614">與 Gemini 展開新對話</translation>
 <translation id="2186711480981247270">透過其他裝置分享的網頁</translation>
@@ -2138,7 +2141,6 @@
 <translation id="244231003699905658">位址無效。請檢查位址是否正確，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
 <translation id="2443487764245141020">網站可能也需要使用 ID 來辨識你的裝置</translation>
-<translation id="2444091518615234627">將較少資料傳送給 Google (例如網址的一部分)</translation>
 <translation id="244475495405467108">關閉左側的分頁</translation>
 <translation id="2444874983932528148">輕鬆接續瀏覽進度</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
@@ -2417,6 +2419,7 @@
 <translation id="2628874386573004005">與 Gemini 展開新對話</translation>
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
 <translation id="2629437048544561682">清除畫布</translation>
+<translation id="2630703150574465936">你已允許 Gemini 使用你的帳戶自動登入這些網站和應用程式</translation>
 <translation id="2631498379019108537">在檔案櫃中顯示輸入選項</translation>
 <translation id="2632176111713971407">網站可要求捲動及縮放已分享的分頁</translation>
 <translation id="2633212996805280240">要移除「<ph name="EXTENSION_NAME" />」嗎？</translation>
@@ -3591,6 +3594,7 @@
 <translation id="3443744348829035122"><ph name="BRAND" />逾時</translation>
 <translation id="3443754338602062261">你的「<ph name="BRAND" />」中已有這些帳戶的密碼。如果選擇匯入以下其中一個密碼，將會取代現有密碼。</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
+<translation id="3445140416168872040">移除「<ph name="URL" />」的權限</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344537926140058498">這個檔案含有敏感或危險內容，因此遭到貴機構封鎖。請要求檔案擁有者修正。</translation>
 <translation id="3445465968953598059">臉部控制</translation>
@@ -3841,6 +3845,7 @@
 <translation id="3615579745882581859">正在掃描「<ph name="FILE_NAME" />」。</translation>
 <translation id="3615596877979647433">缺少按鍵。按下鍵盤按鍵即可自訂</translation>
 <translation id="3616113530831147358">音訊</translation>
+<translation id="3616658341000358527">讓 Gemini 自動登入，在網路上幫你完成工作</translation>
 <translation id="3617062258679844578">如要點選，請輕觸觸控板，不要按壓</translation>
 <translation id="3617891479562106823">目前無法存取背景，請稍後再試。</translation>
 <translation id="3618647122592024084">現在起，<ph name="RECIPIENT_NAME" />可以透過 Google 密碼管理工具使用你的使用者名稱和密碼。你可以請對方前往 <ph name="WEBSITE" /> 登入帳戶。</translation>
@@ -5787,6 +5792,7 @@
 <translation id="4940448324259979830">這個帳戶是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">預留磁碟大小</translation>
 <translation id="4941246025622441835">為企業管理服務註冊裝置時使用這個裝置申請單：</translation>
+<translation id="4941391011436448776">Gemini 可登入的網站</translation>
 <translation id="4941627891654116707">字型大小</translation>
 <translation id="4941963255146903244">查看手機上的相片、媒體和應用程式</translation>
 <translation id="494286511941020793">Proxy 設定說明</translation>
@@ -6513,6 +6519,7 @@
 <translation id="5460861858595506978">靈感</translation>
 <translation id="5461050611724244538">手機連線中斷</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
+<translation id="5463348003600590648">停用建議功能</translation>
 <translation id="5463450804024056231">訂閱 <ph name="DEVICE_TYPE" /> 電子郵件</translation>
 <translation id="5463625433003343978">正在尋找裝置…</translation>
 <translation id="5463856536939868464">選單包含隱藏的書籤</translation>
@@ -6593,7 +6600,6 @@
 <translation id="5510775624736435856">從 Google 取得圖片說明</translation>
 <translation id="5511379779384092781">特小</translation>
 <translation id="5511823366942919280">你確定要將這個裝置設為「Shark」嗎？</translation>
-<translation id="5512511240775436189">將較多資料傳送給 Google (例如網址、網頁內容等)</translation>
 <translation id="5512739112435045339">請先釋出裝置空間，然後再下載一次</translation>
 <translation id="5513807280330619196">計算機</translation>
 <translation id="5514315914873062345">Tab 鍵</translation>
@@ -6620,7 +6626,6 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> 要求下列權限</translation>
 <translation id="5533343601674003130">PDF 服務</translation>
 <translation id="5535769176698670170">與上方畫面交換</translation>
-<translation id="5537395135310061418">採用 Google 最強大的安全機制，保護你的網路安全</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539070192556911367">無法連上 Google</translation>
 <translation id="5541091577812545428">密碼未變更</translation>
@@ -7976,7 +7981,6 @@
 <translation id="6494483173119160146">裝置發生無法復原的錯誤。請重設裝置 (系統將清除所有使用者資料)，然後再試一次。</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi 連線</translation>
 <translation id="6495453178162183932">主題已更新為預設的 Chrome 主題</translation>
-<translation id="6496542321576111907">提供強大的安全防護。你可以選擇開啟其他功能。</translation>
 <translation id="6496641546298525838">你的裝置</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
@@ -9837,6 +9841,7 @@
 <translation id="7769709635093101687">按下鍵盤快速鍵即可暫停</translation>
 <translation id="7769748505895274502">收合最近關閉的分頁</translation>
 <translation id="7770072242481632881">側邊面板選取器</translation>
+<translation id="7770247511810814330">移除權限</translation>
 <translation id="7770612696274572992">從其他裝置複製的圖片</translation>
 <translation id="7770827449915784217">韌體已是最新版本</translation>
 <translation id="7771452384635174008">配置</translation>
@@ -11379,7 +11384,6 @@
 <translation id="8808686172382650546">貓咪</translation>
 <translation id="8809147117840417135">淺藍綠色</translation>
 <translation id="8811862054141704416">Crostini 麥克風存取權</translation>
-<translation id="8811881249098640048">降低部分陌生網站的速度</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 組密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8813199641941291474">已禁止控制及重設 MIDI 裝置的程式</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>

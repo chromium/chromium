@@ -439,6 +439,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Can't open file}other{Can't open files}}</translation>
 <translation id="1282311502488501110">Don't sign in</translation>
 <translation id="1282436639288565079">Tab group details</translation>
+<translation id="1282577885428483870">Sites and accounts</translation>
 <translation id="1283126956823499975">Something went wrong with setting up the device</translation>
 <translation id="1284277788676816155">Don’t allow to save data</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
@@ -1328,6 +1329,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1885066963699478692">XML files that are being used to set the policies.</translation>
 <translation id="1885089541024391265">Google Calendar</translation>
 <translation id="1885106732301550621">Disk space</translation>
+<translation id="188537499764410817">Sites where Gemini can sign you in will appear here</translation>
 <translation id="1886996562706621347">Allow sites to ask to become default handlers for protocols (recommended)</translation>
 <translation id="1887210448491286312">Stop casting tab to <ph name="DEVICE_NAME" /></translation>
 <translation id="1887442540531652736">Sign-in error</translation>
@@ -1766,6 +1768,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2183570493397356669">Continue button disabled</translation>
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="2184515124301515068">Let Chrome choose when sites can play sound (recommended)</translation>
+<translation id="2184754597051264978">Gemini will no longer be able to sign you in to <ph name="URL" /></translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Start new chat with Gemini</translation>
 <translation id="2186711480981247270">Page shared from another device</translation>
@@ -2151,7 +2154,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
 <translation id="2442916515643169563">Text shadow</translation>
 <translation id="2443487764245141020">Sites may also need to recognise your device using an identifier</translation>
-<translation id="2444091518615234627">Sends less data to Google (for example, parts of URLs)</translation>
 <translation id="244475495405467108">Close Tabs to the Left</translation>
 <translation id="2444874983932528148">Easily pick up where you left off</translation>
 <translation id="2445081178310039857">Extension root directory is required.</translation>
@@ -2430,6 +2432,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2628874386573004005">Start new chat with Gemini</translation>
 <translation id="2629227353894235473">Develop Android apps</translation>
 <translation id="2629437048544561682">Clear canvas</translation>
+<translation id="2630703150574465936">You've allowed Gemini to automatically sign you in to these sites and apps using your accounts</translation>
 <translation id="2631498379019108537">Show input options in the shelf</translation>
 <translation id="2632176111713971407">Sites can ask to scroll and zoom shared tabs</translation>
 <translation id="2633212996805280240">Remove '<ph name="EXTENSION_NAME" />'?</translation>
@@ -3607,6 +3610,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3443744348829035122"><ph name="BRAND" /> timed out</translation>
 <translation id="3443754338602062261">You already have passwords for these accounts in your <ph name="BRAND" />. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
+<translation id="3445140416168872040">Remove permission for <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Your organisation has blocked this file because it has sensitive or dangerous content. Ask its owner to fix it.</translation>
 <translation id="3445465968953598059">Facial control</translation>
@@ -3857,6 +3861,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> is being scanned.</translation>
 <translation id="3615596877979647433">Key is missing. Press a keyboard key to customise</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616658341000358527">Let Gemini automatically sign you in to complete tasks for you on the web</translation>
 <translation id="3617062258679844578">To click, tap your touchpad instead of pressing it</translation>
 <translation id="3617891479562106823">Backgrounds are unavailable. Try again later.</translation>
 <translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> can now use your username and password when they use Google Password Manager. Tell them to go to <ph name="WEBSITE" /> to sign in.</translation>
@@ -5808,6 +5813,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4940448324259979830">This account is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Reserve disk size</translation>
 <translation id="4941246025622441835">Use this device requisition when enrolling the device for enterprise management:</translation>
+<translation id="4941391011436448776">Sites that Gemini can sign you in to</translation>
 <translation id="4941627891654116707">Font size</translation>
 <translation id="4941963255146903244">View your phone's photos, media and apps</translation>
 <translation id="494286511941020793">Proxy Configuration Help</translation>
@@ -6535,6 +6541,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5460861858595506978">Inspiration</translation>
 <translation id="5461050611724244538">Connection lost with your phone</translation>
 <translation id="5463275305984126951">Index of <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Disable suggestions</translation>
 <translation id="5463450804024056231">Sign up for <ph name="DEVICE_TYPE" /> emails</translation>
 <translation id="5463625433003343978">Finding devices…</translation>
 <translation id="5463856536939868464">Menu containing hidden bookmarks</translation>
@@ -6615,7 +6622,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5510775624736435856">Get Image Descriptions from Google</translation>
 <translation id="5511379779384092781">Extra small</translation>
 <translation id="5511823366942919280">Are you sure that you want to set up this device as a "Shark"?</translation>
-<translation id="5512511240775436189">Sends more data to Google (for example, URLs, page content and more)</translation>
 <translation id="5512739112435045339">Free up space on your device. Then, try to download again</translation>
 <translation id="5513807280330619196">Calculator</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6642,7 +6648,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wants to</translation>
 <translation id="5533343601674003130">PDF service</translation>
 <translation id="5535769176698670170">Swap with top view</translation>
-<translation id="5537395135310061418">Protects you on the web with Google's best security</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539070192556911367">Can't reach Google</translation>
 <translation id="5541091577812545428">Password wasn't changed</translation>
@@ -8002,7 +8007,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6494483173119160146">The device encountered an unrecoverable error. Please reset your device (it will erase all user data) and try again.</translation>
 <translation id="6495266441917713704">Can't transfer Wi-Fi</translation>
 <translation id="6495453178162183932">Theme updated to Default Chrome</translation>
-<translation id="6496542321576111907">Provides strong security. You can choose to turn on additional features.</translation>
 <translation id="6496641546298525838">Your device</translation>
 <translation id="6497784818439587832">Change display size to make items on your screen smaller or larger</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
@@ -9864,6 +9868,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7769709635093101687">Keyboard shortcut to pause</translation>
 <translation id="7769748505895274502">Collapse recently closed</translation>
 <translation id="7770072242481632881">Side panel selector</translation>
+<translation id="7770247511810814330">Remove permission</translation>
 <translation id="7770612696274572992">Image copied from other device</translation>
 <translation id="7770827449915784217">Firmware is up to date</translation>
 <translation id="7771452384635174008">Layout</translation>
@@ -11406,7 +11411,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8808686172382650546">Cat</translation>
 <translation id="8809147117840417135">Light teal</translation>
 <translation id="8811862054141704416">Crostini microphone access</translation>
-<translation id="8811881249098640048">Slows some unfamiliar sites</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 password is saved only to this device. To use it on your other devices, save it in your Google Account. This will also clean up any duplicates.}other{{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}}</translation>
 <translation id="8813199641941291474">Control and reprogramming of MIDI devices blocked</translation>
 <translation id="8813698869395535039">Can't sign in to <ph name="USERNAME" /></translation>

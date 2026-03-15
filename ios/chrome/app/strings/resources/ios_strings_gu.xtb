@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">મોબાઇલ સાઇટની વિનંતી કરો</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. <ph name="USER_EMAIL" />. સેટિંગ ખોલે છે.</translation>
 <translation id="2371084566192454134">ટૅબ અને ટૅબના ગ્રૂપ</translation>
+<translation id="2371303771137626249">નવું</translation>
 <translation id="2381405137052800939">મૂળભૂત</translation>
 <translation id="2384692388811649784">છૂપા ટૅબ છુપાવો</translation>
 <translation id="2386793615875593361">1 પસંદ કર્યું છે</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">તમારા સિંક કરેલા બધા ડિવાઇસ પર ખુલ્લા અને તાજેતરમાં બંધ કરેલા બધા ટૅબને ઝડપથી શોધો.</translation>
 <translation id="3530767473765895035">આ ડિવાઇસ પરના એકાઉન્ટ મેનેજ કરો…</translation>
 <translation id="3533436815740441613">નવું ટૅબ</translation>
+<translation id="3534738261102690620">Geminiને પૂછો</translation>
 <translation id="3540141921715814660">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="3546122170015471515">Google.com પર Mapsના પ્રીવ્યૂ</translation>
 <translation id="3547356470684043247">મહત્ત્વપૂર્ણ નિર્ણય લેવામાં તમને સહાય મળે તે માટે, પ્રોડક્ટ, સેવાઓ કે અનુભવ સંબંધિત ગ્રાહકોના રિવ્યૂ વાંચો</translation>
@@ -1088,6 +1090,7 @@
 <translation id="4944543191714094452">પેજમાં શોધો…</translation>
 <translation id="4945756290001680296">પાસવર્ડના સેટિંગને ઍક્સેસ કરો</translation>
 <translation id="4949302115427722371">સેટિંગને મેનેજ કરો…</translation>
+<translation id="4952050521954075618">કૅમેરા રોલમાંના ફોટા તમારા બધા ડિવાઇસ પર સિંક થશે નહીં</translation>
 <translation id="4958444002117714549">સૂચિ વિસ્તૃત કરો</translation>
 <translation id="496392417432935267">અન્ય ક્યાંક ખોલેલું છે</translation>
 <translation id="4970724460420203313">તમારા મેનેજ કરેલા એકાઉન્ટ વડે Chromeનો ઉપયોગ કરવાથી તમને તમારી સંસ્થા સાથે સંબંધિત બ્રાઉઝિંગ (ટૅબ, ઇતિહાસ અને પાસવર્ડ સહિત)ને તમારા અન્ય બ્રાઉઝિંગથી અલગ રાખવામાં મદદ મળે છે</translation>
@@ -1287,6 +1290,7 @@
 <translation id="5647702255748985085">ગ્રૂપ છોડીએ?</translation>
 <translation id="5648166631817621825">છેલ્લા 7 દિવસ</translation>
 <translation id="5652623411397330904">તમે ટ્રૅક કરો તે પ્રોડક્ટ અહીં બતાવવામાં આવશે.</translation>
+<translation id="5653100054596780862">બધા ટૅબ</translation>
 <translation id="5656431592348714536">વધારેલું કૅલેન્ડર</translation>
 <translation id="5659593005791499971">ઇમેઇલ</translation>
 <translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> અને <ph name="GEMINI_APPS_PRIVACY" /> લાગુ. Geminiથી ભૂલો થઈ શકે છે, તેથી બે વાર ચેક કરો.</translation>
@@ -1752,6 +1756,7 @@
 <translation id="7300448350764260141">ઑનલાઇન જોખમો સામે સુરક્ષાનું વધારાનું લેયર ઉમેરો.</translation>
 <translation id="7311244614769792472">કોઈ પરિણામ મળ્યું નથી</translation>
 <translation id="7313347584264171202">તમને તમારી છૂપી ટૅબ અહીં મળશે</translation>
+<translation id="7322186060879266048">{count,plural, =1{તમારા કીબોર્ડ પર ઑટોમૅટિક રીતે ભરવા માટેનો {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર ઑટોમૅટિક રીતે ભરવા માટેનો {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર ઑટોમૅટિક રીતે ભરવા માટેના {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ટકા ડાઉનલોડ થઈ</translation>
 <translation id="7345061034321640811">આયાત કરવાની મંજૂરી નથી</translation>

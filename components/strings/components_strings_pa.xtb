@@ -754,6 +754,7 @@
 <translation id="2184405333245229118">{COUNT,plural, =1{1 ਪਤਾ}one{# ਪਤੇ}other{# ਪਤੇ}}</translation>
 <translation id="2188375229972301266">ਹੇਠਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>
 <translation id="218940509700321686">ਕੌਮੇ ਨਾਲ ਵੱਖ ਕੀਤੇ ਮੁੱਲ</translation>
+<translation id="2190094353033916816">ਇਸ ਨੀਤੀ ਵਿੱਚ ਮਸ਼ੀਨ ਅਤੇ ਵਰਤੋਂਕਾਰ ਪੱਧਰਾਂ 'ਤੇ ਵੱਖ-ਵੱਖ ਮੁੱਲ ਲਾਗੂ ਕੀਤੇ ਗਏ ਹਨ। ਨੀਤੀ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="2191980191135734720">ਆਮ ਤੌਰ 'ਤੇ ਆਪਣਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਵਰਤ ਕੇ, ਅਗਲੇ ਪੜਾਅ ਵਿੱਚ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ। ਤੁਸੀਂ <ph name="LINK_TEXT" /> ਵੀ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
@@ -3190,6 +3191,7 @@
 <translation id="6042308850641462728">ਹੋਰ</translation>
 <translation id="6043357981274314628">ਹੋ ਗਿਆ!</translation>
 <translation id="6045164183059402045">ਇੰਮਪੋਜ਼ਿਸ਼ਨ ਟੈਮਪਲੇਟ</translation>
+<translation id="6046026831939367176"><ph name="URL" /> ਤੁਹਾਡੇ ਅੰਦਾਜ਼ਨ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
 <translation id="6046892054959167494">ਖੋਜਣ ਲਈ <ph name="SEARCH_AGGREGATOR_KEYWORD" /> ਟਾਈਪ ਕਰੋ ਜਾਂ <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /> ਕਹੋ</translation>
 <translation id="6047927260846328439">ਇਹ ਸਮੱਗਰੀ ਸਾਫਟਵੇਅਰ ਸਥਾਪਤ ਕਰਨ ਜਾਂ ਨਿੱਜੀ ਜਾਣਕਾਰੀ ਦਾ ਖੁਲਾਸਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਨਾਲ ਚਾਲਬਾਜ਼ੀ ਕਰ ਸਕਦੀ ਹੈ। <ph name="BEGIN_LINK" />ਫਿਰ ਵੀ ਦਿਖਾਓ<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">B4 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -4987,6 +4989,7 @@
 <translation id="8870700989640064057">ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਪ੍ਰਿੰਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8871485335898060555">ਪ੍ਰਾਚੀਨ ਅਤੇ ਸੰਗ੍ਰਹਿਣਯੋਗ ਚੀਜ਼ਾਂ</translation>
 <translation id="8871553383647848643">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="887350038812854047">ਇਸ ਨੀਤੀ ਵਿੱਚ ਮਸ਼ੀਨ ਅਤੇ ਵਰਤੋਂਕਾਰ ਪੱਧਰਾਂ 'ਤੇ ਲਾਗੂ ਕੀਤਾ ਗਿਆ ਇੱਕੋ ਜਿਹਾ ਮੁੱਲ ਹੈ। ਨੀਤੀ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="8874790741333031443">ਕੁਝ ਸਮੇਂ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਆਗਿਆ ਦਿਓ, ਇਸਦਾ ਮਤਲਬ ਹੈ ਕਿ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਘਟ ਜਾਵੇਗੀ ਪਰ ਸਾਈਟ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰਨਗੀਆਂ।</translation>
 <translation id="8874824191258364635">ਕੋਈ ਵੈਧ ਕਾਰਡ ਨੰਬਰ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="8877780815363510165">ਮੱਛੀ ਫੜ੍ਹਨਾ</translation>

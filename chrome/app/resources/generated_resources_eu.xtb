@@ -439,6 +439,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Ezin da ireki fitxategia}other{Ezin dira ireki fitxategiak}}</translation>
 <translation id="1282311502488501110">Ez hasi saioa</translation>
 <translation id="1282436639288565079">Fitxa taldearen xehetasunak</translation>
+<translation id="1282577885428483870">Webguneak eta kontuak</translation>
 <translation id="1283126956823499975">Arazoren bat izan da gailua konfiguratzean</translation>
 <translation id="1284277788676816155">Ez eman datuak gordetzeko baimenik</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
@@ -1318,6 +1319,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1885066963699478692">Gidalerroak ezartzeko erabiltzen diren XML fitxategiak.</translation>
 <translation id="1885089541024391265">Google Calendar</translation>
 <translation id="1885106732301550621">Diskoko tokia</translation>
+<translation id="188537499764410817">Gemini-k zure izenean saioa has dezakeen webguneak hemen agertuko dira</translation>
 <translation id="1886996562706621347">Baimendu webguneei protokoloen kudeatzaile lehenetsi bihurtzeko baimena eskatzea (gomendatua)</translation>
 <translation id="1887210448491286312">Utzi fitxa <ph name="DEVICE_NAME" /> gailura igortzeari</translation>
 <translation id="1887442540531652736">Errore bat gertatu da saioa hastean</translation>
@@ -1655,7 +1657,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2114326799768592691">&amp;Kargatu markoa berriro</translation>
 <translation id="2114995631896158695">Ez da sartu SIM txartelik</translation>
 <translation id="2115808389282428160">Ez eman gailuko beste aplikazio eta zerbitzu batzuk erabiltzeko baimena webguneei</translation>
-<translation id="2116619964159595185">Webguneak Bluetooth bidezko gailuetara konektatu ohi dira kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-gailu bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
+<translation id="2116619964159595185">Webguneak Bluetooth bidezko gailuetara konektatu ohi dira kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-tresna bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="2117655453726830283">Hurrengo diapositiba</translation>
 <translation id="211803431539496924">Segurtasun-eguneratze hedatuak berretsi nahi dituzu?</translation>
 <translation id="2118594521750010466">Konpondu</translation>
@@ -1755,6 +1757,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2183570493397356669">Aurrera egiteko botoia desgaituta</translation>
 <translation id="2184272387334793084">Hasi saioa pasahitzak eta bestelako datuak gailu guztietan lortzeko</translation>
 <translation id="2184515124301515068">Utzi Chrome-k erabaki dezan zer webguneri baimenduko dion soinua erreproduzitzea (gomendatua)</translation>
+<translation id="2184754597051264978">Gemini-k ezingo du hasi saioa zure izenean <ph name="URL" /> helbidean</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Hasi elkarrizketa bat Gemini-rekin</translation>
 <translation id="2186711480981247270">Beste gailu batetik partekatutako orria</translation>
@@ -2137,7 +2140,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="244231003699905658">Helbideak ez du balio. Egiaztatu helbidea zuzena dela eta saiatu berriro.</translation>
 <translation id="2442916515643169563">Testuaren itzala</translation>
 <translation id="2443487764245141020">Gainera, litekeena da webguneek identifikatzaile baten bidez gailua ezagutu behar izatea</translation>
-<translation id="2444091518615234627">Datu gutxiago bidaltzen dizkio Google-ri (adibidez, URLen zatiak)</translation>
 <translation id="244475495405467108">Itxi ezkerreko fitxak</translation>
 <translation id="2444874983932528148">Jarraitu utzi zenuen tokitik erraz asko</translation>
 <translation id="2445081178310039857">Luzapenaren erroaren direktorioa behar da.</translation>
@@ -2416,6 +2418,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2628874386573004005">Hasi elkarrizketa bat Gemini-rekin</translation>
 <translation id="2629227353894235473">Garatu Android-erako aplikazioak</translation>
 <translation id="2629437048544561682">Garbitu Canvas</translation>
+<translation id="2630703150574465936">Webgune eta aplikazio hauetan automatikoki saioa hasteko baimena eman diozu Gemini-ri, zure kontuak erabilita</translation>
 <translation id="2631498379019108537">Erakutsi idazketa-aukerak apalean</translation>
 <translation id="2632176111713971407">Fitxa partekatuetan gora/behera egiteko eta zooma erabiltzeko eska dezakete webguneek</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" luzapena kendu nahi duzu?</translation>
@@ -2795,7 +2798,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2876556152483133018">Webgune-bilaketa</translation>
 <translation id="2877467134191447552">Zure gainerako kontuak ere gehi ditzakezu webgune eta aplikazioak atzitu ahal izateko.</translation>
 <translation id="2878889940310164513">Gehitu sare mugikorra…</translation>
-<translation id="288042212351694283">Atzitu Universal 2nd Factor gailuak</translation>
+<translation id="288042212351694283">Atzitu 2 faktoreko autentifikazio unibertsaleko gailuak</translation>
 <translation id="2881076733170862447">Luzapena sakatzen duzunean</translation>
 <translation id="2882301808122022326">Omaha protokoloaren erantzuna</translation>
 <translation id="2882943222317434580"><ph name="IDS_SHORT_PRODUCT_NAME" /> berrabiarazi eta berrezarri egingo da</translation>
@@ -3591,6 +3594,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3443744348829035122"><ph name="BRAND" /> zerbitzuak denbora-muga gainditu du</translation>
 <translation id="3443754338602062261">Jadanik badauzkazu kontu hauetarako pasahitzak <ph name="BRAND" /> zerbitzuan. Beheko pasahitzetako bat inportatzea aukeratzen baduzu, lehendik dagoena ordeztuko du.</translation>
 <translation id="344449859752187052">Hirugarrenen cookieak blokeatuta</translation>
+<translation id="3445140416168872040">Kendu baimena <ph name="URL" /> erabiltzaileari</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Zure erakundeak fitxategia blokeatu du kontuzko edukia edo eduki arriskutsua daukalako. Eskatu jabeari arazoa konpontzeko.</translation>
 <translation id="3445465968953598059">Aurpegi-keinuen bidez kontrolatzeko eginbidea</translation>
@@ -3841,6 +3845,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> aztertzen ari gara.</translation>
 <translation id="3615596877979647433">Tekla falta da. Sakatu teklatuko tekla bat fokuratuta dagoena pertsonalizatzeko</translation>
 <translation id="3616113530831147358">Audioa</translation>
+<translation id="3616658341000358527">Eman sarean zure izenean zereginak egiteko automatikoki saioa hasteko baimena Gemini-ri</translation>
 <translation id="3617062258679844578">Klik egiteko, sakatu ukipen-panela, zapaldu ordez</translation>
 <translation id="3617891479562106823">Atzeko planoak ez daude erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="3618647122592024084">Orain, <ph name="RECIPIENT_NAME" /> erabiltzaileak zure erabiltzaile-izena eta pasahitza erabil ditzake Google-ren Pasahitz-kudeatzailea darabilenean. Esan iezaiozu <ph name="WEBSITE" /> webgunera joateko eta saioa hasteko.</translation>
@@ -5791,6 +5796,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" /> da kontuaren kudeatzailea</translation>
 <translation id="4940845626435830013">Gorde diskoaren tamaina</translation>
 <translation id="4941246025622441835">Erabili gailu-eskaera hau gailua enpresak kudeatzeko erregistratzen duzunean:</translation>
+<translation id="4941391011436448776">Gemini-k zure izenean saioa has dezakeen webguneak</translation>
 <translation id="4941627891654116707">Letra-tamaina</translation>
 <translation id="4941963255146903244">Ikusi telefonoko argazkiak, multimedia-elementuak eta aplikazioak</translation>
 <translation id="494286511941020793">Proxy-konfigurazioaren laguntza</translation>
@@ -6517,6 +6523,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5460861858595506978">Inspirazioa</translation>
 <translation id="5461050611724244538">Gailuaren eta telefonoaren arteko konexioa eten egin da</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> kokapenaren aurkibidea</translation>
+<translation id="5463348003600590648">Desgaitu iradokizunak</translation>
 <translation id="5463450804024056231">Erregistratu <ph name="DEVICE_TYPE" />-ari buruzko mezu elektronikoak jasotzeko</translation>
 <translation id="5463625433003343978">Gailuak bilatzen…</translation>
 <translation id="5463856536939868464">Ezkutuko laster-markak dauzkan menua</translation>
@@ -6597,7 +6604,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5510775624736435856">Lortu Google-ren irudi-azalpenak</translation>
 <translation id="5511379779384092781">Oso-oso txikia</translation>
 <translation id="5511823366942919280">Ziur gailua "Shark" gailu gisa ezarri nahi duzula?</translation>
-<translation id="5512511240775436189">Datu gehiago bidaltzen dizkio Google-ri (adibidez, URLak, orrien edukia eta abar)</translation>
 <translation id="5512739112435045339">Egin tokia gailuan. Ondoren, deskargatu berriro fitxategia.</translation>
 <translation id="5513807280330619196">Kalkulagailua</translation>
 <translation id="5514315914873062345">Tabuladorea</translation>
@@ -6624,7 +6630,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> webguneak hau egin nahi du:</translation>
 <translation id="5533343601674003130">PDFetarako zerbitzua</translation>
 <translation id="5535769176698670170">Aldatu goiko ikuspegiarekin</translation>
-<translation id="5537395135310061418">Sarean babesten zaitu, Google-ren segurtasun-neurri onenekin</translation>
 <translation id="5537725057119320332">Igorri</translation>
 <translation id="5539070192556911367">Ezin da konektatu Google-ra</translation>
 <translation id="5541091577812545428">Pasahitza ez da aldatu</translation>
@@ -7981,7 +7986,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6494483173119160146">Gailuak leheneratu ezin den errore bat izan du. Berrezarri gailua (erabiltzaile-datu guztiak ezabatuko dira) eta saiatu berriro.</translation>
 <translation id="6495266441917713704">Ezin da transferitu wifia</translation>
 <translation id="6495453178162183932">Gaia eguneratu da, eta Chrome-ko gai lehenetsia ezarri</translation>
-<translation id="6496542321576111907">Segurtasun handia ematen du. Eginbide gehigarriak aktibatzea aukera dezakezu.</translation>
 <translation id="6496641546298525838">Zure gailua</translation>
 <translation id="6497784818439587832">Aldatu bistaratzeko tamaina pantailako elementuak handitu edo txikitzeko</translation>
 <translation id="6497789971060331894">Saguarekin gora eta behera alderantziz egiteko aukera</translation>
@@ -8663,7 +8667,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6960507406838246615">Linux eguneratu egin behar da</translation>
 <translation id="6960648667961844909">Ezin izan dira deskargatu hizketa-fitxategiak (<ph name="LANGUAGE" />). Geroago saiatuko da deskargatzen berriro. Hizketa Google-ra bidaltzen da prozesatzeko, deskarga amaitu arte.</translation>
 <translation id="696103774840402661"><ph name="DEVICE_TYPE" /> gailuan gordeta zeuden erabiltzaile guztien fitxategi eta gailuko datu guztiak betiko ezabatu dira.</translation>
-<translation id="6961327401577924850">Webguneek Bluetooth bidezko gailuak bilatu ohi dituzte, kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipena egiteko gailu bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
+<translation id="6961327401577924850">Webguneek Bluetooth bidezko gailuak bilatu ohi dituzte, kontsumo txikiko kokapen-adierazle bat, osasunaren edo fitnessaren jarraipen-tresna bat, edo bonbilla adimendun bat konfiguratzeko edo sinkronizatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="6963772203726867701">Ez da hauteman</translation>
 <translation id="6963872466817251924">Testu-kurtsorea nabarmentzeko eginbidea</translation>
 <translation id="6964239097707154771">gauza gehiago egiten laguntzen dizuten Chrome-rako gehigarriak dira</translation>
@@ -9841,6 +9845,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7769709635093101687">Pausatzeko lasterbidea</translation>
 <translation id="7769748505895274502">Tolestu berriki itxitakoak</translation>
 <translation id="7770072242481632881">Alboko paneleko hautatzailea</translation>
+<translation id="7770247511810814330">Kendu baimena</translation>
 <translation id="7770612696274572992">Beste gailu batetik kopiatu da irudia</translation>
 <translation id="7770827449915784217">Firmwarea eguneratuta dago</translation>
 <translation id="7771452384635174008">Diseinua</translation>
@@ -11383,7 +11388,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8808686172382650546">Katua</translation>
 <translation id="8809147117840417135">Berde urdinxka argia</translation>
 <translation id="8811862054141704416">Crostini-ren mikrofonorako sarbidea</translation>
-<translation id="8811881249098640048">Webgune ezezagun batzuk moteltzen ditu</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 pasahitz gailu honetan soilik gordeta dago. Beste gailuetan erabiltzeko, gorde ezazu Google-ko kontuan. Gainera, bikoiztuak garbituko dira.}other{{PASSWORD_COUNT} pasahitz gailu honetan soilik gordeta daude. Beste gailuetan erabiltzeko, gorde itzazu Google-ko kontuan. Gainera, bikoiztuak garbituko dira.}}</translation>
 <translation id="8813199641941291474">Blokeatu da MIDI gailuak kontrolatzeko eta berriro programatzeko aukera</translation>
 <translation id="8813698869395535039">Ezin da hasi saioa <ph name="USERNAME" /> kontuan</translation>

@@ -439,6 +439,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файлът не може да се отвори}other{Файловете не могат да се отворят}}</translation>
 <translation id="1282311502488501110">Без влизане в профила</translation>
 <translation id="1282436639288565079">Подробности за групата раздели</translation>
+<translation id="1282577885428483870">Сайтове и профили</translation>
 <translation id="1283126956823499975">Нещо се обърка при настройването на устройството</translation>
 <translation id="1284277788676816155">Забраняване на запазването на данни</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
@@ -1324,6 +1325,7 @@
 <translation id="1885066963699478692">XML файловете, чрез които се задават правилата.</translation>
 <translation id="1885089541024391265">Google Календар</translation>
 <translation id="1885106732301550621">Място на диска</translation>
+<translation id="188537499764410817">Тук ще се показват сайтовете, в които можете да влизате в профила си с помощта на Gemini</translation>
 <translation id="1886996562706621347">Разрешаване на питания от сайтове дали да са манипулаторите по подразбиране за протоколите (препоръчително)</translation>
 <translation id="1887210448491286312">Спиране на предаването на раздела към „<ph name="DEVICE_NAME" />“</translation>
 <translation id="1887442540531652736">Грешка при влизането</translation>
@@ -1762,6 +1764,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2183570493397356669">Бутонът „Напред“ е деактивиран</translation>
 <translation id="2184272387334793084">Влезте в профила си, за да имате достъп до своите пароли и др. на всичките си устройства</translation>
 <translation id="2184515124301515068">Нека Chrome избира кога сайтовете да могат да възпроизвеждат звук (препоръчително)</translation>
+<translation id="2184754597051264978">Вече няма да можете да влизате в(ъв) <ph name="URL" /> с помощта на Gemini</translation>
 <translation id="2186206192313702726">Google Обектив</translation>
 <translation id="2186539124645132614">Започване на нов разговор с Gemini</translation>
 <translation id="2186711480981247270">Страницата е споделена от друго устройство</translation>
@@ -2147,7 +2150,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="244231003699905658">Невалиден адрес. Моля, проверете адреса и опитайте отново.</translation>
 <translation id="2442916515643169563">Сянка на текста</translation>
 <translation id="2443487764245141020">Може да се наложи сайтовете да разпознават устройството ви и с помощта на идентификатор</translation>
-<translation id="2444091518615234627">Изпраща по-малко данни до Google (например части от URL адреси).</translation>
 <translation id="244475495405467108">Затваряне на разделите отляво</translation>
 <translation id="2444874983932528148">Лесно продължавайте оттам, откъдето сте прекъснали</translation>
 <translation id="2445081178310039857">Необходима е основна директория на разширението.</translation>
@@ -2426,6 +2428,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2628874386573004005">Започване на нов разговор с Gemini</translation>
 <translation id="2629227353894235473">Разработване на приложения за Android</translation>
 <translation id="2629437048544561682">Изчистване на платното</translation>
+<translation id="2630703150574465936">Разрешили сте на Gemini да ви помага автоматично да влизате в тези сайтове и приложения чрез профилите ви</translation>
 <translation id="2631498379019108537">Опциите за въвеждане да се показват в лавицата</translation>
 <translation id="2632176111713971407">Сайтовете могат да искат разрешение за превъртане и промяна на мащаба на споделените раздели</translation>
 <translation id="2633212996805280240">Да се премахне ли „<ph name="EXTENSION_NAME" />“?</translation>
@@ -3603,6 +3606,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3443744348829035122">Времето за изчакване на <ph name="BRAND" /> изтече</translation>
 <translation id="3443754338602062261">Вече има пароли за тези профили в(ъв) <ph name="BRAND" />. Ако решите да импортирате една от паролите по-долу, тя ще замени съществуващата.</translation>
 <translation id="344449859752187052">„Бисквитките“ на трети страни са блокирани</translation>
+<translation id="3445140416168872040">Премахване на разрешението за <ph name="URL" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344537926140058498">Организацията ви блокира този файл, защото в него има поверително или опасно съдържание. Помолете собственика му да отстрани проблема.</translation>
 <translation id="3445465968953598059">Контролиране посредством мимики</translation>
@@ -3853,6 +3857,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> се сканира.</translation>
 <translation id="3615596877979647433">Липсва клавиш. Натиснете клавиш от клавиатурата, за да персонализирате</translation>
 <translation id="3616113530831147358">Аудио</translation>
+<translation id="3616658341000358527">Разрешете на Gemini да ви помага автоматично да влизате в профила си, за да изпълнява задачи вместо вас в мрежата</translation>
 <translation id="3617062258679844578">За да кликнете, докоснете сензорния панел, вместо да го натиснете</translation>
 <translation id="3617891479562106823">Фоновете не са налице. Опитайте отново по-късно.</translation>
 <translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> вече може да използва потребителското име и паролата ви, когато ползва Google Мениджър на пароли. Кажете на члена на семейството да посети <ph name="WEBSITE" />, за да влезе в профила.</translation>
@@ -5805,6 +5810,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4940448324259979830">Този профил се управлява от <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Запазване на място на диска</translation>
 <translation id="4941246025622441835">Използване на заявката за устройството при записването му за корпоративно управление:</translation>
+<translation id="4941391011436448776">Сайтовете, в които Gemini може да ви помага да влизате в профила си</translation>
 <translation id="4941627891654116707">Размер на шрифта</translation>
 <translation id="4941963255146903244">Преглед на снимките, мултимедийните файлове и приложенията на телефона ви</translation>
 <translation id="494286511941020793">Помощ за конфигурация на прокси сървър</translation>
@@ -6532,6 +6538,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5460861858595506978">Вдъхновение</translation>
 <translation id="5461050611724244538">Връзката с телефона ви прекъсна</translation>
 <translation id="5463275305984126951">Индекс на <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Деактивиране на предложенията</translation>
 <translation id="5463450804024056231">Регистрация за имейли относно <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Търсят се устройства...</translation>
 <translation id="5463856536939868464">Менюто съдържа скрити отметки</translation>
@@ -6612,7 +6619,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5510775624736435856">Изтегляне от Google на описания за изображенията</translation>
 <translation id="5511379779384092781">Много нисък</translation>
 <translation id="5511823366942919280">Наистина ли искате да настроите това устройство като Shark?</translation>
-<translation id="5512511240775436189">Изпраща повече данни до Google (например URL адреси, съдържание на страници и др.).</translation>
 <translation id="5512739112435045339">Освободете място на устройството си и опитайте да изтеглите файла отново</translation>
 <translation id="5513807280330619196">Калкулатор</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6639,7 +6645,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> иска да</translation>
 <translation id="5533343601674003130">Услуга за PDF файлове</translation>
 <translation id="5535769176698670170">Размяна с изгледа отгоре</translation>
-<translation id="5537395135310061418">Защитава ви в мрежата с най-добрите мерки за сигурност на Google.</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5539070192556911367">Няма връзка с Google</translation>
 <translation id="5541091577812545428">Паролата не бе променена</translation>
@@ -8000,7 +8005,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6494483173119160146">Възникна непоправима грешка в устройството. Нулирайте го (всички потребителски данни ще бъдат изтрити) и опитайте отново.</translation>
 <translation id="6495266441917713704">Wi-Fi не може да се прехвърли</translation>
 <translation id="6495453178162183932">Темата е актуализирана до основната за Chrome</translation>
-<translation id="6496542321576111907">Осигурява надеждна защита. Можете да включите допълнителни функции.</translation>
 <translation id="6496641546298525838">Вашето устройство</translation>
 <translation id="6497784818439587832">С промяната на размера на елементите на екрана ги смалявате или увеличавате</translation>
 <translation id="6497789971060331894">Обратно превъртане с мишката</translation>
@@ -9862,6 +9866,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7769709635093101687">Клавишна комбинация за поставяне на пауза</translation>
 <translation id="7769748505895274502">Свиване на наскоро затворените</translation>
 <translation id="7770072242481632881">Инструмент за избор на елемент в страничния панел</translation>
+<translation id="7770247511810814330">Премахване на разрешението</translation>
 <translation id="7770612696274572992">Изображение, копирано от друго устройство</translation>
 <translation id="7770827449915784217">Фърмуерът е актуален</translation>
 <translation id="7771452384635174008">Ориентация</translation>
@@ -11404,7 +11409,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8808686172382650546">Котка</translation>
 <translation id="8809147117840417135">Светло синьо-зелено</translation>
 <translation id="8811862054141704416">Достъп на Crostini до микрофона</translation>
-<translation id="8811881249098640048">Забавя някои непознати сайтове.</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 парола е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google. Това действие също така ще изчисти всички дубликати.}other{{PASSWORD_COUNT} пароли са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google. Това действие също така ще изчисти всички дубликати.}}</translation>
 <translation id="8813199641941291474">Контролирането и препрограмирането на MIDI устройствата са забранени</translation>
 <translation id="8813698869395535039">Не мога да вляза в профила <ph name="USERNAME" /></translation>

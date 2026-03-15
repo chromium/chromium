@@ -439,6 +439,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Datei kann nicht geöffnet werden}other{Dateien können nicht geöffnet werden}}</translation>
 <translation id="1282311502488501110">Nicht anmelden</translation>
 <translation id="1282436639288565079">Details zur Tabgruppe</translation>
+<translation id="1282577885428483870">Websites und Konten</translation>
 <translation id="1283126956823499975">Bei der Einrichtung des Geräts ist ein Fehler aufgetreten</translation>
 <translation id="1284277788676816155">Speichern von Daten nicht genehmigen</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
@@ -1315,6 +1316,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1885066963699478692">XML-Dateien, die zum Festlegen der Richtlinien verwendet werden.</translation>
 <translation id="1885089541024391265">Google Kalender</translation>
 <translation id="1885106732301550621">Speicherplatz</translation>
+<translation id="188537499764410817">Hier werden Websites angezeigt, auf denen Gemini dich anmelden kann</translation>
 <translation id="1886996562706621347">Registrierung von Websites als Standard-Handler für Protokolle zulassen (empfohlen)</translation>
 <translation id="1887210448491286312">Streamen des Tabs an „<ph name="DEVICE_NAME" />“ beenden</translation>
 <translation id="1887442540531652736">Fehler bei der Anmeldung</translation>
@@ -1753,6 +1755,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2183570493397356669">Button „Weiter“ deaktiviert</translation>
 <translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="2184515124301515068">Chrome die Entscheidung überlassen, wann Audioinhalte auf Websites abgespielt werden (empfohlen)</translation>
+<translation id="2184754597051264978">Gemini kann dich dann nicht mehr auf <ph name="URL" /> anmelden</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Neuen Chat mit Gemini starten</translation>
 <translation id="2186711480981247270">Von einem anderen Gerät geteilte Seite</translation>
@@ -2135,7 +2138,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="244231003699905658">Ungültige Adresse. Prüfe die Adresse und versuche es noch einmal.</translation>
 <translation id="2442916515643169563">Textschatten</translation>
 <translation id="2443487764245141020">Websites müssen dein Gerät eventuell auch anhand einer Kennung identifizieren können</translation>
-<translation id="2444091518615234627">Sendet weniger Daten an Google (z. B. Teile von URLs)</translation>
 <translation id="244475495405467108">Tabs links schließen</translation>
 <translation id="2444874983932528148">Einfach dort weitermachen, wo du aufgehört hast</translation>
 <translation id="2445081178310039857">Stammverzeichnis der Erweiterung ist erforderlich.</translation>
@@ -2414,6 +2416,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2628874386573004005">Neuen Chat mit Gemini starten</translation>
 <translation id="2629227353894235473">Android-Apps entwickeln</translation>
 <translation id="2629437048544561682">Arbeitsbereich löschen</translation>
+<translation id="2630703150574465936">Du hast Gemini erlaubt, dich mit deinen Konten automatisch auf diesen Websites und in diesen Apps anzumelden</translation>
 <translation id="2631498379019108537">Eingabeoptionen in der Ablage anzeigen</translation>
 <translation id="2632176111713971407">Websites dürfen nachfragen, ob auf geteilten Tabs gescrollt und gezoomt werden darf</translation>
 <translation id="2633212996805280240">"<ph name="EXTENSION_NAME" />" entfernen?</translation>
@@ -3589,6 +3592,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3443744348829035122">Zeitüberschreitung für <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Du hast bereits Passwörter für diese Konten im <ph name="BRAND" />. Wenn du eines der Passwörter unten importierst, wird das vorhandene ersetzt.</translation>
 <translation id="344449859752187052">Drittanbieter-Cookies blockiert</translation>
+<translation id="3445140416168872040">Berechtigung für <ph name="URL" /> entfernen</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Deine Organisation hat diese Datei blockiert, weil sie sensible oder gefährliche Inhalte enthält. Bitte den Inhaber, das Problem zu beheben.</translation>
 <translation id="3445465968953598059">Steuerung durch Gesichtsbewegungen</translation>
@@ -3839,6 +3843,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> wird gegenwärtig gescannt</translation>
 <translation id="3615596877979647433">Keine Taste zugewiesen. Drücke zum Anpassen eine Taste auf der Tastatur.</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616658341000358527">Gemini kann dich automatisch anmelden, um Aufgaben im Web zu erledigen</translation>
 <translation id="3617062258679844578">Tippe zum Klicken auf das Touchpad, statt es zu drücken</translation>
 <translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuche es später noch einmal.</translation>
 <translation id="3618647122592024084"><ph name="RECIPIENT_NAME" /> kann jetzt mithilfe von Google Passwortmanager deinen Nutzernamen und dein Passwort verwenden. Bitte dieses Familienmitglied darum, sich auf <ph name="WEBSITE" /> anzumelden.</translation>
@@ -5789,6 +5794,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4940448324259979830">Dieses Konto wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
 <translation id="4940845626435830013">Speicherplatz reservieren</translation>
 <translation id="4941246025622441835">Diese Geräteanforderung beim Registrieren des Geräts für die Unternehmensverwaltung verwenden:</translation>
+<translation id="4941391011436448776">Websites, auf denen dich Gemini anmelden kann</translation>
 <translation id="4941627891654116707">Schriftgröße</translation>
 <translation id="4941963255146903244">Fotos, Medien und Apps von deinem Smartphone abrufen</translation>
 <translation id="494286511941020793">Proxy-Konfigurationshilfe</translation>
@@ -6515,6 +6521,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5460861858595506978">Zur Inspiration</translation>
 <translation id="5461050611724244538">Die Verbindung zu deinem Smartphone wurde unterbrochen</translation>
 <translation id="5463275305984126951">Index von <ph name="LOCATION" /></translation>
+<translation id="5463348003600590648">Vorschläge deaktivieren</translation>
 <translation id="5463450804024056231">Für <ph name="DEVICE_TYPE" />-E-Mails anmelden</translation>
 <translation id="5463625433003343978">Geräte werden gesucht…</translation>
 <translation id="5463856536939868464">Menü enthält ausgeblendete Lesezeichen</translation>
@@ -6595,7 +6602,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5510775624736435856">Bildbeschreibungen von Google verwenden</translation>
 <translation id="5511379779384092781">Sehr klein</translation>
 <translation id="5511823366942919280">Möchtest du dieses Gerät wirklich als „Shark“ einrichten?</translation>
-<translation id="5512511240775436189">Sendet mehr Daten an Google (z. B. URLs, Seiteninhalte)</translation>
 <translation id="5512739112435045339">Gib Speicherplatz auf dem Gerät frei. Versuch dann, die Datei noch einmal herunterzuladen.</translation>
 <translation id="5513807280330619196">Rechner</translation>
 <translation id="5514315914873062345">Tabulatortaste</translation>
@@ -6622,7 +6628,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> möchte:</translation>
 <translation id="5533343601674003130">PDF-Dienst</translation>
 <translation id="5535769176698670170">Mit oberer Ansicht tauschen</translation>
-<translation id="5537395135310061418">Schützt dich im Web mit den besten Sicherheitsfunktionen von Google</translation>
 <translation id="5537725057119320332">Streamen</translation>
 <translation id="5539070192556911367">Keine Verbindung mit Google möglich</translation>
 <translation id="5541091577812545428">Passwort wurde nicht geändert</translation>
@@ -7979,7 +7984,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6494483173119160146">Auf dem Gerät ist ein nicht behebbarer Fehler aufgetreten. Bitte setze dein Gerät zurück (dadurch werden alle Nutzerdaten gelöscht) und versuch es noch einmal.</translation>
 <translation id="6495266441917713704">WLAN-Übertragung nicht möglich</translation>
 <translation id="6495453178162183932">Design wurde auf Chrome-Standard zurückgesetzt</translation>
-<translation id="6496542321576111907">Bietet umfassenden Schutz; du kannst zusätzliche Funktionen aktivieren.</translation>
 <translation id="6496641546298525838">Mein Gerät</translation>
 <translation id="6497784818439587832">Du kannst die Bildschirmgröße ändern, um Elemente auf dem Bildschirm zu verkleinern oder zu vergrößern</translation>
 <translation id="6497789971060331894">Mausrad-Scrollrichtung umkehren</translation>
@@ -9841,6 +9845,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7769709635093101687">Tastenkombination zum Pausieren</translation>
 <translation id="7769748505895274502">Kürzlich geschlossene Tabs minimieren</translation>
 <translation id="7770072242481632881">Seitenleistenauswahl</translation>
+<translation id="7770247511810814330">Berechtigung entfernen</translation>
 <translation id="7770612696274572992">Bild wurde von einem anderen Gerät kopiert</translation>
 <translation id="7770827449915784217">Die Firmware ist auf dem neuesten Stand</translation>
 <translation id="7771452384635174008">Ausrichtung</translation>
@@ -11383,7 +11388,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8808686172382650546">Katze</translation>
 <translation id="8809147117840417135">Helles Blaugrün</translation>
 <translation id="8811862054141704416">Crostini-Mikrofonzugriff</translation>
-<translation id="8811881249098640048">Verlangsamt einige unbekannte Websites</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}other{{PASSWORD_COUNT} Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto. Dadurch werden auch alle Duplikate entfernt.}}</translation>
 <translation id="8813199641941291474">MIDI-Geräte dürfen nicht gesteuert und neu programmiert werden</translation>
 <translation id="8813698869395535039">Anmeldung unter <ph name="USERNAME" /> nicht möglich</translation>

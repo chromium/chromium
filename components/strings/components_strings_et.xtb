@@ -754,6 +754,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2184405333245229118">{COUNT,plural, =1{1 aadress}other{# aadressi}}</translation>
 <translation id="2188375229972301266">Mitu auku all</translation>
 <translation id="218940509700321686">Komaeraldusega väärtused</translation>
+<translation id="2190094353033916816">Sellel reeglil on seadme ja kasutaja tasemel erinevad väärtused. Reegel toimib eelduspäraselt.</translation>
 <translation id="2191980191135734720">Järgmises etapis avage ekraani lukust (tavaliselt sõrmejälje abil). Võite ka <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2198183835992354675">Known Traveler Number</translation>
@@ -3193,6 +3194,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6042308850641462728">Rohkem</translation>
 <translation id="6043357981274314628">Valmis!</translation>
 <translation id="6045164183059402045">Kehtestamise mall</translation>
+<translation id="6046026831939367176"><ph name="URL" /> soovib kasutada teie ligikaudset asukohta.</translation>
 <translation id="6046892054959167494">Sisestage <ph name="SEARCH_AGGREGATOR_KEYWORD" />, et otsida või küsida otsingumootorist <ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">See sisu võib meelitada teid installima tarkvara või avaldama isiklikke andmeid. <ph name="BEGIN_LINK" />Kuva ikkagi<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Ümbrik B4</translation>
@@ -4992,6 +4994,7 @@ Lisateave:
 <translation id="8870700989640064057">Kas printida konfidentsiaalne fail?</translation>
 <translation id="8871485335898060555">Antiik- ja kollektsioneeritavad esemed</translation>
 <translation id="8871553383647848643">Kohandage oma brauseri ilmet</translation>
+<translation id="887350038812854047">Sellel reeglil on seadme ja kasutaja tasemel sama väärtus. Reegel toimib eelduspäraselt.</translation>
 <translation id="8874790741333031443">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada. See vähendab sirvimiskaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega oodatud moel.</translation>
 <translation id="8874824191258364635">Sisestaeg kehtiv kaardinumber</translation>
 <translation id="8877780815363510165">Kalapüük</translation>

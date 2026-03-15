@@ -754,6 +754,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2184405333245229118">{COUNT,plural, =1{1 alamat}other{# alamat}}</translation>
 <translation id="2188375229972301266">Berbilang tebukan bawah</translation>
 <translation id="218940509700321686">Nilai Dipisahkan Koma</translation>
+<translation id="2190094353033916816">Dasar ini menggunakan nilai yang berbeza yang digunakan pada peringkat mesin dan pengguna. Dasar ini berfungsi seperti yang sepatutnya.</translation>
 <translation id="2191980191135734720">Buka kunci skrin anda dalam langkah seterusnya, lazimnya menggunakan cap jari anda. Anda juga boleh <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2198183835992354675">Nombor Pengembara Yang Diketahui</translation>
@@ -3194,6 +3195,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6042308850641462728">Lagi</translation>
 <translation id="6043357981274314628">Selesai!</translation>
 <translation id="6045164183059402045">Templat pengenaan</translation>
+<translation id="6046026831939367176"><ph name="URL" /> mahu menggunakan lokasi anggaran anda</translation>
 <translation id="6046892054959167494">Taip <ph name="SEARCH_AGGREGATOR_KEYWORD" /> untuk membuat carian atau tanya<ph name="SEARCH_AGGREGATOR_SHORT_NAME" /></translation>
 <translation id="6047927260846328439">Kandungan ini mungkin menggunakan tipu muslihat supaya anda memasang perisian atau mendedahkan maklumat peribadi. <ph name="BEGIN_LINK" />Tunjukkan juga<ph name="END_LINK" /></translation>
 <translation id="6049056807983403918">Sampul B4</translation>
@@ -4994,6 +4996,7 @@ Butiran tambahan:
 <translation id="8870700989640064057">Cetak kandungan fail sulit?</translation>
 <translation id="8871485335898060555">Barang Antik &amp; Koleksi</translation>
 <translation id="8871553383647848643">Sesuaikan rupa penyemak imbas anda</translation>
+<translation id="887350038812854047">Dasar ini menggunakan nilai yang sama yang digunakan pada peringkat mesin dan pengguna. Dasar ini berfungsi seperti yang sepatutnya.</translation>
 <translation id="8874790741333031443">Cuba berikan kebenaran sementara untuk kuki pihak ketiga yang boleh mengurangkan perlindungan penyemakan imbas tetapi ciri laman lebih berkemungkinan untuk berfungsi seperti yang dijangka.</translation>
 <translation id="8874824191258364635">Masukkan nombor kad yang sah</translation>
 <translation id="8877780815363510165">Memancing</translation>

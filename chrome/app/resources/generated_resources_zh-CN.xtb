@@ -439,6 +439,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{无法打开文件}other{无法打开文件}}</translation>
 <translation id="1282311502488501110">不登录</translation>
 <translation id="1282436639288565079">标签页分组详情</translation>
+<translation id="1282577885428483870">网站和账号</translation>
 <translation id="1283126956823499975">设置设备时出了点问题</translation>
 <translation id="1284277788676816155">不允许保存数据</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
@@ -1311,6 +1312,7 @@
 <translation id="1885066963699478692">正被用来设置政策的 XML 文件。</translation>
 <translation id="1885089541024391265">Google 日历</translation>
 <translation id="1885106732301550621">磁盘空间</translation>
+<translation id="188537499764410817">Gemini 可以为您自动登录的网站将显示在此处</translation>
 <translation id="1886996562706621347">允许网站要求成为协议的默认处理程序（推荐）</translation>
 <translation id="1887210448491286312">停止将标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1887442540531652736">登录错误</translation>
@@ -1749,6 +1751,7 @@
 <translation id="2183570493397356669">已停用“继续”按钮</translation>
 <translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
+<translation id="2184754597051264978">Gemini 将无法再为您自动登录 <ph name="URL" /></translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
 <translation id="2186539124645132614">发起与 Gemini 的新对话</translation>
 <translation id="2186711480981247270">收到了另一设备分享的页面</translation>
@@ -2131,7 +2134,6 @@
 <translation id="244231003699905658">地址无效。请检查该地址，然后重试。</translation>
 <translation id="2442916515643169563">文字阴影</translation>
 <translation id="2443487764245141020">网站可能还需要使用标识符来识别您的设备</translation>
-<translation id="2444091518615234627">向 Google 发送更少数据（例如网址的部分内容）</translation>
 <translation id="244475495405467108">关闭左侧标签页</translation>
 <translation id="2444874983932528148">无缝延续浏览体验</translation>
 <translation id="2445081178310039857">必须指定扩展程序根目录。</translation>
@@ -2409,6 +2411,7 @@
 <translation id="2628874386573004005">发起与 Gemini 的新对话</translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
 <translation id="2629437048544561682">清除画布</translation>
+<translation id="2630703150574465936">您已允许 Gemini 使用您的账号自动登录这些网站和应用</translation>
 <translation id="2631498379019108537">在任务栏中显示输入法选项</translation>
 <translation id="2632176111713971407">网站可以请求滚动和缩放分享的标签页</translation>
 <translation id="2633212996805280240">要删除“<ph name="EXTENSION_NAME" />”吗？</translation>
@@ -3584,6 +3587,7 @@
 <translation id="3443744348829035122"><ph name="BRAND" />已超时</translation>
 <translation id="3443754338602062261">您的<ph name="BRAND" />中已有这些账号的密码。如果您选择导入以下某个密码，导入的密码会替换现有密码。</translation>
 <translation id="344449859752187052">已阻止第三方 Cookie</translation>
+<translation id="3445140416168872040">移除登录 <ph name="URL" /> 的权限</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="344537926140058498">贵组织屏蔽了此文件，因为它包含敏感内容或危险内容。请让此文件的所有者解决这一问题。</translation>
 <translation id="3445465968953598059">面部控制</translation>
@@ -3834,6 +3838,7 @@
 <translation id="3615579745882581859">正在扫描“<ph name="FILE_NAME" />”。</translation>
 <translation id="3615596877979647433">缺少按键。按一个键盘按键即可自定义</translation>
 <translation id="3616113530831147358">音频</translation>
+<translation id="3616658341000358527">让 Gemini 自动为您登录，轻松完成网络任务</translation>
 <translation id="3617062258679844578">如要执行点击操作，请点按（而非按）触控板</translation>
 <translation id="3617891479562106823">背景不可用。请稍后重试。</translation>
 <translation id="3618647122592024084">现在，如果<ph name="RECIPIENT_NAME" />使用 Google 密码管理工具，那么对方将可以使用您的用户名和密码。您可以请对方前往 <ph name="WEBSITE" /> 进行登录。</translation>
@@ -5783,6 +5788,7 @@
 <translation id="4940448324259979830">这个账号由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="4940845626435830013">预留磁盘空间大小</translation>
 <translation id="4941246025622441835">将设备登记到企业管理目录下时使用此设备前提条件：</translation>
+<translation id="4941391011436448776">Gemini 可以为您自动登录的网站</translation>
 <translation id="4941627891654116707">字号</translation>
 <translation id="4941963255146903244">查看您手机上的照片、媒体内容和应用</translation>
 <translation id="494286511941020793">代理配置帮助</translation>
@@ -6509,6 +6515,7 @@
 <translation id="5460861858595506978">灵感示例</translation>
 <translation id="5461050611724244538">与您手机的连接中断了</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
+<translation id="5463348003600590648">停用建议功能</translation>
 <translation id="5463450804024056231">注册接收 <ph name="DEVICE_TYPE" /> 电子邮件</translation>
 <translation id="5463625433003343978">正在查找设备…</translation>
 <translation id="5463856536939868464">包含隐藏书签的菜单</translation>
@@ -6589,7 +6596,6 @@
 <translation id="5510775624736435856">从 Google 获取图片说明</translation>
 <translation id="5511379779384092781">特小</translation>
 <translation id="5511823366942919280">确定要将此设备设为“Shark”吗？</translation>
-<translation id="5512511240775436189">向 Google 发送更多数据（例如网址、网页内容等）</translation>
 <translation id="5512739112435045339">请先在您的设备上释放空间，再尝试重新下载</translation>
 <translation id="5513807280330619196">计算器</translation>
 <translation id="5514315914873062345">Tab 键</translation>
@@ -6616,7 +6622,6 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> 想要</translation>
 <translation id="5533343601674003130">PDF 服务</translation>
 <translation id="5535769176698670170">与顶部视图交换</translation>
-<translation id="5537395135310061418">利用 Google 最强大的安全机制保护您在网络上的安全</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539070192556911367">无法连接到 Google</translation>
 <translation id="5541091577812545428">密码未更改</translation>
@@ -7973,7 +7978,6 @@
 <translation id="6494483173119160146">设备遇到了不可恢复的错误。请重置设备（此操作将清空所有用户数据），然后重试。</translation>
 <translation id="6495266441917713704">无法迁移 Wi-Fi</translation>
 <translation id="6495453178162183932">主题已更新为默认 Chrome 主题</translation>
-<translation id="6496542321576111907">提供强大的安全保障。您可以选择开启更多功能。</translation>
 <translation id="6496641546298525838">您的设备</translation>
 <translation id="6497784818439587832">更改显示大小以缩小或放大屏幕上的内容</translation>
 <translation id="6497789971060331894">鼠标反向滚动</translation>
@@ -9835,6 +9839,7 @@
 <translation id="7769709635093101687">用于暂停的键盘快捷键</translation>
 <translation id="7769748505895274502">收起“最近关闭的标签页”部分</translation>
 <translation id="7770072242481632881">侧边栏选择器</translation>
+<translation id="7770247511810814330">移除权限</translation>
 <translation id="7770612696274572992">从其他设备复制的图片</translation>
 <translation id="7770827449915784217">固件已是最新版本</translation>
 <translation id="7771452384635174008">布局</translation>
@@ -11377,7 +11382,6 @@
 <translation id="8808686172382650546">猫</translation>
 <translation id="8809147117840417135">浅蓝绿色</translation>
 <translation id="8811862054141704416">Crostini 麦克风使用权限</translation>
-<translation id="8811881249098640048">降低部分陌生网站的加载速度</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{有 1 个密码只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {PASSWORD_COUNT} 个密码只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="8813199641941291474">已被禁止对 MIDI 设备进行控制和重新编程</translation>
 <translation id="8813698869395535039">无法登录 <ph name="USERNAME" /></translation>

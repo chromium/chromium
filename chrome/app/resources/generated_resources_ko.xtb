@@ -439,6 +439,7 @@
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{파일을 열 수 없음}other{파일을 열 수 없음}}</translation>
 <translation id="1282311502488501110">로그인 안함</translation>
 <translation id="1282436639288565079">탭 그룹 세부정보</translation>
+<translation id="1282577885428483870">사이트 및 계정</translation>
 <translation id="1283126956823499975">기기를 설정하는 중에 문제가 발생했습니다</translation>
 <translation id="1284277788676816155">데이터 저장 허용 안 함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -1328,6 +1329,7 @@
 <translation id="1885066963699478692">정책을 설정하는 데 사용되는 XML 파일입니다.</translation>
 <translation id="1885089541024391265">Google Calendar</translation>
 <translation id="1885106732301550621">디스크 공간</translation>
+<translation id="188537499764410817">Gemini가 자동으로 로그인할 수 있는 사이트가 여기에 표시됩니다.</translation>
 <translation id="1886996562706621347">사이트에서 프로토콜 기본 핸들러로 사용할지 여부를 묻도록 허용(권장)</translation>
 <translation id="1887210448491286312"><ph name="DEVICE_NAME" /> 기기로 탭 전송 중지</translation>
 <translation id="1887442540531652736">로그인 오류</translation>
@@ -1767,6 +1769,7 @@
 <translation id="2183570493397356669">계속 버튼 사용 중지됨</translation>
 <translation id="2184272387334793084">모든 기기에서 비밀번호 등을 가져오려면 Chrome에 로그인하세요.</translation>
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
+<translation id="2184754597051264978">Gemini가 더 이상 <ph name="URL" />에 자동으로 로그인할 수 없습니다.</translation>
 <translation id="2186206192313702726">Google 렌즈</translation>
 <translation id="2186539124645132614">Gemini와 새 채팅 시작하기</translation>
 <translation id="2186711480981247270">다른 기기에서 공유된 페이지</translation>
@@ -2153,7 +2156,6 @@
 <translation id="244231003699905658">잘못된 주소입니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="2442916515643169563">텍스트 음영</translation>
 <translation id="2443487764245141020">사이트에서 식별자를 사용하여 기기를 인식해야 할 수도 있습니다.</translation>
-<translation id="2444091518615234627">Google에 더 적은 데이터 전송(예: URL의 일부)</translation>
 <translation id="244475495405467108">좌측 탭 닫기</translation>
 <translation id="2444874983932528148">중단한 부분부터 간편하게 다시 시작하세요</translation>
 <translation id="2445081178310039857">확장 프로그램 루트 디렉터리가 필요합니다.</translation>
@@ -2432,6 +2434,7 @@
 <translation id="2628874386573004005">Gemini와 새 채팅 시작하기</translation>
 <translation id="2629227353894235473">Android 앱 개발</translation>
 <translation id="2629437048544561682">캔버스 지우기</translation>
+<translation id="2630703150574465936">Gemini가 내 계정을 사용하여 해당 사이트 및 앱에 자동으로 로그인하도록 허용했습니다.</translation>
 <translation id="2631498379019108537">앱 표시줄에 입력 옵션 표시</translation>
 <translation id="2632176111713971407">사이트에서 공유한 탭의 스크롤 및 확대/축소를 요청할 수 있음</translation>
 <translation id="2633212996805280240">'<ph name="EXTENSION_NAME" />'을(를) 삭제하시겠습니까?</translation>
@@ -3609,6 +3612,7 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> 시간 초과됨</translation>
 <translation id="3443754338602062261"><ph name="BRAND" />에 이미 이 계정의 비밀번호가 있습니다. 아래 비밀번호 중 하나를 가져오면 기존 비밀번호가 대체됩니다.</translation>
 <translation id="344449859752187052">서드 파티 쿠키 차단됨</translation>
+<translation id="3445140416168872040"><ph name="URL" />의 권한 삭제</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="344537926140058498">파일에 민감하거나 위험한 콘텐츠가 포함되어 있기 때문에 조직에서 파일을 차단했습니다. 소유자에게 수정을 요청하세요.</translation>
 <translation id="3445465968953598059">얼굴 제어</translation>
@@ -3859,6 +3863,7 @@
 <translation id="3615579745882581859"><ph name="FILE_NAME" />을(를) 스캔하는 중입니다.</translation>
 <translation id="3615596877979647433">키가 누락되었습니다. 키보드 키를 눌러 맞춤설정하세요.</translation>
 <translation id="3616113530831147358">오디오</translation>
+<translation id="3616658341000358527">Gemini가 자동으로 로그인하여 웹에서 작업을 완료하도록 허용합니다.</translation>
 <translation id="3617062258679844578">클릭하려면 터치패드를 누르는 대신 탭하세요.</translation>
 <translation id="3617891479562106823">배경을 사용할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3618647122592024084">이제 <ph name="RECIPIENT_NAME" />님이 Google 비밀번호 관리자를 사용할 때 내 사용자 이름과 비밀번호를 사용할 수 있습니다. <ph name="WEBSITE" /> 페이지로 이동하여 로그인하도록 안내하세요.</translation>
@@ -5809,6 +5814,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4940448324259979830"><ph name="PROFILE_NAME" />에서 관리하는 계정입니다</translation>
 <translation id="4940845626435830013">디스크 용량 예약</translation>
 <translation id="4941246025622441835">다음과 같이 기기를 엔터프라이즈 관리용으로 등록할 때 이 기기 요청을 사용합니다.</translation>
+<translation id="4941391011436448776">Gemini가 자동으로 로그인할 수 있는 사이트</translation>
 <translation id="4941627891654116707">글꼴 크기</translation>
 <translation id="4941963255146903244">휴대전화의 사진, 미디어, 앱을 봅니다.</translation>
 <translation id="494286511941020793">프록시 설정 도움말</translation>
@@ -6536,6 +6542,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5460861858595506978">영감</translation>
 <translation id="5461050611724244538">휴대전화와 연결 끊김</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" />의 색인</translation>
+<translation id="5463348003600590648">제안 사용 중지</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> 이메일 가입</translation>
 <translation id="5463625433003343978">기기를 찾는 중...</translation>
 <translation id="5463856536939868464">숨은 북마크를 포함하는 메뉴</translation>
@@ -6616,7 +6623,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5510775624736435856">Google에서 이미지 설명 가져오기</translation>
 <translation id="5511379779384092781">아주 작게</translation>
 <translation id="5511823366942919280">이 기기를 'Shark'로 설정하시겠습니까?</translation>
-<translation id="5512511240775436189">Google에 더 많은 데이터 전송(예: URL, 페이지 콘텐츠 등)</translation>
 <translation id="5512739112435045339">기기에서 여유 공간을 확보한 다음 다시 다운로드해 보세요</translation>
 <translation id="5513807280330619196">계산기</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6643,7 +6649,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />에서 다음 권한을 요청합니다.</translation>
 <translation id="5533343601674003130">PDF 서비스</translation>
 <translation id="5535769176698670170">상단 뷰와 바꾸기</translation>
-<translation id="5537395135310061418">Google 최고의 보안 기능으로 웹에서 사용자 보호</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="5539070192556911367">Google에 연결할 수 없음</translation>
 <translation id="5541091577812545428">비밀번호가 변경되지 않았습니다.</translation>
@@ -8003,7 +8008,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6494483173119160146">기기에 복구 불가 오류가 발생했습니다. 기기를 재설정하고(모든 사용자 데이터가 삭제됨) 다시 시도하세요.</translation>
 <translation id="6495266441917713704">Wi-Fi 전송 불가</translation>
 <translation id="6495453178162183932">테마가 기본 Chrome으로 업데이트됨</translation>
-<translation id="6496542321576111907">강력한 보안을 제공합니다. 추가 기능을 사용 설정하도록 선택할 수 있습니다.</translation>
 <translation id="6496641546298525838">내 기기</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
@@ -9864,6 +9868,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7769709635093101687">일시중지 단축키</translation>
 <translation id="7769748505895274502">최근에 닫은 탭 접기</translation>
 <translation id="7770072242481632881">측면 패널 선택기</translation>
+<translation id="7770247511810814330">권한 삭제</translation>
 <translation id="7770612696274572992">다른 기기에서 이미지가 복사됨</translation>
 <translation id="7770827449915784217">펌웨어가 최신 버전입니다.</translation>
 <translation id="7771452384635174008">레이아웃</translation>
@@ -11407,7 +11412,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8808686172382650546">고양이</translation>
 <translation id="8809147117840417135">연한 청록색</translation>
 <translation id="8811862054141704416">Crostini 마이크 액세스</translation>
-<translation id="8811881249098640048">알려지지 않은 일부 사이트의 속도를 제한</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}other{비밀번호 {PASSWORD_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}}</translation>
 <translation id="8813199641941291474">MIDI 기기의 제어 및 재프로그래밍 차단됨</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />에 로그인할 수 없음</translation>
