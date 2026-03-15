@@ -30,18 +30,12 @@ const char* ProtocolHandlerNavigationThrottle::GetNameForLogging() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ProtocolHandlerNavigationThrottle::WillStartRequest() {
-  if (!protocol_handler_registry_) {
-    return CANCEL;
-  }
-  return RequestPermissionForHandler();
+  return ThrottleNavigation();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 ProtocolHandlerNavigationThrottle::WillRedirectRequest() {
-  if (!protocol_handler_registry_) {
-    return CANCEL;
-  }
-  return RequestPermissionForHandler();
+  return ThrottleNavigation();
 }
 
 // static
@@ -50,15 +44,12 @@ void ProtocolHandlerNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   const GURL& url = handle.GetURL();
-  // TODO(crbug.com/40482153): We should use scheme_piece instead, which would
-  // imply adapting the ProtocolHandlerRegistry code to use std::string_view.
-  if (!protocol_handler_registry ||
-      !protocol_handler_registry->IsHandledProtocol(url.scheme()) ||
-      protocol_handler_registry->IsProtocolHandlerConfirmed(url.scheme())) {
-    return;
+  if (protocol_handler_registry &&
+      protocol_handler_registry->ProtocolHandlerNeedsConfirmation(
+          url.scheme())) {
+    registry.AddThrottle(std::make_unique<ProtocolHandlerNavigationThrottle>(
+        registry, *protocol_handler_registry));
   }
-  registry.AddThrottle(std::make_unique<ProtocolHandlerNavigationThrottle>(
-      registry, *protocol_handler_registry));
 }
 
 // static
@@ -69,13 +60,21 @@ ProtocolHandlerNavigationThrottle::GetDialogLaunchCallbackForTesting() {
 }
 
 content::NavigationThrottle::ThrottleCheckResult
-ProtocolHandlerNavigationThrottle::RequestPermissionForHandler() {
-  const GURL& url = navigation_handle()->GetURL();
-  if (!protocol_handler_registry_->IsHandledProtocol(url.scheme()) ||
-      protocol_handler_registry_->IsProtocolHandlerConfirmed(url.scheme())) {
-    return PROCEED;
+ProtocolHandlerNavigationThrottle::ThrottleNavigation() {
+  if (!protocol_handler_registry_) {
+    return CANCEL;
   }
+  const GURL& url = navigation_handle()->GetURL();
+  if (protocol_handler_registry_->ProtocolHandlerNeedsConfirmation(
+          url.scheme())) {
+    RequestPermissionForHandler();
+    return DEFER;
+  }
+  return PROCEED;
+}
 
+void ProtocolHandlerNavigationThrottle::RequestPermissionForHandler() {
+  const GURL& url = navigation_handle()->GetURL();
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   ProtocolHandler handler =
       protocol_handler_registry_->GetHandlerFor(url.scheme());
@@ -116,8 +115,6 @@ ProtocolHandlerNavigationThrottle::RequestPermissionForHandler() {
   // runner is more convenient.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(launch_callback)));
-
-  return DEFER;
 }
 
 void ProtocolHandlerNavigationThrottle::OnProtocolHandlerPermissionGranted(

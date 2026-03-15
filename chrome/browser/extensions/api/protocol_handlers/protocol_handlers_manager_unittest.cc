@@ -63,7 +63,7 @@ TEST_F(ProtocolHandlersManagerServiceTest, PRE_ProtocolHandlerSanityCheck) {
   const auto* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
   DCHECK(registry);
-  ASSERT_FALSE(registry->IsHandledProtocol("ipfs"));
+  ASSERT_FALSE(registry->HasDefaultHandler("ipfs"));
 }
 
 TEST_F(ProtocolHandlersManagerServiceTest, ProtocolHandlerSanityCheck) {
@@ -74,7 +74,7 @@ TEST_F(ProtocolHandlersManagerServiceTest, ProtocolHandlerSanityCheck) {
   const auto* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(profile());
   DCHECK(registry);
-  ASSERT_TRUE(registry->IsHandledProtocol("ipfs"));
+  ASSERT_TRUE(registry->HasDefaultHandler("ipfs"));
 }
 
 }  // namespace extensions

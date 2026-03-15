@@ -254,9 +254,9 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest, UpdateExtension) {
   UpdateExtension(extension->id(), crx_v2_path, /*expected_change=*/0);
 
   // Check the registry after the update.
-  ASSERT_FALSE(registry->IsHandledProtocol(url1.GetScheme()));
-  ASSERT_FALSE(registry->IsHandledProtocol(url2.GetScheme()));
-  ASSERT_TRUE(registry->IsHandledProtocol(url3.GetScheme()));
+  ASSERT_FALSE(registry->HasDefaultHandler(url1.GetScheme()));
+  ASSERT_FALSE(registry->HasDefaultHandler(url2.GetScheme()));
+  ASSERT_TRUE(registry->HasDefaultHandler(url3.GetScheme()));
 
   // Test the old handlers are not used.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
@@ -367,8 +367,8 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   // Web API, other installed extensions still expect their handlers to take
   // over when the default one has been removed.
   registry->RemoveHandler(handler);
-  ASSERT_FALSE(registry->IsHandledProtocol(kScheme1));
-  ASSERT_TRUE(registry->IsHandledProtocol(kScheme2));
+  ASSERT_FALSE(registry->HasDefaultHandler(kScheme1));
+  ASSERT_TRUE(registry->HasDefaultHandler(kScheme2));
 }
 
 // Test the conflict resolution between 2 extensions registering different
@@ -475,8 +475,8 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlersManagerBrowserTest,
   // Web API, other installed extensions still expect their handlers to take
   // over when the default one has been removed.
   registry->RemoveHandler(extAPI_handler2);
-  ASSERT_FALSE(registry->IsHandledProtocol(kScheme1));
-  ASSERT_TRUE(registry->IsHandledProtocol(kScheme2));
+  ASSERT_FALSE(registry->HasDefaultHandler(kScheme1));
+  ASSERT_TRUE(registry->HasDefaultHandler(kScheme2));
 }
 
 }  // namespace extensions

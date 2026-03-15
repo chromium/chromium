@@ -56,8 +56,8 @@ class ProtocolHandlerNavigationThrottle : public content::NavigationThrottle {
       HandlerPermissionDeniedCallback denied_callback) const {}
 
  private:
-  content::NavigationThrottle::ThrottleCheckResult
-  RequestPermissionForHandler();
+  content::NavigationThrottle::ThrottleCheckResult ThrottleNavigation();
+  void RequestPermissionForHandler();
   void OnProtocolHandlerPermissionGranted(const GURL& target_url, bool save);
   void OnProtocolHandlerPermissionDenied();
 

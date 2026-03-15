@@ -417,9 +417,20 @@ void ProtocolHandlerRegistry::RemoveIgnoredHandler(
     NotifyChanged();
 }
 
-bool ProtocolHandlerRegistry::IsHandledProtocol(std::string_view scheme) const {
+bool ProtocolHandlerRegistry::HasDefaultHandler(std::string_view scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return enabled_ && !GetHandlerFor(scheme).IsEmpty();
+}
+
+bool ProtocolHandlerRegistry::IsHandledProtocol(std::string_view scheme) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!enabled_) {
+    return false;
+  }
+  ProtocolHandler handler = GetHandlerFor(scheme);
+  DCHECK(handler.IsEmpty() || handler.is_confirmed() ||
+         handler.IsExtensionHandler());
+  return !handler.IsEmpty() && handler.is_confirmed();
 }
 
 void ProtocolHandlerRegistry::ConfirmProtocolHandler(std::string_view scheme,
@@ -442,11 +453,19 @@ void ProtocolHandlerRegistry::ConfirmProtocolHandler(std::string_view scheme,
 
 bool ProtocolHandlerRegistry::IsProtocolHandlerConfirmed(
     std::string_view scheme) const {
-  DCHECK(IsHandledProtocol(scheme));
+  DCHECK(HasDefaultHandler(scheme));
+  return GetHandlerFor(scheme).is_confirmed();
+}
 
+bool ProtocolHandlerRegistry::ProtocolHandlerNeedsConfirmation(
+    std::string_view scheme) const {
+  if (!enabled_) {
+    return false;
+  }
   ProtocolHandler handler = GetHandlerFor(scheme);
-  DCHECK(handler.is_confirmed() || handler.IsExtensionHandler());
-  return handler.is_confirmed();
+  DCHECK(handler.IsEmpty() || handler.is_confirmed() ||
+         handler.IsExtensionHandler());
+  return !handler.IsEmpty() && !handler.is_confirmed();
 }
 
 void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler,
@@ -476,7 +495,7 @@ void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler,
     }
   }
 
-  if (erase_success && !IsHandledProtocol(handler.protocol())) {
+  if (erase_success && !HasDefaultHandler(handler.protocol())) {
     delegate_->DeregisterExternalHandler(handler.protocol());
   }
   if (save) {

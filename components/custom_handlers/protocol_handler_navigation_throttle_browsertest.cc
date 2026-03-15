@@ -83,7 +83,7 @@ class ProtocolHandlerNavigationThrottleBrowserTest
                                const GURL& handler_url) {
     ProtocolHandler ph1 = CreateUnconfirmedProtocolHandler(scheme, handler_url);
     registry()->OnAcceptRegisterProtocolHandler(ph1);
-    ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
+    ASSERT_TRUE(registry()->HasDefaultHandler(scheme));
     ASSERT_FALSE(registry()->IsProtocolHandlerConfirmed(scheme));
   }
 };

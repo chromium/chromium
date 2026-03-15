@@ -195,14 +195,21 @@ class ProtocolHandlerRegistry : public KeyedService {
   void RemoveIgnoredHandler(const ProtocolHandler& handler, bool save = true);
 
   // Returns true if the protocol has a default protocol handler.
+  bool HasDefaultHandler(std::string_view scheme) const;
+
+  // Returns true if the protocol has a confirmed default protocol handler.
   bool IsHandledProtocol(std::string_view scheme) const;
 
   // Mark the scheme's default handler as confirmed by the user.
   void ConfirmProtocolHandler(std::string_view scheme, bool save);
 
-  // Returns true if the user has granted permission to use the scheme's default
-  // handler.
+  // Assumes the scheme has a default handler; it returns true if the user has
+  // granted permission to use it.
   bool IsProtocolHandlerConfirmed(std::string_view scheme) const;
+
+  // If the scheme is handled, it checks whether the user needs to grant
+  // permission to use the handler.
+  bool ProtocolHandlerNeedsConfirmation(std::string_view scheme) const;
 
   // Removes the given protocol handler from the registry.
   void RemoveHandler(const ProtocolHandler& handler, bool save = true);

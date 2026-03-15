@@ -409,14 +409,14 @@ TEST_F(ProtocolHandlerRegistryTest, TestExtensionProtocolHandlers) {
   ProtocolHandler ph1 =
       CreateExtensionProtocolHandler("news", GURL("https://test/%s"), kIdFoo);
   registry()->OnAcceptRegisterProtocolHandler(ph1);
-  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  ASSERT_TRUE(registry()->HasDefaultHandler("news"));
   ASSERT_TRUE(registry()->IsDefault(ph1));
 
   const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
   ProtocolHandler ph2 =
       CreateExtensionProtocolHandler("mailto", GURL("https://test/%s"), kIdBar);
   registry()->OnAcceptRegisterProtocolHandler(ph2);
-  ASSERT_TRUE(registry()->IsHandledProtocol("mailto"));
+  ASSERT_TRUE(registry()->HasDefaultHandler("mailto"));
   ASSERT_TRUE(registry()->IsDefault(ph2));
 
   {
@@ -1258,7 +1258,7 @@ TEST_F(ProtocolHandlerRegistryTest, RestoreUnconfirmedHandlerFromPref) {
                       std::move(handlers_registered_by_pref));
   registry()->InitProtocolSettings();
 
-  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+  ASSERT_TRUE(registry()->HasDefaultHandler("news"));
   EXPECT_FALSE(registry()->IsProtocolHandlerConfirmed("news"));
 }
 
