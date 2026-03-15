@@ -1659,19 +1659,21 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
     return;
   }
 
-  // 1, 2, 3 and 16 are covered by the for() loop.
+  // 3, 4.1 and 4.2 are covered by the loop condition.
   for (int i = 0; i < kOuterIterationLimit; ++i) {
     // 4.
     // ClosestElementInScopeWithName() returns null for non-html tags.
-    if (!token->IsValidHTMLTag())
+    if (!token->IsValidHTMLTag()) {
       return ProcessAnyOtherEndTagForInBody(token);
+    }
     Element* formatting_element =
         tree_.ActiveFormattingElements()->ClosestElementInScopeWithName(
             token->GetName());
-    // 4.a
-    if (!formatting_element)
+    // 4.3
+    if (!formatting_element) {
       return ProcessAnyOtherEndTagForInBody(token);
-    // 4.c
+    }
+    // 4.5
     if ((tree_.OpenElements()->Contains(formatting_element)) &&
         !tree_.OpenElements()->InScope(formatting_element)) {
       ParseError(token);
@@ -1679,7 +1681,7 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
       DVLOG(1) << "Not implemented.";
       return;
     }
-    // 4.b
+    // 4.4
     HTMLStackItem* formatting_element_item =
         tree_.OpenElements()->Find(formatting_element);
     if (!formatting_element_item) {
@@ -1687,77 +1689,145 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
       tree_.ActiveFormattingElements()->Remove(formatting_element);
       return;
     }
-    // 4.d
-    if (formatting_element != tree_.CurrentElement())
+    // 4.6
+    if (formatting_element != tree_.CurrentElement()) {
       ParseError(token);
-    // 5.
+    }
+    // 4.7
     HTMLStackItem* furthest_block =
         tree_.OpenElements()->FurthestBlockForFormattingElement(
             formatting_element);
-    // 6.
+    // 4.8
     if (!furthest_block) {
       tree_.OpenElements()->PopUntilPopped(formatting_element);
       tree_.ActiveFormattingElements()->Remove(formatting_element);
       return;
     }
-    // 7.
+    // 4.9
     DCHECK(furthest_block->IsAboveItemInStack(formatting_element_item));
     HTMLStackItem* common_ancestor = formatting_element_item->NextItemInStack();
-    // 8.
+    // 4.10
     HTMLFormattingElementList::Bookmark bookmark =
         tree_.ActiveFormattingElements()->BookmarkFor(formatting_element);
-    // 9.
+    // 4.11
     HTMLStackItem* node = furthest_block;
     HTMLStackItem* next_node = node->NextItemInStack();
     HTMLStackItem* last_node = furthest_block;
-    // 9.1, 9.2, 9.3 and 9.11 are covered by the for() loop.
-    for (int j = 0; j < kInnerIterationLimit; ++j) {
-      // 9.4
-      node = next_node;
-      DCHECK(node);
-      // Save node->next() for the next iteration in case node is deleted in
-      // 9.5.
-      next_node = node->NextItemInStack();
-      // 9.5
-      if (!tree_.ActiveFormattingElements()->Contains(node->GetElement())) {
-        tree_.OpenElements()->Remove(node->GetElement());
-        node = nullptr;
-        continue;
-      }
-      // 9.6
-      if (node == formatting_element_item) {
-        break;
-      }
-      // 9.7
-      HTMLStackItem* new_item = tree_.CreateElementFromSavedToken(node);
+    if (RuntimeEnabledFeatures::HTMLAdoptionAlgorithmNewStepsEnabled()) {
+      bool node_in_active_formatting_elements = false;
+      // 4.12
+      int inner_loop_counter = 0;
+      while (true) {
+        // 4.13
+        // 4.13.1
+        inner_loop_counter++;
+        // 4.13.2
+        node = next_node;
+        DCHECK(node);
+        // Save node->next() for the next iteration in case node is deleted in
+        // 4.13.5.
+        next_node = node->NextItemInStack();
+        // 4.13.3
+        // This loop is guaranteed to terminate because formatting_element_item
+        // is always present higher up in the stack of open elements.
+        if (node == formatting_element_item) {
+          break;
+        }
+        node_in_active_formatting_elements =
+            tree_.ActiveFormattingElements()->Contains(node->GetElement());
+        // 4.13.4
+        if (inner_loop_counter > kInnerIterationLimit &&
+            node_in_active_formatting_elements) {
+          DCHECK(bookmark.Mark());
+          // Cache the bookmark's element to regenerate it after the removal.
+          Element* bookmark_element = bookmark.Mark()->GetElement();
+          bool has_been_moved = bookmark.HasBeenMoved();
+          tree_.ActiveFormattingElements()->Remove(node->GetElement());
+          bookmark =
+              tree_.ActiveFormattingElements()->BookmarkFor(bookmark_element);
+          if (has_been_moved) {
+            // BookmarkFor creates a 'before' bookmark; if the original was
+            // moved, we must explicitly convert it back to an 'after' bookmark
+            // relative to its current mark.
+            bookmark.MoveToAfter(bookmark.Mark());
+          }
+          // Set to false so the subsequent step (4.13.5) removes the node from
+          // the stack of open elements and continues the inner loop.
+          node_in_active_formatting_elements = false;
+        }
+        // 4.13.5
+        if (!node_in_active_formatting_elements) {
+          tree_.OpenElements()->Remove(node->GetElement());
+          node = nullptr;
+          continue;
+        }
+        // 4.13.6
+        HTMLStackItem* new_item = tree_.CreateElementFromSavedToken(node);
+        HTMLFormattingElementList::Entry* node_entry =
+            tree_.ActiveFormattingElements()->Find(node->GetElement());
+        node_entry->ReplaceElement(new_item);
+        tree_.OpenElements()->Replace(node, new_item);
+        node = new_item;
 
-      HTMLFormattingElementList::Entry* node_entry =
-          tree_.ActiveFormattingElements()->Find(node->GetElement());
-      node_entry->ReplaceElement(new_item);
-      tree_.OpenElements()->Replace(node, new_item);
-      node = new_item;
+        // 4.13.7
+        if (last_node == furthest_block) {
+          bookmark.MoveToAfter(node_entry);
+        }
+        // 4.13.8
+        tree_.Reparent(node, last_node);
+        // 4.13.9
+        last_node = node;
+      }
+    } else {
+      // 9.1, 9.2, 9.3 and 9.11 are covered by the for() loop.
+      for (int j = 0; j < kInnerIterationLimit; ++j) {
+        // 9.4
+        node = next_node;
+        DCHECK(node);
+        // Save node->next() for the next iteration in case node is deleted in
+        // 9.5.
+        next_node = node->NextItemInStack();
+        // 9.5
+        if (!tree_.ActiveFormattingElements()->Contains(node->GetElement())) {
+          tree_.OpenElements()->Remove(node->GetElement());
+          node = nullptr;
+          continue;
+        }
+        // 9.6
+        if (node == formatting_element_item) {
+          break;
+        }
+        // 9.7
+        HTMLStackItem* new_item = tree_.CreateElementFromSavedToken(node);
+        HTMLFormattingElementList::Entry* node_entry =
+            tree_.ActiveFormattingElements()->Find(node->GetElement());
+        node_entry->ReplaceElement(new_item);
+        tree_.OpenElements()->Replace(node, new_item);
+        node = new_item;
 
-      // 9.8
-      if (last_node == furthest_block)
-        bookmark.MoveToAfter(node_entry);
-      // 9.9
-      tree_.Reparent(node, last_node);
-      // 9.10
-      last_node = node;
+        // 9.8
+        if (last_node == furthest_block) {
+          bookmark.MoveToAfter(node_entry);
+        }
+        // 9.9
+        tree_.Reparent(node, last_node);
+        // 9.10
+        last_node = node;
+      }
     }
-    // 10.
+    // 4.14
     tree_.InsertAlreadyParsedChild(common_ancestor, last_node);
-    // 11.
+    // 4.15
     HTMLStackItem* new_item =
         tree_.CreateElementFromSavedToken(formatting_element_item);
-    // 12.
+    // 4.16
     tree_.TakeAllChildren(new_item, furthest_block);
-    // 13.
+    // 4.17
     tree_.Reparent(furthest_block, new_item);
-    // 14.
+    // 4.18
     tree_.ActiveFormattingElements()->SwapTo(formatting_element, new_item,
                                              bookmark);
-    // 15.
+    // 4.19
     tree_.OpenElements()->Remove(formatting_element);
     tree_.OpenElements()->InsertAbove(new_item, furthest_block);
   }

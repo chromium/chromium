@@ -3070,6 +3070,13 @@
       status: "experimental",
       base_feature: "none",
     },
+    // Extra steps in HTML Agency Adoption algorithm to remove elements from the
+    // formatting list when the internal loop reached the maximum number of
+    // iterations. This shipped in M148 and the flag can be removed in M150.
+    {
+      name: "HTMLAdoptionAlgorithmNewSteps",
+      status: "stable",
+    },
     // Additional default command/commandfor actions that aren't part of v1 of
     // commands. When this flag is disabled only v1 actions (popover and dialog
     // defaults) will work.

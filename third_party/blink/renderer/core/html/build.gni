@@ -772,6 +772,7 @@ blink_core_tests_html = [
   "parser/html_document_parser_loading_test.cc",
   "parser/html_document_parser_test.cc",
   "parser/html_entity_parser_test.cc",
+  "parser/html_tree_builder_adoption_agency_test.cc",
   "parser/html_parser_idioms_test.cc",
   "parser/html_parser_metrics_test.cc",
   "parser/html_preload_scanner_document_test.cc",
