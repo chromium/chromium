@@ -245,6 +245,13 @@ views::Widget* VerticalTabGroupView::ShowGroupEditorBubble(
       stop_context_menu_propagation);
 }
 
+bool VerticalTabGroupView::IsDragging() const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
+  return GetDragHandler().IsDragging();
+}
+
 bool VerticalTabGroupView::IsViewDragging(const views::View& child_view) const {
   if (!collection_node_ || !collection_node_->GetController()) {
     return false;

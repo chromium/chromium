@@ -62,6 +62,7 @@ class VerticalTabGroupView
   void ShiftGroupDown() override;
 
   // TabCollectionAnimatingLayoutManager::Delegate:
+  bool IsDragging() const override;
   bool IsViewDragging(const views::View& child_view) const override;
   bool ShouldAnimateOpacityForAddAndRemove(
       const views::View& child_view) const override;

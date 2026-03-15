@@ -166,6 +166,13 @@ gfx::Size VerticalPinnedTabContainerView::GetMinimumSize() const {
                    min_height);
 }
 
+bool VerticalPinnedTabContainerView::IsDragging() const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
+  return GetDragHandler().IsDragging();
+}
+
 bool VerticalPinnedTabContainerView::IsViewDragging(
     const views::View& child_view) const {
   if (!collection_node_ || !collection_node_->GetController()) {

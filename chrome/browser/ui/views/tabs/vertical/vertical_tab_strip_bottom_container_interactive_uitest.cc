@@ -17,13 +17,23 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_utils.h"
 
 namespace base::test {
 
 class VerticalTabStripBottomContainerInteractiveUiTest
-    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {};
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
+ public:
+  using VerticalTabsInteractiveTestMixin::VerticalTabsInteractiveTestMixin;
+
+ private:
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+};
 
 // This test checks that we can click the new tab button in the bottom container
 // of the vertical tab strip
@@ -111,6 +121,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
             gfx::Point pt_above = point_above_new_tab_button;
             views::View::ConvertPointFromScreen(vt_region_view, &pt_above);
 
+            LOG(ERROR)
+                << "<<<<<<<<<<<<<<<<<< " << __func__
+                << " vt_region_view->IsPositionInWindowCaption(pt_center)="
+                << vt_region_view->IsPositionInWindowCaption(pt_center);
+            LOG(ERROR)
+                << "<<<<<<<<<<<<<<<<<< " << __func__
+                << " vt_region_view->IsPositionInWindowCaption(pt_above)="
+                << vt_region_view->IsPositionInWindowCaption(pt_above);
             return !vt_region_view->IsPositionInWindowCaption(pt_center) &&
                    !vt_region_view->IsPositionInWindowCaption(pt_above);
           },

@@ -246,6 +246,13 @@ VerticalUnpinnedTabContainerView::GetLinkDropIndex(
                                                   std::nullopt);
 }
 
+bool VerticalUnpinnedTabContainerView::IsDragging() const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
+  return GetDragHandler().IsDragging();
+}
+
 bool VerticalUnpinnedTabContainerView::IsViewDragging(
     const views::View& child_view) const {
   if (!collection_node_ || !collection_node_->GetController()) {

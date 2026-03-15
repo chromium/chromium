@@ -19,7 +19,6 @@ namespace views {
 class ScrollView;
 class Separator;
 class View;
-class ViewTracker;
 }  // namespace views
 
 // The view class for vertical tab strip which holds the pinned and unpinned
@@ -62,16 +61,23 @@ class VerticalTabStripView final : public views::View,
   void RecordMousePressedInTab();
 
  private:
+  class ActivatedViewTracker;
+
   views::View* AddScrollViewContents(std::unique_ptr<views::View> view);
   void RemoveScrollViewContents(views::View* view);
   void SetScrollViewProperties(views::ScrollView* scroll_view);
   void ResetCollectionNode();
 
-  // Called when the compositor has successfully presented the next frame
-  // after an activation of `tracked_view` in `scroll_view`.
-  void DidPresentFramePostActivation(
-      views::ScrollView* scroll_view,
-      std::unique_ptr<views::ViewTracker> tracked_view);
+  // Invoked after layout has been invoked for the activated view's associated
+  // ScrollView. Ensures that the activated view is visible in the viewport.
+  void EnsureVisibleInViewportPostActivationAndLayout(
+      views::ScrollView* scroll_view);
+
+  // Enables and disables overflow visuals on `scroll_view` respectively. Used
+  // in combination to avoid visual artifacts caused by repeatedly scrolling-in
+  // animating views.
+  void EnableOverflowVisuals(views::ScrollView* scroll_view);
+  void DisableOverflowVisuals(views::ScrollView* scroll_view);
 
   void UpdateColors();
 
@@ -92,6 +98,10 @@ class VerticalTabStripView final : public views::View,
   std::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
   // Used to track if the time from mouse entered to tab switch been reported.
   bool has_reported_time_mouse_entered_to_switch_ = false;
+
+  // Tracks the most recently activated view as reported by
+  // `OnActiveTabChanged()`.
+  std::unique_ptr<ActivatedViewTracker> activated_view_tracker_;
 
   base::CallbackListSubscription node_destroyed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
