@@ -1173,6 +1173,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   data.reason = ContentAnalysisRequest::FILE_PICKER_DIALOG;
   CreateFilesForTest({"a.exe", "b.exe", "c.exe"},
                      {"a content", "b content", "c content"}, &data);
+
+  std::vector<std::string> expected_scan_ids = {kScanId1, kScanId2, kScanId3};
+
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
 
@@ -1221,7 +1224,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
             // printf "c content" | sha256sum | tr '[:lower:]' '[:upper:]'
             "2E6D1C4A1F39A02562BF1505AD775C0323D7A04C0C37C9B29D25F532B9972080",
         },
-        ExeMimeTypes());
+        expected_scan_ids, ExeMimeTypes());
   } else {
     validator.ExpectUnscannedFileEvents(
         /*url*/ "about:blank",
@@ -1242,6 +1245,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
             "2E6D1C4A1F39A02562BF1505AD775C0323D7A04C0C37C9B29D25F532B9972080",
         },
         /*trigger*/ kFileUploadDataTransferEventTrigger,
+        /*scan_ids*/ expected_scan_ids,
         /*reason*/ "TOO_MANY_REQUESTS",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ 9,
@@ -1256,10 +1260,13 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Throttled) {
   // TOO_MANY_REQUEST result, it can be any of them depending on how quickly
   // they are opened asynchronously. This means responses must be set up for
   // each of them.
+  auto content_analysis_reponses = std::vector<ContentAnalysisResponse>(3);
   for (size_t i = 0; i < 3; ++i) {
+    content_analysis_reponses[i].set_request_token(expected_scan_ids[i]);
     FakeBinaryUploadServiceStorage()->SetResponseForFile(
         created_file_paths()[i].AsUTF8Unsafe(),
-        ScanRequestUploadResult::kTooManyRequests, ContentAnalysisResponse());
+        ScanRequestUploadResult::kTooManyRequests,
+        content_analysis_reponses[i]);
   }
 
   bool called = false;
@@ -1416,6 +1423,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
             FILE_PASSWORD_PROTECTED);
     expected_event.set_trigger(
         chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+    expected_event.set_scan_id("");
     expected_result()
         ? expected_event.set_event_result(
               chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED)
@@ -1439,10 +1447,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
         /*filename*/
         machine_scope() ? test_zip.AsUTF8Unsafe() : "encrypted.zip",
         // sha256sum < chrome/test/data/safe_browsing/download_protection/\
-      // encrypted.zip |  tr '[:lower:]' '[:upper:]'
+        // encrypted.zip |  tr '[:lower:]' '[:upper:]'
         /*sha*/
         "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A",
         /*trigger*/ kFileUploadDataTransferEventTrigger,
+        /*scan_id*/ "",
         /*reason*/ "FILE_PASSWORD_PROTECTED",
         /*mimetypes*/ ZipMimeTypes(),
         // du chrome/test/data/safe_browsing/download_protection/encrypted.zip
@@ -1584,10 +1593,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
         /*filename*/
         machine_scope() ? created_file_paths()[0].AsUTF8Unsafe() : "large.doc",
         // python3 -c "print('a' * (51 * 1024 * 1024), end='')" |\
-      // sha256sum |  tr '[:lower:]' '[:upper:]'
+        // sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha*/
         "6F040FFDD67004CA3074BFB39936F553A49669427C477CC60DBE064C355EE1B1",
         /*trigger*/ kFileUploadDataTransferEventTrigger,
+        /*scan_id*/ "",
         /*reason*/ "FILE_TOO_LARGE",
         /*mimetypes*/ DocMimeTypes(),
         /*size*/ kLargeSize,
@@ -1691,6 +1701,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
         chrome::cros::reporting::proto::UnscannedFileEvent::FILE_TOO_LARGE);
     expected_event.set_trigger(
         chrome::cros::reporting::proto::DataTransferEventTrigger::PAGE_PRINT);
+    expected_event.set_scan_id("");
     expected_result()
         ? expected_event.set_event_result(
               chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED)
@@ -1711,9 +1722,10 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
         /*destination*/ "",
         /*filename*/ "about:blank",
         // python3 -c "print('a' * (51 * 1024 * 1024), end='')" |\
-      // sha256sum |  tr '[:lower:]' '[:upper:]'
+        // sha256sum |  tr '[:lower:]' '[:upper:]'
         /*sha*/ "",
         /*trigger*/ kPagePrintDataTransferEventTrigger,
+        /*scan_id*/ "",
         /*reason*/ "FILE_TOO_LARGE",
         /*mimetypes*/ DocMimeTypes(),
         /*size*/ std::nullopt,

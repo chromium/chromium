@@ -10,7 +10,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -106,6 +108,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
     const std::string& expected_filename,
     const std::string& expected_sha256,
     const std::string& expected_trigger,
+    const std::string& expected_scan_id,
     const std::string& expected_reason,
     const std::set<std::string>* expected_mimetypes,
     std::optional<int64_t> expected_content_size,
@@ -121,6 +124,7 @@ void EventReportValidator::ExpectUnscannedFileEvent(
   filenames_and_hashes_[expected_filename] = expected_sha256;
   mimetypes_ = expected_mimetypes;
   trigger_ = expected_trigger;
+  scan_ids_[expected_filename] = expected_scan_id;
   unscanned_reason_ = expected_reason;
   content_size_ = expected_content_size;
   results_[expected_filename] = expected_result;
@@ -144,18 +148,32 @@ void EventReportValidator::ExpectUnscannedFileEvents(
         expected_unscanned_file_event,
     const std::vector<std::string>& expected_filenames,
     const std::vector<std::string>& expected_sha256s,
+    const std::vector<std::string>& expected_scan_ids,
     const std::set<std::string>* expected_mimetypes) {
   DCHECK_EQ(expected_filenames.size(), expected_sha256s.size());
   base::flat_map<std::string, std::string> filenames_and_hashes;
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes[expected_filenames[i]] = expected_sha256s[i];
+    scan_ids_[expected_filenames[i]] = expected_scan_ids[i];
   }
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      expected_filenames.size(),
+      base::BindLambdaForTesting([this, expected_unscanned_file_event]() {
+        if (expected_unscanned_file_event.unscanned_reason() ==
+            proto::UnscannedFileEvent::TOO_MANY_REQUESTS) {
+          // When throttled, ValidateReport will erase from scan_ids_ if the
+          // file did not have a scan id.  Exactly one file should have been
+          // scanned.
+          EXPECT_EQ(scan_ids_.size(), 1ul);
+        }
+      }).Then(done_closure_ ? std::move(done_closure_) : base::DoNothing()));
 
   EXPECT_CALL(*client_, UploadSecurityEvent)
       .Times(expected_filenames.size())
       .WillRepeatedly(
           [this, expected_unscanned_file_event, filenames_and_hashes,
-           expected_mimetypes](
+           expected_mimetypes, barrier_closure](
               bool include_device_info,
               ::chrome::cros::reporting::proto::UploadEventsRequest request,
               base::OnceCallback<void(policy::CloudPolicyClient::Result)>
@@ -170,19 +188,26 @@ void EventReportValidator::ExpectUnscannedFileEvents(
                 unscanned_file_event.content_type()));
             EXPECT_EQ(filenames_and_hashes.at(unscanned_file_event.file_name()),
                       unscanned_file_event.download_digest_sha_256());
+            if (expected_unscanned_file_event.unscanned_reason() ==
+                    proto::UnscannedFileEvent::TOO_MANY_REQUESTS &&
+                unscanned_file_event.scan_id().empty()) {
+              scan_ids_.erase(unscanned_file_event.file_name());
+            } else {
+              EXPECT_EQ(scan_ids_.at(unscanned_file_event.file_name()),
+                        unscanned_file_event.scan_id());
+            }
 
             // Clear the validated fields, so that the captured proto can match
             // the expected protos.
             unscanned_file_event.clear_content_type();
             unscanned_file_event.clear_file_name();
             unscanned_file_event.clear_download_digest_sha_256();
+            unscanned_file_event.clear_scan_id();
 
             EXPECT_THAT(unscanned_file_event,
                         EqualsProto(expected_unscanned_file_event));
 
-            if (!done_closure_.is_null()) {
-              done_closure_.Run();
-            }
+            barrier_closure.Run();
           });
 }
 
@@ -194,6 +219,7 @@ void EventReportValidator::ExpectUnscannedFileEvents(
     const std::vector<std::string>& expected_filenames,
     const std::vector<std::string>& expected_sha256s,
     const std::string& expected_trigger,
+    const std::vector<std::string>& expected_scan_ids,
     const std::string& expected_reason,
     const std::set<std::string>* expected_mimetypes,
     int64_t expected_content_size,
@@ -202,10 +228,23 @@ void EventReportValidator::ExpectUnscannedFileEvents(
     const std::string& expected_profile_identifier,
     const std::optional<std::string>& expected_content_transfer_method) {
   DCHECK_EQ(expected_filenames.size(), expected_sha256s.size());
+  DCHECK_EQ(expected_filenames.size(), expected_scan_ids.size());
   for (size_t i = 0; i < expected_filenames.size(); ++i) {
     filenames_and_hashes_[expected_filenames[i]] = expected_sha256s[i];
+    scan_ids_[expected_filenames[i]] = expected_scan_ids[i];
     results_[expected_filenames[i]] = expected_result;
   }
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      expected_filenames.size(),
+      base::BindLambdaForTesting([this, expected_reason]() {
+        if (expected_reason == "TOO_MANY_REQUESTS") {
+          // When throttled, ValidateReport will erase from scan_ids_ if the
+          // file did not have a scan id. Exactly one file should have been
+          // scanned.
+          EXPECT_EQ(scan_ids_.size(), 1ul);
+        }
+      }).Then(done_closure_ ? std::move(done_closure_) : base::DoNothing()));
 
   event_key_ = kKeyUnscannedFileEvent;
   url_ = expected_url;
@@ -222,9 +261,13 @@ void EventReportValidator::ExpectUnscannedFileEvents(
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
       .WillRepeatedly(
-          [this](bool include_device_info, base::DictValue report,
-                 base::OnceCallback<void(policy::CloudPolicyClient::Result)>
-                     callback) { ValidateReport(&report); });
+          [this, barrier_closure](
+              bool include_device_info, base::DictValue report,
+              base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                  callback) {
+            ValidateReport(&report);
+            barrier_closure.Run();
+          });
 }
 
 void EventReportValidator::ExpectDangerousDeepScanningResult(
@@ -294,13 +337,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      expected_filenames.size(), base::BindOnce(
-                                     [](base::RepeatingClosure closure) {
-                                       if (!closure.is_null()) {
-                                         closure.Run();
-                                       }
-                                     },
-                                     std::move(done_closure_)));
+      expected_filenames.size(),
+      done_closure_ ? std::move(done_closure_) : base::DoNothing());
 
   EXPECT_CALL(*client_, UploadSecurityEvent)
       .Times(expected_filenames.size())
@@ -449,13 +487,8 @@ void EventReportValidator::ExpectSensitiveDataEvents(
   user_justification_ = expected_user_justification;
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      expected_filenames.size(), base::BindOnce(
-                                     [](base::RepeatingClosure closure) {
-                                       if (!closure.is_null()) {
-                                         closure.Run();
-                                       }
-                                     },
-                                     std::move(done_closure_)));
+      expected_filenames.size(),
+      done_closure_ ? std::move(done_closure_) : base::DoNothing());
 
   EXPECT_CALL(*client_, UploadSecurityEventReport)
       .Times(expected_filenames.size())
@@ -928,8 +961,19 @@ void EventReportValidator::ValidateFilenameMappedAttributes(
     ValidateField(value, kKeyEventResult, results_[filename]);
     ValidateField(value, kKeyDownloadDigestSha256,
                   filenames_and_hashes_[filename]);
+
     if (scan_ids_.count(filename)) {
-      ValidateField(value, kKeyScanId, scan_ids_[filename]);
+      if (auto unscanned_reason =
+              base::OptionalFromPtr(value->FindString(kKeyUnscannedReason)),
+          scan_id = base::OptionalFromPtr(value->FindString(kKeyScanId));
+          unscanned_reason == "TOO_MANY_REQUESTS" && scan_id == "") {
+        // If scan was throttled and the scan id is empty, remove the entry
+        // from the map so a test can verify only the first throttled scan got a
+        // scan_id.
+        scan_ids_.erase(filename);
+      } else {
+        ValidateField(value, kKeyScanId, scan_ids_[filename]);
+      }
     } else {
       ValidateField(value, kKeyScanId, std::optional<std::string>());
     }

@@ -125,6 +125,7 @@ chrome::cros::reporting::proto::UnscannedFileEvent GetUnscannedFileEvent(
     const std::string& download_digest_sha256,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& scan_id,
     const std::string& reason,
     const std::string& content_transfer_method,
     const std::string& profile_identifier,

@@ -841,6 +841,7 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
     expected_event.set_file_name("encrypted.zip");
     expected_event.set_download_digest_sha_256("sha256_of_data");
     expected_event.set_content_type("application/zip");
+    expected_event.set_scan_id("123");
     expected_event.set_content_size(12345);
 
     expected_event.set_unscanned_reason(
@@ -866,6 +867,7 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
         /*expected_filename=*/"encrypted.zip",
         /*expected_sha256=*/"sha256_of_data",
         /*expected_trigger=*/"FILE_UPLOAD",
+        /*expected_scan_id=*/"123",
         /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
         /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
         /* expected_result=*/"EVENT_RESULT_ALLOWED",
@@ -878,7 +880,7 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Allowed) {
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", "sha256_of_data",
-      "application/zip", "FILE_UPLOAD", "FILE_PASSWORD_PROTECTED",
+      "application/zip", "FILE_UPLOAD", "123", "FILE_PASSWORD_PROTECTED",
       "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345, EventResult::ALLOWED);
   run_loop.Run();
 }
@@ -903,6 +905,7 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
     expected_event.set_download_digest_sha_256("sha256_of_data");
     expected_event.set_content_type("application/zip");
     expected_event.set_content_size(12345);
+    expected_event.set_scan_id("123");
 
     expected_event.set_unscanned_reason(
         chrome::cros::reporting::proto::UnscannedFileEvent::
@@ -924,6 +927,7 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
         /*expected_filename=*/"encrypted.zip",
         /*expected_sha256=*/"sha256_of_data",
         /*expected_trigger=*/"FILE_DOWNLOAD",
+        /*expected_scan_id=*/"123",
         /*expected_reason=*/"FILE_PASSWORD_PROTECTED",
         /*expected_mimetypes=*/ZipMimeType(), /*expected_content_size=*/12345,
         /*expected_result=*/"EVENT_RESULT_BLOCKED",
@@ -935,8 +939,8 @@ TEST_P(ReportingEventRouterTest, TestOnUnscannedFileEvent_Blocked) {
   reporting_event_router_->OnUnscannedFileEvent(
       GURL("about:blank"), GURL("tab:about:blank"), "exampleSource",
       "exampleDestination", "encrypted.zip", "sha256_of_data",
-      "application/zip", "FILE_DOWNLOAD", "FILE_PASSWORD_PROTECTED", "", 12345,
-      EventResult::BLOCKED);
+      "application/zip", "FILE_DOWNLOAD", "123", "FILE_PASSWORD_PROTECTED", "",
+      12345, EventResult::BLOCKED);
   run_loop.Run();
 }
 

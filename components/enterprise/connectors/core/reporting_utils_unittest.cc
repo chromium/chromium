@@ -225,6 +225,7 @@ TEST(ReportingUtilsTest, GetUnscannedFileEvent) {
       /*file_name=*/"encrypted.zip",
       /*download_digest_sha256=*/"sha256_of_data",
       /*mime_type=*/"application/zip", /*trigger=*/"FILE_UPLOAD",
+      /*scan_id=*/"123",
       /*reason=*/"FILE_PASSWORD_PROTECTED",
       /*content_transfer_method=*/"CONTENT_TRANSFER_METHOD_DRAG_AND_DROP",
       /*profile_identifier=*/"identifier",
@@ -241,6 +242,7 @@ TEST(ReportingUtilsTest, GetUnscannedFileEvent) {
   ASSERT_EQ(
       event.trigger(),
       chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_UPLOAD);
+  ASSERT_EQ(event.scan_id(), "123");
   ASSERT_EQ(event.unscanned_reason(),
             chrome::cros::reporting::proto::UnscannedFileEvent::
                 FILE_PASSWORD_PROTECTED);

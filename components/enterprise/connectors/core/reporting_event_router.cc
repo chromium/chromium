@@ -457,6 +457,7 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     const std::string& download_digest_sha256,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& scan_id,
     const std::string& reason,
     const std::string& content_transfer_method,
     const int64_t content_size,
@@ -476,7 +477,7 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     chrome::cros::reporting::proto::Event event;
     *event.mutable_unscanned_file_event() = GetUnscannedFileEvent(
         url, tab_url, source, destination, final_file_name,
-        download_digest_sha256, mime_type, trigger, reason,
+        download_digest_sha256, mime_type, trigger, scan_id, reason,
         content_transfer_method, reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), content_size, event_result);
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
@@ -491,6 +492,7 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     event.Set(kKeyFileName, final_file_name);
     event.Set(kKeyDownloadDigestSha256, download_digest_sha256);
     event.Set(kKeyContentType, mime_type);
+    event.Set(kKeyScanId, scan_id);
     event.Set(kKeyUnscannedReason, reason);
     // |content_size| can be set to -1 to indicate an unknown size, in
     // which case the field is not set.

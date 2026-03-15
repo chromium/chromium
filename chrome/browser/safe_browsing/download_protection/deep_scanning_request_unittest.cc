@@ -188,6 +188,7 @@ chrome::cros::reporting::proto::UnscannedFileEvent CreateUnscannedFileEvent(
   event.set_destination("");
   event.set_trigger(
       chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
+  event.set_scan_id(kScanId);
 
   if (event_result ==
       chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED) {
@@ -227,7 +228,7 @@ CreateDangerousDownloadEvent(
       "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C");
   event.set_content_type("application/octet-stream");
   event.set_content_size(std::string("download contents").size());
-  event.set_scan_id("scan_id");
+  event.set_scan_id(kScanId);
   event.set_trigger(
       chrome::cros::reporting::proto::DataTransferEventTrigger::FILE_DOWNLOAD);
   event.set_clicked_through(false);
@@ -1437,6 +1438,7 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
+    response.set_request_token(kScanId);
 
     auto* malware_result = response.add_results();
     malware_result->set_tag("dlp");
@@ -1464,6 +1466,7 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ kScanId,
         /*reason*/ "DLP_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1502,6 +1505,7 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         /*password=*/std::nullopt);
 
     enterprise_connectors::ContentAnalysisResponse response;
+    response.set_request_token(kScanId);
 
     auto* malware_result = response.add_results();
     malware_result->set_tag("malware");
@@ -1529,6 +1533,7 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ kScanId,
         /*reason*/ "MALWARE_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -1572,6 +1577,7 @@ TEST_P(DeepScanningReportingSourceTypeTest,
                                    DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
 
     enterprise_connectors::ContentAnalysisResponse response;
+    response.set_request_token(kScanId);
 
     auto* malware_result = response.add_results();
     malware_result->set_tag("malware");
@@ -1604,6 +1610,7 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ kScanId,
         /*reason*/ "MALWARE_SCAN_FAILED",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -2110,6 +2117,8 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
     base::RunLoop validator_run_loop;
     validator.SetDoneClosure(validator_run_loop.QuitClosure());
 
+    // Only mock the 0th file with a scan failure, so only the 0th file triggers
+    // UnscannedFileEvent with request_token (i.e. scan_id) "kScanId0" set above
     if (base::FeatureList::IsEnabled(
             policy::kUploadRealtimeReportingEventsUsingProto)) {
       auto expected_event = CreateUnscannedFileEvent(
@@ -2125,6 +2134,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
               MALWARE_SCAN_FAILED,
           /*event_result=*/
           chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED);
+      expected_event.set_scan_id(kScanId + std::string("0"));
 
       validator.ExpectUnscannedFileEvent(std::move(expected_event));
     } else {
@@ -2139,6 +2149,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
           "DDAB29FF2C393EE52855D21A240EB05F775DF88E3CE347DF759F0C4B80356C35",
           /*trigger*/
           enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+          /*scan_id*/ kScanId + std::string("0"),
           /*reason*/ "MALWARE_SCAN_FAILED",
           /*mimetypes*/ TxtMimeTypes(),
           /*size*/ std::string("foo.exe").size(),
@@ -2375,9 +2386,11 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
       &download_protection_service_, settings().value(),
       /*password=*/std::nullopt);
 
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
       download_path_, enterprise_connectors::ScanRequestUploadResult::kTimeout,
-      enterprise_connectors::ContentAnalysisResponse());
+      response);
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop validator_run_loop;
@@ -2411,6 +2424,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ kScanId,
         /*reason*/ "TIMEOUT",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -2818,6 +2832,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ kScanId,
         /*reason*/ "FILE_TOO_LARGE",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -2906,6 +2921,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ kScanId,
         /*reason*/ "FILE_TOO_LARGE",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),
@@ -2996,6 +3012,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
         "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
         /*trigger*/
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
+        /*scan_id*/ kScanId,
         /*reason*/ "FILE_TOO_LARGE",
         /*mimetypes*/ ExeMimeTypes(),
         /*size*/ std::string("download contents").size(),

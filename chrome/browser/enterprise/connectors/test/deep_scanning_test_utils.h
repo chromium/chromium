@@ -189,6 +189,7 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::string& expected_filename,
       const std::string& expected_sha256,
       const std::string& expected_trigger,
+      const std::string& expected_scan_id,
       const std::string& expected_reason,
       const std::set<std::string>* expected_mimetypes,
       std::optional<int64_t> expected_content_size,
@@ -202,6 +203,7 @@ class EventReportValidator : public EventReportValidatorBase {
           expected_unscanned_file_event,
       const std::vector<std::string>& expected_filenames,
       const std::vector<std::string>& expected_sha256s,
+      const std::vector<std::string>& expected_scan_ids,
       const std::set<std::string>* expected_mimetypes);
 
   void ExpectUnscannedFileEvents(
@@ -212,6 +214,7 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::vector<std::string>& expected_filenames,
       const std::vector<std::string>& expected_sha256s,
       const std::string& expected_trigger,
+      const std::vector<std::string>& expected_scan_ids,
       const std::string& expected_reason,
       const std::set<std::string>* expected_mimetypes,
       int64_t expected_content_size,
