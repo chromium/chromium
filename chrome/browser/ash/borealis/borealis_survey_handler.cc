@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/borealis/borealis_survey_handler.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 

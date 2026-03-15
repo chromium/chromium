@@ -6,9 +6,9 @@
 
 #include <string>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

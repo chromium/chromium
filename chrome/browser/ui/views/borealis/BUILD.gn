@@ -17,6 +17,7 @@ static_library("borealis") {
   ]
 
   deps = [
+    "//ash/strings:strings_grit",
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/feedback",

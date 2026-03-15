@@ -73,6 +73,7 @@ source_set("publishers") {
     ]
 
     deps += [
+      "//ash/strings:strings_grit",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/app_service/app_icon:util",

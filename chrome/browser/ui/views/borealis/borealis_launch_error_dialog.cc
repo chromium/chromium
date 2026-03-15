@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"

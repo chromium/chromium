@@ -7,7 +7,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "inspect_ui\.cc": [
+  "inspect_ui\\.cc": [
     "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
   ],
 }

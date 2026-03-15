@@ -9229,6 +9229,145 @@ To shut down the device, press and hold the power button on the device again.
         Uninstall
       </message>
 
+      <!-- Borealis strings -->
+      <!-- TODO(danielng): Add string descriptions and remove translateable tags
+        when strings are finalized. -->
+      <message name="IDS_BOREALIS_APP_NAME" desc="Name of app, noun, video game distribution service" translateable="false">
+        Steam
+      </message>
+      <message name="IDS_BOREALIS_CREDITS_PLACEHOLDER" desc="Shown to users who navigate to about://borealis-credits when the real credits file can't be shown (e.g. because borealis is not running)" translateable="false">
+        Steam is either not installed or not running. Please run Steam to view credits.
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_TITLE" desc="Title of the dialog shown to users who are unable to install 'Steam for Chromebook' (Steam is a video game distribution service)">
+        Can't install Steam
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_HARDWARE" desc="Message shown to the user when 'Steam for Chromebook' is disabled on their device">
+        Steam for Chromebook (beta) is not available on your Chromebook.
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_FAILED" desc="Message shown to the user when 'Steam for Chromebook' failed to determine whether it should be allowed">
+        Restart your Chromebook and try again
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_IRREGULAR" desc="Message shown to users when they try to install 'Steam for Chromebook' on an irregular (incognito, kiosk, etc) profile">
+        You need to be signed-in to a Google Account to use Steam for Chromebook (Beta). Sign in and try again.
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_PRIMARY" desc="Message shown to users when they try to install 'Steam for Chromebook' on a secondary profile">
+        Steam for Chromebook (Beta) is only available for the account that signed in first on this Chromebook.
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_CHILD" desc="Message shown to the users when they try to install 'Steam for Chromebook' on a child account">
+        Steam for Chromebook (Beta) is not available for child Google Accounts
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_ADMIN" desc="Message shown to the user when 'Steam for Chromebook' is blocked by their admin. The placeholders are the names of policy settings.">
+        Steam for Chromebook (Beta) is blocked by your administrator. Your administrator needs to turn on these policies:
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_FLAG" desc="Message shown to the user when 'Steam for Chromebook' doesn't have the correct chrome://flags setting enabled">
+        You need to turn on the “Borealis Enabled” flag
+      </message>
+      <message name="IDS_BOREALIS_DISALLOWED_FLAG_BUTTON" desc="Button label used to bring up the user's chrome://flags settings. Shown when users try to install borealis but are unable to due to their flags.">
+        ChromeOS flags
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_APP_NAME" desc="Name of a utility which is used to install the Steam application (Steam is a video game distribution service)">
+        Steam installer
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_TITLE" desc="Title of the installer for 'Steam for Chromebook'. 'Steam for Chromebook' is the name of the piece of software used to run 'Steam' (a software distribution platform) on Chromebooks.">
+        Welcome to Steam for Chromebook
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_CONFIRMATION_MESSAGE" desc="Body text shown in the installer for 'Steam for Chromebook'.">
+        This is a beta program. You can now use Steam to play some games on your Chromebook.
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ONGOING_TITLE" desc="Title for installer while 'Steam for Chromebook' is installing.">
+        Setting up Steam for Chromebook
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ONGOING_MESSAGE" desc="Body text shown in the installer while 'Steam for Chromebook' is installing.">
+        This may take a few minutes
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ONGOING_PERCENTAGE" desc="Message containing the progress percentage of the ongoing 'Steam for Chromebook' installation.">
+        <ph name="PERCENTAGE_COMPLETE">$1<ex>42</ex></ph>% completed
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ONGOING_INITIAL" desc="Message shown while the 'Steam for Chromebook' installer is calculating how much longer it will need to complete.">
+        estimating time
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_FINISHED_TITLE" desc="Title for installer when installation for 'Steam for Chromebook' completes succesfully.">
+        Let’s get gaming
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_FINISHED_MESSAGE" desc="Body text shown in the installer when 'Steam for Chromebook' installation suceeded.">
+        You can now use Steam for Chromebook (Beta)
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_LAUNCH_BUTTON" desc="Button in the installer for 'Steam for Chromebook' to launch Steam.">
+        Open Steam
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_TITLE" desc="Title for installer when Steam (noun, name of app) fails to install.">
+        Can’t set up Steam for Chromebook (Beta)
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_DUPLICATE" desc="Body for Steam (noun, name of app) when installation fails due to another process already running.">
+        Steam is already being set up. Wait for setup to complete.
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_UPDATE" desc="Body for Steam (noun, name of app) installer when installation fails due to device being out of date.">
+        Make sure your Chromebook is on the latest version. Then, restart your Chromebook and try again.
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_BUSY" desc="Body for Steam (noun, name of app) installer when installation fails with suggestion to try again.">
+        Wait a few minutes and try again
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_SPACE" desc="Body for Steam (noun, name of app) installer when installation fails due to low space.">
+        There is not enough device storage to complete setup. Free up space and try again.
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_OFFLINE" desc="Body for Steam (noun, name of app) installer when installation fails due to being offline.">
+        Make sure you’re connected to the internet and try again
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_STARTUP" desc="Body for Steam (noun, name of app) installer when installation fails trying to start up after installing">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_BUTTON_RETRY" desc="Button for Steam (noun, name of app) installer to retry after failing.">
+        Try again
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_BUTTON_STORAGE" desc="Button for Steam (noun, name of app) installer to free disk-space if needed.">
+        Storage management
+      </message>
+      <message name="IDS_BOREALIS_INSTALLER_ERROR_LEARN_MORE" desc="Hyperlink to help page to learn more about the error encountered.">
+        Learn more
+      </message>
+      <message name="IDS_BOREALIS_LAUNCH_ERROR_TITLE" desc="Title of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch.">
+        Can’t open Steam for Chromebook (Beta)
+      </message>
+      <message name="IDS_BOREALIS_LAUNCH_ERROR_BODY" desc="Body of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch.">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_BOREALIS_LAUNCH_ERROR_NEED_RESTART_BODY" desc="Body of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch, due to needing an update.">
+        Steam for Chromebook (Beta) needs to be updated. Restart your Chromebook and try again.
+      </message>
+      <message name="IDS_BOREALIS_LAUNCH_ERROR_NEED_SPACE_BODY" desc="Body of a dialog shown when Steam (noun, name of app, a gaming software distribution platform) fails to launch, due to needing more space.">
+        There is not enough device storage to open this app. Free up space and try again.
+      </message>
+      <message name="IDS_BOREALIS_LAUNCH_ERROR_SEND_FEEDBACK" desc="Label for a checkbox the user can tick to send feedback about the error.">
+        Send feedback
+      </message>
+      <message name="IDS_BOREALIS_LAUNCH_ERROR_BUTTON_RESTART" desc="Button of a dialog shown when Steam (noun, name of app) fails to launch to restart and a restart is suggested.">
+        Restart
+      </message>
+      <message name="IDS_BOREALIS_BETA_BADGE" desc="Badge text indicating that borealis (steam on chromeos) is a beta product, i.e. it is still under development.">
+        Beta
+      </message>
+      <message name="IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling Steam (name of app).">
+          Any apps and games installed using Steam for Chromebook (Beta) will be removed from this device. Data associated with these apps and games will also be removed. Make sure to back up saved apps and games before uninstalling.
+      </message>
+      <message name="IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling a game.">
+          Data associated with this app may be removed from this device
+      </message>
+      <message name="IDS_BOREALIS_SPLASHSCREEN_TITLE" desc="Title on splashscreen when starting Steam on Chrome OS. 'Steam for Chromebook' is the name of the product.">
+        Steam for Chromebook
+      </message>
+      <message name="IDS_BOREALIS_SPLASHSCREEN_MESSAGE" desc="Message on splashscreen when starting Steam on Chrome OS.">
+        Loading...
+      </message>
+      <message name="IDS_BOREALIS_HATS_TITLE" desc="Title for HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
+        Help us improve Steam for Chromebook
+      </message>
+      <message name="IDS_BOREALIS_HATS_BODY" desc="Message on HaTS notification requesting feedback. It will appear occasionally when a user closes a Steam game. Clicking it will show a satisfaction survey to the user.">
+        Tell us about your recent gameplay
+      </message>
+      <message name="IDS_BOREALIS_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the Borealis feedback dialog.">
+        Share your feedback or describe your issue. If possible, include steps to reproduce your issue.
+      </message>
+
       <!-- Bruschetta -->
       <message name="IDS_BRUSCHETTA_NAME" desc="The display name for Bruschetta (codename) when a specific VM name cannot be used.">
         Managed Development Environment

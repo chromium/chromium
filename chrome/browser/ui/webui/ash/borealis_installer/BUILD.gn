@@ -41,6 +41,7 @@ static_library("borealis_installer") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings:strings_grit",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/app:generated_resources",
     "//chrome/app/theme:chrome_unscaled_resources",

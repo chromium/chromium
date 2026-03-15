@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_page_handler.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
 #include "ui/base/l10n/l10n_util.h"

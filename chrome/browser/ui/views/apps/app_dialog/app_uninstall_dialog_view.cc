@@ -63,6 +63,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/strings/grit/ash_strings.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #endif

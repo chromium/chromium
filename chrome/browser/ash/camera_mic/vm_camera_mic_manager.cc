@@ -13,6 +13,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check_deref.h"

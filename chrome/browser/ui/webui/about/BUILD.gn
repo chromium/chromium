@@ -32,6 +32,7 @@ source_set("impl") {
 
   if (is_chromeos) {
     deps += [
+      "//ash/strings:strings_grit",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/crostini",
       "//chrome/browser/ash/customization",
