@@ -3840,8 +3840,6 @@ static_library("browser") {
       "preloading/preview/preview_tab.h",
       "preloading/preview/preview_zoom_controller.cc",
       "preloading/preview/preview_zoom_controller.h",
-      "privacy_sandbox/privacy_sandbox_queue_manager.cc",
-      "privacy_sandbox/privacy_sandbox_queue_manager.h",
       "process_singleton_startup_lock.cc",
       "process_singleton_startup_lock.h",
       "profile_resetter/brandcode_config_fetcher.cc",

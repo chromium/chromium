@@ -363,8 +363,6 @@ source_set("test_support") {
     sources = [
       "mock_privacy_sandbox_service.cc",
       "mock_privacy_sandbox_service.h",
-      "mock_queue_manager.cc",
-      "mock_queue_manager.h",
     ]
 
     public_deps = [

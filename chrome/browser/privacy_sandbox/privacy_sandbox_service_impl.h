@@ -25,10 +25,6 @@
 #include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 class BrowserWindowInterface;
 class PrefService;
 
@@ -77,8 +73,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
                               views::Widget* widget) override;
   void PromptClosedForBrowser(BrowserWindowInterface* browser) override;
   bool IsPromptOpenForBrowser(BrowserWindowInterface* browser) override;
-  privacy_sandbox::PrivacySandboxQueueManager&
-  GetPrivacySandboxNoticeQueueManager() override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
   bool IsPrivacySandboxRestricted() override;
@@ -361,8 +355,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // to the Widget for that prompt.
   std::map<BrowserWindowInterface*, raw_ptr<views::Widget, CtnExperimental>>
       browsers_to_open_prompts_;
-  // Instance of queue manager used to manage queue states.
-  std::unique_ptr<privacy_sandbox::PrivacySandboxQueueManager> queue_manager_;
 #endif
 
   // Fake implementation for current and blocked topics.

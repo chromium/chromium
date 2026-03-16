@@ -900,9 +900,6 @@ BrowserView::BrowserView(Browser* browser)
 
   SetProperty(views::kElementIdentifierKey, kBrowserViewElementId);
 
-  // Add any legal notices required for the user to the queue.
-  QueueLegalAndPrivacyNotices(browser_->GetProfile());
-
   browser_->tab_strip_model()->AddObserver(this);
 
   main_background_region_ =

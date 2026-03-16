@@ -18,10 +18,6 @@ namespace views {
 class Widget;
 }
 
-namespace privacy_sandbox {
-class PrivacySandboxQueueManager;
-}
-
 // Service which encapsulates logic related to displaying and controlling the
 // users Privacy Sandbox settings. This service contains the chrome/ specific
 // logic used by the UI, including decision making around what the users'
@@ -202,9 +198,6 @@ class PrivacySandboxService : public KeyedService {
 
   // Returns whether a Privacy Sandbox prompt is currently open for |browser|.
   virtual bool IsPromptOpenForBrowser(BrowserWindowInterface* browser) = 0;
-
-  virtual privacy_sandbox::PrivacySandboxQueueManager&
-  GetPrivacySandboxNoticeQueueManager() = 0;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // If set to true, this treats the testing environment as that of a branded

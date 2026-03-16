@@ -16,7 +16,6 @@ class NewBadgeRegistry;
 class TutorialRegistry;
 }  // namespace user_education
 
-class Profile;
 class UserEducationService;
 
 // These do low-level initialization of data structures required for user
@@ -36,14 +35,6 @@ void MaybeRegisterChromeTutorials(user_education::TutorialRegistry& registry);
 // browser as well.
 std::unique_ptr<user_education::FeaturePromoControllerImpl>
 CreateUserEducationResources(UserEducationService& user_education_service);
-
-// Adds (or doesn't add) high priority notices (usually legal and privacy
-// related) to the product messaging queue for the specified `profile`. The
-// order of showing is defined by the show_after_ and blocked_by_ lists when
-// each notice is queued. These lists are often defined within services used in
-// this method. Notices are queued in this frame and the queue begins processing
-// in the next frame.
-void QueueLegalAndPrivacyNotices(Profile* profile);
 
 // Returns true if Enterprise policy blocks promotions. What counts as a
 // "promotion" vs. an important alert is up to each system to determine.

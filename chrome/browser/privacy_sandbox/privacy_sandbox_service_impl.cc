@@ -48,7 +48,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
 #include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -421,19 +420,9 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
   fake_blocked_topics_ = {{browsing_topics::Topic(3), kFakeTaxonomyVersion},
                           {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
 
-// Create queue manager
-#if !BUILDFLAG(IS_ANDROID)
-  queue_manager_ =
-      std::make_unique<privacy_sandbox::PrivacySandboxQueueManager>(profile_);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
-#if !BUILDFLAG(IS_ANDROID)
-  CHECK(queue_manager_);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   // Register observers for the Privacy Sandbox preferences.
   user_prefs_registrar_.Init(pref_service_);
   user_prefs_registrar_.Add(
@@ -735,11 +724,6 @@ void PrivacySandboxServiceImpl::PromptClosedForBrowser(
 bool PrivacySandboxServiceImpl::IsPromptOpenForBrowser(
     BrowserWindowInterface* browser) {
   return browsers_to_open_prompts_.count(browser);
-}
-
-privacy_sandbox::PrivacySandboxQueueManager&
-PrivacySandboxServiceImpl::GetPrivacySandboxNoticeQueueManager() {
-  return *queue_manager_.get();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1342,9 +1326,6 @@ void PrivacySandboxServiceImpl::MaybeCloseOpenPrompts() {
     CHECK(prompt);
     prompt->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
-
-  // After we are done closing the last prompt, release the handle
-  queue_manager_->MaybeUnqueueNotice();
 }
 #endif
 

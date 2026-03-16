@@ -7,14 +7,10 @@
 
 #include <memory>
 
-#include "chrome/browser/privacy_sandbox/mock_queue_manager.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class BrowserContext;
@@ -52,10 +48,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MOCK_METHOD(bool,
               IsPromptOpenForBrowser,
               (BrowserWindowInterface*),
-              (override));
-  MOCK_METHOD(privacy_sandbox::PrivacySandboxQueueManager&,
-              GetPrivacySandboxNoticeQueueManager,
-              (),
               (override));
 #endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override));
@@ -144,10 +136,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               GetAdMeasurementApiEligibility,
               (),
               (override));
-
- private:
-  std::unique_ptr<privacy_sandbox::MockPrivacySandboxQueueManager>
-      mock_queue_manager_;
 };
 
 std::unique_ptr<KeyedService> BuildMockPrivacySandboxService(

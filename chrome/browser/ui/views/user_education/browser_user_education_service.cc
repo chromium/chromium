@@ -21,9 +21,6 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_queue_manager.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -2200,15 +2197,6 @@ CreateUserEducationResources(UserEducationService& user_education_service) {
       &user_education_service.product_messaging_controller());
   result->Init();
   return result;
-}
-
-void QueueLegalAndPrivacyNotices(Profile* profile) {
-  // Privacy Sandbox Notice
-  if (auto* privacy_sandbox_service =
-          PrivacySandboxServiceFactory::GetForProfile(profile)) {
-    privacy_sandbox_service->GetPrivacySandboxNoticeQueueManager()
-        .MaybeQueueNotice();
-  }
 }
 
 bool DoesEnterprisePolicyBlockPromotions() {
