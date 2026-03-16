@@ -143,6 +143,13 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
             // recyclerview hasn't been scrolled yet. This allows to highlight the dot of the last
             // view if the recyclerview can't be scrolled any further.
             dotHighlightPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+
+            if (dotHighlightPosition < 0) {
+                // LayoutManager#findLastCompletelyVisibleItemPosition() may return -1 and lead to
+                // highlight the wrong page indicator dot. Early exits here without highlighting
+                // any dot. See https://crbug.com/491700252.
+                return;
+            }
         }
 
         if (!mIsLeftToRight) {
@@ -190,10 +197,6 @@ public class CirclePagerIndicatorDecoration extends RecyclerView.ItemDecoration 
             float indicatorPosY,
             int highlightPosition,
             boolean drawDot) {
-        if (highlightPosition < 0) {
-            return;
-        }
-
         mPaint.setColor(mColorActive);
 
         // The width of an indicator dot with padding.
