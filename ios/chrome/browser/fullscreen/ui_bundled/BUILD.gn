@@ -110,6 +110,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "fullscreen_mediator_unittest.mm",
+    "fullscreen_metrics_unittest.mm",
     "fullscreen_model_unittest.mm",
     "fullscreen_ui_updater_unittest.mm",
     "fullscreen_web_state_list_observer_unittest.mm",
@@ -119,6 +120,7 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
+    ":metrics",
     ":ui",
     ":ui_bundled",
     "//base/test:test_support",

@@ -32,6 +32,13 @@ void SimulateFullscreenUserScrollWithDelta(FullscreenModel* model,
   model->SetScrollViewIsScrolling(false);
 }
 
+void SimulateFullscreenUserScrollWithDeltaWithoutEnding(FullscreenModel* model,
+                                                        CGFloat offset_delta) {
+  model->SetScrollViewIsDragging(true);
+  model->SetScrollViewIsScrolling(true);
+  model->SetYContentOffset(model->GetYContentOffset() + offset_delta);
+}
+
 void SimulateFullscreenUserScrollForProgress(FullscreenModel* model,
                                              CGFloat progress) {
   ASSERT_GE(progress, 0.0);
