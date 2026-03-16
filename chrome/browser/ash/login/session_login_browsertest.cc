@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
@@ -81,12 +82,12 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
             session_manager::SessionManager::Get()->session_state());
   histograms.ExpectTotalCount("OOBE.BootToSignInCompleted", 1);
 
-  Browser* browser =
+  BrowserWindowInterface* browser =
       chrome::FindAnyBrowser(ProfileManager::GetActiveUserProfile(), false);
   EXPECT_TRUE(browser != nullptr);
-  EXPECT_TRUE(browser->window()->IsActive());
+  EXPECT_TRUE(browser->IsActive());
 
-  gfx::NativeWindow window = browser->window()->GetNativeWindow();
+  gfx::NativeWindow window = browser->GetWindow()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   views::FocusManager* focus_manager = widget->GetFocusManager();
   EXPECT_TRUE(focus_manager != nullptr);

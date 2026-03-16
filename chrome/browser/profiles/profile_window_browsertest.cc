@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -275,9 +276,10 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
                           ->GetSearchPrepopulateText());
 
   // Close the remaining guest browser window.
-  guest_browser = chrome::FindAnyBrowser(guest_profile, true);
-  EXPECT_TRUE(guest_browser);
-  CloseBrowserSynchronously(guest_browser);
+  BrowserWindowInterface* found_guest_browser =
+      chrome::FindAnyBrowser(guest_profile, true);
+  EXPECT_TRUE(found_guest_browser);
+  CloseBrowserSynchronously(found_guest_browser);
   content::RunAllTasksUntilIdle();
 
   // Open a new guest browser window. Since this is a separate session, the find

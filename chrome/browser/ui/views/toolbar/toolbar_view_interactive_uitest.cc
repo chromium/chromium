@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -454,7 +455,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarViewTest,
   Profile* guest = g_browser_process->profile_manager()->GetProfileByPath(
       ProfileManager::GetGuestProfilePath());
   ASSERT_TRUE(guest);
-  Browser* target_browser = chrome::FindAnyBrowser(guest, true);
+  BrowserWindowInterface* target_browser = chrome::FindAnyBrowser(guest, true);
   ASSERT_TRUE(target_browser);
   ExtensionsToolbarDesktop* extensions_container =
       BrowserView::GetBrowserViewForBrowser(target_browser)
