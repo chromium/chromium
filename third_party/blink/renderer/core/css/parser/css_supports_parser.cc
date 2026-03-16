@@ -218,7 +218,11 @@ bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
   }
 
   // @charset is accepted in parsing but is not a valid at-rule.
-  return guard.Release() && at_rule_id != CSSAtRuleID::kCSSAtRuleCharset;
+  if (guard.Release() && at_rule_id != CSSAtRuleID::kCSSAtRuleCharset) {
+    stream.ConsumeWhitespace();
+    return true;
+  }
+  return false;
 }
 
 namespace {
