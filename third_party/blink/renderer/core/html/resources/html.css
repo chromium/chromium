@@ -575,10 +575,6 @@ input[type="search" i]:enabled:read-write:-webkit-any(:focus,:hover)::-webkit-se
     pointer-events: auto;
 }
 
-input[type="search" i]::-webkit-search-results-decoration {
-  margin: auto 3px auto 2px;
-}
-
 /* Specifying all of the type attributes in the selector below does not seem
  * necessary and causes a performance issue when combined with
  * -internal-auto-base(), so the AppearanceBase one does not include the type

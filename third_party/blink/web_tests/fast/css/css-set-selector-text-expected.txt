@@ -84,9 +84,6 @@ PASS setThenReadSelectorText(':-webkit-drag') is ':-webkit-drag'
 
 PASS setThenReadSelectorText('::-webkit-file-upload-button') is '::-webkit-file-upload-button'
 PASS setThenReadSelectorText('::-webkit-search-cancel-button') is '::-webkit-search-cancel-button'
-PASS setThenReadSelectorText('::-webkit-search-decoration') is '::-webkit-search-decoration'
-PASS setThenReadSelectorText('::-webkit-search-results-button') is '::-webkit-search-results-button'
-PASS setThenReadSelectorText('::-webkit-search-results-decoration') is '::-webkit-search-results-decoration'
 PASS setThenReadSelectorText('::-webkit-slider-thumb') is '::-webkit-slider-thumb'
 
 
