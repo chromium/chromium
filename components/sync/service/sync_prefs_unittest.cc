@@ -1696,11 +1696,13 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomPassphrase) {
 
   SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
 
-  // All supported types should be considered selected for this account now,
-  // except for kAutofill ("Addresses and more") which should've been disabled
-  // for custom passphrase users.
-  const UserSelectableTypeSet expected_types =
-      base::Difference(default_enabled_types, {UserSelectableType::kAutofill});
+  // All supported types should be considered selected for this account now.
+  // For Android, and iOS, kAutofill ("Addresses and more") should've been
+  // disabled for custom passphrase users.
+  UserSelectableTypeSet expected_types = default_enabled_types;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  expected_types.Remove(UserSelectableType::kAutofill);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   SyncPrefs prefs(&pref_service_);
   UserSelectableTypeSet selected_types =
       prefs.GetSelectedTypesForAccount(gaia_id_);
@@ -1748,7 +1750,7 @@ TEST_F(SyncPrefsMigrationTest,
 }
 
 TEST_F(SyncPrefsMigrationTest,
-       GlobalToAccount_ExplicitSigninForExtensionsEnabled_Enabled) {
+       GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       syncer::kReplaceSyncPromosWithSignInPromos,
@@ -1772,7 +1774,7 @@ TEST_F(SyncPrefsMigrationTest,
 }
 
 TEST_F(SyncPrefsMigrationTest,
-       GlobalToAccount_ExplicitSigninForExtensionsEnabled_Disabled) {
+       GlobalToAccount_ExplicitSigninForExtensionsEnabled_TypeDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       syncer::kReplaceSyncPromosWithSignInPromos,
@@ -1793,6 +1795,78 @@ TEST_F(SyncPrefsMigrationTest,
   SyncPrefs prefs(&pref_service_);
   EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
       UserSelectableType::kExtensions));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       GlobalToAccount_ExplicitSigninForBookmarksEnabled_SyncEverything) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+
+  // All types including kBookmarks are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    // Sync Everything ON.
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/true,
+        /*registered_types=*/UserSelectableTypeSet::All(),
+        UserSelectableTypeSet::All());
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  SyncPrefs prefs(&pref_service_);
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       GlobalToAccount_ExplicitSigninForBookmarksEnabled_TypeEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+
+  // All types including kBookmarks are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    // Enable everything manually (Sync Everything OFF).
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(),
+        UserSelectableTypeSet::All());
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  SyncPrefs prefs(&pref_service_);
+  EXPECT_TRUE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       GlobalToAccount_ExplicitSigninForBookmarksEnabled_TypeDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+
+  // All types except for kBookmarks are selected in the global prefs.
+  {
+    SyncPrefs old_prefs(&pref_service_);
+    UserSelectableTypeSet selected_types = UserSelectableTypeSet::All();
+    selected_types.Remove(UserSelectableType::kBookmarks);
+    old_prefs.SetSelectedTypesForSyncingUser(
+        /*keep_everything_synced=*/false,
+        /*registered_types=*/UserSelectableTypeSet::All(), selected_types);
+  }
+
+  SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
+
+  SyncPrefs prefs(&pref_service_);
+  EXPECT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_).Has(
+      UserSelectableType::kBookmarks));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
         // !BUILDFLAG(IS_CHROMEOS)
