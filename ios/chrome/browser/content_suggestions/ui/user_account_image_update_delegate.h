@@ -11,7 +11,7 @@
 // Sets up an avatar for signed-out state.
 - (void)setSignedOutAccountImage;
 // Updates current signed-in user account avatar with supplied image.
-// `image` and `email` must not be nil.
+// `image` and `email` must not be nil. `name` may be nil.
 - (void)updateAccountImage:(UIImage*)image
                       name:(NSString*)name
                      email:(NSString*)email;

@@ -263,8 +263,8 @@ TEST_F(AccountMenuViewControllerTest, TestDefaultSetting) {
   CentralAccountView* table_header_view =
       static_cast<CentralAccountView*>(table_header_view_);
   EXPECT_EQ(table_header_view.avatarImage, kPrimaryAccountAvatar);
-  EXPECT_EQ(table_header_view.name, kPrimaryIdentity.userFullName);
-  EXPECT_EQ(table_header_view.email, kPrimaryIdentity.userEmail);
+  EXPECT_EQ(table_header_view.title, kPrimaryIdentity.userFullName);
+  EXPECT_EQ(table_header_view.subtitle, kPrimaryIdentity.userEmail);
   EXPECT_EQ(table_header_view.managed, true);
 }
 

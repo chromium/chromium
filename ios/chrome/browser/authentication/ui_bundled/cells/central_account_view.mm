@@ -47,9 +47,9 @@ UIImage* GetEnterpriseIcon() {
   // corners.
   UIImage* _avatarImage;
   // Name displayed in main label.
-  NSString* _name;
+  NSString* _title;
   // Email subtitle displayed in secondary label.
-  NSString* _email;
+  NSString* _subtitle;
   // The account avatar.
   UIImageView* _imageView;
   // Whether to use large margin.
@@ -71,8 +71,8 @@ UIImage* GetEnterpriseIcon() {
     CHECK(avatarImage);
     CHECK(email);
     _avatarImage = avatarImage;
-    _name = name ? name : email;
-    _email = name ? email : nil;
+    _title = name ? name : email;
+    _subtitle = name ? email : nil;
     _useLargeMargins = useLargeMargins;
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitHeader;
@@ -88,7 +88,7 @@ UIImage* GetEnterpriseIcon() {
     [self addSubview:_imageView];
 
     UILabel* titleLabel = [[UILabel alloc] init];
-    titleLabel.text = _name;
+    titleLabel.text = _title;
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.numberOfLines = 1;
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -100,7 +100,7 @@ UIImage* GetEnterpriseIcon() {
     [self addSubview:titleLabel];
 
     UILabel* subtitleLabel = [[UILabel alloc] init];
-    subtitleLabel.text = _email;
+    subtitleLabel.text = _subtitle;
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
     subtitleLabel.numberOfLines = 1;
     subtitleLabel.adjustsFontForContentSizeCategory = YES;
@@ -219,9 +219,9 @@ UIImage* GetEnterpriseIcon() {
 
 - (NSString*)accessibilityLabel {
   NSMutableString* accessibilityLabel =
-      [NSMutableString stringWithString:_name];
-  if (_email) {
-    [accessibilityLabel appendFormat:@", %@", _email];
+      [NSMutableString stringWithString:_title];
+  if (_subtitle) {
+    [accessibilityLabel appendFormat:@", %@", _subtitle];
   }
   if ([self managed]) {
     [accessibilityLabel appendFormat:@". %@", [self managementDescription]];
@@ -244,12 +244,12 @@ UIImage* GetEnterpriseIcon() {
   return _avatarImage;
 }
 
-- (NSString*)name {
-  return _name;
+- (NSString*)title {
+  return _title;
 }
 
-- (NSString*)email {
-  return _email;
+- (NSString*)subtitle {
+  return _subtitle;
 }
 
 - (BOOL)managed {

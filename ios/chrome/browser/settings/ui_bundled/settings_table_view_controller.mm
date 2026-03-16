@@ -1764,8 +1764,14 @@ struct EnhancedSafeBrowsingActivePromoData
   identityAccountItem.image =
       GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           _identity, IdentityAvatarSize::TableViewIcon);
-  identityAccountItem.text = _identity.userFullName;
-  identityAccountItem.detailText = _identity.userEmail;
+  NSString* name = _identity.userFullName;
+  NSString* email = _identity.userEmail;
+  if (name) {
+    identityAccountItem.text = name;
+    identityAccountItem.detailText = email;
+  } else {
+    identityAccountItem.text = email;
+  }
 
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(_profile);

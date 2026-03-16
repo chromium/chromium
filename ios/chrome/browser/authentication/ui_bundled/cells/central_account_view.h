@@ -28,8 +28,10 @@
 
 // Returns the view parameters.
 - (UIImage*)avatarImage;
-- (NSString*)name;
-- (NSString*)email;
+// The title of the view. The name if it’s set otherwise the email.
+- (NSString*)title;
+// The title of the view. The email if the name is set, otherwise nil.
+- (NSString*)subtitle;
 - (BOOL)managed;
 
 - (NSString*)managementDescription;

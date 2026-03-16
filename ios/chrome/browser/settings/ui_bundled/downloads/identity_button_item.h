@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection);
 
 // IdentityButtonControl parameters.
 @property(nonatomic, strong) UIImage* identityAvatar;
+// The name may be nil if it has not yet been loaded.
 @property(nonatomic, copy) NSString* identityName;
 @property(nonatomic, copy) NSString* identityEmail;
 @property(nonatomic, assign) GaiaId identityGaiaID;

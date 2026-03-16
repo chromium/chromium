@@ -14,6 +14,7 @@ class GaiaId;
 
 // Sets the values of the identity button and the value of the "Ask which
 // account to use every time" switch.
+// `name` may be nil if it has not yet been loaded.
 - (void)setIdentityButtonAvatar:(UIImage*)avatar
                            name:(NSString*)name
                           email:(NSString*)email

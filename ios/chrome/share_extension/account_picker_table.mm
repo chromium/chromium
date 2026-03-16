@@ -115,9 +115,13 @@ CGFloat const kAvatarImageDimension = 30.0;
              renderingMode:UIImageRenderingModeAlwaysOriginal];
 
   } else {
-    content.text = ([accountInfo.fullName length] > 0) ? accountInfo.fullName
-                                                       : accountInfo.email;
-    content.secondaryText = accountInfo.email;
+    NSString* name = accountInfo.fullName;
+    if (name.length > 0) {
+      content.text = name;
+      content.secondaryText = accountInfo.email;
+    } else {
+      content.text = accountInfo.email;
+    }
     content.image = accountInfo.avatar;
     UIListContentImageProperties* imageProperties = content.imageProperties;
     imageProperties.cornerRadius = kAvatarImageDimension / 2.0;

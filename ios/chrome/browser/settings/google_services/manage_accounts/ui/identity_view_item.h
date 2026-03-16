@@ -13,6 +13,7 @@ class GaiaId;
 @interface IdentityViewItem : NSObject
 
 @property(nonatomic, copy) NSString* userEmail;
+// The name may be nil if it has not yet been loaded.
 @property(nonatomic, copy) NSString* userFullName;
 @property(nonatomic, assign) GaiaId gaiaID;
 @property(nonatomic, copy) UIImage* avatar;

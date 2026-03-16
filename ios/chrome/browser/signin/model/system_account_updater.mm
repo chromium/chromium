@@ -50,6 +50,7 @@ class SystemIdentityInfo {
   ~SystemIdentityInfo() = default;
 
   const GaiaId& gaia_id() const { return gaia_id_; }
+  // Returns the full name or an empty string.
   NSString* full_name() const { return full_name_; }
   NSString* user_email() const { return user_email_; }
   UIImage* cached_avatar() const { return cached_avatar_; }
@@ -63,6 +64,7 @@ class SystemIdentityInfo {
 
  private:
   GaiaId gaia_id_;
+  // The name may be empty.
   NSString* full_name_;
   NSString* user_email_;
   UIImage* cached_avatar_;

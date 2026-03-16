@@ -316,6 +316,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
 #if BUILDFLAG(IS_IOS)
   // Calls `account_name_email_store_` in order to create or update the
   // kAccountNameEmail profile using current primary account info.
+  // If `account_name` is empty, this method does nothing.
   // TODO(crbug.com/449708427): Remove once `AccountInfo` supports full_name on
   // IOS.
   void MaybeCreateAccountNameEmailProfile(std::string account_name,

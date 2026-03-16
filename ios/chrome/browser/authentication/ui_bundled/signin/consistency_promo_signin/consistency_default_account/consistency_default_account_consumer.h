@@ -19,6 +19,7 @@
 - (void)setSkipButtonText:(NSString*)text;
 
 // Updates the user information, and show the default account.
+// `fullName` and `givenName` may be nil if they have not yet been loaded.
 - (void)showDefaultAccountWithFullName:(NSString*)fullName
                              givenName:(NSString*)givenName
                                  email:(NSString*)email

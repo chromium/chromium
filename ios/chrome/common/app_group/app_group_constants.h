@@ -210,8 +210,10 @@ extern NSString* const kOpenExtensionOutcomes;
 // Name of NSUserDefault key containing info about registered profiles to be
 // passed to widgets.
 extern NSString* const kAccountsOnDevice;
-// Names of keys in dictionary saved in kAccountsOnDevice.
+// Names of keys in dictionary saved in kAccountsOnDevice for the email.
 extern NSString* const kEmail;
+// Names of keys in dictionary saved in kAccountsOnDevice for the name or an
+// empty string.
 extern NSString* const kFullName;
 // Key used to save info for widgets when no account is signed-in.
 extern NSString* const kNoAccount;

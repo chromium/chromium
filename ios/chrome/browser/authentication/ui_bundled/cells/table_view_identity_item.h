@@ -17,7 +17,7 @@
 
 // Gaia ID.
 @property(nonatomic, assign) GaiaId gaiaID;
-// User name.
+// User name. It may be nil.
 @property(nonatomic, copy) NSString* name;
 // User email.
 @property(nonatomic, copy) NSString* email;

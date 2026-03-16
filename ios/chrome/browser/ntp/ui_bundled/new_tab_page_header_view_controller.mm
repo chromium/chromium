@@ -1084,6 +1084,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
 }
 
+// `name` may be nil, `email` must not be nil.
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
                                                email:(NSString*)email {
   NSString* accountButtonLabel;

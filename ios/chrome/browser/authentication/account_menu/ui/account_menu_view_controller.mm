@@ -407,16 +407,22 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                               gaiaID:(const GaiaId&)gaiaID
                            indexPath:(NSIndexPath*)indexPath {
   NSString* email = [self.dataSource emailForGaiaID:gaiaID];
+  NSString* name = [self.dataSource nameForGaiaID:gaiaID];
+  NSString* title = name ? name : email;
+
   BOOL isGaiaIDManaged = [self.dataSource isGaiaIDManaged:gaiaID];
 
   TableViewCellContentConfiguration* configuration =
       [[TableViewCellContentConfiguration alloc] init];
-  configuration.title = [self.dataSource nameForGaiaID:gaiaID];
+  configuration.title = title;
   configuration.titleNumberOfLines = 1;
   configuration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  configuration.subtitle = email;
-  configuration.subtitleNumberOfLines = 1;
-  configuration.subtitleLineBreakMode = NSLineBreakByTruncatingTail;
+  if (name) {
+    // If name is missing, the title is the email, so no need for this subtitle.
+    configuration.subtitle = email;
+    configuration.subtitleNumberOfLines = 1;
+    configuration.subtitleLineBreakMode = NSLineBreakByTruncatingTail;
+  }
 
   ImageContentConfiguration* imageConfiguration =
       [[ImageContentConfiguration alloc] init];
@@ -439,7 +445,6 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UITableViewCell* cell =
       [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
 
-  NSString* name = [self.dataSource nameForGaiaID:gaiaID];
   if (name) {
     configuration.customAccessibilityLabel = l10n_util::GetNSStringF(
         isGaiaIDManaged

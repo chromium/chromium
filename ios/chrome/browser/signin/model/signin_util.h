@@ -83,4 +83,12 @@ void RunSystemCapabilitiesPrefetch(NSArray<id<SystemIdentity>>* identities);
 // Resets the data related to device restore. This is for test only.
 void ResetDeviceRestoreDataForTesting();
 
+// Returns the user given name of `identity`. In case it’s nil, returns the full
+// name or the email.
+NSString* UserGivenNameFullNameOrEmail(id<SystemIdentity> identity);
+
+// Returns the user full name of `identity`. In case it’s nil, returns the the
+// email.
+NSString* UserFullNameOrEmail(id<SystemIdentity> identity);
+
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_UTIL_H_

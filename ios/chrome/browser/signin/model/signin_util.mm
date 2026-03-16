@@ -202,3 +202,19 @@ void ResetDeviceRestoreDataForTesting() {
   CHECK_IS_TEST();
   g_restore_data.reset();
 }
+
+NSString* UserGivenNameFullNameOrEmail(id<SystemIdentity> identity) {
+  NSString* name = identity.userGivenName;
+  if (name) {
+    return name;
+  }
+  return UserFullNameOrEmail(identity);
+}
+
+NSString* UserFullNameOrEmail(id<SystemIdentity> identity) {
+  NSString* name = identity.userFullName;
+  if (name) {
+    return name;
+  }
+  return identity.userEmail;
+}

@@ -34,7 +34,7 @@ class GaiaId;
 // The description showed when the browser is managed.
 @property(nonatomic, readonly) NSString* managementDescription;
 
-// The full name for the user with `gaiaID`.
+// The full name for the user with `gaiaID`. It may be nil.
 - (NSString*)nameForGaiaID:(const GaiaId&)gaiaID;
 
 // The email for the user with `gaiaID`.

@@ -9,6 +9,7 @@
 
 @interface ShareExtensionAccountInfo : NSObject
 @property(nonatomic, copy) NSString* gaiaIDString;
+// May be nil.
 @property(nonatomic, copy) NSString* fullName;
 @property(nonatomic, copy) NSString* email;
 @property(nonatomic, copy) UIImage* avatar;
