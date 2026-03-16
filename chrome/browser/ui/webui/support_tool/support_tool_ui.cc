@@ -29,7 +29,7 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 #include "chrome/common/url_constants.h"

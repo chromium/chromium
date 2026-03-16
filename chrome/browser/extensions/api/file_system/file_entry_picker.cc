@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "ui/gfx/native_ui_types.h"

@@ -24,7 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"

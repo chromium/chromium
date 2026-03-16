@@ -13,7 +13,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"

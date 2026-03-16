@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("select_file_policy") {
+  sources = [
+    "chrome_select_file_policy.cc",
+    "chrome_select_file_policy.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ui/shell_dialogs",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/infobars",
+    "//chrome/common:constants",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_select_file_policy_unittest.cc" ]
+  deps = [
+    ":select_file_policy",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/prefs",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//ui/shell_dialogs",
+  ]
+}

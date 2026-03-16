@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"

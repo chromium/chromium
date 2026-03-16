@@ -1842,6 +1842,7 @@ static_library("browser") {
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/safety_hub:impl",
     "//chrome/browser/ui/search_engines",
+    "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/side_search",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/startup:impl",

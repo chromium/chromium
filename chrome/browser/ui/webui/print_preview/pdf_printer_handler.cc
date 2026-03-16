@@ -26,7 +26,7 @@
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"

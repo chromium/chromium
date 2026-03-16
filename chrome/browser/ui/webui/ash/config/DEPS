@@ -27,7 +27,7 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps/apps",
   "+chrome/browser/feedback",
   "+chrome/browser/ui/ash/holding_space",
-  "+chrome/browser/ui/chrome_select_file_policy.h",
+  "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/about/about_ui.h",
   "+chrome/browser/ui/webui/ash/account_manager",
   "+chrome/browser/ui/webui/ash/add_supervision",

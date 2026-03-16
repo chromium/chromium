@@ -26,7 +26,7 @@ include_rules = [
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/chrome_pages.h",
-  "+chrome/browser/ui/chrome_select_file_policy.h",
+  "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/browser/ui/webui/ash/settings/app_management",
   "+chrome/common/pref_names.h",
 ]

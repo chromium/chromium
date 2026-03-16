@@ -13,7 +13,7 @@
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_gallery_context_menu.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/storage_monitor/storage_info.h"

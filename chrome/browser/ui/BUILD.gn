@@ -54,8 +54,6 @@ static_library("ui") {
     "browser_navigator_params_utils.h",
     "browser_ui_prefs.cc",
     "browser_ui_prefs.h",
-    "chrome_select_file_policy.cc",
-    "chrome_select_file_policy.h",
     "confirm_bubble.h",
     "crypto_module_password_dialog.h",
     "enterprise_startup_dialog.h",
@@ -408,6 +406,7 @@ static_library("ui") {
     "//chrome/browser/ui/profiles:impl",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/search_engines",
+    "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
     "//chrome/browser/ui/side_panel",
@@ -802,11 +801,6 @@ static_library("ui") {
     # - c/b/ui/chrome_pages.h and browser.h
     # - c/b/ui/webui/password_manager/password_manager_ui.h
     "//chrome/browser/ui/passwords:impl",
-
-    # TODO(crbug.com/437811373): Remove this circular dependency when the following
-    # header gets componentized:
-    # - c/b/ui/chrome_select_file_policy.h
-    "//chrome/browser/ui/passwords/settings:impl",
 
     # TODO(crbug.com/420905611): Remove this circular dependency when c/b/ui/browser_dialogs.h
     # gets componentized.

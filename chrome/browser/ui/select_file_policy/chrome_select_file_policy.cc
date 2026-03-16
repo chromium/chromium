@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/common/pref_names.h"
@@ -14,6 +12,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ChromeSelectFilePolicy::ChromeSelectFilePolicy(

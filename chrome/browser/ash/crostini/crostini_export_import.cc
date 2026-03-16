@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_CHROME_SELECT_FILE_POLICY_H_
-#define CHROME_BROWSER_UI_CHROME_SELECT_FILE_POLICY_H_
+#ifndef CHROME_BROWSER_UI_SELECT_FILE_POLICY_CHROME_SELECT_FILE_POLICY_H_
+#define CHROME_BROWSER_UI_SELECT_FILE_POLICY_CHROME_SELECT_FILE_POLICY_H_
 
 #include "base/memory/raw_ptr.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -34,4 +34,4 @@ class ChromeSelectFilePolicy : public ui::SelectFilePolicy {
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> source_contents_;
 };
 
-#endif  // CHROME_BROWSER_UI_CHROME_SELECT_FILE_POLICY_H_
+#endif  // CHROME_BROWSER_UI_SELECT_FILE_POLICY_CHROME_SELECT_FILE_POLICY_H_

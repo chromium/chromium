@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "components/download/public/common/base_file.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"

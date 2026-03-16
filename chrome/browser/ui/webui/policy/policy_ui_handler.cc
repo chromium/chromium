@@ -47,7 +47,7 @@
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/branded_strings.h"

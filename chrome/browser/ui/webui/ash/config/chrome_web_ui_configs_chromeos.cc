@@ -67,7 +67,7 @@
 #include "chrome/browser/ash/system_web_apps/apps/vc_background_ui/vc_background_ui_utils.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_migration_welcome_ui.h"

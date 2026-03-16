@@ -67,6 +67,7 @@ source_set("impl") {
     ":icon_label_bubble",
     ":location_bar",
     "//chrome/browser/ui/dialogs",
+    "//chrome/browser/ui/select_file_policy",
   ]
 
   if (toolkit_views) {

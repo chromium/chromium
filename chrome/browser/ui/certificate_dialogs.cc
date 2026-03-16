@@ -20,7 +20,7 @@
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"

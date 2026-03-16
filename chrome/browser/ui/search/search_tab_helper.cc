@@ -24,7 +24,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"

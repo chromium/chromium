@@ -26,7 +26,7 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
-  "+chrome/browser/ui/chrome_select_file_policy.h",
+  "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
   "+chrome/common/chrome_isolated_world_ids.h",
   "+chrome/test/base",
 

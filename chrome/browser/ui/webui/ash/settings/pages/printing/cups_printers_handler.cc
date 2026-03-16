@@ -39,7 +39,7 @@
 #include "chrome/browser/local_discovery/endpoint_resolver.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/server_printer_url_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"

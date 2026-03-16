@@ -34,7 +34,7 @@
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/apps/platform_apps/api/media_galleries.h"
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/common/pref_names.h"

@@ -17,7 +17,7 @@
 #include "chrome/browser/net/server_certificate_database_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/certificate_dialogs.h"
-#include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_handler.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"

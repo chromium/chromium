@@ -226,6 +226,7 @@ source_set("ui_impl") {
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/webui:webui_util",
     "//components/application_locale_storage",
     "//components/contextual_search:public",
