@@ -11807,6 +11807,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/privacy_sandbox:tracking_protection_settings",
       "//components/reading_list/core",
       "//components/resources",
+      "//components/safe_browsing/content/browser:client_side_detection",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/search",

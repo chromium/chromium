@@ -111,6 +111,10 @@ class ClientSideDetectionHost
   // primary account is signed in.
   using PrimaryAccountSignedIn = base::RepeatingCallback<bool()>;
 
+  // Callback for when preclassification is started.
+  using PreclassificationStarted =
+      base::RepeatingCallback<void(ClientSideDetectionType)>;
+
   // Delegate which allows to provide embedder specific implementations.
   class Delegate {
    public:
@@ -215,6 +219,12 @@ class ClientSideDetectionHost
   // User requests to report a site as unsafe. The screenshot values come from
   // the report dialog view.
   void ReportUnsafeSite(SkBitmap screenshot);
+
+  // Sets a callback to be notified when preclassification is started.
+  void set_preclassification_started_callback_for_testing(
+      const PreclassificationStarted& callback) {
+    preclassification_started_cb_for_testing_ = callback;
+  }
 
  protected:
   explicit ClientSideDetectionHost(
@@ -480,17 +490,9 @@ class ClientSideDetectionHost
   void set_history_service_for_testing(
       history::HistoryService* history_service);
 
-  // Callbacks for when preclassification is started/done.
-  using PreclassificationStarted =
-      base::RepeatingCallback<void(ClientSideDetectionType)>;
+  // Callback for when preclassification is done.
   using PreclassificationDone =
       base::RepeatingCallback<void(ClientSideDetectionType)>;
-
-  // Sets a callback to be notified when preclassification is started.
-  void set_preclassification_started_callback_for_testing(
-      const PreclassificationStarted& callback) {
-    preclassification_started_cb_for_testing_ = callback;
-  }
 
   // Sets a callback to be notified when preclassification is done.
   void set_preclassification_done_callback_for_testing(
