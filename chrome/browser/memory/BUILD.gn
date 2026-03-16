@@ -53,6 +53,7 @@ source_set("impl") {
     ":memory",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/resource_coordinator",
     "//chrome/common:constants",
     "//components/heap_profiling/in_process",
     "//components/heap_profiling/in_process:mojom",
