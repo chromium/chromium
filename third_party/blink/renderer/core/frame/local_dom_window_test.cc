@@ -332,8 +332,7 @@ TEST_F(LocalDOMWindowTest, StorageAccessApiStatus) {
   EXPECT_EQ(GetFrame().DomWindow()->GetStorageAccessApiStatus(),
             net::StorageAccessApiStatus::kNone);
   GetFrame().DomWindow()->SetStorageAccessApiStatus(
-      net::StorageAccessApiStatus::kAccessViaAPI,
-      LocalDOMWindow::StorageAccessApiNotifyEmbedder::kBrowserProcess);
+      net::StorageAccessApiStatus::kAccessViaAPI);
   EXPECT_EQ(GetFrame().DomWindow()->GetStorageAccessApiStatus(),
             net::StorageAccessApiStatus::kAccessViaAPI);
 }

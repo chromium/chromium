@@ -327,7 +327,4 @@ void FakeLocalFrameHost::InitializeCrashReportContext(
 
 void FakeLocalFrameHost::NotifyDocumentInteractive() {}
 
-void FakeLocalFrameHost::SetStorageAccessApiStatus(
-    net::StorageAccessApiStatus status) {}
-
 }  // namespace blink

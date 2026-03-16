@@ -815,9 +815,6 @@ interface LocalFrameHost {
   // Sent for top-level frames.
   NotifyDocumentInteractive();
 
-  // Sets the StorageAccessApiStatus for the given frame.
-  SetStorageAccessApiStatus(network.mojom.StorageAccessApiStatus status);
-
   // This IPC lets the browser initialize memory reserved for crash reporting
   // API of size `length`. Note that the maximum allowed size is
   // `kMaxCrashReportContextSize`. In the future, if we decide that shared

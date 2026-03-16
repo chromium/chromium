@@ -2747,20 +2747,9 @@ bool LocalDOMWindow::CheckGuardrailsPolicyForAssetSize(
 }
 
 void LocalDOMWindow::SetStorageAccessApiStatus(
-    net::StorageAccessApiStatus status,
-    StorageAccessApiNotifyEmbedder notify) {
+    net::StorageAccessApiStatus status) {
   CHECK_GE(status, storage_access_api_status_);
   storage_access_api_status_ = status;
-  switch (notify) {
-    case StorageAccessApiNotifyEmbedder::kNone:
-      break;
-    case StorageAccessApiNotifyEmbedder::kBrowserProcess: {
-      LocalFrame* frame = GetFrame();
-      CHECK(frame);
-      frame->SetStorageAccessApiStatus(status);
-      break;
-    }
-  }
 }
 
 void LocalDOMWindow::SetHasBeenRevealed(bool revealed) {

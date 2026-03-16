@@ -30,7 +30,6 @@ external/wpt/ai/translator/*
 # Storage Access API is implemented in the `//chrome` layer.
 external/wpt/storage-access-api/*
 external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
-virtual/force-allow-storage-access/*
 
 # Device Bound Session Credentials relies on the `//chrome` layer.
 external/wpt/device-bound-session-credentials/*

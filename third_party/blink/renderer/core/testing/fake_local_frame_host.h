@@ -227,7 +227,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       uint64_t length,
       InitializeCrashReportContextCallback callback) override;
   void NotifyDocumentInteractive() override;
-  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

@@ -377,8 +377,7 @@ void DocumentStorageAccess::ProcessStorageAccessPermissionState(
   if (status == mojom::blink::PermissionStatus::GRANTED) {
     if (request_unpartitioned_cookie_access) {
       GetSupplementable()->dom_window_->SetStorageAccessApiStatus(
-          net::StorageAccessApiStatus::kAccessViaAPI,
-          LocalDOMWindow::StorageAccessApiNotifyEmbedder::kBrowserProcess);
+          net::StorageAccessApiStatus::kAccessViaAPI);
     }
     std::move(on_resolve).Run(resolver);
   } else {

@@ -367,9 +367,6 @@ class CORE_EXPORT LocalFrame final
   // scheduler of the state change.
   void SetHadUserInteraction(bool had_user_interaction);
 
-  // Sets the Storage Access API status in the browser process..
-  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status);
-
   // Registers an observer that will be notified if a VK occludes
   // the content when it raises/dismisses. The observer is a HeapHashSet
   // data structure that doesn't allow duplicates.

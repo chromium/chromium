@@ -555,19 +555,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     is_picture_in_picture_window_ = is_picture_in_picture;
   }
 
-  // This enum represents whether or not a call to `SetStorageAccessApiStatus`
-  // needs to also pass the status back up to the browser.
-  enum class StorageAccessApiNotifyEmbedder {
-    // No notification.
-    kNone,
-    // Notify the browser process.
-    kBrowserProcess,
-  };
-
   // Sets the StorageAccessApiStatus. Calls to this method must not downgrade
   // the status.
-  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status,
-                                 StorageAccessApiNotifyEmbedder notify);
+  void SetStorageAccessApiStatus(net::StorageAccessApiStatus status);
 
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#has-been-revealed
   bool HasBeenRevealed() const { return has_been_revealed_; }

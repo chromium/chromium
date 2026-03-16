@@ -814,17 +814,6 @@ bool CookieSettingsBase::IsAllowedByStorageAccessGrant(
     const GURL& url,
     const GURL& first_party_url,
     net::CookieSettingOverrides overrides) const {
-  if (base::FeatureList::IsEnabled(features::kForceAllowStorageAccess)) {
-    // TODO(crbug.com/415223384):
-    // `document.requestStorageAccess` is racy when permission has been
-    // overridden (e.g. via `test_driver.set_permission`). This is because the
-    // RFHI in the browser process may not be aware that the renderer has
-    // requested (and gotten) permission by the time StorageAccessHandle tries
-    // to bind mojo endpoints. This is used in the virtual test suite
-    // `force-allow-storage-access` to ensure no WPTs go stale while we wait on
-    // the less temporary fix in the task linked above.
-    return true;
-  }
   if (!overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible) &&
       !overrides.Has(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {

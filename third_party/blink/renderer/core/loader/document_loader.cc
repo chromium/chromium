@@ -2737,11 +2737,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
         GetWindowAgentForAgentClusterKey(frame_.Get(), agent_cluster_key);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
 
-    // No need to sync this back to the browser, since it just came from the
-    // browser.
-    frame_->DomWindow()->SetStorageAccessApiStatus(
-        storage_access_api_status_,
-        LocalDOMWindow::StorageAccessApiNotifyEmbedder::kNone);
+    frame_->DomWindow()->SetStorageAccessApiStatus(storage_access_api_status_);
     inherited_has_storage_access = [this]() -> bool {
       switch (storage_access_api_status_) {
         case net::StorageAccessApiStatus::kNone:

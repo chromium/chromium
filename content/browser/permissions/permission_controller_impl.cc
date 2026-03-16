@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
@@ -225,6 +226,15 @@ void NotifySchedulerAboutPermissionRequest(RenderFrameHost* render_frame_host,
       ->OnBackForwardCacheDisablingStickyFeatureUsed(feature.value());
 }
 
+// The result of looking up a permission which may be overridden.
+struct OverrideResult {
+  // The type of the permission that was queried.
+  PermissionType permission_type;
+  // The corresponding PermissionResult from overrides. `std::nullopt` means the
+  // status was not overridden.
+  std::optional<PermissionResult> permission_result;
+};
+
 // Calls |original_cb|, a callback expecting the PermissionStatus of a set of
 // permissions, after joining the results of overridden permissions and
 // non-overridden permissions.
@@ -234,17 +244,17 @@ void NotifySchedulerAboutPermissionRequest(RenderFrameHost* render_frame_host,
 // were delegated - their results need to be inserted in order.
 void MergeOverriddenAndDelegatedResults(
     base::OnceCallback<void(const std::vector<PermissionResult>&)> original_cb,
-    std::vector<std::optional<PermissionResult>> overridden_results,
+    std::vector<OverrideResult> overridden_results,
     const std::vector<PermissionResult>& delegated_results) {
   std::vector<PermissionResult> full_results;
   full_results.reserve(overridden_results.size());
   auto delegated_it = delegated_results.begin();
-  for (auto& status : overridden_results) {
-    if (!status) {
+  for (auto& override_result : overridden_results) {
+    if (!override_result.permission_result) {
       CHECK(delegated_it != delegated_results.end());
-      status.emplace(*delegated_it++);
+      override_result.permission_result.emplace(*delegated_it++);
     }
-    full_results.emplace_back(*status);
+    full_results.emplace_back(*override_result.permission_result);
   }
   CHECK(delegated_it == delegated_results.end());
 
@@ -262,23 +272,24 @@ void PermissionStatusCallbackWrapper(
 // status (as per the provided overrides). Returns a result vector that contains
 // all the statuses for permissions after applying overrides, using `nullopt`
 // for those permissions that do not have an override.
-std::vector<std::optional<PermissionResult>> OverridePermissions(
+std::vector<OverrideResult> OverridePermissions(
     PermissionRequestDescription& description,
     RenderFrameHost* render_frame_host,
     const PermissionOverrides& permission_overrides) {
   std::vector<blink::mojom::PermissionDescriptorPtr>
       permissions_without_overrides;
-  std::vector<std::optional<PermissionResult>> results;
+  std::vector<OverrideResult> results;
 
   for (const auto& permission : description.permissions) {
+    PermissionType type =
+        blink::PermissionDescriptorToPermissionType(permission);
     std::optional<PermissionResult> override_status = permission_overrides.Get(
         render_frame_host->GetLastCommittedOrigin(),
-        render_frame_host->GetMainFrame()->GetLastCommittedOrigin(),
-        blink::PermissionDescriptorToPermissionType(permission));
+        render_frame_host->GetMainFrame()->GetLastCommittedOrigin(), type);
     if (!override_status) {
       permissions_without_overrides.push_back(permission.Clone());
     }
-    results.push_back(override_status);
+    results.emplace_back(type, override_status);
   }
 
   description.permissions = std::move(permissions_without_overrides);
@@ -294,6 +305,26 @@ ContentSettingsType ConvertPermissionTypeForCookieManager(
       return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
     default:
       NOTREACHED();
+  }
+}
+
+// Updates `render_frame_host` based on the results of a permission request, if
+// needed.
+void UpdateRenderFrameHostPostPermissionRequest(
+    RenderFrameHost* render_frame_host,
+    base::span<const OverrideResult> results) {
+  const auto is_granted_storage_access = [](const auto& result) {
+    return result.permission_type == PermissionType::STORAGE_ACCESS_GRANT &&
+           result.permission_result.has_value() &&
+           result.permission_result->status ==
+               blink::mojom::PermissionStatus::GRANTED;
+  };
+  if (std::ranges::any_of(results, is_granted_storage_access)) {
+    // Granted STORAGE_ACCESS_GRANT permissions need to also update the relevant
+    // RenderFrameHost, to set its StorageAccessApiStatus. The renderer performs
+    // the corresponding update once it receives the IPC response.
+    render_frame_host->SetStorageAccessApiStatus(
+        net::StorageAccessApiStatus::kAccessViaAPI);
   }
 }
 
@@ -488,9 +519,11 @@ void PermissionControllerImpl::RequestPermissions(
         blink::PermissionDescriptorToPermissionType(permission));
   }
 
-  std::vector<std::optional<PermissionResult>> override_results =
-      OverridePermissions(request_description, render_frame_host,
-                          permission_overrides_);
+  std::vector<OverrideResult> override_results = OverridePermissions(
+      request_description, render_frame_host, permission_overrides_);
+
+  UpdateRenderFrameHostPostPermissionRequest(render_frame_host,
+                                             override_results);
 
   auto wrapper = base::BindOnce(&MergeOverriddenAndDelegatedResults,
                                 std::move(callback), override_results);
@@ -540,9 +573,11 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
 
   request_description.requesting_origin =
       render_frame_host->GetLastCommittedOrigin().GetURL();
-  std::vector<std::optional<PermissionResult>> override_results =
-      OverridePermissions(request_description, render_frame_host,
-                          permission_overrides_);
+  std::vector<OverrideResult> override_results = OverridePermissions(
+      request_description, render_frame_host, permission_overrides_);
+
+  UpdateRenderFrameHostPostPermissionRequest(render_frame_host,
+                                             override_results);
 
   auto wrapper = base::BindOnce(&MergeOverriddenAndDelegatedResults,
                                 std::move(callback), override_results);

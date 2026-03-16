@@ -9253,15 +9253,8 @@ crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/web
 crbug.com/418169805 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.serviceworker.html?cpu [ Failure Pass ]
 crbug.com/418173365 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Failure Pass ]
 
-# TODO(crbug.com/415223384): `document.requestStorageAccess` is racy when
-# permission has been overridden (e.g. via `test_driver.set_permission`).
-# This is because the RFHI in the browser process may not be aware that the
-# renderer has requested (and gotten) permission by the time StorageAccessHandle
-# tries to bind mojo endpoints. All of the tests below are temporarially running
-# in a virtual test suite `force-allow-storage-access` to ensure none go stale
-# while we wait on the less temporary fixes in the tasks linked above.
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Crash Failure Pass Timeout ]
-crbug.com/415223384 external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html [ Crash Failure Pass Timeout ]
+crbug.com/491849980 external/wpt/storage-access-api/storage-access-beyond-cookies.BlobURLSharedWorker.sub.https.tentative.window.html [ Failure Pass Timeout ]
+crbug.com/491849980 external/wpt/storage-access-api/storage-access-beyond-cookies.blobStorage.sub.https.window.html [ Failure Pass Timeout ]
 
 # Gardener 2025-05-05
 crbug.com/413289778 [ Mac12 ] wpt_internal/fedcm/fedcm-cache-manifest.https.html [ Failure ]

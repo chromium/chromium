@@ -129,7 +129,5 @@ const base::FeatureParam<EnableForIframeTypes>
         kTpcdPopupHeuristicEnableForIframeInitiatorName,
         EnableForIframeTypes::kAll, &kEnableForIframeTypesOptions};
 
-BASE_FEATURE(kForceAllowStorageAccess, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features
 }  // namespace content_settings
