@@ -695,6 +695,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return mHasFinishedLatestAccessibilitySnapshot;
     }
 
+    public Object @Nullable [] getExtendedSelection(int virtualViewId) {
+        if (!isNativeInitialized()) return null;
+        int[] selection =
+                WebContentsAccessibilityImplJni.get()
+                        .getExtendedSelection(mNativeObj, virtualViewId);
+
+        if (selection == null) return null;
+
+        AccessibilityNodeInfoCompat startNode = createAccessibilityNodeInfo(selection[0]);
+        int startOffset = selection[1];
+        AccessibilityNodeInfoCompat endNode = createAccessibilityNodeInfo(selection[2]);
+        int endOffset = selection[3];
+
+        return new Object[] {startNode, startOffset, endNode, endOffset};
+    }
+
     public boolean setExtendedSelectionForTesting( // IN-TEST
             int id, int startNodeId, int startNodeOffset, int endNodeId, int endNodeOffset) {
         return WebContentsAccessibilityImplJni.get()
@@ -2895,6 +2911,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         int[] getChildIdsForTesting(long nativeWebContentsAccessibilityAndroid, int virtualViewId);
 
         int[] getChildIdsForExperiment(
+                long nativeWebContentsAccessibilityAndroid, int virtualViewId);
+
+        int @Nullable [] getExtendedSelection(
                 long nativeWebContentsAccessibilityAndroid, int virtualViewId);
 
         int[] getLabeledByNodeIdsForTesting( // IN-TEST

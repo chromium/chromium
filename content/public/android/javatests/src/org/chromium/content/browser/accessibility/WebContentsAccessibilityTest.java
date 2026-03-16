@@ -111,7 +111,6 @@ import android.text.style.SuggestionSpan;
 import android.text.style.SuperscriptSpan;
 import android.text.style.TypefaceSpan;
 import android.text.style.UnderlineSpan;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -126,7 +125,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -222,16 +220,6 @@ public class WebContentsAccessibilityTest {
             new AccessibilityContentShellActivityTestRule();
 
     @Rule public final Expect expect = Expect.create();
-
-    public void setupAconfigFlaggedApiDelegateIfNeededForSelection() {
-        // TODO(crbug.com/443078007): Remove when extended selection is supported with the released
-        // API.
-        if (AconfigFlaggedApiDelegate.getInstance() == null
-                || !AconfigFlaggedApiDelegate.getInstance()
-                        .isActionSetExtendedSelectionSupported()) {
-            AconfigFlaggedApiDelegate.setInstanceForTesting(new FakeAconfigFlaggedApiDelegate());
-        }
-    }
 
     /**
      * Helper methods for setup of a basic web contents accessibility unit test.
@@ -360,6 +348,11 @@ public class WebContentsAccessibilityTest {
     private void clearNodeInfoCacheForGivenId(int virtualViewId) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mWcax.clearNodeInfoCacheForGivenId(virtualViewId));
+    }
+
+    private Object[] getExtendedSelectionOnUiThread(int rootVvid) throws ExecutionException {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.mWcax.getExtendedSelection(rootVvid));
     }
 
     /**
@@ -2767,7 +2760,6 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testPerformAction_setExtendedSelection_nonEditable() throws Throwable {
-        setupAconfigFlaggedApiDelegateIfNeededForSelection();
         setupTestWithHTML(
                 "<p id='paragraph1'>Paragraph1</p>"
                         + "<p id='paragraph2'>Paragraph2</p>"
@@ -2784,25 +2776,27 @@ public class WebContentsAccessibilityTest {
         int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
         int paragraph3Vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "paragraph3");
 
-        // Ensure delegate is available to set and get the selection.
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        Assert.assertNotNull("error message", delegate);
-
-        Pair<Integer, Integer> selectionStart;
-        Pair<Integer, Integer> selectionEnd;
-
         // Select all.
         Assert.assertEquals(
                 true,
                 selectTextOnUiThreadAndWaitForSelectionEvent(
                         rootVvid, paragraph1Vvid, 0, paragraph3Vvid, 5));
         mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selectionStart = delegate.getExtendedSelectionStart(mNodeInfo);
-        selectionEnd = delegate.getExtendedSelectionEnd(mNodeInfo);
-        Assert.assertEquals(PERFORM_ACTION_ERROR, paragraph1Vvid, selectionStart.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, selectionStart.second.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, paragraph3Vvid, selectionEnd.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, selectionEnd.second.longValue());
+
+        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
+        int startOffset = (int) selection[1];
+        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
+        int endOffset = (int) selection[3];
+
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraph1Vvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraph3Vvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, endOffset);
 
         // Some of the first two paragraphs.
         Assert.assertEquals(
@@ -2810,12 +2804,20 @@ public class WebContentsAccessibilityTest {
                 selectTextOnUiThreadAndWaitForSelectionEvent(
                         rootVvid, paragraph1Vvid, 1, paragraph2Vvid, 3));
         mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selectionStart = delegate.getExtendedSelectionStart(mNodeInfo);
-        selectionEnd = delegate.getExtendedSelectionEnd(mNodeInfo);
-        Assert.assertEquals(PERFORM_ACTION_ERROR, paragraph1Vvid, selectionStart.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, selectionStart.second.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, paragraph2Vvid, selectionEnd.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 3, selectionEnd.second.longValue());
+        selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        startNode = (AccessibilityNodeInfoCompat) selection[0];
+        startOffset = (int) selection[1];
+        endNode = (AccessibilityNodeInfoCompat) selection[2];
+        endOffset = (int) selection[3];
+
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraph1Vvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, startOffset);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraph2Vvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 3, endOffset);
 
         // Reverse selection.
         Assert.assertEquals(
@@ -2823,12 +2825,20 @@ public class WebContentsAccessibilityTest {
                 selectTextOnUiThreadAndWaitForSelectionEvent(
                         rootVvid, paragraph3Vvid, 0, paragraph1Vvid, 10));
         mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selectionStart = delegate.getExtendedSelectionStart(mNodeInfo);
-        selectionEnd = delegate.getExtendedSelectionEnd(mNodeInfo);
-        Assert.assertEquals(PERFORM_ACTION_ERROR, paragraph3Vvid, selectionStart.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, selectionStart.second.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, paragraph1Vvid, selectionEnd.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 10, selectionEnd.second.longValue());
+        selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        startNode = (AccessibilityNodeInfoCompat) selection[0];
+        startOffset = (int) selection[1];
+        endNode = (AccessibilityNodeInfoCompat) selection[2];
+        endOffset = (int) selection[3];
+
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraph3Vvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(paragraph1Vvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 10, endOffset);
 
         // Image (no text), not supported.
         Assert.assertEquals(
@@ -2862,37 +2872,35 @@ public class WebContentsAccessibilityTest {
     @Test
     @SmallTest
     public void testPerformAction_setExtendedSelection_simpleEditable() throws Throwable {
-        setupAconfigFlaggedApiDelegateIfNeededForSelection();
         setupTestWithHTML("<input id='input' type='text' value='EditableText'>");
 
         // Find nodes.
         int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         int inputVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "input");
 
-        // Ensure delegate is available to set and get the selection.
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        Assert.assertNotNull("error message", delegate);
-
-        Pair<Integer, Integer> selectionStart;
-        Pair<Integer, Integer> selectionEnd;
-
         Assert.assertEquals(
                 true,
                 selectTextOnUiThreadAndWaitForSelectionEvent(rootVvid, inputVvid, 1, inputVvid, 5));
         mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selectionStart = delegate.getExtendedSelectionStart(mNodeInfo);
-        selectionEnd = delegate.getExtendedSelectionEnd(mNodeInfo);
-        Assert.assertEquals(PERFORM_ACTION_ERROR, inputVvid, selectionStart.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, selectionStart.second.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, inputVvid, selectionEnd.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, selectionEnd.second.longValue());
+        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
+        int startOffset = (int) selection[1];
+        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
+        int endOffset = (int) selection[3];
+
+        Assert.assertEquals(
+                PERFORM_ACTION_ERROR, String.valueOf(inputVvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 1, startOffset);
+        Assert.assertEquals(PERFORM_ACTION_ERROR, String.valueOf(inputVvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, endOffset);
     }
 
     /** Test extended selection on content editable. */
     @Test
     @SmallTest
     public void testPerformAction_setExtendedSelection_contentEditable() throws Throwable {
-        setupAconfigFlaggedApiDelegateIfNeededForSelection();
         setupTestWithHTML(
                 "<div id='contenteditable' contenteditable>"
                         + "<p>Some Text></p>"
@@ -2904,26 +2912,27 @@ public class WebContentsAccessibilityTest {
         int contenteditableVvid =
                 waitForNodeMatching(sViewIdResourceNameMatcher, "contenteditable");
 
-        // Ensure delegate is available to set and get the selection.
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        Assert.assertNotNull("error message", delegate);
-
-        Pair<Integer, Integer> selectionStart;
-        Pair<Integer, Integer> selectionEnd;
-
         Assert.assertEquals(
                 true,
                 selectTextOnUiThreadAndWaitForSelectionEvent(
                         rootVvid, contenteditableVvid, 0, contenteditableVvid, 5));
-        mNodeInfo = createAccessibilityNodeInfo(rootVvid);
-        selectionStart = delegate.getExtendedSelectionStart(mNodeInfo);
-        selectionEnd = delegate.getExtendedSelectionEnd(mNodeInfo);
+
+        Object[] selection = getExtendedSelectionOnUiThread(rootVvid);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, selection);
+
+        AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
+        int startOffset = (int) selection[1];
+        AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
+        int endOffset = (int) selection[3];
+
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, startNode);
         Assert.assertEquals(
-                PERFORM_ACTION_ERROR, contenteditableVvid, selectionStart.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, selectionStart.second.longValue());
+                PERFORM_ACTION_ERROR, String.valueOf(contenteditableVvid), startNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 0, startOffset);
+        Assert.assertNotNull(PERFORM_ACTION_ERROR, endNode);
         Assert.assertEquals(
-                PERFORM_ACTION_ERROR, contenteditableVvid, selectionEnd.first.longValue());
-        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, selectionEnd.second.longValue());
+                PERFORM_ACTION_ERROR, String.valueOf(contenteditableVvid), endNode.getUniqueId());
+        Assert.assertEquals(PERFORM_ACTION_ERROR, 5, endOffset);
     }
 
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */

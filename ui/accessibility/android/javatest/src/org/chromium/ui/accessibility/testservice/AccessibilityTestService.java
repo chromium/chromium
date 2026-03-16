@@ -210,6 +210,37 @@ public class AccessibilityTestService extends AccessibilityService {
         StringBuilder builder = new StringBuilder();
         builder.append(indent);
         builder.append(AccessibilityNodeInfoCompatDumper.toString(node));
+
+        // Append extended selection information if available by checking ancestors.
+        AccessibilityNodeInfoCompat ancestor = node;
+        while (ancestor != null) {
+            AccessibilityNodeInfoCompat.SelectionCompat selection = ancestor.getSelection();
+            if (selection != null) {
+                AccessibilityNodeInfoCompat.SelectionPositionCompat start = selection.getStart();
+                if (start != null) {
+                    if (node.equals(start.getNode())) {
+                        builder.append(" extendedSelectionStart:").append(start.getOffset());
+                    }
+                }
+
+                AccessibilityNodeInfoCompat.SelectionPositionCompat end = selection.getEnd();
+                if (end != null) {
+                    if (node.equals(end.getNode())) {
+                        builder.append(" extendedSelectionEnd:").append(end.getOffset());
+                    }
+                }
+
+                if (start != null || end != null) {
+                    break; // Found selection on this ancestor
+                }
+            }
+            AccessibilityNodeInfoCompat parent = ancestor.getParent();
+            if (!ancestor.equals(node)) {
+                ancestor.recycle();
+            }
+            ancestor = parent;
+        }
+
         builder.append("\n");
 
         String childIndent = indent + "  ";

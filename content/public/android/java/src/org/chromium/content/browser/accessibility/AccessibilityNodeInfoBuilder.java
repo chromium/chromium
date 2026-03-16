@@ -65,6 +65,8 @@ import android.util.SparseArray;
 import android.view.View;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.SelectionCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.SelectionPositionCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -759,25 +761,18 @@ public class AccessibilityNodeInfoBuilder {
             int startOffset,
             int endVirtualViewId,
             int endOffset) {
-        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate != null) {
-            aconfigFlaggedApiDelegate.setSelection(
-                    node,
-                    mDelegate.getView(),
-                    startVirtualViewId,
-                    startOffset,
-                    endVirtualViewId,
-                    endOffset);
-        }
+        node.setSelection(
+                new SelectionCompat(
+                        new SelectionPositionCompat(
+                                mDelegate.getView(), startVirtualViewId, startOffset),
+                        new SelectionPositionCompat(
+                                mDelegate.getView(), endVirtualViewId, endOffset)));
     }
 
     @CalledByNative
     protected void clearAccessibilityNodeInfoExtendedSelectionAttrs(
             AccessibilityNodeInfoCompat node) {
-        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate != null) {
-            aconfigFlaggedApiDelegate.clearSelection(node);
-        }
+        node.setSelection(null);
     }
 
     @CalledByNative

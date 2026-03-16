@@ -4,15 +4,11 @@
 
 package org.chromium.content.browser.accessibility;
 
-import android.util.Pair;
-import android.view.View;
-
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -76,31 +72,23 @@ public final class AccessibilityNodeInfoUtils {
                         AccessibilityNodeInfoCompatDumper.toString(
                                 node, includeScreenSizeDependentAttributes));
 
-        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
-        if (delegate != null) {
-            Integer nodeId = Integer.parseInt(node.getUniqueId());
-            Integer ancestorNodeId = nodeId;
+        Object[] selection =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            int virtualViewId = Integer.parseInt(node.getUniqueId());
+                            return wcax.getExtendedSelection(virtualViewId);
+                        });
+        if (selection != null) {
+            AccessibilityNodeInfoCompat startNode = (AccessibilityNodeInfoCompat) selection[0];
+            int startOffset = (int) selection[1];
+            AccessibilityNodeInfoCompat endNode = (AccessibilityNodeInfoCompat) selection[2];
+            int endOffset = (int) selection[3];
 
-            while (ancestorNodeId != View.NO_ID) {
-                final int finalAncestorId = ancestorNodeId;
-                AccessibilityNodeInfoCompat ancestor =
-                        ThreadUtils.runOnUiThreadBlocking(
-                                () -> wcax.createAccessibilityNodeInfo(finalAncestorId));
-                if (ancestor == null) {
-                    break;
-                }
-                Pair<Integer, Integer> startPosition = delegate.getExtendedSelectionStart(ancestor);
-                Pair<Integer, Integer> endPosition = delegate.getExtendedSelectionEnd(ancestor);
-                if (startPosition != null || endPosition != null) {
-                    if (startPosition != null && startPosition.first.equals(nodeId)) {
-                        builder.append(" extendedSelectionStart:").append(startPosition.second);
-                    }
-                    if (endPosition != null && endPosition.first.equals(nodeId)) {
-                        builder.append(" extendedSelectionEnd:").append(endPosition.second);
-                    }
-                    break;
-                }
-                ancestorNodeId = wcax.getParentIdForTesting(ancestorNodeId); // IN-TEST
+            if (startNode != null && startNode.equals(node)) {
+                builder.append(" extendedSelectionStart:").append(startOffset);
+            }
+            if (endNode != null && endNode.equals(node)) {
+                builder.append(" extendedSelectionEnd:").append(endOffset);
             }
         }
 

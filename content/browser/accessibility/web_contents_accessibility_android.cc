@@ -1917,6 +1917,36 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoPaneTitle(
   }
 }
 
+std::optional<ui::AXSelection>
+WebContentsAccessibilityAndroid::GetSelectionInternal(
+    BrowserAccessibilityManagerAndroid* root_manager) {
+  if (!root_manager) {
+    return std::nullopt;
+  }
+
+  ui::AXSelection selection = root_manager->ax_tree()->GetUnignoredSelection();
+
+  ui::BrowserAccessibility* anchor_node =
+      root_manager->GetFromID(selection.anchor_object_id);
+  ui::BrowserAccessibility* focus_node =
+      root_manager->GetFromID(selection.focus_object_id);
+
+  if (!anchor_node || !focus_node) {
+    return std::nullopt;
+  }
+
+  if (!ConvertToTextSelectionForAndroid(anchor_node, selection.anchor_offset,
+                                        focus_node, selection.focus_offset)) {
+    return std::nullopt;
+  }
+
+  // TODO(accessibility): awkward packing/unpacking of args everywhere; pick a
+  // firm representation.
+  selection.anchor_object_id = anchor_node->GetId();
+  selection.focus_object_id = focus_node->GetId();
+  return selection;
+}
+
 void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     JNIEnv* env,
     const JavaRef<jobject>& info,
@@ -1957,33 +1987,60 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     return;
   }
 
-  ui::AXSelection selection = root_manager->ax_tree()->GetUnignoredSelection();
+  std::optional<ui::AXSelection> selection = GetSelectionInternal(root_manager);
 
-  ui::BrowserAccessibility* anchor_node =
-      root_manager->GetFromID(selection.anchor_object_id);
-  ui::BrowserAccessibility* focus_node =
-      root_manager->GetFromID(selection.focus_object_id);
-
-  if (!anchor_node || !focus_node) {
+  if (!selection.has_value()) {
     Java_AccessibilityNodeInfoBuilder_clearAccessibilityNodeInfoExtendedSelectionAttrs(
         env, obj, info);
     return;
   }
 
-  int anchor_offset = selection.anchor_offset;
-  int focus_offset = selection.focus_offset;
-  if (!ConvertToTextSelectionForAndroid(anchor_node, anchor_offset, focus_node,
-                                        focus_offset)) {
-    return;
-  }
+  ui::BrowserAccessibility* anchor_node =
+      root_manager->GetFromID(selection->anchor_object_id);
+  CHECK(anchor_node);
+  ui::BrowserAccessibility* focus_node =
+      root_manager->GetFromID(selection->focus_object_id);
+  CHECK(focus_node);
 
   const int anchor_unique_id =
       static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
   const int focus_unique_id =
       static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
-      env, obj, info, anchor_unique_id, anchor_offset, focus_unique_id,
-      focus_offset);
+      env, obj, info, anchor_unique_id, selection->anchor_offset,
+      focus_unique_id, selection->focus_offset);
+}
+
+ScopedJavaLocalRef<jintArray>
+WebContentsAccessibilityAndroid::GetExtendedSelection(JNIEnv* env,
+                                                      int32_t unique_id) {
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return nullptr;
+  }
+
+  auto* root_manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
+  std::optional<ui::AXSelection> selection = GetSelectionInternal(root_manager);
+  if (!selection.has_value()) {
+    return nullptr;
+  }
+
+  ui::BrowserAccessibility* anchor_node =
+      root_manager->GetFromID(selection->anchor_object_id);
+  CHECK(anchor_node);
+  ui::BrowserAccessibility* focus_node =
+      root_manager->GetFromID(selection->focus_object_id);
+  CHECK(focus_node);
+
+  const int anchor_unique_id =
+      static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
+  const int focus_unique_id =
+      static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
+
+  int selection_data[] = {anchor_unique_id, selection->anchor_offset,
+                          focus_unique_id, selection->focus_offset};
+  return ToJavaIntArray(env, selection_data);
 }
 
 bool WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
