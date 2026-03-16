@@ -1241,6 +1241,15 @@
   <message name="IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TEXT" desc="Button shown to the user to go to the next step.">
     Next
   </message>
+  <message name="IDS_FJORD_IMAGE_SELECTION_TITLE" desc="Title of the OOBE screen for choosing the device enrollment type.">
+    Choose device enrollment type
+  </message>
+  <message name="IDS_FJORD_IMAGE_SELECTION_MEET_LABEL" desc="Label for the radio button option to enroll the device as Google Beam with Meet.">
+    Google Beam with Meet
+  </message>
+  <message name="IDS_FJORD_IMAGE_SELECTION_ZOOM_LABEL" desc="Label for the radio button option to enroll the device as Google Beam with Zoom.">
+    Google Beam with Zoom
+  </message>
 
   <!-- Strings for parental handoff login screen -->
   <message name="IDS_LOGIN_PARENTAL_HANDOFF_SCREEN_TITLE" desc="Title of screen which tells user that the parent can handoff the device to supervised user.">

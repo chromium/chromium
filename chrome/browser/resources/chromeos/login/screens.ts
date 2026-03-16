@@ -78,6 +78,7 @@ import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.js';
 import './screens/oobe/fjord_fw_update.js';
+import './screens/oobe/fjord_image_selection.js';
 import './screens/oobe/fjord_station_setup.js';
 import './screens/oobe/fjord_touch_controller.js';
 import './screens/oobe/hid_detection.js';
@@ -258,6 +259,11 @@ export const oobeScreensList: OobeTypes.ScreensList = [
     tag: 'fjord-fw-update-element',
     id: 'fjord-fw-update',
     condition: 'isFjordOobeEnabled',
+  },
+  {
+    tag: 'fjord-image-selection-element',
+    id: 'fjord-image-selection',
+    condition: 'isFjordOobeImageSwitchEnabled',
   },
   {
     tag: 'fjord-station-setup-element',

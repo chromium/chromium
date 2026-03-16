@@ -24,6 +24,10 @@ bool ShouldShowFjordOobe() {
           features::IsFjordOobeForSquidEnabled());
 }
 
+bool ShouldShowFjordOobeImageSwitch() {
+  return ShouldShowFjordOobe() && features::IsFjordOobeImageSwitchEnabled();
+}
+
 bool IsAllowlistedLanguage(std::string_view language_code) {
   return kFjordOobeAllowedLanguages.contains(language_code.data());
 }

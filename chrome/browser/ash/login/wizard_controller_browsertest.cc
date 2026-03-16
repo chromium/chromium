@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_fw_update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_image_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -1431,7 +1432,9 @@ class WizardControllerFjordOOBETest
     : public WizardControllerUnifiedEnrollmentTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kFjordOobeForceEnabled);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFjordOobeForceEnabled},
+        /*disabled_features=*/{features::kFjordOobeImageSwitch});
     FjordOobeStateManager::Initialize();
     WizardControllerUnifiedEnrollmentTest::SetUp();
   }
@@ -1529,6 +1532,40 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFjordOOBETest,
   EXPECT_EQ(
       FjordOobeStateManager::Get()->GetFjordOobeStateInfo().oobe_state(),
       fjord_oobe_state::proto::FjordOobeStateInfo::FJORD_OOBE_STATE_COMPLETE);
+}
+
+class WizardControllerFjordImageSelectionTest
+    : public WizardControllerFlowTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kFjordOobeForceEnabled, features::kFjordOobeImageSwitch},
+        {});
+    WizardControllerFlowTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerFjordImageSelectionTest,
+                       ImageSwitchScreenShownAfterUpdate) {
+  CheckCurrentScreen(WelcomeView::kScreenId);
+
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_network_screen_, ShowImpl()).Times(1);
+  mock_welcome_screen_->ExitScreen(WelcomeScreen::Result::kNext);
+
+  CheckCurrentScreen(NetworkScreenView::kScreenId);
+  EXPECT_CALL(*mock_network_screen_, HideImpl()).Times(1);
+  EXPECT_CALL(*mock_update_screen_, ShowImpl()).Times(1);
+  mock_network_screen_->ExitScreen(NetworkScreen::Result::CONNECTED);
+
+  CheckCurrentScreen(UpdateView::kScreenId);
+  EXPECT_CALL(*mock_update_screen_, HideImpl()).Times(1);
+  mock_update_screen_->RunExit(UpdateScreen::Result::UPDATE_NOT_REQUIRED);
+
+  CheckCurrentScreen(FjordImageSelectionScreenView::kScreenId);
 }
 
 class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {

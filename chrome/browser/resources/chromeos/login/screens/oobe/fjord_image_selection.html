@@ -1,0 +1,32 @@
+<style include="oobe-dialog-host-styles cr-card-radio-group-styles
+    cros-color-overrides">
+.card-container {
+  min-height: 96px;
+}
+
+</style>
+<oobe-adaptive-dialog id="fjordImageSelectionDialog"
+    role="dialog">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'fjordImageSelectionTitle')]]
+  </h1>
+  <div slot="content" class="layout vertical landscape-vertical">
+    <cr-radio-group selected="{{selectedImageType}}">
+      <cr-card-radio-button id="meetButton" class="flex" name="meet">
+        <div class="card-container">
+          <div class="card-content card-label">
+            [[i18nDynamic(locale, 'fjordImageSelectionMeetLabel')]]
+          </div>
+        </div>
+      </cr-card-radio-button>
+      <cr-card-radio-button id="zoomButton" class="flex" name="zoom">
+        <div class="card-container">
+          <div class="card-content card-label">
+            [[i18nDynamic(locale, 'fjordImageSelectionZoomLabel')]]
+          </div>
+        </div>
+      </cr-card-radio-button>
+    </cr-radio-group>
+  </div>
+</oobe-adaptive-dialog>

@@ -81,6 +81,7 @@
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_fw_update_screen.h"
+#include "chrome/browser/ash/login/screens/fjord_image_selection_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_station_setup_screen.h"
 #include "chrome/browser/ash/login/screens/fjord_touch_controller_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
@@ -186,6 +187,7 @@
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_fw_update_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/fjord_image_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_station_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fjord_touch_controller_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -1078,6 +1080,13 @@ WizardController::CreateScreens() {
         oobe_ui->GetView<FjordFwUpdateScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnFjordFwUpdateScreenExit,
                             weak_factory_.GetWeakPtr())));
+    if (fjord_util::ShouldShowFjordOobeImageSwitch()) {
+      append(std::make_unique<FjordImageSelectionScreen>(
+          oobe_ui->GetView<FjordImageSelectionScreenHandler>()->AsWeakPtr(),
+          base::BindRepeating(
+              &WizardController::OnFjordImageSelectionScreenExit,
+              weak_factory_.GetWeakPtr())));
+    }
   }
 
   return result;
@@ -1453,6 +1462,10 @@ void WizardController::ShowFjordStationSetupScreen() {
 
 void WizardController::ShowFjordFwUpdateScreen() {
   SetCurrentScreen(GetScreen(FjordFwUpdateScreenView::kScreenId));
+}
+
+void WizardController::ShowFjordImageSelectionScreen() {
+  SetCurrentScreen(GetScreen(FjordImageSelectionScreenView::kScreenId));
 }
 
 void WizardController::OnUserCreationScreenExit(
@@ -2303,6 +2316,11 @@ void WizardController::OnUpdateCompleted() {
   language_packs::LanguagePackManager::UpdatePacksForOobe(locale,
                                                           base::DoNothing());
 
+  if (fjord_util::ShouldShowFjordOobeImageSwitch()) {
+    ShowFjordImageSelectionScreen();
+    return;
+  }
+
   if (demo_setup_controller_) {
     ShowConsolidatedConsentScreen();
     return;
@@ -3056,6 +3074,11 @@ void WizardController::OnFjordFwUpdateScreenExit() {
   ShowFjordStationSetupScreen();
 }
 
+void WizardController::OnFjordImageSelectionScreenExit() {
+  OnScreenExit(FjordImageSelectionScreenView::kScreenId, kDefaultExitReason);
+  ShowAutoEnrollmentCheckScreen();
+}
+
 bool WizardController::ExitFjordTouchControllerScreen() {
   // Return true if Station setup screen or FW update screen is showing because
   // this means the TC setup screen was shown before this. This ensures that if
@@ -3545,6 +3568,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == QuickStartView::kScreenId ||
              screen_id == FjordStationSetupScreenView::kScreenId ||
              screen_id == FjordTouchControllerScreenView::kScreenId ||
+             screen_id == FjordImageSelectionScreenView::kScreenId ||
              screen_id == FjordFwUpdateScreenView::kScreenId) {
     SetCurrentScreen(GetScreen(screen_id));
   } else {

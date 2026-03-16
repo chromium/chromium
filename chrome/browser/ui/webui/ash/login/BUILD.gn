@@ -71,6 +71,8 @@ static_library("login") {
     "fingerprint_setup_screen_handler.h",
     "fjord_fw_update_screen_handler.cc",
     "fjord_fw_update_screen_handler.h",
+    "fjord_image_selection_screen_handler.cc",
+    "fjord_image_selection_screen_handler.h",
     "fjord_station_setup_screen_handler.cc",
     "fjord_station_setup_screen_handler.h",
     "fjord_touch_controller_screen_handler.cc",

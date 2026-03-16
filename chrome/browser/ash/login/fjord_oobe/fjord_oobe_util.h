@@ -15,6 +15,9 @@ namespace ash::fjord_util {
 // Returns if the Fjord variant of OOBE should be shown.
 bool ShouldShowFjordOobe();
 
+// Returns if the Fjord image switch screen should be shown.
+bool ShouldShowFjordOobeImageSwitch();
+
 // Returns if the language code is allowlisted for Fjord OOBE.
 bool IsAllowlistedLanguage(std::string_view language_code);
 
