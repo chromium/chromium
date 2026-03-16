@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 function canXhr(url) {
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
   xhr.open('GET', url, false);
-  var success = true;
+  let success = true;
   try {
     xhr.send();
-  } catch(e) {
+  } catch (e) {
     assertEq('NetworkError', e.name);
     success = false;
   }
@@ -16,8 +16,8 @@ function canXhr(url) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  chrome.runtime.sendMessage({message:'xhr'}, function(response) {
-    var success = canXhr(response.url);
-    chrome.runtime.sendMessage({success:success});
+  chrome.runtime.sendMessage({message: 'xhr'}, function(response) {
+    const success = canXhr(response.url);
+    chrome.runtime.sendMessage({success: success});
   });
 });
