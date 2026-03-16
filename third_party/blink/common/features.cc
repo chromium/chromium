@@ -410,11 +410,14 @@ BASE_FEATURE(kClientHintsViewportWidth_DEPRECATED,
 
 BASE_FEATURE(kCompositedAnimationsForceMainFrames,
              base::FEATURE_ENABLED_BY_DEFAULT);
+// TODO(paint-dev): crbug.com/470127855#comment32. Enabling this parameter
+// causes a significant regression in power consumption. We need to make the
+// behavior more selective before re-enabling it.
 BASE_FEATURE_PARAM(bool,
                    kForceMainFramesForIntersectionObserver,
                    &kCompositedAnimationsForceMainFrames,
                    "intersection-observer",
-                   true);
+                   false);
 BASE_FEATURE_PARAM(bool,
                    kForceMainFramesForAnchorTransform,
                    &kCompositedAnimationsForceMainFrames,
