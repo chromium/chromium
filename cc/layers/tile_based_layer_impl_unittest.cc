@@ -617,40 +617,13 @@ TEST_F(TileBasedLayerImplTest, AppendQuadsComputesQuadOffset) {
             expected_visible_quad_layer_rect);
 }
 
-class QuadOffsetOrderTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
- public:
-  QuadOffsetOrderTestTileBasedLayerImpl(LayerTreeImpl* tree_impl, int id)
-      : TestTileBasedLayerImpl(tree_impl, id) {}
-
-  const viz::SharedQuadState* shared_quad_state_at_specialization() const {
-    return shared_quad_state_at_specialization_.get();
-  }
-
- private:
-  void DidAppendQuad(viz::DrawQuad* quad,
-                     const TilingSetCoverageIterator<FakeTiling>& iter,
-                     AppendQuadsData* append_quads_data,
-                     bool is_checkerboard) override {
-    shared_quad_state_at_specialization_ =
-        std::make_unique<viz::SharedQuadState>(*quad->shared_quad_state);
-  }
-  float GetIdealContentsScaleKey() const override { return 1.f; }
-
-  std::unique_ptr<viz::SharedQuadState> shared_quad_state_at_specialization_;
-};
-
 // Verifies that AppendQuads() updates the shared quad state for the computed
-// quad offset only *after* invoking AppendQuadsSpecialization(). This is part
-// of the method's contract and is necessary AppendQuadsSpecialization()
-// implementations need to operate on the original values of the shared quad
-// state (e.g., to find which tiles to draw).
-TEST_F(
-    TileBasedLayerImplTest,
-    AppendQuadsUpdatesSharedQuadStateWithOffsetOnlyAfterCallingSpecialization) {
+// quad offset.
+TEST_F(TileBasedLayerImplTest, AppendQuadsUpdatesSharedQuadStateWithOffset) {
   const gfx::Size layer_bounds(100, 100);
   const gfx::Rect visible_layer_rect(10, 20, 50, 60);
 
-  auto layer = std::make_unique<QuadOffsetOrderTestTileBasedLayerImpl>(
+  auto layer = std::make_unique<TestTileBasedLayerImpl>(
       host_impl()->active_tree(), /*id=*/1);
   auto* raw_layer = layer.get();
   host_impl()->active_tree()->AddLayer(std::move(layer));
@@ -665,18 +638,7 @@ TEST_F(
   raw_layer->AppendQuads(AppendQuadsContext{DRAW_MODE_SOFTWARE, {}, false},
                          render_pass.get(), &data);
 
-  const viz::SharedQuadState* sqs_at_specialization =
-      raw_layer->shared_quad_state_at_specialization();
-  ASSERT_TRUE(sqs_at_specialization);
-
-  // The SharedQuadState should not have been adjusted by the quad offset at the
-  // time of being passed into AppendQuadsSpecialization().
-  EXPECT_EQ(sqs_at_specialization->quad_to_target_transform,
-            raw_layer->draw_properties().target_space_transform);
-  EXPECT_EQ(sqs_at_specialization->quad_layer_rect, gfx::Rect(layer_bounds));
-  EXPECT_EQ(sqs_at_specialization->visible_quad_layer_rect, visible_layer_rect);
-
-  // Now check the final SQS to ensure the offset was applied later.
+  // Check the final SQS to ensure the offset was applied.
   ASSERT_EQ(render_pass->shared_quad_state_list.size(), 1u);
   const viz::SharedQuadState* final_sqs =
       render_pass->shared_quad_state_list.front();

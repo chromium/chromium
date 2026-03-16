@@ -315,10 +315,9 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   // crbug.com/765297. In order to avoid this, we shift the quads up from where
   // they logically reside and adjust the shared_quad_state's transform instead.
   // We only do this in scale/translate matrices to ensure the math is correct.
-  // NOTE: Implementations of AppendQuadsSpecialization() need to use the
-  // original state in `shared_quad_state` to correctly locate the tiles to
-  // draw. For this reason, we delay adjusting `shared_quad_state` itself until
-  // the bottom of the method below.
+  // NOTE: This method uses the original state in `shared_quad_state` to
+  // correctly locate the tiles to draw. For this reason, we delay adjusting
+  // `shared_quad_state` itself until the bottom of the method below.
   gfx::Vector2d quad_offset;
   if (shared_quad_state->quad_to_target_transform.IsScaleOrTranslation()) {
     const auto& visible_rect = shared_quad_state->visible_quad_layer_rect;
@@ -382,10 +381,9 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
     }
   }
 
-  // Clear the set of scales that were used in the previous
-  // AppendQuadsSpecialization() so that subclasses can track the scales used in
-  // *this* invocation in order to determine which scales are now unused and can
-  // be considered for removal.
+  // Clear the set of scales that were used in the previous AppendQuads() in
+  // order to track the scales used in *this* invocation and be able to
+  // determine which scales are now unused and can be considered for removal.
   ClearLastAppendQuadsScales();
 
   auto custom_data = WillAppendQuads(max_contents_scale);
@@ -442,8 +440,8 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
                          missing_tile_count);
   }
 
-  // Adjust shared_quad_state with the quad_offset, since by contract
-  // AppendQuadsSpecialization() has adjusted each quad appended by that offset.
+  // Adjust shared_quad_state with the quad_offset, since we have
+  // adjusted each quad appended by that offset above.
   shared_quad_state->quad_to_target_transform.Translate(-quad_offset);
   shared_quad_state->quad_layer_rect.Offset(quad_offset);
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
