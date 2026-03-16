@@ -55,6 +55,8 @@ class PrivateAiInternalsPageHandler
   void SendRequest(const std::string& feature_name,
                    const std::string& request,
                    SendRequestCallback callback) override;
+  void SendZssRequest(const std::string& inner_text,
+                      SendZssRequestCallback callback) override;
 
   // PrivateAiLogger::Observer:
   void OnLogInfo(const base::Location& location,

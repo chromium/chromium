@@ -20,6 +20,8 @@ source_set("private_ai_internals") {
     "//chrome/browser/private_ai",
     "//chrome/browser/profiles",
     "//chrome/common",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/private_ai",
     "//components/private_ai:proto",
     "//components/private_ai/common",

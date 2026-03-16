@@ -98,6 +98,10 @@ function registerOnSendButtonListener() {
   sendButton?.addEventListener('click', () => {
     onRequestSend();
   });
+  const sendZssButton = document.getElementById('send-zss-button');
+  sendZssButton?.addEventListener('click', () => {
+    onZssRequestSend();
+  });
 }
 
 function onRequestSend() {
@@ -122,6 +126,38 @@ function onRequestSend() {
         serverResponseElement.textContent = 'Response: ' + response.response;
         consoleContainer?.appendChild(serverResponseElement);
       });
+
+  // Clear the input field and refocus.
+  requestInput.value = '';
+  requestInput.focus();
+}
+
+function onZssRequestSend() {
+  const consoleContainer = document.getElementById('console-container');
+  const requestInput =
+      document.getElementById('request-input') as HTMLInputElement;
+
+  const text = requestInput.value;
+  if (text.trim() === '') {
+    return;
+  }
+
+  // Display user's request.
+  const userRequestElement = document.createElement('div');
+  userRequestElement.textContent = 'ZSS Request: ' + text;
+  consoleContainer?.appendChild(userRequestElement);
+
+  // Send ZSS request to the Private AI client and get a response.
+  proxy.sendZssRequest(text).then((response) => {
+    const serverResponseElement = document.createElement('div');
+    if (response.error) {
+      serverResponseElement.textContent = 'Error: ' + response.error;
+      serverResponseElement.style.color = 'red';
+    } else {
+      serverResponseElement.textContent = 'ZSS Response: ' + response.response;
+    }
+    consoleContainer?.appendChild(serverResponseElement);
+  });
 
   // Clear the input field and refocus.
   requestInput.value = '';

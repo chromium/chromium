@@ -41,4 +41,8 @@ interface PrivateAiInternalsPageHandler {
   SendRequest(
       string feature_name,
       string request) => (PrivateAiResponse response);
+  // Sends a Zero State Suggestions (ZSS) request over the current connection.
+  // inner_text is the text to generate suggestions for.
+  SendZssRequest(
+      string inner_text) => (PrivateAiResponse response);
 };

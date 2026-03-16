@@ -68,10 +68,17 @@ input[type='text'] {
   margin-bottom: 10px; /* Add some space between textarea and button */
 }
 
-#send-button {
+#button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+#send-button,
+#send-zss-button {
   padding: 8px 12px;
   height: 34px;
-  align-self: flex-end;
 }
 
 .console-header {
