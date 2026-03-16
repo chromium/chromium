@@ -53,19 +53,22 @@ struct KeyValuePairExtractor {
   static typename T::KeyType& ExtractKey(T& p) {
     return p.key;
   }
-  // Assumes out points to a buffer of size at least sizeof(T::KeyType).
+  // PRECONDITIONS: out points to a buffer of size at least sizeof(T::KeyType).
   template <typename T>
-  static void ExtractKeyToMemory(const T& p, void* out) {
-    AtomicReadMemcpy<sizeof(typename T::KeyType), alignof(typename T::KeyType)>(
-        out, &p.key);
+  UNSAFE_BUFFER_USAGE static void ExtractKeyToMemory(const T& p, void* out) {
+    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
+    UNSAFE_BUFFERS(AtomicReadMemcpy<sizeof(typename T::KeyType),
+                                    alignof(typename T::KeyType)>(out, &p.key));
   }
   template <typename T>
   static void ClearValue(T& p) {
     using ValueType = typename T::ValueType;
     if (IsTraceableV<ValueType>) {
-      AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value);
+      // SAFTEY: compiler-deduced size for ValueType.
+      UNSAFE_BUFFERS(
+          AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value));
     } else {
-      // SAFETY: Passing the address and the size of `p.value` correctly.
+      // SAFETY: compiler-deduced size for ValueType.
       UNSAFE_BUFFERS(memset(static_cast<void*>(&p.value), 0, sizeof(p.value)));
     }
   }

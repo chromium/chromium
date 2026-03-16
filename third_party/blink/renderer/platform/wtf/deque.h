@@ -415,14 +415,14 @@ inline void Deque<T, InlineCapacity, Allocator>::DestroyAll() {
   if (start_ <= end_) {
     UNSAFE_TODO(begin += start_);
     TypeOperations::Destruct(begin, end);
-    buffer_.ClearUnusedSlots(begin, end);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(begin, end));
   } else {
     TypeOperations::Destruct(begin, end);
-    buffer_.ClearUnusedSlots(begin, end);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(begin, end));
     T* leading_begin = UNSAFE_TODO(begin + start_);
     T* leading_end = UNSAFE_TODO(begin + buffer_.capacity());
     TypeOperations::Destruct(leading_begin, leading_end);
-    buffer_.ClearUnusedSlots(leading_begin, leading_end);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(leading_begin, leading_end));
   }
 }
 
@@ -530,9 +530,8 @@ void Deque<T, InlineCapacity, Allocator>::ExpandCapacity() {
           UNSAFE_TODO(old_buffer + old_capacity),
           UNSAFE_TODO(buffer_.Buffer() + new_start),
           VectorOperationOrigin::kRegularModification);
-      buffer_.ClearUnusedSlots(
-          UNSAFE_TODO(old_buffer + start_),
-          UNSAFE_TODO(old_buffer + std::min(old_capacity, new_start)));
+      UNSAFE_TODO(buffer_.ClearUnusedSlots(
+          old_buffer + start_, old_buffer + std::min(old_capacity, new_start)));
       start_ = new_start;
     }
     return;
@@ -545,17 +544,17 @@ void Deque<T, InlineCapacity, Allocator>::ExpandCapacity() {
     TypeOperations::Move(old_begin, old_end,
                          UNSAFE_TODO(buffer_.Buffer() + start_),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(old_begin, old_end);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(old_begin, old_end));
   } else {
     TypeOperations::Move(old_buffer, old_end, buffer_.Buffer(),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(old_buffer, old_end);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(old_buffer, old_end));
     T* old_buffer_end = UNSAFE_TODO(old_buffer + old_capacity);
     wtf_size_t new_start = buffer_.capacity() - (old_capacity - start_);
     TypeOperations::Move(old_begin, old_buffer_end,
                          UNSAFE_TODO(buffer_.Buffer() + new_start),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(old_begin, old_buffer_end);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(old_begin, old_buffer_end));
     start_ = new_start;
   }
   buffer_.DeallocateBuffer(old_buffer);
@@ -631,7 +630,7 @@ inline void Deque<T, InlineCapacity, Allocator>::pop_front() {
   T* begin = &buffer_[start_];
   T* end = UNSAFE_TODO(begin + 1);
   TypeOperations::Destruct(begin, end);
-  buffer_.ClearUnusedSlots(begin, end);
+  UNSAFE_TODO(buffer_.ClearUnusedSlots(begin, end));
   if (start_ == buffer_.capacity() - 1)
     start_ = 0;
   else
@@ -648,7 +647,7 @@ inline void Deque<T, InlineCapacity, Allocator>::pop_back() {
   T* begin = &buffer_[end_];
   T* end = UNSAFE_TODO(begin + 1);
   TypeOperations::Destruct(begin, end);
-  buffer_.ClearUnusedSlots(begin, end);
+  UNSAFE_TODO(buffer_.ClearUnusedSlots(begin, end));
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -678,7 +677,7 @@ inline void Deque<T, InlineCapacity, Allocator>::erase(wtf_size_t position) {
     TypeOperations::MoveOverlapping(
         source_begin, UNSAFE_TODO(buffer + position), destination_begin,
         VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(source_begin, destination_begin);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(source_begin, destination_begin));
     start_ = (start_ + 1) % buffer_.capacity();
   } else {
     T* source_end = UNSAFE_TODO(buffer + end_);
@@ -686,7 +685,7 @@ inline void Deque<T, InlineCapacity, Allocator>::erase(wtf_size_t position) {
     TypeOperations::MoveOverlapping(
         UNSAFE_TODO(destination_begin + 1), source_end, destination_begin,
         VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(UNSAFE_TODO(source_end - 1), source_end);
+    UNSAFE_TODO(buffer_.ClearUnusedSlots(source_end - 1, source_end));
     end_ = (end_ - 1 + buffer_.capacity()) % buffer_.capacity();
   }
 }

@@ -190,10 +190,11 @@ struct IdentityExtractor {
   static T& ExtractKey(T& t) {
     return t;
   }
-  // Assumes out points to a buffer of size at least sizeof(T).
+  // PRECONDITIONS: out points to a buffer of size at least sizeof(T).
   template <typename T>
-  static void ExtractKeyToMemory(const T& t, void* out) {
-    AtomicReadMemcpy<sizeof(T), alignof(T)>(out, &t);
+  UNSAFE_BUFFER_USAGE static void ExtractKeyToMemory(const T& t, void* out) {
+    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
+    UNSAFE_BUFFERS(AtomicReadMemcpy<sizeof(T), alignof(T)>(out, &t));
   }
   template <typename T>
   static void ClearValue(const T&) {}

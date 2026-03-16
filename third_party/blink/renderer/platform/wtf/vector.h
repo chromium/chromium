@@ -185,7 +185,7 @@ struct VectorTypeOperations {
       if constexpr (IsTraceable<T>::value) {
         // Traceable values must only exist on GCed vectors.
         static_assert(Allocator::kIsGarbageCollected);
-        AtomicMemzero(begin, bytes);
+        UNSAFE_TODO(AtomicMemzero(begin, bytes));
       } else {
         // Anything else (non-GCed, or GCed with non-traceables) can use regular
         // memset.
@@ -215,7 +215,7 @@ struct VectorTypeOperations {
                            reinterpret_cast<const char*>(src);
       if constexpr (IsTraceable<T>::value) {
         static_assert(Allocator::kIsGarbageCollected);
-        AtomicWriteMemcpy(dst, src, bytes);
+        UNSAFE_TODO(AtomicWriteMemcpy(dst, src, bytes));
       } else {
         // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
         UNSAFE_TODO(memcpy(dst, src, bytes));
@@ -339,7 +339,7 @@ struct VectorTypeOperations {
                            reinterpret_cast<const char*>(src);
       if constexpr (IsTraceable<T>::value) {
         static_assert(Allocator::kIsGarbageCollected);
-        AtomicWriteMemcpy(dst, src, bytes);
+        UNSAFE_TODO(AtomicWriteMemcpy(dst, src, bytes));
         if (origin != VectorOperationOrigin::kConstruction) {
           // SAFETY: TODO(359904345): VectorTypeOperations should operate on
           // spans.
@@ -485,9 +485,13 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
     return UNSAFE_TODO(base::span<const T>(buffer_, capacity_));
   }
 
-  void ClearUnusedSlots(T* from, T* to) {
+  // PRECONDTIONS: `from` and `to` must point within the same object with
+  // `from` coming before `to`.
+  UNSAFE_BUFFER_USAGE void ClearUnusedSlots(T* from, T* to) {
     if constexpr (NeedsToClearUnusedSlots()) {
-      AtomicMemzero(reinterpret_cast<void*>(from), sizeof(T) * (to - from));
+      // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE.
+      UNSAFE_BUFFERS(AtomicMemzero(reinterpret_cast<void*>(from),
+                                   sizeof(T) * (to - from)));
     }
   }
 
@@ -2091,7 +2095,8 @@ inline void Vector<T, InlineCapacity, Allocator>::resize(wtf_size_t size) {
   if (size <= size_) {
     T* new_end = UNSAFE_TODO(data() + size);
     TypeOperations::Destruct(new_end, DataEnd());
-    ClearUnusedSlots(new_end, DataEnd());
+    // SAFETY: `new_end` is valid since `size <= size_` tested above.
+    UNSAFE_BUFFERS(ClearUnusedSlots(new_end, DataEnd()));
     MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
                                        size);
   } else {
@@ -2112,7 +2117,8 @@ void Vector<T, InlineCapacity, Allocator>::Shrink(wtf_size_t size) {
   CHECK_LE(size, size_);
   T* new_end = UNSAFE_TODO(data() + size);
   TypeOperations::Destruct(new_end, DataEnd());
-  ClearUnusedSlots(new_end, DataEnd());
+  // SAFETY: CHECK above ensures `new_end` is valid.
+  UNSAFE_BUFFERS(ClearUnusedSlots(new_end, DataEnd()));
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
                                      size);
   size_ = size;
@@ -2603,7 +2609,7 @@ void Vector<T, InlineCapacity, Allocator>::ReallocateBuffer(
     Base::ResetBufferPointer();
     TypeOperations::Move(old_begin, old_end, data(),
                          VectorOperationOrigin::kRegularModification);
-    ClearUnusedSlots(old_begin, old_end);
+    UNSAFE_TODO(ClearUnusedSlots(old_begin, old_end));
     UNSAFE_TODO(ANNOTATE_DELETE_BUFFER(old_begin, old_capacity, size_));
     Base::DeallocateBuffer(old_begin);
     return;
@@ -2618,7 +2624,7 @@ void Vector<T, InlineCapacity, Allocator>::ReallocateBuffer(
   // white.
   TypeOperations::Move(data(), DataEnd(), temp_buffer.Buffer(),
                        VectorOperationOrigin::kConstruction);
-  ClearUnusedSlots(data(), DataEnd());
+  UNSAFE_TODO(ClearUnusedSlots(data(), DataEnd()));
   UNSAFE_TODO(ANNOTATE_DELETE_BUFFER(data(), capacity(), size_));
   Base::DeallocateBuffer(data());
   Base::AcquireBuffer(std::move(temp_buffer));

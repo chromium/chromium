@@ -127,7 +127,8 @@ void TestAtomicMemzero() {
           buf;
   std::ranges::fill(buf, ~uint8_t{0});
   auto span = base::span(buf);
-  AtomicMemzero<buffer_size, alignment>(span.subspan(sizeof(size_t)).data());
+  UNSAFE_TODO(AtomicMemzero<buffer_size, alignment>(
+      span.subspan(sizeof(size_t)).data()));
   // Check nothing before the buffer was changed
   size_t v = *reinterpret_cast<size_t*>(span.data());
   EXPECT_EQ(~size_t{0}, v);
