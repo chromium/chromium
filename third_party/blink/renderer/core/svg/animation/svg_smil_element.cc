@@ -536,16 +536,10 @@ bool SVGSMILElement::ParseCondition(const StringView& value,
       type, begin_or_end, base_id.ToAtomicString(),
       name_string.ToAtomicString(), offset, repeat));
 
-  if (RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()) {
-    if (begin_or_end == kEnd) {
-      has_end_attribute_specified_ = true;
-      if (type == Condition::kEventBase || type == Condition::kAccessKey ||
-          repeat != -1) {
-        has_end_event_conditions_ = true;
-      }
-    }
-  } else {
-    if (type == Condition::kEventBase && begin_or_end == kEnd) {
+  if (begin_or_end == kEnd) {
+    has_end_attribute_specified_ = true;
+    if (type == Condition::kEventBase || type == Condition::kAccessKey ||
+        repeat != -1) {
       has_end_event_conditions_ = true;
     }
   }
@@ -851,10 +845,8 @@ SMILTime SVGSMILElement::ResolveActiveEnd(SMILTime resolved_begin) const {
     if (next_end.IsUnresolved()) {
       // Allow open ended intervals if there are pending end events conditions
       // or no end attribute is specified.
-      bool allow_open_ended =
-          RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()
-              ? (has_end_event_conditions_ || !has_end_attribute_specified_)
-              : has_end_event_conditions_;
+      const bool allow_open_ended =
+          (has_end_event_conditions_ || !has_end_attribute_specified_);
 
       if (!allow_open_ended) {
         return SMILTime::Unresolved();
@@ -986,8 +978,6 @@ void SVGSMILElement::InstanceListChanged() {
         GetActiveInterval(previous_presentation_time);
     active_state_ =
         DetermineActiveState(active_interval, previous_presentation_time);
-    if (GetActiveState() != kActive)
-      EndedActiveInterval();
   }
   if (time_container_) {
     SMILTime next_interval_time;
@@ -1098,10 +1088,8 @@ void SVGSMILElement::UpdateInterval(SMILTime presentation_time) {
   }
   SetNewInterval(next_interval);
 
-  if (RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()) {
-    PruneOldInstanceTimes(begin_times_);
-    PruneOldInstanceTimes(end_times_);
-  }
+  PruneOldInstanceTimes(begin_times_);
+  PruneOldInstanceTimes(end_times_);
 }
 
 void SVGSMILElement::AddedToTimeContainer() {
@@ -1132,9 +1120,7 @@ void SVGSMILElement::AddedToTimeContainer() {
 
 void SVGSMILElement::RemovedFromTimeContainer() {
   DCHECK(time_container_);
-  // If the element is active reset to a clear state.
   if (GetActiveState() != kInactive) {
-    EndedActiveInterval();
     // Dispatch a 'endEvent' if the timeline has started and the interval is
     // (was) active.
     if (GetActiveState() == kActive && time_container_->IsStarted()) {
@@ -1255,7 +1241,6 @@ SVGSMILElement::EventDispatchMask SVGSMILElement::UpdateActiveState(
   unsigned events_to_dispatch = kDispatchNoEvent;
   if ((was_active && !is_active) || interval_restart) {
     events_to_dispatch |= kDispatchEndEvent;
-    EndedActiveInterval();
   }
 
   if (IsContributing(presentation_time)) {
@@ -1478,13 +1463,6 @@ void SVGSMILElement::PruneOldInstanceTimes(
 
     instance_times.RemoveBelowThresholdWithOrigin(num_to_remove, times_to_keep,
                                                   SMILTimeOrigin::kScript);
-  }
-}
-
-void SVGSMILElement::EndedActiveInterval() {
-  if (!RuntimeEnabledFeatures::SvgSmilPruneInstanceTimesEnabled()) {
-    begin_times_.RemoveWithOrigin(SMILTimeOrigin::kScript);
-    end_times_.RemoveWithOrigin(SMILTimeOrigin::kScript);
   }
 }
 

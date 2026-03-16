@@ -5447,10 +5447,6 @@
       status: "experimental",
     },
     {
-      name: "SvgSmilPruneInstanceTimes",
-      status: "stable",
-    },
-    {
       name: "SvgTextPathPathAttribute",
       status: "stable",
     },

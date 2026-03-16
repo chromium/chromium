@@ -174,7 +174,6 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   void ClearConditions();
 
   void StartedActiveInterval();
-  void EndedActiveInterval();
   void PruneOldInstanceTimes(SMILInstanceTimeList& instance_times);
 
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override {
