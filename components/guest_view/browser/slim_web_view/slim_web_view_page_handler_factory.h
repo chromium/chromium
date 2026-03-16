@@ -20,14 +20,15 @@ class SlimWebViewPageHandlerFactory : public mojom::PageHandlerFactory {
   SlimWebViewPageHandlerFactory();
   ~SlimWebViewPageHandlerFactory() override;
 
-  void BindInterface(mojo::PendingReceiver<mojom::PageHandlerFactory> receiver);
+  void BindInterface(content::RenderFrameHost* render_frame_host,
+                     mojo::PendingReceiver<mojom::PageHandlerFactory> receiver);
 
  protected:
   void CreatePageHandler(mojo::PendingReceiver<mojom::PageHandler> receiver,
                          mojo::PendingRemote<mojom::Page> page) final;
-  virtual content::RenderFrameHost* GetWebUiRenderFrameHost() = 0;
 
  private:
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
   mojo::Receiver<mojom::PageHandlerFactory> receiver_{this};
 };
 

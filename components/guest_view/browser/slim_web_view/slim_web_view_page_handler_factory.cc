@@ -12,7 +12,9 @@ SlimWebViewPageHandlerFactory::SlimWebViewPageHandlerFactory() = default;
 SlimWebViewPageHandlerFactory::~SlimWebViewPageHandlerFactory() = default;
 
 void SlimWebViewPageHandlerFactory::BindInterface(
+    content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::PageHandlerFactory> receiver) {
+  render_frame_host_ = render_frame_host;
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
@@ -20,8 +22,9 @@ void SlimWebViewPageHandlerFactory::BindInterface(
 void SlimWebViewPageHandlerFactory::CreatePageHandler(
     mojo::PendingReceiver<mojom::PageHandler> receiver,
     mojo::PendingRemote<mojom::Page> page) {
+  CHECK(render_frame_host_ != nullptr);
   SlimWebViewPageHandler::CreateForCurrentDocument(
-      GetWebUiRenderFrameHost(), std::move(receiver), std::move(page));
+      render_frame_host_, std::move(receiver), std::move(page));
 }
 
 }  // namespace guest_view

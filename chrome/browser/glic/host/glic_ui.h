@@ -80,9 +80,6 @@ class GlicUI : public ui::MojoWebUIController,
  private:
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   using SlimWebViewPageHandlerFactory::CreatePageHandler;
-
-  // guest_view::SlimWebViewPageHandlerFactory implementation.
-  content::RenderFrameHost* GetWebUiRenderFrameHost() override;
 #endif
 
   void CreatePageHandler(

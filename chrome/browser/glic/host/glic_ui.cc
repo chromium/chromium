@@ -407,10 +407,4 @@ void GlicUI::CreatePreloadHandler(
       std::move(page));
 }
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-content::RenderFrameHost* GlicUI::GetWebUiRenderFrameHost() {
-  return web_ui()->GetRenderFrameHost();
-}
-#endif  // !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
 }  // namespace glic
