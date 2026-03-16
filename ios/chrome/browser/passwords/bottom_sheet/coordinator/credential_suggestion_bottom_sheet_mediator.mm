@@ -38,7 +38,6 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -53,10 +52,6 @@ constexpr char kImageFetcherUmaClient[] = "PasswordBottomSheet";
 constexpr CGFloat kProfileImageSize = 80.0;
 
 using PasswordSuggestionBottomSheetExitReason::kBadProvider;
-using ReauthenticationEvent::kAttempt;
-using ReauthenticationEvent::kFailure;
-using ReauthenticationEvent::kMissingPasscode;
-using ReauthenticationEvent::kSuccess;
 
 int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   return suggestion.metadata.is_single_username_form
@@ -212,9 +207,6 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   // Preference service from the application context.
   raw_ptr<PrefService> _prefService;
 
-  // Module containing the reauthentication mechanism.
-  id<ReauthenticationProtocol> _reauthenticationModule;
-
   // Fetches profile pictures.
   std::unique_ptr<image_fetcher::ImageFetcher> _imageFetcher;
 
@@ -248,11 +240,10 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     sharedURLLoaderFactory:
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
          engagementTracker:(feature_engagement::Tracker*)engagementTracker {
-  self = [super initWithWebStateList:webStateList];
+  self = [super initWithWebStateList:webStateList reauthModule:reauthModule];
   if (self) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
-    _reauthenticationModule = reauthModule;
 
     _profilePasswordStore = profilePasswordStore;
     _accountPasswordStore = accountPasswordStore;
@@ -356,34 +347,8 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
-  [self logReauthEvent:kAttempt];
   [self markSharedPasswordNotificationsDisplayed];
-
-  if (!suggestion.requiresReauth) {
-    [self logReauthEvent:kSuccess];
-    [self selectSuggestion:suggestion atIndex:index];
-    completion();
-    return;
-  }
-  if ([_reauthenticationModule canAttemptReauth]) {
-    __weak __typeof(self) weakSelf = self;
-    auto completionHandler = ^(ReauthenticationResult result) {
-      [weakSelf selectSuggestion:suggestion
-                         atIndex:index
-          reauthenticationResult:result];
-      completion();
-    };
-
-    NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
-    [_reauthenticationModule
-        attemptReauthWithLocalizedReason:reason
-                    canReusePreviousAuth:YES
-                                 handler:completionHandler];
-  } else {
-    [self logReauthEvent:kMissingPasscode];
-    [self selectSuggestion:suggestion atIndex:index];
-    completion();
-  }
+  [super didSelectSuggestion:suggestion atIndex:index completion:completion];
 }
 
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
@@ -399,20 +364,18 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 #pragma mark - CredentialSuggestionBottomSheetDelegate
 
 - (void)disableBottomSheet {
-  if (self.webStateList) {
-    web::WebState* activeWebState = self.webStateList->GetActiveWebState();
-    if (!activeWebState) {
-      return;
-    }
-
-    AutofillBottomSheetTabHelper* tabHelper =
-        AutofillBottomSheetTabHelper::FromWebState(activeWebState);
-    if (!tabHelper) {
-      return;
-    }
-
-    tabHelper->DetachPasswordListenersForAllFrames(/*refocus=*/true);
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return;
   }
+
+  AutofillBottomSheetTabHelper* tabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+  if (!tabHelper) {
+    return;
+  }
+
+  tabHelper->DetachPasswordListenersForAllFrames(/*refocus=*/true);
 }
 
 - (void)loadFaviconWithBlockHandler:
@@ -431,18 +394,19 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   }
 }
 
-#pragma mark - Private
+#pragma mark - Subclassing
 
 // Perform suggestion selection
-- (void)selectSuggestion:(FormSuggestion*)suggestion atIndex:(NSInteger)index {
+- (void)selectSuggestion:(FormSuggestion*)suggestion
+                 atIndex:(NSInteger)index
+              completion:(ProceduralBlock)completion {
   default_browser::NotifyPasswordAutofillSuggestionUsed(_engagementTracker);
 
-  if (!self.webStateList) {
-    return;
-  }
-
-  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
+  web::WebState* activeWebState = [self activeWebState];
   if (!activeWebState) {
+    if (completion) {
+      completion();
+    }
     return;
   }
 
@@ -454,19 +418,17 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
     [self logExitReason:kBadProvider];
   }
   [self disconnect];
+
+  if (completion) {
+    completion();
+  }
 }
 
-// Perform suggestion selection based on the reauthentication result.
-- (void)selectSuggestion:(FormSuggestion*)suggestion
-                   atIndex:(NSInteger)index
-    reauthenticationResult:(ReauthenticationResult)result {
-  if (result != ReauthenticationResult::kFailure) {
-    [self logReauthEvent:kSuccess];
-    [self selectSuggestion:suggestion atIndex:index];
-  } else {
-    [self logReauthEvent:kFailure];
-    [self disconnect];
-  }
+#pragma mark - Private
+
+// Return the active web state, if any.
+- (web::WebState*)activeWebState {
+  return self.webStateList ? self.webStateList->GetActiveWebState() : nullptr;
 }
 
 // Returns the default favicon attributes after making sure they are
@@ -609,11 +571,7 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 // Returns the AutofillBottomSheetTabHelper for the active webstate or nil if
 // it can't be retrieved.
 - (AutofillBottomSheetTabHelper*)tabHelper {
-  if (!self.webStateList) {
-    return nil;
-  }
-
-  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
+  web::WebState* activeWebState = [self activeWebState];
   if (!activeWebState) {
     return nil;
   }

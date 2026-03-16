@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -71,6 +72,7 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
 
     consumer_ =
         OCMProtocolMock(@protocol(CredentialSuggestionBottomSheetConsumer));
+    reauth_module_ = OCMProtocolMock(@protocol(ReauthenticationProtocol));
   }
 
   void TearDown() override { [mediator_ disconnect]; }
@@ -78,7 +80,8 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
   void CreateMediator() {
     mediator_ = [[PasskeySuggestionBottomSheetMediator alloc]
         initWithWebStateList:web_state_list_.get()
-                 requestInfo:{kFrameId, kRequestId}];
+                 requestInfo:{kFrameId, kRequestId}
+                reauthModule:reauth_module_];
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -88,6 +91,7 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
   raw_ptr<webauthn::IOSWebAuthnCredentialsDelegate>
       webauthn_credentials_delegate_;
   id consumer_;
+  id reauth_module_;
   PasskeySuggestionBottomSheetMediator* mediator_;
 };
 

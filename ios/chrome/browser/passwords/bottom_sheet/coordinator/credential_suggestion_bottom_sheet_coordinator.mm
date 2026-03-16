@@ -146,7 +146,8 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
 
     _mediator = [[PasskeySuggestionBottomSheetMediator alloc]
         initWithWebStateList:webStateList
-                 requestInfo:std::move(*_requestInfo)];
+                 requestInfo:std::move(*_requestInfo)
+                reauthModule:reauthModule];
   }
   _mediator.presenter = self;
 

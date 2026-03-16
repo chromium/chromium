@@ -24,10 +24,11 @@
       _webAuthnCredentialsDelegate;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                         requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)
-                                         requestInfo {
-  self = [super initWithWebStateList:webStateList];
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+             requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)requestInfo
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule {
+  self = [super initWithWebStateList:webStateList reauthModule:reauthModule];
   if (self) {
     _requestInfo = std::make_unique<webauthn::IOSPasskeyClient::RequestInfo>(
         std::move(requestInfo));
@@ -78,9 +79,15 @@
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
   CHECK_EQ(suggestion.type, autofill::SuggestionType::kWebauthnCredential);
+  [super didSelectSuggestion:suggestion atIndex:index completion:completion];
+}
 
-  // TODO(crbug.com/464290670): Handle reauth.
+#pragma mark - Subclassing
 
+// Perform suggestion selection
+- (void)selectSuggestion:(FormSuggestion*)suggestion
+                 atIndex:(NSInteger)index
+              completion:(ProceduralBlock)completion {
   // `_webAuthnCredentialsDelegate` can be null if the frame it was created for
   // was destroyed or navigated away.
   if (!_webAuthnCredentialsDelegate) {

@@ -60,7 +60,9 @@ class WebStateList;
          engagementTracker:(feature_engagement::Tracker*)engagementTracker
     NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList NS_UNAVAILABLE;
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
+    NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
 

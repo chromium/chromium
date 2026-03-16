@@ -23,6 +23,12 @@
 // The WebStateList observed by this mediator.
 @property(nonatomic, readonly) WebStateList* webStateList;
 
+// Performs the actual suggestion selection after reauthentication (if required)
+// has succeeded.
+- (void)selectSuggestion:(FormSuggestion*)suggestion
+                 atIndex:(NSInteger)index
+              completion:(ProceduralBlock)completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_BOTTOM_SHEET_COORDINATOR_CREDENTIAL_SUGGESTION_BOTTOM_SHEET_MEDIATOR_BASE_SUBCLASSING_H_

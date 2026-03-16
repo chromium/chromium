@@ -17,6 +17,8 @@ enum class PasswordSuggestionBottomSheetExitReason;
 @protocol CredentialSuggestionBottomSheetConsumer;
 @protocol CredentialSuggestionBottomSheetPresenter;
 
+@protocol ReauthenticationProtocol;
+
 // Base class for the mediators responsible for fetching and handling the
 // password and passkey suggestions shown in the Credential Suggestion Bottom
 // Sheet.
@@ -32,6 +34,7 @@ enum class PasswordSuggestionBottomSheetExitReason;
 
 // Designated initializer. `webStateList` is the list of web states to observe.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

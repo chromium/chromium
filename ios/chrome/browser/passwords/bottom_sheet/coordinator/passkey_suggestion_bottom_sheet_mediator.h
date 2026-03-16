@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base.h"
 
 class WebStateList;
+@protocol ReauthenticationProtocol;
 
 // Mediator responsible for providing and handling passkey suggestions shown in
 // the Credential Suggestion Bottom Sheet. Used when passkey suggestions are
@@ -21,11 +22,15 @@ class WebStateList;
 // Designated initializer for this mediator. `webStateList` is the list of web
 // states to observe. `requestInfo` provides information on the passkey request
 // which triggered the bottom sheet.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                         requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)
-                                         requestInfo NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+             requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)requestInfo
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule
+    NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList NS_UNAVAILABLE;
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
+    NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
 
