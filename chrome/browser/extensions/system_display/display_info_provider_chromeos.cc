@@ -133,14 +133,9 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
     layout_info->layout_mode = *properties.is_unified
                                    ? crosapi::mojom::DisplayLayoutMode::kUnified
                                    : crosapi::mojom::DisplayLayoutMode::kNormal;
-    cros_display_config_->SetDisplayLayoutInfo(
-        std::move(layout_info),
-        base::BindOnce(
-            [](ErrorCallback callback,
-               crosapi::mojom::DisplayConfigResult result) {
-              std::move(callback).Run(GetStringResult(result));
-            },
-            std::move(callback)));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config_->SetDisplayLayoutInfo(std::move(layout_info));
+    std::move(callback).Run(GetStringResult(result));
     // Note: If other properties are set they will be ignored.
     return;
   }
@@ -233,13 +228,10 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   }
 }
 
-void DisplayInfoProviderChromeOS::SetDisplayLayout(
-    const DisplayLayoutList& layout_list,
-    ErrorCallback callback) {
-  if (!cros_display_config_) {
-    return;
-  }
-  auto layout_info = crosapi::mojom::DisplayLayoutInfo::New();
+base::expected<void, std::string> DisplayInfoProviderChromeOS::SetDisplayLayout(
+    const DisplayLayoutList& layout_list) {
+  CHECK(cros_display_config_);
+
   // Generate the new list of layouts.
   std::vector<crosapi::mojom::DisplayLayoutPtr> display_layouts;
   for (const system_display::DisplayLayout& layout : layout_list) {
@@ -250,6 +242,8 @@ void DisplayInfoProviderChromeOS::SetDisplayLayout(
     display_layout->offset = layout.offset;
     display_layouts.emplace_back(std::move(display_layout));
   }
+
+  auto layout_info = crosapi::mojom::DisplayLayoutInfo::New();
   layout_info->layouts = std::move(display_layouts);
 
   // We need to get the current layout info to provide the layout mode.
@@ -258,16 +252,12 @@ void DisplayInfoProviderChromeOS::SetDisplayLayout(
 
   // Copy the existing layout_mode.
   layout_info->layout_mode = cur_info->layout_mode;
-  if (cros_display_config_) {
-    cros_display_config_->SetDisplayLayoutInfo(
-        std::move(layout_info),
-        base::BindOnce(
-            [](ErrorCallback callback,
-               crosapi::mojom::DisplayConfigResult result) {
-              std::move(callback).Run(GetStringResult(result));
-            },
-            std::move(callback)));
+  crosapi::mojom::DisplayConfigResult result =
+      cros_display_config_->SetDisplayLayoutInfo(std::move(layout_info));
+  if (auto r = GetStringResult(result); r.has_value()) {
+    return base::unexpected(*r);
   }
+  return base::ok();
 }
 
 void DisplayInfoProviderChromeOS::EnableUnifiedDesktop(bool enable) {
@@ -450,14 +440,10 @@ void DisplayInfoProviderChromeOS::SetMirrorMode(
     }
   }
   if (cros_display_config_) {
-    cros_display_config_->SetDisplayLayoutInfo(
-        std::move(display_layout_info),
-        base::BindOnce(
-            [](ErrorCallback callback,
-               crosapi::mojom::DisplayConfigResult result) {
-              std::move(callback).Run(GetStringResult(result));
-            },
-            std::move(callback)));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config_->SetDisplayLayoutInfo(
+            std::move(display_layout_info));
+    std::move(callback).Run(GetStringResult(result));
   }
 }
 

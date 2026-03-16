@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom-shared.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,8 +45,10 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() override {
     NOTREACHED();
   }
-  void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
-                            SetDisplayLayoutInfoCallback callback) override {}
+  crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+      crosapi::mojom::DisplayLayoutInfoPtr info) override {
+    NOTREACHED();
+  }
   void GetDisplayUnitInfoList(
       bool single_unified,
       GetDisplayUnitInfoListCallback callback) override {}

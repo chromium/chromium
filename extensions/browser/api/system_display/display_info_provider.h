@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display_observer.h"
@@ -59,10 +60,9 @@ class DisplayInfoProvider : public display::DisplayObserver {
       ErrorCallback callback);
 
   // Updates the display layout with `layouts`. If the operation fails,
-  // `callback` will be called with a non empty error string and the layout will
-  // not be changed.
-  virtual void SetDisplayLayout(const DisplayLayoutList& layouts,
-                                ErrorCallback callback);
+  // returns a non-empty error string and the layout will not be changed.
+  virtual base::expected<void, std::string> SetDisplayLayout(
+      const DisplayLayoutList& layouts);
 
   // Enables the unified desktop feature.
   virtual void EnableUnifiedDesktop(bool enable);

@@ -724,22 +724,19 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayouts(
   return crosapi::mojom::DisplayConfigResult::kSuccess;
 }
 
-void CrosDisplayConfigImpl::SetDisplayLayoutInfo(
-    crosapi::mojom::DisplayLayoutInfoPtr info,
-    SetDisplayLayoutInfoCallback callback) {
+crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::SetDisplayLayoutInfo(
+    crosapi::mojom::DisplayLayoutInfoPtr info) {
   crosapi::mojom::DisplayConfigResult result = SetDisplayLayoutMode(*info);
   if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
-    std::move(callback).Run(result);
-    return;
+    return result;
   }
   if (info->layouts) {
     result = SetDisplayLayouts(*info->layouts);
     if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
-      std::move(callback).Run(result);
-      return;
+      return result;
     }
   }
-  std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
+  return crosapi::mojom::DisplayConfigResult::kSuccess;
 }
 
 void CrosDisplayConfigImpl::GetDisplayUnitInfoList(

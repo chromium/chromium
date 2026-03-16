@@ -103,8 +103,10 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() override {
     NOTREACHED();
   }
-  void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
-                            SetDisplayLayoutInfoCallback callback) override {}
+  crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+      crosapi::mojom::DisplayLayoutInfoPtr info) override {
+    NOTREACHED();
+  }
   void GetDisplayUnitInfoList(
       bool single_unified,
       GetDisplayUnitInfoListCallback callback) override {

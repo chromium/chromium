@@ -22,10 +22,6 @@ class TouchCalibratorController;
 class CrosDisplayConfig {
  public:
   // TODO(crbug.com/485123493): Get rid of callbacks where possible.
-  using SetDisplayLayoutInfoCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
-  using SetDisplayLayoutInfoMojoCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
   using GetDisplayUnitInfoListCallback =
       base::OnceCallback<void(std::vector<crosapi::mojom::DisplayUnitInfoPtr>)>;
   using GetDisplayUnitInfoListMojoCallback =
@@ -57,8 +53,8 @@ class CrosDisplayConfig {
 
   // Sets the layout mode, mirroring, and layouts. Returns kSuccess if the
   // layout is valid or an error value otherwise.
-  virtual void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
-                                    SetDisplayLayoutInfoCallback callback) = 0;
+  virtual crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+      crosapi::mojom::DisplayLayoutInfoPtr info) = 0;
 
   // Returns the properties for all displays. If |single_unified| is true, a
   // single display will be returned if the display layout is in unified mode.
@@ -127,8 +123,8 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() override;
-  void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
-                            SetDisplayLayoutInfoCallback callback) override;
+  crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
+      crosapi::mojom::DisplayLayoutInfoPtr info) override;
   void GetDisplayUnitInfoList(bool single_unified,
                               GetDisplayUnitInfoListCallback callback) override;
   void SetDisplayProperties(

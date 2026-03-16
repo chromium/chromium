@@ -96,8 +96,6 @@ class SystemDisplaySetDisplayLayoutFunction
  protected:
   ~SystemDisplaySetDisplayLayoutFunction() override = default;
   ResponseAction Run() override;
-
-  void Response(std::optional<std::string> error);
 };
 
 class SystemDisplayEnableUnifiedDesktopFunction

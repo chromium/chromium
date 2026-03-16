@@ -141,16 +141,6 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
     return GetAllDisplaysInfoSetSingleUnified(false);
   }
 
-  bool SetDisplayLayout(const DisplayLayoutList& layouts) {
-    std::string result;
-    base::RunLoop run_loop;
-    provider_->SetDisplayLayout(
-        layouts,
-        base::BindOnce(&ErrorCallback, &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result.empty();
-  }
-
   bool SetMirrorMode(const api::system_display::MirrorModeInfo& info) {
     std::string result;
     base::RunLoop run_loop;
@@ -698,7 +688,7 @@ TEST_F(DisplayInfoProviderChromeosTest, Layout) {
   layout[1].offset = -100;
 
   // Update with modified layout.
-  EXPECT_TRUE(SetDisplayLayout(layout));
+  EXPECT_TRUE(provider_->SetDisplayLayout(layout).has_value());
 
   // Get updated layout.
   layout = provider_->GetDisplayLayout();
@@ -719,7 +709,7 @@ TEST_F(DisplayInfoProviderChromeosTest, Layout) {
   // Test setting invalid layout fails.
   layout[0].parent_id = displays[2].id;
   layout[1].parent_id = displays[1].id;
-  EXPECT_FALSE(SetDisplayLayout(layout));
+  EXPECT_FALSE(provider_->SetDisplayLayout(layout).has_value());
 }
 
 TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
@@ -768,7 +758,7 @@ TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
   layout[2].parent_id = displays[2].id;
   layout[2].position = api::system_display::LayoutPosition::kRight;
 
-  EXPECT_TRUE(SetDisplayLayout(layout));
+  EXPECT_TRUE(provider_->SetDisplayLayout(layout).has_value());
   EXPECT_EQ(gfx::Size(650, 743),
             display::Screen::Get()->GetPrimaryDisplay().size());
   EXPECT_EQ(

@@ -111,13 +111,8 @@ class CrosDisplayConfigTest : public AshTestBase {
 
   crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(
       crosapi::mojom::DisplayLayoutInfoPtr display_layout_info) {
-    crosapi::mojom::DisplayConfigResult result;
-    base::RunLoop run_loop;
-    cros_display_config_->SetDisplayLayoutInfo(
-        std::move(display_layout_info),
-        base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result;
+    return cros_display_config_->SetDisplayLayoutInfo(
+        std::move(display_layout_info));
   }
 
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(

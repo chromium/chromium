@@ -38,8 +38,8 @@ class DisplayInfoProviderChromeOS : public DisplayInfoProviderBase,
       const std::string& display_id,
       const api::system_display::DisplayProperties& properties,
       ErrorCallback callback) override;
-  void SetDisplayLayout(const DisplayLayoutList& layouts,
-                        ErrorCallback callback) override;
+  base::expected<void, std::string> SetDisplayLayout(
+      const DisplayLayoutList& layouts) override;
   void EnableUnifiedDesktop(bool enable) override;
   void GetAllDisplaysInfo(
       bool single_unified,

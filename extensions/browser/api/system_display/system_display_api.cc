@@ -357,15 +357,9 @@ ExtensionFunction::ResponseAction SystemDisplaySetDisplayLayoutFunction::Run() {
       display::SetDisplayLayout::Params::Create(args());
   DisplayInfoProvider* provider = DisplayInfoProvider::Get();
   DCHECK(provider);
-  provider->SetDisplayLayout(
-      params->layouts,
-      base::BindOnce(&SystemDisplaySetDisplayLayoutFunction::Response, this));
-  return RespondLater();
-}
-
-void SystemDisplaySetDisplayLayoutFunction::Response(
-    std::optional<std::string> error) {
-  Respond(error ? Error(*error) : NoArguments());
+  base::expected<void, std::string> result =
+      provider->SetDisplayLayout(params->layouts);
+  return RespondNow(result.has_value() ? NoArguments() : Error(result.error()));
 }
 
 ExtensionFunction::ResponseAction
