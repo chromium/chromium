@@ -463,3 +463,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
   EXPECT_EQ(group, model->GetTabGroupForTab(1));
   EXPECT_EQ(group, model->GetTabGroupForTab(2));
 }
+
+// TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group
+// Header w/ Editor Bubble Button.

@@ -305,13 +305,16 @@ void VerticalTabGroupHeaderView::OnWillChangeFocus(views::View* focused_before,
     // If navigating upward from below, the button is initially hidden and gets
     // skipped. We detect reverse focus traversal (from a view physically below
     // this one) and manually forward the focus to the button.
-    if (focused_now == this &&
+    if (focused_now == this && focused_before &&
         focused_before->GetBoundsInScreen().y() > GetBoundsInScreen().y()) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(
                          [](base::WeakPtr<VerticalTabGroupHeaderView> view) {
                            if (view && view->editor_bubble_button_) {
-                             view->editor_bubble_button_->RequestFocus();
+                             view->GetFocusManager()->SetFocusedViewWithReason(
+                                 view->editor_bubble_button_,
+                                 views::FocusManager::FocusChangeReason::
+                                     kFocusTraversal);
                            }
                          },
                          weak_ptr_factory_.GetWeakPtr()));
