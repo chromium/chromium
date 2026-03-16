@@ -104,6 +104,19 @@ public class ActorTask {
         return tabs;
     }
 
+    /** Get set of tabs it acted on by the last call to Act. */
+    public Set<Integer> getLastActedTabs() {
+        if (mNativeTask == 0) return new HashSet<>();
+        int[] tabIds = ActorTaskJni.get().getLastActedTabs(mNativeTask);
+        Set<Integer> tabs = new HashSet<>();
+        if (tabIds != null) {
+            for (int id : tabIds) {
+                tabs.add(id);
+            }
+        }
+        return tabs;
+    }
+
     /**
      * @param tabId The tab ID to check if the task is acting on.
      * @return true if the task is acting on the given tab, false otherwise.
@@ -141,5 +154,7 @@ public class ActorTask {
         void resume(long nativeActorTaskAndroid);
 
         int[] getTabs(long nativeActorTaskAndroid);
+
+        int[] getLastActedTabs(long nativeActorTaskAndroid);
     }
 }

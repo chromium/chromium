@@ -90,6 +90,15 @@ ScopedJavaLocalRef<jintArray> ActorTaskAndroid::GetTabs(JNIEnv* env) {
   return ToJavaIntArray(env, tab_ids);
 }
 
+ScopedJavaLocalRef<jintArray> ActorTaskAndroid::GetLastActedTabs(JNIEnv* env) {
+  auto tab_handles = task_->GetLastActedTabs();
+  std::vector<int> tab_ids;
+  for (const auto& handle : tab_handles) {
+    tab_ids.push_back(handle.raw_value());
+  }
+  return ToJavaIntArray(env, tab_ids);
+}
+
 }  // namespace actor
 
 DEFINE_JNI(ActorTask)

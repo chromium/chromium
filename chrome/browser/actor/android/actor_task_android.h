@@ -32,6 +32,7 @@ class ActorTaskAndroid : public base::SupportsUserData::Data {
   void Pause(JNIEnv* env);
   void Resume(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jintArray> GetTabs(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jintArray> GetLastActedTabs(JNIEnv* env);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
