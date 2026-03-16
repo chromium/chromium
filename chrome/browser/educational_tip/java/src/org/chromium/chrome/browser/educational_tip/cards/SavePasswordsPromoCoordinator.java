@@ -100,11 +100,10 @@ public class SavePasswordsPromoCoordinator
         }
 
         if (mSavePasswordsBottomSheetContent != null) {
-            mActionDelegate
-                    .getBottomSheetController()
-                    .hideContent(mSavePasswordsBottomSheetContent, /* animate= */ false);
-            mSavePasswordsBottomSheetContent.destroy();
+            SavePasswordsInstructionalBottomSheetContent content = mSavePasswordsBottomSheetContent;
             mSavePasswordsBottomSheetContent = null;
+            mActionDelegate.getBottomSheetController().hideContent(content, /* animate= */ false);
+            content.destroy();
         }
     }
 
