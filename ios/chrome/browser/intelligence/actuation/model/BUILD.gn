@@ -18,6 +18,8 @@ source_set("model") {
     "actuation_service_factory.mm",
     "actuation_tool_factory.h",
     "actuation_tool_factory.mm",
+    "aggregated_journal.h",
+    "aggregated_journal.mm",
   ]
   public_deps = [
     ":actuation_error",
@@ -42,7 +44,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "actuation_service_unittest.mm" ]
+  sources = [
+    "actuation_service_unittest.mm",
+    "aggregated_journal_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base/test:test_support",
@@ -52,6 +57,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/profile/test",
     "//testing/gtest",
+    "//url",
   ]
 }
 
