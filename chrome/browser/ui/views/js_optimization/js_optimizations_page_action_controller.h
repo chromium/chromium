@@ -28,8 +28,7 @@ class ActionItem;
 
 // Controls the visibility of the JS optimizations omnibar icon and bubble.
 class JsOptimizationsPageActionController
-    : public tabs::ContentsObservingTabFeature,
-      public views::WidgetObserver {
+    : public tabs::ContentsObservingTabFeature {
  public:
   explicit JsOptimizationsPageActionController(
       tabs::TabInterface& tab_interface,
@@ -51,9 +50,6 @@ class JsOptimizationsPageActionController
   // tabs::ContentsObservingTabFeature
   void PrimaryPageChanged(content::Page& page) override;
 
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
-
   void ShowBubble(views::BubbleAnchor anchor, actions::ActionItem* item);
 
  private:
@@ -65,8 +61,6 @@ class JsOptimizationsPageActionController
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
 
   base::WeakPtrFactory<JsOptimizationsPageActionController> weak_factory_{this};
 };
