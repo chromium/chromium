@@ -29,6 +29,14 @@ class GLES2_IMPL_EXPORT GLES2TraceImplementation : public GLES2Interface {
   // GLES2Interface implementation
   bool CanCopySharedImageToGLTextureViaTextureCopy(
       ClientSharedImage* shared_image) override;
+  bool CanCopySharedImageDirectlyToGLTexture(
+      bool is_opaque,
+      ClientSharedImage* shared_image,
+      uint32_t dst_target,
+      uint32_t dst_internal_format,
+      uint32_t dst_type,
+      int32_t dst_level,
+      SkAlphaType dst_alpha_type) override;
   bool CanCopySharedImageToGLTextureViaSkia(
       bool is_opaque,
       uint32_t shared_image_target,

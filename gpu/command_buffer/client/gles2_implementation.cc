@@ -432,6 +432,20 @@ bool GLES2Implementation::CanCopySharedImageToGLTextureViaTextureCopy(
   return si_format_has_single_texture && si_usable_by_gles2_interface;
 }
 
+bool GLES2Implementation::CanCopySharedImageDirectlyToGLTexture(
+    bool is_opaque,
+    ClientSharedImage* shared_image,
+    uint32_t dst_target,
+    uint32_t dst_internal_format,
+    uint32_t dst_type,
+    int32_t dst_level,
+    SkAlphaType dst_alpha_type) {
+  return CanCopySharedImageToGLTextureViaTextureCopy(shared_image) ||
+         CanCopySharedImageToGLTextureViaSkia(
+             is_opaque, shared_image->GetTextureTarget(), dst_target,
+             dst_internal_format, dst_type, dst_level, dst_alpha_type);
+}
+
 bool GLES2Implementation::CanCopySharedImageToGLTextureViaSkia(
     bool is_opaque,
     uint32_t shared_image_target,

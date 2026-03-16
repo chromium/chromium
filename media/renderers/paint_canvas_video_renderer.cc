@@ -702,22 +702,6 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
-bool CanCopySharedImageDirectlyToGLTexture(gpu::gles2::GLES2Interface* gl,
-                                           bool is_opaque,
-                                           gpu::ClientSharedImage* shared_image,
-                                           unsigned int target,
-                                           unsigned int internal_format,
-                                           unsigned int type,
-                                           int level,
-                                           SkAlphaType dst_alpha_type) {
-  CHECK(shared_image);
-
-  return gl->CanCopySharedImageToGLTextureViaTextureCopy(shared_image) ||
-         gl->CanCopySharedImageToGLTextureViaSkia(
-             is_opaque, shared_image->GetTextureTarget(), target,
-             internal_format, type, level, dst_alpha_type);
-}
-
 void CopyVideoFrameDirectlyToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
@@ -1513,10 +1497,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
   const auto shared_image = video_frame->shared_image();
 
-  if (CanCopySharedImageDirectlyToGLTexture(
-          destination_gl, media::IsOpaque(video_frame->format()),
-          shared_image.get(), target, internal_format, type, level,
-          dst_alpha_type)) {
+  if (destination_gl->CanCopySharedImageDirectlyToGLTexture(
+          media::IsOpaque(video_frame->format()), shared_image.get(), target,
+          internal_format, type, level, dst_alpha_type)) {
     CopyVideoFrameDirectlyToGLTexture(
         raster_context_provider, destination_gl, video_frame, target, texture,
         internal_format, format, type, level, dst_alpha_type, dst_origin);
