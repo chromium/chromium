@@ -246,7 +246,8 @@ NSString* const kCollaborationSigninHeaderBackground =
   DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
   DCHECK(email);
   DCHECK(avatar);
-  self.personalizedButtonPrompt = givenName ? givenName : email;
+  self.personalizedButtonPrompt =
+      givenName ? givenName : (userName ? userName : email);
   [self updateUIForIdentityAvailable:YES];
   [self.identityControl setIdentityName:userName email:email managed:managed];
   [self.identityControl setIdentityAvatar:avatar];

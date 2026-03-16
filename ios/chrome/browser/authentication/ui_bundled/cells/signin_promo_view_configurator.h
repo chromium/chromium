@@ -19,6 +19,7 @@
 // `userGivenName` and `userImage` have to be nil.
 // Otherwise `userEmail` and `userImage` can't be nil. `userImage` has to be to
 // the size of IdentityAvatarSize::SmallSize.
+// `userGivenName` may be nil.
 // `hasSignInSpinner` shows a spinner on top of the primary button, and disables
 // other buttons if set YES.
 // TODO(crbug.com/40842280): Consider adding a parameter for

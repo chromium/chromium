@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -67,7 +68,7 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
 
   title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
       IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
-      base::SysNSStringToUTF16(identity.userGivenName)));
+      base::SysNSStringToUTF16(UserGivenNameFullNameOrEmail(identity))));
   message_ = base::SysNSStringToUTF16(identity.userEmail);
   button_text_ =
       base::SysNSStringToUTF16(l10n_util::GetNSString(IDS_IOS_SETTINGS_TITLE));

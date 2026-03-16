@@ -334,8 +334,15 @@ UIFont* GetNavigationBarTitleFont() {
     // Load the view.
     [self view];
   }
+  NSString* nameOrEmail = givenName;
+  if (!nameOrEmail) {
+    nameOrEmail = fullName;
+  }
+  if (!nameOrEmail) {
+    nameOrEmail = email;
+  }
   self.continueAsTitle = l10n_util::GetNSStringF(
-      IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, base::SysNSStringToUTF16(givenName));
+      IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, base::SysNSStringToUTF16(nameOrEmail));
 
   [self.identityButtonControl setIdentityName:fullName
                                         email:email

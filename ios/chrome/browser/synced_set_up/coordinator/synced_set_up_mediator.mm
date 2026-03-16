@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/avatar/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/synced_set_up/coordinator/synced_set_up_mediator_delegate.h"
 #import "ios/chrome/browser/synced_set_up/public/synced_set_up_metrics.h"
@@ -513,7 +514,8 @@ void LogSnackbarInteraction(SyncedSetUpState state,
   [_consumer setWelcomeMessage:
                  l10n_util::GetNSStringF(
                      IDS_IOS_SYNCED_SET_UP_WELCOME_MESSAGE_WITH_USER_NAME_TITLE,
-                     base::SysNSStringToUTF16(_primaryIdentity.userGivenName))];
+                     base::SysNSStringToUTF16(
+                         UserGivenNameFullNameOrEmail(_primaryIdentity)))];
   [_consumer setAvatarImage:avatar];
 }
 

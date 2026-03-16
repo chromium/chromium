@@ -140,7 +140,6 @@
       GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
           selectedIdentity, IdentityAvatarSize::TableViewIcon);
   [_consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
-                                  givenName:selectedIdentity.userGivenName
                                       email:selectedIdentity.userEmail
                                      avatar:avatar
                                     managed:[self isIdentityKnownToBeManaged:

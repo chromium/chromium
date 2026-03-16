@@ -11,8 +11,8 @@
 @protocol AccountPickerConfirmationScreenConsumer <NSObject>
 
 // Updates the user information, and show the default account.
+// `fullName` may be nil.
 - (void)showDefaultAccountWithFullName:(NSString*)fullName
-                             givenName:(NSString*)givenName
                                  email:(NSString*)email
                                 avatar:(UIImage*)avatar
                                managed:(BOOL)managed;
