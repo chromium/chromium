@@ -14,6 +14,17 @@ bool GLES2Interface::CanCopySharedImageToGLTextureViaTextureCopy(
   return false;
 }
 
+bool GLES2Interface::CanCopySharedImageToGLTextureViaSkia(
+    bool is_opaque,
+    uint32_t shared_image_target,
+    uint32_t dst_target,
+    uint32_t dst_internal_format,
+    uint32_t dst_type,
+    int32_t dst_level,
+    SkAlphaType dst_alpha_type) {
+  return false;
+}
+
 gpu::SyncToken GLES2Interface::CopySharedImageToGLTextureViaTextureCopy(
     const gfx::Size& src_size,
     const gfx::Rect& src_rect,

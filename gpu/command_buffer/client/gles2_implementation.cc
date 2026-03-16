@@ -112,6 +112,30 @@ namespace gles2 {
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
+// Valid gl texture internal format that can try to use direct uploading path.
+bool ValidFormatForDirectUploading(GLenum format, uint32_t type) {
+  switch (format) {
+    case GL_RGBA:
+      return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_4_4_4_4;
+    case GL_RGB:
+      return type == GL_UNSIGNED_BYTE || type == GL_UNSIGNED_SHORT_5_6_5;
+    // WebGL2 supported sized formats
+    case GL_RGBA8:
+    case GL_RGB565:
+    case GL_RGBA16F:
+    case GL_RGB8:
+    case GL_RGB10_A2:
+    case GL_RGBA4:
+      // TODO(crbug.com/356649879): RasterContextProvider never has ES3 context.
+      // Use the correct WebGL major version here.
+      return false;
+    default:
+      return false;
+  }
+}
+#endif
+
 void BindAndTexImage2D(gpu::gles2::GLES2Interface* gl,
                        unsigned int target,
                        unsigned int texture,
@@ -406,6 +430,42 @@ bool GLES2Implementation::CanCopySharedImageToGLTextureViaTextureCopy(
   // texture for the shared image, which in turn requires that the shared image
   // be either single-plane or use external sampler and that it be usable by GL.
   return si_format_has_single_texture && si_usable_by_gles2_interface;
+}
+
+bool GLES2Implementation::CanCopySharedImageToGLTextureViaSkia(
+    bool is_opaque,
+    uint32_t shared_image_target,
+    uint32_t dst_target,
+    uint32_t dst_internal_format,
+    uint32_t dst_type,
+    int32_t dst_level,
+    SkAlphaType dst_alpha_type) {
+  // NOTE: CopySharedImageToGLTextureINTERNAL() is implemented only in the
+  // passthrough command decoder, which is not yet fully rolled out on Android.
+  // Hence, disable this codepath on Android.
+  // TODO(crbug.com/40075313): Enable on Android once the passthrough command
+  // decoder is used universally there.
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  bool si_usable_by_gles2_interface = shared_image_target != 0;
+  // Since skia always produces premultiply alpha outputs, trying direct
+  // uploading path when the source is opaque or premultiply alpha been
+  // requested.
+  // TODO(crbug.com/40159723): Figure out whether premultiply options here are
+  // accurate.
+  // TODO(crbug.com/343011436): Remove the `is_opaque` param by querying the
+  // SharedImage's format directly after verifying that this doesn't change
+  // behavior for any existing callers.
+  bool is_premul = is_opaque || dst_alpha_type == kPremul_SkAlphaType;
+  bool supports_one_copy_format = ValidFormatForDirectUploading(
+      static_cast<GLenum>(dst_internal_format), dst_type);
+  // dst texture mipLevel must be 0.
+  // TODO(crbug.com/40141173): Support more texture target, e.g.
+  // 2d array, 3d etc.
+  return si_usable_by_gles2_interface && dst_level == 0 && is_premul &&
+         dst_target == GL_TEXTURE_2D && supports_one_copy_format;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
