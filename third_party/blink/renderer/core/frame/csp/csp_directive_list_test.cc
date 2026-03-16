@@ -480,6 +480,14 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithUrlHash) {
        "https://a.com/page.html", "https://username:password@a.com/abc.js",
        true},
 
+      // Check a relative URL allowlisted both with the hash calculated with
+      // and without a leading /. First test case is the hash for 'relative',
+      // second is for '/relative'. Both should be allowed.
+      {"'url-sha256-0tnh8TQT0+BwZNYprDNBpuHWpesIledqPGbfGTB6VvA='",
+       "https://a.com/", "https://a.com/relative", true},
+      {"'url-sha256-TT+Mw9RGU3rEuJjTyR7pLUr5/XC9/srJp8CnhQa/Tp0='",
+       "https://a.com/", "https://a.com/relative", true},
+
       // Shouldn't match across origins.
       {"'url-sha256-wKJEu59OW9WCQbnklY7Pu9cxYw9DQeVzZF6r6c3Ieq0='",
        "https://b.com/page.html", "https://a.com/abc.js", false},
