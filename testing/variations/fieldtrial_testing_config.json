@@ -8418,6 +8418,26 @@
             ]
         }
     ],
+    "DnsOverHttpsCloudflareFamilies": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260313",
+                    "enable_features": [
+                        "DohProviderCloudflareFamily",
+                        "DohProviderCloudflareSecurity"
+                    ]
+                }
+            ]
+        }
+    ],
     "DomStorageSqliteInMemory": [
         {
             "platforms": [
