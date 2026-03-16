@@ -40,6 +40,10 @@ BASE_DECLARE_FEATURE(kMetricsLogJobSchedulerUpload);
 // Enabled by default - intended as a kill-switch.
 BASE_DECLARE_FEATURE(kPerProfileMetrics);
 
+// Restructures the metrics privacy settings into a three-state model [kNone,
+// kBasic, kAdvanced].
+BASE_DECLARE_FEATURE(kRestructureMetricsConsentSettings);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_
