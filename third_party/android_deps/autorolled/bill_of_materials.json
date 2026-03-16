@@ -357,7 +357,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.18.0"
+        "version": "1.19.0-SNAPSHOT"
     },
     {
         "name": "core-animation",
@@ -372,7 +372,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.18.0"
+        "version": "1.19.0-SNAPSHOT"
     },
     {
         "name": "core-pip",
@@ -382,7 +382,7 @@
     {
         "name": "core-viewtree",
         "group": "androidx.core",
-        "version": "1.0.0"
+        "version": "1.1.0-SNAPSHOT"
     },
     {
         "name": "registry-provider",
@@ -542,7 +542,7 @@
     {
         "name": "graphics-core",
         "group": "androidx.graphics",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.4"
     },
     {
         "name": "graphics-path",
@@ -567,62 +567,62 @@
     {
         "name": "ink-authoring",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-authoring-android",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-brush",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-brush-android",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-geometry",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-geometry-android",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-nativeloader",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-nativeloader-android",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-rendering",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-rendering-android",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-strokes",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "ink-strokes-android",
         "group": "androidx.ink",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.0.0"
     },
     {
         "name": "input-motionprediction",
@@ -932,22 +932,22 @@
     {
         "name": "pdf-document-service",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "pdf-ink",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "pdf-viewer",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "pdf-viewer-fragment",
         "group": "androidx.pdf",
-        "version": "1.0.0-SNAPSHOT"
+        "version": "1.0.0-alpha13"
     },
     {
         "name": "preference",
@@ -1208,6 +1208,11 @@
         "name": "webkit",
         "group": "androidx.webkit",
         "version": "1.16.0-SNAPSHOT"
+    },
+    {
+        "name": "core",
+        "group": "androidx.window.extensions.core",
+        "version": "1.0.0"
     },
     {
         "name": "sidecar",
@@ -1747,7 +1752,7 @@
     {
         "name": "okio",
         "group": "com.squareup.okio",
-        "version": "3.9.1"
+        "version": "3.17.0"
     },
     {
         "name": "okio-jvm",
@@ -1757,12 +1762,12 @@
     {
         "name": "wire-runtime",
         "group": "com.squareup.wire",
-        "version": "5.4.0"
+        "version": "6.0.0"
     },
     {
         "name": "wire-runtime-jvm",
         "group": "com.squareup.wire",
-        "version": "5.4.0"
+        "version": "6.0.0"
     },
     {
         "name": "javapoet",
