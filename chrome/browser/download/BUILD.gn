@@ -6,6 +6,7 @@ import("//components/safe_browsing/buildflags.gni")
 
 source_set("download") {
   public = [
+    "download_danger_prompt.h",
     "download_item_warning_data.h",
     "download_prompt_status.h",
     "download_stats.h",
@@ -13,6 +14,7 @@ source_set("download") {
   ]
 
   sources = [
+    "download_danger_prompt.cc",
     "download_item_warning_data.cc",
     "download_stats.cc",
   ]
@@ -24,6 +26,7 @@ source_set("download") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/content/common/proto:download_file_types_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//content/public/browser",
     "//ui/base",
     "//ui/color:color_headers",
     "//ui/gfx",

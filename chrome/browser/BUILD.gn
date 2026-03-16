@@ -3558,8 +3558,6 @@ static_library("browser") {
       "download/download_auto_open_policy_handler.cc",
       "download/download_auto_open_policy_handler.h",
       "download/download_commands.cc",
-      "download/download_danger_prompt.cc",
-      "download/download_danger_prompt.h",
       "download/download_dir_policy_handler.cc",
       "download/download_dir_policy_handler.h",
       "download/download_dir_util.cc",
