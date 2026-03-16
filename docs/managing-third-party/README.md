@@ -21,3 +21,8 @@ for consultation.
 
 If you're a Googler, you can alternatively email
 [chrome-ssci-team@google.com](mailto:chrome-ssci-team@google.com).
+
+## Well-lit paths
+
+* [Skia Autoroller](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/managing-third-party/skia.md)
+* (More will be added soon...)

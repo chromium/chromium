@@ -309,7 +309,7 @@ Updated automatically by a service e.g. Skia Autoroller, Copybara.
 No exception required.
 
 Please refer to
-[https://chromium.googlesource.com/chromium/src/+/main/docs/managing-third-party/](docs/managing-third-party)
+[docs/managing-third-party](https://chromium.googlesource.com/chromium/src/+/main/docs/managing-third-party/)
 for automation options and usage guide.
 
 ### Manual
