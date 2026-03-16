@@ -296,6 +296,10 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kAutofillAiSetSyncablePrefFromAccountPref,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the client may trigger the server model for AutofillAI type
+// predictions using Private AI Compute.
+BASE_FEATURE(kAutofillAiUsePrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, votes for the format of flight number fields are uploaded. For
 // example, if there is a flight number "LH89" on file, a submitted value of
 // "89" on a field with type `FLIGHT_RESERVATION_FLIGHT_NUMBER` uploads "N".
