@@ -721,7 +721,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       appContentView);
 
   if (animationEnabled) {
-    if (UIAccessibilityIsReduceMotionEnabled()) {
+    // Use reduced animation on TabGroup panel to avoid weird animation where
+    // the tab comes from the side.
+    BOOL isOnTabGroup = _viewController.currentPage == TabGridPageTabGroups;
+    if (isOnTabGroup || UIAccessibilityIsReduceMotionEnabled()) {
       self.transitionHandler = [[TabGridTransitionHandler alloc]
           initWithReducedMotionCommonParams:std::move(params)];
     } else {
