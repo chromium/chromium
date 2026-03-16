@@ -32,8 +32,6 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
 
   bool OnResult(const media::SpeechRecognitionResult&);
 
-  std::string GetContext() const;
-
   void OnPeerConnectionAdded();
   void OnPeerConnectionRemoved();
   void OnPipPeerConnectionAdded();

@@ -240,19 +240,6 @@ void GlicMediaContext::TrimTranscript(Transcript* transcript) {
   }
 }
 
-std::string GlicMediaContext::GetContext() const {
-  const Transcript* transcript = GetTranscriptIfExists();
-  if (!transcript) {
-    return "";
-  }
-
-  std::vector<std::string_view> pieces;
-  for (const auto& chunk : transcript->transcript_chunks_) {
-    pieces.push_back(chunk.text);
-  }
-  return base::JoinString(pieces, "");
-}
-
 std::list<GlicMediaContext::TranscriptChunk>
 GlicMediaContext::GetTranscriptChunks() const {
   const Transcript* transcript = GetTranscriptIfExists();

@@ -263,10 +263,7 @@ void GlicMediaIntegrationImpl::AppendContext(
   content::RenderFrameHost* rfh = nullptr;
   web_contents->ForEachRenderFrameHost([&rfh](content::RenderFrameHost* host) {
     auto* context = glic::GlicMediaContext::GetForCurrentDocument(host);
-    if (!context) {
-      return;
-    }
-    if (context->GetContext() != "") {
+    if (context && context->HasTranscriptChunks()) {
       rfh = host;
     }
   });
@@ -284,16 +281,26 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
   context_root->mutable_content_attributes()->set_attribute_type(
       optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
 
-  auto* context = glic::GlicMediaContext::GetForCurrentDocument(rfh);
-  std::string result;
-  if (context != nullptr &&
-      !IsExcludedByOrigin(content::WebContents::FromRenderFrameHost(rfh))) {
-    result = context->GetContext();
-  }
-
-  if (result.length() == 0) {
+  if (IsExcludedByOrigin(content::WebContents::FromRenderFrameHost(rfh))) {
     return;
   }
+
+  auto* context = glic::GlicMediaContext::GetForCurrentDocument(rfh);
+  if (!context) {
+    return;
+  }
+
+  std::vector<std::string_view> pieces;
+  auto chunks = context->GetTranscriptChunks();
+  for (const auto& chunk : chunks) {
+    pieces.push_back(chunk.text);
+  }
+
+  if (pieces.empty()) {
+    return;
+  }
+
+  std::string result = base::JoinString(pieces, "");
 
   // Trim to `max_size_bytes_`.  Note that we should utf8-trim.
   if (size_t result_size = result.length()) {

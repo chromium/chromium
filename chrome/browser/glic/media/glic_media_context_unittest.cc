@@ -28,6 +28,16 @@ using testing::ReturnPointee;
 
 namespace glic {
 
+// Helper to concatenate transcript chunks for testing.
+std::string GetTranscriptText(const GlicMediaContext* context) {
+  std::vector<std::string> pieces;
+  for (const auto& chunk : context->GetTranscriptChunks()) {
+    pieces.push_back(chunk.text);
+  }
+
+  return base::JoinString(pieces, "");
+}
+
 // Helper to create a SpeechRecognitionResult with optional timing.
 media::SpeechRecognitionResult CreateSpeechRecognitionResult(
     const std::string& transcription,
@@ -118,7 +128,7 @@ class GlicMediaContextTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(GlicMediaContextTest, InitialContextIsEmpty) {
-  EXPECT_EQ(context()->GetContext(), "");
+  EXPECT_EQ(GetTranscriptText(context()), "");
 }
 
 TEST_F(GlicMediaContextTest, GetVariantsWork) {
@@ -141,7 +151,7 @@ TEST_F(GlicMediaContextTest, ContextContainsTranscript) {
   EXPECT_TRUE(context()->OnResult(
       media::SpeechRecognitionResult(test_cap_3, /*is_final=*/true)));
 
-  EXPECT_EQ(context()->GetContext(), "ABCDEFGHIJ");
+  EXPECT_EQ(GetTranscriptText(context()), "ABCDEFGHIJ");
 }
 
 TEST_F(GlicMediaContextTest, ContextShouldTruncate) {
@@ -155,7 +165,7 @@ TEST_F(GlicMediaContextTest, ContextShouldTruncate) {
         media::SpeechRecognitionResult(long_cap, /*is_final=*/true));
   }
 
-  const std::string actual_cap = context()->GetContext();
+  const std::string actual_cap = GetTranscriptText(context());
   EXPECT_LT(actual_cap.length(), long_cap.length() * num_repeats);
 }
 
@@ -164,19 +174,19 @@ TEST_F(GlicMediaContextTest, ContextContainsButReplacesNonFinal) {
   const std::string test_cap_1("ABC");
   context()->OnResult(
       media::SpeechRecognitionResult(test_cap_1, /*is_final=*/true));
-  EXPECT_EQ(context()->GetContext(), test_cap_1);
+  EXPECT_EQ(GetTranscriptText(context()), test_cap_1);
 
   const std::string test_cap_2("DEF");
   context()->OnResult(
       media::SpeechRecognitionResult(test_cap_2, /*is_final=*/false));
-  EXPECT_EQ(context()->GetContext(), test_cap_1 + test_cap_2);
+  EXPECT_EQ(GetTranscriptText(context()), test_cap_1 + test_cap_2);
 
   // The final result "GHI" will be appended, and the non-final result "DEF"
   // will be cleared.
   const std::string test_cap_3("GHI");
   context()->OnResult(
       media::SpeechRecognitionResult(test_cap_3, /*is_final=*/true));
-  EXPECT_EQ(context()->GetContext(), test_cap_1 + test_cap_3);
+  EXPECT_EQ(GetTranscriptText(context()), test_cap_1 + test_cap_3);
 }
 
 TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
@@ -185,7 +195,7 @@ TEST_F(GlicMediaContextTest, AudioCaptureStopsTranscription) {
   // Send a transcription and verify that it is ignored.
   EXPECT_TRUE(context()->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
-  EXPECT_EQ(context()->GetContext(), "");
+  EXPECT_EQ(GetTranscriptText(context()), "");
 
   stream.reset();
 }
@@ -207,7 +217,7 @@ TEST_F(GlicMediaContextTest, AudioCaptureInPiPStopsTranscription) {
   // are dropped.
   EXPECT_TRUE(context()->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
-  EXPECT_EQ(context()->GetContext(), "");
+  EXPECT_EQ(GetTranscriptText(context()), "");
 
   stream.reset();
   pip_controller->Close(false);
@@ -219,7 +229,7 @@ TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
   context()->OnPeerConnectionAdded();
   EXPECT_TRUE(context()->OnResult(
       media::SpeechRecognitionResult("ABC", /*is_final=*/true)));
-  EXPECT_EQ(context()->GetContext(), "");
+  EXPECT_EQ(GetTranscriptText(context()), "");
 }
 
 TEST_F(GlicMediaContextTest, PeerConnectionAddedAndRemovedResetsExclusion) {
@@ -262,7 +272,7 @@ TEST_F(GlicMediaContextTest, OnResult_FinalResultWithTiming_EmptyContext) {
       {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))});
 
   EXPECT_TRUE(context()->OnResult(result));
-  EXPECT_EQ(context()->GetContext(), "hello world");
+  EXPECT_EQ(GetTranscriptText(context()), "hello world");
 }
 
 TEST_F(GlicMediaContextTest, OnResult_FinalResultWithTiming_NoOverlap) {
@@ -280,7 +290,7 @@ TEST_F(GlicMediaContextTest, OnResult_FinalResultWithTiming_NoOverlap) {
       {media::MediaTimestampRange(base::Seconds(1), base::Seconds(2))});
 
   EXPECT_TRUE(context()->OnResult(result));
-  EXPECT_EQ(context()->GetContext(), "chunk onechunk twochunk three");
+  EXPECT_EQ(GetTranscriptText(context()), "chunk onechunk twochunk three");
 }
 
 TEST_F(GlicMediaContextTest,
@@ -304,7 +314,7 @@ TEST_F(GlicMediaContextTest,
       {media::MediaTimestampRange(base::Seconds(1.2), base::Seconds(2))});
 
   EXPECT_TRUE(context()->OnResult(result));
-  EXPECT_EQ(context()->GetContext(), "chunk onenew chunkchunk three");
+  EXPECT_EQ(GetTranscriptText(context()), "chunk onenew chunkchunk three");
 }
 
 TEST_F(GlicMediaContextTest,
@@ -329,7 +339,7 @@ TEST_F(GlicMediaContextTest,
       {media::MediaTimestampRange(base::Seconds(1.5), base::Seconds(2.5))});
 
   EXPECT_TRUE(context()->OnResult(result));
-  EXPECT_EQ(context()->GetContext(),
+  EXPECT_EQ(GetTranscriptText(context()),
             "chunk oneoverlapping new chunkchunk four");
 }
 
@@ -345,7 +355,7 @@ TEST_F(GlicMediaContextTest, OnResult_FinalResultWithoutTiming) {
 
   EXPECT_TRUE(context()->OnResult(result));
   // Untimed chunks are currently just appended.
-  EXPECT_EQ(context()->GetContext(), "timed chunkuntimed chunk");
+  EXPECT_EQ(GetTranscriptText(context()), "timed chunkuntimed chunk");
 }
 
 TEST_F(GlicMediaContextTest, OnResult_MultipleFinalResultsWithoutTiming) {
@@ -357,7 +367,7 @@ TEST_F(GlicMediaContextTest, OnResult_MultipleFinalResultsWithoutTiming) {
 
   EXPECT_TRUE(context()->OnResult(result));
   // Untimed chunks are currently just appended.
-  EXPECT_EQ(context()->GetContext(), "first chunksecond chunk");
+  EXPECT_EQ(GetTranscriptText(context()), "first chunksecond chunk");
 }
 
 TEST_F(GlicMediaContextTest, OnResult_NonFinalResult) {
@@ -365,7 +375,8 @@ TEST_F(GlicMediaContextTest, OnResult_NonFinalResult) {
       CreateSpeechRecognitionResult("non-final text", false);  // Not final
 
   EXPECT_TRUE(context()->OnResult(result));
-  EXPECT_EQ(context()->GetContext(), "non-final text");
+  // No transcripts are returned if we don't have any final chunks.
+  EXPECT_EQ(GetTranscriptText(context()), "");
 }
 
 TEST_F(GlicMediaContextTest, OnResult_FinalResultClearsNonFinal) {
@@ -373,7 +384,8 @@ TEST_F(GlicMediaContextTest, OnResult_FinalResultClearsNonFinal) {
   media::SpeechRecognitionResult non_final_result =
       CreateSpeechRecognitionResult("non-final text", false);
   context()->OnResult(non_final_result);
-  EXPECT_EQ(context()->GetContext(), "non-final text");
+  // No transcripts are returned if we don't have any final chunks.
+  EXPECT_EQ(GetTranscriptText(context()), "");
 
   // Add a final result
   media::SpeechRecognitionResult final_result = CreateSpeechRecognitionResult(
@@ -381,7 +393,7 @@ TEST_F(GlicMediaContextTest, OnResult_FinalResultClearsNonFinal) {
       {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))});
 
   EXPECT_TRUE(context()->OnResult(final_result));
-  EXPECT_EQ(context()->GetContext(), "final text");
+  EXPECT_EQ(GetTranscriptText(context()), "final text");
 }
 
 TEST_F(GlicMediaContextTest,
@@ -398,7 +410,7 @@ TEST_F(GlicMediaContextTest,
       {media::MediaTimestampRange(base::Seconds(1), base::Seconds(2)),
        media::MediaTimestampRange(base::Seconds(3), base::Seconds(4))})));
 
-  EXPECT_EQ(context()->GetContext(), "chunk one");
+  EXPECT_EQ(GetTranscriptText(context()), "chunk one");
 }
 
 TEST_F(GlicMediaContextTest,
@@ -417,7 +429,7 @@ TEST_F(GlicMediaContextTest,
   // Insert a non-final chunk. It should be placed after "chunk three".
   context()->OnResult(CreateSpeechRecognitionResult("chunk two", false));
 
-  EXPECT_EQ(context()->GetContext(), "chunk onechunk threechunk two");
+  EXPECT_EQ(GetTranscriptText(context()), "chunk onechunk threechunk two");
 }
 
 TEST_F(GlicMediaContextTest,
@@ -436,7 +448,7 @@ TEST_F(GlicMediaContextTest,
   // Insert a non-final chunk. It should be placed after "chunk three".
   context()->OnResult(CreateSpeechRecognitionResult("chunk two", false));
 
-  EXPECT_EQ(context()->GetContext(), "chunk threechunk twochunk one");
+  EXPECT_EQ(GetTranscriptText(context()), "chunk threechunk twochunk one");
 }
 
 TEST_F(GlicMediaContextTest,
@@ -452,7 +464,7 @@ TEST_F(GlicMediaContextTest,
       {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
 
   // The context should be sorted by time.
-  EXPECT_EQ(context()->GetContext(), "Final One. Final Three. ");
+  EXPECT_EQ(GetTranscriptText(context()), "Final One. Final Three. ");
 
   // Add a final chunk without a timestamp. It should be inserted after
   // "Final One", which was the last final chunk added.
@@ -461,7 +473,7 @@ TEST_F(GlicMediaContextTest,
 
   // The final context should show the untimed chunk inserted after the last
   // added final chunk.
-  EXPECT_EQ(context()->GetContext(),
+  EXPECT_EQ(GetTranscriptText(context()),
             "Final One. Final Two (no time). Final Three. ");
 }
 
@@ -558,7 +570,7 @@ TEST_F(GlicMediaContextTest, ContextShouldTruncateLeastRecentlyAdded) {
       {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
 
   // The long one should have been evicted.
-  EXPECT_EQ(context()->GetContext(), "B");
+  EXPECT_EQ(GetTranscriptText(context()), "B");
 }
 
 TEST_F(GlicMediaContextTest,
@@ -569,12 +581,12 @@ TEST_F(GlicMediaContextTest,
   context()->OnResult(CreateSpeechRecognitionResult(
       "Final Two. ", true,
       {media::MediaTimestampRange(base::Seconds(2), base::Seconds(3))}));
-  EXPECT_EQ(context()->GetContext(), "Final One. Final Two. ");
+  EXPECT_EQ(GetTranscriptText(context()), "Final One. Final Two. ");
 
   // Add a non-final chunk without a timestamp. It should be inserted after the
   // most recently added final chunk ("Final Two").
   context()->OnResult(CreateSpeechRecognitionResult("Non-final. ", false));
-  EXPECT_EQ(context()->GetContext(), "Final One. Final Two. Non-final. ");
+  EXPECT_EQ(GetTranscriptText(context()), "Final One. Final Two. Non-final. ");
 
   // Add another final chunk.
   context()->OnResult(CreateSpeechRecognitionResult(
@@ -583,21 +595,26 @@ TEST_F(GlicMediaContextTest,
 
   // The previous non-final chunk should be gone, and the context should be
   // sorted correctly.
-  EXPECT_EQ(context()->GetContext(), "Final One. Final Three. Final Two. ");
+  EXPECT_EQ(GetTranscriptText(context()),
+            "Final One. Final Three. Final Two. ");
 
   // Add another non-final chunk. It should be inserted after "Final Three"
   // because that was the last one added.
   context()->OnResult(CreateSpeechRecognitionResult("Non-final Two.", false));
-  EXPECT_EQ(context()->GetContext(),
+  EXPECT_EQ(GetTranscriptText(context()),
             "Final One. Final Three. Non-final Two.Final Two. ");
 }
 
 TEST_F(GlicMediaContextTest, NonFinalChunkWithTimestamp_ReplacesExisting) {
+  context()->OnResult(CreateSpeechRecognitionResult(
+      "Final One. ", true,
+      {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
+
   // Add a non-final chunk with a timestamp.
   context()->OnResult(CreateSpeechRecognitionResult(
       "Non-final One. ", false,
       {media::MediaTimestampRange(base::Seconds(10), base::Seconds(11))}));
-  EXPECT_EQ(context()->GetContext(), "Non-final One. ");
+  EXPECT_EQ(GetTranscriptText(context()), "Final One. Non-final One. ");
 
   // Add another non-final chunk with a different timestamp.
   context()->OnResult(CreateSpeechRecognitionResult(
@@ -605,15 +622,18 @@ TEST_F(GlicMediaContextTest, NonFinalChunkWithTimestamp_ReplacesExisting) {
       {media::MediaTimestampRange(base::Seconds(20), base::Seconds(21))}));
 
   // The first non-final chunk should be replaced by the second one.
-  EXPECT_EQ(context()->GetContext(), "Non-final Two. ");
+  EXPECT_EQ(GetTranscriptText(context()), "Final One. Non-final Two. ");
 }
 
 TEST_F(GlicMediaContextTest, NonFinalChunkWithTimestamp_UpdatesInPlace) {
+  context()->OnResult(CreateSpeechRecognitionResult(
+      "Final One. ", true,
+      {media::MediaTimestampRange(base::Seconds(0), base::Seconds(1))}));
   // Add a non-final chunk with a timestamp.
   context()->OnResult(CreateSpeechRecognitionResult(
       "Hello", false,
       {media::MediaTimestampRange(base::Seconds(10), base::Seconds(11))}));
-  EXPECT_EQ(context()->GetContext(), "Hello");
+  EXPECT_EQ(GetTranscriptText(context()), "Final One. Hello");
 
   // Add another non-final chunk with the same timestamp but different text.
   context()->OnResult(CreateSpeechRecognitionResult(
@@ -621,11 +641,10 @@ TEST_F(GlicMediaContextTest, NonFinalChunkWithTimestamp_UpdatesInPlace) {
       {media::MediaTimestampRange(base::Seconds(10), base::Seconds(13))}));
 
   // The chunk should be updated in place.
-  EXPECT_EQ(context()->GetContext(), "Hello world");
+  EXPECT_EQ(GetTranscriptText(context()), "Final One. Hello world");
 
-  // No transcripts are returned if we don't have any final chunks.
   auto chunks = context()->GetTranscriptChunks();
-  EXPECT_EQ(chunks.size(), 0u);
+  EXPECT_EQ(chunks.size(), 2u);
 }
 
 TEST_F(GlicMediaContextTest, TranscriptSwitchesWithMediaSessionTitle) {
@@ -634,18 +653,18 @@ TEST_F(GlicMediaContextTest, TranscriptSwitchesWithMediaSessionTitle) {
   SetMetadata(metadata);
 
   context()->OnResult(CreateSpeechRecognitionResult("Transcript one", true));
-  EXPECT_EQ(context()->GetContext(), "Transcript one");
+  EXPECT_EQ(GetTranscriptText(context()), "Transcript one");
 
   metadata.title = u"Title Two";
   SetMetadata(metadata);
 
-  EXPECT_EQ(context()->GetContext(), "");
+  EXPECT_EQ(GetTranscriptText(context()), "");
   context()->OnResult(CreateSpeechRecognitionResult("Transcript two", true));
-  EXPECT_EQ(context()->GetContext(), "Transcript two");
+  EXPECT_EQ(GetTranscriptText(context()), "Transcript two");
 
   metadata.title = u"Title One";
   SetMetadata(metadata);
-  EXPECT_EQ(context()->GetContext(), "Transcript one");
+  EXPECT_EQ(GetTranscriptText(context()), "Transcript one");
 }
 
 TEST_F(GlicMediaContextTest, GetMediaSessionIfExists_FiltersByRoutedFrame) {
@@ -653,12 +672,12 @@ TEST_F(GlicMediaContextTest, GetMediaSessionIfExists_FiltersByRoutedFrame) {
   // nullptr, in this case, is just something that is not rfh().
   ON_CALL(mock_media_session(), GetRoutedFrame).WillByDefault(Return(nullptr));
   EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult("test", true)));
-  EXPECT_EQ(context()->GetContext(), "");
+  EXPECT_EQ(GetTranscriptText(context()), "");
 
   // If the routed frame is `rfh()`, then it should return the session.
   ON_CALL(mock_media_session(), GetRoutedFrame).WillByDefault(Return(rfh()));
   EXPECT_TRUE(context()->OnResult(CreateSpeechRecognitionResult("test", true)));
-  EXPECT_EQ(context()->GetContext(), "test");
+  EXPECT_EQ(GetTranscriptText(context()), "test");
 }
 
 TEST_F(GlicMediaContextTest, OnResult_NotifiesTranscriptProvider) {
