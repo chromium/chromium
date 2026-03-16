@@ -5241,6 +5241,10 @@ inline constexpr char kApb144Patch2Name[] = "Apb144Patch2";
 inline constexpr char kApb144Patch2Description[] =
     "Enables the second patch for APB in 144";
 
+inline constexpr char kApb144Patch3Name[] = "Apb144Patch3";
+inline constexpr char kApb144Patch3Description[] =
+    "Enables the third patch for APB in 144.";
+
 inline constexpr char kAppSpecificHistoryName[] = "Allow app specific history";
 inline constexpr char kAppSpecificHistoryDescription[] =
     "If enabled, history results will also be categorized by application.";
