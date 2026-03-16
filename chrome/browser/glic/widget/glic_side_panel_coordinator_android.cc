@@ -47,6 +47,11 @@ GlicSidePanelCoordinatorAndroid::~GlicSidePanelCoordinatorAndroid() {
 }
 
 void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations) {
+  Show(suppress_animations, /* startsExpanded= */ true);
+}
+
+void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations,
+                                           bool startsExpanded) {
   if (IsShowing()) {
     return;
   }
@@ -55,8 +60,8 @@ void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations) {
     SetState(State::kBackgrounded);
     return;
   }
-  Java_TabBottomSheetNativeInterface_show(AttachCurrentThread(),
-                                          java_interface_, co_browse_views_);
+  Java_TabBottomSheetNativeInterface_show(
+      AttachCurrentThread(), java_interface_, co_browse_views_, startsExpanded);
   SetState(State::kShown);
 }
 
@@ -140,8 +145,8 @@ void GlicSidePanelCoordinatorAndroid::OnTabDidActivate(
     return;
   }
 
-  // If we are not closed (e.g. backgrounded), show the panel.
-  Show(/*suppress_animations=*/true);
+  // If we are not closed (e.g. backgrounded), show the panel in peek state.
+  Show(/*suppress_animations=*/true, /* startsExpanded= */ false);
 }
 
 void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(

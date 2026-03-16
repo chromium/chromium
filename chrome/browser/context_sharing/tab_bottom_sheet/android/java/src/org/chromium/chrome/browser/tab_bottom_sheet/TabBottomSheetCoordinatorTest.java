@@ -80,7 +80,7 @@ public class TabBottomSheetCoordinatorTest {
     private BottomSheetObserver simulateShowSuccessAndGetObserver() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
-        mCoordinator.tryToShowBottomSheet();
+        mCoordinator.tryToShowBottomSheet(/* startsExpanded= */ true);
         verify(mMockBottomSheetController)
                 .addObserver(mBottomSheetObserverArgumentCaptor.capture());
         BottomSheetObserver coordinatorObserver = mBottomSheetObserverArgumentCaptor.getValue();
@@ -103,7 +103,7 @@ public class TabBottomSheetCoordinatorTest {
     public void testShowBottomSheet_Fails_Cleanup() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.tryToShowBottomSheet();
+        mCoordinator.tryToShowBottomSheet(/* startsExpanded= */ true);
         verify(mMockBottomSheetController)
                 .requestShowContent(any(BottomSheetContent.class), eq(true));
         verify(mMockBottomSheetController, never()).addObserver(any(BottomSheetObserver.class));
@@ -126,7 +126,7 @@ public class TabBottomSheetCoordinatorTest {
     public void testDestroy_WhenNotShown_CleansUp() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.tryToShowBottomSheet();
+        mCoordinator.tryToShowBottomSheet(/* startsExpanded= */ true);
         mCoordinator.destroy();
 
         verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean(), anyInt());

@@ -39,6 +39,7 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   void OnClose(JNIEnv* env);
 
  private:
+  void Show(bool suppress_animations, bool startsExpanded);
   void SetState(State state);
   void OnTabDidActivate(tabs::TabInterface* tab);
   void OnTabWillDeactivate(tabs::TabInterface* tab);

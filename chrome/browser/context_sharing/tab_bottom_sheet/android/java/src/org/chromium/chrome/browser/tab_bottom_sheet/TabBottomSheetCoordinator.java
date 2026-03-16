@@ -51,7 +51,7 @@ public class TabBottomSheetCoordinator {
     }
 
     /** Tries to show the bottom sheet. */
-    boolean tryToShowBottomSheet() {
+    boolean tryToShowBottomSheet(boolean startsExpanded) {
         if (mIsSheetCurrentlyManagedByController) {
             return false;
         }
@@ -64,6 +64,9 @@ public class TabBottomSheetCoordinator {
         mSheetContent = new TabBottomSheetContent(mContentView);
 
         if (mBottomSheetController.requestShowContent(mSheetContent, true)) {
+            if (startsExpanded) {
+                mBottomSheetController.expandSheet();
+            }
             mSheetObserver = buildBottomSheetObserver();
             mBottomSheetController.addObserver(mSheetObserver);
             mIsSheetCurrentlyManagedByController = true;

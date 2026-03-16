@@ -67,7 +67,9 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mManager.tryToShowBottomSheet(
-                            NativeInterfaceDelegate.getInstance(), mCoBrowseViews);
+                            NativeInterfaceDelegate.getInstance(),
+                            mCoBrowseViews,
+                            /* startsExpanded= */ true);
                 });
         assertEquals(
                 mManager.getNativeInterfaceDelegateForTesting(),

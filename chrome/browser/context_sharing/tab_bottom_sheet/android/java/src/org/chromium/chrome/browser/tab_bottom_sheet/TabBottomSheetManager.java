@@ -66,14 +66,17 @@ public class TabBottomSheetManager implements Destroyable {
      *
      * @param nativeInterfaceDelegate The native interface delegate.
      * @param coBrowseViews The views to show in the bottom sheet.
+     * @param startsExpanded Whether the bottom sheet should start expanded.
      * @return Whether the bottom sheet was shown.
      */
     boolean tryToShowBottomSheet(
-            NativeInterfaceDelegate nativeInterfaceDelegate, CoBrowseViews coBrowseViews) {
+            NativeInterfaceDelegate nativeInterfaceDelegate,
+            CoBrowseViews coBrowseViews,
+            boolean startsExpanded) {
         mTabBottomSheetCoordinator =
                 new TabBottomSheetCoordinator(mBottomSheetController, coBrowseViews);
 
-        if (mTabBottomSheetCoordinator.tryToShowBottomSheet()) {
+        if (mTabBottomSheetCoordinator.tryToShowBottomSheet(startsExpanded)) {
             // Successfully showed bottom sheet.
             mBottomSheetController.addObserver(mBottomSheetObserver);
             mNativeInterfaceDelegate = nativeInterfaceDelegate;

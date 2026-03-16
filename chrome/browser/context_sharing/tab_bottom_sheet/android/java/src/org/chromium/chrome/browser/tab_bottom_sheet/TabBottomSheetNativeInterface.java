@@ -38,10 +38,10 @@ public class TabBottomSheetNativeInterface implements NativeInterfaceDelegate {
 
     // Native calls for glic.
     @CalledByNative
-    public boolean show(CoBrowseViews coBrowseViews) {
+    public boolean show(CoBrowseViews coBrowseViews, boolean startsExpanded) {
         TabBottomSheetManager tabBottomSheetManager = getTabBottomSheetManager(mTab);
         if (tabBottomSheetManager != null && coBrowseViews != null) {
-            return tabBottomSheetManager.tryToShowBottomSheet(this, coBrowseViews);
+            return tabBottomSheetManager.tryToShowBottomSheet(this, coBrowseViews, startsExpanded);
         }
         return false;
     }
