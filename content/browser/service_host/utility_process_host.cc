@@ -235,8 +235,9 @@ UtilityProcessHost::Options::WithGpuClientAllowed() {
 UtilityProcessHost::Options& UtilityProcessHost::Options::WithFileToPreload(
     std::string key,
     std::variant<base::FilePath, base::ScopedFD> file) {
-  DCHECK_EQ(file_data_->files_to_preload.count(key), 0u);
-  file_data_->files_to_preload.insert({std::move(key), std::move(file)});
+  auto [it, inserted] =
+      file_data_->files_to_preload.try_emplace(std::move(key), std::move(file));
+  DCHECK(inserted);
   return *this;
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)

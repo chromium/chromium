@@ -465,7 +465,7 @@ void BiddingAndAuctionServerKeyFetcher::AddKeysDebugOverride(
   state.apis.Put(api);
   state.debug_override = true;
   state.debug_override_callback = std::move(callback);
-  fetcher_state_map_.insert(std::pair(coordinator, std::move(state)));
+  fetcher_state_map_.try_emplace(coordinator, std::move(state));
   // Pretend we succeeded in loading from network.
   OnFetchKeysFromNetworkComplete(
       std::move(coordinator),

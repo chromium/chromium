@@ -867,9 +867,10 @@ void BucketContext::BindMockFailureSingletonForTesting(
 }
 
 Database* BucketContext::CreateAndAddDatabase(const std::u16string& name) {
-  CHECK(!databases_.contains(name));
-  auto database = std::make_unique<Database>(name, *this);
-  return databases_.emplace(name, std::move(database)).first->second.get();
+  auto [it, inserted] = databases_.try_emplace(name);
+  CHECK(inserted);
+  it->second = std::make_unique<Database>(name, *this);
+  return it->second.get();
 }
 
 void BucketContext::OnHandleCreated() {
@@ -956,8 +957,8 @@ void BucketContext::BindBlobReader(
     mojo::PendingReceiver<blink::mojom::Blob> blob_receiver) {
   const base::FilePath& path = blob_info.indexed_db_file_path();
 
-  auto itr = file_reader_map_.find(path);
-  if (itr == file_reader_map_.end()) {
+  auto [itr, inserted] = file_reader_map_.try_emplace(path);
+  if (inserted) {
     // Unretained is safe because `this` owns the reader.
     auto reader = std::make_unique<BlobReader>(
         blob_info,
@@ -965,12 +966,9 @@ void BucketContext::BindBlobReader(
                        base::Unretained(this), path),
         base::BindRepeating(&LogNetError, "IndexedDB.BackingStore.ReadBlob",
                             GetHistogramSuffix()));
-    itr =
-        file_reader_map_
-            .insert({path, std::make_tuple(std::move(reader),
-                                           base::ScopedClosureRunner(
-                                               blob_info.release_callback()))})
-            .first;
+    itr->second = std::make_tuple(
+        std::move(reader),
+        base::ScopedClosureRunner(blob_info.release_callback()));
   }
 
   std::get<0>(itr->second)

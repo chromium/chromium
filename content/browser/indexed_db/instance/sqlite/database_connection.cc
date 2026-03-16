@@ -2332,16 +2332,15 @@ DatabaseConnection::CreateAllExternalObjects(
 
     // Otherwise the blob is in the database already. Look up or create the
     // object that manages the active blob.
-    auto it = active_blobs_.find(object.blob_number());
-    if (it == active_blobs_.end()) {
-      std::unique_ptr<BlobEndpoint> endpoint;
+    auto [it, inserted] = active_blobs_.try_emplace(object.blob_number());
+    if (inserted) {
       const bool is_legacy_blob = !object.indexed_db_file_path().empty();
       base::UmaHistogramBoolean("IndexedDB.SQLite.BlobServedFromLegacyFile",
                                 is_legacy_blob);
       if (!is_legacy_blob) {
-        endpoint = std::make_unique<ActiveBlobStreamer>(
+        it->second = std::make_unique<ActiveBlobStreamer>(
             object,
-            // Unretained is safe because `this` owns `endpoint`.
+            // Unretained is safe because `this` owns the `std::unique_ptr`.
             base::BindRepeating(&DatabaseConnection::OpenBlobChunkForStreaming,
                                 base::Unretained(this), object.blob_number(),
                                 /*readonly=*/true),
@@ -2351,16 +2350,14 @@ DatabaseConnection::CreateAllExternalObjects(
                            /*is_legacy_blob=*/false),
             backing_store_->on_blob_read_complete());
       } else {
-        endpoint = std::make_unique<BlobReader>(
+        it->second = std::make_unique<BlobReader>(
             object,
-            // Unretained is safe because `this` owns `endpoint`.
+            // Unretained is safe because `this` owns the `std::unique_ptr`.
             base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
                            base::Unretained(this), object.blob_number(),
                            /*is_legacy_blob=*/true),
             backing_store_->on_blob_read_complete());
       }
-      it = active_blobs_.emplace(object.blob_number(), std::move(endpoint))
-               .first;
       if (!AddActiveBlobReference(object.blob_number())) {
         LogEvent(SpecificEvent::kAddActiveBlobReferenceFailed);
       }

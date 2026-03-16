@@ -75,7 +75,7 @@ void GinJavaBridgeDispatcher::AddNamedObject(
   CHECK(remote_);
   // Added objects only become available after page reload, so here they
   // are only added into the internal map.
-  named_objects_.insert(std::make_pair(name, NamedObject{object_id, matcher}));
+  named_objects_.try_emplace(name, object_id, matcher);
 }
 
 void GinJavaBridgeDispatcher::RemoveNamedObject(const std::string& name) {

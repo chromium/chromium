@@ -402,9 +402,8 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
     storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CacheStorageMap::const_iterator it =
-      cache_storage_map_.find({bucket_locator, owner});
-  if (it == cache_storage_map_.end()) {
+  auto [it, inserted] = cache_storage_map_.try_emplace({bucket_locator, owner});
+  if (inserted) {
     const auto bucket_path = CacheStorageManager::ConstructBucketPath(
         profile_path_, bucket_locator, owner);
 #if DCHECK_IS_ON()
@@ -424,15 +423,12 @@ CacheStorageHandle CacheStorageManager::OpenCacheStorage(
     DLOG_IF(WARNING, !CacheStoragePathIsUnique(bucket_path))
         << "Multiple CacheStorage instances using the same directory detected";
 #endif
-    CacheStorage* cache_storage = new CacheStorage(
+    it->second = std::make_unique<CacheStorage>(
         bucket_path, IsMemoryBacked(), cache_task_runner_.get(),
         scheduler_task_runner_, quota_manager_proxy_, blob_storage_context_,
         this, bucket_locator, owner);
-    cache_storage_map_[{bucket_locator, owner}] =
-        base::WrapUnique(cache_storage);
-    return cache_storage->CreateHandle();
   }
-  return it->second.get()->CreateHandle();
+  return it->second->CreateHandle();
 }
 
 void CacheStorageManager::NotifyCacheListChanged(

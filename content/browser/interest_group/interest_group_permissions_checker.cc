@@ -115,12 +115,10 @@ void InterestGroupPermissionsChecker::CheckPermissions(
   }
 
   PermissionsKey key{frame_origin, interest_group_owner, network_isolation_key};
-  auto active_request = active_requests_.find(key);
-  if (active_request == active_requests_.end()) {
-    active_request = active_requests_
-                         .emplace(std::make_pair(
-                             std::move(key), std::make_unique<ActiveRequest>()))
-                         .first;
+  auto [active_request, inserted] =
+      active_requests_.try_emplace(std::move(key));
+  if (inserted) {
+    active_request->second = std::make_unique<ActiveRequest>();
 
     auto resource_request = std::make_unique<network::ResourceRequest>();
 
