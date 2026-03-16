@@ -2174,7 +2174,6 @@
 <translation id="244231003699905658">잘못된 주소입니다. 주소를 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="2442916515643169563">텍스트 음영</translation>
 <translation id="2443487764245141020">사이트에서 식별자를 사용하여 기기를 인식해야 할 수도 있습니다.</translation>
-<translation id="2444091518615234627">Google에 더 적은 데이터 전송(예: URL의 일부)</translation>
 <translation id="244475495405467108">좌측 탭 닫기</translation>
 <translation id="2444874983932528148">중단한 부분부터 간편하게 다시 시작하세요</translation>
 <translation id="2445081178310039857">확장 프로그램 루트 디렉터리가 필요합니다.</translation>
@@ -6691,7 +6690,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5510775624736435856">Google에서 이미지 설명 가져오기</translation>
 <translation id="5511379779384092781">아주 작게</translation>
 <translation id="5511823366942919280">이 기기를 'Shark'로 설정하시겠습니까?</translation>
-<translation id="5512511240775436189">Google에 더 많은 데이터 전송(예: URL, 페이지 콘텐츠 등)</translation>
 <translation id="5512739112435045339">기기에서 여유 공간을 확보한 다음 다시 다운로드해 보세요</translation>
 <translation id="5513807280330619196">계산기</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6718,7 +6716,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />에서 다음 권한을 요청합니다.</translation>
 <translation id="5533343601674003130">PDF 서비스</translation>
 <translation id="5535769176698670170">상단 뷰와 바꾸기</translation>
-<translation id="5537395135310061418">Google 최고의 보안 기능으로 웹에서 사용자 보호</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="5539070192556911367">Google에 연결할 수 없음</translation>
 <translation id="5541091577812545428">비밀번호가 변경되지 않았습니다.</translation>
@@ -8093,7 +8090,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6494483173119160146">기기에 복구 불가 오류가 발생했습니다. 기기를 재설정하고(모든 사용자 데이터가 삭제됨) 다시 시도하세요.</translation>
 <translation id="6495266441917713704">Wi-Fi 전송 불가</translation>
 <translation id="6495453178162183932">테마가 기본 Chrome으로 업데이트됨</translation>
-<translation id="6496542321576111907">강력한 보안을 제공합니다. 추가 기능을 사용 설정하도록 선택할 수 있습니다.</translation>
 <translation id="6496641546298525838">내 기기</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
@@ -11541,7 +11537,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8808686172382650546">고양이</translation>
 <translation id="8809147117840417135">연한 청록색</translation>
 <translation id="8811862054141704416">Crostini 마이크 액세스</translation>
-<translation id="8811881249098640048">알려지지 않은 일부 사이트의 속도를 제한</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}other{비밀번호 {PASSWORD_COUNT}개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요. 이렇게 하면 중복 항목도 정리됩니다}}</translation>
 <translation id="8813199641941291474">MIDI 기기의 제어 및 재프로그래밍 차단됨</translation>
 <translation id="8813698869395535039"><ph name="USERNAME" />에 로그인할 수 없음</translation>

@@ -2168,7 +2168,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="244231003699905658">Невалиден адрес. Моля, проверете адреса и опитайте отново.</translation>
 <translation id="2442916515643169563">Сянка на текста</translation>
 <translation id="2443487764245141020">Може да се наложи сайтовете да разпознават устройството ви и с помощта на идентификатор</translation>
-<translation id="2444091518615234627">Изпраща по-малко данни до Google (например части от URL адреси).</translation>
 <translation id="244475495405467108">Затваряне на разделите отляво</translation>
 <translation id="2444874983932528148">Лесно продължавайте оттам, откъдето сте прекъснали</translation>
 <translation id="2445081178310039857">Необходима е основна директория на разширението.</translation>
@@ -6687,7 +6686,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5510775624736435856">Изтегляне от Google на описания за изображенията</translation>
 <translation id="5511379779384092781">Много нисък</translation>
 <translation id="5511823366942919280">Наистина ли искате да настроите това устройство като Shark?</translation>
-<translation id="5512511240775436189">Изпраща повече данни до Google (например URL адреси, съдържание на страници и др.).</translation>
 <translation id="5512739112435045339">Освободете място на устройството си и опитайте да изтеглите файла отново</translation>
 <translation id="5513807280330619196">Калкулатор</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6714,7 +6712,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> иска да</translation>
 <translation id="5533343601674003130">Услуга за PDF файлове</translation>
 <translation id="5535769176698670170">Размяна с изгледа отгоре</translation>
-<translation id="5537395135310061418">Защитава ви в мрежата с най-добрите мерки за сигурност на Google.</translation>
 <translation id="5537725057119320332">Предаване</translation>
 <translation id="5539070192556911367">Няма връзка с Google</translation>
 <translation id="5541091577812545428">Паролата не бе променена</translation>
@@ -8090,7 +8087,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6494483173119160146">Възникна непоправима грешка в устройството. Нулирайте го (всички потребителски данни ще бъдат изтрити) и опитайте отново.</translation>
 <translation id="6495266441917713704">Wi-Fi не може да се прехвърли</translation>
 <translation id="6495453178162183932">Темата е актуализирана до основната за Chrome</translation>
-<translation id="6496542321576111907">Осигурява надеждна защита. Можете да включите допълнителни функции.</translation>
 <translation id="6496641546298525838">Вашето устройство</translation>
 <translation id="6497784818439587832">С промяната на размера на елементите на екрана ги смалявате или увеличавате</translation>
 <translation id="6497789971060331894">Обратно превъртане с мишката</translation>
@@ -11538,7 +11534,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8808686172382650546">Котка</translation>
 <translation id="8809147117840417135">Светло синьо-зелено</translation>
 <translation id="8811862054141704416">Достъп на Crostini до микрофона</translation>
-<translation id="8811881249098640048">Забавя някои непознати сайтове.</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 парола е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google. Това действие също така ще изчисти всички дубликати.}other{{PASSWORD_COUNT} пароли са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google. Това действие също така ще изчисти всички дубликати.}}</translation>
 <translation id="8813199641941291474">Контролирането и препрограмирането на MIDI устройствата са забранени</translation>
 <translation id="8813698869395535039">Не мога да вляза в профила <ph name="USERNAME" /></translation>

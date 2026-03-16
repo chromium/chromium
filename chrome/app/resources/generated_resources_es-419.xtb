@@ -2156,7 +2156,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="244231003699905658">La dirección no es válida. Verifica la dirección y vuelve a intentarlo.</translation>
 <translation id="2442916515643169563">Sombra del texto</translation>
 <translation id="2443487764245141020">Es posible que los sitios también reconozcan tu dispositivo a través de un identificador.</translation>
-<translation id="2444091518615234627">Envía menos datos a Google (por ejemplo, partes de URLs).</translation>
 <translation id="244475495405467108">Cerrar pestañas a la izquierda</translation>
 <translation id="2444874983932528148">Retoma fácilmente tu actividad desde donde la dejaste.</translation>
 <translation id="2445081178310039857">Se requiere un directorio de raíz de la extensión.</translation>
@@ -6674,7 +6673,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5510775624736435856">Obtener descripciones de imágenes de Google</translation>
 <translation id="5511379779384092781">Extrapequeño</translation>
 <translation id="5511823366942919280">¿Confirmas que quieres configurar este dispositivo como "Shark"?</translation>
-<translation id="5512511240775436189">Envía más datos a Google (por ejemplo, URLs, contenido de páginas y mucho más).</translation>
 <translation id="5512739112435045339">Libera espacio en tu dispositivo. Luego, vuelve a iniciar la descarga.</translation>
 <translation id="5513807280330619196">Calculadora</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6701,7 +6699,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> quiere</translation>
 <translation id="5533343601674003130">Servicio de PDF</translation>
 <translation id="5535769176698670170">Intercambiar con la vista superior</translation>
-<translation id="5537395135310061418">Te protege en la Web con la mejor seguridad de Google.</translation>
 <translation id="5537725057119320332">Transmitir</translation>
 <translation id="5539070192556911367">No se puede acceder a Google</translation>
 <translation id="5541091577812545428">No se cambió la contraseña</translation>
@@ -8076,7 +8073,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6494483173119160146">El dispositivo detectó un error irrecuperable. Restablece el dispositivo (se borrarán todos los datos del usuario) y vuelve a intentarlo.</translation>
 <translation id="6495266441917713704">No se puede transferir la conexión Wi-Fi</translation>
 <translation id="6495453178162183932">Se actualizó el tema a Chrome predeterminado</translation>
-<translation id="6496542321576111907">Proporciona una seguridad sólida. Puedes activar funciones adicionales.</translation>
 <translation id="6496641546298525838">Tu dispositivo</translation>
 <translation id="6497784818439587832">Cambia el tamaño de la pantalla para agrandar o achicar los elementos que aparecen en pantalla.</translation>
 <translation id="6497789971060331894">Desplazamiento invertido del mouse</translation>
@@ -11524,7 +11520,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8809147117840417135">Verde azulado claro</translation>
 <translation id="8811862054141704416">Acceso al micrófono en Crostini</translation>
-<translation id="8811881249098640048">Ralentiza algunos sitios desconocidos.</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{1 contraseña se guarda solo en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google. Esto también borrará cualquier duplicado.}other{{PASSWORD_COUNT} contraseñas se guardan solo en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu Cuenta de Google. Esto también borrará cualquier duplicado.}}</translation>
 <translation id="8813199641941291474">Se impidió el control y la reprogramación de dispositivos MIDI</translation>
 <translation id="8813698869395535039">No se puede acceder a <ph name="USERNAME" /></translation>

@@ -2159,7 +2159,6 @@
 <translation id="244231003699905658">位址無效。請檢查位址是否正確，然後再試一次。</translation>
 <translation id="2442916515643169563">文字陰影</translation>
 <translation id="2443487764245141020">網站可能也需要使用 ID 來辨識你的裝置</translation>
-<translation id="2444091518615234627">將較少資料傳送給 Google (例如網址的一部分)</translation>
 <translation id="244475495405467108">關閉左側的分頁</translation>
 <translation id="2444874983932528148">輕鬆接續瀏覽進度</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
@@ -6668,7 +6667,6 @@
 <translation id="5510775624736435856">從 Google 取得圖片說明</translation>
 <translation id="5511379779384092781">特小</translation>
 <translation id="5511823366942919280">你確定要將這個裝置設為「Shark」嗎？</translation>
-<translation id="5512511240775436189">將較多資料傳送給 Google (例如網址、網頁內容等)</translation>
 <translation id="5512739112435045339">請先釋出裝置空間，然後再下載一次</translation>
 <translation id="5513807280330619196">計算機</translation>
 <translation id="5514315914873062345">Tab 鍵</translation>
@@ -6695,7 +6693,6 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> 要求下列權限</translation>
 <translation id="5533343601674003130">PDF 服務</translation>
 <translation id="5535769176698670170">與上方畫面交換</translation>
-<translation id="5537395135310061418">採用 Google 最強大的安全機制，保護你的網路安全</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539070192556911367">無法連上 Google</translation>
 <translation id="5541091577812545428">密碼未變更</translation>
@@ -8066,7 +8063,6 @@
 <translation id="6494483173119160146">裝置發生無法復原的錯誤。請重設裝置 (系統將清除所有使用者資料)，然後再試一次。</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi 連線</translation>
 <translation id="6495453178162183932">主題已更新為預設的 Chrome 主題</translation>
-<translation id="6496542321576111907">提供強大的安全防護。你可以選擇開啟其他功能。</translation>
 <translation id="6496641546298525838">你的裝置</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
@@ -11513,7 +11509,6 @@
 <translation id="8808686172382650546">貓咪</translation>
 <translation id="8809147117840417135">淺藍綠色</translation>
 <translation id="8811862054141704416">Crostini 麥克風存取權</translation>
-<translation id="8811881249098640048">降低部分陌生網站的速度</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{這 1 組密碼只會儲存在這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}other{這 {PASSWORD_COUNT} 組密碼只會儲存到這部裝置。如要在其他裝置使用，請儲存到 Google 帳戶。此操作也會清理所有重複項目。}}</translation>
 <translation id="8813199641941291474">已禁止控制及重設 MIDI 裝置的程式</translation>
 <translation id="8813698869395535039">無法登入 <ph name="USERNAME" /></translation>
