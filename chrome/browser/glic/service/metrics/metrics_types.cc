@@ -56,6 +56,8 @@ GlicEntrypoint GetEntrypointFromInvocationSource(
       return GlicEntrypoint::kNavigationCapture;
     case glic::mojom::InvocationSource::kAutoOpenedForPdf:
       return GlicEntrypoint::kAutoOpenedForPdf;
+    case glic::mojom::InvocationSource::kIph:
+      return GlicEntrypoint::kIph;
     default:
       // All other ones, including mojom::InvocationSource::kUnsupported.
       return GlicEntrypoint::kOther;

@@ -558,6 +558,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="From navigation capture"/>
   <int value="19" label="Automatically opened for a PDF"/>
   <int value="20" label="From capture region hotkey"/>
+  <int value="21" label="In-product help"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -748,6 +749,10 @@ chromium-metrics-reviews@google.com.
   <int value="82" label="Capture Region hotkey, attached, audio mode."/>
   <int value="83" label="Capture Region hotkey, detached, text mode."/>
   <int value="84" label="Capture Region hotkey, detached, audio mode."/>
+  <int value="85" label="IPH, attached, text mode."/>
+  <int value="86" label="IPH, attached, audio mode."/>
+  <int value="87" label="IPH, detached, text mode."/>
+  <int value="88" label="IPH, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->
