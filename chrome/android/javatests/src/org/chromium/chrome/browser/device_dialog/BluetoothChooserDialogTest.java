@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -67,7 +66,7 @@ import java.util.concurrent.Callable;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(BluetoothChooserDialogTest.DEVICE_DIALOG_BATCH_NAME)
+// TODO(crbug.com/344665244): Failing when batched, batch this again.
 public class BluetoothChooserDialogTest {
     public static final String DEVICE_DIALOG_BATCH_NAME = "device_dialog";
 
