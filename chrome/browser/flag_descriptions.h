@@ -6712,12 +6712,6 @@ inline constexpr char kArcRtVcpuQuadCoreDesc[] =
     "Enable ARC real time vCPU on a device with 3+ logical cores online to "
     "reduce media playback glitch.";
 
-inline constexpr char kArcVmMemorySizeName[] =
-    "Enable custom ARCVM memory size";
-inline constexpr char kArcVmMemorySizeDesc[] =
-    "Enable custom ARCVM memory size, "
-    "\"shift\" controls the amount to shift system RAM when sizing ARCVM.";
-
 inline constexpr char kArcVmmSwapKBShortcutName[] =
     "Keyboard shortcut trigger for ARCVM"
     " vmm swap feature";
