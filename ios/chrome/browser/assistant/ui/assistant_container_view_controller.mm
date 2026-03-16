@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -49,6 +50,9 @@ constexpr CGFloat kMinTopPadding = 12.0;
 // The fullscreen progress threshold below which the container minimizes.
 constexpr CGFloat kFullscreenMinimizationThreshold = 0.50;
 
+// Default percentage for the medium detent.
+constexpr NSInteger kDefaultMediumDetentPercentage = 50;
+
 // Returns YES if the layout should be adapted for iPad.
 BOOL IsiPadLayout(UITraitCollection* trait_collection) {
   return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
@@ -60,6 +64,14 @@ BOOL IsiPadLayout(UITraitCollection* trait_collection) {
 BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
   return trait_collection.userInterfaceIdiom == UIUserInterfaceIdiomPhone &&
          trait_collection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+}
+
+// Returns the height for the medium detent, taking into account the
+// experimental setting percentage.
+NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
+  NSInteger percentage =
+      GetAssistantMediumDetentPercentage() ?: kDefaultMediumDetentPercentage;
+  return absoluteMax * (percentage / 100.0);
 }
 
 }  // namespace
@@ -805,7 +817,7 @@ BOOL IsiPhoneLandscapeLayout(UITraitCollection* trait_collection) {
         _detentHeights[detent] = absoluteMax;
         break;
       case AssistantContainerDetent::kMedium:
-        _detentHeights[detent] = absoluteMax / 2;
+        _detentHeights[detent] = GetMediumDetentHeight(absoluteMax);
         break;
       case AssistantContainerDetent::kMinimized:
         _detentHeights[detent] = self.minimizedDetentHeight;

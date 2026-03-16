@@ -1026,6 +1026,8 @@ BASE_FEATURE(kAssistantContainer, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kAssistantContainerParam[] = "kAssistantContainerParam";
 const char kAssistantContainerParamDebug[] = "kAssistantContainerParamDebug";
+const char kAssistantContainerMediumDetentPercentParam[] =
+    "AssistantMediumDetentPercent";
 
 bool IsAssistantContainerEnabled() {
   return base::FeatureList::IsEnabled(kAssistantContainer);
@@ -1038,6 +1040,14 @@ bool ShouldShowAssistantContainerDebugElements() {
   std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kAssistantContainer, kAssistantContainerParam);
   return feature_param == kAssistantContainerParamDebug;
+}
+
+NSInteger GetAssistantMediumDetentPercentage() {
+  if (!base::FeatureList::IsEnabled(kAssistantContainer)) {
+    return 0;
+  }
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kAssistantContainer, kAssistantContainerMediumDetentPercentParam, 0);
 }
 
 BASE_FEATURE(kComposeboxIpad, base::FEATURE_DISABLED_BY_DEFAULT);

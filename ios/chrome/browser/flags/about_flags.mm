@@ -1349,8 +1349,16 @@ const FeatureEntry::FeatureVariation kPageActionMenuIconVariations[] = {
 const FeatureEntry::FeatureParam kAssistantContainerParamDebugDetents[] = {
     {kAssistantContainerParam, kAssistantContainerParamDebug}};
 
+const FeatureEntry::FeatureParam kAssistantContainer30[] = {
+    {kAssistantContainerMediumDetentPercentParam, "30"}};
+
+const FeatureEntry::FeatureParam kAssistantContainer60[] = {
+    {kAssistantContainerMediumDetentPercentParam, "60"}};
+
 const FeatureEntry::FeatureVariation kAssistantContainerVariations[] = {
-    {"with debug elements", kAssistantContainerParamDebugDetents, nullptr}};
+    {"with debug elements", kAssistantContainerParamDebugDetents, nullptr},
+    {"30% medium detent", kAssistantContainer30, nullptr},
+    {"60% medium detent", kAssistantContainer60, nullptr}};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
