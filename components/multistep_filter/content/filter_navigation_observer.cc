@@ -28,19 +28,23 @@ FilterNavigationObserver::~FilterNavigationObserver() = default;
 void FilterNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Track only committed, primary main frame navigations. Ignore downloads,
-  // subframes, same-document navigations (e.g. #foo), and BFCache restorations.
-  if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      navigation_handle->IsPageActivation()) {
+  // subframes, and same-document navigations (e.g. #foo). These navigations do
+  // not change the main document, so any existing suggestions should remain
+  // visible.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted() ||
+      navigation_handle->IsSameDocument()) {
     return;
   }
 
+  // Clear suggestions for the old page now that a new navigation has committed.
   delegate_->ClearSuggestion();
 
-  if (navigation_handle->GetReloadType() != content::ReloadType::NONE ||
-      navigation_handle->IsErrorPage() ||
-      !navigation_handle->GetWebContents()) {
+  // BFCache restorations, prerender activations, reloads, and error pages
+  // do not generate new suggestions.
+  if (navigation_handle->IsPageActivation() ||
+      navigation_handle->GetReloadType() != content::ReloadType::NONE ||
+      navigation_handle->IsErrorPage()) {
     return;
   }
 
