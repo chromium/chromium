@@ -1576,31 +1576,31 @@ GridPosition StyleBuilderConverter::ConvertGridPosition(
   int grid_line_number = 1;
   AtomicString grid_line_name;
 
-  auto it = values.begin();
-  const CSSValue* current_value = it->Get();
+  wtf_size_t i = 0;
+  const CSSValue* current_value = &values.Item(i);
   auto* current_identifier_value = DynamicTo<CSSIdentifierValue>(current_value);
   if (current_identifier_value &&
       current_identifier_value->GetValueID() == CSSValueID::kSpan) {
     is_span_position = true;
-    UNSAFE_TODO(++it);
-    current_value = it != values.end() ? it->Get() : nullptr;
+    ++i;
+    current_value = i < values.length() ? &values.Item(i) : nullptr;
   }
 
   auto* current_primitive_value = DynamicTo<CSSPrimitiveValue>(current_value);
   if (current_primitive_value && current_primitive_value->IsNumber()) {
     grid_line_number = current_primitive_value->ComputeInteger(
         state.CssToLengthConversionData());
-    UNSAFE_TODO(++it);
-    current_value = it != values.end() ? it->Get() : nullptr;
+    ++i;
+    current_value = i < values.length() ? &values.Item(i) : nullptr;
   }
 
   auto* current_ident_value = DynamicTo<CSSCustomIdentValue>(current_value);
   if (current_ident_value) {
     grid_line_name = current_ident_value->Value();
-    UNSAFE_TODO(++it);
+    ++i;
   }
 
-  DCHECK_EQ(it, values.end());
+  DCHECK_EQ(i, values.length());
   if (is_span_position) {
     position.SetSpanPosition(grid_line_number, grid_line_name);
   } else {
@@ -1728,22 +1728,24 @@ ComputedGridTrackList* StyleBuilderConverter::ConvertGridTrackList(
   };
 
   const auto& values = To<CSSValueList>(value);
-  auto curr_value = values.begin();
+  wtf_size_t curr_index = 0;
   bool is_subgrid = false;
 
-  auto* identifier_value = DynamicTo<CSSIdentifierValue>(curr_value->Get());
+  auto* identifier_value =
+      DynamicTo<CSSIdentifierValue>(values.Item(curr_index));
   if (identifier_value &&
       identifier_value->GetValueID() == CSSValueID::kSubgrid) {
     state.GetDocument().CountUse(WebFeature::kCSSSubgridLayout);
     computed_grid_track_list->SetGridAxisType(GridAxisType::kSubgriddedAxis);
     track_list.SetAxisType(GridAxisType::kSubgriddedAxis);
     is_subgrid = true;
-    UNSAFE_TODO(++curr_value);
+    ++curr_index;
   }
 
-  for (; curr_value != values.end(); UNSAFE_TODO(++curr_value)) {
+  for (; curr_index < values.length(); ++curr_index) {
+    const CSSValue& curr_value = values.Item(curr_index);
     if (auto* grid_auto_repeat_value =
-            DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value->Get())) {
+            DynamicTo<cssvalue::CSSGridAutoRepeatValue>(curr_value)) {
       Vector<GridTrackSize, 1> repeated_track_sizes;
       wtf_size_t auto_repeat_index = 0;
       CSSValueID auto_repeat_id = grid_auto_repeat_value->AutoRepeatID();
@@ -1752,7 +1754,7 @@ ComputedGridTrackList* StyleBuilderConverter::ConvertGridTrackList(
       computed_grid_track_list->SetAutoRepeatType(
           (auto_repeat_id == CSSValueID::kAutoFill) ? AutoRepeatType::kAutoFill
                                                     : AutoRepeatType::kAutoFit);
-      for (const CSSValue* auto_repeat_value : To<CSSValueList>(**curr_value)) {
+      for (const CSSValue* auto_repeat_value : To<CSSValueList>(curr_value)) {
         if (auto_repeat_value->IsGridLineNamesValue()) {
           ConvertGridLineNamesList(
               *auto_repeat_value, auto_repeat_index,
@@ -1779,7 +1781,7 @@ ComputedGridTrackList* StyleBuilderConverter::ConvertGridTrackList(
     }
 
     if (auto* grid_integer_repeat_value =
-            DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value->Get())) {
+            DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(curr_value)) {
       const wtf_size_t repetitions =
           grid_integer_repeat_value->ComputeRepetitions(
               state.CssToLengthConversionData());
@@ -1825,9 +1827,9 @@ ComputedGridTrackList* StyleBuilderConverter::ConvertGridTrackList(
     }
 
     // Handle non-repeaters.
-    ConvertLineNameOrTrackSize(**curr_value);
-    if (!curr_value->Get()->IsGridLineNamesValue()) {
-      track_list.AddRepeater({ConvertGridTrackSize(state, **curr_value)});
+    ConvertLineNameOrTrackSize(curr_value);
+    if (!curr_value.IsGridLineNamesValue()) {
+      track_list.AddRepeater({ConvertGridTrackSize(state, curr_value)});
     } else if (is_subgrid) {
       track_list.AddRepeater(/*repeater_track_sizes=*/{});
     }
