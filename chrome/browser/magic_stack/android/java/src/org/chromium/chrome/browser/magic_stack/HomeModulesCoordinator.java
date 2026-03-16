@@ -400,6 +400,11 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     @Override
+    public void scrollTo(int position) {
+        mRecyclerView.smoothScrollToPosition(position);
+    }
+
+    @Override
     public void prepareBuildAndShow() {
         maybeSetUpAdapter();
         mRecyclerView.addOnScrollListener(mOnScrollListener);

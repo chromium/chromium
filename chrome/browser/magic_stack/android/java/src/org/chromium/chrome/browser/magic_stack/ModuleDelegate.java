@@ -129,6 +129,13 @@ public interface ModuleDelegate {
     /** Re-evaluates eligibility and re-renders the magic stack. */
     void refreshModules();
 
+    /**
+     * Scrolls the magic stack to the given position.
+     *
+     * @param position The position to scroll to.
+     */
+    void scrollTo(int position);
+
     /** Called before build and show modules. */
     void prepareBuildAndShow();
 }

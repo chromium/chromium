@@ -350,6 +350,7 @@ public class EducationalTipModuleMediatorUnitTest {
         // Final verification of completion signal and reordering trigger.
         verify(mSetupListManager).onCompletionAnimationFinished(ModuleType.SIGN_IN_PROMO);
         verify(mModuleDelegate).maybeMoveModuleToTheEnd(ModuleType.SIGN_IN_PROMO);
+        verify(mModuleDelegate).scrollTo(0);
     }
 
     @Test
