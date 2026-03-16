@@ -319,7 +319,8 @@ bool RootFrameViewport::SetScrollOffsetInternal(
     mojom::blink::ScrollType scroll_type,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
-    bool targeted_scroll) {
+    bool targeted_scroll,
+    std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver) {
   UpdateScrollAnimator();
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kAuto)
@@ -336,9 +337,9 @@ bool RootFrameViewport::SetScrollOffsetInternal(
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
-  return ScrollableArea::SetScrollOffsetInternal(clamped_offset, scroll_type,
-                                                 source_type, scroll_behavior,
-                                                 /*targeted_scroll=*/false);
+  return ScrollableArea::SetScrollOffsetInternal(
+      clamped_offset, scroll_type, source_type, scroll_behavior,
+      /*targeted_scroll=*/false, std::move(promise_resolver));
 }
 
 mojom::blink::ScrollBehavior RootFrameViewport::ScrollBehaviorStyle() const {

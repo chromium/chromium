@@ -792,7 +792,8 @@ bool VisualViewport::SetScrollOffsetInternal(
     mojom::blink::ScrollType scroll_type,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
-    bool targeted_scroll) {
+    bool targeted_scroll,
+    std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver) {
   // We clamp the offset here, because the ScrollAnimator may otherwise be
   // set to a non-clamped offset by ScrollableArea::setScrollOffsetInternal,
   // which may lead to incorrect scrolling behavior in RootFrameViewport down
@@ -802,9 +803,9 @@ bool VisualViewport::SetScrollOffsetInternal(
   // stores fractional offsets and that truncation happens elsewhere, see
   // crbug.com/626315.
   ScrollOffset new_scroll_offset = ClampScrollOffset(offset);
-  return ScrollableArea::SetScrollOffsetInternal(new_scroll_offset, scroll_type,
-                                                 source_type, scroll_behavior,
-                                                 /*targeted_scroll=*/false);
+  return ScrollableArea::SetScrollOffsetInternal(
+      new_scroll_offset, scroll_type, source_type, scroll_behavior,
+      /*targeted_scroll=*/false, std::move(promise_resolver));
 }
 
 PhysicalOffset VisualViewport::LocalToScrollOriginOffset() const {

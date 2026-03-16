@@ -288,7 +288,7 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollBehavior behavior,
                                      bool targeted_scroll) {
   return SetScrollOffsetInternal(offset, scroll_type, source_type, behavior,
-                                 targeted_scroll);
+                                 targeted_scroll, /*promise_resolver=*/nullptr);
 }
 
 bool ScrollableArea::SetScrollOffsetInternal(
@@ -296,7 +296,8 @@ bool ScrollableArea::SetScrollOffsetInternal(
     mojom::blink::ScrollType scroll_type,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior behavior,
-    bool targeted_scroll) {
+    bool targeted_scroll,
+    std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver) {
   bool filter_scroll = false;
   if (active_smooth_scroll_type_.has_value()) {
     filter_scroll = ShouldFilterIncomingScroll(scroll_type);
@@ -306,12 +307,12 @@ bool ScrollableArea::SetScrollOffsetInternal(
     return false;
   }
 
-  // TODO(https://crbug.com/40712058): We should interrupt scroll promises here
-  // by calling `SettlePendingPromiseHandler()` correctly. We know that we will
-  // need to skip this call for ScrollType::kNone (because in this case we don't
-  // have a latched scroller, implying this is not the direct result of a user
-  // scroll). The main challenge is that a single programmatic scroll request
-  // results in multiple calls to that method (apparently one per frame) with
+  // TODO(https://crbug.com/40712058): We should interrupt `promise_resolver`
+  // here for user scroll. We know that we will need to skip this call for
+  // ScrollType::kNone (because in this case we don't have a latched scroller,
+  // implying this is not the direct result of a user scroll). The main
+  // challenge is that a single programmatic scroll request results in multiple
+  // calls to that method (apparently one per frame) with
   // ScrollType::kCompositor, and we currently have no way to isolate those
   // calls!
 
@@ -356,6 +357,11 @@ bool ScrollableArea::SetScrollOffsetInternal(
     StopApplyingScrollStart();
   }
 
+  // A non-null `promise_reolver` can be passed to this method only from JS
+  // scroll requests (using Window and Element scroll methods).
+  CHECK(!promise_resolver ||
+        scroll_type == mojom::blink::ScrollType::kProgrammatic);
+
   switch (scroll_type) {
     case mojom::blink::ScrollType::kCompositor:
       ScrollOffsetChanged(clamped_offset, scroll_type, source_type);
@@ -383,12 +389,14 @@ bool ScrollableArea::SetScrollOffsetInternal(
 
     case mojom::blink::ScrollType::kProgrammatic:
       return InitiateScrollAnimation(clamped_offset, scroll_type, behavior,
-                                     animation_adjustment, source_type);
+                                     animation_adjustment, source_type,
+                                     std::move(promise_resolver));
 
     case mojom::blink::ScrollType::kUser:
       if (behavior == mojom::blink::ScrollBehavior::kSmooth) {
         return InitiateScrollAnimation(clamped_offset, scroll_type, behavior,
-                                       animation_adjustment, source_type);
+                                       animation_adjustment, source_type,
+                                       nullptr);
       }
       UserScrollHelper(clamped_offset, behavior, source_type);
       break;
@@ -406,18 +414,14 @@ bool ScrollableArea::SetProgrammaticScrollOffset(
     const ScrollOffset& offset,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior behavior,
-    std::unique_ptr<ScopedScrollPromiseResolver> resolver) {
-  // If the last `promise_resolver_` is pending, it has been passed on to
-  // `ProgrammaticScrollAnimator` already and the `SetScrollOffsetInternal` call
-  // below "interrupts" the animator to resolve the pending promise.
-  promise_resolver_ = std::move(resolver);
-
-  if (!SetScrollOffsetInternal(offset, mojom::blink::ScrollType::kProgrammatic,
-                               source_type, behavior, false)) {
-    promise_resolver_ = nullptr;
-    return false;
-  }
-  return true;
+    std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver) {
+  // The last `promise_resolver` for this `ScrollableArea` could still be in a
+  // pending state while being owner by `ProgrammaticScrollAnimator`. The
+  // `SetScrollOffsetInternal` call below "interrupts" the animator which
+  // resolves the pending state.
+  return SetScrollOffsetInternal(
+      offset, mojom::blink::ScrollType::kProgrammatic, source_type, behavior,
+      false, std::move(promise_resolver));
 }
 
 const LayoutObject* ScrollableArea::GetScrollInitialTarget() const {
@@ -507,7 +511,8 @@ bool ScrollableArea::InitiateScrollAnimation(
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
     gfx::Vector2d animation_adjustment,
-    cc::ScrollSourceType source_type) {
+    cc::ScrollSourceType source_type,
+    std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver) {
   bool should_use_animation =
       scroll_behavior == mojom::blink::ScrollBehavior::kSmooth &&
       ScrollAnimatorEnabled();
@@ -525,16 +530,16 @@ bool ScrollableArea::InitiateScrollAnimation(
 
   ScrollCallback callback = ScrollCallback(blink::BindOnce(
       [](WeakPersistent<ScrollableArea> area,
-         std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver,
+         std::unique_ptr<ScopedScrollPromiseResolver> resolver,
          ScrollCompletionMode mode) {
         if (area) {
           area->OnScrollFinished(/*enqueue_scrollend=*/mode ==
                                  ScrollCompletionMode::kFinished);
         }
-        // The promise in `promise_resolver` is implicitly resolved when this
-        // callback is destroyed.
+        // The promise in `resolver` is implicitly resolved when this callback
+        // is destroyed.
       },
-      WrapWeakPersistent(this), std::move(promise_resolver_)));
+      WrapWeakPersistent(this), std::move(promise_resolver)));
 
   // Enqueue scrollsnapchanging if necessary.
   if (auto* snap_container = GetSnapContainerData()) {

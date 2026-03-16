@@ -2601,17 +2601,16 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   end_point = GetSnapPositionAndSetTarget(*strategy).value_or(end_point);
   new_scroll_offset = ScrollPositionToOffset(end_point);
 
-  if (params->is_for_scroll_sequence) {
-    mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
-        params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-    SetScrollOffsetInternal(new_scroll_offset, params->type,
-                            cc::ScrollSourceType::kAbsoluteScroll, behavior,
-                            true);
-  } else {
-    SetScrollOffsetInternal(new_scroll_offset, params->type,
-                            cc::ScrollSourceType::kAbsoluteScroll,
-                            mojom::blink::ScrollBehavior::kInstant, true);
-  }
+  mojom::blink::ScrollBehavior behavior =
+      params->is_for_scroll_sequence
+          ? DetermineScrollBehavior(
+                params->behavior,
+                GetLayoutBox()->StyleRef().GetScrollBehavior())
+          : mojom::blink::ScrollBehavior::kInstant;
+  SetScrollOffsetInternal(new_scroll_offset, params->type,
+                          cc::ScrollSourceType::kAbsoluteScroll, behavior, true,
+                          /*promise_handler=*/nullptr);
+
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.
   // To calculate the result from the scroll, we move the |local_expose_rect| to

@@ -636,11 +636,13 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   }
 
  protected:
-  virtual bool SetScrollOffsetInternal(const ScrollOffset&,
-                                       mojom::blink::ScrollType,
-                                       cc::ScrollSourceType,
-                                       mojom::blink::ScrollBehavior,
-                                       bool targeted_scroll);
+  virtual bool SetScrollOffsetInternal(
+      const ScrollOffset&,
+      mojom::blink::ScrollType,
+      cc::ScrollSourceType,
+      mojom::blink::ScrollBehavior,
+      bool targeted_scroll,
+      std::unique_ptr<ScopedScrollPromiseResolver>);
 
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
@@ -714,7 +716,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                mojom::blink::ScrollType,
                                mojom::blink::ScrollBehavior,
                                gfx::Vector2d animation_adjustment,
-                               cc::ScrollSourceType);
+                               cc::ScrollSourceType,
+                               std::unique_ptr<ScopedScrollPromiseResolver>);
   void UserScrollHelper(const ScrollOffset&,
                         mojom::blink::ScrollBehavior,
                         cc::ScrollSourceType);
@@ -796,8 +799,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
       fade_overlay_scrollbars_timer_;
 
   Member<TextOverflowPostLayoutSnapshot> text_overflow_snapshot_;
-
-  std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver_;
 
   ScrollOffset pending_scroll_anchor_adjustment_;
 

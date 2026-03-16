@@ -312,11 +312,13 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
  protected:
   // ScrollableArea implementation
-  bool SetScrollOffsetInternal(const ScrollOffset&,
-                               mojom::blink::ScrollType,
-                               cc::ScrollSourceType,
-                               mojom::blink::ScrollBehavior,
-                               bool targeted_scroll) override;
+  bool SetScrollOffsetInternal(
+      const ScrollOffset&,
+      mojom::blink::ScrollType,
+      cc::ScrollSourceType,
+      mojom::blink::ScrollBehavior,
+      bool targeted_scroll,
+      std::unique_ptr<ScopedScrollPromiseResolver>) override;
 
  private:
   bool DidSetScaleOrLocation(float scale,
