@@ -67,9 +67,6 @@ class HTMLSink : public UnderlyingSinkBase {
     }
 
     CustomElementRegistry* registry = context_element->customElementRegistry();
-    if (!registry) {
-      registry = context_element->GetDocument().customElementRegistry();
-    }
 
     // TODO(nrosenthal): support safe sanitizer.
     // FIXME(nrosenthal): support more methods. This currently assumes "append".

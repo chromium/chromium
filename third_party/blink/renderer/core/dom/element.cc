@@ -1116,9 +1116,7 @@ Node* Element::Clone(Document& factory,
       if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
         // 6.2 Let shadowRootRegistry be node's shadow root's custom element
         // registry
-        if (auto* node_registry = shadow_root->customElementRegistry()) {
-          shadow_root_registry = node_registry;
-        }
+        shadow_root_registry = shadow_root->customElementRegistry();
         // 6.3 If shadowRootRegistry is a global custom element registry, then
         // set shadowRootRegistry to document's effective global custom element
         // registry
@@ -7257,13 +7255,11 @@ CustomElementDefinition* Element::GetCustomElementDefinition() const {
 }
 
 CustomElementRegistry* Element::customElementRegistry() const {
-  if (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    return nullptr;
-  }
   // If scoped registry is not exercised at all in the document,
   // we can avoid the rare data lookup and just return the tree scope's
   // registry.
-  if (GetDocument().ScopedCustomElementRegistryUsed()) {
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      GetDocument().ScopedCustomElementRegistryUsed()) {
     if (const ElementRareDataVector* data = RareData()) {
       if (data->HasCustomElementRegistrySet()) {
         return data->GetCustomElementRegistry();
@@ -7358,7 +7354,7 @@ const char* Element::ErrorMessageForAttachShadow(
   // IsValidName() is not cheap.
   if (IsCustomElement() &&
       (CustomElement::IsValidName(localName()) || !IsValue().IsNull())) {
-    auto* registry = GetTreeScope().customElementRegistry();
+    auto* registry = customElementRegistry();
     auto* definition =
         registry ? registry->DefinitionForName(IsValue().IsNull() ? localName()
                                                                   : IsValue())
@@ -9201,13 +9197,11 @@ CustomElementRegistry* CustomElementRegistryForInnerHTML(Element* element) {
   // Use null registry to create fragment if the context element is a
   // template element as the container of the document fragment will be a
   // document fragment without browsing context.
-  auto* template_element = DynamicTo<HTMLTemplateElement>(*element);
-  CustomElementRegistry* registry =
-      element->GetDocument().customElementRegistry();
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    registry = template_element ? nullptr : element->customElementRegistry();
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      IsA<HTMLTemplateElement>(element)) {
+    return nullptr;
   }
-  return registry;
+  return element->customElementRegistry();
 }
 }  // namespace
 
@@ -9292,18 +9286,15 @@ void Element::SetOuterHTMLInternal(const String& html,
   Node* prev = previousSibling();
   Node* next = nextSibling();
 
-  DocumentFragment* fragment = ParseHTMLFragment(
-      html,
-      {
-          .interface_name = trusted_types_names::kElement,
-          .property_name = trusted_types_names::kOuterHTML,
-          .context_element = parent,
-          .registry =
-              RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-                  ? customElementRegistry()
-                  : GetDocument().customElementRegistry(),
-      },
-      FragmentParserOptions(), exception_state);
+  DocumentFragment* fragment =
+      ParseHTMLFragment(html,
+                        {
+                            .interface_name = trusted_types_names::kElement,
+                            .property_name = trusted_types_names::kOuterHTML,
+                            .context_element = parent,
+                            .registry = customElementRegistry(),
+                        },
+                        FragmentParserOptions(), exception_state);
 
   if (!fragment) {
     return;
@@ -9572,10 +9563,7 @@ void Element::InsertAdjacentHTMLInternal(const String& where,
               .interface_name = trusted_types_names::kElement,
               .property_name = trusted_types_names::kInsertAdjacentHTML,
               .context_element = context_element,
-              .registry =
-                  RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-                      ? customElementRegistry()
-                      : GetDocument().customElementRegistry(),
+              .registry = customElementRegistry(),
           },
           FragmentParserOptions(), exception_state)) {
     InsertAdjacent(where, fragment, exception_state);

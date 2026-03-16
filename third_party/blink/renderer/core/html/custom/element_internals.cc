@@ -477,8 +477,7 @@ bool ElementInternals::IsTargetFormAssociated() const {
   // ElementInternals needs to handle elements to be form-associated same as
   // form-associated custom elements because web authors want to call
   // form-related operations of ElementInternals in constructors.
-  CustomElementRegistry* registry =
-      Target().GetTreeScope().customElementRegistry();
+  CustomElementRegistry* registry = Target().customElementRegistry();
   if (!registry)
     return false;
   auto* definition = registry->DefinitionForName(Target().localName());

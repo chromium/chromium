@@ -323,10 +323,7 @@ void CustomElement::TryToUpgrade(Element& element) {
 
   DCHECK_EQ(element.GetCustomElementState(), CustomElementState::kUndefined);
 
-  CustomElementRegistry* registry =
-      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-          ? element.customElementRegistry()
-          : element.GetTreeScope().customElementRegistry();
+  CustomElementRegistry* registry = element.customElementRegistry();
 
   if (!registry)
     return;

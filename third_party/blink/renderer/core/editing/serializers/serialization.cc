@@ -778,18 +778,22 @@ FragmentParserConfig GetFragmentParserConfig(Sanitizer::Mode mode,
                                              const AtomicString& property_name,
                                              ContainerNode* context) {
   CHECK(context->IsElementNode() || context->IsShadowRoot());
-  return {.sanitizer_mode = mode,
-          .parse_declarative_shadows =
-              FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
-          .force_html = FragmentParserConfig::ForceHtml::kForce,
-          .interface_name = interface_name,
-          .property_name = property_name,
-          .context_element = context->IsElementNode()
-                                 ? To<Element>(context)
-                                 : &To<ShadowRoot>(context)->host(),
-          .registry = context->IsElementNode()
-                          ? To<Element>(context)->customElementRegistry()
-                          : To<ShadowRoot>(context)->customElementRegistry()};
+  return {
+      .sanitizer_mode = mode,
+      .parse_declarative_shadows =
+          FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      .force_html = FragmentParserConfig::ForceHtml::kForce,
+      .interface_name = interface_name,
+      .property_name = property_name,
+      .context_element = context->IsElementNode()
+                             ? To<Element>(context)
+                             : &To<ShadowRoot>(context)->host(),
+      .registry =
+          context->IsElementNode()
+              ? (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+                     ? To<Element>(context)->customElementRegistry()
+                     : nullptr)
+              : To<ShadowRoot>(context)->customElementRegistry()};
 }
 
 DocumentFragment* ParseHTMLFragment(const String& markup,
@@ -1003,11 +1007,10 @@ DocumentFragment* CreateContextualFragment(const String& html,
   // template element as the container of the document fragment will be a
   // document fragment without browsing context.
   CustomElementRegistry* registry =
-      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-          ? (IsA<HTMLTemplateElement>(*element)
-                 ? nullptr
-                 : element->customElementRegistry())
-          : element->GetDocument().customElementRegistry();
+      (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+       IsA<HTMLTemplateElement>(element))
+          ? nullptr
+          : element->customElementRegistry();
 
   DocumentFragment* fragment = blink::ParseHTMLFragment(
       html,

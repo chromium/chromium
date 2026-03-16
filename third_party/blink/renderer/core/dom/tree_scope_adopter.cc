@@ -204,11 +204,11 @@ void TreeScopeAdopter::WillMoveTreeToNewDocument(Node& root) const {
       // when it's moved to the new scope. Therefore, we're explicitly setting
       // the element's registry here to ensure the knowledge is kept even with
       // the scope change.
-      auto* registry = element->customElementRegistry();
       if (old_document.ScopedCustomElementRegistryUsed()) {
         DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+        auto* registry = element->customElementRegistry();
         if (registry && registry == old_document.customElementRegistry()) {
-          element->SetCustomElementRegistry(element->customElementRegistry(),
+          element->SetCustomElementRegistry(registry,
                                             /*explicitly_set=*/true);
         }
       }
