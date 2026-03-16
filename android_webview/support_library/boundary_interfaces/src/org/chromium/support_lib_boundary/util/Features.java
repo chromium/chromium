@@ -332,48 +332,16 @@ public class Features {
     // WebViewCompat.saveState
     public static final String SAVE_STATE = "SAVE_STATE";
 
-    /**
-     * @deprecated to be replaced by {@link #WEB_VIEW_NAVIGATION_LISTENER}
-     */
-    @Deprecated
+    // TODO: crbug.com/492948743 Deprecate these features
     public static final String WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE =
             "WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE";
-
-    /**
-     * @deprecated to be replaced by {@link #WEB_VIEW_NAVIGATION_LISTENER}
-     */
-    @Deprecated
     public static final String WEB_VIEW_NAVIGATION_LISTENER_V1 = "WEB_VIEW_NAVIGATION_LISTENER_V1";
-
-    /**
-     * @deprecated to be replaced by {@link #WEB_VIEW_NAVIGATION_LISTENER}
-     */
-    @Deprecated
     public static final String WEB_VIEW_NAVIGATION_LISTENER_V2 = "WEB_VIEW_NAVIGATION_LISTENER_V2";
-
-    /**
-     * @deprecated to be replaced by {@link #WEB_VIEW_NAVIGATION_LISTENER}
-     */
-    @Deprecated
     public static final String ON_NAVIGATION_COMPLETED_NON_COMMITTED =
             "ON_NAVIGATION_COMPLETED_NON_COMMITTED";
-
-    /**
-     * @deprecated to be replaced by {@link #WEB_VIEW_NAVIGATION_LISTENER}
-     */
-    @Deprecated
     public static final String COMMITTED_NAVIGATION_GET_PAGE_NON_NULL =
             "COMMITTED_NAVIGATION_GET_PAGE_NON_NULL";
-
-    /**
-     * @deprecated to be replaced by {@link #WEB_VIEW_NAVIGATION_LISTENER}
-     */
-    @Deprecated public static final String PAGE_GET_URL = "PAGE_GET_URL";
-
-    /**
-     * @deprecated to be replaced by {@link #WEB_VIEW_NAVIGATION_LISTENER}
-     */
-    @Deprecated
+    public static final String PAGE_GET_URL = "PAGE_GET_URL";
     public static final String NAVIGATION_GET_WEB_RESOURCE_ERROR =
             "NAVIGATION_GET_WEB_RESOURCE_ERROR";
 

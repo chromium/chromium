@@ -92,10 +92,10 @@ public interface WebViewProviderBoundaryInterface {
     void removeWebViewNavigationListener(
             /* WebViewNavigationListener */ InvocationHandler listener);
 
-    @Deprecated
+    // TODO: crbug.com/492948743 Deprecate these features
     /* WebViewNavigationClient */ @Nullable InvocationHandler getWebViewNavigationClient();
 
-    @Deprecated
+    // TODO: crbug.com/492948743 Deprecate these features
     void setWebViewNavigationClient(
             /* WebViewNavigationClient */ @Nullable InvocationHandler webViewNavigationClient);
 
