@@ -12,6 +12,7 @@ source_set("coordinator") {
   deps = [
     "//ios/chrome/browser/assistant/coordinator:commands",
     "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/cobrowse/ui",
     "//ios/chrome/browser/composebox/coordinator:input_plate",
     "//ios/chrome/browser/composebox/public",

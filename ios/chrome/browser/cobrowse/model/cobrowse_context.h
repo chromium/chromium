@@ -27,8 +27,13 @@ class GURL;
 // Corresponds to the "mtid" query parameter.
 @property(nonatomic, copy, readonly) NSString* serverID;
 
+// Returns a default context with the base search URL, used mainly for debugging
+// purposes.
++ (instancetype)defaultContext;
+
 // Initializes the context with `url`, adding cobrowse query parameters.
 - (instancetype)initWithURL:(const GURL&)url NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

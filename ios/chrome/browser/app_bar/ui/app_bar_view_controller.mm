@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_mutator.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
@@ -500,7 +501,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 // Called when the Assistant button is tapped.
 - (void)didTapAssistantButton {
   base::RecordAction(base::UserMetricsAction("MobileToolbarAssistant"));
-  [self.sceneHandler showAssistant];
+  [self.sceneHandler showAssistantWithContext:[CobrowseContext defaultContext]];
 }
 
 // Called when the New Tab button is tapped.

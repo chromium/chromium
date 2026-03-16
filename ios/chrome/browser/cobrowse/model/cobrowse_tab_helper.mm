@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -36,7 +37,9 @@ void CobrowseTabHelper::DidStartNavigation(
   }
 
   if (delegate_->CanShowAssistantForWebState(web_state)) {
-    [scene_commands_handler_ showAssistant];
+    // TODO(crbug.com/489118971): Pass the correct cobrowse Context.
+    [scene_commands_handler_
+        showAssistantWithContext:[CobrowseContext defaultContext]];
   }
 }
 

@@ -16,6 +16,7 @@ source_set("ui_bundled") {
     "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",

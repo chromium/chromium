@@ -18,6 +18,7 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -931,7 +932,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
                                                    kSymbolActionPointSize)
              identifier:nil
                 handler:^(UIAction* action) {
-                  [weakSelf.dispatcher showAssistant];
+                  [weakSelf.dispatcher
+                      showAssistantWithContext:[CobrowseContext
+                                                   defaultContext]];
                 }];
     [menuElements addObject:assistantAction];
   }

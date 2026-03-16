@@ -105,6 +105,7 @@ source_set("input_plate") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/composebox/debugger",
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public",

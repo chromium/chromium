@@ -12,6 +12,7 @@
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_sender.h"
 
 enum class AccountMenuAccessPoint;
+@class CobrowseContext;
 class GURL;
 @class OpenNewTabCommand;
 @protocol SafariDataImportUIHandler;
@@ -174,8 +175,8 @@ enum class TabGridOpeningMode {
 // Opens a debug menu for AI prototyping.
 - (void)openAIMenu;
 
-// Opens the assistant sheet.
-- (void)showAssistant;
+// Opens the assistant sheet with a specific context.
+- (void)showAssistantWithContext:(CobrowseContext*)context;
 
 // Shows the fullscreen sign-in promo with a completion block that is called
 // when the promo is dismissed.

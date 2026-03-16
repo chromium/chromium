@@ -8,6 +8,12 @@
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
+namespace {
+
+const char kBaseSearchURL[] = "https://www.google.com/search?udm=50";
+
+}  // namespace
+
 @implementation CobrowseContext {
   GURL _url;
 }
@@ -33,6 +39,10 @@
     }
   }
   return self;
+}
+
++ (instancetype)defaultContext {
+  return [[self alloc] initWithURL:GURL(kBaseSearchURL)];
 }
 
 @end

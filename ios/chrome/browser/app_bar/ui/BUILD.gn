@@ -19,6 +19,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/cobrowse/model",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/intents/model:model_donation_helper",
     "//ios/chrome/browser/shared/public/commands",

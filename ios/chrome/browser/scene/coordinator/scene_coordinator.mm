@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_coordinator.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
@@ -592,14 +593,15 @@ void OnListFamilyMembersResponse(
   [_historyCoordinator start];
 }
 
-- (void)showAssistant {
+- (void)showAssistantWithContext:(CobrowseContext*)context {
   if (!IsAssistantContainerEnabled()) {
     return;
   }
   [_assistantAIMCoordinator stop];
   _assistantAIMCoordinator = [[AssistantAIMCoordinator alloc]
       initWithBaseViewController:self.activeViewController
-                         browser:self.currentBrowser];
+                         browser:self.currentBrowser
+                         context:context];
   [_assistantAIMCoordinator start];
 }
 

@@ -29,6 +29,17 @@
   AssistantAIMMediator* _mediator;
   ComposeboxInputPlateCoordinator* _inputPlateCoordinator;
   ComposeboxModeHolder* _modeHolder;
+  CobrowseContext* _context;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                   context:(CobrowseContext*)context {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _context = context;
+  }
+  return self;
 }
 
 - (void)start {
@@ -38,10 +49,9 @@
   _viewController.delegate = self;
 
   web::WebState::CreateParams params(self.browser->GetProfile());
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  _mediator =
-      [[AssistantAIMMediator alloc] initWithWebState:std::move(webState)];
+  _mediator = [[AssistantAIMMediator alloc]
+      initWithWebState:web::WebState::Create(params)
+               context:_context];
   _mediator.consumer = _viewController;
 
   id<AssistantContainerCommands> containerHandler = HandlerForProtocol(
