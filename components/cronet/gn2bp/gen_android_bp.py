@@ -2735,6 +2735,10 @@ def _is_cflag_allowed(cflag):
         # See https://crbug.com/481594099
         '-fsanitize-ignore-for-ubsan-feature=array-bounds',
         # Causes the build to fail with:
+        #   clang++-real: error: unknown argument: '-fsanitize-ignore-for-ubsan-feature=return'
+        # See https://crbug.com/493168827
+        '-fsanitize-ignore-for-ubsan-feature=',
+        # Causes the build to fail with:
         #   clang++-real: error: unknown argument: '-fno-lifetime-dse'
         # See https://crbug.com/484919839
         '-fno-lifetime-dse',
