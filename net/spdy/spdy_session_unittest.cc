@@ -3939,6 +3939,52 @@ TEST_F(SpdySessionTestWithMockTime, FlowControlSlowReads) {
   EXPECT_EQ(0, session_unacked_recv_window_bytes());
 }
 
+TEST_F(SpdySessionTestWithMockTime, PendingStreamRequestQueueWaitTime) {
+  MockRead reads[] = {
+      MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0)  // Stall forever.
+  };
+  StaticSocketDataProvider data(reads, base::span<MockWrite>());
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  // Create kInitialMaxConcurrentStreams streams.
+  std::vector<base::WeakPtr<SpdyStream>> streams;
+  for (size_t i = 0; i < kInitialMaxConcurrentStreams; ++i) {
+    base::WeakPtr<SpdyStream> spdy_stream =
+        CreateStreamSynchronously(SPDY_BIDIRECTIONAL_STREAM, session_,
+                                  test_url_, MEDIUM, NetLogWithSource());
+    ASSERT_TRUE(spdy_stream);
+    streams.push_back(spdy_stream);
+  }
+
+  // This request should be stalled.
+  TestCompletionCallback callback;
+  SpdyStreamRequest request;
+  int rv =
+      request.StartRequest(SPDY_BIDIRECTIONAL_STREAM, session_, test_url_,
+                           false, MEDIUM, SocketTag(), NetLogWithSource(),
+                           callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(ERR_IO_PENDING, rv);
+
+  // Advance time by 100ms.
+  constexpr base::TimeDelta kWaitTime = base::Milliseconds(100);
+  FastForwardBy(kWaitTime);
+
+  // Close one of the active streams.
+  streams[0]->Close();
+
+  // The stalled request should now be satisfied.
+  rv = callback.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
+
+  // Check the queue wait time.
+  EXPECT_GE(request.max_stream_limit_pending_delay(), kWaitTime);
+}
+
 // SpdySession::{Increase,Decrease}SendWindowSize should properly
 // adjust the session send window size when the "enable_spdy_31" flag
 // is set.

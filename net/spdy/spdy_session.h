@@ -216,6 +216,11 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
     return confirm_handshake_end_;
   }
 
+  // Returns the time spent waiting in the SpdySession's pending queue.
+  base::TimeDelta max_stream_limit_pending_delay() const {
+    return max_stream_limit_pending_delay_;
+  }
+
   // Starts the request to create a stream. If OK is returned, then
   // ReleaseStream() may be called. If ERR_IO_PENDING is returned,
   // then when the stream is created, |callback| will be called, at
@@ -293,6 +298,7 @@ class NET_EXPORT_PRIVATE SpdyStreamRequest {
   CompletionOnceCallback callback_;
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
   base::TimeTicks confirm_handshake_end_;
+  base::TimeDelta max_stream_limit_pending_delay_;
   bool detect_broken_connection_;
   base::TimeDelta heartbeat_interval_;
 
@@ -628,8 +634,21 @@ class NET_EXPORT SpdySession
   friend class SpdySessionTest;
   friend class SpdyStreamRequest;
 
-  using PendingStreamRequestQueue =
-      base::circular_deque<base::WeakPtr<SpdyStreamRequest>>;
+  // Represents a pending stream request.
+  struct PendingStreamRequest {
+    PendingStreamRequest(base::WeakPtr<SpdyStreamRequest> request,
+                         base::TimeTicks queue_first_enqueued_time);
+    ~PendingStreamRequest();
+    PendingStreamRequest(const PendingStreamRequest& other);
+    PendingStreamRequest(PendingStreamRequest&& other);
+    PendingStreamRequest& operator=(const PendingStreamRequest& other);
+    PendingStreamRequest& operator=(PendingStreamRequest&& other);
+
+    base::WeakPtr<SpdyStreamRequest> request;
+    base::TimeTicks queue_first_enqueued_time;
+  };
+
+  using PendingStreamRequestQueue = base::circular_deque<PendingStreamRequest>;
   using ActiveStreamMap = std::map<spdy::SpdyStreamId, SpdyStream*>;
   using CreatedStreamSet = std::set<raw_ptr<SpdyStream>>;
 
