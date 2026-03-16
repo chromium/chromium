@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/live_caption/features.h"
@@ -77,6 +78,12 @@ void LiveTranslateController::GetTranslation(const std::string& result,
                                              std::string source_language,
                                              std::string target_language,
                                              TranslateEventCallback callback) {
+  base::UmaHistogramSparse(
+      "Accessibility.LiveTranslate.GetTranslation.TargetLanguage",
+      base::HashMetricName(target_language));
+  base::UmaHistogramSparse(
+      "Accessibility.LiveTranslate.GetTranslation.SourceLanguage",
+      base::HashMetricName(source_language));
   translation_dispatcher_->GetTranslation(
       result, source_language, target_language,
       base::BindOnce(OnGetTranslation, source_language, target_language,
