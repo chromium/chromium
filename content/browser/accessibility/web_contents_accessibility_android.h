@@ -186,6 +186,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void Click(JNIEnv* env, int32_t id);
   void Focus(JNIEnv* env, int32_t id);
   void Blur(JNIEnv* env);
+  void Expand(JNIEnv* env, int32_t id);
+  void Collapse(JNIEnv* env, int32_t id);
   void ScrollToMakeNodeVisible(JNIEnv* env, int32_t id);
   void SetTextFieldValue(JNIEnv* env,
                          int32_t id,

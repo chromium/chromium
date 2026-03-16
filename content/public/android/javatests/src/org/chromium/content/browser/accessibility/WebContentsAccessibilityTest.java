@@ -17,8 +17,10 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLEAR_ACCESSIBILITY_FOCUS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLEAR_FOCUS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COLLAPSE;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COPY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
@@ -3192,6 +3194,80 @@ public class WebContentsAccessibilityTest {
         Assert.assertEquals(PERFORM_ACTION_ERROR, 0, mNodeInfo.getRangeInfo().getCurrent(), 0.01);
         Assert.assertEquals(PERFORM_ACTION_ERROR, 0, mNodeInfo.getRangeInfo().getMin(), 0.01);
         Assert.assertEquals(PERFORM_ACTION_ERROR, 50, mNodeInfo.getRangeInfo().getMax(), 0.01);
+    }
+
+    /**
+     * Test that performAction for ACTION_EXPAND and ACTION_COLLAPSE on ARIA treeitems, especially
+     * when the item is also an anchor link.
+     */
+    @Test
+    @SmallTest
+    public void testPerformAction_ariaExpandCollapseTreeItem() throws Throwable {
+        // Because AXObject::RequestExpandAction (in Blink) maps kExpand to ArrowRight and
+        // kCollapse to ArrowLeft for ARIA treeitems, we use an onkeydown listener to
+        // mock the response.
+        setupTestWithHTML(
+                "<ul role='tree'>"
+                        + "  <li role='none'>"
+                        + "    <a id='node' role='treeitem' aria-expanded='false'"
+                        + "       href='#placeholder' onkeydown='expandLogic(event)'>"
+                        + "      Expandable Link"
+                        + "    </a>"
+                        + "  </li>"
+                        + "</ul>"
+                        + "<script>"
+                        + "  function expandLogic(e) {"
+                        + "    if (e.key === 'ArrowRight') {"
+                        + "      e.preventDefault();"
+                        + "      e.target.setAttribute('aria-expanded', 'true');"
+                        + "    } else if (e.key === 'ArrowLeft') {"
+                        + "      e.preventDefault();"
+                        + "      e.target.setAttribute('aria-expanded', 'false');"
+                        + "    }"
+                        + "  }"
+                        + "</script>");
+
+        // Find the treeitem node.
+        int vvid = waitForNodeMatching(sViewIdResourceNameMatcher, "node");
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Verify initial state is collapsed.
+        Assert.assertTrue(
+                "Node should initially have ACTION_EXPAND",
+                mNodeInfo.getActionList().contains(ACTION_EXPAND));
+        Assert.assertFalse(
+                "Node should NOT have ACTION_COLLAPSE",
+                mNodeInfo.getActionList().contains(ACTION_COLLAPSE));
+        // 1. Send ACTION_EXPAND and poll for the state to update.
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_EXPAND,
+                        null,
+                        () ->
+                                createAccessibilityNodeInfo(vvid)
+                                        .getActionList()
+                                        .contains(ACTION_COLLAPSE)));
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertTrue(
+                PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_COLLAPSE));
+        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_EXPAND));
+        // 2. Send ACTION_COLLAPSE and poll for the state to update.
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid,
+                        ACTION_COLLAPSE,
+                        null,
+                        () ->
+                                createAccessibilityNodeInfo(vvid)
+                                        .getActionList()
+                                        .contains(ACTION_EXPAND)));
+
+        mNodeInfo = createAccessibilityNodeInfo(vvid);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_EXPAND));
+        Assert.assertFalse(
+                PERFORM_ACTION_ERROR, mNodeInfo.getActionList().contains(ACTION_COLLAPSE));
     }
 
     /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */

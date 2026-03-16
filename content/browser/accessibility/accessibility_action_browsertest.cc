@@ -1460,4 +1460,52 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, FocusPermissionElement) {
   ASSERT_TRUE(valid_pepc->IsFocused());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       AriaExpandCollapseTreeItem) {
+  // Because AXObject::RequestExpandAction (in Blink) maps kExpand to ArrowRight
+  // and kCollapse to ArrowLeft for ARIA treeitems, we use an onkeydown listener
+  // to mock the response.
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <ul role='tree'>
+        <li role='none'>
+          <a id='node' role='treeitem' aria-expanded='false' href='#placeholder'
+          onkeydown='expandLogic(event)'>Expandable Link</a>
+        </li>
+      </ul>
+      <script>
+        function expandLogic(e) {
+          if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            e.target.setAttribute('aria-expanded', 'true');
+          } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            e.target.setAttribute('aria-expanded', 'false');
+          }
+        }
+      </script>
+      )HTML");
+
+  ui::BrowserAccessibility* target =
+      FindNode(ax::mojom::Role::kTreeItem, "Expandable Link");
+  ASSERT_NE(nullptr, target);
+  EXPECT_TRUE(target->HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(target->HasState(ax::mojom::State::kExpanded));
+
+  AccessibilityNotificationWaiter expand_waiter(
+      shell()->web_contents(), ui::AXEventGenerator::Event::EXPANDED);
+  GetManager()->Expand(*target);
+  ASSERT_TRUE(expand_waiter.WaitForNotification());
+
+  EXPECT_TRUE(target->HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(target->HasState(ax::mojom::State::kCollapsed));
+
+  AccessibilityNotificationWaiter collapse_waiter(
+      shell()->web_contents(), ui::AXEventGenerator::Event::COLLAPSED);
+  GetManager()->Collapse(*target);
+  ASSERT_TRUE(collapse_waiter.WaitForNotification());
+
+  EXPECT_TRUE(target->HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(target->HasState(ax::mojom::State::kExpanded));
+}
+
 }  // namespace content

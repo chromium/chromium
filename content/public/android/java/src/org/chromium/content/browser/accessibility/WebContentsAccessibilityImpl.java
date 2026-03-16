@@ -1555,9 +1555,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 return true;
             }
             return false;
-        } else if (action == ACTION_COLLAPSE.getId() || action == ACTION_EXPAND.getId()) {
-            // If something is collapsible or expandable, just activate it to toggle.
-            performClick(virtualViewId);
+        } else if (action == ACTION_EXPAND.getId()) {
+            WebContentsAccessibilityImplJni.get().expand(mNativeObj, virtualViewId);
+            return true;
+        } else if (action == ACTION_COLLAPSE.getId()) {
+            WebContentsAccessibilityImplJni.get().collapse(mNativeObj, virtualViewId);
             return true;
         } else if (action == ACTION_SHOW_ON_SCREEN.getId()) {
             scrollToMakeNodeVisible(virtualViewId);
@@ -2896,6 +2898,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         boolean setRangeValue(long nativeWebContentsAccessibilityAndroid, int id, float value);
 
         String getSupportedHtmlElementTypes(long nativeWebContentsAccessibilityAndroid);
+
+        void expand(long nativeWebContentsAccessibilityAndroid, int id);
+
+        void collapse(long nativeWebContentsAccessibilityAndroid, int id);
 
         void showContextMenu(long nativeWebContentsAccessibilityAndroid, int id);
 
