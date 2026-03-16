@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -308,7 +313,13 @@ class SigninViewControllerTestUtil {
         button_id = "rejectButton";
         break;
     }
-    return TryDismissModalDialog(browser, "history-sync-optin-app", button_id);
+    return TryDismissModalDialog(
+        browser,
+        /*app=*/
+        base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
+            ? "history-sync-optin-app-refresh"
+            : "history-sync-optin-app",
+        button_id);
 #endif
   }
 
