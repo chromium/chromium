@@ -5,6 +5,8 @@
 source_set("common") {
   sources = [
     "future_browser_features.h",
+    "glic_navigation.cc",
+    "glic_navigation.h",
     "glic_tab_observer.cc",
     "glic_tab_observer.h",
   ]

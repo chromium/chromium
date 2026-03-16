@@ -35,6 +35,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
+#include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -715,11 +716,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     const int x = work_area.x() + (work_area.width() - popup_width) / 2;
     const int y = work_area.y() + (work_area.height() - popup_height) / 2;
 
-    NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_POPUP;
-    params.opened_by_another_window = true;
-    params.window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
-    DoNavigate(&params);
+    std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
+        profile_, url, ui::PAGE_TRANSITION_LINK);
+    params->disposition = WindowOpenDisposition::NEW_POPUP;
+    params->opened_by_another_window = true;
+    params->window_features.bounds = gfx::Rect(x, y, popup_width, popup_height);
+    glic::NavigateAsync(std::move(params), base::DoNothing());
   }
 
   void WebClientCreated(
@@ -2580,11 +2582,11 @@ void GlicPageHandler::OpenProfilePickerAndClosePanel() {
 
 void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
   GURL disabled_by_admin_link_url = GURL(features::kGlicCaaLinkUrl.Get());
-  NavigateParams params(Profile::FromBrowserContext(browser_context_),
-                        disabled_by_admin_link_url,
-                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  DoNavigate(&params);
+  std::unique_ptr<NavigateParams> params = std::make_unique<NavigateParams>(
+      Profile::FromBrowserContext(browser_context_), disabled_by_admin_link_url,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  glic::NavigateAsync(std::move(params), base::DoNothing());
   host().ClosePanel(this);
   base::RecordAction(
       base::UserMetricsAction("Glic.DisabledByAdminPanelLinkClicked"));

@@ -30,6 +30,7 @@
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
+#include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -633,7 +634,7 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
     std::move(callback).Run(nullptr);
     return nullptr;
   }
-  std::optional<NavigateParams> params;
+  std::unique_ptr<NavigateParams> params;
   BrowserWindowInterface* last_active_bwi = nullptr;
 
   if (base::FeatureList::IsEnabled(features::kGlicCreateTabAdjacent)) {
@@ -651,22 +652,25 @@ tabs::TabInterface* GlicKeyedService::CreateTab(
       // By setting the `source_contents` and using `PAGE_TRANSITION_LINK`, the
       // new tab will be opened adjacent to the currently active tab and inherit
       // its tab group.
-      params.emplace(last_active_bwi, url, ui::PAGE_TRANSITION_LINK);
+      params = std::make_unique<NavigateParams>(last_active_bwi, url,
+                                                ui::PAGE_TRANSITION_LINK);
       params->source_contents = TabListInterface::From(last_active_bwi)
                                     ->GetActiveTab()
                                     ->GetContents();
     } else {
-      params.emplace(profile_, url, ui::PAGE_TRANSITION_LINK);
+      params = std::make_unique<NavigateParams>(profile_, url,
+                                                ui::PAGE_TRANSITION_LINK);
     }
   } else {
-    params.emplace(profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    params = std::make_unique<NavigateParams>(
+        profile_, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   }
 
   params->disposition = open_in_background
                             ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                             : WindowOpenDisposition::NEW_FOREGROUND_TAB;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
-      DoNavigate(&params.value());
+      glic::Navigate(std::move(params));
   if (!navigation_handle.get()) {
     std::move(callback).Run(nullptr);
     return nullptr;

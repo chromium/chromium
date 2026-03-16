@@ -8,16 +8,9 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_handle.h"
-
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
 #include "chrome/browser/ui/browser.h"
-#else
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #endif
 
 // The intent is to remove functions from this file as things become available
@@ -66,27 +59,6 @@ inline base::WeakPtr<BrowserWindowInterface> GetBrowserWindowInterfaceWeakPtr(
   return browser_window ? browser_window->GetWeakPtr() : nullptr;
 #else
   return nullptr;
-#endif
-}
-
-inline base::WeakPtr<content::NavigationHandle> DoNavigate(
-    NavigateParams* params) {
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-  return Navigate(params);
-#else
-  if (!params->browser) {
-    BrowserWindowInterface* last_active_browser = nullptr;
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-        [&](BrowserWindowInterface* browser) {
-          if (browser->GetProfile() == params->initiating_profile) {
-            last_active_browser = browser;
-            return false;  // stop iterating once found
-          }
-          return true;  // keep iterating
-        });
-    params->browser = last_active_browser;
-  }
-  return Navigate(params);
 #endif
 }
 
