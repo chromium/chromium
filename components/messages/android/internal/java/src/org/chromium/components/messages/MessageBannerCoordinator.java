@@ -16,6 +16,7 @@ import androidx.core.view.accessibility.AccessibilityEventCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.MessageStateHandler.Position;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenuHost.PopupMenuShownListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,6 +84,8 @@ class MessageBannerCoordinator {
         view.setSwipeHandler(mMediator);
         view.setPopupMenuShownListener(
                 createPopupMenuShownListener(mTimer, mAutodismissDurationMs.get(), mOnTimeUp));
+
+        UiUtils.disableLigaturesForSecurity(view);
     }
 
     /**
