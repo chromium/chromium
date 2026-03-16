@@ -9,7 +9,12 @@
 #import "base/barrier_closure.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/account_capabilities.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -19,6 +24,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -26,6 +33,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager_observer_bridge.h"
 
 @interface SigninAccountCapabilitiesSceneAgent () <
+    IdentityManagerObserverBridgeDelegate,
     ProfileStateObserver,
     SystemIdentityManagerObserving,
     UIBlockerManagerObserver>
@@ -41,6 +49,9 @@
 
   std::unique_ptr<SystemIdentityManagerObserverBridge>
       _systemIdentityManagerObserver;
+
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
 }
 
 - (instancetype)initWithSceneUIProvider:(id<SceneUIProvider>)sceneUIProvider {
@@ -60,6 +71,13 @@
   [super setSceneState:sceneState];
   [self.sceneState.profileState addObserver:self];
   [self.sceneState.profileState addUIBlockerManagerObserver:self];
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  _identityManagerObserver =
+      std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
+                                                              self);
 }
 
 #pragma mark - SceneStateObserver
@@ -74,6 +92,7 @@
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
   _systemIdentityManagerObserver.reset();
+  _identityManagerObserver.reset();
 }
 
 - (void)sceneStateDidHideModalOverlay:(SceneState*)sceneState {
@@ -92,6 +111,31 @@
 
 - (void)onIdentityListChanged {
   [self fetchCapabilitiesForUnhandledIdentities];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  if (info.account_id !=
+      identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  if (!authenticationService) {
+    return;
+  }
+
+  if (info.capabilities.can_sign_in_to_chrome() == signin::Tribool::kFalse) {
+    authenticationService->SignOut(
+        signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
+        nil);
+  }
 }
 
 #pragma mark - UIBlockerManagerObserver

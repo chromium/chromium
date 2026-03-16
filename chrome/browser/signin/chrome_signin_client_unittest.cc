@@ -179,6 +179,8 @@ bool IsAlwaysAllowedSignoutSources(
     case signin_metrics::ProfileSignout::kSignoutBeforeSupervisedSignin:
     case signin_metrics::ProfileSignout::kSignoutFromWidgets:
     case signin_metrics::ProfileSignout::kForcedDiceMigration:
+    case signin_metrics::ProfileSignout::
+        kSignoutFromCanSignInToChromeCapability:
       return false;
 
     case signin_metrics::ProfileSignout::kAccountRemovedFromDevice:
@@ -294,6 +296,7 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::kSignoutFromWidgets,
     signin_metrics::ProfileSignout::kUserDeclinedEnterpriseManagementDisclaimer,
     signin_metrics::ProfileSignout::kForcedDiceMigration,
+    signin_metrics::ProfileSignout::kSignoutFromCanSignInToChromeCapability,
 };
 
 // kNumberOfObsoleteSignoutSources should be updated when a ProfileSignout

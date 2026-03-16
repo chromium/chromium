@@ -5,7 +5,18 @@
 #import "ios/chrome/browser/signin/coordinator/signin_account_capabilities_scene_agent.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
+#import "components/signin/public/identity_manager/account_capabilities.h"
+#import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
@@ -15,8 +26,14 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -28,11 +45,22 @@
 class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
  public:
   SigninAccountCapabilitiesSceneAgentTest() : PlatformTest() {
+    feature_list_.InitAndEnableFeature(
+        switches::kEnforceCanSignInToChromeCapability);
+
     fake_system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
 
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
+        IdentityManagerFactory::GetInstance(),
+        base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                                BuildIdentityManagerForTests));
     profile_ = std::move(builder).Build();
 
     app_state_ = OCMClassMock([AppState class]);
@@ -53,8 +81,39 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
     [agent_ sceneStateDidDisableUI:scene_state_];
   }
 
+  void AddIdentity(FakeSystemIdentity* identity) {
+    fake_system_identity_manager_->AddIdentity(identity);
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
+    auto options =
+        signin::AccountAvailabilityOptionsBuilder().WithGaiaId(identity.gaiaId);
+    signin::MakeAccountAvailable(
+        identity_manager,
+        options.Build(base::SysNSStringToUTF8(identity.userEmail)));
+  }
+
+  void SetPrimaryIdentity(FakeSystemIdentity* identity) {
+    AuthenticationService* authentication_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    authentication_service->SignIn(identity,
+                                   signin_metrics::AccessPoint::kSettings);
+  }
+
+  void RemoveIdentity(FakeSystemIdentity* identity) {
+    fake_system_identity_manager_->ForgetIdentityFromOtherApplication(identity);
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile_.get());
+    signin::RemoveRefreshTokenForAccount(
+        identity_manager, identity_manager
+                              ->FindExtendedAccountInfoByEmailAddress(
+                                  base::SysNSStringToUTF8(identity.userEmail))
+                              .account_id);
+  }
+
  protected:
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::IOThreadType::REAL_THREAD};
+  base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   id<SceneUIProvider> scene_ui_provider_;
@@ -69,8 +128,8 @@ class SigninAccountCapabilitiesSceneAgentTest : public PlatformTest {
 TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnActivation) {
   FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* identity2 = [FakeSystemIdentity fakeIdentity2];
-  fake_system_identity_manager_->AddIdentity(identity1);
-  fake_system_identity_manager_->AddIdentity(identity2);
+  AddIdentity(identity1);
+  AddIdentity(identity2);
 
   __block int build_context_calls = 0;
   fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
@@ -90,7 +149,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnActivation) {
 TEST_F(SigninAccountCapabilitiesSceneAgentTest,
        TestFetchOnIdentityListChanged) {
   FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  fake_system_identity_manager_->AddIdentity(identity1);
+  AddIdentity(identity1);
 
   __block int build_context_calls_identity1 = 0;
   __block int build_context_calls_identity2 = 0;
@@ -114,7 +173,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
   // Add a second identity.
   FakeSystemIdentity* identity2 = [FakeSystemIdentity fakeIdentity2];
 
-  fake_system_identity_manager_->AddIdentity(identity2);
+  AddIdentity(identity2);
   fake_system_identity_manager_->FireSystemIdentityReloaded();
 
   // Identity 1 should NOT be refetched. Identity 2 should be fetched.
@@ -125,7 +184,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest,
 // Tests that removing an identity clears it from the handled set.
 TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIdentityRemoval) {
   FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  fake_system_identity_manager_->AddIdentity(identity1);
+  AddIdentity(identity1);
 
   __block int build_context_calls = 0;
   fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
@@ -140,11 +199,11 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIdentityRemoval) {
   EXPECT_EQ(build_context_calls, 1);
 
   // Forget identity.
-  fake_system_identity_manager_->ForgetIdentityFromOtherApplication(identity1);
+  RemoveIdentity(identity1);
   fake_system_identity_manager_->FireSystemIdentityReloaded();
 
   // Add it back. It should be refetched.
-  fake_system_identity_manager_->AddIdentity(identity1);
+  AddIdentity(identity1);
   fake_system_identity_manager_->FireSystemIdentityReloaded();
 
   EXPECT_EQ(build_context_calls, 2);
@@ -153,7 +212,7 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestIdentityRemoval) {
 // Tests that the agent fetches capabilities when a UI blocker is removed.
 TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnUIBlockerRemoved) {
   FakeSystemIdentity* identity1 = [FakeSystemIdentity fakeIdentity1];
-  fake_system_identity_manager_->AddIdentity(identity1);
+  AddIdentity(identity1);
 
   __block int build_context_calls = 0;
   fake_system_identity_manager_->SetBuildExternalPrivacyContextCallback(
@@ -178,4 +237,39 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestFetchOnUIBlockerRemoved) {
 
   // The fetch should now be triggered.
   EXPECT_EQ(build_context_calls, 1);
+}
+
+// Tests that the agent signs out the account if the `CanSignInToChrome`
+// capability is explicitly set to false.
+TEST_F(SigninAccountCapabilitiesSceneAgentTest,
+       TestSignoutOnCanSignInToChromeCapabilityFalse) {
+  base::HistogramTester histogram_tester;
+
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  AddIdentity(identity);
+  SetPrimaryIdentity(identity);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  AccountInfo account = identity_manager->FindExtendedAccountInfoByEmailAddress(
+      base::SysNSStringToUTF8(identity.userEmail));
+
+  account = signin::WithGeneratedUserInfo(account, "Test");
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_can_sign_in_to_chrome(false);
+  signin::UpdateAccountInfoForAccount(identity_manager, account);
+
+  base::HistogramTester* histogram_tester_ptr = &histogram_tester;
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool {
+        return histogram_tester_ptr->GetBucketCount(
+                   "Signin.SignoutProfile",
+                   signin_metrics::ProfileSignout::
+                       kSignoutFromCanSignInToChromeCapability) == 1;
+      }));
+
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(authentication_service->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin));
 }

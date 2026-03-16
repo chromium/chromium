@@ -1349,6 +1349,10 @@ chromium-metrics-reviews@google.com.
     User tapped on the 'Undo' button in a snackbar shown right after signin
     through recent tabs promo. (Android only).
   </int>
+  <int value="45" label="Capability restricts signin">
+    A forced sign-out when the account capability CanSignInToChrome restricts
+    signin. (iOS only).
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
