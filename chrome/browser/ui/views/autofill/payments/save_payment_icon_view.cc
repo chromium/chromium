@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
@@ -27,6 +28,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -52,6 +54,8 @@ SavePaymentIconView::SavePaymentIconView(
   SetUpForInOutAnimation();
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
   UpdateTooltipText();
+  SetProperty(views::kElementIdentifierKey,
+              kAutofillSavePaymentsPageActionElementId);
 }
 
 SavePaymentIconView::~SavePaymentIconView() = default;

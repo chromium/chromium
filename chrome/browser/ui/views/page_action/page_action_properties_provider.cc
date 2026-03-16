@@ -162,6 +162,8 @@ constexpr auto kPageActionProperties =
             {
                 .histogram_name = "MandatoryReauth",
                 .type = PageActionIconType::kMandatoryReauth,
+                .element_identifier =
+                    kAutofillMandatoryReauthPageActionElementId,
             },
         },
         {
@@ -185,6 +187,7 @@ constexpr auto kPageActionProperties =
             {
                 .histogram_name = "AddressAutofill",
                 .type = PageActionIconType::kAutofillAddress,
+                .element_identifier = kAutofillAddressPageActionElementId,
             },
         },
         {
@@ -192,6 +195,8 @@ constexpr auto kPageActionProperties =
             {
                 .histogram_name = "VirtualCardEnroll",
                 .type = PageActionIconType::kVirtualCardEnroll,
+                .element_identifier =
+                    kAutofillVirtualCardEnrollPageActionElementId,
             },
         },
         {
@@ -199,6 +204,8 @@ constexpr auto kPageActionProperties =
             {
                 .histogram_name = "FilledCardInformation",
                 .type = PageActionIconType::kFilledCardInformation,
+                .element_identifier =
+                    kAutofillFilledCardInformationPageActionElementId
             },
         },
         {
@@ -219,6 +226,7 @@ constexpr auto kPageActionProperties =
                 // Therefore, we should rely on feature level metrics for this
                 // particular page action.
                 .type = PageActionIconType::kSaveCard,
+                .element_identifier = kAutofillSavePaymentsPageActionElementId,
             },
         },
         {

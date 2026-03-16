@@ -7,6 +7,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
@@ -16,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -31,6 +33,8 @@ AddressBubblesIconView::AddressBubblesIconView(
                          kActionShowAddressesBubbleOrPage) {
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
   UpdateTooltipText();
+  SetProperty(views::kElementIdentifierKey,
+              kAutofillAddressPageActionElementId);
 }
 
 AddressBubblesIconView::~AddressBubblesIconView() = default;

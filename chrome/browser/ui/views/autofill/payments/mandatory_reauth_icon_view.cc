@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_confirmation_bubble_view.h"
@@ -20,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -34,6 +36,8 @@ MandatoryReauthIconView::MandatoryReauthIconView(
                          "MandatoryReauth") {
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANDATORY_REAUTH_ICON_TOOLTIP));
+  SetProperty(views::kElementIdentifierKey,
+              kAutofillMandatoryReauthPageActionElementId);
 }
 
 MandatoryReauthIconView::~MandatoryReauthIconView() = default;

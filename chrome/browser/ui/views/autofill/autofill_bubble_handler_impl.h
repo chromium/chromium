@@ -20,10 +20,6 @@ namespace content {
 class WebContents;
 }
 
-namespace views {
-class Button;
-}
-
 namespace autofill {
 class AutofillBubbleBase;
 class FilledCardInformationBubbleController;
@@ -104,7 +100,7 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       views::BubbleAnchor anchor,
       content::WebContents* web_contents,
       base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
-      views::Button* icon_view,
+      ui::ElementIdentifier highlight_element,
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
 
   raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
