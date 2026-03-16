@@ -128,21 +128,36 @@ void AccessibilityEventRewriter::OnUnhandledSpokenFeedbackEvent(
 
 void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
     unsigned int id,
-    bool propagate) {
+    bool propagate,
+    int64_t session_id) {
   // This method is only allowed for ChromeVox in manifest v3.
   CHECK(Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
   CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
   CHECK(chromevox_mv3_key_handling_enabled_);
-  if (pending_key_events_.empty()) {
-    // The queue can be empty in edge cases where ChromeVox is toggled off and
-    // back on in quick succession, or EventRewriterController has been
-    // re-initialized after a browser restart.
+
+  if (session_id != current_session_id_) {
+    // This event belongs to a stale ChromeVox instance. We can safely ignore
+    // it because the stale events were already flushed when the new session
+    // initialized.
     return;
   }
 
-  // IDs are an ordered long. Assume that that if we missed some events, we can
-  // reinject all the events sent before this one, and that events are returned
-  // in the order they were sent.
+  if (pending_key_events_.empty()) {
+    // This is unexpected: We have the correct session ID but the queue is
+    // empty, so somehow the event was lost from the queue or the ChromeVox
+    // extension sent the wrong event ID, indicating a bug.
+    DumpWithoutCrashingHelper(
+        std::string("AccessibilityEventRewriter: empty queue with correct "
+                    "session ID. Event ID: " +
+                    base::NumberToString(id) +
+                    ", session ID: " + base::NumberToString(session_id)));
+    return;
+  }
+
+  // IDs are an ordered long. Assume that events are returned
+  // in the order they were sent. However, we must gracefully handle ChromeVox
+  // dropping an event rather than assuming the next event in the queue is
+  // the one we want.
   while (!pending_key_events_.empty() && pending_key_events_.front().id < id) {
     const auto& pending_event_info = pending_key_events_.front();
     SendEventHelper(pending_event_info.continuation,
@@ -151,15 +166,28 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
   }
 
   if (pending_key_events_.empty()) {
-    DumpWithoutCrashingHelper(
-        "AccessibilityEventRewriter: Sent pending events enqueued before " +
+    // This is unexpected: We have the correct session ID but the queue is
+    // empty when we got to this ID, so somehow the event was lost from the
+    // queue.
+    DumpWithoutCrashingHelper(std::string(
+        "AccessibilityEventRewriter: emptied queue to reach event with correct "
+        "session ID, but it was missing. Event ID: " +
         base::NumberToString(id) +
-        ", but did not find this event in the queue.");
+        ", session ID: " + base::NumberToString(session_id)));
     return;
   }
 
   const auto& pending_event_info = pending_key_events_.front();
-  CHECK_EQ(id, pending_event_info.id);
+  if (id != pending_event_info.id) {
+    // This is unexpected: it may happen if ChromeVox sends an event twice or
+    // if the events are not ordered.
+    DumpWithoutCrashingHelper(std::string(
+        "AccessibilityEventRewriter: mismatched event ID. Expected: " +
+        base::NumberToString(pending_event_info.id) +
+        ", got: " + base::NumberToString(id)));
+    return;
+  }
+
   if (propagate) {
     SendEventHelper(pending_event_info.continuation,
                     pending_event_info.event.get());
@@ -212,16 +240,33 @@ void AccessibilityEventRewriter::SetKeyCodesForSwitchAccessCommand(
 }
 
 void AccessibilityEventRewriter::SetSpokenFeedbackMv3KeyHandlingEnabled(
-    bool enabled) {
+    bool enabled,
+    int64_t session_id) {
   CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
+
+  // If ChromeVox has initiated a new session, flush any leftover events from
+  // the old session.
+  if (enabled && session_id != current_session_id_) {
+    // Session ID should always be increasing since it is based on a timestamp.
+    // However, it's not worth crashing over this since it is set in JS and the
+    // user might change their system clock.
+    if (session_id <= current_session_id_) {
+      DumpWithoutCrashingHelper(std::string(
+          "AccessibilityEventRewriter: Restarted with session ID less than "
+          "previous ID. New ID: " +
+          base::NumberToString(session_id) +
+          ", old ID: " + base::NumberToString(current_session_id_)));
+    }
+    current_session_id_ = session_id;
+    // Immediately flush any leftover events from the old session.
+    SendAllPendingSpokenFeedbackEvents();
+  }
+
   if (chromevox_mv3_key_handling_enabled_ == enabled) {
     return;
   }
 
-  if (enabled) {
-    // Ensure we are starting with a clean state.
-    CHECK(pending_key_events_.empty());
-  } else {
+  if (!enabled) {
     // Post a task to propagate all pending events. We can't immediately
     // propagate them here because there is a chance that the front-most event
     // is still in-use; this happens if ChromeVox is disabled with the keyboard

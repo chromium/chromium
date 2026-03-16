@@ -846,15 +846,17 @@ chrome.accessibilityPrivate.enableDragEventRewriter = function(enabled) {};
 /**
  * Used by the ChromeVox extension to enable key handling for the Manifest V3
  * version of the extension.
+ * @param {number} sessionId The session ID of the ChromeVox instance.
  */
-chrome.accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling = function() {};
+chrome.accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling = function(sessionId) {};
 
 /**
  * Used by the ChromeVox extension to process a pending spoken feedback event.
  * @param {number} id The ID of the key event.
  * @param {boolean} propagate Whether or not to propagate the key.
+ * @param {number} sessionId The session ID of the ChromeVox instance.
  */
-chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent = function(id, propagate) {};
+chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent = function(id, propagate, sessionId) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

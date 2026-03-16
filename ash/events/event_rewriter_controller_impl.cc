@@ -219,15 +219,17 @@ void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
 
 void EventRewriterControllerImpl::ProcessPendingSpokenFeedbackEvent(
     unsigned int id,
-    bool propagate) {
-  accessibility_event_rewriter_->ProcessPendingSpokenFeedbackEvent(id,
-                                                                   propagate);
+    bool propagate,
+    int64_t session_id) {
+  accessibility_event_rewriter_->ProcessPendingSpokenFeedbackEvent(
+      id, propagate, session_id);
 }
 
 void EventRewriterControllerImpl::SetSpokenFeedbackMv3KeyHandlingEnabled(
-    bool enabled) {
+    bool enabled,
+    int64_t session_id) {
   accessibility_event_rewriter_->SetSpokenFeedbackMv3KeyHandlingEnabled(
-      enabled);
+      enabled, session_id);
 }
 
 void EventRewriterControllerImpl::SetAltDownRemappingEnabled(bool enabled) {

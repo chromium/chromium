@@ -403,7 +403,7 @@ AccessibilityPrivateProcessPendingSpokenFeedbackEventFunction::Run() {
           Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   ash::EventRewriterController::Get()->ProcessPendingSpokenFeedbackEvent(
-      params->id, params->propagate);
+      params->id, params->propagate, static_cast<int64_t>(params->session_id));
   return RespondNow(NoArguments());
 }
 
@@ -1059,8 +1059,13 @@ AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
 ExtensionFunction::ResponseAction
 AccessibilityPrivateEnableSpokenFeedbackMv3KeyHandlingFunction::Run() {
   CHECK_EQ(extension_misc::kChromeVoxExtensionId, extension_id());
+  std::optional<
+      accessibility_private::EnableSpokenFeedbackMv3KeyHandling::Params>
+      params = accessibility_private::EnableSpokenFeedbackMv3KeyHandling::
+          Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
   ash::EventRewriterController::Get()->SetSpokenFeedbackMv3KeyHandlingEnabled(
-      true);
+      true, static_cast<int64_t>(params->session_id));
   return RespondNow(NoArguments());
 }
 

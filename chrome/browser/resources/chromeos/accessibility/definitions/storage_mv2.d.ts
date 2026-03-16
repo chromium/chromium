@@ -55,8 +55,13 @@ declare global {
       }
 
       export interface StorageArea {
+        get(keys?: string|string[]|{
+          [key: string]: any,
+        }): Promise<{
+          [key: string]: any,
+        }>;
         get(keys: string|string[]|{[key: string]: any}|undefined,
-            callback?: (result: {[key: string]: any}) => void): void;
+            callback: (result: {[key: string]: any}) => void): void;
         getBytesInUse(
             keys: string|string[]|undefined,
             callback?: (bytes: number) => void): void;

@@ -55,10 +55,12 @@ class ASH_EXPORT EventRewriterController {
 
   // Either propagates or cancels a stored key event for ChromeVox in mv3.
   virtual void ProcessPendingSpokenFeedbackEvent(unsigned int id,
-                                                 bool propagate) = 0;
+                                                 bool propagate,
+                                                 int64_t session_id) = 0;
 
   // Enables or disables key event handling for the ChromeVox in mv3.
-  virtual void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled) = 0;
+  virtual void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled,
+                                                      int64_t session_id) = 0;
 
  protected:
   virtual ~EventRewriterController() {}

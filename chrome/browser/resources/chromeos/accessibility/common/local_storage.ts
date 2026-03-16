@@ -11,13 +11,12 @@ type StorageChange = chrome.storage.StorageChange;
 
 export class LocalStorage {
   private values_: Record<string, any>|null = null;
+  private sessionValues_: Record<string, any>|null = null;
   private keyCallbacks_: Record<string, Array<(value: any) => void>> = {};
   private static instance?: LocalStorage;
 
   constructor(onInit: (localStorage: LocalStorage) => void) {
-    chrome.storage.local.get(
-        undefined /* get all values */,
-        (values: {[key: string]: any}) => this.onInitialGet_(values, onInit));
+    this.getLocalAndSessionValues(onInit);
     chrome.storage.local.onChanged.addListener(
         (updates: {[key: string]: StorageChange}) => this.update_(updates));
   }
@@ -104,10 +103,31 @@ export class LocalStorage {
     LocalStorage.set(key, !val);
   }
 
+  // ========= Session storage ==========
+
+  static getInSession(key: string, defaultValue: any = undefined): any {
+    LocalStorage.assertReady_();
+    const value = LocalStorage.instance!.sessionValues_![key];
+    if (value !== undefined) {
+      return value;
+    }
+    return defaultValue;
+  }
+
+  static setInSession(key: string, val: any): void {
+    LocalStorage.assertReady_();
+    chrome.storage.session.set({[key]: val});
+    LocalStorage.instance!.sessionValues_![key] = val;
+  }
+
   // ========= Private Methods ==========
 
-  private onInitialGet_(values: Record<string, any>, onInit: (localStorage: LocalStorage) => void): void {
+  private async getLocalAndSessionValues(
+      onInit: (localStorage: LocalStorage) => void): Promise<void> {
+    const [values, sessionValues] = await Promise.all(
+        [chrome.storage.local.get(), chrome.storage.session.get()]);
     this.values_ = values;
+    this.sessionValues_ = sessionValues;
     onInit(this);
   }
 

@@ -572,8 +572,8 @@ class ChromeVoxMv3AccessibilityEventRewriterTest
     ASSERT_FALSE(accessibility_event_rewriter().pending_key_events_.empty());
     unsigned int id =
         accessibility_event_rewriter().pending_key_events_.front().id;
-    accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(id,
-                                                                     propagate);
+    accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(
+        id, propagate, /*session_id=*/1);
   }
 
   size_t GetPendingKeyEventsSize() {
@@ -592,7 +592,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, NextPendingEventId) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
   EXPECT_EQ(0u, next_pending_event_id());
 
   // Press a key. The unique ID counter should be incremented.
@@ -614,7 +615,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, TabKey) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press Tab. It should be sent to ChromeVox and captured.
   generator().PressKey(ui::VKEY_TAB, ui::EF_NONE);
@@ -647,7 +649,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, SearchKey) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press Search. It should be sent to ChromeVox and captured.
   generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
@@ -683,7 +686,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, ValidCommand) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press Search + H.
   generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
@@ -720,7 +724,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, InvalidCommand) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press Search + Q.
   generator().PressKey(ui::VKEY_LWIN, ui::EF_COMMAND_DOWN);
@@ -760,7 +765,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
 
   prefs->SetBoolean(prefs::kAccessibilitySpokenFeedbackEnabled, true);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press and release A. This should queue pending events.
   generator().PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -781,7 +787,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, QueueSizeIsCapped) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   for (int i = 0; i < 2 * AccessibilityEventRewriter::kMaxPendingEvents; ++i) {
     generator().PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -798,7 +805,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press key A, then press key B.
   generator().PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -819,7 +827,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, RepeatKeysAreCaptured) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press key 'A'.
   generator().PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -851,7 +860,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, TearDownWithPendingEvents) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press a key to queue a pending event.
   generator().PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -866,13 +876,15 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
   EXPECT_TRUE(controller->spoken_feedback().enabled());
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Attempt to propagate an event when the pending queue is empty. This can
   // theoretically happen in edge cases where ChromeVox is toggled off and back
   // on in quick succession.
   EXPECT_EQ(0U, GetPendingKeyEventsSize());
-  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(123, true);
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(
+      123, true, /*session_id=*/1);
   EXPECT_EQ(0, event_recorder().events_seen());
   EXPECT_EQ(0U, GetPendingKeyEventsSize());
 }
@@ -881,7 +893,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
        ProcessPendingEventOutOfSync) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press three keys to queue three pending events.
   generator().PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -892,7 +905,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
 
   // Process the third event. This should also propagate the first two.
   // ID 2 corresponds to VKEY_C.
-  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(2, true);
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(
+      2, true, /*session_id=*/1);
   EXPECT_EQ(3, event_recorder().events_seen());
   EXPECT_EQ(0U, GetPendingKeyEventsSize());
 }
@@ -901,7 +915,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
        ProcessPendingEventOutOfSyncNoPropagate) {
   AccessibilityController* controller = GetAccessibilityController();
   controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
-  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
 
   // Press three keys to queue three pending events.
   generator().PressKey(ui::VKEY_A, ui::EF_NONE);
@@ -913,7 +928,8 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
 
   // "Cancel" (do not propagate) the third event. The first two should still be
   // propagated.
-  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(2, false);
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(
+      2, false, /*session_id=*/1);
   EXPECT_EQ(2, event_recorder().events_seen());
   // The final event is not propagated.
   EXPECT_EQ(1U, GetPendingKeyEventsSize());
@@ -923,6 +939,60 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
   ASSERT_EQ(2U, events.size());
   EXPECT_EQ(ui::VKEY_A, events[0].key_code());
   EXPECT_EQ(ui::VKEY_B, events[1].key_code());
+}
+
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, NewSessionFlushesOldEvents) {
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
+
+  // Queue an event.
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1U, GetPendingKeyEventsSize());
+  EXPECT_EQ(0, event_recorder().events_seen());
+
+  // Start a new session.
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/2);
+
+  // The previous pending event should have been flushed (propagated).
+  EXPECT_EQ(0U, GetPendingKeyEventsSize());
+  EXPECT_EQ(1, event_recorder().events_seen());
+  EXPECT_EQ(ui::VKEY_A, event_capturer().key_events()[0].key_code());
+}
+
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
+       StaleSessionResponsesIgnored) {
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/1);
+
+  // Start a new session right away.
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true, /*session_id=*/2);
+
+  // Queue an event in the new session.
+  unsigned int id = next_pending_event_id();
+  generator().PressKey(ui::VKEY_A, ui::EF_NONE);
+  EXPECT_EQ(1U, GetPendingKeyEventsSize());
+
+  // Try to process it using the old session ID.
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(
+      id, true, /*session_id=*/1);
+
+  // Queue should still have 1 item, and it shouldn't have propagated.
+  EXPECT_EQ(1U, GetPendingKeyEventsSize());
+  EXPECT_EQ(0, event_recorder().events_seen());
+
+  // Process with the correct session ID.
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(
+      id, true, /*session_id=*/2);
+
+  // Now it should be processed.
+  EXPECT_EQ(0U, GetPendingKeyEventsSize());
+  EXPECT_EQ(1, event_recorder().events_seen());
 }
 
 class MouseKeysAccessibilityEventRewriterTest

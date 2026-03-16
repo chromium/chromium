@@ -53,8 +53,10 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   void CaptureAllKeysForSpokenFeedback(bool capture) override;
   void SetSendMouseEvents(bool value) override;
   void ProcessPendingSpokenFeedbackEvent(unsigned int id,
-                                         bool propagate) override;
-  void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled) override;
+                                         bool propagate,
+                                         int64_t session_id) override;
+  void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled,
+                                              int64_t session_id) override;
 
   // aura::EnvObserver:
   void OnHostInitialized(aura::WindowTreeHost* host) override;

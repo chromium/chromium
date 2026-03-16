@@ -3515,7 +3515,7 @@ AX_TEST_F(
       // However, this invariant is invalidated in this test suite since we are
       // calling directly into the BackgroundKeyboardHandler key handlers.
       chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent =
-          (id, propagate) => {};
+          (id, propagate, sessionId) => {};
 
       const mockFeedback = this.createMockFeedback();
       const site = `

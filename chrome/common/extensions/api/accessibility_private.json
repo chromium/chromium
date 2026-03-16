@@ -1201,7 +1201,13 @@
         "name": "enableSpokenFeedbackMv3KeyHandling",
         "type": "function",
         "description": "Used by the ChromeVox extension to enable key handling for the Manifest V3 version of the extension.",
-        "parameters": []
+        "parameters": [
+          {
+            "name": "sessionId",
+            "type": "number",
+            "description": "The session ID of the ChromeVox instance."
+          }
+        ]
       },
       {
         "name": "processPendingSpokenFeedbackEvent",
@@ -1217,6 +1223,11 @@
             "name": "propagate",
             "type": "boolean",
             "description": "Whether or not to propagate the key."
+          },
+          {
+            "name": "sessionId",
+            "type": "number",
+            "description": "The session ID of the ChromeVox instance."
           }
         ]
       }

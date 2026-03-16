@@ -22,7 +22,7 @@ ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
     // However, this invariant is invalidated in this test suite since we are
     // calling directly into the BackgroundKeyboardHandler key handlers.
     chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent =
-        (id, propagate) => {
+        (id, propagate, sessionId) => {
           this.lastPropagate_ = propagate;
         };
   }

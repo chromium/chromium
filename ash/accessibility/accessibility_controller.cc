@@ -3851,7 +3851,7 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
         // here (as opposed to the extension) to ensure that mv3 key handling
         // is only enabled if we're guaranteed a response from the extension.
         accessibility_event_rewriter_->SetSpokenFeedbackMv3KeyHandlingEnabled(
-            false);
+            false, /*session_id=*/0);
       }
 
       // ChromeVox focus highlighting overrides the other focus highlighting.

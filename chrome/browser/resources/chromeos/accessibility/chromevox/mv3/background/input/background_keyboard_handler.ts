@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox keyboard handler.
  */
 import {KeyCode} from '/common/key_code.js';
+import {LocalStorage} from '/common/local_storage.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {EventSourceType} from '../../common/event_source_type.js';
@@ -43,11 +44,22 @@ export class BackgroundKeyboardHandler {
   private eatenKeyDowns_: Set<number>;
   private passThroughState_: KeyboardPassThroughState;
   private passedThroughKeyDowns_: Set<number>;
+  private static sessionId_: number = 0;
+  private static KEY_SESSION_ID = 'tts_session_id';
 
   private constructor() {
     this.eatenKeyDowns_ = new Set();
     this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
     this.passedThroughKeyDowns_ = new Set();
+
+    let sessionId =
+        LocalStorage.getInSession(BackgroundKeyboardHandler.KEY_SESSION_ID, -1);
+    if (sessionId === -1) {
+      sessionId = Date.now();
+      LocalStorage.setInSession(
+          BackgroundKeyboardHandler.KEY_SESSION_ID, sessionId);
+    }
+    BackgroundKeyboardHandler.sessionId_ = sessionId;
 
     chrome.accessibilityPrivate.onKeyDown.addListener(
         event => this.onKeyDown_(event));
@@ -67,6 +79,13 @@ export class BackgroundKeyboardHandler {
   static enablePassThroughMode(): void {
     ChromeVox.tts.speak(Msgs.getMsg('pass_through_key'), QueueMode.QUEUE);
     BackgroundKeyboardHandler.passThroughModeEnabled_ = true;
+  }
+
+  static enableSpokenFeedbackMv3KeyHandling(): void {
+    // Get the session ID, and tell the browser that ChromeVox is ready to begin
+    // handling key events.
+    chrome.accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling(
+        BackgroundKeyboardHandler.sessionId_);
   }
 
   /**
@@ -110,7 +129,8 @@ export class BackgroundKeyboardHandler {
 
     // Send result to the browser.
     chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent(
-        /*id=*/ evt.id, /*propagate=*/ !stopPropagation);
+        /*id=*/ evt.id, /*propagate=*/ !stopPropagation,
+        BackgroundKeyboardHandler.sessionId_);
   }
 
   /** Returns true if the key should continue propagation. */
@@ -181,7 +201,8 @@ export class BackgroundKeyboardHandler {
 
     // Send result to the browser.
     chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent(
-        /*id=*/ evt.id, /*propagate=*/ !stopPropagation);
+        /*id=*/ evt.id, /*propagate=*/ !stopPropagation,
+        BackgroundKeyboardHandler.sessionId_);
   }
 }
 

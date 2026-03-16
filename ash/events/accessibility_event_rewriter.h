@@ -68,7 +68,9 @@ class ASH_EXPORT AccessibilityEventRewriter
   void OnUnhandledSpokenFeedbackEvent(std::unique_ptr<ui::Event> event) const;
 
   // Either propagates or cancels a stored key event for ChromeVox.
-  void ProcessPendingSpokenFeedbackEvent(unsigned int id, bool propagate);
+  void ProcessPendingSpokenFeedbackEvent(unsigned int id,
+                                         bool propagate,
+                                         int64_t session_id);
 
   void SendEventHelper(const ui::EventRewriter::Continuation continuation,
                        const ui::Event* event) const;
@@ -81,7 +83,7 @@ class ASH_EXPORT AccessibilityEventRewriter
   // This ensures that we only queue events if we know that we will get a
   // response from the extension. Otherwise, we run the risk of getting
   // unhandled events or queuing events that never make it to the extension.
-  void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled);
+  void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled, int64_t session_id);
 
   // Sets what |key_codes| are captured for a given Switch Access command.
   void SetKeyCodesForSwitchAccessCommand(
@@ -177,6 +179,9 @@ class ASH_EXPORT AccessibilityEventRewriter
   bool try_rewriting_positional_keys_for_chromevox_ = true;
 
   bool chromevox_mv3_key_handling_enabled_ = false;
+
+  // The session ID of the currently active ChromeVox instance.
+  int64_t current_session_id_ = 0;
 
   // Attached to pending key events as unique IDs.
   unsigned int next_pending_event_id_ = 0;
