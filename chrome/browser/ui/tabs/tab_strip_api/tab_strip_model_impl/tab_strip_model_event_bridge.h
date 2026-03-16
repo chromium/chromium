@@ -37,6 +37,7 @@ class BridgeInstance : public TabStripModelObserver,
                       int index,
                       TabChangeType change_type) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
+  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // tabs::TabCollectionObserver:
   void OnChildrenAdded(const tabs::TabCollection::Position& position,

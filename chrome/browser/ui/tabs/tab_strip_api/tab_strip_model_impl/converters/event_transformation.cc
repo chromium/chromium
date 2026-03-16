@@ -6,14 +6,11 @@
 
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_events.mojom.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "components/tabs/public/tab_collection_observer.h"
-#include "components/tabs/public/tab_group.h"
-#include "components/tabs/public/tab_group_tab_collection.h"
 
 namespace tabs_api::events {
 
@@ -125,19 +122,30 @@ mojom::OnDataChangedEventPtr ToEvent(
   return mojom::OnDataChangedEvent::NewTab(std::move(tab_change));
 }
 
-mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
+mojom::OnDataChangedEventPtr ToEvent(
+    const TabGroupChange& tab_group_change,
+    const tabs_api::TabStripModelAdapter& adapter) {
   CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kVisualsChanged);
-  TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
-      tab_group_change.group);
-
   auto tab_group_change_record = mojom::TabGroupChange::New();
   tab_group_change_record->data =
       tabs_api::converters::BuildMojoTabCollectionData(
-          tab_group->GetCollectionHandle())
+          adapter.GetCollectionHandleForTabGroupId(tab_group_change.group))
           ->get_tab_group()
           .Clone();
   return mojom::OnDataChangedEvent::NewTabGroup(
       std::move(tab_group_change_record));
+}
+
+mojom::OnDataChangedEventPtr ToEvent(
+    const SplitTabChange& split_tab_change,
+    const tabs_api::TabStripModelAdapter& adapter) {
+  auto split_change_record = mojom::SplitTabChange::New();
+  split_change_record->data =
+      tabs_api::converters::BuildMojoTabCollectionData(
+          adapter.GetCollectionHandleForSplitTabId(split_tab_change.split_id))
+          ->get_split_tab()
+          .Clone();
+  return mojom::OnDataChangedEvent::NewSplitTab(std::move(split_change_record));
 }
 
 std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
@@ -203,5 +211,4 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
   }
   return events;
 }
-
 }  // namespace tabs_api::events

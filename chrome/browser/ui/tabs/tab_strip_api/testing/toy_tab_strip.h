@@ -20,6 +20,7 @@ struct ToyTab {
   GURL gurl;
   bool active = false;
   bool selected = false;
+  std::optional<tab_groups::TabGroupId> group_id;
 };
 
 struct ToyTabCollection {
@@ -31,6 +32,11 @@ struct ToyTabGroupData {
   tab_groups::TabGroupId id;
   tabs::TabCollectionHandle handle;
   tab_groups::TabGroupVisualData visuals;
+};
+
+struct ToySplitTabData {
+  split_tabs::SplitTabId id;
+  tabs::TabCollectionHandle handle;
 };
 
 // A toy tab strip for integration testing. Toy tab strip is a simple
@@ -57,6 +63,9 @@ class ToyTabStrip {
       const tabs::TabCollectionHandle& handle) const;
   tabs::TabCollectionHandle AddGroup(
       const tab_groups::TabGroupVisualData& visual_data);
+  tabs::TabCollectionHandle AddGroup(
+      const tab_groups::TabGroupId& group_id,
+      const tab_groups::TabGroupVisualData& visual_data);
   const tab_groups::TabGroupVisualData* GetGroupVisualData(
       const tabs::TabCollectionHandle& handle) const;
   void UpdateGroupVisuals(const tab_groups::TabGroupId& group_id,
@@ -66,12 +75,21 @@ class ToyTabStrip {
   void SetTabSelection(std::set<tabs::TabHandle> selection);
   tabs::TabCollectionHandle GetRoot() { return root_.collection_handle; }
 
+  std::optional<tab_groups::TabGroupId> GetTabGroupForTab(int index) const;
+  tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
+      tab_groups::TabGroupId group_id) const;
+  tabs::TabCollectionHandle GetCollectionHandleForSplitTabId(
+      split_tabs::SplitTabId split_id) const;
+
+  tabs::TabCollectionHandle AddSplit(split_tabs::SplitTabId split_id);
+
  protected:
   // An ever incrementing id.
   int GetNextId();
 
  private:
   std::vector<ToyTabGroupData> groups_with_visuals_;
+  std::vector<ToySplitTabData> splits_;
   std::unique_ptr<tabs::TabStripCollection> tab_strip_collection_;
   ToyTabCollection root_;
 };

@@ -52,6 +52,8 @@ class TabStripModelAdapter {
       int index) const = 0;
   virtual tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
       tab_groups::TabGroupId group_id) const = 0;
+  virtual tabs::TabCollectionHandle GetCollectionHandleForSplitTabId(
+      split_tabs::SplitTabId split_id) const = 0;
   virtual tabs_api::Position GetPositionForAbsoluteIndex(
       int absolute_index) const = 0;
   virtual tabs_api::Path GetPathForCollection(

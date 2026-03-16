@@ -110,8 +110,14 @@ void BridgeInstance::OnTabGroupChanged(const TabGroupChange& change) {
   }
 
   if (change.type == TabGroupChange::Type::kVisualsChanged) {
-    ForwardToObserver(events::ToEvent(change));
+    ForwardToObserver(events::ToEvent(change, *tab_strip_model_adapter_));
     return;
+  }
+}
+
+void BridgeInstance::OnSplitTabChanged(const SplitTabChange& change) {
+  if (change.type == SplitTabChange::Type::kVisualsChanged) {
+    ForwardToObserver(events::ToEvent(change, *tab_strip_model_adapter_));
   }
 }
 

@@ -43,10 +43,16 @@ mojom::OnDataChangedEventPtr ToEvent(
     size_t index,
     TabChangeType change_type);
 
+mojom::OnDataChangedEventPtr ToEvent(
+    const TabGroupChange& tab_group_change,
+    const tabs_api::TabStripModelAdapter& adapter);
+
+mojom::OnDataChangedEventPtr ToEvent(
+    const SplitTabChange& split_tab_change,
+    const tabs_api::TabStripModelAdapter& adapter);
+
 std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
                            const tabs_api::TabStripModelAdapter& adapter);
-
-mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change);
 
 }  // namespace tabs_api::events
 

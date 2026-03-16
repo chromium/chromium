@@ -110,17 +110,19 @@ void ToyTabStripModelAdapter::SetTabSelection(
 
 std::optional<tab_groups::TabGroupId>
 ToyTabStripModelAdapter::GetTabGroupForTab(int index) const {
-  // TODO(crbug.com/412709271): Integrate with the toy tabstrip
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  return tab_strip_->GetTabGroupForTab(index);
 }
 
 tabs::TabCollectionHandle
 ToyTabStripModelAdapter::GetCollectionHandleForTabGroupId(
     tab_groups::TabGroupId group_id) const {
-  // TODO(crbug.com/412709271): Integrate with the toy tabstrip
-  NOTIMPLEMENTED();
-  return tabs::TabCollectionHandle::Null();
+  return tab_strip_->GetCollectionHandleForTabGroupId(group_id);
+}
+
+tabs::TabCollectionHandle
+ToyTabStripModelAdapter::GetCollectionHandleForSplitTabId(
+    split_tabs::SplitTabId split_id) const {
+  return tab_strip_->GetCollectionHandleForSplitTabId(split_id);
 }
 
 tabs_api::Position ToyTabStripModelAdapter::GetPositionForAbsoluteIndex(

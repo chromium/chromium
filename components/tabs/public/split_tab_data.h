@@ -30,6 +30,9 @@ class SplitTabData {
 
   std::vector<tabs::TabInterface*> ListTabs() const;
 
+  // Returns the TabCollection handle associated with this split.
+  tabs::TabCollection::Handle GetCollectionHandle() const;
+
   // Returns [start, end) where the leftmost tab in the split has index start
   // and the rightmost tab in the split has index end - 1.
   gfx::Range GetIndexRange() const;

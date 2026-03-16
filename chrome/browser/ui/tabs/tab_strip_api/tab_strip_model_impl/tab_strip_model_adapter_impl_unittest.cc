@@ -14,7 +14,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "components/browser_apis/tab_strip/types/position.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -182,6 +186,34 @@ TEST_F(TabStripModelAdapterImplTest, MoveCollection) {
   EXPECT_EQ(model_->GetTabGroupForTab(1), group_id);
   EXPECT_EQ(model_->GetTabGroupForTab(2), group_id);
   EXPECT_FALSE(model_->GetTabGroupForTab(0).has_value());
+}
+
+TEST_F(TabStripModelAdapterImplTest, GetCollectionHandleForSplitTabId) {
+  AddTabs(2);
+  split_tabs::SplitTabId split_id =
+      model_->AddToNewSplit({0}, split_tabs::SplitTabVisualData(),
+                            static_cast<split_tabs::SplitTabCreatedSource>(0));
+
+  tabs::TabCollectionHandle split_handle =
+      adapter_->GetCollectionHandleForSplitTabId(split_id);
+  EXPECT_TRUE(split_handle.Get());
+  EXPECT_EQ(split_handle.Get()->type(), tabs::TabCollection::Type::SPLIT);
+  EXPECT_EQ(static_cast<const tabs::SplitTabCollection*>(split_handle.Get())
+                ->GetSplitTabId(),
+            split_id);
+}
+
+TEST_F(TabStripModelAdapterImplTest, GetCollectionHandleForTabGroupId) {
+  AddTabs(2);
+  tab_groups::TabGroupId group_id = model_->AddToNewGroup({0, 1});
+
+  tabs::TabCollectionHandle group_handle =
+      adapter_->GetCollectionHandleForTabGroupId(group_id);
+  EXPECT_TRUE(group_handle.Get());
+  EXPECT_EQ(group_handle.Get()->type(), tabs::TabCollection::Type::GROUP);
+  EXPECT_EQ(static_cast<const tabs::TabGroupTabCollection*>(group_handle.Get())
+                ->GetTabGroupId(),
+            group_id);
 }
 
 }  // namespace tabs_api

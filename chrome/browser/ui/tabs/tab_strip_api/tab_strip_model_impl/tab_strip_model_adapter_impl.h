@@ -53,6 +53,8 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
       int index) const override;
   tabs::TabCollectionHandle GetCollectionHandleForTabGroupId(
       tab_groups::TabGroupId group_id) const override;
+  tabs::TabCollectionHandle GetCollectionHandleForSplitTabId(
+      split_tabs::SplitTabId split_id) const override;
   tabs_api::Position GetPositionForAbsoluteIndex(
       int absolute_index) const override;
   tabs_api::Path GetPathForCollection(

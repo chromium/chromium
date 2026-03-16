@@ -242,6 +242,14 @@ TabStripModelAdapterImpl::GetCollectionHandleForTabGroupId(
   return tab_group->GetCollectionHandle();
 }
 
+tabs::TabCollectionHandle
+TabStripModelAdapterImpl::GetCollectionHandleForSplitTabId(
+    split_tabs::SplitTabId split_id) const {
+  split_tabs::SplitTabData* split_data =
+      tab_strip_model_->GetSplitData(split_id);
+  return split_data->GetCollectionHandle();
+}
+
 tabs_api::Position TabStripModelAdapterImpl::GetPositionForAbsoluteIndex(
     int absolute_index) const {
   const auto tab_group_id = GetTabGroupForTab(absolute_index);

@@ -25,6 +25,10 @@ std::vector<tabs::TabInterface*> SplitTabData::ListTabs() const {
   return collection_->GetTabsRecursive();
 }
 
+tabs::TabCollection::Handle SplitTabData::GetCollectionHandle() const {
+  return collection_->GetHandle();
+}
+
 gfx::Range SplitTabData::GetIndexRange() const {
   std::vector<tabs::TabInterface*> split_tabs = ListTabs();
 
