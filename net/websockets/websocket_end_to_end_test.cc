@@ -92,6 +92,16 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include <winhttp.h>
+
+#include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/winhttp/scoped_hinternet.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace net {
 class HttpResponseHeaders;
 class ProxyServer;
@@ -112,6 +122,88 @@ GURL ReplaceUrlScheme(const GURL& in_url, std::string_view scheme) {
   replacements.SetSchemeStr(scheme);
   return in_url.ReplaceComponents(replacements);
 }
+
+#if BUILDFLAG(IS_WIN)
+// Tests if WinHTTP's system proxy resolver correctly resolves the given PAC URL
+// and returns a proxy string containing the expected proxy. This is used to
+// detect cases where WinHTTP ignores our custom PAC URL (e.g., on corporate
+// machines with a system-level PAC URL configured).
+
+bool WinHttpReturnsExpectedProxy(const GURL& pac_url,
+                                 const GURL& test_url,
+                                 std::string_view expected_proxy_host_port) {
+  // Open a WinHTTP session.
+  winhttp::ScopedHInternet session(
+      WinHttpOpen(L"WebSocketEndToEndTest", WINHTTP_ACCESS_TYPE_NO_PROXY,
+                  WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
+  if (!session.is_valid()) {
+    LOG(WARNING) << "WinHttpOpen failed: " << GetLastError();
+    // WinHTTP API itself is broken — not a corporate PAC issue.
+    // Return true so the test runs and fails naturally, surfacing real issues.
+    return true;
+  }
+
+  // Store wide strings in local variables to avoid dangling pointers.
+  std::wstring pac_url_wide = base::ASCIIToWide(pac_url.spec());
+  std::wstring test_url_wide = base::ASCIIToWide(test_url.spec());
+
+  // Configure auto-proxy options with our PAC URL.
+  WINHTTP_AUTOPROXY_OPTIONS auto_proxy_options = {0};
+  auto_proxy_options.dwFlags = WINHTTP_AUTOPROXY_CONFIG_URL;
+  auto_proxy_options.lpszAutoConfigUrl = pac_url_wide.c_str();
+  auto_proxy_options.dwAutoDetectFlags = 0;
+  auto_proxy_options.fAutoLogonIfChallenged = FALSE;
+
+  WINHTTP_PROXY_INFO proxy_info = {0};
+  base::ScopedClosureRunner proxy_info_cleanup(base::BindOnce(
+      [](WINHTTP_PROXY_INFO* info) {
+        if (info->lpszProxy) {
+          GlobalFree(info->lpszProxy);
+        }
+        if (info->lpszProxyBypass) {
+          GlobalFree(info->lpszProxyBypass);
+        }
+      },
+      &proxy_info));
+
+  if (WinHttpGetProxyForUrl(session.get(), test_url_wide.c_str(),
+                            &auto_proxy_options, &proxy_info)) {
+    if (proxy_info.dwAccessType == WINHTTP_ACCESS_TYPE_NAMED_PROXY &&
+        proxy_info.lpszProxy != nullptr) {
+      std::string proxy_string = base::WideToASCII(proxy_info.lpszProxy);
+      bool match = proxy_string.contains(expected_proxy_host_port);
+      if (!match) {
+        LOG(WARNING) << "WinHTTP ignored custom PAC. Found: " << proxy_string;
+      }
+      return match;
+    }
+    LOG(WARNING) << "WinHTTP returned NO_PROXY or DIRECT instead of using "
+                 << "our PAC URL. dwAccessType=" << proxy_info.dwAccessType;
+    return false;
+  }
+
+  // WinHttpGetProxyForUrl failed.
+  DWORD error = GetLastError();
+  // Only skip for errors that indicate corporate PAC interference.
+  // For unexpected errors, return true so the test runs and fails
+  // naturally to surface real issues.
+  // On corp machines, WinHTTP may return success=FALSE with no error
+  // (ERROR_SUCCESS / 0) when it silently ignores our PAC URL.
+  if (error == ERROR_SUCCESS ||
+      error == ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT ||
+      error == ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT ||
+      error == ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR ||
+      error == ERROR_WINHTTP_TIMEOUT) {
+    LOG(WARNING) << "WinHTTP PAC resolution failed (error " << error
+                 << ") — likely corporate PAC interference, skipping test";
+    return false;
+  }
+
+  LOG(WARNING) << "WinHttpGetProxyForUrl failed unexpectedly (error " << error
+               << ") — not skipping, let test fail naturally";
+  return true;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // An implementation of WebSocketEventInterface that waits for and records the
 // results of the connect.
@@ -679,9 +771,21 @@ TEST_F(WebSocketEndToEndTest, ProxyPacUsed) {
   proxy_server.EnableConnectProxy({HostPortPair::FromURL(ws_url)});
   ASSERT_TRUE(proxy_server.Start());
 
-  ProxyConfig proxy_config =
-      ProxyConfig::CreateFromCustomPacURL(proxy_pac_server.GetURL(base::StrCat(
-          {"/proxy.pac?proxy=", proxy_server.host_port_pair().ToString()})));
+  const auto pac_url = proxy_pac_server.GetURL(base::StrCat(
+      {"/proxy.pac?proxy=", proxy_server.host_port_pair().ToString()}));
+  const auto expected_proxy = proxy_server.host_port_pair().ToString();
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, verify that WinHTTP correctly resolves our PAC URL before
+  // running the test.
+  if (!WinHttpReturnsExpectedProxy(pac_url, ws_url, expected_proxy)) {
+    GTEST_SKIP() << "WinHTTP does not return expected proxy from test PAC URL. "
+                    "This can happen on machines with a system-level PAC URL "
+                    "configured (e.g., corporate machines).";
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  ProxyConfig proxy_config = ProxyConfig::CreateFromCustomPacURL(pac_url);
   proxy_config.set_pac_mandatory(true);
   auto proxy_config_service = std::make_unique<ProxyConfigServiceFixed>(
       ProxyConfigWithAnnotation(proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS));

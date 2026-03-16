@@ -84,6 +84,11 @@ specific_include_rules = {
     "+third_party/fuzztest",
   ],
 
+  # WinHTTP pre-check helper uses ScopedHInternet for RAII handle management.
+  "websocket_end_to_end_test\.cc": [
+    "+components/winhttp/scoped_hinternet.h",
+  ],
+
   "cookie_monster_unittest.cc": [
     "+base/i18n/time_formatting.h",
   ],

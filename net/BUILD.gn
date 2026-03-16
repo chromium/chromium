@@ -3563,6 +3563,7 @@ target(_test_target_type, "net_unittests") {
       "iphlpapi.lib",
       "ncrypt.lib",
     ]
+    deps += [ "//components/winhttp" ]
   }
 
   if (chrome_root_store_supported) {
