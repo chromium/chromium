@@ -151,7 +151,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       isImmersiveMode: {type: Boolean},
       isReadAnythingPinned: {type: Boolean},
       settingsPrefs: {type: Object},
-      currentOpenId_: {type: String, attribute: false},
+      currentOpenId_: {state: true},
     };
   }
 
@@ -161,6 +161,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
 
   protected options_: SettingsItem[] = [];
   protected accessor currentOpenId_: string|null = null;
+
   private interceptedEvents_: string[] =
       ['click', 'pointerdown', 'pointermove'];
   private openTimer_: number|null = null;

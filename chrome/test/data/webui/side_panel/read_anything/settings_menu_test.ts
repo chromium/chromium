@@ -389,6 +389,34 @@ suite('SettingsMenuElement', () => {
     assertEquals('false', linksItem.getAttribute('aria-haspopup'));
   });
 
+  test('menu items have correct aria-expanded attribute', async () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+
+    // Submenu toggles should have aria-expanded false by default.
+    const fontItem = menuItems.find(item => item.id === SettingsOption.FONT);
+    assertTrue(!!fontItem);
+    assertEquals('false', fontItem.getAttribute('aria-expanded'));
+
+    // Toggles that are not submenus shouldn't have aria-expanded attribute.
+    const linksItem = menuItems.find(item => item.id === SettingsOption.LINKS);
+    assertTrue(!!linksItem);
+    assertFalse(linksItem.hasAttribute('aria-expanded'));
+
+    // Open the font submenu.
+    fontItem.click();
+    await microtasksFinished();
+
+    // The font item should now be expanded.
+    assertEquals('true', fontItem.getAttribute('aria-expanded'));
+    // Another submenu should still not be expanded.
+    const letterSpacingItem =
+        menuItems.find(item => item.id === SettingsOption.LETTER_SPACING);
+    assertTrue(!!letterSpacingItem);
+    assertEquals('false', letterSpacingItem.getAttribute('aria-expanded'));
+  });
+
   test('pinned toggle has separator when links and images hidden', async () => {
     chrome.readingMode.isReadabilityEnabled = true;
     chrome.readingMode.isReadabilityWithLinksEnabled = false;
