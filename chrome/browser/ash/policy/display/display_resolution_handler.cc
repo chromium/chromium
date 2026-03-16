@@ -219,17 +219,15 @@ void DisplayResolutionHandler::ApplyChanges(
       continue;
 
     resized_display_ids_.insert(display_id);
-    cros_display_config.SetDisplayProperties(
-        display_unit_info->id, std::move(new_config),
-        crosapi::mojom::DisplayConfigSource::kPolicy,
-        base::BindOnce([](crosapi::mojom::DisplayConfigResult result) {
-          if (result == crosapi::mojom::DisplayConfigResult::kSuccess) {
-            VLOG(1) << "Successfully changed display mode.";
-          } else {
-            LOG(ERROR) << "Couldn't change display mode. Error code: "
-                       << result;
-          }
-        }));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config.SetDisplayProperties(
+            display_unit_info->id, std::move(new_config),
+            crosapi::mojom::DisplayConfigSource::kPolicy);
+    if (result == crosapi::mojom::DisplayConfigResult::kSuccess) {
+      VLOG(1) << "Successfully changed display mode.";
+    } else {
+      LOG(ERROR) << "Couldn't change display mode. Error code: " << result;
+    }
   }
 }
 

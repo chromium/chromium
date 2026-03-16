@@ -116,7 +116,7 @@ void DisplayRotationDefaultHandler::ApplyChanges(
         RotationOptionsFromDisplayRotation(display_rotation_default_));
     cros_display_config.SetDisplayProperties(
         display_unit_info->id, std::move(config_properties),
-        crosapi::mojom::DisplayConfigSource::kPolicy, base::DoNothing());
+        crosapi::mojom::DisplayConfigSource::kPolicy);
   }
 }
 

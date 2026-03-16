@@ -53,17 +53,16 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
       bool single_unified) override {
     NOTREACHED();
   }
-  void SetDisplayProperties(
+  crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       crosapi::mojom::DisplayConfigPropertiesPtr properties,
-      crosapi::mojom::DisplayConfigSource source,
-      SetDisplayPropertiesCallback callback) override {
+      crosapi::mojom::DisplayConfigSource source) override {
     if (properties->set_primary) {
       int64_t display_id;
       base::StringToInt64(id, &display_id);
       Shell::Get()->window_tree_host_manager()->SetPrimaryDisplayId(display_id);
     }
-    std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
+    return crosapi::mojom::DisplayConfigResult::kSuccess;
   }
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   void OverscanCalibration(const std::string& display_id,

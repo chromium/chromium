@@ -108,11 +108,12 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
     next_display_unit_info_list_.clear();
     return result;
   }
-  void SetDisplayProperties(
+  crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       crosapi::mojom::DisplayConfigPropertiesPtr properties,
-      crosapi::mojom::DisplayConfigSource source,
-      SetDisplayPropertiesCallback callback) override {}
+      crosapi::mojom::DisplayConfigSource source) override {
+    NOTREACHED();
+  }
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   void OverscanCalibration(const std::string& display_id,
                            crosapi::mojom::DisplayConfigOperation op,

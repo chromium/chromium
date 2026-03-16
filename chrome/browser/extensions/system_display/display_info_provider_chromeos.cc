@@ -216,15 +216,11 @@ void DisplayInfoProviderChromeOS::SetDisplayProperties(
   }
 
   if (cros_display_config_) {
-    cros_display_config_->SetDisplayProperties(
-        display_id_str, std::move(config_properties),
-        crosapi::mojom::DisplayConfigSource::kUser,
-        base::BindOnce(
-            [](ErrorCallback callback,
-               crosapi::mojom::DisplayConfigResult result) {
-              std::move(callback).Run(GetStringResult(result));
-            },
-            std::move(callback)));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config_->SetDisplayProperties(
+            display_id_str, std::move(config_properties),
+            crosapi::mojom::DisplayConfigSource::kUser);
+    std::move(callback).Run(GetStringResult(std::move(result)));
   }
 }
 

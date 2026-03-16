@@ -959,13 +959,11 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
       auto config_properties = crosapi::mojom::DisplayConfigProperties::New();
       config_properties->rotation =
           crosapi::mojom::DisplayRotation::New(rotation);
-      base::test::TestFuture<crosapi::mojom::DisplayConfigResult> result_future;
-      cros_display_config->SetDisplayProperties(
-          display_id, std::move(config_properties),
-          crosapi::mojom::DisplayConfigSource::kUser,
-          result_future.GetCallback());
-      EXPECT_EQ(result_future.Take(),
-                crosapi::mojom::DisplayConfigResult::kSuccess);
+      crosapi::mojom::DisplayConfigResult result =
+          cros_display_config->SetDisplayProperties(
+              display_id, std::move(config_properties),
+              crosapi::mojom::DisplayConfigSource::kUser);
+      EXPECT_EQ(result, crosapi::mojom::DisplayConfigResult::kSuccess);
 
       // Wait for the browser view to change its bounds as a result of display
       // rotation.

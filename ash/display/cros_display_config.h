@@ -22,10 +22,6 @@ class TouchCalibratorController;
 class CrosDisplayConfig {
  public:
   // TODO(crbug.com/485123493): Get rid of callbacks where possible.
-  using SetDisplayPropertiesCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
-  using SetDisplayPropertiesMojoCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
   using OverscanCalibrationCallback =
       base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
   using OverscanCalibrationMojoCallback =
@@ -60,11 +56,10 @@ class CrosDisplayConfig {
   // Sets |properties| for individual display with identifier |id|. |source|
   // should describe who initiated the change. Returns Success if the properties
   // are valid or an error value otherwise.
-  virtual void SetDisplayProperties(
+  virtual crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       crosapi::mojom::DisplayConfigPropertiesPtr properties,
-      crosapi::mojom::DisplayConfigSource source,
-      SetDisplayPropertiesCallback callback) = 0;
+      crosapi::mojom::DisplayConfigSource source) = 0;
 
   // Enables or disables unified desktop mode. If the current display mode is
   // kMirrored the mode will not be changed, if it is kNormal then the mode will
@@ -122,11 +117,10 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
       crosapi::mojom::DisplayLayoutInfoPtr info) override;
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
       bool single_unified) override;
-  void SetDisplayProperties(
+  crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       crosapi::mojom::DisplayConfigPropertiesPtr properties,
-      crosapi::mojom::DisplayConfigSource source,
-      SetDisplayPropertiesCallback callback) override;
+      crosapi::mojom::DisplayConfigSource source) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
   void OverscanCalibration(const std::string& display_id,
                            crosapi::mojom::DisplayConfigOperation op,

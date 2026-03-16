@@ -768,17 +768,15 @@ CrosDisplayConfigImpl::GetDisplayUnitInfoList(bool single_unified) {
   return info_list;
 }
 
-void CrosDisplayConfigImpl::SetDisplayProperties(
+crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::SetDisplayProperties(
     const std::string& id,
     crosapi::mojom::DisplayConfigPropertiesPtr properties,
-    crosapi::mojom::DisplayConfigSource source,
-    SetDisplayPropertiesCallback callback) {
+    crosapi::mojom::DisplayConfigSource source) {
   const display::Display display = GetDisplay(id);
   crosapi::mojom::DisplayConfigResult result =
       ValidateDisplayProperties(*properties, display);
   if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
-    std::move(callback).Run(result);
-    return;
+    return result;
   }
 
   display::DisplayManager* display_manager = GetDisplayManager();
@@ -842,12 +840,11 @@ void CrosDisplayConfigImpl::SetDisplayProperties(
   if (properties->display_mode) {
     result = SetDisplayMode(display.id(), *properties->display_mode, source);
     if (result != crosapi::mojom::DisplayConfigResult::kSuccess) {
-      std::move(callback).Run(result);
-      return;
+      return result;
     }
   }
 
-  std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
+  return crosapi::mojom::DisplayConfigResult::kSuccess;
 }
 
 void CrosDisplayConfigImpl::SetUnifiedDesktopEnabled(bool enabled) {

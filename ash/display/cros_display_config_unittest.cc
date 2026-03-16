@@ -123,13 +123,8 @@ class CrosDisplayConfigTest : public AshTestBase {
   crosapi::mojom::DisplayConfigResult SetDisplayProperties(
       const std::string& id,
       crosapi::mojom::DisplayConfigPropertiesPtr properties) {
-    crosapi::mojom::DisplayConfigResult result;
-    base::RunLoop run_loop;
-    cros_display_config_->SetDisplayProperties(
-        id, std::move(properties), crosapi::mojom::DisplayConfigSource::kUser,
-        base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result;
+    return cros_display_config_->SetDisplayProperties(
+        id, std::move(properties), crosapi::mojom::DisplayConfigSource::kUser);
   }
 
   bool OverscanCalibration(int64_t id,
