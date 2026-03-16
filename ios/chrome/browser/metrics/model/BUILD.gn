@@ -131,6 +131,7 @@ source_set("model") {
     "//components/country_codes",
     "//components/crash/core/common",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/language/core/browser",
     "//components/metrics",
     "//components/metrics:net",
     "//components/metrics:ui",

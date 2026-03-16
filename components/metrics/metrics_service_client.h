@@ -102,6 +102,9 @@ class MetricsServiceClient {
   virtual int32_t GetProduct() = 0;
 
   // Returns the current application locale (e.g. "en-US").
+  // This is a virtual method because //components/metrics should not depend on
+  // the components that provide the application locale (e.g.,
+  // //components/language) to avoid unnecessary bloat.
   virtual std::string GetApplicationLocale() = 0;
 
   // Return a NetworkTimeTracker for access to a server-provided clock.

@@ -27,4 +27,7 @@ BASE_FEATURE(kPerProfileMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kRestructureMetricsConsentSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kConsolidateMetricsServiceLocales,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace metrics::features

@@ -40,6 +40,9 @@ BASE_DECLARE_FEATURE(kMetricsLogJobSchedulerUpload);
 // Enabled by default - intended as a kill-switch.
 BASE_DECLARE_FEATURE(kPerProfileMetrics);
 
+// Consolidates the application locale logic in MetricsServiceClient.
+BASE_DECLARE_FEATURE(kConsolidateMetricsServiceLocales);
+
 // Restructures the metrics privacy settings into a three-state model [kNone,
 // kBasic, kAdvanced].
 BASE_DECLARE_FEATURE(kRestructureMetricsConsentSettings);

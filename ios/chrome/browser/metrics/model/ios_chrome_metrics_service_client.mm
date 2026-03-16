@@ -35,6 +35,7 @@
 #import "components/crash/core/common/crash_keys.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/language/core/browser/locale_util.h"
 #import "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #import "components/metrics/cpu_metrics_provider.h"
 #import "components/metrics/demographics/demographic_metrics_provider.h"
@@ -45,6 +46,7 @@
 #import "components/metrics/field_trials_provider.h"
 #import "components/metrics/install_date_provider.h"
 #import "components/metrics/metrics_data_validation.h"
+#import "components/metrics/metrics_features.h"
 #import "components/metrics/metrics_log_uploader.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_default_state.h"
@@ -261,6 +263,11 @@ int32_t IOSChromeMetricsServiceClient::GetProduct() {
 }
 
 std::string IOSChromeMetricsServiceClient::GetApplicationLocale() {
+  if (base::FeatureList::IsEnabled(
+          metrics::features::kConsolidateMetricsServiceLocales)) {
+    return language::GetApplicationLocale(
+        GetApplicationContext()->GetLocalState());
+  }
   return GetApplicationContext()->GetApplicationLocaleStorage()->Get();
 }
 

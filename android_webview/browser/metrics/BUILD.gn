@@ -37,6 +37,7 @@ source_set("metrics") {
     "//base",
     "//components/component_updater",
     "//components/component_updater/android:embedded_component_loader",
+    "//components/language/core/browser",
     "//components/metrics",
     "//components/metrics:component_metrics",
     "//components/metrics:content",

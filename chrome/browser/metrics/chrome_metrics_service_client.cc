@@ -76,6 +76,7 @@
 #include "components/country_codes/country_codes.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/language/core/browser/locale_util.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #include "components/metrics/component_metrics_provider.h"
 #include "components/metrics/content/content_stability_metrics_provider.h"
@@ -89,6 +90,7 @@
 #include "components/metrics/dwa/dwa_service.h"
 #include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/install_date_provider.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -629,6 +631,10 @@ int32_t ChromeMetricsServiceClient::GetProduct() {
 }
 
 std::string ChromeMetricsServiceClient::GetApplicationLocale() {
+  if (base::FeatureList::IsEnabled(
+          metrics::features::kConsolidateMetricsServiceLocales)) {
+    return language::GetApplicationLocale(g_browser_process->local_state());
+  }
   return g_browser_process->GetApplicationLocale();
 }
 
