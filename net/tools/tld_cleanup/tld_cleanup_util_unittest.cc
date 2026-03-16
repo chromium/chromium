@@ -11,9 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "build/buildflag.h"
 #include "net/base/registry_controlled_domain_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/buildflags.h"
 
 namespace net::tld_cleanup {
 
@@ -216,12 +218,23 @@ TEST(TldCleanupUtilTest, GperfIsUpToDate) {
           .AppendASCII("registry_controlled_domains");
 
   const base::FilePath temp_file = temp_dir.GetPath().AppendASCII("temp.gperf");
-  ASSERT_EQ(NormalizeFile(source_dir.AppendASCII("effective_tld_names.dat"),
-                          temp_file),
-            NormalizeResult::kSuccess);
+  NormalizeResult result = NormalizeFile(
+      source_dir.AppendASCII("effective_tld_names.dat"), temp_file);
 
-  EXPECT_TRUE(base::ContentsEqual(
-      source_dir.AppendASCII("effective_tld_names.gperf"), temp_file));
+  ASSERT_THAT(
+      result,
+  // IDN eTLDs may cause warnings on platforms without ICU support.
+#if BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
+      testing::AnyOf(NormalizeResult::kSuccess, NormalizeResult::kWarning)
+#else
+      NormalizeResult::kSuccess
+#endif
+  );
+
+  if (result == NormalizeResult::kSuccess) {
+    EXPECT_TRUE(base::ContentsEqual(
+        source_dir.AppendASCII("effective_tld_names.gperf"), temp_file));
+  }
 }
 
 }  // namespace net::tld_cleanup
