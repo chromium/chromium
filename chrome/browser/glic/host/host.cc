@@ -294,8 +294,8 @@ void Host::CreateContents(bool initially_hidden) {
   if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {
     contents_ = glic_service().web_contents_warming_pool().TakeContainer();
   } else {
-    contents_ =
-        std::make_unique<WebUIContentsContainer>(profile_, initially_hidden);
+    contents_ = std::make_unique<WebUIContentsContainerImpl>(profile_,
+                                                             initially_hidden);
   }
   contents_->AttachToHost(this);
   glic::GlicProfileManager::GetInstance()->OnLoadingClientForService(

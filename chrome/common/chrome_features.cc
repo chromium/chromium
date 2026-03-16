@@ -508,6 +508,12 @@ BASE_FEATURE(kGlicWebContentsWarming,
 const base::FeatureParam<base::TimeDelta> kGlicWebContentsWarmingDelay{
     &kGlicWebContentsWarming, "glic-web-contents-warming-delay",
     base::Seconds(20)};
+// Controls the delay before the WebContents is removed from the pool if it is
+// not used.
+const base::FeatureParam<base::TimeDelta>
+    kGlicWebContentsWarmingPoolExpiryDelay{
+        &kGlicWebContentsWarming, "glic-web-contents-warming-pool-expiry-delay",
+        base::Hours(23)};
 
 // Controls desired min width for the side panel. Not guaranteed to be respected
 // if user manually resizes.

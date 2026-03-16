@@ -535,6 +535,7 @@ source_set("unit_tests") {
       "host/context/glic_screenshot_capturer_unittest.cc",
       "host/context/glic_tab_data_unittest.cc",
       "host/glic_cookie_synchronizer_unittest.cc",
+      "host/glic_web_contents_warming_pool_unittest.cc",
       "host/guest_util_unittest.cc",
       "public/glic_enabling_metrics_unittest.cc",
       "public/glic_enabling_unittest.cc",

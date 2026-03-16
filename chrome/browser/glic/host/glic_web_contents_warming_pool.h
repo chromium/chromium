@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_WEB_CONTENTS_WARMING_POOL_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 
@@ -21,7 +23,7 @@ class WebUIContentsContainer;
 class GlicWebContentsWarmingPool {
  public:
   explicit GlicWebContentsWarmingPool(Profile* profile);
-  ~GlicWebContentsWarmingPool();
+  virtual ~GlicWebContentsWarmingPool();
 
   // Retrieves a warmed WebUIContentsContainer from the pool. If no warmed
   // container is available, one will be created and then returned. A new
@@ -33,10 +35,27 @@ class GlicWebContentsWarmingPool {
   // Clears the warming pool and destroys any warmed WebContents.
   void Clear();
 
+  // LINT.IfChange(GlicWarmingPoolStatus)
+  enum class WarmingPoolStatus {
+    kHit = 0,
+    kCold = 1,
+    kExpired = 2,
+    kCrashed = 3,
+    kMaxValue = kCrashed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicWarmingPoolStatus)
+
   bool HasWarmedContainerForTesting() const;
   base::OneShotTimer& GetDelayTimerForTesting() { return delay_timer_; }
+  WebUIContentsContainer* GetWarmedContainerForTesting() const;
 
- private:
+ protected:
+  class Metrics;
+
+  // Virtual for testing.
+  virtual std::unique_ptr<WebUIContentsContainer> CreateContainer();
+
+  void OnContainerExpired();
   // Starts a timer to preload a WebContents after a delay.
   void EnsurePreloadDelayed();
 
@@ -45,6 +64,9 @@ class GlicWebContentsWarmingPool {
 
   // Timer for delayed warming.
   base::OneShotTimer delay_timer_;
+  // Timer for resource cleanup.
+  base::OneShotDelayedBackgroundTimer expiry_timer_;
+  std::unique_ptr<Metrics> metrics_;
 };
 
 }  // namespace glic

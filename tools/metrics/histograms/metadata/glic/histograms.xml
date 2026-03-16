@@ -2657,6 +2657,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.WarmingPool.HitStatus" enum="GlicWarmingPoolStatus"
+    expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when the Glic WebContents warming pool is used to provide a
+    pre-warmed WebContents. Reports whether the container was pre-warmed (hit),
+    not pre-warmed (cold), pre-warmed but expired before use, or pre-warmed but
+    crashed before use.
+  </summary>
+</histogram>
+
+<histogram name="Glic.WarmingPool.TimeSinceCreatedAtHit" units="ms"
+    expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when the Glic WebContents warming pool reports a 'Hit' status.
+    Records the time elapsed since the container was initially created.
+  </summary>
+</histogram>
+
+<histogram name="Glic.WarmingPool.TimeSinceCreatedAtMiss" units="ms"
+    expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when the Glic WebContents warming pool reports a miss (Cold, Expired,
+    or Crashed) but a creation timestamp for a previous container was available.
+    Records the time elapsed since that container was initially created.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

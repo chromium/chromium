@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -16,21 +17,37 @@ class Profile;
 namespace glic {
 class Host;
 
+class WebUIContentsContainer {
+ public:
+  WebUIContentsContainer();
+  virtual ~WebUIContentsContainer();
+
+  // Attaches this container's WebContents to the provided Host. This must be
+  // called exactly once.
+  virtual void AttachToHost(Host* host) = 0;
+  virtual content::WebContents* web_contents() const = 0;
+  base::TimeTicks creation_time() const { return creation_time_; }
+
+ protected:
+  const base::TimeTicks creation_time_;
+};
+
 // Owns the `WebContents` that houses the chrome://glic WebUI.
-class WebUIContentsContainer : public content::WebContentsObserver {
+class WebUIContentsContainerImpl : public content::WebContentsObserver,
+                                   public WebUIContentsContainer {
  public:
   // `initially_hidden` value is only relevant when
   // `kGlicGuestContentsVisibilityState` flag is enabled, otherwise the default
   // value is used (i.e. false).
-  WebUIContentsContainer(Profile* profile, bool initially_hidden);
-  ~WebUIContentsContainer() override;
+  WebUIContentsContainerImpl(Profile* profile, bool initially_hidden);
+  ~WebUIContentsContainerImpl() override;
+  WebUIContentsContainerImpl(const WebUIContentsContainerImpl&) = delete;
+  WebUIContentsContainerImpl& operator=(const WebUIContentsContainerImpl&) =
+      delete;
 
-  // Attaches this container's WebContents to the provided Host. This must be
-  // called exactly once.
-  void AttachToHost(Host* host);
-  content::WebContents* web_contents() const { return web_contents_.get(); }
-  WebUIContentsContainer(const WebUIContentsContainer&) = delete;
-  WebUIContentsContainer& operator=(const WebUIContentsContainer&) = delete;
+  // WebUIContentsContainer impl.
+  void AttachToHost(Host* host) override;
+  content::WebContents* web_contents() const override;
 
  private:
   // content::WebContentsObserver:

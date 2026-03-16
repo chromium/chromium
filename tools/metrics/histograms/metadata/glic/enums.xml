@@ -849,6 +849,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/context/glic_sharing_manager.h:GlicUnpinTrigger) -->
 
+<!-- LINT.IfChange(GlicWarmingPoolStatus) -->
+
+<enum name="GlicWarmingPoolStatus">
+  <int value="0" label="Hit: Container was pre-warmed."/>
+  <int value="1" label="Cold: Container was not pre-warmed (miss)."/>
+  <int value="2"
+      label="Expired: Container was pre-warmed but expired before use."/>
+  <int value="3"
+      label="Crashed: Container was pre-warmed but crashed before use."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicWarmingPoolStatus) -->
+
 <!-- LINT.IfChange(GlicWebClientMode) -->
 
 <enum name="GlicWebClientMode">

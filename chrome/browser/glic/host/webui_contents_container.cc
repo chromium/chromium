@@ -48,8 +48,12 @@ content::WebContents::CreateParams MakeCreateParams(Profile* profile,
 
 }  // namespace
 
-WebUIContentsContainer::WebUIContentsContainer(Profile* profile,
-                                               bool initially_hidden)
+WebUIContentsContainer::WebUIContentsContainer()
+    : creation_time_(base::TimeTicks::Now()) {}
+WebUIContentsContainer::~WebUIContentsContainer() = default;
+
+WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
+                                                       bool initially_hidden)
     : profile_keep_alive_(profile, ProfileKeepAliveOrigin::kGlicView),
       web_contents_(content::WebContents::Create(
           MakeCreateParams(profile, initially_hidden))),
@@ -73,7 +77,7 @@ WebUIContentsContainer::WebUIContentsContainer(Profile* profile,
           GURL{chrome::kChromeUIGlicURL}));
 }
 
-WebUIContentsContainer::~WebUIContentsContainer() {
+WebUIContentsContainerImpl::~WebUIContentsContainerImpl() {
   Observe(nullptr);
   web_contents_->ClosePage();
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
@@ -84,7 +88,7 @@ WebUIContentsContainer::~WebUIContentsContainer() {
   glic_profile_manager->OnUnloadingClientForService(glic_service);
 }
 
-void WebUIContentsContainer::AttachToHost(Host* host) {
+void WebUIContentsContainerImpl::AttachToHost(Host* host) {
   // This is only allowed to be called once.
   CHECK(!host_);
   host_ = host;
@@ -93,7 +97,7 @@ void WebUIContentsContainer::AttachToHost(Host* host) {
   }
 }
 
-void WebUIContentsContainer::DidFinishNavigation(
+void WebUIContentsContainerImpl::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!host_ || !navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted()) {
@@ -112,7 +116,7 @@ void WebUIContentsContainer::DidFinishNavigation(
   }
 }
 
-void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
+void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   base::UmaHistogramEnumeration("Glic.Session.WebUiCrash.TerminationStatus",
                                 status, base::TERMINATION_STATUS_MAX_ENUM);
@@ -127,6 +131,10 @@ void WebUIContentsContainer::PrimaryMainFrameRenderProcessGone(
     keyed_service->CloseAndShutdown();
   }
   // WARNING: Do not do any more work, as `this` may have been destroyed.
+}
+
+content::WebContents* WebUIContentsContainerImpl::web_contents() const {
+  return web_contents_.get();
 }
 
 }  // namespace glic
