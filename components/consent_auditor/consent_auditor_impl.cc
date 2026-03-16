@@ -121,6 +121,16 @@ void ConsentAuditorImpl::RecordRecorderSpeakerLabelConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
+void ConsentAuditorImpl::RecordWalletPrivatePassConsent(
+    const GaiaId& gaia_id,
+    const SessionId& session_id,
+    const sync_pb::UserConsentTypes::WalletPrivatePassConsent& consent) {
+  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
+      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_, session_id);
+  specifics->mutable_wallet_private_pass_consent()->CopyFrom(consent);
+  consent_sync_bridge_->RecordConsent(std::move(specifics));
+}
+
 base::WeakPtr<syncer::DataTypeControllerDelegate>
 ConsentAuditorImpl::GetControllerDelegate() {
   if (consent_sync_bridge_) {

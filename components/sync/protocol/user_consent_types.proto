@@ -185,4 +185,13 @@ message UserConsentTypes {
     // the consent was given or not given/revoked.
     optional ConsentStatus status = 3;
   }
+
+  // The User Consent for saving a new private pass to Google Wallet.
+  message WalletPrivatePassConsent {
+    // Ids of the strings in the save prompt presented to the user.
+    repeated int32 description_grd_ids = 1;
+
+    // Id of the string of the UI element the user clicked when consenting.
+    optional int32 confirmation_grd_id = 2;
+  }
 }

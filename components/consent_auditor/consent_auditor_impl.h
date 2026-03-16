@@ -49,6 +49,11 @@ class ConsentAuditorImpl : public ConsentAuditor {
       const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)
       override;
+  void RecordWalletPrivatePassConsent(
+      const GaiaId& gaia_id,
+      const SessionId& session_id,
+      const sync_pb::UserConsentTypes::WalletPrivatePassConsent& consent)
+      override;
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 

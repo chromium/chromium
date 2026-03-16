@@ -31,22 +31,28 @@ class FakeConsentAuditor : public ConsentAuditor {
   void RecordSyncConsent(
       const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::SyncConsent& consent) override;
-  MOCK_METHOD2(
-      RecordArcPlayConsent,
-      void(const GaiaId&,
-           const sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent&));
-  MOCK_METHOD2(
-      RecordArcBackupAndRestoreConsent,
-      void(const GaiaId&,
-           const sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent&));
-  MOCK_METHOD2(
+  MOCK_METHOD(void,
+              RecordArcPlayConsent,
+              (const GaiaId&,
+               const sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent&));
+  MOCK_METHOD(void,
+              RecordArcBackupAndRestoreConsent,
+              (const GaiaId&,
+               const sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent&));
+  MOCK_METHOD(
+      void,
       RecordArcGoogleLocationServiceConsent,
-      void(const GaiaId&,
-           const sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent&));
-  MOCK_METHOD2(
-      RecordRecorderSpeakerLabelConsent,
-      void(const GaiaId&,
-           const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&));
+      (const GaiaId&,
+       const sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent&));
+  MOCK_METHOD(void,
+              RecordRecorderSpeakerLabelConsent,
+              (const GaiaId&,
+               const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&));
+  MOCK_METHOD(void,
+              RecordWalletPrivatePassConsent,
+              (const GaiaId&,
+               const SessionId&,
+               const sync_pb::UserConsentTypes::WalletPrivatePassConsent&));
 
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;

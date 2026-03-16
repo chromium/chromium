@@ -1725,6 +1725,7 @@ VISIT_PROTO_FIELDS(const sync_pb::UserConsentSpecifics& proto) {
   VISIT(assistant_activity_control_consent);
   VISIT(account_passwords_consent);
   VISIT(recorder_speaker_label_consent);
+  VISIT(wallet_private_pass_consent);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::UserConsentSpecifics::SessionId& proto) {
@@ -1783,6 +1784,12 @@ VISIT_PROTO_FIELDS(
   VISIT_REP(description_grd_ids);
   VISIT(confirmation_grd_id);
   VISIT_ENUM(status);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::UserConsentTypes::WalletPrivatePassConsent& proto) {
+  VISIT_REP(description_grd_ids);
+  VISIT(confirmation_grd_id);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::UserEventSpecifics& proto) {

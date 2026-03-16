@@ -87,6 +87,14 @@ class ConsentAuditor : public KeyedService {
       const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent&
           consent) = 0;
 
+  // Records the Wallet Private Pass `consent` for the signed-in GAIA
+  // account with the ID `gaia_id` (as defined in Account Info).
+  // The `session_id` is associated with the consent.
+  virtual void RecordWalletPrivatePassConsent(
+      const GaiaId& gaia_id,
+      const SessionId& session_id,
+      const sync_pb::UserConsentTypes::WalletPrivatePassConsent& consent) = 0;
+
   // Returns the underlying Sync integration point.
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate() = 0;
