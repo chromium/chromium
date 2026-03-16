@@ -494,10 +494,6 @@ bool BrowserAccessibilityAndroid::IsTableHeader() const {
   return ui::IsTableHeader(GetRole());
 }
 
-bool BrowserAccessibilityAndroid::IsTextSelectable() const {
-  return IsText() || IsAndroidTextView();
-}
-
 bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
   return !IsInvisibleOrIgnored();
 }
@@ -738,12 +734,6 @@ const char* BrowserAccessibilityAndroid::GetClassName() const {
   }
 
   return ui::AXRoleToAndroidClassName(role, PlatformGetParent() != nullptr);
-}
-
-bool BrowserAccessibilityAndroid::CanSetExtendedSelection() const {
-  // Extended selection is currently only supported for text and editable nodes.
-  // TODO(crbug.com/488168548): Cover all node types.
-  return IsTextSelectable() || IsTextField();
 }
 
 bool BrowserAccessibilityAndroid::IsAndroidTextView() const {
