@@ -16,8 +16,6 @@ NonInteractiveGlicTest::NonInteractiveGlicTest() {
 #if BUILDFLAG(IS_CHROMEOS)
   features_.InitAndEnableFeature(chromeos::features::kFeatureManagementGlic);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(true);
 }
 
 NonInteractiveGlicTest::NonInteractiveGlicTest(
@@ -25,13 +23,16 @@ NonInteractiveGlicTest::NonInteractiveGlicTest(
     const GlicTestEnvironmentConfig& glic_config)
     : test::InteractiveGlicTestMixin<InteractiveBrowserTest>(glic_params,
                                                              glic_config) {
-  GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(true);
 }
 
 NonInteractiveGlicTest::~NonInteractiveGlicTest() = default;
 
 void NonInteractiveGlicTest::SetUpOnMainThread() {
   test::InteractiveGlicTestMixin<InteractiveBrowserTest>::SetUpOnMainThread();
+
+  // Initialize testing mode after browser startup is complete.
+  GlicFocusedBrowserManagerImpl::SetTestingModeForTesting(true);
+
 #if defined(USE_MOCK_ACTIVATION_CONTROLLER)
   activation_controller_ =
       std::make_unique<views::test::MockActivationController>();
