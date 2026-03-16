@@ -319,26 +319,26 @@ CSSParserToken CSSTokenizer::ConsumeNumber() {
     sign = kMinusSign;
   }
 
-  number_length = input_.SkipWhilePredicate<IsASCIIDigit>(number_length);
+  number_length = input_.SkipWhilePredicate<IsAsciiDigit>(number_length);
   next = input_.PeekWithoutReplacement(number_length);
   if (next == '.' &&
-      IsASCIIDigit(input_.PeekWithoutReplacement(number_length + 1))) {
+      IsAsciiDigit(input_.PeekWithoutReplacement(number_length + 1))) {
     type = kNumberValueType;
-    number_length = input_.SkipWhilePredicate<IsASCIIDigit>(number_length + 2);
+    number_length = input_.SkipWhilePredicate<IsAsciiDigit>(number_length + 2);
     next = input_.PeekWithoutReplacement(number_length);
   }
 
   if (next == 'E' || next == 'e') {
     next = input_.PeekWithoutReplacement(number_length + 1);
-    if (IsASCIIDigit(next)) {
+    if (IsAsciiDigit(next)) {
       type = kNumberValueType;
       number_length =
-          input_.SkipWhilePredicate<IsASCIIDigit>(number_length + 1);
+          input_.SkipWhilePredicate<IsAsciiDigit>(number_length + 1);
     } else if ((next == '+' || next == '-') &&
-               IsASCIIDigit(input_.PeekWithoutReplacement(number_length + 2))) {
+               IsAsciiDigit(input_.PeekWithoutReplacement(number_length + 2))) {
       type = kNumberValueType;
       number_length =
-          input_.SkipWhilePredicate<IsASCIIDigit>(number_length + 3);
+          input_.SkipWhilePredicate<IsAsciiDigit>(number_length + 3);
     }
   }
 
@@ -696,15 +696,15 @@ bool CSSTokenizer::NextTwoCharsAreValidEscape() {
 // http://www.w3.org/TR/css3-syntax/#starts-with-a-number
 bool CSSTokenizer::NextCharsAreNumber(UChar first) {
   UChar second = input_.PeekWithoutReplacement(0);
-  if (IsASCIIDigit(first)) {
+  if (IsAsciiDigit(first)) {
     return true;
   }
   if (first == '+' || first == '-') {
-    return ((IsASCIIDigit(second)) ||
-            (second == '.' && IsASCIIDigit(input_.PeekWithoutReplacement(1))));
+    return ((IsAsciiDigit(second)) ||
+            (second == '.' && IsAsciiDigit(input_.PeekWithoutReplacement(1))));
   }
   if (first == '.') {
-    return (IsASCIIDigit(second));
+    return (IsAsciiDigit(second));
   }
   return false;
 }

@@ -100,8 +100,9 @@ double Value::ToNumber() const {
       unsigned len = str.length();
       for (unsigned i = 0; i < len; ++i) {
         UChar c = str[i];
-        if (!IsASCIIDigit(c) && c != '.' && c != '-')
+        if (!IsAsciiDigit(c) && c != '.' && c != '-') {
           return std::numeric_limits<double>::quiet_NaN();
+        }
       }
 
       return StringToDouble(str).value_or(

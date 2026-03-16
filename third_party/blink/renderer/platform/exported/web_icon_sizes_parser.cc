@@ -33,7 +33,7 @@ static bool IsNotWhitespace(UChar c) {
 }
 
 static bool IsNonDigit(UChar c) {
-  return !IsASCIIDigit(c);
+  return !IsAsciiDigit(c);
 }
 
 static inline wtf_size_t FindEndOfWord(const String& string, wtf_size_t start) {

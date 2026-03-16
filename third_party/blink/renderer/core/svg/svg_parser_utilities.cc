@@ -57,14 +57,14 @@ static bool GenericParseNumber(base::span<const CharType>& result_span,
     sign = -1;
   }
 
-  if (span.empty() || (!IsASCIIDigit(span[0]) && span[0] != '.')) {
+  if (span.empty() || (!IsAsciiDigit(span[0]) && span[0] != '.')) {
     // The first character of a number must be one of [0-9+-.]
     return false;
   }
 
   // read the integer part, build right-to-left
   size_t digits_count = 0;
-  while (digits_count < span.size() && IsASCIIDigit(span[digits_count])) {
+  while (digits_count < span.size() && IsAsciiDigit(span[digits_count])) {
     ++digits_count;  // Advance to first non-digit.
   }
 
@@ -90,13 +90,13 @@ static bool GenericParseNumber(base::span<const CharType>& result_span,
     span = span.template subspan<1u>();
 
     // There must be a least one digit following the .
-    if (span.empty() || !IsASCIIDigit(span[0])) {
+    if (span.empty() || !IsAsciiDigit(span[0])) {
       return false;
     }
 
     FloatType frac = 1;
     size_t decimal_count = 0;
-    while (decimal_count < span.size() && IsASCIIDigit(span[decimal_count])) {
+    while (decimal_count < span.size() && IsAsciiDigit(span[decimal_count])) {
       frac *= static_cast<FloatType>(0.1);
       decimal += (span[decimal_count] - '0') * frac;
       ++decimal_count;
@@ -127,13 +127,13 @@ static bool GenericParseNumber(base::span<const CharType>& result_span,
     }
 
     // There must be an exponent
-    if (span.empty() || !IsASCIIDigit(span[0])) {
+    if (span.empty() || !IsAsciiDigit(span[0])) {
       return false;
     }
 
     FloatType exponent = 0;
     size_t exponent_count = 0;
-    while (exponent_count < span.size() && IsASCIIDigit(span[exponent_count])) {
+    while (exponent_count < span.size() && IsAsciiDigit(span[exponent_count])) {
       exponent *= static_cast<FloatType>(10);
       exponent += span[exponent_count] - '0';
       ++exponent_count;

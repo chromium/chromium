@@ -75,7 +75,7 @@ static std::optional<int> ParseFontSize(
 
   // Step 6
   const size_t digits_start = position;
-  position = SkipWhile<CharacterType, IsASCIIDigit>(characters, position);
+  position = SkipWhile<CharacterType, IsAsciiDigit>(characters, position);
 
   // Step 7
   if (digits_start == position)

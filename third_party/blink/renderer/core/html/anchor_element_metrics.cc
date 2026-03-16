@@ -101,18 +101,18 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
 
   // There is no difference, or the difference is not a digit.
   if (left == source.length() || left == target.length() ||
-      !IsASCIIDigit(source[left]) || !IsASCIIDigit(target[left])) {
+      !IsAsciiDigit(source[left]) || !IsAsciiDigit(target[left])) {
     return false;
   }
 
   // Expand towards right to extract the numbers.
   unsigned int source_right = left + 1;
-  while (source_right < source.length() && IsASCIIDigit(source[source_right])) {
+  while (source_right < source.length() && IsAsciiDigit(source[source_right])) {
     source_right++;
   }
 
   unsigned int target_right = left + 1;
-  while (target_right < target.length() && IsASCIIDigit(target[target_right])) {
+  while (target_right < target.length() && IsAsciiDigit(target[target_right])) {
     target_right++;
   }
 

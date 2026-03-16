@@ -51,7 +51,7 @@ bool DigitalCredential::userAgentAllowsProtocol(const String& protocol) {
 
     if (IsASCIILower(c)) {
       has_lower_alpha = true;
-    } else if (!IsASCIIDigit(c) && c != uchar::kHyphenMinus) {
+    } else if (!IsAsciiDigit(c) && c != uchar::kHyphenMinus) {
       return false;
     }
   }

@@ -60,19 +60,19 @@ inline bool IsASCIIAlpha(CharType c) {
 }
 
 template <typename CharType>
-inline bool IsASCIIDigit(CharType c) {
+inline bool IsAsciiDigit(CharType c) {
   return c >= '0' && c <= '9';
 }
 
 template <typename CharType>
 inline bool IsASCIIAlphanumeric(CharType c) {
-  return IsASCIIDigit(c) || IsASCIIAlpha(c);
+  return IsAsciiDigit(c) || IsASCIIAlpha(c);
 }
 
 // Returns true if the character is an ASCII hex digit (0-9, a-f, or A-F).
 template <typename CharType>
 inline bool IsAsciiHexDigit(CharType c) {
-  return IsASCIIDigit(c) || ((c | 0x20) >= 'a' && (c | 0x20) <= 'f');
+  return IsAsciiDigit(c) || ((c | 0x20) >= 'a' && (c | 0x20) <= 'f');
 }
 
 template <typename CharType>

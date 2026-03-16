@@ -211,7 +211,7 @@ struct LazyLineBreakIterator::Context {
     if (last_ch == '-') [[unlikely]] {
       if (ch <= 0x7F) {
         // Up to U+007F is fast-breakable. See `LineBreakData::FillAscii()`.
-        if (IsASCIIDigit(ch)) {
+        if (IsAsciiDigit(ch)) {
           // Don't allow line breaking between '-' and a digit if the '-' may
           // mean a minus sign in the context, while allow breaking in
           // 'ABCD-1234' and '1234-5678' which may be in long URLs.

@@ -107,7 +107,7 @@ void EventSourceParser::ParseLine() {
   }
   if (field_name == "retry") {
     const bool has_only_digits =
-        std::ranges::all_of(field_value, IsASCIIDigit<char>);
+        std::ranges::all_of(field_value, IsAsciiDigit<char>);
     if (field_value.empty()) {
       client_->OnReconnectionTimeSet(EventSource::kDefaultReconnectDelay);
     } else if (has_only_digits) {

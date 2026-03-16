@@ -549,7 +549,7 @@ StringView ParsePortFromString(const StringView& value) {
   // "008080junk" needs to be treated as port "8080" and "000" as "0".
   wtf_size_t num_leading_digits = 0;
   while (num_leading_digits < value.length() &&
-         IsASCIIDigit(value[num_leading_digits])) {
+         IsAsciiDigit(value[num_leading_digits])) {
     ++num_leading_digits;
   }
   wtf_size_t num_leading_zeros = 0;

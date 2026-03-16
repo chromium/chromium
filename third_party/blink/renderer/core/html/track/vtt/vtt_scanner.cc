@@ -72,7 +72,7 @@ String VTTScanner::RestOfInputAsString() {
 }
 
 size_t VTTScanner::ScanDigits(unsigned& number) {
-  const size_t num_digits = CountWhile<IsASCIIDigit>();
+  const size_t num_digits = CountWhile<IsAsciiDigit>();
   if (num_digits == 0) {
     number = 0;
     return 0;
@@ -95,13 +95,13 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
 
 bool VTTScanner::ScanDouble(double& number) {
   const State start_state = state_;
-  const size_t num_integer_digits = CountWhile<IsASCIIDigit>();
+  const size_t num_integer_digits = CountWhile<IsAsciiDigit>();
   AdvanceIfNonZero(num_integer_digits);
   size_t length_of_double = num_integer_digits;
   size_t num_decimal_digits = 0;
   if (Scan('.')) {
     length_of_double++;
-    num_decimal_digits = CountWhile<IsASCIIDigit>();
+    num_decimal_digits = CountWhile<IsAsciiDigit>();
     AdvanceIfNonZero(num_decimal_digits);
     length_of_double += num_decimal_digits;
   }

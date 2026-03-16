@@ -121,8 +121,9 @@ Decimal ParseToDecimalForNumberType(const String& string,
   // whitespace characters, which are not valid here.
   const UChar first_character = string[0];
   if (first_character != '-' && first_character != '.' &&
-      !IsASCIIDigit(first_character))
+      !IsAsciiDigit(first_character)) {
     return fallback_value;
+  }
 
   const Decimal value = Decimal::FromString(string);
   if (!value.IsFinite())
@@ -166,8 +167,9 @@ double ParseToDoubleForNumberType(const String& string, double fallback_value) {
   // not valid here.
   UChar first_character = string[0];
   if (first_character != '-' && first_character != '.' &&
-      !IsASCIIDigit(first_character))
+      !IsAsciiDigit(first_character)) {
     return fallback_value;
+  }
   if (string.ends_with('.')) {
     return fallback_value;
   }
@@ -290,7 +292,7 @@ static bool IsSpaceOrDelimiter(CharacterType c) {
 
 template <typename CharacterType>
 static bool IsNotSpaceDelimiterOrNumberStart(CharacterType c) {
-  return !(IsSpaceOrDelimiter(c) || IsASCIIDigit(c) || c == '.' || c == '-');
+  return !(IsSpaceOrDelimiter(c) || IsAsciiDigit(c) || c == '.' || c == '-');
 }
 
 template <typename CharacterType>

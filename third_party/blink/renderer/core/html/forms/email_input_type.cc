@@ -140,7 +140,7 @@ static bool IsInvalidLocalPartCharacter(UChar ch) {
 static bool IsInvalidDomainCharacter(UChar ch) {
   if (!IsASCII(ch))
     return true;
-  return !IsASCIILower(ch) && !IsASCIIUpper(ch) && !IsASCIIDigit(ch) &&
+  return !IsASCIILower(ch) && !IsASCIIUpper(ch) && !IsAsciiDigit(ch) &&
          ch != '.' && ch != '-';
 }
 

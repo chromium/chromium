@@ -141,8 +141,9 @@ bool IsValidLocalType(const String& input) {
     return false;
   if (input[0] != ':')
     return false;
-  if (!IsASCIILower(input[1]) && !IsASCIIDigit(input[1]))
+  if (!IsASCIILower(input[1]) && !IsAsciiDigit(input[1])) {
     return false;
+  }
 
   // TODO(https://crbug.com/520391): Validate |input| is not equal to the record
   // type of any NDEF record defined in its containing NDEF message.

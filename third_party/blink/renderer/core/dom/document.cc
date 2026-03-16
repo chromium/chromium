@@ -611,7 +611,7 @@ std::optional<CharType> ParseElementLocalName(
       // digits, U+002D (-), U+002E (.), U+003A (:), U+005F (_), or in the range
       // U+0080 to U+10FFFF, inclusive, then return false.
       next_char = characters[i];
-      if (!IsASCIIAlpha(next_char) && !IsASCIIDigit(next_char) &&
+      if (!IsASCIIAlpha(next_char) && !IsAsciiDigit(next_char) &&
           next_char != '-' && next_char != '.' && next_char != ':' &&
           next_char != '_' && next_char < 0x80) {
         return next_char;

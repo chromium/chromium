@@ -80,7 +80,7 @@ struct DescriptorToken {
     // https://html.spec.whatwg.org/C/#valid-non-negative-integer
     unsigned length_excluding_descriptor = length - 1;
     while (position < length_excluding_descriptor) {
-      if (!IsASCIIDigit(attribute[start + position])) {
+      if (!IsAsciiDigit(attribute[start + position])) {
         is_valid = false;
         return 0;
       }

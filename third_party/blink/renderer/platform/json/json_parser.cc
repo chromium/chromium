@@ -103,7 +103,7 @@ Error ReadInt(Cursor* cursor,
   }
   const size_t start_pos = cursor->pos;
   bool have_leading_zero = '0' == data[cursor->pos];
-  while (cursor->pos < data.size() && IsASCIIDigit(data[cursor->pos])) {
+  while (cursor->pos < data.size() && IsAsciiDigit(data[cursor->pos])) {
     ++(cursor->pos);
   }
   const size_t length = cursor->pos - start_pos;

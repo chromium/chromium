@@ -58,7 +58,7 @@ bool IsNameStartCodePoint(CharacterType c) {
 // https://drafts.csswg.org/css-syntax/#name-code-point
 template <typename CharacterType>
 bool IsNameCodePoint(CharacterType c) {
-  return IsNameStartCodePoint(c) || IsASCIIDigit(c) || c == '-';
+  return IsNameStartCodePoint(c) || IsAsciiDigit(c) || c == '-';
 }
 
 // https://drafts.csswg.org/css-syntax/#check-if-two-code-points-are-a-valid-escape

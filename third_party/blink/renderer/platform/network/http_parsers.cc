@@ -441,7 +441,7 @@ inline bool SkipWhiteSpace(const String& str,
 
 template <typename CharType>
 inline bool IsASCIILowerAlphaOrDigit(CharType c) {
-  return IsASCIILower(c) || IsASCIIDigit(c);
+  return IsASCIILower(c) || IsAsciiDigit(c);
 }
 
 template <typename CharType>
@@ -459,7 +459,7 @@ bool ParseRefreshTime(const StringView& source, base::TimeDelta& delay) {
     if (ch == uchar::kFullStop) {
       if (++full_stop_count == 2)
         number_end = i;
-    } else if (!IsASCIIDigit(ch)) {
+    } else if (!IsAsciiDigit(ch)) {
       return false;
     }
   }
