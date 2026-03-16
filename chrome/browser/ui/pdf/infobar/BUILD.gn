@@ -20,6 +20,7 @@ source_set("infobar") {
     "//chrome/common:buildflags",
     "//components/infobars/content",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
   ]
   deps = [
     "//chrome/app:branded_strings",

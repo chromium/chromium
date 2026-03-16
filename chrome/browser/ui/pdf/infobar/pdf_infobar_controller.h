@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 
@@ -27,8 +28,11 @@ namespace pdf::infobar {
 // offers to set Chrome as the default PDF viewer if it's not already.
 class PdfInfoBarController : public infobars::InfoBarManager::Observer {
  public:
+  DECLARE_USER_DATA(PdfInfoBarController);
   explicit PdfInfoBarController(BrowserWindowInterface* browser);
   ~PdfInfoBarController() override;
+
+  static PdfInfoBarController* From(BrowserWindowInterface* window);
 
   // Enables the PDF infobar to show only if `higher_priority_infobar_shown` is
   // false. If the PDF-infobar experiment is enabled, shows the infobar for
@@ -80,6 +84,8 @@ class PdfInfoBarController : public infobars::InfoBarManager::Observer {
   // shown in this session. Has no value if higher priority infobars are still
   // deciding whether to appear.
   static std::optional<bool> higher_priority_infobar_shown_;
+
+  ui::ScopedUnownedUserData<PdfInfoBarController> scoped_unowned_user_data_;
 
   // Must be the last member variable.
   base::WeakPtrFactory<PdfInfoBarController> weak_factory_{this};

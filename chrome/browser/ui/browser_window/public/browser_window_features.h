@@ -296,9 +296,6 @@ class BrowserWindowFeatures {
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  pdf::infobar::PdfInfoBarController* pdf_infobar_controller() {
-    return pdf_infobar_controller_.get();
-  }
   default_browser::PinInfoBarController* pin_infobar_controller() {
     return pin_infobar_controller_.get();
   }

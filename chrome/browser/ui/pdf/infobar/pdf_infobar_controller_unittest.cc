@@ -25,6 +25,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace pdf::infobar {
 
@@ -41,6 +42,8 @@ class PdfInfoBarControllerTest : public testing::Test {
         .WillByDefault(::testing::Return(tab_strip_model()));
     ON_CALL(*browser_window_interface_, GetProfile())
         .WillByDefault(::testing::Return(profile()));
+    ON_CALL(*browser_window_interface_, GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(unowned_user_data_host_));
     delegate_->SetBrowserWindowInterface(browser_window_interface());
   }
 
@@ -104,6 +107,8 @@ class PdfInfoBarControllerTest : public testing::Test {
  private:
   // Must be the first member.
   content::BrowserTaskEnvironment task_environment_;
+
+  ui::UnownedUserDataHost unowned_user_data_host_;
 
   base::test::ScopedFeatureList feature_list_;
 

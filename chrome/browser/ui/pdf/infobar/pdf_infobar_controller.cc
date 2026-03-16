@@ -56,10 +56,19 @@ bool IsAppropriateForInfoBar(BrowserWindowInterface* browser) {
 
 }  // namespace
 
+// static
+PdfInfoBarController* PdfInfoBarController::From(
+    BrowserWindowInterface* window) {
+  return Get(window->GetUnownedUserDataHost());
+}
+
+DEFINE_USER_DATA(PdfInfoBarController);
+
 std::optional<bool> PdfInfoBarController::higher_priority_infobar_shown_;
 
 PdfInfoBarController::PdfInfoBarController(BrowserWindowInterface* browser)
-    : browser_(browser) {
+    : browser_(browser),
+      scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
   CHECK(base::FeatureList::IsEnabled(features::kPdfInfoBar));
   if (!IsAppropriateForInfoBar(browser_)) {
     return;
@@ -83,7 +92,11 @@ void PdfInfoBarController::MaybeShowInfoBarAtStartup(
   if (!IsAppropriateForInfoBar(startup_browser.get())) {
     return;
   }
-  startup_browser->GetFeatures().pdf_infobar_controller()->MaybeShowInfoBar();
+  PdfInfoBarController* controller =
+      PdfInfoBarController::From(startup_browser.get());
+  if (controller) {
+    controller->MaybeShowInfoBar();
+  }
 }
 
 void PdfInfoBarController::OnBrowserClosed(BrowserWindowInterface* browser) {
