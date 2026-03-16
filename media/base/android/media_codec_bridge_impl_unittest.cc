@@ -176,9 +176,9 @@ AudioDecoderConfig NewAudioConfig(
     base::TimeDelta seek_preroll = base::TimeDelta(),
     int64_t codec_delay = 0) {
   AudioDecoderConfig config;
-  config.Initialize(codec, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO, 44100,
-                    extra_data, EncryptionScheme::kUnencrypted, seek_preroll,
-                    codec_delay);
+  config.Initialize(codec, kSampleFormatPlanarF32,
+                    ChannelLayoutConfig::Stereo(), 44100, extra_data,
+                    EncryptionScheme::kUnencrypted, seek_preroll, codec_delay);
   return config;
 }
 
