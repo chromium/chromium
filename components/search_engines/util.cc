@@ -18,6 +18,7 @@
 #include "base/base64url.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_number_conversions.h"
@@ -685,14 +686,27 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
   RecordDefaultSearchMatchCount(entries_matching_dsp_to_reconcile,
                                 /*is_unreconciled_count=*/false);
 
+  // Debugging https://crbug.com/492852740
+  bool is_dsp_from_policy =
+      default_search_provider && default_search_provider->enforced_by_policy();
+
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_dsp",
+                        default_search_provider != nullptr);
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_dsp_match", dsp_match != nullptr);
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "has_existing_urls",
+                        !existing_urls.empty());
+  SCOPED_CRASH_KEY_BOOL("KwdbRefresh", "is_dsp_from_policy",
+                        is_dsp_from_policy);
+
   // It would make no sense that none of the existing turls matches the DSP,
   // except if there is no DSP or no existing turls.
-  CHECK(dsp_match || !default_search_provider || existing_urls.empty(),
-        base::NotFatalUntil::M149);
+  CHECK(dsp_match || !default_search_provider || existing_urls.empty() ||
+            is_dsp_from_policy,
+        base::NotFatalUntil::M150);
 
   // We expect to only have one regulatory program engine at a time, see
   // `TemplateURLService::ResetPlayAPISearchEngine()`.
-  CHECK_LE(regulatory_entries.size(), 1u, base::NotFatalUntil::M149);
+  CHECK_LE(regulatory_entries.size(), 1u, base::NotFatalUntil::M150);
 
   // For each current prepopulated URL, check whether |template_urls| contained
   // a matching prepopulated URL.  If so, update the passed-in URL to match the
