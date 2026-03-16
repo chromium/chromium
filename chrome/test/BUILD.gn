@@ -12408,6 +12408,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/os_crypt",
         "//chrome/browser/os_crypt:browser_tests",
         "//chrome/browser/os_crypt:test_support",
+        "//chrome/browser/win:isolated_browser_support",
         "//chrome/elevation_service:public_headers",
         "//chrome/install_static:install_static_util",
         "//chrome/installer/util:strings",

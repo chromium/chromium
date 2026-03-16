@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -33,6 +34,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#include "chrome/browser/win/isolated_browser_support.h"
+#include "chrome/install_static/test/scoped_install_details.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 using content::BrowserContext;
 using content::DownloadManager;
@@ -247,3 +254,29 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestHaveLocalStatePrefs) {
       PrefService::INCLUDE_DEFAULTS);
   EXPECT_FALSE(prefs.empty());
 }
+
+#if BUILDFLAG(IS_WIN)
+// Verify that setting the process isolation pref actually triggers the change
+// to the isolation state in the registry.
+IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestProcessIsolationPref) {
+  registry_util::RegistryOverrideManager rom;
+  rom.OverrideRegistry(HKEY_CURRENT_USER);
+  install_static::ScopedInstallDetails scoped_install_details(
+      /*system_level=*/true);
+
+  PrefService* local_state = g_browser_process->local_state();
+
+  // The state should be disabled by default in tests.
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kProcessIsolationEnabled));
+  EXPECT_FALSE(chrome::IsIsolationEnabled());
+
+  // Wait for the UI thread to complete the registry persistence.
+  // There is no direct callback to hook, but it is posted as a task to
+  // the current (UI) sequenced task runner, so evaluating IsIsolationEnabled
+  // in a RunUntil loop will ensure it catches the change safely.
+  local_state->SetBoolean(prefs::kProcessIsolationEnabled, true);
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return chrome::IsIsolationEnabled(); }));
+}
+#endif  // BUILDFLAG(IS_WIN)

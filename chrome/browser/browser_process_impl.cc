@@ -176,6 +176,10 @@
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_stats_mac.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/isolated_browser_support.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -478,6 +482,18 @@ void BrowserProcessImpl::Init() {
   // whenever the preference or its controlling policy changes.
   pref_change_registrar_.Add(metrics::prefs::kMetricsReportingEnabled,
                              base::BindRepeating(&ApplyMetricsReportingPolicy));
+
+#if BUILDFLAG(IS_WIN)
+  // Pref state is taken from the trusted process isolation state during browser
+  // startup, and reset during each startup. This ensures that even if the pref
+  // has been modified on disk, it cannot be used to force a transition from
+  // isolated to un-isolated.
+  local_state()->ClearPref(prefs::kProcessIsolationEnabled);
+  pref_change_registrar_.Add(
+      prefs::kProcessIsolationEnabled,
+      base::BindRepeating(&BrowserProcessImpl::UpdateProcessIsolationState,
+                          base::Unretained(this)));
+#endif  // BUILDFLAG(IS_WIN)
 
   DCHECK(!webrtc_event_log_manager_);
   webrtc_event_log_manager_ = WebRtcEventLogManager::CreateSingletonInstance();
@@ -1248,6 +1264,13 @@ void BrowserProcessImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kAllowCrossOriginAuthPrompt, false);
 
+#if BUILDFLAG(IS_WIN)
+  // Isolation state is determined dynamically at startup based on the system
+  // configuration.
+  registry->RegisterBooleanPref(prefs::kProcessIsolationEnabled,
+                                chrome::IsIsolationEnabled());
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kEulaAccepted, false);
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -1442,6 +1465,39 @@ void BrowserProcessImpl::PreCreateThreads() {
     SystemNetworkContextManager::CreateInstance(local_state());
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+void BrowserProcessImpl::UpdateProcessIsolationState() {
+  chrome::SetIsolationState(
+      local_state()->GetBoolean(prefs::kProcessIsolationEnabled)
+          ? chrome::IsolationState::kProcessIsolation
+          : chrome::IsolationState::kIsolationDisabled,
+      local_state(),
+      base::BindOnce(&BrowserProcessImpl::OnProcessIsolationStateSet,
+                     base::Unretained(this)));
+}
+
+void BrowserProcessImpl::OnProcessIsolationStateSet(
+    base::expected<chrome::IsolationState, HRESULT> result) {
+  if (result.has_value()) {
+    return;
+  }
+
+  // Need to notify the UI that changing the switch hasn't worked, and switch
+  // it back again. However, to avoid reentrancy in the notification and
+  // `UpdateProcessIsolationState` being called again, unregister the
+  // notification before setting the pref.
+  pref_change_registrar_.Remove(prefs::kProcessIsolationEnabled);
+  // Pref is updated to the current isolation state to indicate to the UI when
+  // changing the process isolation state failed.
+  local_state()->SetBoolean(prefs::kProcessIsolationEnabled,
+                            chrome::IsIsolationEnabled());
+  pref_change_registrar_.Add(
+      prefs::kProcessIsolationEnabled,
+      base::BindRepeating(&BrowserProcessImpl::UpdateProcessIsolationState,
+                          base::Unretained(this)));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void BrowserProcessImpl::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "BrowserProcessImpl::PreMainMessageLoopRun");

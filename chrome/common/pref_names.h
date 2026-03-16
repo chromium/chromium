@@ -2806,6 +2806,11 @@ inline constexpr char kBackgroundModeEnabled[] = "background_mode.enabled";
 inline constexpr char kHardwareAccelerationModeEnabled[] =
     "hardware_acceleration_mode.enabled";
 
+// Set to true if process isolation mode is enabled.
+#if BUILDFLAG(IS_WIN)
+inline constexpr char kProcessIsolationEnabled[] = "isolation_state.enabled";
+#endif  // BUILDFLAG(IS_WIN)
+
 // Hardware acceleration mode from previous browser launch.
 inline constexpr char kHardwareAccelerationModePrevious[] =
     "hardware_acceleration_mode_previous";

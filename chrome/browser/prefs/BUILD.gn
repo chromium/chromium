@@ -539,5 +539,9 @@ if (!is_android) {
       "//testing/gmock",
       "//ui/gfx/geometry",
     ]
+
+    if (is_win) {
+      deps += [ "//chrome/browser/win:isolated_browser_support" ]
+    }
   }
 }

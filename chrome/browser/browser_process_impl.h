@@ -65,6 +65,10 @@ namespace embedder_support {
 class OriginTrialsSettingsStorage;
 }  // namespace embedder_support
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/isolated_browser_support.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace extensions {
 class ExtensionsBrowserClient;
 }
@@ -281,6 +285,12 @@ class BrowserProcessImpl : public BrowserProcess,
 
   // ApplicationLocaleStorage callback
   void OnLocaleChanged(const std::string& new_locale);
+
+#if BUILDFLAG(IS_WIN)
+  void UpdateProcessIsolationState();
+  void OnProcessIsolationStateSet(
+      base::expected<chrome::IsolationState, HRESULT> result);
+#endif  // BUILDFLAG(IS_WIN)
 
   // Methods called to control our lifetime. The browser process can be "pinned"
   // to make sure it keeps running.
