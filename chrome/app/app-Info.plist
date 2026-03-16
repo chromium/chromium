@@ -167,9 +167,11 @@
 	<string>scripting.sdef</string>
 	<key>ASWebAuthenticationSessionWebBrowserSupportCapabilities</key>
 	<dict>
-		<key>IsSupported</key>
+		<key>CallbackURLMatchingIsSupported</key>
 		<true/>
 		<key>EphemeralBrowserSessionIsSupported</key>
+		<true/>
+		<key>IsSupported</key>
 		<true/>
 	</dict>
 	<key>CFBundleURLTypes</key>
