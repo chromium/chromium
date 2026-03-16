@@ -35,15 +35,13 @@ struct DomainRule {
 123website.ch, 4
 123website.lu, 4
 123website.nl, 4
-12chars.dev, 4
-12chars.it, 4
-12chars.pro, 4
 12hp.at, 4
 12hp.ch, 4
 12hp.de, 4
 1337.pictures, 4
 16-b.it, 4
 180r.com, 4
+1cooldns.com, 4
 1kapp.com, 4
 2-d.jp, 4
 2.azurestaticapps.net, 4
@@ -82,12 +80,14 @@ a.prod.fastly.net, 4
 a.se, 0
 a.ssl.fastly.net, 4
 a2hosted.com, 4
+aa.crm.dev, 6
 aa.no, 0
 aaa, 0
 aaa.pro, 0
 aarborte.no, 0
 aarp, 0
 ab.ca, 0
+ab.crm.dev, 6
 abashiri.hokkaido.jp, 0
 abb, 0
 abbott, 0
@@ -116,6 +116,7 @@ ac.bw, 0
 ac.ci, 0
 ac.cn, 0
 ac.cr, 0
+ac.crm.dev, 6
 ac.cy, 0
 ac.eg, 0
 ac.fj, 0
@@ -174,6 +175,7 @@ act.edu.au, 0
 activetrail.biz, 4
 actor, 0
 ad, 0
+ad.crm.dev, 6
 ad.jp, 0
 adachi.tokyo.jp, 0
 adaptable.app, 4
@@ -193,6 +195,8 @@ advisor.ws, 6
 adygeya.ru, 4
 adygeya.su, 4
 ae, 0
+ae.crm.dev, 6
+ae.kg, 4
 ae.org, 4
 aeg, 0
 aejrie.no, 0
@@ -210,6 +214,8 @@ aetna, 0
 af, 0
 af-south-1.airflow.amazonaws.com, 6
 af-south-1.elasticbeanstalk.com, 4
+af-south-1.rds.amazonaws.com, 6
+af.crm.dev, 6
 affinitylottery.org.uk, 4
 afjord.no, 0
 afl, 0
@@ -417,6 +423,7 @@ ann-arbor.mi.us, 0
 annaka.gunma.jp, 0
 anpachi.gifu.jp, 0
 anquan, 0
+antagonist.cloud, 4
 anz, 0
 ao, 0
 ao.it, 0
@@ -432,23 +439,43 @@ aostavalley.it, 0
 aoste.it, 0
 ap-east-1.airflow.amazonaws.com, 6
 ap-east-1.elasticbeanstalk.com, 4
+ap-east-1.rds.amazonaws.com, 6
+ap-east-2.rds.amazonaws.com, 6
+ap-north-1.r.cloud.int.apple, 6
 ap-northeast-1.airflow.amazonaws.com, 6
 ap-northeast-1.elasticbeanstalk.com, 4
+ap-northeast-1.rds.amazonaws.com, 6
 ap-northeast-2.airflow.amazonaws.com, 6
 ap-northeast-2.elasticbeanstalk.com, 4
+ap-northeast-2.rds.amazonaws.com, 6
 ap-northeast-3.airflow.amazonaws.com, 6
 ap-northeast-3.elasticbeanstalk.com, 4
+ap-northeast-3.rds.amazonaws.com, 6
 ap-south-1.airflow.amazonaws.com, 6
 ap-south-1.elasticbeanstalk.com, 4
+ap-south-1.r.cloud.int.apple, 6
+ap-south-1.rds.amazonaws.com, 6
 ap-south-2.airflow.amazonaws.com, 6
+ap-south-2.r.cloud.int.apple, 6
+ap-south-2.rds.amazonaws.com, 6
 ap-southeast-1.airflow.amazonaws.com, 6
 ap-southeast-1.elasticbeanstalk.com, 4
+ap-southeast-1.rds.amazonaws.com, 6
 ap-southeast-2.airflow.amazonaws.com, 6
 ap-southeast-2.elasticbeanstalk.com, 4
+ap-southeast-2.rds.amazonaws.com, 6
 ap-southeast-3.airflow.amazonaws.com, 6
 ap-southeast-3.elasticbeanstalk.com, 4
+ap-southeast-3.rds.amazonaws.com, 6
 ap-southeast-4.airflow.amazonaws.com, 6
+ap-southeast-4.rds.amazonaws.com, 6
 ap-southeast-5.airflow.amazonaws.com, 6
+ap-southeast-5.elasticbeanstalk.com, 4
+ap-southeast-5.rds.amazonaws.com, 6
+ap-southeast-6.rds.amazonaws.com, 6
+ap-southeast-7.airflow.amazonaws.com, 6
+ap-southeast-7.elasticbeanstalk.com, 4
+ap-southeast-7.rds.amazonaws.com, 6
 ap.gov.br, 0
 ap.gov.pl, 0
 ap.it, 0
@@ -480,6 +507,7 @@ appspaceusercontent.com, 4
 appspot.com, 4
 appudo.net, 4
 appwrite.global, 4
+appwrite.network, 4
 appwrite.run, 6
 aq, 0
 aq.it, 0
@@ -587,6 +615,8 @@ at-band-camp.net, 4
 at.emf.camp, 4
 at.eu.org, 4
 at.it, 0
+at.playit.plus, 6
+at.ply.gg, 6
 atami.shizuoka.jp, 0
 ath.cx, 4
 athleta, 0
@@ -606,6 +636,7 @@ audible, 0
 audio, 0
 audnedaln.no, 0
 augustow.pl, 0
+auiusercontent.com, 6
 aukra.no, 0
 aure.no, 0
 aurland.no, 0
@@ -635,6 +666,7 @@ auth.ap-southeast-5.amazoncognito.com, 4
 auth.ap-southeast-7.amazoncognito.com, 4
 auth.ca-central-1.amazoncognito.com, 4
 auth.ca-west-1.amazoncognito.com, 4
+auth.cognito-idp.eusc-de-east-1.on.amazonwebservices.eu, 4
 auth.eu-central-1.amazoncognito.com, 4
 auth.eu-central-2.amazoncognito.com, 4
 auth.eu-north-1.amazoncognito.com, 4
@@ -687,12 +719,14 @@ azimuth.network, 4
 azumino.nagano.jp, 0
 azure, 0
 azure-api.net, 4
+azure-api.us, 4
 azure-mobile.net, 4
 azurecontainer.io, 6
 azureedge.net, 4
 azurefd.net, 4
 azurestaticapps.net, 4
 azurewebsites.net, 4
+azurewebsites.us, 4
 b-data.io, 4
 b.bg, 0
 b.br, 0
@@ -786,6 +820,8 @@ barum.no, 0
 bas.it, 0
 base.ec, 4
 base.shop, 4
+base44-sandbox.com, 4
+base44.app, 4
 baseball, 0
 bashkiria.ru, 4
 bashkiria.su, 4
@@ -818,6 +854,7 @@ bedzin.pl, 0
 beep.pl, 4
 beer, 0
 beget.app, 6
+begetcdn.cloud, 6
 beiarn.no, 0
 bel.tr, 0
 belem.br, 0
@@ -911,13 +948,13 @@ biz.zm, 0
 bizen.okayama.jp, 0
 bj, 0
 bj.cn, 0
-bjarkoy.no, 0
 bjerkreim.no, 0
 bjugn.no, 0
 bl.it, 0
 black, 0
 blackbaudcdn.net, 4
 blackfriday, 0
+blob.core.usgovcloudapi.net, 4
 blob.core.windows.net, 4
 blockbuster, 0
 blog, 0
@@ -1002,6 +1039,7 @@ bradesco, 0
 brand.se, 0
 brasilia.me, 4
 brave.app, 4
+brave.dev, 4
 brave.io, 4
 bremanger.no, 0
 brescia.it, 0
@@ -1037,6 +1075,7 @@ bukhara.su, 4
 bulsan-sudtirol.it, 0
 bulsan-suedtirol.it, 0
 bulsan.it, 0
+bumbleshrimp.com, 4
 bungoono.oita.jp, 0
 bungotakada.oita.jp, 0
 bunkyo.tokyo.jp, 0
@@ -1051,6 +1090,7 @@ buzen.fukuoka.jp, 0
 buzz, 0
 bv, 0
 bw, 0
+bwcloud-os-instance.de, 6
 by, 0
 bydgoszcz.pl, 0
 byen.site, 4
@@ -1069,7 +1109,9 @@ c66.me, 4
 ca, 0
 ca-central-1.airflow.amazonaws.com, 6
 ca-central-1.elasticbeanstalk.com, 4
+ca-central-1.rds.amazonaws.com, 6
 ca-west-1.airflow.amazonaws.com, 6
+ca-west-1.rds.amazonaws.com, 6
 ca.eu.org, 4
 ca.in, 0
 ca.it, 0
@@ -1161,6 +1203,7 @@ cc.ar.us, 0
 cc.as.us, 0
 cc.az.us, 0
 cc.ca.us, 0
+cc.cd, 4
 cc.co.us, 0
 cc.ct.us, 0
 cc.dc.us, 0
@@ -1212,6 +1255,7 @@ cc.wi.us, 0
 cc.wv.us, 0
 cc.wy.us, 0
 cci.fr, 0
+ccwu.cc, 4
 cd, 0
 cd.eu.org, 4
 cdn-edges.net, 4
@@ -1310,6 +1354,7 @@ chuo.tokyo.jp, 0
 chuo.yamanashi.jp, 0
 church, 0
 ci, 0
+ci.crm.dev, 6
 ci.it, 0
 ciao.jp, 4
 ciencia.bo, 0
@@ -1356,6 +1401,7 @@ cloud-ip.biz, 4
 cloud-ip.cc, 4
 cloud.fedoraproject.org, 4
 cloud.goog, 4
+cloud.int.apple, 6
 cloud.interhostsolutions.be, 4
 cloud.metacentrum.cz, 6
 cloud.nospamproxy.com, 4
@@ -1395,6 +1441,7 @@ club, 0
 club.aero, 0
 club.tw, 0
 clubmed, 0
+clusters.rdpa.co, 6
 cm, 0
 cn, 0
 cn-north-1.airflow.amazonaws.com.cn, 6
@@ -1405,10 +1452,10 @@ cn.com, 4
 cn.eu.org, 4
 cn.in, 0
 cn.it, 0
+cn.st, 6
 cn.ua, 0
 cng.br, 0
 cnpy.gdn, 4
-cns.joyent.com, 6
 cnt.br, 0
 co, 0
 co.ae, 0
@@ -1476,6 +1523,8 @@ co.pn, 0
 co.ro, 4
 co.rs, 0
 co.rw, 0
+co.scot, 4
+co.site, 4
 co.ss, 0
 co.st, 0
 co.sz, 0
@@ -1575,6 +1624,7 @@ com.io, 0
 com.iq, 0
 com.jo, 0
 com.kg, 0
+com.kh, 0
 com.ki, 0
 com.km, 0
 com.kp, 0
@@ -1699,6 +1749,7 @@ coop.py, 0
 coop.rw, 0
 cooperativa.bo, 0
 copro.uk, 4
+corespeed.app, 4
 corsica, 0
 cosenza.it, 0
 couchpotatofries.org, 4
@@ -1782,6 +1833,7 @@ d.bg, 0
 d.crm.dev, 6
 d.gv.vc, 4
 d.se, 0
+d6.ply.gg, 4
 daa.jp, 4
 dad, 0
 daegu.kr, 0
@@ -1818,7 +1870,6 @@ daynight.jp, 4
 dazaifu.fukuoka.jp, 0
 dc.us, 0
 dclk, 0
-dd-dns.de, 4
 ddl.fr-par.scw.cloud, 4
 ddl.nl-ams.scw.cloud, 4
 ddl.pl-waw.scw.cloud, 4
@@ -1827,6 +1878,7 @@ ddns.me, 4
 ddns.net, 4
 ddnsfree.com, 4
 ddnsgeek.com, 4
+ddnsguru.com, 4
 ddnsking.com, 4
 ddnss.de, 4
 ddnss.org, 4
@@ -1837,6 +1889,7 @@ de.cool, 4
 de.eu.org, 4
 de.trendhosting.cloud, 4
 de.us, 0
+de5.net, 4
 deal, 0
 dealer, 0
 deals, 0
@@ -1880,6 +1933,8 @@ det.br, 0
 deta.app, 4
 deta.dev, 4
 deus-canvas.com, 4
+deuxfleurs.eu, 4
+deuxfleurs.page, 4
 dev, 0
 dev-builder.code.com, 6
 dev-myqnapcloud.com, 4
@@ -1914,13 +1969,12 @@ disco.ec, 0
 discordsays.com, 4
 discordsez.com, 4
 discount, 0
+discourse.diy, 4
 discourse.group, 4
 discourse.team, 4
 discover, 0
 dish, 0
-diskstation.eu, 4
 diskstation.me, 4
-diskstation.org, 4
 diskussionsbereich.de, 4
 ditchyourip.com, 4
 divtasvuodna.no, 0
@@ -1985,11 +2039,11 @@ dr.in, 0
 dr.tr, 0
 drammen.no, 0
 drangedal.no, 0
-dray-dns.de, 4
 drayddns.com, 4
-draydns.de, 4
 dreamhosters.com, 4
 drive, 0
+drive-platform.com, 4
+drive-platform.io, 4
 drobak.no, 0
 drr.ac, 4
 dscloud.biz, 4
@@ -2017,7 +2071,6 @@ dy.fi, 4
 dyn-berlin.de, 4
 dyn-ip24.de, 4
 dyn-o-saur.com, 4
-dyn-vpn.de, 4
 dyn.addr.tools, 4
 dyn.cosidns.de, 4
 dyn.ddnss.de, 4
@@ -2053,8 +2106,10 @@ dyndns1.de, 4
 dynns.com, 4
 dynserv.org, 4
 dynu.net, 4
+dynuddns.com, 4
+dynuddns.net, 4
+dynuhosting.com, 4
 dynv6.net, 4
-dynvpn.de, 4
 dyroy.no, 0
 dz, 0
 e.bg, 0
@@ -2078,6 +2133,7 @@ ebina.kanagawa.jp, 0
 ebino.miyazaki.jp, 0
 ebiz.tw, 0
 ec, 0
+ec.cc, 4
 echizen.fukui.jp, 0
 ecn.br, 0
 eco, 0
@@ -2092,7 +2148,6 @@ ed.ci, 0
 ed.cr, 0
 ed.jp, 0
 edeka, 0
-edgeapp.net, 4
 edgecompute.app, 4
 edgekey-staging.net, 4
 edgekey.net, 4
@@ -2137,6 +2192,7 @@ edu.eg, 0
 edu.es, 0
 edu.et, 0
 edu.eu.org, 4
+edu.fj, 0
 edu.fm, 0
 edu.gd, 0
 edu.ge, 0
@@ -2158,6 +2214,7 @@ edu.iq, 0
 edu.it, 0
 edu.jo, 0
 edu.kg, 0
+edu.kh, 0
 edu.ki, 0
 edu.km, 0
 edu.kn, 0
@@ -2261,6 +2318,7 @@ elb.amazonaws.com.cn, 6
 elblag.pl, 0
 elementor.cloud, 4
 elementor.cool, 4
+eliv-api.kr, 4
 eliv-cdn.kr, 4
 eliv-dns.kr, 4
 elk.pl, 0
@@ -2271,6 +2329,8 @@ embaixada.st, 0
 embetsu.hokkaido.jp, 0
 emerck, 0
 emergency.aero, 0
+emergent.cloud, 4
+emergent.host, 4
 emilia-romagna.it, 0
 emiliaromagna.it, 0
 emp.br, 0
@@ -2376,7 +2436,6 @@ emrstudio-prod.us-gov-east-1.amazonaws.com, 4
 emrstudio-prod.us-gov-west-1.amazonaws.com, 4
 emrstudio-prod.us-west-1.amazonaws.com, 4
 emrstudio-prod.us-west-2.amazonaws.com, 4
-en-root.fr, 4
 en.it, 0
 ena.gifu.jp, 0
 encoreapi.com, 4
@@ -2445,18 +2504,29 @@ eu-3.evennode.com, 4
 eu-4.evennode.com, 4
 eu-central-1.airflow.amazonaws.com, 6
 eu-central-1.elasticbeanstalk.com, 4
+eu-central-1.r.cloud.int.apple, 6
+eu-central-1.rds.amazonaws.com, 6
 eu-central-2.airflow.amazonaws.com, 6
+eu-central-2.rds.amazonaws.com, 6
 eu-north-1.airflow.amazonaws.com, 6
 eu-north-1.elasticbeanstalk.com, 4
+eu-north-1.r.cloud.int.apple, 6
 eu-south-1.airflow.amazonaws.com, 6
 eu-south-1.elasticbeanstalk.com, 4
 eu-south-2.airflow.amazonaws.com, 6
+eu-south-2.elasticbeanstalk.com, 4
 eu-west-1.airflow.amazonaws.com, 6
+eu-west-1.convex.cloud, 4
+eu-west-1.convex.site, 4
 eu-west-1.elasticbeanstalk.com, 4
+eu-west-1.rds.amazonaws.com, 6
 eu-west-2.airflow.amazonaws.com, 6
 eu-west-2.elasticbeanstalk.com, 4
+eu-west-2.rds.amazonaws.com, 6
 eu-west-3.airflow.amazonaws.com, 6
 eu-west-3.elasticbeanstalk.com, 4
+eu-west-3.rds.amazonaws.com, 6
+eu.cc, 4
 eu.com, 4
 eu.encoway.cloud, 4
 eu.int, 0
@@ -2588,7 +2658,10 @@ fi.it, 0
 fidelity, 0
 fido, 0
 fie.ee, 0
+figma-gov.site, 4
 figma.site, 4
+file.core.usgovcloudapi.net, 4
+file.core.windows.net, 4
 filegear-sg.me, 4
 filegear.me, 4
 film, 0
@@ -2875,6 +2948,8 @@ g.se, 0
 g12.br, 0
 ga, 0
 ga.us, 0
+gadget.app, 4
+gadget.host, 4
 gaivuotna.no, 0
 gal, 0
 gal.ec, 0
@@ -3044,7 +3119,6 @@ golf, 0
 golffan.us, 4
 gonna.jp, 4
 gonohe.aomori.jp, 0
-goo, 0
 goodyear, 0
 goog, 0
 google, 0
@@ -3130,6 +3204,7 @@ gov.ir, 0
 gov.it, 0
 gov.jo, 0
 gov.kg, 0
+gov.kh, 0
 gov.ki, 0
 gov.km, 0
 gov.kn, 0
@@ -3230,6 +3305,7 @@ gratangen.no, 0
 gratis, 0
 grayjayleagues.com, 4
 greater.jp, 4
+grebedoc.dev, 4
 green, 0
 greta.fr, 0
 grimstad.no, 0
@@ -3276,6 +3352,7 @@ gsj.bz, 4
 gsm.pl, 0
 gt, 0
 gu, 0
+gu.cc, 4
 gu.us, 0
 guam.gu, 0
 gub.uy, 0
@@ -3292,6 +3369,7 @@ guru, 0
 gushikami.okinawa.jp, 0
 gv.ao, 0
 gv.at, 0
+gv.uy, 4
 gv.vc, 4
 gw, 0
 gwangju.kr, 0
@@ -3420,6 +3498,8 @@ hemsedal.no, 0
 hepforge.org, 4
 her.jp, 4
 herad.no, 0
+hercules-app.com, 4
+hercules-dev.com, 4
 here, 0
 here-for-more.info, 4
 hermes, 0
@@ -3606,7 +3686,6 @@ hoylandet.no, 0
 hr, 0
 hr.eu.org, 4
 hra.health, 4
-hrsn.au, 4
 hrsn.dev, 4
 hs.kr, 0
 hsbc, 0
@@ -3615,6 +3694,7 @@ httpbin.org, 4
 hu, 0
 hu.eu.org, 4
 hu.net, 4
+hue.vn, 0
 hughes, 0
 huissier-justice.fr, 0
 hungry.jp, 4
@@ -3670,6 +3750,7 @@ id.au, 0
 id.bd, 0
 id.cv, 0
 id.firewalledreplit.co, 4
+id.fj, 0
 id.forgerock.io, 4
 id.ir, 0
 id.lv, 0
@@ -3719,6 +3800,7 @@ ikusaka.nagano.jp, 0
 il, 0
 il-central-1.airflow.amazonaws.com, 6
 il-central-1.elasticbeanstalk.com, 4
+il-central-1.rds.amazonaws.com, 6
 il.eu.org, 4
 il.us, 0
 ilawa.pl, 0
@@ -3727,6 +3809,8 @@ ilovecollege.info, 4
 im, 0
 im.it, 0
 imabari.ehime.jp, 0
+imagine-proxy.work, 4
+imagine.diy, 4
 imakane.hokkaido.jp, 0
 imamat, 0
 imari.saga.jp, 0
@@ -3785,6 +3869,7 @@ independent-inquiry.uk, 4
 independent-panel.uk, 4
 independent-review.uk, 4
 inderoy.no, 0
+indevs.in, 4
 indigena.bo, 0
 industria.bo, 0
 industries, 0
@@ -3843,6 +3928,7 @@ insurance, 0
 insurance.aero, 0
 insure, 0
 int, 0
+int.apple, 4
 int.ar, 0
 int.az, 0
 int.bo, 0
@@ -3864,6 +3950,7 @@ international, 0
 internet-dns.de, 4
 internet.in, 0
 intl.tn, 0
+intouch.email, 4
 intuit, 0
 inuyama.aichi.jp, 0
 investments, 0
@@ -3999,6 +4086,7 @@ ishikawa.okinawa.jp, 0
 ishinomaki.miyagi.jp, 0
 isla.pr, 0
 ismaili, 0
+ispmanager.name, 4
 isshiki.aichi.jp, 0
 issmarterthanyou.com, 4
 ist, 0
@@ -4118,6 +4206,7 @@ joburg, 0
 joetsu.niigata.jp, 0
 jogasz.hu, 0
 johana.toyama.jp, 0
+joinmc.link, 4
 joinville.br, 0
 jolster.no, 0
 jondal.no, 0
@@ -4369,7 +4458,12 @@ kazimierz-dolny.pl, 0
 kazo.saitama.jp, 0
 kazuno.akita.jp, 0
 kddi, 0
+kdns.fr, 4
 ke, 0
+keenetic.io, 4
+keenetic.link, 4
+keenetic.name, 4
+keenetic.pro, 4
 keisen.fukuoka.jp, 0
 keliweb.cloud, 4
 kembuchi.hokkaido.jp, 0
@@ -4383,7 +4477,7 @@ keyword-on.net, 4
 kfh, 0
 kg, 0
 kg.kr, 0
-kh, 2
+kh, 0
 kh.ua, 0
 khakassia.su, 4
 khanhhoa.vn, 0
@@ -4410,6 +4504,8 @@ kikuchi.kumamoto.jp, 0
 kikugawa.shizuoka.jp, 0
 kill.jp, 4
 kilo.jp, 4
+kiloapps.ai, 4
+kiloapps.io, 4
 kim, 0
 kim.replit.dev, 4
 kimino.wakayama.jp, 0
@@ -4668,6 +4764,28 @@ ladesk.com, 4
 lahppi.no, 0
 laichau.vn, 0
 lakas.hu, 0
+lambda-url.af-south-1.on.aws, 4
+lambda-url.ap-east-1.on.aws, 4
+lambda-url.ap-northeast-1.on.aws, 4
+lambda-url.ap-northeast-2.on.aws, 4
+lambda-url.ap-northeast-3.on.aws, 4
+lambda-url.ap-south-1.on.aws, 4
+lambda-url.ap-southeast-1.on.aws, 4
+lambda-url.ap-southeast-2.on.aws, 4
+lambda-url.ap-southeast-3.on.aws, 4
+lambda-url.ca-central-1.on.aws, 4
+lambda-url.eu-central-1.on.aws, 4
+lambda-url.eu-north-1.on.aws, 4
+lambda-url.eu-south-1.on.aws, 4
+lambda-url.eu-west-1.on.aws, 4
+lambda-url.eu-west-2.on.aws, 4
+lambda-url.eu-west-3.on.aws, 4
+lambda-url.me-south-1.on.aws, 4
+lambda-url.sa-east-1.on.aws, 4
+lambda-url.us-east-1.on.aws, 4
+lambda-url.us-east-2.on.aws, 4
+lambda-url.us-west-1.on.aws, 4
+lambda-url.us-west-2.on.aws, 4
 lamborghini, 0
 lamdong.vn, 0
 lamer, 0
@@ -4840,7 +4958,6 @@ live-website.com, 4
 living, 0
 livorno.it, 0
 lk, 0
-lk3.ru, 4
 llc, 0
 llp, 0
 ln.cn, 0
@@ -4970,6 +5087,8 @@ maebashi.gunma.jp, 0
 mafelo.net, 4
 magazine.aero, 0
 magentosite.cloud, 6
+magicpatterns.app, 4
+magicpatternsapp.com, 4
 maibara.shiga.jp, 0
 maif, 0
 mail-box.ne.jp, 4
@@ -5047,7 +5166,6 @@ matta-varjjat.no, 0
 mattel, 0
 mayfirst.info, 4
 mayfirst.org, 4
-mazeplay.com, 4
 mazowsze.pl, 0
 mazury.pl, 0
 mb.ca, 0
@@ -5063,14 +5181,18 @@ md, 0
 md.us, 0
 me, 0
 me-central-1.airflow.amazonaws.com, 6
+me-central-1.elasticbeanstalk.com, 4
+me-central-1.rds.amazonaws.com, 6
 me-south-1.airflow.amazonaws.com, 6
 me-south-1.elasticbeanstalk.com, 4
+me-south-1.rds.amazonaws.com, 6
 me.eg, 0
 me.eu.org, 4
 me.in, 0
 me.it, 0
 me.ke, 0
 me.kr, 0
+me.scot, 4
 me.so, 0
 me.ss, 0
 me.tz, 0
@@ -5104,7 +5226,6 @@ medusajs.app, 4
 meet, 0
 meguro.tokyo.jp, 0
 mein-iserv.de, 4
-mein-vigor.de, 4
 meinforum.net, 4
 meiwa.gunma.jp, 0
 meiwa.mie.jp, 0
@@ -5276,6 +5397,8 @@ mints.ne.jp, 4
 mircloud.host, 4
 mircloud.ru, 4
 mircloud.us, 4
+miren.app, 4
+miren.systems, 4
 misaki.okayama.jp, 0
 misaki.osaka.jp, 0
 misasa.tottori.jp, 0
@@ -5354,6 +5477,9 @@ mobi.ke, 0
 mobi.ng, 0
 mobi.tz, 0
 mobile, 0
+mocha-sandbox.dev, 4
+mocha.app, 4
+mochausercontent.com, 4
 mochizuki.nagano.jp, 0
 mock.pstmn.io, 4
 mod.gi, 0
@@ -5408,7 +5534,6 @@ moseushi.hokkaido.jp, 0
 mosjoen.no, 0
 moskenes.no, 0
 moss.no, 0
-mosvik.no, 0
 motegi.tochigi.jp, 0
 moto, 0
 motobu.okinawa.jp, 0
@@ -5426,10 +5551,12 @@ mr.no, 0
 mragowo.pl, 0
 mrap.accesspoint.s3-global.amazonaws.com, 4
 ms, 0
+ms.fun, 4
 ms.gov.br, 0
 ms.it, 0
 ms.kr, 0
 ms.leg.br, 4
+ms.show, 4
 ms.us, 0
 msd, 0
 msk.ru, 4
@@ -5478,13 +5605,13 @@ mw, 0
 mw.gov.pl, 0
 mwcloudnonprod.com, 4
 mx, 0
+mx-central-1.rds.amazonaws.com, 6
 my, 0
 my-firewall.org, 4
 my-gateway.de, 4
 my-router.de, 4
-my-vigor.de, 4
-my-wan.de, 4
 my.at, 4
+my.be, 4
 my.canva.site, 4
 my.canvasite.cn, 4
 my.de, 4
@@ -5496,6 +5623,9 @@ myaddr.io, 4
 myaddr.tools, 4
 myamaze.net, 4
 myasustor.com, 4
+mybox.company, 4
+mybox.me, 4
+mybox.page, 4
 mycloudnas.com, 4
 mydatto.com, 4
 mydatto.net, 4
@@ -5558,6 +5688,7 @@ myspreadshop.nl, 4
 myspreadshop.no, 4
 myspreadshop.pl, 4
 myspreadshop.se, 4
+mysynology.net, 4
 mytabit.co.il, 4
 mytabit.com, 4
 mytis.ru, 4
@@ -5782,6 +5913,7 @@ net.ir, 0
 net.je, 0
 net.jo, 0
 net.kg, 0
+net.kh, 0
 net.ki, 0
 net.kn, 0
 net.kw, 0
@@ -5862,10 +5994,10 @@ net.za, 0
 net.zm, 0
 netbank, 0
 netflix, 0
-netfy.app, 4
 netgamers.jp, 4
 netlib.re, 4
 netlify.app, 4
+nett.to, 4
 network, 0
 neustar, 0
 new, 0
@@ -6154,7 +6286,6 @@ obj.ag, 4
 objects.lp.dev, 4
 objects.lpg.cloudscale.ch, 4
 objects.rma.cloudscale.ch, 4
-obl.ong, 4
 obninsk.su, 4
 observablehq.cloud, 4
 observer, 0
@@ -6284,8 +6415,9 @@ on-web.fr, 4
 on.biz.ng, 4
 on.ca, 0
 on.crisp.email, 4
+on.expo.app, 4
+on.staging.expo.app, 4
 onagawa.miyagi.jp, 0
-onavstack.net, 4
 oncilla.mythic-beasts.com, 4
 ondigitalocean.app, 4
 one, 0
@@ -6293,6 +6425,7 @@ onfabrica.com, 4
 ong, 0
 ong.br, 0
 onga.fukuoka.jp, 0
+onhercules.app, 4
 onid.ca, 4
 oninferno.net, 4
 onion, 0
@@ -6321,6 +6454,7 @@ open, 0
 opencraft.hosting, 4
 opensocial.site, 4
 operaunite.com, 4
+opik.net, 4
 opoczno.pl, 0
 opole.pl, 0
 oppdal.no, 0
@@ -6413,6 +6547,7 @@ org.ir, 0
 org.je, 0
 org.jo, 0
 org.kg, 0
+org.kh, 0
 org.ki, 0
 org.km, 0
 org.kn, 0
@@ -6468,10 +6603,12 @@ org.rw, 0
 org.sa, 0
 org.sb, 0
 org.sc, 0
+org.scot, 4
 org.sd, 0
 org.se, 0
 org.sg, 0
 org.sh, 0
+org.sk, 0
 org.sl, 0
 org.sn, 0
 org.so, 0
@@ -6594,6 +6731,7 @@ p.se, 0
 p.tawk.email, 4
 p.tawkto.email, 4
 pa, 0
+pa.crm.dev, 6
 pa.gov.br, 0
 pa.gov.pl, 0
 pa.it, 0
@@ -6642,15 +6780,19 @@ pay, 0
 paynow.cx, 4
 paywhirl.com, 6
 pb.ao, 0
+pb.crm.dev, 6
 pb.gov.br, 0
 pb.leg.br, 4
+pc.crm.dev, 6
 pc.it, 0
 pc.pl, 0
 pccw, 0
+pd.crm.dev, 6
 pd.it, 0
 pdns.page, 4
 pe, 0
 pe.ca, 0
+pe.crm.dev, 6
 pe.gov.br, 0
 pe.it, 0
 pe.kr, 0
@@ -6665,7 +6807,6 @@ per.la, 0
 per.nf, 0
 perma.jp, 4
 perso.ht, 0
-perso.sn, 0
 perso.tn, 0
 perspecta.cloud, 4
 perugia.it, 0
@@ -6674,6 +6815,7 @@ pesarourbino.it, 0
 pescara.it, 0
 pet, 0
 pf, 0
+pf.crm.dev, 6
 pfizer, 0
 pg, 2
 pg.in, 0
@@ -6722,6 +6864,7 @@ pippu.hokkaido.jp, 0
 pisa.it, 0
 pistoia.it, 0
 pisz.pl, 0
+pivohosting.com, 4
 piw.gov.pl, 0
 pixolino.com, 4
 pizza, 0
@@ -6732,8 +6875,8 @@ pl.ua, 0
 place, 0
 platformsh.site, 6
 platter-app.dev, 4
-platterp.us, 4
 play, 0
+playit.plus, 4
 playstation, 0
 playstation-cloud.com, 4
 plc.co.im, 0
@@ -6819,6 +6962,7 @@ press.se, 0
 presse.km, 0
 presse.ml, 0
 preview.csb.app, 4
+preview.emergentagent.com, 4
 preview.site, 4
 pri.ee, 0
 prime, 0
@@ -6866,6 +7010,7 @@ pru, 0
 prudential, 0
 pruszkow.pl, 0
 prvcy.page, 4
+prvw.eu, 4
 przeworsk.pl, 0
 ps, 0
 psc.br, 0
@@ -6937,6 +7082,7 @@ qzz.io, 4
 r.appspot.com, 6
 r.bg, 0
 r.cdn77.net, 4
+r.cloud.int.apple, 6
 r.se, 0
 r2.dev, 4
 ra.it, 0
@@ -6979,6 +7125,8 @@ rc.it, 0
 rdb.fr-par.scw.cloud, 4
 rdb.nl-ams.scw.cloud, 4
 rdb.pl-waw.scw.cloud, 4
+rds.cn-north-1.amazonaws.com.cn, 6
+rds.cn-northwest-1.amazonaws.com.cn, 6
 rdy.jp, 4
 re, 0
 re.it, 0
@@ -7129,6 +7277,7 @@ routingthecloud.net, 4
 routingthecloud.org, 4
 rovigo.it, 0
 rovno.ua, 0
+roxa.org, 4
 royal-commission.uk, 4
 royken.no, 0
 royrvik.no, 0
@@ -7172,6 +7321,7 @@ rzeszow.pl, 0
 rzgw.gov.pl, 0
 s.bg, 0
 s.brave.app, 6
+s.brave.dev, 6
 s.brave.io, 6
 s.se, 0
 s3-1.amazonaws.com, 4
@@ -7388,6 +7538,8 @@ s3-website.dualstack.me-central-1.amazonaws.com, 4
 s3-website.dualstack.sa-east-1.amazonaws.com, 4
 s3-website.dualstack.us-east-1.amazonaws.com, 4
 s3-website.dualstack.us-east-2.amazonaws.com, 4
+s3-website.dualstack.us-gov-east-1.amazonaws.com, 4
+s3-website.dualstack.us-gov-west-1.amazonaws.com, 4
 s3-website.dualstack.us-west-1.amazonaws.com, 4
 s3-website.dualstack.us-west-2.amazonaws.com, 4
 s3-website.eu-central-1.amazonaws.com, 4
@@ -7489,6 +7641,7 @@ s3.us-west-2.amazonaws.com, 4
 sa, 0
 sa-east-1.airflow.amazonaws.com, 6
 sa-east-1.elasticbeanstalk.com, 4
+sa-east-1.rds.amazonaws.com, 6
 sa.au, 0
 sa.com, 4
 sa.cr, 0
@@ -7560,6 +7713,7 @@ samsung, 0
 samukawa.kanagawa.jp, 0
 sanagochi.tokushima.jp, 0
 sanda.hyogo.jp, 0
+sandbox.deno.net, 4
 sandcats.io, 4
 sande.more-og-romsdal.no, 0
 sande.vestfold.no, 0
@@ -7602,6 +7756,7 @@ satsumasendai.kagoshima.jp, 0
 satte.saitama.jp, 0
 sauda.no, 0
 sauherad.no, 0
+sav.case, 4
 save, 0
 saves-the-whales.com, 4
 savona.it, 0
@@ -7750,6 +7905,7 @@ servesarcasm.com, 4
 service.gov.scot, 4
 service.gov.uk, 4
 service.one, 4
+servicebus.usgovcloudapi.net, 4
 servicebus.windows.net, 4
 services, 0
 services.aero, 0
@@ -7842,6 +7998,8 @@ shinyoshitomi.fukuoka.jp, 0
 shiogama.miyagi.jp, 0
 shiojiri.nagano.jp, 0
 shioya.tochigi.jp, 0
+shiptoday.app, 4
+shiptoday.build, 4
 shirahama.wakayama.jp, 0
 shirakawa.fukushima.jp, 0
 shirakawa.gifu.jp, 0
@@ -7890,7 +8048,6 @@ showa.fukushima.jp, 0
 showa.gunma.jp, 0
 showa.yamanashi.jp, 0
 shunan.yamaguchi.jp, 0
-shw.io, 4
 si, 0
 si.eu.org, 4
 si.it, 0
@@ -7946,7 +8103,6 @@ skodje.no, 0
 skr.jp, 4
 sky, 0
 skydiving.aero, 0
-skygearapp.com, 4
 skype, 0
 sl, 0
 slask.pl, 0
@@ -7997,6 +8153,7 @@ sohu, 0
 soja.okayama.jp, 0
 soka.saitama.jp, 0
 sokndal.no, 0
+sol.site, 4
 sola.no, 0
 solar, 0
 solund.no, 0
@@ -8034,6 +8191,7 @@ sp.leg.br, 4
 spa, 0
 space, 0
 space-to-rent.com, 4
+spawnbase.app, 4
 spb.ru, 4
 spb.su, 4
 spdns.de, 4
@@ -8047,6 +8205,8 @@ sport, 0
 sport.eg, 0
 sport.hu, 0
 spot, 0
+sprites.app, 4
+spryt.net, 4
 spydeberg.no, 0
 square.site, 4
 square7.ch, 4
@@ -8060,6 +8220,7 @@ srht.site, 4
 srl, 0
 srv.br, 0
 srv.us, 4
+srvrless.rdpa.co, 6
 ss, 0
 ss.it, 0
 ssl.origin.cdn77-secure.org, 4
@@ -8121,7 +8282,6 @@ store.st, 0
 store.ve, 0
 storebase.store, 4
 storfjord.no, 0
-storipress.app, 4
 storj.farm, 4
 strand.no, 0
 stranda.no, 0
@@ -8240,9 +8400,6 @@ sy, 0
 sydney, 0
 sykkylven.no, 0
 syncloud.it, 4
-syno-ds.de, 4
-synology-diskstation.de, 4
-synology-ds.de, 4
 synology.me, 4
 sys.qcx.io, 6
 systems, 0
@@ -8615,6 +8772,7 @@ transfer-webapp.ap-southeast-2.on.aws, 4
 transfer-webapp.ap-southeast-3.on.aws, 4
 transfer-webapp.ap-southeast-4.on.aws, 4
 transfer-webapp.ap-southeast-5.on.aws, 4
+transfer-webapp.ap-southeast-7.on.aws, 4
 transfer-webapp.ca-central-1.on.aws, 4
 transfer-webapp.ca-west-1.on.aws, 4
 transfer-webapp.cn-north-1.on.amazonwebservices.com.cn, 4
@@ -8630,6 +8788,7 @@ transfer-webapp.eu-west-3.on.aws, 4
 transfer-webapp.il-central-1.on.aws, 4
 transfer-webapp.me-central-1.on.aws, 4
 transfer-webapp.me-south-1.on.aws, 4
+transfer-webapp.mx-central-1.on.aws, 4
 transfer-webapp.sa-east-1.on.aws, 4
 transfer-webapp.us-east-1.on.aws, 4
 transfer-webapp.us-east-2.on.aws, 4
@@ -8638,7 +8797,6 @@ transfer-webapp.us-gov-west-1.on.aws, 4
 transfer-webapp.us-west-1.on.aws, 4
 transfer-webapp.us-west-2.on.aws, 4
 translate.goog, 4
-translated.page, 4
 transporte.bo, 0
 transurl.be, 6
 transurl.eu, 6
@@ -8737,6 +8895,7 @@ tula.su, 4
 tuleap-partners.com, 4
 tunes, 0
 tunk.org, 4
+tunnelmole.net, 4
 tur.ar, 0
 tur.br, 0
 tur.ec, 0
@@ -8811,6 +8970,7 @@ uji.kyoto.jp, 0
 ujiie.tochigi.jp, 0
 ujitawara.kyoto.jp, 0
 uk, 0
+uk.cc, 4
 uk.com, 4
 uk.eu.org, 4
 uk.in, 0
@@ -8831,6 +8991,7 @@ umb.it, 0
 umbria.it, 0
 umi.fukuoka.jp, 0
 umig.gov.pl, 0
+umso.co, 4
 unazuki.toyama.jp, 0
 under.jp, 4
 undo.jp, 4
@@ -8877,17 +9038,35 @@ us-1.evennode.com, 4
 us-2.evennode.com, 4
 us-3.evennode.com, 4
 us-4.evennode.com, 4
+us-central-1.r.cloud.int.apple, 6
+us-central-2.r.cloud.int.apple, 6
 us-east-1.airflow.amazonaws.com, 6
 us-east-1.amazonaws.com, 4
+us-east-1.convex.cloud, 4
+us-east-1.convex.site, 4
 us-east-1.elasticbeanstalk.com, 4
+us-east-1.r.cloud.int.apple, 6
+us-east-1.rds.amazonaws.com, 6
 us-east-2.airflow.amazonaws.com, 6
 us-east-2.elasticbeanstalk.com, 4
+us-east-2.r.cloud.int.apple, 6
+us-east-2.rds.amazonaws.com, 6
 us-gov-east-1.elasticbeanstalk.com, 4
+us-gov-east-1.rds.amazonaws.com, 6
 us-gov-west-1.elasticbeanstalk.com, 4
+us-gov-west-1.rds.amazonaws.com, 6
+us-northeast-1.rds.amazonaws.com, 6
 us-west-1.airflow.amazonaws.com, 6
 us-west-1.elasticbeanstalk.com, 4
+us-west-1.r.cloud.int.apple, 6
+us-west-1.rds.amazonaws.com, 6
 us-west-2.airflow.amazonaws.com, 6
 us-west-2.elasticbeanstalk.com, 4
+us-west-2.r.cloud.int.apple, 6
+us-west-2.rds.amazonaws.com, 6
+us-west-3.r.cloud.int.apple, 6
+us.cc, 4
+us.ci, 4
 us.com, 4
 us.eu.org, 4
 us.gov.pl, 0
@@ -8908,6 +9087,8 @@ user.srcf.net, 4
 user.webaccel.jp, 4
 usercontent.goog, 6
 usercontent.jp, 4
+usgovcloudapp.net, 4
+usgovtrafficmanager.net, 4
 ushiku.ibaraki.jp, 0
 usr.cloud.muni.cz, 4
 ustka.pl, 0
@@ -9163,13 +9344,14 @@ wazuka.kyoto.jp, 0
 wb.crm.dev, 6
 wc.crm.dev, 6
 wd.crm.dev, 6
-wdh.app, 4
 we.bs, 4
 we.crm.dev, 6
 weather, 0
 weatherchannel, 0
 web.app, 4
 web.bo, 0
+web.core.usgovcloudapi.net, 4
+web.core.windows.net, 4
 web.do, 0
 web.erp.dev, 4
 web.gu, 0
@@ -9285,7 +9467,9 @@ windsurf.build, 4
 wine, 0
 winners, 0
 wios.gov.pl, 0
+wiredbladehosting.com, 4
 witd.gov.pl, 0
+with.playit.plus, 4
 withgoogle.com, 4
 withyoutube.com, 4
 wiw.gov.pl, 0
@@ -9303,7 +9487,6 @@ wmflabs.org, 4
 wnext.app, 4
 wodzislaw.pl, 0
 wolomin.pl, 0
-wolterskluwer, 0
 woltlab-demo.com, 4
 woodside, 0
 worf.replit.dev, 4
@@ -9421,6 +9604,7 @@ xn--90azh.xn--90a3ac, 0
 xn--9dbq2a, 0
 xn--9et52u, 0
 xn--9krt00a, 0
+xn--9tfky.id, 0
 xn--andy-ira.no, 0
 xn--aroport-bya.ci, 0
 xn--asky-ira.no, 0
@@ -9438,7 +9622,6 @@ xn--bhcavuotna-s4a.no, 0
 xn--bhccavuotna-k7a.no, 0
 xn--bidr-5nac.no, 0
 xn--bievt-0qa.no, 0
-xn--bjarky-fya.no, 0
 xn--bjddar-pta.no, 0
 xn--blt-elab.no, 0
 xn--bmlo-gra.no, 0
@@ -9812,6 +9995,7 @@ xn--zf0avx.hk, 0
 xn--zfr164b, 0
 xnbay.com, 4
 xs4all.space, 4
+xtooldevice.com, 4
 xx.kg, 4
 xxx, 0
 xxx.ec, 0
