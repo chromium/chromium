@@ -133,7 +133,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.WEBVIEW_BUILDER_V2,
                 Features.BACK_FORWARD_CACHE_SETTINGS_V3,
                 Features.JS_INJECTION_IN_FRAME_AND_WORLD,
-                Features.BACK_FORWARD_CACHE_SETTINGS_V4 + Features.DEV_SUFFIX,
+                Features.BACK_FORWARD_CACHE_SETTINGS_V4,
                 Features.WEB_VIEW_NAVIGATION_LISTENER,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
