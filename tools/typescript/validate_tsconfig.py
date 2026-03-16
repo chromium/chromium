@@ -221,9 +221,10 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
 
   # Broadly special casing ios/ for now, since compile_ts.gni relies on
   # unsupported behavior of setting the root_dir to src/.
-  # TODO (https://www.crbug.com/1412158): Make iOS TypeScript build tools use
+  # TODO (https://www.crbug.com/493269336): Make iOS TypeScript build tools use
   # ts_library in a supported way, or change them to not rely on ts_library.
-  if (is_ios and 'ios' in pathlib.Path(target_path).parts):
+  if is_ios and ('ios' in pathlib.Path(target_path).parts
+                 or 'ios_internal' in pathlib.Path(target_path).parts):
     return True, None
 
   # Legacy cases supported for backward-compatibility. Do not add new targets
