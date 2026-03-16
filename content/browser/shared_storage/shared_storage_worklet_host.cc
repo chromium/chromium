@@ -1874,10 +1874,10 @@ void SharedStorageWorkletHost::OnJsonParsed(
     return;
   }
 
-  bool script_origin_match = false;
-  bool context_origin_match = false;
   url::Origin worklet_script_origin = url::Origin::Create(script_source_url_);
   for (const base::Value& item_value : result.value()) {
+    bool script_origin_match = false;
+    bool context_origin_match = false;
     if (!item_value.is_dict()) {
       SetDataOriginOptInResultAndMaybeFinish(
           /*opted_in=*/false, /*data_origin_opt_in_error_message=*/base::StrCat(
