@@ -17,6 +17,12 @@ public interface FullButtonData extends DisplayButtonData {
     @Nullable Runnable getOnPressRunnable();
 
     /**
+     * Returns the {@link Runnable} that should be invoked when the button is long-pressed. If this
+     * returns null no long-press action will be performed.
+     */
+    @Nullable Runnable getOnLongPressRunnable();
+
+    /**
      * Compares this button data with another for equality based on display-relevant properties.
      *
      * <p>This method exists because UI frameworks need to determine if button data has changed to
