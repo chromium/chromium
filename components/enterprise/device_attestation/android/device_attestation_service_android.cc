@@ -20,8 +20,9 @@ void DeviceAttestationServiceAndroid::GetAttestationResponse(
     DeviceAttestationCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GenerateAttestationBlob, flow_name, request_payload,
-                     timestamp, nonce),
+      base::BindOnce(&GenerateAttestationBlob, std::string(flow_name),
+                     std::string(request_payload), std::string(timestamp),
+                     std::string(nonce)),
       base::BindOnce(&DeviceAttestationServiceAndroid::OnAttestationResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
