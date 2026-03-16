@@ -350,7 +350,6 @@ void XRWebGLLayer::OnFrameStart() {
     framebuffer_->SetContentsChanged(false);
 
     const XRSharedImageData& content_image_data = SharedImage();
-    const XRSharedImageData& camera_image_data = CameraSharedImage();
 
     if (content_image_data.shared_image) {
       drawing_buffer_->UseSharedBuffer(content_image_data.shared_image,
@@ -361,6 +360,12 @@ void XRWebGLLayer::OnFrameStart() {
     } else {
       is_direct_draw_frame = false;
     }
+  }
+}
+
+void XRWebGLLayer::OnFrameStartForCamera() {
+  if (framebuffer_) {
+    const XRSharedImageData& camera_image_data = CameraSharedImage();
 
     if (camera_image_data.shared_image) {
       DVLOG(3) << __func__ << ": camera_image_data.shared_image->mailbox()"

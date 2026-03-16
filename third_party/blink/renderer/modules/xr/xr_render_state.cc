@@ -128,6 +128,7 @@ bool XRRenderState::HasLayer(XRLayer* layer) const {
 void XRRenderState::OnFrameStart() {
   if (base_layer_) {
     base_layer_->OnFrameStart();
+    base_layer_->OnFrameStartForCamera();
   }
 
   if (layers_) {
