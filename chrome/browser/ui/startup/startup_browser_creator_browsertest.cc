@@ -738,9 +738,6 @@ class StartupBrowserCreatorChromeAppShortcutTest
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-  enum class ExpectedLaunchBehavior{kLaunchAnywaysInTab, kLaunchAnywaysInWindow,
-                                    kNoLaunch};
   void ExpectBlockLaunchWithLaunchBehavior(const std::string& app_id,
                                            bool force_install_dialog) {
     EXPECT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
