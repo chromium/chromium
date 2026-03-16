@@ -101,7 +101,8 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   bool IsLoading() const;
 
   // Reader implementation.
-  void NotifyAvailableRange(const Interval<MultiBufferBlockId>& range) override;
+  void NotifyAvailableRange(
+      const media::Interval<MultiBufferBlockId>& range) override;
 
   // Getters
   int64_t preload_high() const { return preload_high_; }
@@ -160,7 +161,7 @@ class PLATFORM_EXPORT MultiBufferReader : public MultiBuffer::Reader {
   int64_t current_buffer_size_;
 
   // Currently pinned range.
-  Interval<MultiBuffer::BlockId> pinned_range_;
+  media::Interval<MultiBuffer::BlockId> pinned_range_;
 
   // Current position in bytes.
   int64_t pos_;

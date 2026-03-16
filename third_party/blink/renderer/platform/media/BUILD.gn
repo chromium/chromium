@@ -48,7 +48,6 @@ component("media") {
     "cdm_session_adapter.h",
     "create_cdm_uma_helper.cc",
     "create_cdm_uma_helper.h",
-    "interval_map.h",
     "key_system_config_selector.cc",
     "multi_buffer.cc",
     "multi_buffer.h",
@@ -132,7 +131,6 @@ source_set("unit_tests") {
   sources = [
     "buffered_data_source_host_impl_unittest.cc",
     "cache_util_unittest.cc",
-    "interval_map_unittest.cc",
     "key_system_config_selector_unittest.cc",
     "multi_buffer_data_source_unittest.cc",
     "multi_buffer_unittest.cc",

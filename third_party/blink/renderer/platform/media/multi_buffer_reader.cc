@@ -182,7 +182,7 @@ void MultiBufferReader::UpdateEnd(MultiBufferBlockId p) {
 }
 
 void MultiBufferReader::NotifyAvailableRange(
-    const Interval<MultiBufferBlockId>& range) {
+    const media::Interval<MultiBufferBlockId>& range) {
   // Update end_ if we can.
   if (range.end > range.begin) {
     UpdateEnd(range.end);
@@ -248,7 +248,7 @@ void MultiBufferReader::UpdateInternalState() {
 void MultiBufferReader::PinRange(MultiBuffer::BlockId begin,
                                  MultiBuffer::BlockId end) {
   // Use a rangemap to compute the diff in pinning.
-  IntervalMap<MultiBuffer::BlockId, int32_t> tmp;
+  media::IntervalMap<MultiBuffer::BlockId, int32_t> tmp;
   tmp.IncrementInterval(pinned_range_.begin, pinned_range_.end, -1);
   tmp.IncrementInterval(begin, end, 1);
   multibuffer_->PinRanges(tmp);

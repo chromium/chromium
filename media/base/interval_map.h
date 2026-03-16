@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_INTERVAL_MAP_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_INTERVAL_MAP_H_
+#ifndef MEDIA_BASE_INTERVAL_MAP_H_
+#define MEDIA_BASE_INTERVAL_MAP_H_
 
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 
-namespace blink {
+namespace media {
 
 // An IntervalMap<KeyType, ValueType> maps every value of KeyType to
 // a ValueType, and incrementing, decrementing and setting ranges of values
@@ -179,8 +180,9 @@ class IntervalMap {
 
   // Increase [from..to) by |how_much|.
   void IncrementInterval(KeyType from, KeyType to, ValueType how_much) {
-    if (to <= from || how_much == 0)
+    if (to <= from || how_much == 0) {
       return;
+    }
     typename MapType::iterator a = MakeEntry(from);
     typename MapType::iterator b = MakeEntry(to);
     for (typename MapType::iterator i = a; i != b; ++i) {
@@ -193,8 +195,9 @@ class IntervalMap {
 
   // Set [from..to) to |how_much|.
   void SetInterval(KeyType from, KeyType to, ValueType how_much) {
-    if (to <= from)
+    if (to <= from) {
       return;
+    }
     typename MapType::iterator a = MakeEntry(from);
     typename MapType::iterator b = MakeEntry(to);
     a->second = how_much;
@@ -259,8 +262,9 @@ class IntervalMap {
 
   // Remove duplicates before and after |i|.
   void RemoveDuplicates(typename MapType::iterator i) {
-    if (i == map_.end())
+    if (i == map_.end()) {
       return;
+    }
 
     typename MapType::iterator first = i;
     typename MapType::iterator second = i;
@@ -279,9 +283,9 @@ class IntervalMap {
     }
   }
 
-  MapType map_ ALLOW_DISCOURAGED_TYPE("HashMap lacks key sorting.");
+  MapType map_;
 };
 
-}  // namespace blink
+}  // namespace media
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_INTERVAL_MAP_H_
+#endif  // MEDIA_BASE_INTERVAL_MAP_H_

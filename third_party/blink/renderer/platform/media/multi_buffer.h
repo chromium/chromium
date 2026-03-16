@@ -22,7 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/data_buffer.h"
-#include "third_party/blink/renderer/platform/media/interval_map.h"
+#include "media/base/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -98,7 +98,7 @@ class PLATFORM_EXPORT MultiBuffer {
     // Notifies the reader that the range of available blocks has changed.
     // The reader must call MultiBuffer::Observe() to activate this callback.
     virtual void NotifyAvailableRange(
-        const Interval<MultiBufferBlockId>& range) = 0;
+        const media::Interval<MultiBufferBlockId>& range) = 0;
   };
 
   // DataProvider is the interface that MultiBuffer
@@ -260,7 +260,7 @@ class PLATFORM_EXPORT MultiBuffer {
 
   // Calls PinRange for each range in |ranges|, convenience
   // function for applying multiple changes to the pinned ranges.
-  void PinRanges(const IntervalMap<BlockId, int32_t>& ranges);
+  void PinRanges(const media::IntervalMap<BlockId, int32_t>& ranges);
 
   // Returns a continous (but possibly empty) list of blocks starting at
   // |from| up to, but not including |to|. This function is thread safe.
@@ -342,8 +342,9 @@ class PLATFORM_EXPORT MultiBuffer {
 
   // Call NotifyAvailableRange(new_range) on all readers waiting
   // for a block in |observer_range|
-  void NotifyAvailableRange(const Interval<MultiBufferBlockId>& observer_range,
-                            const Interval<MultiBufferBlockId>& new_range);
+  void NotifyAvailableRange(
+      const media::Interval<MultiBufferBlockId>& observer_range,
+      const media::Interval<MultiBufferBlockId>& new_range);
 
   // Max number of blocks.
   int64_t max_size_;
@@ -379,12 +380,12 @@ class PLATFORM_EXPORT MultiBuffer {
   // Keeps track of what blocks are pinned. If block p is pinned,
   // then pinned_[p] > 0. Pinned blocks cannot be freed and should not
   // be present in |lru_|.
-  IntervalMap<BlockId, int32_t> pinned_;
+  media::IntervalMap<BlockId, int32_t> pinned_;
 
   // present_[block] should be 1 for all blocks that are present
   // and 0 for all blocks that are not. Used to quickly figure out
   // ranges of available/unavailable blocks without iterating.
-  IntervalMap<BlockId, int32_t> present_;
+  media::IntervalMap<BlockId, int32_t> present_;
 };
 
 }  // namespace blink

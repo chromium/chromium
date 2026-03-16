@@ -13,8 +13,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "media/base/interval_map.h"
 #include "media/base/ranges.h"
-#include "third_party/blink/renderer/platform/media/interval_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -69,7 +69,8 @@ class PLATFORM_EXPORT BufferedDataSourceHostImpl
 
  private:
   // Returns number of bytes not yet loaded in the given interval.
-  int64_t UnloadedBytesInInterval(const Interval<int64_t>& interval) const;
+  int64_t UnloadedBytesInInterval(
+      const media::Interval<int64_t>& interval) const;
 
   // Returns an estimate of the download rate.
   // Returns 0.0 if an estimate cannot be made.
@@ -80,7 +81,7 @@ class PLATFORM_EXPORT BufferedDataSourceHostImpl
 
   // List of buffered byte ranges for estimating buffered time.
   // The InterValMap value is 1 for bytes that are buffered, 0 otherwise.
-  IntervalMap<int64_t, int> buffered_byte_ranges_;
+  media::IntervalMap<int64_t, int> buffered_byte_ranges_;
 
   // True when AddBufferedByteRange() has been called more recently than
   // DidLoadingProgress().

@@ -153,17 +153,17 @@ class TestMultiBuffer : public MultiBuffer {
   void SetMaxWriters(size_t max_writers) { max_writers_ = max_writers; }
 
   void CheckPresentState() {
-    IntervalMap<MultiBufferBlockId, int32_t> tmp;
+    media::IntervalMap<MultiBufferBlockId, int32_t> tmp;
     for (auto i = data_.begin(); i != data_.end(); ++i) {
       CHECK(i->value);  // Null pointers are not allowed in data_.
       CHECK_NE(!!pinned_[i->key], lru_->Contains(this, i->key))
           << " i->key = " << i->key;
       tmp.IncrementInterval(i->key, i->key + 1, 1);
     }
-    IntervalMap<MultiBufferBlockId, int32_t>::const_iterator tmp_iterator =
-        tmp.begin();
-    IntervalMap<MultiBufferBlockId, int32_t>::const_iterator present_iterator =
-        present_.begin();
+    media::IntervalMap<MultiBufferBlockId, int32_t>::const_iterator
+        tmp_iterator = tmp.begin();
+    media::IntervalMap<MultiBufferBlockId, int32_t>::const_iterator
+        present_iterator = present_.begin();
     while (tmp_iterator != tmp.end() && present_iterator != present_.end()) {
       EXPECT_EQ(tmp_iterator.interval_begin(),
                 present_iterator.interval_begin());

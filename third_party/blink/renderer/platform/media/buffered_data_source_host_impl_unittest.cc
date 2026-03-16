@@ -86,7 +86,7 @@ TEST_F(BufferedDataSourceHostImplTest, DidLoadingProgress) {
 TEST_F(BufferedDataSourceHostImplTest, CanPlayThrough) {
   host_.SetTotalBytes(100000);
   EXPECT_EQ(100000,
-            host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
+            host_.UnloadedBytesInInterval(media::Interval<int64_t>(0, 100000)));
   host_.AddBufferedByteRange(0, 10000);
   clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(10000, 20000);
@@ -97,7 +97,8 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThrough) {
   clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(40000, 50000);
   clock_.Advance(base::Seconds(1));
-  EXPECT_EQ(50000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
+  EXPECT_EQ(50000,
+            host_.UnloadedBytesInInterval(media::Interval<int64_t>(0, 100000)));
   host_.AddBufferedByteRange(50000, 60000);
   clock_.Advance(base::Seconds(1));
   host_.AddBufferedByteRange(60000, 70000);
@@ -108,7 +109,8 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThrough) {
   // Download rate is allowed to be estimated low, but not high.
   EXPECT_LE(host_.DownloadRate(), 10000.0f);
   EXPECT_GE(host_.DownloadRate(), 9000.0f);
-  EXPECT_EQ(10000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
+  EXPECT_EQ(10000,
+            host_.UnloadedBytesInInterval(media::Interval<int64_t>(0, 100000)));
   EXPECT_EQ(9, progress_callback_calls_);
   // If the video is 0.1s we can't play through.
   EXPECT_FALSE(
@@ -123,7 +125,8 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThrough) {
       host_.CanPlayThrough(base::TimeDelta(), base::Seconds(100.0), 1.0));
   host_.AddBufferedByteRange(90000, 100000);
   clock_.Advance(base::Seconds(1));
-  EXPECT_EQ(0, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 100000)));
+  EXPECT_EQ(0,
+            host_.UnloadedBytesInInterval(media::Interval<int64_t>(0, 100000)));
 
   // Media is fully downloaded, so we can certainly play through, even if
   // we only have 0.01 seconds to do it.
@@ -133,7 +136,8 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThrough) {
 
 TEST_F(BufferedDataSourceHostImplTest, CanPlayThroughSmallAdvances) {
   host_.SetTotalBytes(20000);
-  EXPECT_EQ(20000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 20000)));
+  EXPECT_EQ(20000,
+            host_.UnloadedBytesInInterval(media::Interval<int64_t>(0, 20000)));
   for (int j = 1; j <= 100; j++) {
     host_.AddBufferedByteRange(0, j * 100);
     clock_.Advance(base::Seconds(0.01));
@@ -141,7 +145,8 @@ TEST_F(BufferedDataSourceHostImplTest, CanPlayThroughSmallAdvances) {
   // Download rate is allowed to be estimated low, but not high.
   EXPECT_LE(host_.DownloadRate(), 10000.0f);
   EXPECT_GE(host_.DownloadRate(), 9000.0f);
-  EXPECT_EQ(10000, host_.UnloadedBytesInInterval(Interval<int64_t>(0, 20000)));
+  EXPECT_EQ(10000,
+            host_.UnloadedBytesInInterval(media::Interval<int64_t>(0, 20000)));
   EXPECT_EQ(100, progress_callback_calls_);
   // If the video is 0.1s we can't play through.
   EXPECT_FALSE(

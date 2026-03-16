@@ -37,14 +37,14 @@ void BufferedDataSourceHostImpl::SetTotalBytes(int64_t total_bytes) {
 }
 
 int64_t BufferedDataSourceHostImpl::UnloadedBytesInInterval(
-    const Interval<int64_t>& interval) const {
+    const media::Interval<int64_t>& interval) const {
   int64_t bytes = 0;
   auto i = buffered_byte_ranges_.find(interval.begin);
   while (i != buffered_byte_ranges_.end()) {
     if (i.interval_begin() >= interval.end)
       break;
     if (!i.value()) {
-      Interval<int64_t> intersection = i.interval().Intersect(interval);
+      media::Interval<int64_t> intersection = i.interval().Intersect(interval);
       if (!intersection.Empty())
         bytes += intersection.end - intersection.begin;
     }
@@ -55,7 +55,8 @@ int64_t BufferedDataSourceHostImpl::UnloadedBytesInInterval(
 
 void BufferedDataSourceHostImpl::AddBufferedByteRange(int64_t start,
                                                       int64_t end) {
-  int64_t new_bytes = UnloadedBytesInInterval(Interval<int64_t>(start, end));
+  int64_t new_bytes =
+      UnloadedBytesInInterval(media::Interval<int64_t>(start, end));
   if (new_bytes > 0)
     did_loading_progress_ = true;
   buffered_byte_ranges_.SetInterval(start, end, 1);
@@ -164,7 +165,7 @@ bool BufferedDataSourceHostImpl::CanPlayThrough(
   const int64_t byte_pos =
       std::max<int64_t>(total_bytes_ * (current_position / media_duration), 0);
   const int64_t unloaded_bytes =
-      UnloadedBytesInInterval(Interval<int64_t>(byte_pos, total_bytes_));
+      UnloadedBytesInInterval(media::Interval<int64_t>(byte_pos, total_bytes_));
   if (unloaded_bytes == 0)
     return true;
 

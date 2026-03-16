@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/media/interval_map.h"
+#include "media/base/interval_map.h"
 
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/test_random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace blink {
+namespace media {
 
 // Our tests only modifiy the interval map entries in [0..kTestSize).
 // We need this to be big enough to hit tricky corner cases, but small
@@ -270,4 +271,4 @@ TEST_F(IntervalMapTest, RandomSetTest) {
   }
 }
 
-}  // namespace blink
+}  // namespace media
