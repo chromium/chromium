@@ -210,4 +210,18 @@ TEST_F(RegistryOverrideManagerTest, DoesNotUseMockTime) {
   ASSERT_NO_FATAL_FAILURE(AssertKeyExists(system_time_path_current));
 }
 
+TEST_F(RegistryOverrideManagerTest, OpenMultipleHKCU) {
+  ASSERT_NO_FATAL_FAILURE(CreateManager(base::Time::Now()));
+
+  {
+    base::win::RegKey key(HKEY_CURRENT_USER);
+    EXPECT_FALSE(key.HasValue(kTestValueName));
+    EXPECT_EQ(key.WriteValue(kTestValueName, 42), ERROR_SUCCESS);
+  }
+  {
+    base::win::RegKey key(HKEY_CURRENT_USER);
+    EXPECT_TRUE(key.HasValue(kTestValueName));
+  }
+}
+
 }  // namespace registry_util

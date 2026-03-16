@@ -49,6 +49,14 @@ constexpr REGSAM kWow64AccessMask = KEY_WOW64_32KEY | KEY_WOW64_64KEY;
 
 constexpr DWORD kInvalidIterValue = static_cast<DWORD>(-1);
 
+// Returns true if `key` is a predefined registry handle.
+bool IsPredefinedKey(HKEY key) {
+  // Predefined keys are sign-extended 32-bit values with the high bit set.
+  // It is safe to cast them to intptr_t and check if they are negative.
+  // Valid user-mode handles are positive indices into a handle table.
+  return reinterpret_cast<intptr_t>(key) < 0;
+}
+
 }  // namespace
 
 // Watches for modifications to a key.
@@ -232,7 +240,9 @@ LONG RegKey::OpenKey(const wchar_t* relative_key_name, REGSAM access) {
 
 void RegKey::Close() {
   if (key_) {
-    ::RegCloseKey(key_);
+    if (!IsPredefinedKey(key_)) {
+      ::RegCloseKey(key_);
+    }
     key_ = nullptr;
     wow64access_ = 0;
   }
