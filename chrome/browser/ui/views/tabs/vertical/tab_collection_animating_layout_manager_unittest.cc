@@ -7,10 +7,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -66,6 +69,12 @@ class TabCollectionAnimatingLayoutManagerTest
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
+    // Force rich animation because these tests expect to see in-progress values
+    // for animated properties. Even when scale mode is ZERO_DURATION the test
+    // expects the animation to complete asynchronously.
+    render_mode_lock_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
     animation_mode_ = std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
         IsAnimationDurationEnabled()
             ? gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION
@@ -102,6 +111,8 @@ class TabCollectionAnimatingLayoutManagerTest
   views::Widget* widget() { return widget_.get(); }
 
  private:
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      render_mode_lock_;
   std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_mode_;
   std::unique_ptr<MockAnimatingLayoutManagerDelegate> layout_manager_delegate_;
   std::unique_ptr<views::Widget> widget_;
