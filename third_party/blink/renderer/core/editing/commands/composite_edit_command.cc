@@ -2209,13 +2209,19 @@ void CompositeEditCommand::AppliedEditing() {
     editor.GetUndoStack().RegisterUndoStep(EnsureUndoStep());
   }
 
-  if (Element* element = undo_step.StartingRootEditableElement()) {
-    if (element->GetDocument().IsPageVisible()) {
-      element->GetDocument()
-          .GetPage()
-          ->GetChromeClient()
-          .DidUserChangeContentEditableContent(*element);
-    }
+  Element* element = undo_step.StartingRootEditableElement();
+  if (!element) {
+    // Fallback to EndingRoot because StartingRoot may be null if the DeleteKey
+    // command was grouped into a single typing command (happens in
+    // TypingCommand::DeleteKeyPressed). Using the current root leads to the
+    // notification reaching Chrome Client, preventing state desyncs.
+    element = undo_step.EndingRootEditableElement();
+  }
+  if (element && element->GetDocument().IsPageVisible()) {
+    element->GetDocument()
+        .GetPage()
+        ->GetChromeClient()
+        .DidUserChangeContentEditableContent(*element);
   }
   editor.RespondToChangedContents(new_selection.Anchor());
 
