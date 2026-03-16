@@ -411,6 +411,8 @@ public class FullscreenVideoPictureInPictureControllerTest {
                         .expectIntRecord(
                                 FullscreenVideoPictureInPictureController.EXIT_REASON_HISTOGRAM,
                                 MetricsEndReason.LEFT_FULLSCREEN)
+                        .expectAnyRecord(
+                                FullscreenVideoPictureInPictureController.DURATION_HISTOGRAM)
                         .build();
 
         exitPipAndFullscreenAndWait();

@@ -338,4 +338,46 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
         watcher.assertExpected();
     }
+
+    @Test
+    public void testOnFrameworkExitedPictureInPicture() {
+        mActivityTabProvider.setForTesting(mTab); // Reset just in case
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+
+        // Enter PiP first to set mLastOnEnteredTimeMillis.
+        mController.onEnteredPictureInPictureMode();
+
+        // Advance clock to simulate time passing.
+        ShadowSystemClock.advanceBy(1000, TimeUnit.MILLISECONDS);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(
+                                FullscreenVideoPictureInPictureController.DURATION_HISTOGRAM)
+                        .build();
+
+        mController.onFrameworkExitedPictureInPicture();
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnFrameworkExitedPictureInPicture_NotPiPed() {
+        mActivityTabProvider.setForTesting(mTab); // Reset just in case
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+
+        // Do NOT enter PiP.
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                FullscreenVideoPictureInPictureController.DURATION_HISTOGRAM)
+                        .expectNoRecords(
+                                FullscreenVideoPictureInPictureController.EXIT_REASON_HISTOGRAM)
+                        .build();
+
+        mController.onFrameworkExitedPictureInPicture();
+
+        watcher.assertExpected();
+    }
 }

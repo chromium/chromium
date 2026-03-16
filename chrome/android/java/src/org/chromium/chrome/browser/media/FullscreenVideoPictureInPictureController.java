@@ -53,6 +53,10 @@ public class FullscreenVideoPictureInPictureController {
     private static final String TAG = "VideoPersist";
 
     @VisibleForTesting
+    public static final String DURATION_HISTOGRAM =
+            "Media.FullscreenVideoPictureInPicture.Android.Duration";
+
+    @VisibleForTesting
     public static final String ENTERED_HISTOGRAM =
             "Media.FullscreenVideoPictureInPicture.Android.Entered";
 
@@ -472,11 +476,17 @@ public class FullscreenVideoPictureInPictureController {
 
         // If we don't believe that a Picture in Picture session is active, it means that the
         // cleanup call happened while Chrome was not PIP'ing. The early return also avoid recording
-        // the reason why the (non-)PIP session ended.
+        // the reason why the (non-)PIP session ended and the duration.
         if (!isPipSessionActive()) return;
 
         RecordHistogram.recordEnumeratedHistogram(
                 EXIT_REASON_HISTOGRAM, reason, MetricsEndReason.COUNT);
+
+        if (mLastOnEnteredTimeMillis > 0) {
+            long duration = SystemClock.elapsedRealtime() - mLastOnEnteredTimeMillis;
+            RecordHistogram.recordLongTimesHistogram(DURATION_HISTOGRAM, duration);
+            mLastOnEnteredTimeMillis = 0;
+        }
 
         // This method can be called when we haven't been PiPed. We use Callbacks to ensure we only
         // do cleanup if it is required.

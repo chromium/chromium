@@ -4529,6 +4529,17 @@ chromium-metrics-reviews@google.com.
   <token key="RendererType" variants="RendererType"/>
 </histogram>
 
+<histogram name="Media.FullscreenVideoPictureInPicture.Android.Duration"
+    units="ms" expires_after="2027-03-15">
+  <owner>philyan@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    The duration of a fullscreen video Picture-in-Picture session on Android.
+    Recorded when the PiP session is exited (e.g., when Chrome switches back to
+    non-PiP mode or when the PiP window is directly closed).
+  </summary>
+</histogram>
+
 <histogram name="Media.FullscreenVideoPictureInPicture.Android.Entered"
     enum="FullscreenVideoPictureInPictureEntered" expires_after="2027-03-01">
   <owner>philyan@google.com</owner>
