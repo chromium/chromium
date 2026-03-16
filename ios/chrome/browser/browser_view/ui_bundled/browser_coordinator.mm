@@ -3253,8 +3253,6 @@ const char kChromeAppStoreUrl[] =
   if (lensOverlayVisible) {
     id<LensOverlayCommands> lensOverlayHandler =
         HandlerForProtocol(_dispatcher, LensOverlayCommands);
-    // TODO(crbug.com/436453178): Rename lens dismissal reason to be
-    // `kReaderModeInvoked`.
     [lensOverlayHandler
         destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kReaderModeActivated
