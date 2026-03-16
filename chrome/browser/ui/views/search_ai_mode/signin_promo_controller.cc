@@ -49,14 +49,9 @@ void SearchAIModeSignInPromoController::ShowPromo(BrowserView* browser_view) {
   auto promo_view = std::make_unique<SearchAIModeSignInPromoView>(
       avatar_button, web_contents_.get(), GetWeakPtr());
   promo_view_ = promo_view.get();
+
   views::BubbleDialogDelegateView::CreateBubble(std::move(promo_view));
-  // TODO(crbug.com/486858498): When we add the invoking flow we should decide
-  // which `DisplayReason` is more appropriate. AUTOMATIC seems a better fit
-  // because this bubble might be shown while navigations and page loads on the
-  // linked web_contents_ can happen, which make take the focus from the bubble
-  // and prevent it from showing.
-  // Check the A11y impact on focusing an screen reader announcements.
-  promo_view_->ShowForReason(LocationBarBubbleDelegateView::AUTOMATIC);
+  promo_view_->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
 }
 
 void SearchAIModeSignInPromoController::OnBubbleClosed() {

@@ -142,6 +142,7 @@
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -281,6 +282,10 @@
 #include "chrome/browser/safe_browsing/trigger_creator.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #endif
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/contextual_tasks/search_ai_mode_promo_tab_helper.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 using content::WebContents;
 
@@ -581,6 +586,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  contextual_tasks::SearchAiModePromoTabHelper::CreateForWebContents(
+      web_contents);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementService::Helper::CreateForWebContents(
         web_contents,
