@@ -144,6 +144,12 @@ void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
   // active.
   CHECK(process_host);
 
+  // A stale IPC could arrive from the renderer process after the extension has
+  // been deactivated, reloaded and immediately reactivated.
+  if (!IsCurrentActivation(extension_id, activation_token)) {
+    return;
+  }
+
   util::InitializeFileSchemeAccessForExtension(
       render_process_id.GetUnsafeValue(), extension_id, browser_context_);
   ProcessManager::Get(browser_context_)

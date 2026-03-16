@@ -614,6 +614,47 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, FilteredEvents) {
       << message_;
 }
 
+// Tests that the browser doesn't crash when a stale IPC message from the
+// renderer process arrives after the extension has been reloaded (and its
+// activation token has changed).
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       CrashWithStaleActivationToken) {
+  ExtensionTestMessageListener worker_listener("WORKER_RUNNING");
+  worker_listener.set_failure_message("NON_WORKER_SCOPE");
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_based_background/basic"));
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(worker_listener.WaitUntilSatisfied());
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  ExtensionId extension_id = extension->id();
+  std::optional<base::UnguessableToken> old_activation_token =
+      task_queue->GetCurrentActivationToken(extension_id);
+  ASSERT_TRUE(old_activation_token.has_value());
+
+  // Reload the extension to generate a new activation token.
+  ExtensionTestMessageListener new_worker_listener("WORKER_RUNNING");
+  ReloadExtension(extension_id);
+  EXPECT_TRUE(new_worker_listener.WaitUntilSatisfied());
+
+  std::vector<WorkerId> worker_ids =
+      ProcessManager::Get(profile())->GetServiceWorkersForExtension(
+          extension_id);
+  ASSERT_FALSE(worker_ids.empty());
+  content::ChildProcessId render_process_id = worker_ids[0].render_process_id;
+
+  // Simulate a stale IPC arriving at the browser process after the reload.
+  blink::ServiceWorkerToken sw_token;
+  task_queue->RendererDidInitializeServiceWorkerContext(
+      render_process_id, extension_id, old_activation_token.value(),
+      /*service_worker_version_id=*/100, /*thread_id=*/100, sw_token);
+
+  std::vector<WorkerId> worker_ids_after_ipc =
+      ProcessManager::Get(profile())->GetServiceWorkersForExtension(
+          extension_id);
+  EXPECT_EQ(worker_ids, worker_ids_after_ipc);
+}
+
 // Listens for |message| from extension Service Worker early so that tests can
 // wait for the message on startup (and not miss it).
 template <const char message[]>
