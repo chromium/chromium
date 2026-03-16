@@ -148,6 +148,7 @@
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -210,6 +211,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -14896,6 +14898,94 @@ TEST_F(WebFrameTest, SandboxedIframePopupCtrlClick) {
   // sandboxed without `allow-popups`. This should be blocked before reaching
   // BeginNavigation().
   EXPECT_EQ(web_frame_client.iframe_client()->BeginNavigationCallCount(), 1);
+}
+
+// Tests that a FrameLoadRequest for a POST request made from an opaque origin
+// results in a ResourceRequest with an Origin header of "null".
+TEST_F(WebFrameTest, FrameLoadRequestOriginPOSTOpaque) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  auto* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  auto* window = frame->DomWindow();
+
+  window->GetSecurityContext().SetSecurityOriginForTesting(
+      SecurityOrigin::CreateUniqueOpaque());
+
+  ResourceRequest resource_request(KURL("https://destination.test/"));
+  resource_request.SetHttpMethod(http_names::kPOST);
+
+  FrameLoadRequest frame_load_request(window, resource_request);
+
+  EXPECT_EQ("null", frame_load_request.GetResourceRequest().HttpHeaderField(
+                        http_names::kOrigin));
+}
+
+// Tests that a FrameLoadRequest for a GET request made from an opaque origin
+// results in a ResourceRequest with no Origin header.
+TEST_F(WebFrameTest, FrameLoadRequestOriginGETOpaque) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  auto* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  auto* window = frame->DomWindow();
+
+  window->GetSecurityContext().SetSecurityOriginForTesting(
+      SecurityOrigin::CreateUniqueOpaque());
+
+  ResourceRequest resource_request(KURL("https://destination.test/"));
+  resource_request.SetHttpMethod(http_names::kGET);
+
+  FrameLoadRequest frame_load_request(window, resource_request);
+
+  EXPECT_TRUE(frame_load_request.GetResourceRequest()
+                  .HttpHeaderField(http_names::kOrigin)
+                  .IsNull());
+}
+
+// Tests that a FrameLoadRequest for a POST request made from a document with
+// URL "about:blank" and origin "https://example.test" results in a
+// ResourceRequest with an Origin header of "https://example.test".
+TEST_F(WebFrameTest, FrameLoadRequestOriginPOSTAboutBlank) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  auto* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  auto* window = frame->DomWindow();
+
+  frame->GetDocument()->SetURL(BlankUrl());
+  window->GetSecurityContext().SetSecurityOriginForTesting(
+      SecurityOrigin::CreateFromString("https://example.test"));
+
+  ResourceRequest resource_request(KURL("https://destination.test/"));
+  resource_request.SetHttpMethod(http_names::kPOST);
+
+  FrameLoadRequest frame_load_request(window, resource_request);
+
+  EXPECT_EQ("https://example.test",
+            frame_load_request.GetResourceRequest().HttpHeaderField(
+                http_names::kOrigin));
+}
+
+// Tests that a FrameLoadRequest for a POST request made from a document with
+// URL "about:blank" and origin "https://example.test" with a referrer policy of
+// "no-referrer" results in a ResourceRequest with an Origin header of "null".
+TEST_F(WebFrameTest, FrameLoadRequestOriginPOSTAboutBlankNoReferrer) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  auto* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  auto* window = frame->DomWindow();
+
+  KURL about_blank = BlankUrl();
+  frame->GetDocument()->SetURL(about_blank);
+  window->GetSecurityContext().SetSecurityOriginForTesting(
+      SecurityOrigin::CreateFromString("https://example.test"));
+  window->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
+
+  ResourceRequest resource_request(KURL("https://destination.test/"));
+  resource_request.SetHttpMethod(http_names::kPOST);
+
+  FrameLoadRequest frame_load_request(window, resource_request);
+
+  EXPECT_EQ("null", frame_load_request.GetResourceRequest().HttpHeaderField(
+                        http_names::kOrigin));
 }
 
 }  // namespace blink

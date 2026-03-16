@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 #include "ui/gfx/geometry/point.h"
@@ -79,6 +80,10 @@ HistoryItem* HistoryItem::Create(const PageState& page_state) {
   const ExplodedFrameState& state = exploded_page_state.top;
   new_item->SetURLString(WebString::FromUTF16(state.url_string));
   new_item->SetReferrer(WebString::FromUTF16(state.referrer));
+  if (state.initiator_origin) {
+    new_item->SetRequestorOrigin(
+        SecurityOrigin::CreateFromUrlOrigin(*state.initiator_origin));
+  }
   new_item->SetReferrerPolicy(state.referrer_policy);
   new_item->SetTarget(WebString::FromUTF16(state.target));
   if (state.state_object) {
@@ -176,6 +181,11 @@ void HistoryItem::SetReferrer(const String& referrer) {
   referrer_ = referrer;
 }
 
+void HistoryItem::SetRequestorOrigin(
+    const scoped_refptr<const SecurityOrigin>& requestor_origin) {
+  requestor_origin_ = requestor_origin;
+}
+
 void HistoryItem::SetReferrerPolicy(network::mojom::ReferrerPolicy policy) {
   referrer_policy_ = policy;
 }
@@ -266,7 +276,7 @@ ResourceRequest HistoryItem::GenerateResourceRequest(
     request.SetHttpMethod(http_names::kPOST);
     request.SetHttpBody(form_data_);
     request.SetHTTPContentType(form_content_type_);
-    request.SetHTTPOriginToMatchReferrerIfNeeded();
+    request.SetHTTPOriginToMatchReferrerPolicyIfNeeded(requestor_origin_.get());
   }
   return request;
 }

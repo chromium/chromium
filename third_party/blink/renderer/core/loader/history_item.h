@@ -48,6 +48,7 @@ class EncodedFormData;
 class KURL;
 class PageState;
 class ResourceRequest;
+class SecurityOrigin;
 class SerializedScriptValue;
 
 namespace mojom {
@@ -106,6 +107,7 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   void SetURL(const KURL&);
   void SetURLString(const String&);
   void SetReferrer(const String&);
+  void SetRequestorOrigin(const scoped_refptr<const SecurityOrigin>&);
   void SetReferrerPolicy(network::mojom::ReferrerPolicy);
   void SetTarget(const String& target) { target_ = target; }
 
@@ -160,6 +162,9 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
 
   // The referrer provided when this item was originally requested.
   String referrer_;
+
+  // The `Origin` provided when this item was originally requested.
+  scoped_refptr<const SecurityOrigin> requestor_origin_;
 
   // The referrer policy of the document this item represents.
   network::mojom::ReferrerPolicy referrer_policy_ =

@@ -1207,6 +1207,7 @@ void DocumentLoader::SetHistoryItemStateForCommit(
 
   history_item_->SetURL(UrlForHistory());
   history_item_->SetReferrer(referrer_.GetString());
+  history_item_->SetRequestorOrigin(requestor_origin_);
   if (EqualIgnoringAsciiCase(http_method_, "POST")) {
     // FIXME: Eventually we have to make this smart enough to handle the case
     // where we have a stream for the body to handle the "data interspersed with

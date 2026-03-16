@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
@@ -352,9 +353,20 @@ void ResourceRequestHead::SetHttpOriginIfNeeded(const SecurityOrigin* origin) {
     SetHTTPOrigin(origin);
 }
 
-void ResourceRequestHead::SetHTTPOriginToMatchReferrerIfNeeded() {
-  if (NeedsHTTPOrigin()) {
-    SetHTTPOrigin(SecurityOrigin::CreateFromString(ReferrerString()).get());
+void ResourceRequestHead::SetHTTPOriginToMatchReferrerPolicyIfNeeded(
+    const SecurityOrigin* origin) {
+  if (!NeedsHTTPOrigin()) {
+    return;
+  }
+  if (origin->IsOpaque()) {
+    SetHTTPOrigin(origin);
+  } else {
+    Referrer origin_with_referrer_policy_applied =
+        SecurityPolicy::GenerateReferrer(referrer_policy_, url_,
+                                         origin->ToString());
+    SetHTTPOrigin(SecurityOrigin::CreateFromString(
+                      origin_with_referrer_policy_applied.referrer)
+                      .get());
   }
 }
 
