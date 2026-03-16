@@ -84,8 +84,8 @@
 #include "chrome/browser/page_load_metrics/observers/top_chrome_webui_metrics_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_soft_navigation_observer.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
-#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/common/webui_url_constants.h"
 #endif
 
