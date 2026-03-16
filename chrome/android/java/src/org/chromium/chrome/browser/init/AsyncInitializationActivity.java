@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
+import org.chromium.chrome.browser.multiwindow.WindowOcclusionTracker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
@@ -650,6 +651,10 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                             + getClass().getName()
                             + " is trying to start.");
         }
+
+        if (ChromeFeatureList.sAndroidSelfOcclusionTracking.isEnabled() && mWindowAndroid != null) {
+            WindowOcclusionTracker.getInstance().track(mWindowAndroid);
+        }
     }
 
     @CallSuper
@@ -683,6 +688,10 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void onStop() {
         super.onStop();
         mNativeInitializationController.onStop();
+
+        if (ChromeFeatureList.sAndroidSelfOcclusionTracking.isEnabled() && mWindowAndroid != null) {
+            WindowOcclusionTracker.getInstance().untrack(mWindowAndroid);
+        }
     }
 
     @CallSuper
