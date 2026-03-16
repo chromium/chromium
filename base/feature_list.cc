@@ -27,6 +27,8 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -288,15 +290,16 @@ bool ParseEnableFeatures(const std::string& enable_features,
 }
 
 std::pair<FeatureList::OverrideState, uint16_t> UnpackFeatureCache(
-    uint32_t packed_cache_value) {
+    Feature::FeatureStateCache packed_cache_value) {
   return std::make_pair(
       static_cast<FeatureList::OverrideState>(packed_cache_value >> 24),
       packed_cache_value & 0xFFFF);
 }
 
-uint32_t PackFeatureCache(FeatureList::OverrideState override_state,
-                          uint32_t caching_context) {
-  return (static_cast<uint32_t>(override_state) << 24) |
+Feature::FeatureStateCache PackFeatureCache(
+    FeatureList::OverrideState override_state,
+    uint32_t caching_context) {
+  return (static_cast<Feature::FeatureStateCache>(override_state) << 24) |
          (caching_context & 0xFFFF);
 }
 
@@ -304,6 +307,32 @@ uint32_t PackFeatureCache(FeatureList::OverrideState override_state,
 // to invalidate the cache member of `base::Feature` objects that were queried
 // with a different `FeatureList` installed.
 uint16_t g_current_caching_context = 1;
+
+void SetFeatureCachedBits(std::atomic<Feature::FeatureStateCache>& cached_value,
+                          Feature::FeatureStateCache new_value) {
+  // In non-test code, this value can be in one of 2 states: either it's unset,
+  // or another thread has updated it to the same value we're about to write.
+  // Because of this, a plain `store` yields the correct result in all cases.
+  // In test code, it's possible for a different thread to have installed a new
+  // `ScopedFeatureList` and written a value that's different than the one we're
+  // about to write, although that would be a thread safety violation already
+  // and such tests should be fixed.
+  Feature::FeatureStateCache expected =
+      cached_value.load(std::memory_order_relaxed);
+  Feature::FeatureStateCache value_to_store;
+
+  // We need to use a loop to preserve the logging bits (bits 16 and 17),
+  // which might be set concurrently by RegisterFeatureAccess(). A simple store
+  // would clear those bits.
+  do {
+    value_to_store = new_value | (expected & (Feature::kCachedLogGeneralMask |
+                                              Feature::kCachedLogEarlyMask));
+    // Note that compare_exchange_weak() will update `expected` if the value
+    // doesn't match.
+  } while (!cached_value.compare_exchange_weak(expected, value_to_store,
+                                               std::memory_order_relaxed,
+                                               std::memory_order_relaxed));
+}
 
 }  // namespace
 
@@ -491,8 +520,11 @@ void FeatureList::GetCommandLineFeatureOverrides(
 
 // static
 bool FeatureList::IsEnabled(const Feature& feature) {
+  RegisterFeatureAccess(feature, Feature::kCachedLogGeneralMask);
+
   if (!g_feature_list_instance ||
       !g_feature_list_instance->AllowFeatureAccess(feature)) {
+    RegisterFeatureAccess(feature, Feature::kCachedLogEarlyMask);
     EarlyFeatureAccessTracker::GetInstance()->AccessedFeature(
         feature, g_feature_list_instance &&
                      g_feature_list_instance->IsEarlyAccessInstance());
@@ -711,6 +743,11 @@ void FeatureList::ResetEarlyFeatureAccessTrackerForTesting() {
   EarlyFeatureAccessTracker::GetInstance()->Reset();
 }
 
+// static
+void FeatureList::ClearFeatureCachedValueForTesting(const Feature& feature) {
+  feature.cached_value.store(0, std::memory_order_relaxed);
+}
+
 void FeatureList::AddEarlyAllowedFeatureForTesting(std::string feature_name) {
   CHECK(IsEarlyAccessInstance());
   allowed_feature_names_.insert(std::move(feature_name));
@@ -766,6 +803,37 @@ void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor,
   }
 }
 
+// static
+void FeatureList::RegisterFeatureAccess(
+    const Feature& feature,
+    Feature::FeatureStateCache logging_mask) {
+  Feature::FeatureStateCache expected =
+      feature.cached_value.load(std::memory_order_relaxed);
+
+  while ((expected & logging_mask) != logging_mask) {
+    Feature::FeatureStateCache new_value = expected | logging_mask;
+    // Note that compare_exchange_weak() will update `expected` if the value
+    // doesn't match.
+    if (feature.cached_value.compare_exchange_weak(expected, new_value,
+                                                   std::memory_order_relaxed,
+                                                   std::memory_order_relaxed)) {
+      if ((logging_mask & Feature::kCachedLogGeneralMask) &&
+          (expected & Feature::kCachedLogGeneralMask) == 0) {
+        base::UmaHistogramSparse(
+            "Variations.FeatureAccess",
+            static_cast<int>(base::HashFieldTrialName(feature.name)));
+      }
+      if ((logging_mask & Feature::kCachedLogEarlyMask) &&
+          (expected & Feature::kCachedLogEarlyMask) == 0) {
+        base::UmaHistogramSparse(
+            "Variations.FeatureAccessEarly",
+            static_cast<int>(base::HashFieldTrialName(feature.name)));
+      }
+      return;
+    }
+  }
+}
+
 void FeatureList::FinalizeInitialization() {
   DCHECK(!initialized_);
   // Store the field trial list pointer for DCHECKing.
@@ -807,7 +875,7 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
          "components (shared libraries) without a corresponding export "
          "statement";
 
-  uint32_t current_cache_value =
+  Feature::FeatureStateCache current_cache_value =
       feature.cached_value.load(std::memory_order_relaxed);
 
   auto unpacked = UnpackFeatureCache(current_cache_value);
@@ -817,17 +885,11 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
   }
 
   OverrideState state = GetOverrideStateByFeatureName(feature.name);
-  uint32_t new_cache_value = PackFeatureCache(state, caching_context_);
+  Feature::FeatureStateCache new_cache_value =
+      PackFeatureCache(state, caching_context_);
 
   // Update the cache with the new value.
-  // In non-test code, this value can be in one of 2 states: either it's unset,
-  // or another thread has updated it to the same value we're about to write.
-  // Because of this, a plain `store` yields the correct result in all cases.
-  // In test code, it's possible for a different thread to have installed a new
-  // `ScopedFeatureList` and written a value that's different than the one we're
-  // about to write, although that would be a thread safety violation already
-  // and such tests should be fixed.
-  feature.cached_value.store(new_cache_value, std::memory_order_relaxed);
+  SetFeatureCachedBits(feature.cached_value, new_cache_value);
 
   return state;
 }

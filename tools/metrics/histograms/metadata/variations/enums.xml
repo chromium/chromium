@@ -34,6 +34,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Missing clean exit beacon key"/>
 </enum>
 
+<enum name="FeatureNameHash">
+  <int value="0" label="Dummy"/>
+</enum>
+
 <enum name="JsonDeserializationError">
   <summary>
     Captures errors codes that can be given by

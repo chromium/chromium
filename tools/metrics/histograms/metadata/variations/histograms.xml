@@ -127,6 +127,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.FeatureAccess" enum="FeatureNameHash"
+    expires_after="2026-12-01">
+  <owner>artomczak@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the hash of the feature name for every feature accessed via
+    base::FeatureList::IsEnabled(). This is recorded once per feature per
+    session to avoid performance overhead.
+  </summary>
+</histogram>
+
+<histogram name="Variations.FeatureAccessEarly" enum="FeatureNameHash"
+    expires_after="2026-12-01">
+  <owner>artomczak@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the hash of the feature name for every feature accessed via
+    base::FeatureList::IsEnabled() *before* the FeatureList has been
+    initialized. This is recorded once per feature per session.
+  </summary>
+</histogram>
+
 <histogram name="Variations.FieldTriamParamsLogInvalidValue"
     enum="VariationsLogInvalidValue" expires_after="2026-11-01">
   <owner>thiabaud@google.com</owner>

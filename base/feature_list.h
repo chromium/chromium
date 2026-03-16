@@ -229,6 +229,14 @@ StringStorage(const char (&feature)[N]) -> StringStorage<N - 1>;
 // [1]:
 // https://crsrc.org/c/docs/speed/binary_size/android_binary_size_trybot.md#Mutable-Constants
 struct BASE_EXPORT LOGICALLY_CONST Feature {
+  // The type used to store the cached state of a feature. This is a uint32_t
+  // that is packed with the override state, logging information, and a caching
+  // context ID.
+  // See the comments on `cached_value` below for more details.
+  using FeatureStateCache = uint32_t;
+  static constexpr FeatureStateCache kCachedLogGeneralMask = 0x00010000;
+  static constexpr FeatureStateCache kCachedLogEarlyMask = 0x00020000;
+
   constexpr Feature(const char* name,
                     FeatureState default_state,
                     internal::FeatureMacroHandshake)
@@ -263,10 +271,11 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   friend class FeatureList;
 
   // A packed value where the first 8 bits represent the `OverrideState` of this
-  // feature, and the last 16 bits are a caching context ID used to allow
-  // ScopedFeatureLists to invalidate these cached values in testing. A value of
-  // 0 in the caching context ID field indicates that this value has never been
-  // looked up and cached, a value of 1 indicates this value contains the cached
+  // feature, the next 8 bits are reserved for flags (e.g. logging), and the
+  // last 16 bits are a caching context ID used to allow ScopedFeatureLists to
+  // invalidate these cached values in testing. A value of 0 in the caching
+  // context ID field indicates that this value has never been looked up and
+  // cached, a value of 1 indicates this value contains the cached
   // `OverrideState` that was looked up via `base::FeatureList`, and any other
   // value indicate that this cached value is only valid for a particular
   // ScopedFeatureList instance.
@@ -278,7 +287,9 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // `FeatureList::caching_context_` field is equal to the lower 16 bits of the
   // packed cached value. Otherwise, the override state is looked up in the
   // feature list and the cache is updated.
-  mutable std::atomic<uint32_t> cached_value = 0;
+  // The logging bits (16 and 17) are used to ensure that we only log the
+  // feature access once per session, even if the cached value is invalidated.
+  mutable std::atomic<FeatureStateCache> cached_value = 0;
 };
 
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
@@ -645,6 +656,9 @@ class BASE_EXPORT FeatureList {
   // only be called on a FeatureList that was set with SetEarlyAccessInstance().
   void AddEarlyAllowedFeatureForTesting(std::string feature_name);
 
+  // Clears the cached value of the given feature.
+  static void ClearFeatureCachedValueForTesting(const Feature& feature);
+
   // Allows a visitor to record override state, parameters, and field trial
   // associated with each feature. Optionally, provide a prefix which filters
   // the visited features.
@@ -686,6 +700,10 @@ class BASE_EXPORT FeatureList {
     // the trial, so |overridden_by_field_trial| will be set to true.
     OverrideEntry(OverrideState overridden_state, FieldTrial* field_trial);
   };
+
+  // Registers the feature access to the appropriate histograms.
+  static void RegisterFeatureAccess(const Feature& feature,
+                                    Feature::FeatureStateCache logging_mask);
 
   // Returns the override for the field trial associated with the given feature
   // |name| or null if the feature is not found.

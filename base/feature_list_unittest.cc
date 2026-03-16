@@ -21,10 +21,12 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +47,10 @@ BASE_FEATURE(kFeatureOffByDefault,
 // For testing the 2-argument BASE_FEATURE macro.
 BASE_FEATURE(kFeature2ArgsOn, FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeature2ArgsOff, FEATURE_DISABLED_BY_DEFAULT);
+
+// Features for the HistogramLogging test.
+BASE_FEATURE(kEarlyFeature, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLateFeature, FEATURE_DISABLED_BY_DEFAULT);
 
 std::string SortFeatureListString(const std::string& feature_list) {
   std::vector<std::string_view> features =
@@ -1089,6 +1095,53 @@ TEST(TestFeatureVisitor, FeatureWithPrefix) {
       };
 
   EXPECT_EQ(actual_feature_state, expected_feature_state);
+}
+
+TEST_F(FeatureListTest, HistogramLogging) {
+  FeatureList::ClearInstanceForTesting();
+  FeatureList::ResetEarlyFeatureAccessTrackerForTesting();
+  FeatureList::ClearFeatureCachedValueForTesting(kEarlyFeature);
+  FeatureList::ClearFeatureCachedValueForTesting(kLateFeature);
+
+  HistogramTester histogram_tester;
+
+  FeatureList::IsEnabled(kEarlyFeature);
+  histogram_tester.ExpectUniqueSample("Variations.FeatureAccess",
+                                      HashFieldTrialName("EarlyFeature"), 1);
+  histogram_tester.ExpectUniqueSample("Variations.FeatureAccessEarly",
+                                      HashFieldTrialName("EarlyFeature"), 1);
+
+  // Access again, should not log again.
+  FeatureList::IsEnabled(kEarlyFeature);
+  histogram_tester.ExpectUniqueSample("Variations.FeatureAccess",
+                                      HashFieldTrialName("EarlyFeature"), 1);
+  histogram_tester.ExpectUniqueSample("Variations.FeatureAccessEarly",
+                                      HashFieldTrialName("EarlyFeature"), 1);
+
+  // Initialize FeatureList.
+  // We need to reset the tracker before setting the instance, otherwise
+  // SetInstance will CHECK that no feature was accessed early.
+  FeatureList::ResetEarlyFeatureAccessTrackerForTesting();
+  auto feature_list = std::make_unique<FeatureList>();
+  feature_list->InitFromCommandLine("", "");
+  FeatureList::SetInstance(std::move(feature_list));
+
+  // Access a new feature after initialization.
+  FeatureList::IsEnabled(kLateFeature);
+
+  histogram_tester.ExpectBucketCount("Variations.FeatureAccess",
+                                     HashFieldTrialName("LateFeature"), 1);
+  histogram_tester.ExpectTotalCount("Variations.FeatureAccessEarly", 1);
+
+  // Access again, should not log again.
+  FeatureList::IsEnabled(kLateFeature);
+  histogram_tester.ExpectBucketCount("Variations.FeatureAccess",
+                                     HashFieldTrialName("LateFeature"), 1);
+
+  // Access the early feature again. Should not log again.
+  FeatureList::IsEnabled(kEarlyFeature);
+  histogram_tester.ExpectBucketCount("Variations.FeatureAccess",
+                                     HashFieldTrialName("EarlyFeature"), 1);
 }
 
 }  // namespace base
