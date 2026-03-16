@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
@@ -303,9 +302,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildHistoryItem());
         }
 
-        // Tinker Tank
-        if (shouldShowTinkerTank()) modelList.add(buildTinkerTankItem());
-
         // Quick Delete
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
                 && shouldShowQuickDeleteItem()) {
@@ -531,7 +527,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
         modelList.add(buildNewTabGroupItem());
         modelList.add(buildCloseAllTabsItem());
-        if (shouldShowTinkerTank()) modelList.add(buildTinkerTankItem());
         if (shouldShowSelectTabsItem()) modelList.add(buildSelectTabsItem());
         if (shouldShowQuickDeleteItem()) modelList.add(buildQuickDeleteItem());
         modelList.add(buildSettingsItem());
@@ -1173,20 +1168,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             model.set(AppMenuItemProperties.ENABLED, mTabModelSelector.getTotalTabCount() > 0);
         }
         return new MVCListAdapter.ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
-    }
-
-    private boolean shouldShowTinkerTank() {
-        return TinkerTankDelegate.isEnabled();
-    }
-
-    private MVCListAdapter.ListItem buildTinkerTankItem() {
-        assert shouldShowTinkerTank();
-        return new MVCListAdapter.ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
-                        R.id.tinker_tank_menu_id,
-                        R.string.menu_tinker_tank,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_add_box_rounded_corner : 0));
     }
 
     private boolean shouldShowSelectTabsItem() {

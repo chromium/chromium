@@ -24,7 +24,6 @@ found in the LICENSE file.
     <item type="id" name="tab_list_editor_share_menu_item" />
     <item type="id" name="tab_list_editor_select_tabs_menu_item" />
     <item type="id" name="tab_list_editor_pin_menu_item" />
-    <item type="id" name="tab_list_editor_tinker_tank_menu_item" />
     <item type="id" name="tab_list_editor_restore_all_archived_tabs_menu_item" />
     <item type="id" name="tab_list_editor_restore_archived_tabs_menu_item" />
     <item type="id" name="tab_list_editor_select_archived_tabs_menu_item" />
