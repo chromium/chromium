@@ -2938,16 +2938,6 @@ _CONFIG = [
         ]
     },
     {
-        # TODO(crbug.com/418169222): Remove this entry once the device
-        # bound session credentials origin trial is complete.
-        'paths': [
-            'third_party/blink/common/loader/throttling_url_loader.cc',
-        ],
-        'allowed': [
-            'mojom::OriginTrialFeature',
-        ]
-    },
-    {
         'paths': [
             'third_party/blink/common/loader/code_cache_util.cc',
             'third_party/blink/public/common/loader/code_cache_util.h',

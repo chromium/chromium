@@ -867,9 +867,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
 #endif
 
   // Whether this request is allowed to register new device bound
-  // sessions or accept challenges on device bound sessions (e.g. due to
-  // an Origin Trial)
-  bool allows_device_bound_session_registration_ = false;
+  // sessions or accept challenges on device bound sessions.
+  bool allows_device_bound_session_registration_ = true;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

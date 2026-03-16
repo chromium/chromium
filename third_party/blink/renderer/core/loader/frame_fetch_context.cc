@@ -461,12 +461,6 @@ void FrameFetchContext::PrepareRequest(
     document_loader_->GetServiceWorkerNetworkProvider()->WillSendRequest(
         webreq);
   }
-
-  request.SetAllowsDeviceBoundSessionRegistration(
-      RuntimeEnabledFeatures::DeviceBoundSessionCredentialsEnabled(
-          GetExecutionContext()) ||
-      RuntimeEnabledFeatures::DeviceBoundSessionCredentials2Enabled(
-          GetExecutionContext()));
 }
 
 // TODO(crbug.com/422626353): Consider consolidating the initiator info

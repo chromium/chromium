@@ -27,7 +27,6 @@
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 namespace blink {
@@ -482,18 +481,6 @@ void ThrottlingURLLoader::Start(
       if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
         return;
     }
-  }
-
-  if (initiator_origin_trial_features &&
-      (std::ranges::contains(
-           *initiator_origin_trial_features,
-           static_cast<int>(
-               mojom::OriginTrialFeature::kDeviceBoundSessionCredentials)) ||
-       std::ranges::contains(
-           *initiator_origin_trial_features,
-           static_cast<int>(
-               mojom::OriginTrialFeature::kDeviceBoundSessionCredentials2)))) {
-    url_request->allows_device_bound_session_registration = true;
   }
 
   start_info_ = std::make_unique<StartInfo>(factory, request_id, options,

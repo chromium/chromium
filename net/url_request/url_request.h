@@ -1287,7 +1287,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
       device_bound_session_access_callback_;
 
   // Whether the request is allowed to register new device-bound sessions
-  bool allows_device_bound_session_registration_ = false;
+  bool allows_device_bound_session_registration_ = true;
   // How existing device-bound sessions for the request's site interacted with
   // this request.
   base::flat_map<device_bound_sessions::SessionKey,

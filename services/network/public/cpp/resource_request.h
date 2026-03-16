@@ -294,9 +294,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   net::SocketTag socket_tag;
 
   // Whether this request is allowed to register device bound sessions
-  // or accept challenges for device bound sessions (e.g. due to an
-  // origin trial).
-  bool allows_device_bound_session_registration = false;
+  // or accept challenges for device bound sessions.
+  bool allows_device_bound_session_registration = true;
 
   std::optional<network::PermissionsPolicy> permissions_policy;
 

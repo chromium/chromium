@@ -22,8 +22,6 @@ bool FeatureEnabledForNavigation(blink::mojom::OriginTrialFeature feature) {
       // feature, for tests.
       blink::mojom::OriginTrialFeature::kOriginTrialsSampleAPINavigation,
       blink::mojom::OriginTrialFeature::kTextFragmentIdentifiers,
-      blink::mojom::OriginTrialFeature::kDeviceBoundSessionCredentials,
-      blink::mojom::OriginTrialFeature::kDeviceBoundSessionCredentials2,
   };
   return std::ranges::contains(kEnabledForNavigation, feature);
 }
