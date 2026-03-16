@@ -57,7 +57,7 @@ public class HomeButtonCoordinatorTest {
                 new HomeButtonCoordinator(
                         mContext,
                         mHomeButton,
-                        (view) -> {},
+                        (metaState, buttonState) -> {},
                         (context) -> {},
                         () -> mIsHomeButtonMenuDisabled,
                         mThemeColorProvider,

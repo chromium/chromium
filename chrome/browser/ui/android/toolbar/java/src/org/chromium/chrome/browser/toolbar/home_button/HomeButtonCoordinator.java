@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.toolbar.home_button;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.view.View;
-import android.view.View.OnClickListener;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
@@ -27,6 +26,7 @@ import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.util.ClickWithMetaStateCallback;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.function.Supplier;
@@ -51,7 +51,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
     /**
      * @param context The Android context used for various view operations.
      * @param homeButton The concrete {@link View} class for this MVC component.
-     * @param onClickListener Listener invoked when button is clicked.
+     * @param clickCallback Callback invoked when button is clicked.
      * @param onMenuClickCallback Callback when home button menu item is clicked.
      * @param isHomepageMenuDisabledSupplier Supplier for whether the home button menu is enabled.
      * @param themeColorProvider a provider that notifies about theme changes.
@@ -60,7 +60,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
     public HomeButtonCoordinator(
             Context context,
             View homeButton,
-            OnClickListener onClickListener,
+            ClickWithMetaStateCallback clickCallback,
             Callback<Context> onMenuClickCallback,
             Supplier<Boolean> isHomepageMenuDisabledSupplier,
             ThemeColorProvider themeColorProvider,
@@ -71,7 +71,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements TintObs
         mOnMenuClickCallback = onMenuClickCallback;
         mIsHomeButtonMenuDisabled = isHomepageMenuDisabledSupplier;
         mHomeButton.setOnLongClickListener(this::onLongClickHomeButton);
-        mHomeButton.setOnClickListener(onClickListener);
+        mHomeButton.setClickCallback(clickCallback);
     }
 
     @VisibleForTesting

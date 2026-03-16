@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.toolbar.forward_button;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.core.widget.ImageViewCompat;
@@ -25,6 +23,8 @@ import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
+import org.chromium.ui.util.KeyEventUtils;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.function.Supplier;
@@ -174,9 +174,9 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
         if (!mActivityLifecycleDispatcher.isNativeInitializationFinished()) return false;
 
         maybeUnfocusUrlBar();
-        boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
-        boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
-        boolean isMiddleClick = (buttonState & MotionEvent.BUTTON_TERTIARY) != 0;
+        boolean hasControl = KeyEventUtils.isCtrlOn(metaState);
+        boolean hasShift = KeyEventUtils.isShiftOn(metaState);
+        boolean isMiddleClick = MotionEventUtils.isTertiaryButton(buttonState);
 
         if ((hasControl && hasShift) || (isMiddleClick && hasShift)) {
             // Holding ALT is allowed as well (reference desktop behavior).

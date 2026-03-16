@@ -37,6 +37,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private final Supplier<@Nullable Tab> mActivityTabSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
+    private final Supplier<Boolean> mIsOffTheRecordSupplier;
 
     /**
      * @param tabSupplier Supplier for the currently active tab.
@@ -52,6 +53,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
      *     on overview mode.
      * @param tabCreatorManager The {@link TabCreatorManager} used to create new tabs.
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to new windows
+     * @param isOffTheRecordSupplier Supplier for whether the current UI is off-the-record.
      */
     public ToolbarTabControllerImpl(
             Supplier<@Nullable Tab> tabSupplier,
@@ -61,7 +63,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             Runnable onSuccessRunnable,
             Supplier<@Nullable Tab> activityTabSupplier,
             TabCreatorManager tabCreatorManager,
-            @Nullable MultiInstanceManager multiInstanceManager) {
+            @Nullable MultiInstanceManager multiInstanceManager,
+            Supplier<Boolean> isOffTheRecordSupplier) {
         mTabSupplier = tabSupplier;
         mTrackerSupplier = trackerSupplier;
         mBottomControlsBackPressHandlerSupplier = bottomControlsBackPressHandlerSupplier;
@@ -70,6 +73,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         mActivityTabSupplier = activityTabSupplier;
         mTabCreatorManager = tabCreatorManager;
         mMultiInstanceManager = multiInstanceManager;
+        mIsOffTheRecordSupplier = isOffTheRecordSupplier;
     }
 
     @Override
@@ -171,7 +175,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
 
     private @Nullable Tab createTabWithHistory(Tab tab, boolean foregroundNewTab) {
         return mTabCreatorManager
-                .getTabCreator(tab.isIncognitoBranded())
+                .getTabCreator(tab.isOffTheRecord())
                 .createTabWithHistory(
                         tab,
                         foregroundNewTab
@@ -201,9 +205,74 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     @Override
     public void openHomepage() {
         RecordUserAction.record("Home");
-        Tab currentTab = mTabSupplier.get();
-        if (currentTab == null) return;
         String homePageUrl = mHomepageUrlSupplier.get();
+        recordHomeButtonMetrics(homePageUrl);
+
+        recordHomeButtonUseForIph();
+
+        Tab currentTab = mTabSupplier.get();
+        if (currentTab != null) {
+            currentTab.loadUrl(new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
+        } else {
+            // Fallback: If there's no active tab (e.g. from tab switcher), open in a new tab
+            // instead.
+            mTabCreatorManager
+                    .getTabCreator(mIsOffTheRecordSupplier.get())
+                    .createNewTab(
+                            new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE),
+                            TabLaunchType.FROM_CHROME_UI,
+                            null);
+        }
+    }
+
+    @Override
+    public void openHomepageInNewTab(boolean foregroundNewTab) {
+        RecordUserAction.record(
+                foregroundNewTab ? "HomeInNewForegroundTab" : "HomeInNewBackgroundTab");
+        String homePageUrl = mHomepageUrlSupplier.get();
+        recordHomeButtonMetrics(homePageUrl);
+
+        recordHomeButtonUseForIph();
+        Tab currentTab = mTabSupplier.get();
+        boolean isOffTheRecord =
+                currentTab != null ? currentTab.isOffTheRecord() : mIsOffTheRecordSupplier.get();
+        mTabCreatorManager
+                .getTabCreator(isOffTheRecord)
+                .createNewTab(
+                        new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE),
+                        foregroundNewTab
+                                ? TabLaunchType.FROM_CHROME_UI
+                                : TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                        currentTab);
+    }
+
+    @Override
+    public void openHomepageInNewWindow() {
+        RecordUserAction.record("HomeInNewForegroundWindow");
+        String homePageUrl = mHomepageUrlSupplier.get();
+        recordHomeButtonMetrics(homePageUrl);
+
+        recordHomeButtonUseForIph();
+        Tab currentTab = mTabSupplier.get();
+        boolean isOffTheRecord =
+                currentTab != null ? currentTab.isOffTheRecord() : mIsOffTheRecordSupplier.get();
+        Tab newTab =
+                mTabCreatorManager
+                        .getTabCreator(isOffTheRecord)
+                        .createNewTab(
+                                new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE),
+                                TabLaunchType.FROM_CHROME_UI,
+                                currentTab);
+
+        if (mMultiInstanceManager == null) return;
+        // Move tab to a new window.
+        mMultiInstanceManager.moveTabsToNewWindow(
+                Collections.singletonList(newTab),
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
+    }
+
+    private void recordHomeButtonMetrics(String homePageUrl) {
         boolean isChromeInternal =
                 homePageUrl.startsWith(ContentUrlConstants.ABOUT_URL_SHORT_PREFIX)
                         || homePageUrl.startsWith(UrlConstants.CHROME_URL_SHORT_PREFIX)
@@ -215,9 +284,6 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
         if (!isChromeInternal) {
             RecordUserAction.record("Navigation.Home.NotChromeInternal");
         }
-
-        recordHomeButtonUseForIph();
-        currentTab.loadUrl(new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
     }
 
     /**

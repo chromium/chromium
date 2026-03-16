@@ -20,7 +20,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnAttachStateChangeListener;
@@ -240,6 +239,8 @@ import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.Resource;
 import org.chromium.ui.resources.dynamics.DynamicResourceSnapshot;
+import org.chromium.ui.util.KeyEventUtils;
+import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.ChromeImageButton;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -961,7 +962,8 @@ public class ToolbarManager
                         this::updateButtonStatus,
                         mActivityTabProvider,
                         mTabCreatorManager,
-                        mMultiInstanceManager);
+                        mMultiInstanceManager,
+                        mLocationBarModel::isOffTheRecord);
 
         if (backPressManager != null) {
             mBackPressHandler = new OnBackPressHandler();
@@ -1068,14 +1070,31 @@ public class ToolbarManager
                     new HomeButtonCoordinator(
                             mActivity,
                             homeButton,
-                            (view) -> {
+                            (metaState, buttonState) -> {
                                 if (ntpDelegate.isCurrentlyVisible()) {
                                     // Record the clicking action on the home button.
                                     BrowserUiUtils.recordModuleClickHistogram(
                                             ModuleTypeOnStartAndNtp.HOME_BUTTON);
                                 }
                                 setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-                                mToolbarTabController.openHomepage();
+
+                                boolean hasControl = KeyEventUtils.isCtrlOn(metaState);
+                                boolean hasShift = KeyEventUtils.isShiftOn(metaState);
+                                boolean isMiddleClick =
+                                        MotionEventUtils.isTertiaryButton(buttonState);
+
+                                if ((hasControl && hasShift) || (isMiddleClick && hasShift)) {
+                                    mToolbarTabController.openHomepageInNewTab(
+                                            /* foregroundNewTab= */ true);
+                                } else if (hasControl || isMiddleClick) {
+                                    mToolbarTabController.openHomepageInNewTab(
+                                            /* foregroundNewTab= */ false);
+                                } else if (hasShift) {
+                                    mToolbarTabController.openHomepageInNewWindow();
+                                } else {
+                                    mToolbarTabController.openHomepage();
+                                }
+
                                 Tracker tracker =
                                         TrackerFactory.getTrackerForProfile(mProfileSupplier);
                                 boolean isPartnerHomepageEnabled =
@@ -1814,9 +1833,9 @@ public class ToolbarManager
 
     private void back(int metaState, int buttonState) {
         setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-        boolean hasControl = (metaState & KeyEvent.META_CTRL_ON) != 0;
-        boolean hasShift = (metaState & KeyEvent.META_SHIFT_ON) != 0;
-        boolean isMiddleClick = (buttonState & MotionEvent.BUTTON_TERTIARY) != 0;
+        boolean hasControl = KeyEventUtils.isCtrlOn(metaState);
+        boolean hasShift = KeyEventUtils.isShiftOn(metaState);
+        boolean isMiddleClick = MotionEventUtils.isTertiaryButton(buttonState);
 
         if ((hasControl && hasShift) || (isMiddleClick && hasShift)) {
             // Holding ALT is allowed as well (reference desktop behavior).

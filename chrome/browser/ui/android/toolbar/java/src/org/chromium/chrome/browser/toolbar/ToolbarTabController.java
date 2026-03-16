@@ -65,4 +65,14 @@ public interface ToolbarTabController {
 
     /** Opens hompage in the current tab. */
     void openHomepage();
+
+    /**
+     * Opens homepage in a new tab.
+     *
+     * @param foregroundNewTab Whether the new tab should be foregrounded.
+     */
+    void openHomepageInNewTab(boolean foregroundNewTab);
+
+    /** Opens homepage in a new window. */
+    void openHomepageInNewWindow();
 }
