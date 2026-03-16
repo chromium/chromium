@@ -3004,16 +3004,30 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   CertVerifyResult verify_result;
   int error = Verify(chain_sha1.get(), kHostname, flags, &verify_result);
 
-  // Should have built a chain through the SHA256 intermediate. This was only
-  // available via AIA, and not the (SHA1) one provided directly to path
-  // building.
-  ASSERT_EQ(2u, verify_result.verified_cert->intermediate_buffers().size());
-  EXPECT_TRUE(x509_util::CryptoBufferEqual(
-      verify_result.verified_cert->intermediate_buffers()[0].get(),
-      intermediate_sha256.get()));
-  ASSERT_EQ(2u, verify_result.verified_cert->intermediate_buffers().size());
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_IOS) {
+    // Should have built a chain through the SHA256 intermediate. This was only
+    // available via AIA, and not the (SHA1) one provided directly to path
+    // building.
+    ASSERT_EQ(2u, verify_result.verified_cert->intermediate_buffers().size());
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        verify_result.verified_cert->intermediate_buffers()[0].get(),
+        intermediate_sha256.get()));
+    ASSERT_EQ(2u, verify_result.verified_cert->intermediate_buffers().size());
 
-  EXPECT_THAT(error, IsOk());
+    EXPECT_THAT(error, IsOk());
+  } else {
+    EXPECT_NE(OK, error);
+    if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID &&
+        error == ERR_CERT_AUTHORITY_INVALID) {
+      // Newer Android versions reject the chain due to the SHA1 intermediate,
+      // but do not build the correct chain by AIA. Since only the partial
+      // chain is returned, CertVerifyProc does not mark it as SHA1 as it does
+      // not examine the last cert in the chain. Therefore, if
+      // ERR_CERT_AUTHORITY_INVALID is returned, don't check the rest of the
+      // statuses. See https://crbug.com/1191795.
+      return;
+    }
+  }
 }
 
 TEST_P(CertVerifyProcInternalWithNetFetchingTest, RevocationHardFailNoCrls) {
