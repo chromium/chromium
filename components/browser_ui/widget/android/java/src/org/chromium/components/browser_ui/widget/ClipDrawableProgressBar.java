@@ -413,8 +413,14 @@ public class ClipDrawableProgressBar extends ImageView {
     protected boolean onSetAlpha(int alpha) {
         int oldVisibility = mCompositedLayersVisibility;
         if (alpha == 0) {
+            if (!ChromeFeatureList.sAndroidApb144Patch2.isEnabled()) {
+                mDesiredAndroidVisibility = INVISIBLE;
+            }
             mCompositedLayersVisibility = INVISIBLE;
         } else {
+            if (!ChromeFeatureList.sAndroidApb144Patch2.isEnabled()) {
+                mDesiredAndroidVisibility = VISIBLE;
+            }
             mCompositedLayersVisibility = VISIBLE;
         }
 
