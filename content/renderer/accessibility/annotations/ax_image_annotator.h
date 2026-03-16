@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_util.h"
 #include "content/common/content_export.h"
 #include "content/renderer/accessibility/annotations/ax_annotator.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
@@ -79,11 +80,13 @@ class CONTENT_EXPORT AXImageAnnotator : public AXAnnotator,
       status_ = status;
     }
 
-    std::string annotation() const {
-      return annotation_.value_or("");
+    const std::string& annotation() const {
+      return annotation_.has_value() ? *annotation_ : base::EmptyString();
     }
 
-    void set_annotation(std::string annotation) { annotation_ = annotation; }
+    void set_annotation(std::string annotation) {
+      annotation_ = std::move(annotation);
+    }
 
    private:
     image_annotation::ImageProcessor image_processor_;
@@ -97,16 +100,6 @@ class CONTENT_EXPORT AXImageAnnotator : public AXAnnotator,
   void AddImageAnnotations(const blink::WebDocument& document,
                            ui::AXTreeUpdate* update);
   void AddImageAnnotationsForNode(blink::WebAXObject& src, ui::AXNodeData* dst);
-
-  std::string GetImageAnnotation(blink::WebAXObject& image) const;
-  ax::mojom::ImageAnnotationStatus GetImageAnnotationStatus(
-      blink::WebAXObject& image) const;
-  bool HasAnnotationInCache(blink::WebAXObject& image) const;
-  bool HasImageInCache(const blink::WebAXObject& image) const;
-
-  void OnImageAdded(blink::WebAXObject& image);
-  void OnImageUpdated(blink::WebAXObject& image);
-  void OnImageRemoved(blink::WebAXObject& image);
 
   static int GetLengthAfterRemovingStopwords(const std::string& image_name);
   static bool ImageNameHasMostlyStopwords(const std::string& image_name);

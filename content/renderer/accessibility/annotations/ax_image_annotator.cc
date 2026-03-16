@@ -415,19 +415,32 @@ void AXImageAnnotator::AddImageAnnotationsForNode(WebAXObject& src,
     return;
   }
 
-  if (HasAnnotationInCache(src)) {
+  DCHECK(!src.IsDetached());
+  auto [it, inserted] = image_annotations_.try_emplace(src.AxID(), src);
+  if (it->second.HasAnnotation()) {
     dst->AddStringAttribute(ax::mojom::StringAttribute::kImageAnnotation,
-                            GetImageAnnotation(src));
-    dst->SetImageAnnotationStatus(GetImageAnnotationStatus(src));
-  } else if (HasImageInCache(src)) {
-    OnImageUpdated(src);
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kAnnotationPending);
-  } else if (!HasImageInCache(src)) {
-    OnImageAdded(src);
-    dst->SetImageAnnotationStatus(
-        ax::mojom::ImageAnnotationStatus::kAnnotationPending);
+                            it->second.annotation());
+    dst->SetImageAnnotationStatus(it->second.status());
+    return;
   }
+
+  const std::string image_id = GenerateImageSourceId(src);
+  if (image_id.empty()) {
+    if (inserted) {
+      image_annotations_.erase(it);
+    }
+    return;
+  }
+
+  dst->SetImageAnnotationStatus(
+      ax::mojom::ImageAnnotationStatus::kAnnotationPending);
+
+  // Fetch or update image annotation.
+  annotator_remote_->AnnotateImage(
+      image_id, render_accessibility_->GetLanguage(),
+      it->second.GetImageProcessor(),
+      base::BindOnce(&AXImageAnnotator::OnImageAnnotated,
+                     weak_factory_.GetWeakPtr(), src));
 }
 
 void AXImageAnnotator::AddDebuggingAttributes(
@@ -509,78 +522,6 @@ void AXImageAnnotator::AddDebuggingAttributes(
       }
     }
   }
-}
-
-std::string AXImageAnnotator::GetImageAnnotation(
-    blink::WebAXObject& image) const {
-  DCHECK(!image.IsDetached());
-  const auto lookup = image_annotations_.find(image.AxID());
-  if (lookup != image_annotations_.end())
-    return lookup->second.annotation();
-  return std::string();
-}
-
-ax::mojom::ImageAnnotationStatus AXImageAnnotator::GetImageAnnotationStatus(
-    blink::WebAXObject& image) const {
-  DCHECK(!image.IsDetached());
-  const auto lookup = image_annotations_.find(image.AxID());
-  if (lookup != image_annotations_.end())
-    return lookup->second.status();
-  return ax::mojom::ImageAnnotationStatus::kNone;
-}
-
-bool AXImageAnnotator::HasAnnotationInCache(blink::WebAXObject& image) const {
-  DCHECK(!image.IsDetached());
-  if (!HasImageInCache(image))
-    return false;
-  return image_annotations_.at(image.AxID()).HasAnnotation();
-}
-
-bool AXImageAnnotator::HasImageInCache(const blink::WebAXObject& image) const {
-  DCHECK(!image.IsDetached());
-  return image_annotations_.contains(image.AxID());
-}
-
-void AXImageAnnotator::OnImageAdded(blink::WebAXObject& image) {
-  DCHECK(!image.IsDetached());
-  DCHECK(!image_annotations_.contains(image.AxID()));
-  const std::string image_id = GenerateImageSourceId(image);
-  if (image_id.empty())
-    return;
-
-  image_annotations_.emplace(image.AxID(), image);
-  ImageInfo& image_info = image_annotations_.at(image.AxID());
-  // Fetch image annotation.
-  annotator_remote_->AnnotateImage(
-      image_id, render_accessibility_->GetLanguage(),
-      image_info.GetImageProcessor(),
-      base::BindOnce(&AXImageAnnotator::OnImageAnnotated,
-                     weak_factory_.GetWeakPtr(), image));
-  VLOG(1) << "Requesting annotation for " << image_id << " with language '"
-          << render_accessibility_->GetLanguage() << "' from page "
-          << GetDocumentUrl();
-}
-
-void AXImageAnnotator::OnImageUpdated(blink::WebAXObject& image) {
-  DCHECK(!image.IsDetached());
-  DCHECK(image_annotations_.contains(image.AxID()));
-  const std::string image_id = GenerateImageSourceId(image);
-  if (image_id.empty())
-    return;
-
-  ImageInfo& image_info = image_annotations_.at(image.AxID());
-  // Update annotation.
-  annotator_remote_->AnnotateImage(
-      image_id, render_accessibility_->GetLanguage(),
-      image_info.GetImageProcessor(),
-      base::BindOnce(&AXImageAnnotator::OnImageAnnotated,
-                     weak_factory_.GetWeakPtr(), image));
-}
-
-void AXImageAnnotator::OnImageRemoved(blink::WebAXObject& image) {
-  DCHECK(!image.IsDetached());
-  DCHECK(image_annotations_.contains(image.AxID()));
-  image_annotations_.erase(image.AxID());
 }
 
 // static
@@ -735,12 +676,15 @@ void AXImageAnnotator::OnImageAnnotated(
   DCHECK(render_accessibility_->GetAXContext());
   render_accessibility_->GetAXContext()->UpdateAXForAllDocuments();
 
-  if (!image_annotations_.contains(image.AxID()))
+  const auto it = image_annotations_.find(image.AxID());
+  if (it == image_annotations_.end()) {
     return;
+  }
+  ImageInfo& image_info = it->second;
 
   if (image.IsDetached()) {
-    image_annotations_.at(image.AxID())
-        .set_status(ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);
+    image_info.set_status(
+        ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation);
     // We should not mark dirty a detached object.
     return;
   }
@@ -806,18 +750,16 @@ void AXImageAnnotator::OnImageAnnotated(
         // kEligibleForAnnotation:, the user will not be asked to visit the
         // context menu to turn on automatic image labels, because there is no
         // way to repeat the operation from that menu yet.
-        image_annotations_.at(image.AxID())
-            .set_status(ax::mojom::ImageAnnotationStatus::
-                            kSilentlyEligibleForAnnotation);
+        image_info.set_status(
+            ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation);
         break;
       case image_annotation::mojom::AnnotateImageError::kFailure:
-        image_annotations_.at(image.AxID())
-            .set_status(
-                ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed);
+        image_info.set_status(
+            ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed);
         break;
       case image_annotation::mojom::AnnotateImageError::kAdult:
-        image_annotations_.at(image.AxID())
-            .set_status(ax::mojom::ImageAnnotationStatus::kAnnotationAdult);
+        image_info.set_status(
+            ax::mojom::ImageAnnotationStatus::kAnnotationAdult);
         break;
     }
     MarkDirty(image);
@@ -826,8 +768,7 @@ void AXImageAnnotator::OnImageAnnotated(
 
   if (!result->is_annotations()) {
     DLOG(WARNING) << "No image annotation results.";
-    image_annotations_.at(image.AxID())
-        .set_status(ax::mojom::ImageAnnotationStatus::kAnnotationEmpty);
+    image_info.set_status(ax::mojom::ImageAnnotationStatus::kAnnotationEmpty);
     MarkDirty(image);
     return;
   }
@@ -891,8 +832,7 @@ void AXImageAnnotator::OnImageAnnotated(
   }
 
   if (contextualized_strings.empty()) {
-    image_annotations_.at(image.AxID())
-        .set_status(ax::mojom::ImageAnnotationStatus::kAnnotationEmpty);
+    image_info.set_status(ax::mojom::ImageAnnotationStatus::kAnnotationEmpty);
     MarkDirty(image);
     return;
   }
@@ -907,18 +847,18 @@ void AXImageAnnotator::OnImageAnnotated(
       .SetImageAlreadyHasLabel(has_existing_label)
       .Record(render_accessibility_->ukm_recorder());
 
-  image_annotations_.at(image.AxID())
-      .set_status(ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded);
+  image_info.set_status(ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded);
   // TODO(accessibility): join two sentences together in a more i18n-friendly
   // way. Since this is intended for a screen reader, though, a period
   // probably works in almost all languages.
   std::string contextualized_string =
       base::JoinString(contextualized_strings, ". ");
-  image_annotations_.at(image.AxID()).set_annotation(contextualized_string);
-  MarkDirty(image);
 
   VLOG(1) << "Annotating image on page " << GetDocumentUrl() << " - "
           << contextualized_string;
+
+  image_info.set_annotation(std::move(contextualized_string));
+  MarkDirty(image);
 }
 
 std::string AXImageAnnotator::GetDocumentUrl() const {
