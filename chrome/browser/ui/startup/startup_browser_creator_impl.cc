@@ -25,8 +25,6 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/headless/headless_command_processor.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -62,7 +60,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/dom_storage_context.h"
@@ -444,28 +441,9 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   const bool whats_new_enabled =
       whats_new::ShouldShowForState(local_state, promotions_enabled);
 
-  auto* privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(profile_);
-
-  bool privacy_sandbox_dialog_required = false;
-  if (privacy_sandbox_service) {
-    switch (privacy_sandbox_service->GetRequiredPromptType(
-        PrivacySandboxService::SurfaceType::kDesktop)) {
-      case PrivacySandboxService::PromptType::kM1Consent:
-      case PrivacySandboxService::PromptType::kM1NoticeEEA:
-      case PrivacySandboxService::PromptType::kM1NoticeROW:
-      case PrivacySandboxService::PromptType::kM1NoticeRestricted:
-        privacy_sandbox_dialog_required = true;
-        break;
-      case PrivacySandboxService::PromptType::kNone:
-        break;
-    }
-  }
-
   auto result = DetermineStartupTabs(
       StartupTabProviderImpl(), process_startup, is_incognito_or_guest,
-      is_post_crash_launch, promotions_enabled, whats_new_enabled,
-      privacy_sandbox_dialog_required);
+      is_post_crash_launch, promotions_enabled, whats_new_enabled);
   StartupTabs tabs = std::move(result.tabs);
 
   // Return immediately if we start an async restore, since the remainder of
@@ -550,8 +528,7 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool is_incognito_or_guest,
     bool is_post_crash_launch,
     bool promotions_enabled,
-    bool whats_new_enabled,
-    bool privacy_sandbox_dialog_required) {
+    bool whats_new_enabled) {
   StartupTabs tabs =
       provider.GetCommandLineTabs(*command_line_, cur_dir_, profile_);
   LaunchResult launch_result =
@@ -627,14 +604,6 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
     // the NTP.
     if (prefs_tabs.empty()) {
       AppendTabs(provider.GetNewTabPageTabs(*command_line_, profile_), &tabs);
-    }
-
-    // Potentially add a tab appropriate to display the Privacy Sandbox
-    // confirmation dialog on top of. Ideally such a tab will already exist
-    // in |tabs|, and no additional tab will be required.
-    if (privacy_sandbox_dialog_required &&
-        launch_result == LaunchResult::kNormally) {
-      AppendTabs(provider.GetPrivacySandboxTabs(profile_, tabs), &tabs);
     }
   }
 

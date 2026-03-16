@@ -6,8 +6,6 @@
 
 #include "base/time/default_clock.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -175,16 +173,6 @@ NoCriticalNoticeShowingPrecondition::~NoCriticalNoticeShowingPrecondition() =
 user_education::FeaturePromoResult
 NoCriticalNoticeShowingPrecondition::CheckPrecondition(
     user_education::UnownedTypedDataCollection&) const {
-  // Turn off IPH while a required privacy interstitial is visible or pending.
-  auto* const privacy_sandbox_service =
-      PrivacySandboxServiceFactory::GetForProfile(browser_view_->GetProfile());
-  if (privacy_sandbox_service &&
-      privacy_sandbox_service->GetRequiredPromptType(
-          PrivacySandboxService::SurfaceType::kDesktop) !=
-          PrivacySandboxService::PromptType::kNone) {
-    return user_education::FeaturePromoResult::kBlockedByUi;
-  }
-
   // Turn off IPH while a required search engine choice dialog is visible or
   // pending.
   SearchEngineChoiceDialogService* const search_engine_choice_dialog_service =

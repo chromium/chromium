@@ -107,8 +107,6 @@ class StartupBrowserCreatorImpl {
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_NewFeaturesPage);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
-                           DetermineStartupTabs_PrivacySandbox);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineNonMilestoneUpdate);
 
   enum class LaunchResult {
@@ -181,8 +179,7 @@ class StartupBrowserCreatorImpl {
       bool is_ephemeral_profile,
       bool is_post_crash_launch,
       bool promotional_tabs_enabled,
-      bool whats_new_enabled,
-      bool privacy_sandbox_confirmation_required);
+      bool whats_new_enabled);
 
   // Begins an asynchronous session restore if current state allows it (e.g.,
   // this is not process startup) and SessionService indicates that one is

@@ -58,7 +58,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
@@ -87,34 +86,6 @@ bool ProfileHasOtherTabbedBrowser(Profile* profile) {
       });
   return found;
 }
-
-
-#if !BUILDFLAG(IS_ANDROID)
-// Returns whether |extension_registry| contains an extension which has a URL
-// override for the new tab URL.
-bool HasExtensionNtpOverride(
-    extensions::ExtensionRegistry* extension_registry) {
-  for (const auto& extension : extension_registry->enabled_extensions()) {
-    const auto& overrides =
-        extensions::URLOverrides::GetChromeURLOverrides(extension.get());
-    if (overrides.find(chrome::kChromeUINewTabHost) != overrides.end()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Returns whether |url| is an NTP controlled entirely by Chrome.
-bool IsChromeControlledNtpUrl(const GURL& url) {
-  // Convert to origins for comparison, as any appended paths are irrelevant.
-  const auto ntp_origin = url::Origin::Create(url);
-
-  return ntp_origin ==
-             url::Origin::Create(GURL(chrome::kChromeUINewTabPageURL)) ||
-         ntp_origin == url::Origin::Create(
-                           GURL(chrome::kChromeUINewTabPageThirdPartyURL));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool IsWelcomePageUrl(const GURL& url) {
   static constexpr std::string_view kChromeUIWelcomeHost = "welcome";
@@ -223,14 +194,6 @@ StartupTabs StartupTabProviderImpl::GetNewFeaturesTabs(
   return GetNewFeaturesTabsForState(whats_new_enabled);
 }
 
-StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabs(
-    Profile* profile,
-    const StartupTabs& other_startup_tabs) const {
-  return GetPrivacySandboxTabsForState(
-      extensions::ExtensionRegistry::Get(profile),
-      search::GetNewTabPageURL(profile), other_startup_tabs);
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
@@ -319,42 +282,6 @@ StartupTabs StartupTabProviderImpl::GetNewFeaturesTabsForState(
   if (whats_new_enabled) {
     tabs.emplace_back(whats_new::GetWebUIStartupURL());
   }
-  return tabs;
-}
-
-// static
-StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
-    extensions::ExtensionRegistry* extension_registry,
-    const GURL& ntp_url,
-    const StartupTabs& other_startup_tabs) {
-  // There may already be a tab appropriate for the Privacy Sandbox prompt
-  // available in |other_startup_tabs|.
-  StartupTabs tabs;
-  const bool suitable_tab_available =
-      std::ranges::any_of(other_startup_tabs, [&](const StartupTab& tab) {
-        // The generic new tab URL is only suitable if the user has a Chrome
-        // controlled New Tab Page.
-        if (tab.url.GetHost() == chrome::kChromeUINewTabHost) {
-          return !HasExtensionNtpOverride(extension_registry) &&
-                 IsChromeControlledNtpUrl(ntp_url);
-        }
-        return privacy_sandbox::IsUrlSuitableForPrompt(tab.url);
-      });
-
-  if (suitable_tab_available) {
-    return tabs;
-  }
-
-  // Fallback to using about:blank if the user has customized the NTP.
-  // TODO(crbug.com/40218325): Stop using about:blank and create a dedicated
-  // Privacy Sandbox WebUI page for this scenario.
-  if (HasExtensionNtpOverride(extension_registry) ||
-      !IsChromeControlledNtpUrl(ntp_url)) {
-    tabs.emplace_back(GURL(url::kAboutBlankURL));
-  } else {
-    tabs.emplace_back(GURL(chrome::kChromeUINewTabURL));
-  }
-
   return tabs;
 }
 
