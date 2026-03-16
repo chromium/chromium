@@ -194,20 +194,24 @@ void WaapUIMetricsService::OnReloadButtonCreated() {
                                 InitialWebUIView::kReloadButton);
 }
 
-void WaapUIMetricsService::OnReloadButtonRendererProcessCreated(
-    base::TimeTicks timestamp) {
+void WaapUIMetricsService::OnReloadButtonRendererProcessCreatedAndLaunched(
+    base::TimeTicks created_timestamp,
+    base::TimeTicks launched_timestamp) {
   // TODO(crbug.com/490810407): Record this and the other metrics as UKM as
   // well, so that we can see the progression of renderer process creation
   // requested
   // -> launched -> commit -> paint etc. UKM recording for topchrome is
   // currently not working.
-  if (timestamp.is_null()) {
-    return;
-  }
   base::TimeTicks time_origin =
       startup_metric_utils::GetBrowser().GetApplicationStartTicksForStartup();
-  RecordStartupPaintMetric("ReloadButton.RendererProcessCreated", time_origin,
-                           timestamp);
+  if (!created_timestamp.is_null()) {
+    RecordStartupPaintMetric("ReloadButton.RendererProcessCreated", time_origin,
+                             created_timestamp);
+  }
+  if (!launched_timestamp.is_null()) {
+    RecordStartupPaintMetric("ReloadButton.RendererProcessLaunched",
+                             time_origin, launched_timestamp);
+  }
 }
 
 void WaapUIMetricsService::OnBrowserWindowFirstPresentation(

@@ -117,9 +117,11 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonFirstContentfulPaint(
   }
 }
 
-void InitialWebUIWindowMetricsManager::OnReloadButtonRendererProcessCreated(
-    base::TimeTicks timestamp) {
-  // Ensures only one startup process creation is recorded per browser process.
+void InitialWebUIWindowMetricsManager::
+    OnReloadButtonRendererProcessCreatedAndLaunched(
+        base::TimeTicks created_timestamp,
+        base::TimeTicks launched_timestamp) {
+  // Ensures only one startup process launch is recorded per browser process.
   static bool is_startup_process_recorded = false;
   if (!waap_service_) {
     return;
@@ -127,7 +129,8 @@ void InitialWebUIWindowMetricsManager::OnReloadButtonRendererProcessCreated(
 
   if (!is_startup_process_recorded && !skip_startup_metrics_for_testing_) {
     is_startup_process_recorded = true;
-    waap_service_->OnReloadButtonRendererProcessCreated(timestamp);
+    waap_service_->OnReloadButtonRendererProcessCreatedAndLaunched(
+        created_timestamp, launched_timestamp);
   }
 }
 
