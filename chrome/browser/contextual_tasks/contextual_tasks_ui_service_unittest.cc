@@ -57,6 +57,7 @@ constexpr char kAimHomepage[] = "https://www.google.com/search?udm=50";
 constexpr char kAimHomepageThinking[] = "https://www.google.com/search?nem=143";
 constexpr char kSrpShopping[] = "https://www.google.com/search?udm=28&q=query";
 constexpr char kSrpUrl[] = "https://google.com/search?q=query";
+constexpr char kSignOutUrl[] = "https://accounts.google.com/Logout";
 constexpr char kSrpUrlWithLensQuery[] =
     "https://www.google.com/search?lns_mode=un";
 constexpr char kLabsUrl[] = "https://labs.google.com/search";
@@ -1158,6 +1159,34 @@ TEST_F(ContextualTasksUiServiceTest, GetAimUrlFromContextualTasksUrl) {
                 "contextual-tasks?aim_url=https%3A%2F%2Fgoogle.com%2Fsearch")));
 }
 
+// If the navigation is to sign the user out, ensure it opens outside the
+// webview to ensure the user is signed out of the main storage partition.
+TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
+  GURL navigated_url(kSignOutUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  ON_CALL(*aim_eligibility_service_, HasAimUrlParams(_))
+      .WillByDefault(Return(false));
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+  tabs::MockTabInterface tab;
+  ON_CALL(tab, GetContents).WillByDefault(Return(web_contents.get()));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNonThreadNavigationInTab(navigated_url, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
+      /*is_from_embedded_page=*/true,
+      /*is_to_new_tab=*/false));
+  run_loop.Run();
+}
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   GURL display_url("chrome://google.com/search?udm=50&q=test+query");
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
