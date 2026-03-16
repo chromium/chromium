@@ -456,7 +456,10 @@ source_set("impl") {
     deps += [ "//ui/accelerated_widget_mac" ]
   }
   if (is_chromeos) {
-    deps += [ "//ash" ]
+    deps += [
+      "//ash",
+      "//chromeos/ui/wm",
+    ]
   }
   if (use_ozone) {
     deps += [ "//ui/ozone" ]

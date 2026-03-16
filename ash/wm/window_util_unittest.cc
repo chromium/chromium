@@ -16,6 +16,7 @@
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/wm_event.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
@@ -273,7 +274,7 @@ TEST_F(WindowUtilTest, InteriorTargeter) {
   window->SetBounds(gfx::Rect(0, 0, 100, 100));
 
   WindowState::Get(window.get())->Maximize();
-  InstallResizeHandleWindowTargeterForWindow(window.get());
+  chromeos::wm::InstallResizeHandleWindowTargeterForWindow(window.get());
 
   auto* child =
       aura::test::CreateTestWindow(
@@ -310,7 +311,7 @@ TEST_F(WindowUtilTest, InteriorTargeterWithCustomInsets) {
   window->SetBounds({0, 0, 100, 100});
 
   WindowState::Get(window.get())->Maximize();
-  InstallResizeHandleWindowTargeterForWindow(
+  chromeos::wm::InstallResizeHandleWindowTargeterForWindow(
       window.get(), chromeos::ResizeBorderInsets{.for_mouse = gfx::Insets(5),
                                                  .for_touch = gfx::Insets(10)});
 

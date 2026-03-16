@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_FRAME_INTERIOR_RESIZE_HANDLER_TARGETER_H_
-#define CHROMEOS_UI_FRAME_INTERIOR_RESIZE_HANDLER_TARGETER_H_
+#ifndef CHROMEOS_UI_WM_INTERIOR_RESIZE_HANDLER_TARGETER_H_
+#define CHROMEOS_UI_WM_INTERIOR_RESIZE_HANDLER_TARGETER_H_
 
 #include "base/functional/callback.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -42,4 +42,4 @@ class InteriorResizeHandleTargeter : public aura::WindowTargeter {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_UI_FRAME_INTERIOR_RESIZE_HANDLER_TARGETER_H_
+#endif  // CHROMEOS_UI_WM_INTERIOR_RESIZE_HANDLER_TARGETER_H_

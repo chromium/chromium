@@ -58,8 +58,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/frame/frame_view_ash.h"
-#include "ash/wm/window_util.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/window_util.h"
 #endif
 
 namespace glic {
@@ -313,7 +313,7 @@ std::unique_ptr<views::WidgetDelegate> GlicWidget::CreateWidgetDelegate(
             gfx::ScaleToFlooredInsets(mouse_insets, kResizeInsetScaleForTouch);
 
         auto* frame_window = delegate->GetWidget()->GetNativeWindow();
-        ash::window_util::InstallResizeHandleWindowTargeterForWindow(
+        chromeos::wm::InstallResizeHandleWindowTargeterForWindow(
             frame_window,
             chromeos::ResizeBorderInsets{.for_mouse = mouse_insets,
                                          .for_touch = touch_insets});

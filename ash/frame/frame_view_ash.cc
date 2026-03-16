@@ -12,7 +12,6 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
-#include "ash/wm/window_util.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -25,6 +24,7 @@
 #include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -162,7 +162,7 @@ FrameViewAsh::FrameViewAsh(views::Widget* widget)
       /*avoid_propagate_during_layout=*/false));
 
   aura::Window* frame_window = widget->GetNativeWindow();
-  window_util::InstallResizeHandleWindowTargeterForWindow(frame_window);
+  chromeos::wm::InstallResizeHandleWindowTargeterForWindow(frame_window);
 
   // A delegate may be set which takes over the responsibilities of the
   // FrameViewAshImmersiveHelper. This is the case for container apps

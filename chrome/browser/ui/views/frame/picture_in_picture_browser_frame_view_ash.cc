@@ -6,13 +6,13 @@
 
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/window_state.h"
-#include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/background.h"
 
@@ -21,7 +21,7 @@ PictureInPictureBrowserFrameViewAsh::PictureInPictureBrowserFrameViewAsh(
     BrowserView* browser_view)
     : PictureInPictureBrowserFrameView(browser_widget, browser_view) {
   aura::Window* frame_window = browser_widget->GetNativeWindow();
-  ash::window_util::InstallResizeHandleWindowTargeterForWindow(frame_window);
+  chromeos::wm::InstallResizeHandleWindowTargeterForWindow(frame_window);
 
   window_observation_.Observe(frame_window);
 }

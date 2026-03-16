@@ -18,6 +18,8 @@ source_set("wm") {
     "fullscreen/keep_fullscreen_for_url_checker.h",
     "fullscreen/pref_names.cc",
     "fullscreen/pref_names.h",
+    "interior_resize_handler_targeter.cc",
+    "interior_resize_handler_targeter.h",
     "window_util.cc",
     "window_util.h",
   ]

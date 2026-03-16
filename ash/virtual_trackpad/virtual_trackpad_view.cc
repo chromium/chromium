@@ -306,8 +306,8 @@ void VirtualTrackpadView::Toggle() {
 
   // Used to extend bounds on the virtual trackpad window for resizing. Note
   // that we cannot use
-  // `window_util::InstallResizeHandleWindowTargeterForWindow` since the virtual
-  // trackpad window is not a toplevel window.
+  // `chromeos::wm::InstallResizeHandleWindowTargeterForWindow` since the
+  // virtual trackpad window is not a toplevel window.
   auto targeter = std::make_unique<aura::WindowTargeter>();
   targeter->SetInsets(gfx::Insets(-chromeos::kResizeOutsideBoundsSize));
   g_fake_trackpad_widget->GetNativeWindow()->SetEventTargeter(

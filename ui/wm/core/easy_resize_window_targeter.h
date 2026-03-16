@@ -18,7 +18,7 @@ namespace wm {
 // hit-target region for easier resize. It extends the hit test region for child
 // windows (top level Widgets that are resizable) to outside their bounds. For
 // Ash, this correlates to ash::kResizeOutsideBoundsSize. For the interior
-// resize area, see ash::InstallResizeHandleWindowTargeterForWindow().
+// resize area, see chromeos::wm::InstallResizeHandleWindowTargeterForWindow().
 class COMPONENT_EXPORT(UI_WM) EasyResizeWindowTargeter
     : public aura::WindowTargeter {
  public:

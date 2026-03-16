@@ -4,11 +4,13 @@
 
 #include "chromeos/ui/wm/window_util.h"
 
+#include "base/functional/bind.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/constants.h"
+#include "chromeos/ui/wm/interior_resize_handler_targeter.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
@@ -53,6 +55,17 @@ bool CanFloatWindowInTablet(aura::Window* window) {
 }
 
 }  // namespace
+
+void InstallResizeHandleWindowTargeterForWindow(
+    aura::Window* window,
+    chromeos::ResizeBorderInsets border_insets) {
+  window->SetProperty(chromeos::kResizeBorderInsets, border_insets);
+  window->SetEventTargeter(
+      std::make_unique<chromeos::InteriorResizeHandleTargeter>(
+          border_insets, base::BindRepeating([](const aura::Window* window) {
+            return window->GetProperty(chromeos::kWindowStateTypeKey);
+          })));
+}
 
 bool IsLandscapeOrientationForWindow(aura::Window* window) {
   display::Display display =
