@@ -53,6 +53,8 @@
 - (void)start {
   CommandDispatcher* regularDispatcher =
       _regularBrowser->GetCommandDispatcher();
+  CommandDispatcher* incognitoDispatcher =
+      _incognitoBrowser->GetCommandDispatcher();
   // It is ok to use the regular browser here as the Scene commands are
   // handled by the same object for both modes.
   id<SceneCommands> sceneHandler =
@@ -103,6 +105,8 @@
   _mediator.tabGridHandler = tabGridHandler;
   _mediator.regularTabGroupsCommands =
       HandlerForProtocol(regularDispatcher, TabGroupsCommands);
+  _mediator.incognitoTabGroupsCommands =
+      HandlerForProtocol(incognitoDispatcher, TabGroupsCommands);
 
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
@@ -158,6 +162,12 @@
                              initWithBrowser:incognitoBrowser
                                     scenario:kMenuScenarioHistogramToolbarMenu]
                        : nil;
+  CommandDispatcher* incognitoDispatcher =
+      incognitoBrowser ? _incognitoBrowser->GetCommandDispatcher() : nil;
+  _mediator.incognitoTabGroupsCommands =
+      incognitoDispatcher
+          ? HandlerForProtocol(incognitoDispatcher, TabGroupsCommands)
+          : nil;
 }
 
 #pragma mark - GuidedTourCommands

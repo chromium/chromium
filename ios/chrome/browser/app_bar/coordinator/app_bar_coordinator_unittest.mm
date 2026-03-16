@@ -94,6 +94,9 @@ class AppBarCoordinatorTest : public PlatformTest {
     [regular_browser_->GetCommandDispatcher()
         startDispatchingToTarget:tab_group_handler_
                      forProtocol:@protocol(TabGroupsCommands)];
+    [incognito_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:tab_group_handler_
+                     forProtocol:@protocol(TabGroupsCommands)];
 
     bwg_handler_ = OCMProtocolMock(@protocol(BWGCommands));
     [regular_browser_->GetCommandDispatcher()

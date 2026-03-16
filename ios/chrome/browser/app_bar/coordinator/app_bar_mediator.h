@@ -41,6 +41,9 @@ class WebStateList;
 // The regular Tab Groups command handler.
 @property(nonatomic, weak) id<TabGroupsCommands> regularTabGroupsCommands;
 
+// The incognito Tab Groups command handler.
+@property(nonatomic, weak) id<TabGroupsCommands> incognitoTabGroupsCommands;
+
 // The consumer of this mediator.
 @property(nonatomic, weak) id<AppBarConsumer, FullscreenUIElement> consumer;
 

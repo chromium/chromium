@@ -313,6 +313,32 @@
   [self updateForTabGridPage:_tabGridState.currentPage];
 }
 
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  [self updateAssistantButton];
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  [self updateAssistantButton];
+}
+
+- (void)onAccountsOnDeviceChanged {
+  [self updateAssistantButton];
+}
+
+- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
+  [self updateAssistantButton];
+}
+
+- (void)onIdentityManagerShutdown:(signin::IdentityManager*)identityManager {
+  _identityManager = nullptr;
+  _identityManagerBridge.reset();
+}
+
 #pragma mark - AppBarMutator
 
 - (void)createNewTabFromView:(UIView*)sender {
@@ -340,11 +366,8 @@
 }
 
 - (void)createNewTabGroupFromView:(UIView*)sender {
-  if (!_tabGridState.tabGridVisible) {
-    return;
-  }
-  base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
-  [self.regularTabGroupsCommands showTabGroupCreationWithoutTabs];
+  // Create an empty Tab Group.
+  [self createNewTabGroupWithTabs:{}];
 }
 
 #pragma mark - Properties
@@ -434,6 +457,30 @@
     }
   }
   [self.consumer setButtonsEnabled:enableButtons];
+}
+
+// Updates the consumer with the latest state of the assistant button.
+- (void)updateAssistantButton {
+  AppBarAssistantButtonState state = AppBarAssistantButtonState::kSignedOut;
+  UIImage* avatar = nil;
+
+  if (IsPageActionMenuEnabled()) {
+    state = AppBarAssistantButtonState::kAsk;
+  } else if (_authenticationService->HasPrimaryIdentity(
+                 signin::ConsentLevel::kSignin)) {
+    state = AppBarAssistantButtonState::kAccount;
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    ApplicationContext* context = GetApplicationContext();
+    signin::AvatarProvider* avatarProvider =
+        context ? context->GetIdentityAvatarProvider() : nullptr;
+    if (avatarProvider) {
+      avatar = avatarProvider->GetIdentityAvatar(
+          identity, IdentityAvatarSize::TableViewIcon);
+    }
+  }
+
+  [self.consumer setAssistantButtonState:state avatar:avatar];
 }
 
 // Updates for `incognito` being visible.
@@ -617,14 +664,14 @@
     cameraSearchAction
   ]];
 
-  if (experimental_flags::EnableAIPrototypingMenu()) {
-    UIAction* openAIMenu = [actionFactory actionToOpenAIMenu];
-    [staticActions addObject:openAIMenu];
-  }
-
   if (IsAIMCobrowseDebugEntrypointEnabled()) {
     UIAction* openAIMode = [actionFactory actionToOpenAIMode];
     [staticActions addObject:openAIMode];
+  }
+
+  if (experimental_flags::EnableAIPrototypingMenu()) {
+    UIAction* openAIMenu = [actionFactory actionToOpenAIMenu];
+    [staticActions addObject:openAIMenu];
   }
 
   UIMenuElement* clipboardAction = [self createMenuElementForPasteboard];
@@ -637,8 +684,6 @@
     return [UIMenu menuWithChildren:@[ staticMenu, clipboardAction ]];
   }
 
-  // TODO(crbug.com/484000878): Add experimental menu button for add/move tab to
-  // group.
   return [UIMenu menuWithTitle:@""
                          image:nil
                     identifier:nil
@@ -656,18 +701,34 @@
     return nil;
   }
 
+  NSMutableArray* staticActions = [[NSMutableArray alloc] init];
+
+  UIAction* closeCurrentTabAction =
+      _incognitoState.incognitoContentVisible
+          ? [self.incognitoActionFactory actionToCloseCurrentTab]
+          : [self.regularActionFactory actionToCloseCurrentTab];
+  [staticActions addObject:closeCurrentTabAction];
+
+  if (base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu)) {
+    UIMenuElement* tabGroupActionsMenu = [self createMenuElementForTabGroups];
+    if (tabGroupActionsMenu) {
+      [staticActions addObject:tabGroupActionsMenu];
+    }
+  }
+
   // From an incognito tab, the `openNewTabAction` should open a non-incognito
   // tab. From a non-incognito tab, it should open an incognito tab.
   UIAction* openNewTabAction =
       _incognitoState.incognitoContentVisible
           ? [self.regularActionFactory actionToOpenNewTab]
           : [self.incognitoActionFactory actionToOpenNewIncognitoTab];
-  UIAction* closeCurrentTabAction =
-      _incognitoState.incognitoContentVisible
-          ? [self.incognitoActionFactory actionToCloseCurrentTab]
-          : [self.regularActionFactory actionToCloseCurrentTab];
+  [staticActions addObject:openNewTabAction];
 
-  return [UIMenu menuWithChildren:@[ closeCurrentTabAction, openNewTabAction ]];
+  return [UIMenu menuWithTitle:@""
+                         image:nil
+                    identifier:nil
+                       options:UIMenuOptionsDisplayInline
+                      children:staticActions];
 }
 
 // Returns the UIMenuElement for the content of the pasteboard. Can return
@@ -708,54 +769,125 @@
   return nil;
 }
 
-// Updates the consumer with the latest state of the assistant button.
-- (void)updateAssistantButton {
-  AppBarAssistantButtonState state = AppBarAssistantButtonState::kSignedOut;
-  UIImage* avatar = nil;
+// Returns the UIMenuElement for the content of the Add/Move Tab to Group Menu.
+- (UIMenuElement*)createMenuElementForTabGroups {
+  CHECK(base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu));
+  CHECK(self.currentWebStateList);
+  CHECK(self.regularActionFactory);
+  CHECK(self.incognitoActionFactory);
 
-  if (IsPageActionMenuEnabled()) {
-    state = AppBarAssistantButtonState::kAsk;
-  } else if (_authenticationService->HasPrimaryIdentity(
-                 signin::ConsentLevel::kSignin)) {
-    state = AppBarAssistantButtonState::kAccount;
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
-    ApplicationContext* context = GetApplicationContext();
-    signin::AvatarProvider* avatarProvider =
-        context ? context->GetIdentityAvatarProvider() : nullptr;
-    if (avatarProvider) {
-      avatar = avatarProvider->GetIdentityAvatar(
-          identity, IdentityAvatarSize::TableViewIcon);
-    }
+  BrowserActionFactory* actionFactory = _incognitoState.incognitoContentVisible
+                                            ? self.incognitoActionFactory
+                                            : self.regularActionFactory;
+
+  int activeIndex = self.currentWebStateList->active_index();
+  if (activeIndex == WebStateList::kInvalidIndex) {
+    return nil;
   }
 
-  [self.consumer setAssistantButtonState:state avatar:avatar];
+  std::set<const TabGroup*> allGroups = self.currentWebStateList->GetGroups();
+  const TabGroup* currentGroup =
+      self.currentWebStateList->GetGroupOfWebStateAt(activeIndex);
+
+  __weak __typeof(self) weakSelf = self;
+  /// If the current tab is in a group, display the "Move Tab to Group" menu.
+  /// Otherwise, display the "Add Tab to Group" menu. If a user doesn't have
+  /// any Tab Groups, the "Add Tab to Group" menu will just be a "Add Tab to
+  /// New Group" button.
+  if (currentGroup) {
+    return [actionFactory menuToMoveTabToGroupWithGroups:allGroups
+        currentGroup:currentGroup
+        moveBlock:^(const TabGroup* destinationGroup) {
+          [weakSelf moveTabToGroupBlock:destinationGroup];
+        }
+        removeBlock:^{
+          [weakSelf removeTabFromGroupBlock];
+        }];
+  } else {
+    return [actionFactory
+        menuToAddTabToGroupWithGroups:allGroups
+                         numberOfTabs:1
+                                block:^(const TabGroup* destinationGroup) {
+                                  [weakSelf
+                                      addTabToGroupBlock:destinationGroup];
+                                }];
+  }
 }
 
-#pragma mark - AuthenticationServiceObserving
-
-- (void)onServiceStatusChanged {
-  [self updateAssistantButton];
+// Creates a Move Tab to Group block for the Move Tab to Group menu.
+- (void)moveTabToGroupBlock:(const TabGroup*)destinationGroup {
+  int tabIndex = self.currentWebStateList->active_index();
+  if (tabIndex == WebStateList::kInvalidIndex) {
+    return;
+  }
+  self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
 }
 
-#pragma mark - IdentityManagerObserverBridgeDelegate
+// Creates a Remove Tab from Group block for the Move Tab to Group menu.
+- (void)removeTabFromGroupBlock {
+  CHECK(self.currentWebStateList);
 
-- (void)onPrimaryAccountChanged:
-    (const signin::PrimaryAccountChangeEvent&)event {
-  [self updateAssistantButton];
+  int tabIndex = self.currentWebStateList->active_index();
+  if (tabIndex == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  self.currentWebStateList->RemoveFromGroups({tabIndex});
 }
 
-- (void)onAccountsOnDeviceChanged {
-  [self updateAssistantButton];
+// Creates an Add Tab to Group block for the Add Tab to Group menu.
+- (void)addTabToGroupBlock:(const TabGroup*)destinationGroup {
+  CHECK(self.currentWebStateList);
+
+  int tabIndex = self.currentWebStateList->active_index();
+  if (tabIndex == WebStateList::kInvalidIndex) {
+    return;
+  }
+
+  if (destinationGroup) {
+    self.currentWebStateList->MoveToGroup({tabIndex}, destinationGroup);
+  } else {
+    web::WebState* currentWebState =
+        self.currentWebStateList->GetActiveWebState();
+    if (!currentWebState) {
+      return;
+    }
+    std::set<web::WebStateID> identifiers = {
+        currentWebState->GetUniqueIdentifier()};
+    [self createNewTabGroupWithTabs:identifiers];
+  }
 }
 
-- (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
-  [self updateAssistantButton];
-}
+// Triggers the creation of a New Tab Group with 'identifiers'.
+- (void)createNewTabGroupWithTabs:(std::set<web::WebStateID>)identifiers {
+  // While in the tab grid, the App Bar can only create new Tab Groups from the
+  // Tab Groups page in the grid.
+  CHECK(!_tabGridState.tabGridVisible ||
+        _tabGridState.currentPage == TabGridPageTabGroups);
+  CHECK(self.regularTabGroupsCommands);
+  CHECK(self.incognitoTabGroupsCommands);
 
-- (void)onIdentityManagerShutdown:(signin::IdentityManager*)identityManager {
-  _identityManager = nullptr;
-  _identityManagerBridge.reset();
+  // If the current tab is incognito and visible, then a new Tab Group being
+  // created should be incognito. If the current tab is incognito, but not
+  // visible (the Tab Grid is visible), then a Tab Group is being created from
+  // the Tab Groups page so the new group should be non-incognito.
+  BOOL isCurrentTabIncognitoAndVisible =
+      self.currentWebStateList == _incognitoWebStateList &&
+      !_tabGridState.tabGridVisible;
+
+  id<TabGroupsCommands> tabGroupsHandler = isCurrentTabIncognitoAndVisible
+                                               ? self.incognitoTabGroupsCommands
+                                               : self.regularTabGroupsCommands;
+
+  // Create a new Tab Group.
+  base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
+  if (identifiers.empty()) {
+    // Create an empty Tab Group.
+    [tabGroupsHandler showTabGroupCreationWithoutTabs];
+  } else {
+    // Create a Tab Group with 'identifiers'.
+    [tabGroupsHandler showTabGroupCreationForTabs:identifiers];
+  }
 }
 
 @end
