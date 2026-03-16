@@ -50,6 +50,7 @@ import type {ComposeboxVoiceSearchElement} from './composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
+import {WindowProxy} from './window_proxy.js';
 
 export enum VoiceSearchAction {
   ACTIVATE = 0,
@@ -78,7 +79,6 @@ export interface ComposeboxElement {
     submitOverlay: HTMLElement,
     matches: ComposeboxDropdownElement,
     errorScrim: ErrorScrimElement,
-    voiceSearch: ComposeboxVoiceSearchElement,
     caret: HTMLInputElement,
     mirror: HTMLDivElement,
   };
@@ -899,8 +899,11 @@ export class ComposeboxElement extends I18nMixinLit
 
   protected shouldShowVoiceSearch_(): boolean {
     const isExpanded = this.showDropdown_ || this.files_.size > 0;
-    return isExpanded ? this.showVoiceSearchInExpandedComposebox_ :
-                        this.showVoiceSearchInSteadyComposebox_;
+    const isFeatureEnabled = isExpanded ?
+        this.showVoiceSearchInExpandedComposebox_ :
+        this.showVoiceSearchInSteadyComposebox_;
+    return isFeatureEnabled &&
+        WindowProxy.getInstance().hasWebkitSpeechRecognition();
   }
 
   protected shouldShowVoiceSearchAnimation_(): boolean {
@@ -1271,7 +1274,9 @@ export class ComposeboxElement extends I18nMixinLit
     this.fire('voice-search-action', {value: VoiceSearchAction.ACTIVATE});
     // For contextual tasks composebox voice metrics.
     this.fire('composebox-voice-search-start');
-    this.$.voiceSearch.start();
+    this.shadowRoot
+        .querySelector<ComposeboxVoiceSearchElement>(
+            'cr-composebox-voice-search')!.start();
   }
 
   protected onVoiceSearchClose_(e: CustomEvent<boolean>) {

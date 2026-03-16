@@ -175,14 +175,16 @@ export function getHtml(this: ComposeboxElement) {
        button enabled/disabled state. -->
     ${!this.searchboxNextEnabled ? getSubmitButtonHtml.bind(this)() : ''}
   </div>
-  <cr-composebox-voice-search id="voiceSearch"
-      @voice-search-cancel="${this.onVoiceSearchClose_}"
-      @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
-      @voice-search-error="${this.onVoiceSearchError_}"
-      @transcript-update="${this.onTranscriptUpdate_}"
-      @speech-received="${this.onSpeechReceived_}"
-      exportparts="voice-close-button">
-  </cr-composebox-voice-search>
+  ${this.shouldShowVoiceSearch_() ? html`
+    <cr-composebox-voice-search id="voiceSearch"
+        @voice-search-cancel="${this.onVoiceSearchClose_}"
+        @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
+        @voice-search-error="${this.onVoiceSearchError_}"
+        @transcript-update="${this.onTranscriptUpdate_}"
+        @speech-received="${this.onSpeechReceived_}"
+        exportparts="voice-close-button">
+    </cr-composebox-voice-search>
+  ` : ''}
   ${this.shouldShowSuggestionActivityLink_()
       && this.suggestionActivityEnabled ? html`
     <div id="suggestionActivity">

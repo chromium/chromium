@@ -31,4 +31,8 @@ export class WindowProxy {
   matchMedia(query: string): MediaQueryList {
     return window.matchMedia(query);
   }
+
+  hasWebkitSpeechRecognition(): boolean {
+    return 'webkitSpeechRecognition' in window;
+  }
 }

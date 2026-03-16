@@ -12,6 +12,7 @@ import type {ComposeboxElement} from 'chrome://resources/cr_components/composebo
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
@@ -22,7 +23,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {assertStyle, installMock, mockInputState} from './test_utils.js';
@@ -223,6 +224,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
                                                    removeListener() {},
                                                    removeEventListener() {},
                                                  }));
+    windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
 
     window.webkitSpeechRecognition =
         MockSpeechRecognition as unknown as typeof SpeechRecognition;
@@ -352,7 +354,8 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
         assertTrue(mockSpeechRecognition.voiceSearchInProgress);
         assertStyle(composeboxDiv, 'opacity', '0');
-        assertStyle(composebox.$.voiceSearch, 'display', 'inline');
+        assertStyle(
+            $$(composebox, 'cr-composebox-voice-search'), 'display', 'inline');
         assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
         assertEquals(
             1,
@@ -567,20 +570,18 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
     await composebox.updateComplete;
 
-    const voiceSearchElement = composebox.$.voiceSearch;
-    const errorContainer =
-        voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
-            '#error-container');
-    const inputElement =
-        voiceSearchElement.shadowRoot.querySelector<HTMLTextAreaElement>(
-            '#input');
+    const voiceSearchElement = $$(composebox, 'cr-composebox-voice-search');
+    assertTrue(!!voiceSearchElement);
+    const errorContainer = $$(voiceSearchElement, '#error-container');
+    const inputElement = $$(voiceSearchElement, '#input');
 
     assertTrue(!!errorContainer);
     assertFalse(errorContainer.hidden);
     assertFalse(errorContainer.hidden, 'Error container should not be hidden');
     assertTrue(inputElement!.hidden);
     assertStyle(composeboxDiv, 'opacity', '0');
-    assertStyle(composebox.$.voiceSearch, 'display', 'inline');
+    assertStyle(
+        $$(composebox, 'cr-composebox-voice-search'), 'display', 'inline');
     assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
 
     mockSpeechRecognition.onend!();
@@ -599,7 +600,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         const composeboxDiv =
             contextualTasksApp.$.composebox.$.composebox.$.composebox;
         const composebox = contextualTasksApp.$.composebox.$.composebox;
-        composebox.$.voiceSearch.start();
+        const voiceSearch = $$<ComposeboxVoiceSearchElement>(
+            composebox, 'cr-composebox-voice-search');
+        assertTrue(!!voiceSearch);
+        voiceSearch.start();
         await microtasksFinished();
         assertEquals(
             0,
@@ -613,10 +617,9 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        const voiceSearchElement = composebox.$.voiceSearch;
-        const errorContainer =
-            voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
-                '#error-container');
+        const voiceSearchElement = $$(composebox, 'cr-composebox-voice-search');
+        assertTrue(!!voiceSearchElement);
+        const errorContainer = $$(voiceSearchElement, '#error-container');
         assertTrue(!!errorContainer);
         assertTrue(errorContainer.hidden);
 
@@ -642,8 +645,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         contextualTasksApp.$.composebox.$.composebox.$.composebox;
     const composebox = contextualTasksApp.$.composebox.$.composebox;
     const voiceSearchButton = getVoiceSearchButton(composebox);
-    const voiceSearchElement = composebox.$.voiceSearch;
-    voiceSearchButton!.click();
+    const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
+        composebox, 'cr-composebox-voice-search');
+    assertTrue(!!voiceSearchButton && !!voiceSearchElement);
+    voiceSearchButton.click();
     await microtasksFinished();
 
     const result = createResults(2);
@@ -821,31 +826,27 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
     await composebox.updateComplete;
 
-    await contextEntrypoint.dispatchEvent(
-        new CustomEvent('tool-click', {
-          detail: {toolMode: ComposeboxToolMode.kDeepSearch},
-          bubbles: true,
-          composed: true,
-        }));
+    await contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ComposeboxToolMode.kDeepSearch},
+      bubbles: true,
+      composed: true,
+    }));
     await microtasksFinished();
     await composebox.updateComplete;
     assertEquals(
-        ComposeboxToolMode.kDeepSearch,
-        composebox.activeToolMode,
+        ComposeboxToolMode.kDeepSearch, composebox.activeToolMode,
         'Active tool should be Deep Search after clicking tool');
-    await contextEntrypoint.dispatchEvent(
-        new CustomEvent('tool-click', {
-          detail: {toolMode: ComposeboxToolMode.kDeepSearch},
-          bubbles: true,
-          composed: true,
-        }));
+    await contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
+      detail: {toolMode: ComposeboxToolMode.kDeepSearch},
+      bubbles: true,
+      composed: true,
+    }));
 
     await microtasksFinished();
     await composebox.updateComplete;
 
     assertEquals(
-        ComposeboxToolMode.kUnspecified,
-        composebox.activeToolMode,
+        ComposeboxToolMode.kUnspecified, composebox.activeToolMode,
         'Active tool should be unspecified after clicking tool twice');
   });
 
@@ -858,34 +859,31 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
     await composebox.updateComplete;
 
-    await contextEntrypoint.dispatchEvent(
-        new CustomEvent(
-            'create-image-click',
-            {
-              bubbles: true,
-              composed: true,
-            },
-            ));
+    await contextEntrypoint.dispatchEvent(new CustomEvent(
+        'create-image-click',
+        {
+          bubbles: true,
+          composed: true,
+        },
+        ));
     await microtasksFinished();
     await composebox.updateComplete;
     assertEquals(
         ComposeboxToolMode.kImageGen, composebox.activeToolMode,
         'Active tool should be nano after clicking tool');
-    await contextEntrypoint.dispatchEvent(
-        new CustomEvent(
-            'create-image-click',
-            {
-              bubbles: true,
-              composed: true,
-            },
-            ));
+    await contextEntrypoint.dispatchEvent(new CustomEvent(
+        'create-image-click',
+        {
+          bubbles: true,
+          composed: true,
+        },
+        ));
 
     await microtasksFinished();
     await composebox.updateComplete;
 
     assertEquals(
-        ComposeboxToolMode.kUnspecified,
-        composebox.activeToolMode,
+        ComposeboxToolMode.kUnspecified, composebox.activeToolMode,
         'Active tool should be unspecified after clicking tool twice');
   });
 
