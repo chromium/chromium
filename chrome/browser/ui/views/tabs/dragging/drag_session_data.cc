@@ -38,11 +38,15 @@ TabDragData::TabDragData(TabDragContext* source_context, TabSlotView* view)
   }
   std::optional<tab_groups::TabGroupId> tab_group_id = view->group();
   if (tab_group_id.has_value()) {
+    const TabGroup* group =
+        source_context->GetTabStripModel()->group_model()->GetTabGroup(
+            tab_group_id.value());
+    int index_in_group = source_model_index.has_value()
+                             ? source_model_index.value() -
+                                   static_cast<int>(group->ListTabs().start())
+                             : 0;
     tab_group_data = TabDragData::TabGroupData{
-        tab_group_id.value(), *source_context->GetTabStripModel()
-                                   ->group_model()
-                                   ->GetTabGroup(tab_group_id.value())
-                                   ->visual_data()};
+        tab_group_id.value(), *group->visual_data(), index_in_group};
   }
 }
 

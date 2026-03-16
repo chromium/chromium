@@ -66,6 +66,8 @@ struct TabDragData final {
   struct TabGroupData {
     tab_groups::TabGroupId group_id;
     tab_groups::TabGroupVisualData group_visual_data;
+    // The index of the tab within the group at the start of the drag.
+    int index_in_group;
   };
 
   // The information on the group the tab was in at the start of the drag, or
