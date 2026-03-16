@@ -234,8 +234,7 @@ TEST_F(NetworkQualityEstimatorTest, TestKbpsRTTUpdates) {
   std::unique_ptr<URLRequest> request(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                        net::LOAD_DISABLE_CACHE);
+  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
   test_delegate.RunUntilComplete();
 
@@ -279,8 +278,7 @@ TEST_F(NetworkQualityEstimatorTest, TestKbpsRTTUpdates) {
   std::unique_ptr<URLRequest> request2(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request2->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                         net::LOAD_DISABLE_CACHE);
+  request2->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request2->Start();
   test_delegate.RunUntilComplete();
 
@@ -304,8 +302,7 @@ TEST_F(NetworkQualityEstimatorTest, TestKbpsRTTUpdates) {
   std::unique_ptr<URLRequest> request3(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request3->SetLoadFlags(request3->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                         net::LOAD_DISABLE_CACHE);
+  request3->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request3->Start();
   test_delegate.RunUntilComplete();
 
@@ -354,8 +351,7 @@ TEST_F(NetworkQualityEstimatorTest, Caching) {
       std::unique_ptr<URLRequest> request(
           context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                                  &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-      request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                            net::LOAD_DISABLE_CACHE);
+      request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
       request->Start();
       test_delegate.RunUntilComplete();
     }
@@ -469,8 +465,7 @@ TEST_F(NetworkQualityEstimatorTest, CachingDisabled) {
     std::unique_ptr<URLRequest> request(
         context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                                &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                          net::LOAD_DISABLE_CACHE);
+    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
     request->Start();
     test_delegate.RunUntilComplete();
   }
@@ -1269,8 +1264,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestThroughputNoRequestOverlap) {
     std::unique_ptr<URLRequest> request(
         context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                                &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                          net::LOAD_DISABLE_CACHE);
+    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
     request->Start();
     test_delegate.RunUntilComplete();
 
@@ -1327,8 +1321,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestEffectiveConnectionTypeObserver) {
   std::unique_ptr<URLRequest> request(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                        net::LOAD_DISABLE_CACHE);
+  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
   test_delegate.RunUntilComplete();
   EXPECT_EQ(1U, observer.effective_connection_types().size());
@@ -1354,8 +1347,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestEffectiveConnectionTypeObserver) {
   std::unique_ptr<URLRequest> request2(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request2->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                         net::LOAD_DISABLE_CACHE);
+  request2->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request2->Start();
   test_delegate.RunUntilComplete();
   EXPECT_EQ(1U, observer.effective_connection_types().size());
@@ -1714,8 +1706,7 @@ TEST_F(NetworkQualityEstimatorTest,
   std::unique_ptr<URLRequest> request(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                        net::LOAD_DISABLE_CACHE);
+  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
   test_delegate.RunUntilComplete();
   EXPECT_EQ(1U, observer.effective_connection_types().size());
@@ -1800,16 +1791,14 @@ TEST_F(NetworkQualityEstimatorTest, TestRttThroughputObservers) {
   std::unique_ptr<URLRequest> request(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                        net::LOAD_DISABLE_CACHE);
+  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
   test_delegate.RunUntilComplete();
 
   std::unique_ptr<URLRequest> request2(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request2->SetLoadFlags(request2->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                         net::LOAD_DISABLE_CACHE);
+  request2->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request2->Start();
   test_delegate.RunUntilComplete();
 
@@ -1917,8 +1906,7 @@ TEST_F(NetworkQualityEstimatorTest, TestGlobalSocketWatcherThrottle) {
   std::unique_ptr<URLRequest> request(
       context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                              &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                        net::LOAD_DISABLE_CACHE);
+  request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
   test_delegate.RunUntilComplete();
   EXPECT_EQ(1U, rtt_observer.observations().size());
@@ -2000,8 +1988,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestTCPSocketRTT) {
     std::unique_ptr<URLRequest> request(
         context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                                &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                          net::LOAD_DISABLE_CACHE);
+    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
     request->Start();
     tick_clock.Advance(
         estimator.params()->socket_watchers_min_notification_interval());
@@ -2165,8 +2152,7 @@ TEST_F(NetworkQualityEstimatorTest,
     std::unique_ptr<URLRequest> request(
         context->CreateRequest(estimator.GetEchoURL(), DEFAULT_PRIORITY,
                                &test_delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
-    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED |
-                          net::LOAD_DISABLE_CACHE);
+    request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
     request->Start();
     test_delegate.RunUntilComplete();
 
