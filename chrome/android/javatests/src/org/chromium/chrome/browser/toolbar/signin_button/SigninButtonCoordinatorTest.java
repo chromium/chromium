@@ -18,17 +18,20 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -47,14 +50,17 @@ import org.chromium.ui.test.util.ViewUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(SigninFeatures.SIGNIN_LEVEL_UP_BUTTON)
 public class SigninButtonCoordinatorTest {
-    private final FreshCtaTransitTestRule mActivityTestRule =
+
+    @Rule(order = 1)
+    public final FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    private final SigninTestRule mSigninTestRule = new SigninTestRule();
+    // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
+    // observers registered in the AccountManagerFacade mock.
+    @Rule(order = 0)
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
-    @Rule
-    public final RuleChain mRuleChain =
-            RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
+    private FakeSyncServiceImpl mFakeSyncServiceImpl;
 
     private RegularNewTabPageStation mPage;
 
@@ -72,6 +78,14 @@ public class SigninButtonCoordinatorTest {
                                         .accessibility_toolbar_btn_identity_disc_with_name_and_email,
                                 TestAccounts.ACCOUNT1.getFullName(),
                                 TestAccounts.ACCOUNT1.getEmail());
+    }
+
+    @After
+    public void tearDown() {
+        if (mFakeSyncServiceImpl != null) {
+            mFakeSyncServiceImpl = null;
+            SyncServiceFactory.setInstanceForTesting(null);
+        }
     }
 
     @Test
@@ -157,6 +171,53 @@ public class SigninButtonCoordinatorTest {
                         isDisplayed(),
                         withContentDescription(
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninButtonWithErrorBadge() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFakeSyncServiceImpl = new FakeSyncServiceImpl();
+                    SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
+                });
+
+        // SigninButton may have already been initialized with a real SyncService. As such,
+        // recreating the activity in order to ensure the fake SyncService override is used.
+        mActivityTestRule.recreateActivity();
+
+        // Test initial state with no error.
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(mContentDescriptionWithNameAndEmail)));
+
+        // Test transition to error.
+        mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
+
+        String expectedErrorContentDescription =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string
+                                        .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(expectedErrorContentDescription)));
+
+        // Test transition to signed in state with error resolved.
+        mFakeSyncServiceImpl.setRequiresClientUpgrade(false);
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.signin_button),
+                        isDisplayed(),
+                        withContentDescription(mContentDescriptionWithNameAndEmail)));
     }
 
     @Test
