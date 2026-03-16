@@ -4,7 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {IntroAppElement} from './dice_app.js';
+import type {IntroAppElement} from './intro_app.js';
 
 export function getHtml(this: IntroAppElement) {
   return html`<!--_html_template_start_-->

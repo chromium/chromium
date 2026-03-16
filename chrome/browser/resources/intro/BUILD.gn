@@ -44,8 +44,8 @@ build_webui("build") {
       "default_browser/app.ts",
       "default_browser/app_refresh.html.ts",
       "default_browser/app_refresh.ts",
-      "dice_app.html.ts",
-      "dice_app.ts",
+      "intro_app.html.ts",
+      "intro_app.ts",
       "sign_in_promo.html.ts",
       "sign_in_promo.ts",
       "sign_in_promo_refresh.html.ts",
@@ -55,7 +55,7 @@ build_webui("build") {
     css_files = [
       "default_browser/app.css",
       "default_browser/app_refresh.css",
-      "dice_app.css",
+      "intro_app.css",
       "sign_in_promo.css",
       "sign_in_promo_refresh.css",
     ]

@@ -12,7 +12,7 @@ build_webui_tests("build") {
 
   files = [
     "default_browser_refresh_test.ts",
-    "dice_app_test.ts",
+    "intro_app_test.ts",
     "sign_in_promo_test.ts",
     "sign_in_promo_refresh_test.ts",
     "test_intro_browser_proxy.ts",

@@ -266,6 +266,63 @@ class ClassInfo {
     });
   }
 
+  runConsistentFilenameDomNameCheck() {
+    if (!this.isLitElement) {
+      return;
+    }
+
+    const basename = path.basename(this.context.filename, '.ts');
+
+    if (basename.endsWith('_element')) {
+      this.context.report({
+        node: this.node,
+        messageId: 'incorrectFilenameSuffix',
+        data: {
+          filename: basename + '.ts',
+        },
+      });
+      return;
+    }
+
+    if (this.isTest) {
+      // Don't proceed with filename consistency checks if running in a test
+      // context, since it is common for custom elements to be defined in the
+      // file holding the tests and not a dedicated file.
+      return;
+    }
+
+    // Use the DOM name to derive the expected filename. If no DOM name exists,
+    // use the class name instead.
+    const candidateParts = this.domName ?
+        this.domName.split('-') :
+        this.node.id.name.match(/[A-Z]?[a-z]+/g)
+            .filter(p => p !== 'Element')
+            .map(p => p.toLowerCase());
+
+    const isBasenameConsistent = candidateParts.some((_, i) => {
+      const candidateSuffix = candidateParts.slice(-i).join('_');
+
+      // Allow a file name prefix that does not exist in the DOM name, only if
+      // all the DOM name parts are reflected in the file name.
+      return i === 0 ? basename.endsWith(candidateSuffix) :
+                       candidateSuffix === basename;
+    });
+
+    if (isBasenameConsistent) {
+      return;
+    }
+
+    this.context.report({
+      node: this.node,
+      messageId: 'inconsistentFilename',
+      data: {
+        filename: basename + '.ts',
+        referenceType: this.domName ? 'DOM' : 'class',
+        referenceName: this.domName || this.node.id.name,
+      },
+    });
+  }
+
   runConsistentClassDomNameCheck() {
     if (!this.isLitElement) {
       return;
@@ -373,8 +430,12 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
           'Class name \'{{className}}\' should end with the \'Element\' suffix.',
       incorrectDomNameSuffix:
           'DOM name \'{{domName}}\' should not end with the \'-element\' suffix.',
+      incorrectFilenameSuffix:
+          'File name \'{{filename}}\' should not end with the \'_element\' suffix.',
       inconsistentClassName:
           'Naming of class/dom pair {{className}} ↔ {{domName}} is inconsistent.',
+      inconsistentFilename:
+          'Naming of file/{{referenceType}} pair {{filename}} ↔ {{referenceName}} is inconsistent.',
       incorrectDollarSignNotation:
           'Use camelCase instead of dash-case for DOM ids, change this.$[\'{{dashCaseName}}\'] to this.$.{{camelCaseName}}.',
       incorrectMethodDefinitionOrder:
@@ -505,6 +566,7 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs({
         currentClassInfo.runMissingSuperCallsCheck();
         currentClassInfo.runMethodDefinitionOrderCheck();
         currentClassInfo.runConsistentClassDomNameCheck();
+        currentClassInfo.runConsistentFilenameDomNameCheck();
       },
       ['Program > TSModuleDeclaration[kind=global] > TSModuleBlock > TSInterfaceDeclaration[id.name="HTMLElementTagNameMap"] > TSInterfaceBody > TSPropertySignature'](
           node) {

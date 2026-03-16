@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://intro/dice_app.js';
+import 'chrome://intro/intro_app.js';
 
 import {IntroBrowserProxyImpl} from 'chrome://intro/browser_proxy.js';
-import type {IntroAppElement} from 'chrome://intro/dice_app.js';
+import type {IntroAppElement} from 'chrome://intro/intro_app.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

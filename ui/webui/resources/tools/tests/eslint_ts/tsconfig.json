@@ -9,19 +9,21 @@
     "no_violations.ts",
     "with_violations.ts",
     "with_webui_plugin_inline_event_handler_violations.html.ts",
-    "with_webui_plugin_lit_element_structure_violations.ts",
-    "with_webui_plugin_lit_violations.ts",
     "with_webui_plugin_lit_element_bindings_violations.html.ts",
     "with_webui_plugin_lit_element_bindings_violations.ts",
     "with_webui_plugin_lit_element_invalid_interface_violations.html.ts",
-    "with_webui_plugin_lit_element_invalid_interface_violations.ts",
     "with_webui_plugin_lit_element_invalid_interface_violations_no_template_file.ts",
+    "with_webui_plugin_lit_element_invalid_interface_violations.ts",
+    "with_webui_plugin_lit_element_structure_violations.ts",
     "with_webui_plugin_lit_element_template_structure_violations.html.ts",
+    "with_webui_plugin_lit_violations.ts",
     "with_webui_plugin_polymer_property_class_member_violations.ts",
     "with_webui_plugin_polymer_violations.ts",
-    "with_webui_plugin_web_component_missing_deps_violations.html.ts",
-    "with_webui_plugin_web_component_missing_deps_violations.ts",
+    "with_webui_plugin_violations_inconsistent_file_name.ts",
+    "with_webui_plugin_violations_incorrect_filename_suffix_element.ts",
     "with_webui_plugin_web_component_missing_deps_violations_bar.html.ts",
-    "with_webui_plugin_web_component_missing_deps_violations_foo.html.ts"
+    "with_webui_plugin_web_component_missing_deps_violations_foo.html.ts",
+    "with_webui_plugin_web_component_missing_deps_violations.html.ts",
+    "with_webui_plugin_web_component_missing_deps_violations.ts"
   ]
 }

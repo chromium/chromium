@@ -440,6 +440,42 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_LitElementIncorrectFilenameSuffixCheck(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(
+          ["with_webui_plugin_violations_incorrect_filename_suffix_element.ts"])
+
+    # Expected ESLint rule violation that should be part of the error output.
+    _EXPECTED_STRING = "@webui-eslint/lit-element-structure"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_INCORRECT_FILE_NAME_SUFFIX_ERROR = "File name '%(filename)s' should not end with the '_element' suffix"
+    error = _EXPECTED_INCORRECT_FILE_NAME_SUFFIX_ERROR % {
+        'filename':
+            'with_webui_plugin_violations_incorrect_filename_suffix_element.ts',
+    }
+    self.assertTrue(
+        error in str(context.exception),
+        f'Didn\'t find expected error: {error}')
+
+  def testWebUiEslintPlugin_LitElementInconsistentFilenameCheck(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(["with_webui_plugin_violations_inconsistent_file_name.ts"])
+
+    # Expected ESLint rule violation that should be part of the error output.
+    _EXPECTED_STRING = "@webui-eslint/lit-element-structure"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_INCONSISTENT_FILE_NAME_ERROR = "Naming of file/%(referenceType)s pair %(filename)s ↔ %(referenceName)s is inconsistent"
+    error = _EXPECTED_INCONSISTENT_FILE_NAME_ERROR % {
+        'filename': 'with_webui_plugin_violations_inconsistent_file_name.ts',
+        'referenceType': 'DOM',
+        'referenceName': 'inconsistent-filename',
+    }
+    self.assertTrue(
+        error in str(context.exception),
+        f'Didn\'t find expected error: {error}')
+
   def testWebUiEslintPlugin_LitElementTemplateStructure(self):
     with self.assertRaises(RuntimeError) as context:
       self._run_test([

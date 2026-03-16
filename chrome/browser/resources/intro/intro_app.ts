@@ -9,8 +9,8 @@ import './sign_in_promo.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './dice_app.css.js';
-import {getHtml} from './dice_app.html.js';
+import {getCss} from './intro_app.css.js';
+import {getHtml} from './intro_app.html.js';
 
 export interface IntroAppElement {
   $: {
