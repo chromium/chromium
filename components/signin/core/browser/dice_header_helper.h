@@ -38,6 +38,18 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   static DiceResponseParams BuildDiceSignoutResponseParams(
       const std::string& header_value);
 
+  // Adds the Dice to all Gaia requests from a connected profile, with the
+  // exception of requests from gaia webview.
+  // Removes the header in case it should not be transferred to a redirected
+  // url. Returns whether the request has the Dice request header.
+  static bool AppendOrRemoveDiceRequestHeader(
+      RequestAdapter* request,
+      const GURL& redirect_url,
+      const GaiaId& gaia_id,
+      bool sync_enabled,
+      AccountConsistencyMethod account_consistency,
+      const std::string& device_id);
+
   // Returns the header value for Dice requests. Returns the empty string when
   // the header must not be added.
   // |sync_gaia_id| is not empty if Sync is currently enabled for this
@@ -46,11 +58,6 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   // confirmation dialog.
   std::string BuildRequestHeader(const GaiaId& sync_gaia_id,
                                  const std::string& device_id);
-
-  // SigninHeaderHelper implementation:
-  bool ShouldBuildRequestHeader(
-      const GURL& url,
-      const content_settings::CookieSettings* cookie_settings) override;
 
  private:
   // SigninHeaderHelper implementation:

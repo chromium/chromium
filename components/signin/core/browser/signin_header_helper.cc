@@ -190,44 +190,9 @@ void AppendOrRemoveMirrorRequestHeader(
       chrome_connected_header_value);
 }
 
-bool AppendOrRemoveDiceRequestHeader(
-    RequestAdapter* request,
-    const GURL& redirect_url,
-    const GaiaId& gaia_id,
-    bool sync_enabled,
-    AccountConsistencyMethod account_consistency,
-    const content_settings::CookieSettings* cookie_settings,
-    const std::string& device_id) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  const GURL& url = redirect_url.is_empty() ? request->GetUrl() : redirect_url;
-  DiceHeaderHelper dice_helper(account_consistency);
-  std::string dice_header_value;
-  if (dice_helper.ShouldBuildRequestHeader(url, cookie_settings)) {
-    dice_header_value = dice_helper.BuildRequestHeader(
-        sync_enabled ? gaia_id : GaiaId(), device_id);
-  }
-  return dice_helper.AppendOrRemoveRequestHeader(
-      request, redirect_url, kDiceRequestHeader, dice_header_value);
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-}
-
 ManageAccountsParams BuildManageAccountsParams(
     const std::string& header_value) {
   return ChromeConnectedHeaderHelper::BuildManageAccountsParams(header_value);
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-DiceResponseParams BuildDiceSigninResponseParams(
-    const std::string& header_value) {
-  return DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
-}
-
-DiceResponseParams BuildDiceSignoutResponseParams(
-    const std::string& header_value) {
-  return DiceHeaderHelper::BuildDiceSignoutResponseParams(header_value);
-}
-#endif
 
 }  // namespace signin

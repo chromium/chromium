@@ -190,10 +190,23 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
   return params;
 }
 
-bool DiceHeaderHelper::ShouldBuildRequestHeader(
-    const GURL& url,
-    const content_settings::CookieSettings* cookie_settings) {
-  return IsUrlEligibleForRequestHeader(url);
+// static
+bool DiceHeaderHelper::AppendOrRemoveDiceRequestHeader(
+    RequestAdapter* request,
+    const GURL& redirect_url,
+    const GaiaId& gaia_id,
+    bool sync_enabled,
+    AccountConsistencyMethod account_consistency,
+    const std::string& device_id) {
+  const GURL& url = redirect_url.is_empty() ? request->GetUrl() : redirect_url;
+  DiceHeaderHelper dice_helper(account_consistency);
+  std::string dice_header_value;
+  if (dice_helper.IsUrlEligibleForRequestHeader(url)) {
+    dice_header_value = dice_helper.BuildRequestHeader(
+        sync_enabled ? gaia_id : GaiaId(), device_id);
+  }
+  return dice_helper.AppendOrRemoveRequestHeader(
+      request, redirect_url, kDiceRequestHeader, dice_header_value);
 }
 
 bool DiceHeaderHelper::IsUrlEligibleForRequestHeader(const GURL& url) {

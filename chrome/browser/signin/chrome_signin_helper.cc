@@ -26,6 +26,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/core/browser/account_reconcilor.h"
+#include "components/signin/core/browser/dice_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -513,14 +514,14 @@ void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
   std::optional<std::string> header_value;
   if (header_value = response_headers->GetNormalizedHeader(kDiceResponseHeader);
       header_value) {
-    params = BuildDiceSigninResponseParams(*header_value);
+    params = DiceHeaderHelper::BuildDiceSigninResponseParams(*header_value);
     // The header must be removed for privacy reasons, so that renderers never
     // have access to the authorization code.
     response->RemoveHeader(kDiceResponseHeader);
   } else if (header_value = response_headers->GetNormalizedHeader(
                  kGoogleSignoutResponseHeader);
              header_value) {
-    params = BuildDiceSignoutResponseParams(*header_value);
+    params = DiceHeaderHelper::BuildDiceSignoutResponseParams(*header_value);
   }
 
   if (!params.IsValid()) {
@@ -663,9 +664,9 @@ void FixAccountConsistencyRequestHeader(
 
 // Dice header:
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  bool dice_header_added = AppendOrRemoveDiceRequestHeader(
+  bool dice_header_added = DiceHeaderHelper::AppendOrRemoveDiceRequestHeader(
       request, redirect_url, gaia_id, is_sync_enabled, account_consistency,
-      cookie_settings, signin_scoped_device_id);
+      signin_scoped_device_id);
 
   // Block the AccountReconcilor while the Dice requests are in flight. This
   // allows the DiceReponseHandler to process the response before the reconcilor

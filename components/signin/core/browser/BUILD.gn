@@ -154,6 +154,7 @@ source_set("unit_tests") {
   if (enable_dice_support) {
     sources += [
       "dice_account_reconcilor_delegate_unittest.cc",
+      "dice_header_helper_unittest.cc",
       "dice_response_params_unittest.cc",
     ]
   }
