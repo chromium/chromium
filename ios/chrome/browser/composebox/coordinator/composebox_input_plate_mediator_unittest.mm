@@ -196,7 +196,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                   aimEligibilityService:aim_eligibility_service_.get()
                             prefService:&pref_service_
               browserCoordinatorHandler:nil
-                           sceneHandler:nil];
+                           sceneHandler:nil
+                             entrypoint:ComposeboxEntrypoint::kOther];
     consumer_ = [[TestComposeboxInputPlateConsumer alloc] init];
     mediator_.consumer = consumer_;
 

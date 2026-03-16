@@ -313,6 +313,8 @@ CreateInputDataFromAnnotatedPageContent(
   __weak id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
   // Handler for scene commands.
   __weak id<SceneCommands> _sceneHandler;
+  // The entrypoint from which the composebox was invoked.
+  ComposeboxEntrypoint _entrypoint;
 }
 
 - (instancetype)
@@ -331,9 +333,11 @@ CreateInputDataFromAnnotatedPageContent(
                         prefService:(PrefService*)prefService
           browserCoordinatorHandler:
               (id<BrowserCoordinatorCommands>)browserCoordinatorHandler
-                       sceneHandler:(id<SceneCommands>)sceneHandler {
+                       sceneHandler:(id<SceneCommands>)sceneHandler
+                         entrypoint:(ComposeboxEntrypoint)entrypoint {
   self = [super init];
   if (self) {
+    _entrypoint = entrypoint;
     _browserCoordinatorHandler = browserCoordinatorHandler;
     _sceneHandler = sceneHandler;
     _prefService = prefService;
@@ -2013,7 +2017,8 @@ CreateInputDataFromAnnotatedPageContent(
                 isSearchType:(BOOL)isSearchType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  if (![self isActiveTabAttached]) {
+  if (![self isActiveTabAttached] &&
+      _entrypoint != ComposeboxEntrypoint::kCobrowse) {
     // If we are initiating a new navigation while the active tab is not
     // attached to the composebox, hide the tab-specific assistant sheet.
     [_sceneHandler hideAssistant];

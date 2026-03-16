@@ -203,7 +203,8 @@ const CGFloat kSnackbarBottomMargin = 10;
                                           dispatcher,
                                           BrowserCoordinatorCommands)
                          sceneHandler:HandlerForProtocol(dispatcher,
-                                                         SceneCommands)];
+                                                         SceneCommands)
+                           entrypoint:_entrypoint];
   _mediator.debugLogger = self.debugLogger;
   _mediator.URLLoader = _URLLoader;
   _mediator.consumer = _viewController;

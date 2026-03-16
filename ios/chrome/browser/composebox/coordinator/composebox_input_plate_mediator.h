@@ -10,6 +10,7 @@
 #include <memory>
 
 #import "components/omnibox/composebox/ios/composebox_context_upload_observer_bridge.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client_delegate.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_tab_picker_coordinator.h"
@@ -83,7 +84,8 @@ class ContextualSearchSessionHandle;
                         prefService:(PrefService*)prefService
           browserCoordinatorHandler:
               (id<BrowserCoordinatorCommands>)browserCoordinatorHandler
-                       sceneHandler:(id<SceneCommands>)sceneHandler;
+                       sceneHandler:(id<SceneCommands>)sceneHandler
+                         entrypoint:(ComposeboxEntrypoint)entrypoint;
 
 - (void)disconnect;
 
