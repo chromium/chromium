@@ -213,6 +213,104 @@ breaking installer changes.''')
     return []
 
 
+def _CheckNoBaseRunLoopInChrome(input_api, output_api):
+    """Check for base::RunLoop usage in chrome/ (production code only)."""
+    # These are files in //chrome that currently use base::RunLoop and are
+    # grandfathered in. New usages should be avoided.
+    allowed_files = [
+        'chrome/app_shim/app_shim_main_delegate.mm',
+        'chrome/browser/app_controller_mac.mm',
+        'chrome/browser/apps/app_service/app_registry_cache_waiter.h',
+        'chrome/browser/apps/app_service/browser_app_launcher.cc',
+        'chrome/browser/ash/accessibility/speech_monitor.cc',
+        'chrome/browser/ash/arc/session/arc_session_manager.cc',
+        'chrome/browser/ash/system_web_apps/system_web_app_manager.cc',
+        'chrome/browser/browser_process_impl.cc',
+        'chrome/browser/browser_switcher/ieem_sitelist_parser_fuzzer.cc',
+        'chrome/browser/btm/btm_browser_signin_detector_factory.h',
+        'chrome/browser/chrome_browser_main.cc',
+        'chrome/browser/chrome_browser_main.h',
+        'chrome/browser/enterprise/connectors/device_trust/key_management/installer/management_service/rotate_util.cc',
+        'chrome/browser/extensions/blocked_action_waiter.h',
+        'chrome/browser/extensions/load_error_waiter.h',
+        'chrome/browser/extensions/startup_helper.cc',
+        'chrome/browser/first_run/first_run.cc',
+        'chrome/browser/first_run/first_run_internal_linux.cc',
+        'chrome/browser/lifetime/browser_shutdown.cc',
+        'chrome/browser/notifications/stub_notification_display_service.cc',
+        'chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade.cc',
+        'chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h',
+        'chrome/browser/policy/extension_force_install_mixin.cc',
+        'chrome/browser/printing/print_job.cc',
+        'chrome/browser/printing/print_view_manager_base.cc',
+        'chrome/browser/profiles/keep_alive/profile_keep_alive_waiter.h',
+        'chrome/browser/profiles/profile_manager.cc',
+        'chrome/browser/sessions/session_restore.cc',
+        'chrome/browser/sessions/tab_restore_service_load_waiter.h',
+        'chrome/browser/ssl/ssl_client_auth_requestor_mock.h',
+        'chrome/browser/sync_file_system/local/canned_syncable_file_system.cc',
+        'chrome/browser/ui/ash/login/login_display_host.h',
+        'chrome/browser/ui/cocoa/first_run_dialog_cocoa.mm',
+        'chrome/browser/ui/cocoa/share_menu_controller.mm',
+        'chrome/browser/ui/global_error/global_error_waiter.h',
+        'chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h',
+        'chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.cc',
+        'chrome/browser/ui/views/accessibility/uia_accessibility_event_waiter.h',
+        'chrome/browser/ui/views/chrome_browser_main_extra_parts_views.cc',
+        'chrome/browser/ui/views/first_run_dialog.cc',
+        'chrome/browser/ui/views/message_box_dialog.cc',
+        'chrome/browser/ui/views/process_singleton_dialog_linux.cc',
+        'chrome/browser/ui/views/uninstall_view.cc',
+        'chrome/browser/web_applications/os_integration/mac/app_shim_launch.mm',
+        'chrome/browser/web_applications/os_integration/mac/web_app_shortcut_copier_mac.mm',
+        'chrome/browser/web_applications/web_app_command_manager.cc',
+        'chrome/browser/web_applications/web_app_command_manager.h',
+        'chrome/browser/web_applications/web_app_provider.cc',
+        'chrome/browser/webauthn/enclave_keys_waiter.h',
+        'chrome/credential_provider/extension/service.cc',
+        'chrome/enterprise_companion/app/app.cc',
+        'chrome/tools/service_discovery_sniffer/service_discovery_sniffer.cc',
+        'chrome/updater/app/app.cc',
+        'chrome/updater/app/app_server.cc',
+    ]
+
+    test_patterns = [
+        r'.*test.*',
+        r'.*fake.*',
+        r'.*mock.*',
+        r'.*fuzz.*',
+    ]
+    test_re = input_api.re.compile('|'.join(test_patterns))
+
+    def SourceFilter(affected_file):
+        return input_api.FilterSourceFile(affected_file,
+                                          INCLUDE_SOURCE_FILES_ONLY,
+                                          input_api.DEFAULT_FILES_TO_SKIP)
+
+    run_loop_re = input_api.re.compile(r'\bbase::RunLoop\b')
+    problems = []
+    for f in input_api.AffectedSourceFiles(SourceFilter):
+        local_path = f.LocalPath().replace('\\', '/')
+        if local_path in allowed_files or test_re.match(local_path):
+            continue
+
+        for line_num, line in f.ChangedContents():
+            if run_loop_re.search(line):
+                problems.append('    %s:%d' % (local_path, line_num))
+
+    if not problems:
+        return []
+
+    return [
+        output_api.PresubmitError(
+            'base::RunLoop is disallowed in production code in //chrome. '
+            'Please email chrome-directory-owners@chromium.org if you '
+            'believe a RunLoop is necessary. It could be necessary for '
+            'integration with OS APIs.',
+            items=problems)
+    ]
+
+
 def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     results = []
@@ -221,6 +319,7 @@ def _CommonChecks(input_api, output_api):
     results.extend(_CheckNoIsIOSBuildFlagsInChrome(input_api, output_api))
     results.extend(
         _CheckBreakingInstallerVersionBumpNeeded(input_api, output_api))
+    results.extend(_CheckNoBaseRunLoopInChrome(input_api, output_api))
     return results
 
 
