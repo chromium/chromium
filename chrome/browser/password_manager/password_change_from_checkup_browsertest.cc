@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 }
 
 // TODO(https://crbug.com/492810570): Fix the flakiness.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FormWaiterFindsFormAndSubmits \
   DISABLED_FormWaiterFindsFormAndSubmits
 #else
