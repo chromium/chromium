@@ -171,6 +171,7 @@ NSAttributedString* GetAttributedMessage(NSString* message) {
 
   if ([self.subtitle length]) {
     UITextView* subtitleTextView = [[UITextView alloc] init];
+    subtitleTextView.editable = NO;
     subtitleTextView.isAccessibilityElement = NO;
     subtitleTextView.attributedText = self.subtitle;
     subtitleTextView.delegate = self;
