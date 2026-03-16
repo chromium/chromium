@@ -93,7 +93,7 @@ class IsPlaceholderCrateTests(unittest.TestCase):
         # Unit tests that depend on external state are a bit icky... But it
         # seems that this assumption should hold "forever", so...
         crate_id = list(
-            filter(lambda crate_id: "serde@" in crate_id,
+            filter(lambda crate_id: crate_id.startswith("serde@"),
                    GetCurrentCrateIds()))[0]
         self.assertFalse(IsPlaceholderCrate(crate_id))
 

@@ -147,8 +147,9 @@ def GetPlaceholderCrateIdForTesting() -> str:
     # Unit tests that depend on external state are a bit icky... But it
     # seems that this assumption should hold "forever" + this helps write
     # more tests for other stuff, so let ignore the ickiness...
-    return list(filter(lambda crate_id: "cc@" in crate_id,
-                       GetCurrentCrateIds()))[0]
+    return list(
+        filter(lambda crate_id: crate_id.startswith("cc@"),
+               GetCurrentCrateIds()))[0]
 
 
 def _ConvertCrateIdToBuildDirRelativeToChromiumRoot(crate_id: str) -> str:
