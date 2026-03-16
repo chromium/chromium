@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/nearby",
-  "+chrome/browser/browser_process.h",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:

@@ -8,8 +8,11 @@
 #include <array>
 #include <string>
 
+#include "base/memory/raw_ref.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
+
+class PrefService;
 
 namespace ash::quick_start {
 
@@ -21,17 +24,20 @@ class SessionContext {
   using SharedSecret = std::array<uint8_t, 32>;
   using SessionId = uint64_t;
 
-  SessionContext();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit SessionContext(PrefService* local_state);
 
   // Alternative constructor used for testing.
-  SessionContext(SessionId session_id,
+  // `local_state` must be non-null and must outlive `this`.
+  SessionContext(PrefService* local_state,
+                 SessionId session_id,
                  AdvertisingId advertising_id,
                  SharedSecret shared_secret,
                  SharedSecret secondary_shared_secret,
                  bool is_resume_after_update = false);
 
-  SessionContext(const SessionContext& other);
-  SessionContext& operator=(const SessionContext& other);
+  SessionContext(const SessionContext& other) = delete;
+  SessionContext& operator=(const SessionContext& other) = delete;
   ~SessionContext();
 
   // Updates session info with new random values or persisted session. Used when
@@ -73,6 +79,8 @@ class SessionContext {
   // |shared_secret|.
   void FetchPersistedSessionContext();
   void DecodeSharedSecret(const std::string& encoded_shared_secret);
+
+  const raw_ref<PrefService> local_state_;
 
   SessionId session_id_;
   AdvertisingId advertising_id_;

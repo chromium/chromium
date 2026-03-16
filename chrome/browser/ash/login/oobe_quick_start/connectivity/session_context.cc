@@ -7,11 +7,11 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/random.h"
@@ -28,37 +28,35 @@ constexpr char kPrepareForUpdateSecondarySharedSecretKey[] =
     "secondary_shared_secret";
 constexpr char kPrepareForUpdateDidTransferWifiKey[] = "did_transfer_wifi";
 
-bool ShouldResumeAfterUpdate() {
-  const base::DictValue& maybe_info = g_browser_process->local_state()->GetDict(
-      prefs::kResumeQuickStartAfterRebootInfo);
+bool ShouldResumeAfterUpdate(const PrefService& local_state) {
+  const base::DictValue& maybe_info =
+      local_state.GetDict(prefs::kResumeQuickStartAfterRebootInfo);
   return maybe_info.FindString(kPrepareForUpdateSessionIdKey) &&
          maybe_info.FindString(kPrepareForUpdateAdvertisingIdKey);
 }
 
 }  // namespace
 
-SessionContext::SessionContext() = default;
+SessionContext::SessionContext(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {}
 
-SessionContext::SessionContext(SessionId session_id,
+SessionContext::SessionContext(PrefService* local_state,
+                               SessionId session_id,
                                AdvertisingId advertising_id,
                                SharedSecret shared_secret,
                                SharedSecret secondary_shared_secret,
                                bool is_resume_after_update)
-    : session_id_(session_id),
+    : local_state_(CHECK_DEREF(local_state)),
+      session_id_(session_id),
       advertising_id_(advertising_id),
       shared_secret_(shared_secret),
       secondary_shared_secret_(secondary_shared_secret),
       is_resume_after_update_(is_resume_after_update) {}
 
-SessionContext::SessionContext(const SessionContext& other) = default;
-
-SessionContext& SessionContext::operator=(const SessionContext& other) =
-    default;
-
 SessionContext::~SessionContext() = default;
 
 void SessionContext::FillOrResetSession() {
-  is_resume_after_update_ = ShouldResumeAfterUpdate();
+  is_resume_after_update_ = ShouldResumeAfterUpdate(local_state_.get());
   QS_LOG(INFO)
       << "Going to fetch/generate session context. is_resume_after_update_: "
       << is_resume_after_update_;
@@ -114,9 +112,8 @@ void SessionContext::PopulateRandomSessionContext() {
 }
 
 void SessionContext::FetchPersistedSessionContext() {
-  PrefService* prefs = g_browser_process->local_state();
   const base::DictValue& session_info =
-      prefs->GetDict(prefs::kResumeQuickStartAfterRebootInfo);
+      local_state_->GetDict(prefs::kResumeQuickStartAfterRebootInfo);
 
   const std::string* session_id_str =
       session_info.FindString(kPrepareForUpdateSessionIdKey);
@@ -133,7 +130,7 @@ void SessionContext::FetchPersistedSessionContext() {
   if (!maybe_advertising_id.has_value()) {
     // TODO(b/234655072) Cancel Quick Start if this error occurs. The secondary
     // connection cannot bootstrap if the AdvertisingId doesn't match.
-    prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
+    local_state_->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
     return;
   }
   advertising_id_ = maybe_advertising_id.value();
@@ -148,7 +145,7 @@ void SessionContext::FetchPersistedSessionContext() {
       session_info.FindBool(kPrepareForUpdateDidTransferWifiKey);
   did_transfer_wifi_ = did_transfer_wifi.value_or(true);
 
-  prefs->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
+  local_state_->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
 }
 
 void SessionContext::DecodeSharedSecret(

@@ -23,7 +23,6 @@ static_library("oobe_quick_start") {
     ":oobe_quick_start_pref_names",
     "connectivity",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/nearby:quick_start_connectivity_service",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/channel",

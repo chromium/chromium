@@ -314,13 +314,18 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
     connection_factory_ = connection_factory.get();
 
     if (is_resume_after_update) {
-      session_context_ =
-          SessionContext(kSessionId, advertising_id_, kSharedSecret,
-                         kSecondarySharedSecret, is_resume_after_update);
+      // NOTE: Reset connection_broker_ here as it has session_context_ pointer.
+      connection_broker_.reset();
+      session_context_.reset();
+
+      session_context_ = std::make_unique<SessionContext>(
+          TestingBrowserProcess::GetGlobal()->local_state(), kSessionId,
+          advertising_id_, kSharedSecret, kSecondarySharedSecret,
+          is_resume_after_update);
     }
 
     connection_broker_ = std::make_unique<TargetDeviceConnectionBrokerImpl>(
-        &session_context_, fake_quick_start_connectivity_service_.get(),
+        session_context_.get(), fake_quick_start_connectivity_service_.get(),
         std::move(connection_factory));
   }
 
@@ -376,10 +381,13 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
   std::unique_ptr<FakeQuickStartConnectivityService>
       fake_quick_start_connectivity_service_;
-  SessionContext session_context_ = SessionContext(kSessionId,
-                                                   advertising_id_,
-                                                   kSharedSecret,
-                                                   kSecondarySharedSecret);
+  std::unique_ptr<SessionContext> session_context_ =
+      std::make_unique<SessionContext>(
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          kSessionId,
+          advertising_id_,
+          kSharedSecret,
+          kSecondarySharedSecret);
   raw_ptr<FakeNearbyConnectionsManager> fake_nearby_connections_manager_;
   FakeNearbyConnection fake_nearby_connection_;
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;

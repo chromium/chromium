@@ -8,7 +8,6 @@ static_library("connectivity") {
   deps = [
     "proto",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/oobe_quick_start:oobe_quick_start_pref_names",
     "//chrome/browser/ash/nearby:quick_start_connectivity_service",
     "//chromeos/ash/components/nearby/common/connections_manager",

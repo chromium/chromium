@@ -61,6 +61,7 @@ TargetDeviceBootstrapController::TargetDeviceBootstrapController(
     QuickStartConnectivityService* quick_start_connectivity_service)
     : local_state_(CHECK_DEREF(local_state)),
       auth_broker_(std::move(auth_broker)),
+      session_context_(local_state),
       accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)),
       quick_start_connectivity_service_(quick_start_connectivity_service) {
   connection_broker_ = TargetDeviceConnectionBrokerFactory::Create(

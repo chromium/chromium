@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/handshake_helpers.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connection.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection.h"
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
@@ -383,10 +384,12 @@ class ConnectionTest : public testing::Test {
   std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
   std::unique_ptr<Connection> connection_;
   AdvertisingId advertising_id_ = AdvertisingId(kAdvertisingId);
-  SessionContext session_context_ = SessionContext(kSessionId,
-                                                   advertising_id_,
-                                                   kSharedSecret,
-                                                   kSecondarySharedSecret);
+  SessionContext session_context_ =
+      SessionContext(TestingBrowserProcess::GetGlobal()->local_state(),
+                     kSessionId,
+                     advertising_id_,
+                     kSharedSecret,
+                     kSecondarySharedSecret);
   bool ran_assertion_response_callback_ = false;
   bool ran_connection_authenticated_callback_ = false;
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
