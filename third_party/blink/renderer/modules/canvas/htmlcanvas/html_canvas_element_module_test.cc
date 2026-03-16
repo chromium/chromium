@@ -152,7 +152,8 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   // latency canvas.  The latter is true only on ChromeOS in production.
   ScopedTestingPlatformSupport<LowLatencyTestPlatform> platform;
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLowLatencyCanvas2dImageChromium);
+  feature_list.InitAndEnableFeature(
+      features::kLowLatencyUsageSupportedForCanvas2D);
 
   auto context_provider = viz::TestContextProvider::CreateRaster();
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)

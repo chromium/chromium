@@ -3510,7 +3510,7 @@ class CanvasRenderingContext2DTestImageChromium
     // This test relies on overlays being supported and enabled for low latency
     // canvas.  The latter is true only on ChromeOS in production.
     feature_list_.InitAndEnableFeature(
-        features::kLowLatencyCanvas2dImageChromium);
+        features::kLowLatencyUsageSupportedForCanvas2D);
   }
 
   void ConfigureContextProvider(

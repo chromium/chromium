@@ -101,7 +101,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // enable these optimizations in WebView though they are not fundamentally
   // impossible.
   aw_feature_overrides.DisableFeature(
-      blink::features::kLowLatencyCanvas2dImageChromium);
+      blink::features::kLowLatencyUsageSupportedForCanvas2D);
   aw_feature_overrides.DisableFeature(
       blink::features::kLowLatencyWebGLImageChromium);
 

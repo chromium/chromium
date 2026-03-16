@@ -438,7 +438,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
   // whether this method can then return true on Apple if
   // IsDelegatedCompositingEnabled() holds.
   return base::FeatureList::IsEnabled(
-      features::kLowLatencyCanvas2dImageChromium);
+      features::kLowLatencyUsageSupportedForCanvas2D);
 }
 
 bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
