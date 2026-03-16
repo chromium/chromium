@@ -151,6 +151,7 @@ SettingsOverriddenExplicitChoiceDialogInteractiveUiTest.*
 *SharedPasswordsNotificationBubbleInteractiveUiTest.*
 SharedTabGroupInteractiveUiTest.SharedTabGroupIn*
 SingleBookmarkUploadDialogPixelTest.InvokeUi
+SearchAIModeSignInPromoViewPixelTest.*
 *SkillsPageInteractiveUITest*
 SplitTabButtonInteractiveTest.ButtonUpdatesOnSplit
 SyncConfirmationUIDialogPixelTest.*

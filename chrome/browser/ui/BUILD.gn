@@ -5767,6 +5767,11 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [ "browser_manager_service_browsertest.cc" ]
+
+    if (enable_dice_support) {
+      sources += [ "//chrome/browser/ui/views/search_ai_mode/signin_promo_view_pixeltest.cc" ]
+    }
+
     deps = [
       "//base",
       "//chrome/browser",
