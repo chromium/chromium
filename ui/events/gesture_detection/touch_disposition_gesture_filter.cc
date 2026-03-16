@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/gesture_detection/gesture_touch_uma_histogram.h"
 #include "ui/events/gesture_event_details.h"
 
 namespace ui {
@@ -375,6 +376,7 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
       continue;
     }
     if (packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT) {
+      GestureTouchUMAHistogram::RecordGestureTimeout(gesture);
       // Sending a timed gesture could delete |this|, so we need to return
       // directly after the |SendGesture| call.
       SendGesture(gesture, packet);

@@ -141,8 +141,13 @@ class TouchDispositionGestureFilterTest
 
   TouchDispositionGestureFilter::PacketResult
   SendTimeoutGesture(EventType type) {
+    return SendTimeoutGesture(CreateGesture(type));
+  }
+
+  TouchDispositionGestureFilter::PacketResult SendTimeoutGesture(
+      GestureEventData gesture) {
     return queue_->OnGesturePacket(
-        GestureEventDataPacket::FromTouchTimeout(CreateGesture(type)));
+        GestureEventDataPacket::FromTouchTimeout(gesture));
   }
 
   TouchDispositionGestureFilter::PacketResult
@@ -941,7 +946,9 @@ TEST_F(TouchDispositionGestureFilterTest, TimeoutEventAfterRelease) {
       Gestures(EventType::kGestureTapDown, EventType::kGestureTapUnconfirmed),
       GetAndResetSentGestures()));
 
-  SendTimeoutGesture(EventType::kGestureTap);
+  GestureEventData gesture = CreateGesture(EventType::kGestureTap);
+  gesture.details.set_tap_count(1);
+  SendTimeoutGesture(gesture);
   EXPECT_TRUE(GesturesMatch(
       Gestures(EventType::kGestureShowPress, EventType::kGestureTap),
       GetAndResetSentGestures()));

@@ -64,6 +64,7 @@ enum UMAEventType {
 class GESTURE_DETECTION_EXPORT GestureTouchUMAHistogram {
  public:
   static void RecordGestureEvent(const ui::GestureEventData& gesture);
+  static void RecordGestureTimeout(const ui::GestureEventData& gesture);
   void RecordTouchEvent(const ui::MotionEvent& event);
 
  private:

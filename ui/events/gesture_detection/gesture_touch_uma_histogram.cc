@@ -17,6 +17,12 @@ void GestureTouchUMAHistogram::RecordGestureEvent(
       "Event.GestureCreated", UMAEventTypeFromEvent(gesture), UMA_ET_COUNT);
 }
 
+void GestureTouchUMAHistogram::RecordGestureTimeout(
+    const GestureEventData& gesture) {
+  UMA_HISTOGRAM_ENUMERATION("Event.GestureTimeout",
+                            UMAEventTypeFromEvent(gesture), UMA_ET_COUNT);
+}
+
 #define RECORD_MAX_DRAG_DISTANCE(HISTOGRAM_NAME, DIST_SQUARED) \
   UMA_HISTOGRAM_CUSTOM_COUNTS(                                 \
       HISTOGRAM_NAME, static_cast<int>(sqrt(DIST_SQUARED)), 1, 1500, 50)

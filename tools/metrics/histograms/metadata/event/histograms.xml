@@ -193,6 +193,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.GestureTimeout" enum="UIEventType"
+    expires_after="2027-03-12">
+  <owner>anandrv@chromium.org</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    The type of gesture that was timed out. A gesture times out when a touch
+    event (e.g., touchstart) is sent to the renderer process, but the renderer
+    takes too long to handle it. When the timeout delay is reached, the browser
+    cancels the touch sequence to ensure the UI remains responsive and logs the
+    gesture event that was dropped.
+  </summary>
+</histogram>
+
 <histogram name="Event.InputEventPrediction.Scroll.Frame{ScoreType}"
     units="pixels" expires_after="2024-12-30">
   <owner>flackr@chromium.org</owner>
