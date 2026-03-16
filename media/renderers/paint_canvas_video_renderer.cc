@@ -702,22 +702,20 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
-bool CanCopyVideoFrameDirectlyToGLTexture(gpu::gles2::GLES2Interface* gl,
-                                          scoped_refptr<VideoFrame> video_frame,
-                                          unsigned int target,
-                                          unsigned int internal_format,
-                                          unsigned int type,
-                                          int level,
-                                          SkAlphaType dst_alpha_type) {
-  DCHECK(video_frame);
-  CHECK(video_frame->HasSharedImage());
-  const auto shared_image = video_frame->shared_image();
+bool CanCopySharedImageDirectlyToGLTexture(gpu::gles2::GLES2Interface* gl,
+                                           bool is_opaque,
+                                           gpu::ClientSharedImage* shared_image,
+                                           unsigned int target,
+                                           unsigned int internal_format,
+                                           unsigned int type,
+                                           int level,
+                                           SkAlphaType dst_alpha_type) {
+  CHECK(shared_image);
 
-  return gl->CanCopySharedImageToGLTextureViaTextureCopy(shared_image.get()) ||
+  return gl->CanCopySharedImageToGLTextureViaTextureCopy(shared_image) ||
          gl->CanCopySharedImageToGLTextureViaSkia(
-             media::IsOpaque(video_frame->format()),
-             shared_image->GetTextureTarget(), target, internal_format, type,
-             level, dst_alpha_type);
+             is_opaque, shared_image->GetTextureTarget(), target,
+             internal_format, type, level, dst_alpha_type);
 }
 
 void CopyVideoFrameDirectlyToGLTexture(
@@ -1515,9 +1513,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 
   const auto shared_image = video_frame->shared_image();
 
-  if (CanCopyVideoFrameDirectlyToGLTexture(destination_gl, video_frame, target,
-                                           internal_format, type, level,
-                                           dst_alpha_type)) {
+  if (CanCopySharedImageDirectlyToGLTexture(
+          destination_gl, media::IsOpaque(video_frame->format()),
+          shared_image.get(), target, internal_format, type, level,
+          dst_alpha_type)) {
     CopyVideoFrameDirectlyToGLTexture(
         raster_context_provider, destination_gl, video_frame, target, texture,
         internal_format, format, type, level, dst_alpha_type, dst_origin);
