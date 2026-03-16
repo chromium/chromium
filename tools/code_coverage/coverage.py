@@ -19,12 +19,12 @@
   gclient runhooks
   vpython3 tools/code_coverage/coverage.py crypto_unittests url_unittests \\
       -b out/coverage -o out/report -c 'out/coverage/crypto_unittests' \\
-      -c 'out/coverage/url_unittests --gtest_filter=URLParser.PathURL' \\
+      -c 'out/coverage/url_unittests --gtest_filter=URLParser.PathUrl' \\
       -f url/ -f crypto/
 
   The command above builds crypto_unittests and url_unittests targets and then
   runs them with specified command line arguments. For url_unittests, it only
-  runs the test URLParser.PathURL. The coverage report is filtered to include
+  runs the test URLParser.PathUrl. The coverage report is filtered to include
   only files and sub-directories under url/ and crypto/ directories.
 
   If you want to run tests that try to draw to the screen but don't have a
@@ -38,8 +38,7 @@
   If you are building a fuzz target, in addition to "use_clang_coverage=true"
   and "is_component_build=false", you must have the following GN flags as well:
     optimize_for_fuzzing=false
-    use_remoteexec=false
-    is_asan=false (ASAN & other sanitizers are incompatible with coverage)
+    use_clang_modules=false
     use_libfuzzer=true
 
   * Sample workflow for a fuzz target (e.g. pdfium_fuzzer):

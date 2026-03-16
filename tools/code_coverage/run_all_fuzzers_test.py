@@ -11,6 +11,7 @@ import sys
 
 
 class RunAllFuzzersTest(unittest.TestCase):
+
   @classmethod
   def setUpClass(cls):
     if sys.platform != 'linux':
@@ -18,11 +19,12 @@ class RunAllFuzzersTest(unittest.TestCase):
     gn_args = ('use_clang_coverage=true '
                'dcheck_always_on=true '
                'ffmpeg_branding=\"ChromeOS\" '
-               'is_component_build=true '
+               'is_component_build=false '
                'is_debug=false '
                'proprietary_codecs=true '
-               'use_reclient=true '
-               'use_libfuzzer=true')
+               'use_remoteexec=true '
+               'use_libfuzzer=true '
+               'use_clang_modules=false')
     cls.testfuzzer1 = 'xml_parser_fuzzer'
     cls.testfuzzer2 = 'query_parser_fuzzer'
     cls.chromium_src_dir = os.path.join(
@@ -103,25 +105,60 @@ class RunAllFuzzersTest(unittest.TestCase):
       subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
     assert ("returned non-zero exit status 2" in str(e.exception))
 
-  def test_all_fuzzers_succeed(self):
+  def test_libfuzzer_fuzzers_succeed(self):
     if sys.platform != 'linux':
       return
     cmd = [
         'python3', 'tools/code_coverage/run_all_fuzzers.py',
         '--fuzzer-binaries-dir', self.__class__.fuzzer_binaries_dir,
         '--fuzzer-corpora-dir', self.__class__.fuzzer_corpora_dir,
-        '--profdata-outdir', self.__class__.profdata_outdir
+        '--profdata-outdir', self.__class__.profdata_outdir, '--fuzzer',
+        'libfuzzer'
     ]
     subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
 
     expected_profdata = sorted([
-        self.__class__.testfuzzer1 + ".profraw",
-        self.__class__.testfuzzer2 + ".profraw"
+        self.__class__.testfuzzer1 + ".profdata",
+        self.__class__.testfuzzer2 + ".profdata"
     ])
     actual_profdata = sorted(os.listdir(self.__class__.profdata_outdir))
     assert (
         expected_profdata == actual_profdata
     ), "Expected " + str(expected_profdata) + " but got " + str(actual_profdata)
+
+  def test_blackbox_fuzzers_succeed(self):
+    if sys.platform != 'linux':
+      return
+    # Create a dummy chrome binary in a temp dir.
+    with tempfile.TemporaryDirectory() as bin_dir:
+      chrome_bin = os.path.join(bin_dir, "chrome")
+      with open(chrome_bin, "w") as f:
+        f.write("#!/bin/sh\n")
+        f.write("exit 0\n")
+      os.chmod(chrome_bin, 0o755)
+
+      # Create dummy testcases in the corpora_dir directory.
+      with tempfile.TemporaryDirectory() as corpora_dir:
+        with open(os.path.join(corpora_dir, "test.html"), "w") as f:
+          f.write("<html></html>")
+
+        with tempfile.TemporaryDirectory() as out_dir:
+          cmd = [
+              sys.executable,
+              'tools/code_coverage/run_all_fuzzers.py',
+              '--fuzzer-binaries-dir',
+              bin_dir,
+              '--fuzzer-corpora-dir',
+              corpora_dir,
+              '--profdata-outdir',
+              out_dir,
+              '--fuzzer',
+              'blackbox',
+              '--target',
+              'chrome',
+          ]
+          # Verify the script runs without crashing when blackbox is specified.
+          subprocess.check_call(cmd, cwd=self.__class__.chromium_src_dir)
 
 
 if __name__ == '__main__':
