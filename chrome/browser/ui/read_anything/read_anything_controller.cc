@@ -453,6 +453,20 @@ void ReadAnythingController::PrimaryPageChanged(content::Page& page) {
   }
 }
 
+void ReadAnythingController::OnSoftNavigation() {
+  // Soft navigations are Single Page App (SPA) navigations (URL change + DOM
+  // update). They are not emitted via PrimaryPageChanged. We handle them
+  // here to differentiate them from simple fragment/anchor navigations, which
+  // should *not* close Reading Mode. For true soft navigations, we close IRM if
+  // it's open
+  if (GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    CloseImmersiveUI(ReadAnythingCloseReason::kPageChangedSoftNavigation);
+  }
+  // Currently, Readability doesn't redistill on soft navigations,
+  // so we recreate the WebUI on the next time it's opened to force a redistill.
+  RecreateWebUIWrapper();
+}
+
 void ReadAnythingController::OnReadAnythingVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {

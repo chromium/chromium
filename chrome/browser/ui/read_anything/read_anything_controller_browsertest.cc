@@ -33,10 +33,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -79,6 +82,12 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
         {});
     ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
+    ASSERT_TRUE(embedded_test_server()->Start());
   }
 
   void TearDown() override {
@@ -2112,4 +2121,68 @@ IN_PROC_BROWSER_TEST_F(
   // Verify that the new contents can be navigated without crashing the
   // controllers
   ASSERT_TRUE(content::NavigateToURL(new_contents_ptr, GURL("about:blank")));
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnSoftNavigation_ClosesImmersiveUI) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Navigate to initial page
+  GURL url("about:blank");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Show Immersive UI
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EmitWebUIShowEvent();
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // Perform soft navigation
+  controller->OnSoftNavigation();
+
+  // Verify Immersive UI is closed
+  AssertOverlayVisibility(/*visible=*/false);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       SoftNavigation_ClosesImmersiveUI_EndToEnd) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Load the test page
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      tab->GetContents());
+  waiter->AddPageExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/page_load_metrics/soft_navigation.html")));
+  waiter->Wait();
+
+  // Show Immersive
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  EmitWebUIShowEvent();
+  AssertOverlayVisibility(/*visible=*/true);
+
+  // First soft navigation: click on the soft navigation trigger
+  waiter->AddSoftNavigationCountExpectation(1);
+  // Wait for the main frame to be ready for input to avoid flakiness.
+  content::WaitForHitTestData(tab->GetContents()->GetPrimaryMainFrame());
+  content::MainThreadFrameObserver frame_observer(
+      tab->GetContents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  content::SimulateMouseClickOrTapElementWithId(tab->GetContents(), "button");
+  waiter->Wait();
+
+  // Verify Immersive is closed
+  AssertOverlayVisibility(/*visible=*/false);
+  EXPECT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInactive);
 }

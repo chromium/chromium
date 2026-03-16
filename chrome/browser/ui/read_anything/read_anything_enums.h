@@ -32,7 +32,9 @@ enum class ReadAnythingCloseReason {
   kToggledPresentation = 3,
   kRendererCrashed = 4,
   kControllerDestroyed = 5,
-  kMaxValue = kControllerDestroyed,
+  kPageChangedSoftNavigation = 6,  // When Single Page Application "soft
+                                   // navigation" page change is detected
+  kMaxValue = kPageChangedSoftNavigation,
 };
 
 namespace read_anything {

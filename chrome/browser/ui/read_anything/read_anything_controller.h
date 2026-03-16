@@ -193,6 +193,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
     return read_anything_side_panel_controller_.get();
   }
 
+  void OnSoftNavigation();
+
  private:
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
