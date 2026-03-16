@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
+#include "components/password_manager/core/browser/password_store/actionable_error.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "extensions/browser/extension_function.h"
@@ -302,6 +303,9 @@ class PasswordsPrivateDelegate
 
   virtual bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) = 0;
+
+  // Returns the current actionable error.
+  virtual password_manager::ActionableError GetActionableError() = 0;
 
   virtual void DeleteAllPasswordManagerData(
       content::WebContents* web_contents,

@@ -1003,6 +1003,26 @@ bool PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator(
   return enclave_manager->IsRegistered();
 }
 
+password_manager::ActionableError
+PasswordsPrivateDelegateImpl::GetActionableError() {
+  auto profile_store = ProfilePasswordStoreFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  auto account_store = AccountPasswordStoreFactory::GetForProfile(
+      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+
+  // Only propagate profile errors if there aren't any account store errors.
+  password_manager::ActionableError error =
+      password_manager::ActionableError::kNoError;
+  if (account_store) {
+    error = account_store->GetError();
+  }
+  if (error == password_manager::ActionableError::kNoError && profile_store) {
+    error = profile_store->GetError();
+  }
+
+  return error;
+}
+
 void PasswordsPrivateDelegateImpl::DeleteAllPasswordManagerData(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> success_callback) {

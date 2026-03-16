@@ -65,6 +65,14 @@ void TestPasswordStore::ReturnErrorOnRequest(
   fake_backend()->ReturnErrorOnRequest(password_store_backend_error);
 }
 
+void TestPasswordStore::SetError(ActionableError error) {
+  fake_backend()->SetError(error);
+}
+
+void TestPasswordStore::NotifyAboutError() {
+  fake_backend()->NotifyAboutError();
+}
+
 TestPasswordStore::~TestPasswordStore() = default;
 
 FakePasswordStoreBackend* TestPasswordStore::fake_backend() {

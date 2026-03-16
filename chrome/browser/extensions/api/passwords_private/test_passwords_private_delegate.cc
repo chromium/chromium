@@ -502,6 +502,16 @@ bool TestPasswordsPrivateDelegate::IsConnectedToCloudAuthenticator(
   return false;
 }
 
+password_manager::ActionableError
+TestPasswordsPrivateDelegate::GetActionableError() {
+  return actionable_error_;
+}
+
+void TestPasswordsPrivateDelegate::SetActionableError(
+    password_manager::ActionableError error) {
+  actionable_error_ = error;
+}
+
 base::WeakPtr<PasswordsPrivateDelegate>
 TestPasswordsPrivateDelegate::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

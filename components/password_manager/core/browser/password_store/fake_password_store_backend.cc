@@ -90,6 +90,45 @@ void FakePasswordStoreBackend::TriggerOnLoginsRetainedForAndroid(
 void FakePasswordStoreBackend::ReturnErrorOnRequest(
     PasswordStoreBackendError password_store_backend_error) {
   password_store_backend_error_ = password_store_backend_error;
+  actionable_error_ =
+      BackendErrorToActionableError(password_store_backend_error.type);
+}
+
+void FakePasswordStoreBackend::SetError(ActionableError error) {
+  actionable_error_ = error;
+}
+
+void FakePasswordStoreBackend::NotifyAboutError() {
+  if (actionable_error_ == ActionableError::kNoError) {
+    remote_form_changes_received_.Run(std::nullopt);
+    return;
+  }
+
+  PasswordStoreBackendErrorType error_type =
+      PasswordStoreBackendErrorType::kUncategorized;
+  switch (actionable_error_) {
+    case ActionableError::kNoError:
+      NOTREACHED();
+    case ActionableError::kInactionable:
+      error_type = PasswordStoreBackendErrorType::kUncategorized;
+      break;
+    case ActionableError::kSignInNeeded:
+      error_type = PasswordStoreBackendErrorType::kAuthErrorResolvable;
+      break;
+    case ActionableError::kKeychainError:
+      error_type = PasswordStoreBackendErrorType::kKeychainError;
+      break;
+    case ActionableError::kNeedsPassphrase:
+      error_type = PasswordStoreBackendErrorType::kNeedsPassphrase;
+      break;
+    case ActionableError::kTrustedVaultKeyNeeded:
+      error_type = PasswordStoreBackendErrorType::kKeyRetrievalRequired;
+      break;
+    case ActionableError::kInactionableTemporaryError:
+      error_type = PasswordStoreBackendErrorType::kUncategorized;
+      break;
+  }
+  remote_form_changes_received_.Run(PasswordStoreBackendError(error_type));
 }
 
 void FakePasswordStoreBackend::InitBackend(
@@ -112,11 +151,7 @@ void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
 }
 
 ActionableError FakePasswordStoreBackend::GetError() {
-  if (password_store_backend_error_.has_value()) {
-    return BackendErrorToActionableError(
-        password_store_backend_error_.value().type);
-  }
-  return ActionableError::kNoError;
+  return actionable_error_;
 }
 
 void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {

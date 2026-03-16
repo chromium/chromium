@@ -118,6 +118,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       base::OnceCallback<void(bool)> success_callback) override;
   bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) override;
+  password_manager::ActionableError GetActionableError() override;
   void DeleteAllPasswordManagerData(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
@@ -127,6 +128,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   void SetProfile(Profile* profile);
   void SetAccountStorageEnabled(bool enabled);
   void SetShouldShowAccountStorageSettingToggle(bool enabled);
+  void SetActionableError(password_manager::ActionableError error);
   void AddCompromisedCredential(int id);
   void SetSavedPasswordsPresenter(
       std::unique_ptr<password_manager::SavedPasswordsPresenter> presenter);
@@ -220,6 +222,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   bool is_account_storage_enabled_ = false;
 
   bool should_show_account_storage_setting_toggle_ = false;
+
+  password_manager::ActionableError actionable_error_ =
+      password_manager::ActionableError::kNoError;
 
   // Flags for detecting whether password sharing operations have been invoked.
   bool fetch_family_members_triggered_ = false;

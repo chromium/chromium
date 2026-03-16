@@ -63,6 +63,10 @@ class TestPasswordStore : public PasswordStore {
   void ReturnErrorOnRequest(
       PasswordStoreBackendError password_store_backend_error);
 
+  void SetError(ActionableError error);
+
+  void NotifyAboutError();
+
  protected:
   ~TestPasswordStore() override;
 

@@ -523,6 +523,39 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetSavedPasswordsList) {
   delegate->GetSavedPasswordsList(callback.Get());
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, GetActionableErrorFromAccountStore) {
+  auto delegate = CreateDelegate();
+  EXPECT_EQ(password_manager::ActionableError::kNoError,
+            delegate->GetActionableError());
+
+  account_store_->SetError(
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  EXPECT_EQ(password_manager::ActionableError::kTrustedVaultKeyNeeded,
+            delegate->GetActionableError());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetActionableErrorPrioritizesAccountStore) {
+  auto delegate = CreateDelegate();
+  profile_store_->SetError(password_manager::ActionableError::kKeychainError);
+  account_store_->SetError(
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  EXPECT_EQ(password_manager::ActionableError::kTrustedVaultKeyNeeded,
+            delegate->GetActionableError());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       GetReturnProfileErrorIfNoAccountError) {
+  auto delegate = CreateDelegate();
+  profile_store_->SetError(password_manager::ActionableError::kKeychainError);
+  account_store_->SetError(password_manager::ActionableError::kNoError);
+
+  EXPECT_EQ(password_manager::ActionableError::kKeychainError,
+            delegate->GetActionableError());
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest,
        PasswordsDuplicatedInStoresAreRepresentedAsSingleEntity) {
   auto delegate = CreateDelegate();

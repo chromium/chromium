@@ -29,6 +29,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/recipients_fetcher.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/passwords_provider.h"
@@ -153,6 +154,7 @@ class PasswordsPrivateDelegateImpl
       base::OnceCallback<void(bool)> success_callback) override;
   bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) override;
+  password_manager::ActionableError GetActionableError() override;
   void DeleteAllPasswordManagerData(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
