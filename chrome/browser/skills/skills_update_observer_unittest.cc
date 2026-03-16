@@ -170,10 +170,12 @@ TEST_F(SkillsUpdateObserverTest, OnOptimizationGuideDecision_IsTrue) {
   skill_1->set_id("test_skill_1");
   skill_1->set_name("Test Skill 1");
   skill_1->set_icon("test_icon_1");
+  skill_1->set_description("test_description_1");
   skills::proto::Skill* skill_2 = skills_list.add_skills();
   skill_2->set_id("test_skill_2");
   skill_2->set_name("Test Skill 2");
   skill_2->set_icon("test_icon_2");
+  skill_2->set_description("test_description_2");
   ExpectOptimizationGuideDecision(
       url, optimization_guide::OptimizationGuideDecision::kTrue, skills_list);
 
@@ -187,10 +189,26 @@ TEST_F(SkillsUpdateObserverTest, OnOptimizationGuideDecision_IsTrue) {
   EXPECT_EQ(actual_skill_1.id(), "test_skill_1");
   EXPECT_EQ(actual_skill_1.name(), "Test Skill 1");
   EXPECT_EQ(actual_skill_1.icon(), "test_icon_1");
+  EXPECT_EQ(actual_skill_1.description(), "test_description_1");
   const skills::proto::Skill& actual_skill_2 = actual_skills->skills(1);
   EXPECT_EQ(actual_skill_2.id(), "test_skill_2");
   EXPECT_EQ(actual_skill_2.name(), "Test Skill 2");
   EXPECT_EQ(actual_skill_2.icon(), "test_icon_2");
+  EXPECT_EQ(actual_skill_2.description(), "test_description_2");
+
+  // Verify that the glic::mojom::SkillPtr's are similarly updated.
+  auto glic_skills = observer_->GetContextualSkills();
+  EXPECT_EQ(glic_skills.size(), 2lu);
+  auto& glic_skill_1 = glic_skills[0];
+  EXPECT_EQ(glic_skill_1->preview->id, "test_skill_1");
+  EXPECT_EQ(glic_skill_1->preview->name, "Test Skill 1");
+  EXPECT_EQ(glic_skill_1->preview->icon, "test_icon_1");
+  EXPECT_EQ(glic_skill_1->preview->description, "test_description_1");
+  auto& glic_skill_2 = glic_skills[1];
+  EXPECT_EQ(glic_skill_2->preview->id, "test_skill_2");
+  EXPECT_EQ(glic_skill_2->preview->name, "Test Skill 2");
+  EXPECT_EQ(glic_skill_2->preview->icon, "test_icon_2");
+  EXPECT_EQ(glic_skill_2->preview->description, "test_description_2");
 }
 
 // Test that the contextual skills are updated on successive navigations.
