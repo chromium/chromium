@@ -38,6 +38,8 @@
 #include "components/tabs/public/tab_interface.h"  // nogncheck
 #endif
 
+using content::webid::FederatedLoginResult;
+
 IdentityDialogController::IdentityDialogController(
     content::WebContents* rp_web_contents,
     segmentation_platform::SegmentationPlatformService* service,
@@ -186,8 +188,7 @@ bool IdentityDialogController::ShowAccountsDialog(
         // explicitly requested an account to be automatically selected. This
         // could happen if the account was revoked between being shown to the
         // user and the actor login request being sent.
-        embedder_login_request->OnFederatedResultReceived(
-            content::webid::FederatedLoginResult::kAccountIsSignUp);
+        NotifyEmbedderOfResult(FederatedLoginResult::kAccountIsSignUp);
         return false;
       }
     }
@@ -201,20 +202,19 @@ bool IdentityDialogController::ShowAccountsDialog(
           url::Origin::Create(
               account->identity_provider->idp_metadata.config_url) ==
               idp_origin) {
-        embedder_login_request->OnFederatedResultReceived(
-            content::webid::FederatedLoginResult::kAccountNotAvailable);
+        NotifyEmbedderOfResult(FederatedLoginResult::kAccountNotAvailable);
         return false;
       }
     }
 
     // The selected account was not found in the list of accounts fetched from
     // the IdP.
-    embedder_login_request->OnFederatedResultReceived(
-        content::webid::FederatedLoginResult::kAccountNotLoggedIn);
+    NotifyEmbedderOfResult(FederatedLoginResult::kAccountNotLoggedIn);
     return false;
   }
 
   if (!TrySetAccountView()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
   }
   favicon::FaviconDriver* favicon_driver =
@@ -270,14 +270,14 @@ bool IdentityDialogController::ShowFailureDialog(
           url::Origin::Create(
               account->identity_provider->idp_metadata.config_url) ==
               idp_origin) {
-        embedder_login_request->OnFederatedResultReceived(
-            content::webid::FederatedLoginResult::kAccountNotAvailable);
+        NotifyEmbedderOfResult(FederatedLoginResult::kAccountNotAvailable);
         return false;
       }
     }
   }
 
   if (!TrySetAccountView()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
   }
   // Else:
@@ -289,6 +289,7 @@ bool IdentityDialogController::ShowFailureDialog(
   if (account_view_->ShowFailureDialog(rp_data, idp_for_display, rp_context,
                                        rp_mode, idp_metadata)) {
     DidInvokeShowUi();
+    NotifyEmbedderOfResult(FederatedLoginResult::kAccountNotLoggedIn);
     return true;
   }
   return false;
@@ -307,6 +308,7 @@ bool IdentityDialogController::ShowErrorDialog(
   on_more_details_ = std::move(more_details_callback);
 
   if (!TrySetAccountView()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
   }
 
@@ -315,6 +317,7 @@ bool IdentityDialogController::ShowErrorDialog(
   if (account_view_->ShowErrorDialog(rp_data, idp_for_display, rp_context,
                                      rp_mode, idp_metadata, error)) {
     DidInvokeShowUi();
+    NotifyEmbedderOfResult(FederatedLoginResult::kIdpReturnedError);
     return true;
   }
   return false;
@@ -328,6 +331,7 @@ bool IdentityDialogController::ShowLoadingDialog(
     DismissCallback dismiss_callback) {
   on_dismiss_ = std::move(dismiss_callback);
   if (!TrySetAccountView()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
   }
   // Because the loading dialog is not interactable, we do not count it for
@@ -348,6 +352,7 @@ bool IdentityDialogController::ShowVerifyingDialog(
   rp_mode_ = rp_mode;
 
   if (!TrySetAccountView()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return false;
   }
   // Do not modify any member variables if the verifying dialog is not shown
@@ -470,17 +475,13 @@ content::WebContents* IdentityDialogController::ShowModalDialog(
     DismissCallback dismiss_callback) {
   on_dismiss_ = std::move(dismiss_callback);
   if (!TrySetAccountView()) {
+    NotifyEmbedderOfResult(FederatedLoginResult::kFrameNotActive);
     return nullptr;
   }
 
   did_invoke_show_ui_ = true;
   did_show_ui_ = true;
-  content::webid::FederatedEmbedderLoginRequest* embedder_login_request =
-      content::webid::FederatedEmbedderLoginRequest::Get(rp_web_contents_);
-  if (embedder_login_request) {
-    embedder_login_request->OnFederatedResultReceived(
-        content::webid::FederatedLoginResult::kContinuation);
-  }
+  NotifyEmbedderOfResult(FederatedLoginResult::kContinuation);
   // Show the modal dialog even if FedCM UI is not being shown.
   return account_view_->ShowModalDialog(url, rp_mode);
 }
@@ -679,4 +680,13 @@ bool IdentityDialogController::ShouldShowFedCmUi() {
 void IdentityDialogController::DidInvokeShowUi() {
   did_invoke_show_ui_ = true;
   did_show_ui_ |= ShouldShowFedCmUi();
+}
+
+void IdentityDialogController::NotifyEmbedderOfResult(
+    FederatedLoginResult result) {
+  content::webid::FederatedEmbedderLoginRequest* embedder_login_request =
+      content::webid::FederatedEmbedderLoginRequest::Get(rp_web_contents_);
+  if (embedder_login_request) {
+    embedder_login_request->OnFederatedResultReceived(result);
+  }
 }

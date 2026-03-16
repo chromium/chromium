@@ -197,6 +197,8 @@ class IdentityDialogController
 
   void DidInvokeShowUi();
 
+  void NotifyEmbedderOfResult(content::webid::FederatedLoginResult result);
+
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;
