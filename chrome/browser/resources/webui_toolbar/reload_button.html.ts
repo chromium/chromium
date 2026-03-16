@@ -16,7 +16,8 @@ export function getHtml(this: ReloadButtonElement) {
     is-menu-open="${this.state.isContextMenuVisible}"
     @pointerdown="${this.onPointerdown_}"
     @pointerup="${this.onPointerup_}"
-    @contextmenu="${this.onContextmenu_}">
+    @pointercancel="${this.pressHandler_.onPointercancel}"
+    @contextmenu="${this.pressHandler_.onContextmenu}">
 </cr-icon-button>
 <!--_html_template_end_-->`;
 }

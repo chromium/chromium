@@ -8,7 +8,6 @@ import './split_tabs_button_icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ContextMenuType} from './toolbar_ui_api_data_model.mojom-webui.js';
@@ -44,17 +43,6 @@ export class SplitTabsButtonElement extends CrLitElement {
     isContextMenuVisible: false,
   };
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-
-  override willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-
-    if (changedPrivateProperties.has('state')) {
-      this.hidden = !this.state.isPinned && !this.state.isCurrentTabSplit;
-    }
-  }
 
   protected getIcon(): string {
     let iconName = 'split-scene';

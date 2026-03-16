@@ -11,15 +11,16 @@ export function getHtml(this: BackForwardButtonElement) {
 <cr-icon-button
     iron-icon="${
       this.direction === 'back' ? 'cr:arrow-back' : 'cr:arrow-forward'}"
+    ?hidden="${!this.state.visible}"
     ?disabled="${!this.state.enabled}"
     aria-label="${this.ariaLabel_}"
     title="${this.tooltip_}"
     style="margin-inline-start: ${this.leadingMargin}px"
-    @pointerdown="${this.onPointerdown_}"
-    @pointerup="${this.onPointerup_}"
-    @pointercancel="${this.onPointercancel_}"
+    @pointerdown="${this.pressHandler_.onPointerdown}"
+    @pointerup="${this.pressHandler_.onPointerup}"
+    @pointercancel="${this.pressHandler_.onPointercancel}"
     @pointerenter="${this.onPointerenter_}"
-    @contextmenu="${this.onContextmenu_}">
+    @contextmenu="${this.pressHandler_.onContextmenu}">
   </cr-icon-button>
 
 <!--_html_template_end_-->`;
