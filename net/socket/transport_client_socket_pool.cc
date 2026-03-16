@@ -1524,16 +1524,29 @@ void TransportClientSocketPool::OnPreconnectConnectJobComplete(
             SocketTag(), ClientSocketPool::RespectLimits::ENABLED,
             base::DoNothing(), ProxyAuthCallback(), this, net_log);
 
-        // Since we checked that we have an idle socket in the group, we
-        // should never get ERR_IO_PENDING here.
-        CHECK_NE(rv, ERR_IO_PENDING);
+        // There are couple of cases where rv can be ERR_IO_PENDING:
+        // 1. Within TransportClientSocketPool::RequestSocket, it
+        // immediately calls CleanupIdleSockets(false) to prune any sockets that
+        // have become stale based on wall time. If enough time has passed since
+        // the socket was added to the pool (which is common in asynchronous
+        // callbacks), the very socket that passed the check at line 1520 may be
+        // closed and removed during this internal cleanup.
+        // 2. Even if the socket is not timed out, Init performs a usability
+        // check. If the socket has been closed by the peer or has received
+        // unexpected data while idle, the pool will discard it as unusable.
+        // Once the idle socket is discarded, the pool initiates a new
+        // connection attempt to satisfy the Init request. Since starting a new
+        // connection is an asynchronous process, Init returns ERR_IO_PENDING.
+        if (rv == ERR_IO_PENDING) {
+          rv = ERR_FAILED;
+        }
 
-        // However, there is a slight chance that the socket is not usable (e.g.
+        // There is a slight chance that the socket is not usable (e.g.
         // the socket is being closed due to network connection failures or
-        // flakiness), thus handle->Init might return an error. If that happens,
-        // we cannot hand out the socket to the callback, and we should reset
-        // the handle.
-        // We should also consider this case as a failure for the preconnect,
+        // flakiness), thus handle->Init might return an error. If that
+        // happens, we cannot hand out the socket to the callback, and we
+        // should reset the handle to indicate that no socket is available. We
+        // should also consider this case as a failure for the preconnect,
         // since no socket can be reused.
         if (rv != OK) {
           handle.reset();
