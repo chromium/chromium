@@ -83,11 +83,33 @@ class BrowserUserEducationInterface {
   virtual bool IsFeaturePromoActive(const base::Feature& iph_feature) const = 0;
 
   // Returns whether `MaybeShowFeaturePromo()` would succeed if called now.
+  // In many cases, consider calling `HasFeaturePromoBeenDismissed()` instead
+  // since promos can be queued for a short time until conditions are right to
+  // show them, and this function does not take that into account.
   //
   // USAGE NOTE: Only call this method if figuring out whether to try to show an
   // IPH would involve significant expense. This method may itself have
   // non-trivial cost.
+  //
+  // ADDITIONAL NOTE: During browser startup, this may return `kError` or
+  // `kBlockedByConfig` if either the browser or the Feature Engagement Tracker
+  // is not fully initialized.
   virtual user_education::FeaturePromoResult CanShowFeaturePromo(
+      const base::Feature& iph_feature) const = 0;
+
+  // Returns whether the promo for `iph_feature` has been dismissed in a way
+  // that would prevent it from showing again (user action, toast timeout, etc.)
+  // Unlike other methods, this can be reliably called during most of browser
+  // initialization.
+  //
+  // This does not take additional conditions into account; an additional
+  // condition *might* prevent a promo from ever showing again, but interpreting
+  // the conditions is promo-specific.
+  //
+  // It also does not [yet] take into account promos which can reshow after a
+  // specific amount of time. For now it will return true if the promo has ever
+  // been dismissed.
+  virtual bool HasFeaturePromoBeenDismissed(
       const base::Feature& iph_feature) const = 0;
 
   // Maybe shows an in-product help promo.
