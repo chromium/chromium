@@ -28,10 +28,6 @@ class SigninClient;
 class DeviceAccountsProvider;
 #endif
 
-namespace signin {
-enum class AccountConsistencyMethod;
-}
-
 namespace network {
 class NetworkConnectionTracker;
 }
@@ -53,7 +49,6 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     PrefService* pref_service,
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
-    signin::AccountConsistencyMethod account_consistency,
 #if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,

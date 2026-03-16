@@ -55,14 +55,11 @@ class AccountManagerFacade;
 #endif
 
 namespace signin {
-enum class AccountConsistencyMethod;
 
 struct IdentityManagerBuildParams {
   IdentityManagerBuildParams();
   ~IdentityManagerBuildParams();
 
-  AccountConsistencyMethod account_consistency =
-      AccountConsistencyMethod::kDisabled;
   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder;
   raw_ptr<PrefService> local_state = nullptr;
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker;

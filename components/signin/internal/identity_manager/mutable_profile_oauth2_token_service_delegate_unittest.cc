@@ -36,7 +36,6 @@
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -235,19 +234,16 @@ class MutableProfileOAuth2TokenServiceDelegateTest
 
   std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate>
   CreateOAuth2ServiceDelegate(
-      signin::AccountConsistencyMethod account_consistency,
       std::unique_ptr<TokenBindingHelper> token_binding_helper = nullptr) {
     return std::make_unique<MutableProfileOAuth2TokenServiceDelegate>(
         client_.get(), &account_tracker_service_,
         network::TestNetworkConnectionTracker::GetInstance(), token_web_data_,
-        account_consistency, revoke_all_tokens_on_load_,
-        std::move(token_binding_helper),
+        revoke_all_tokens_on_load_, std::move(token_binding_helper),
         MutableProfileOAuth2TokenServiceDelegate::FixRequestErrorCallback());
   }
 
-  void InitializeOAuth2ServiceDelegate(
-      signin::AccountConsistencyMethod account_consistency) {
-    oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(account_consistency);
+  void InitializeOAuth2ServiceDelegate() {
+    oauth2_service_delegate_ = CreateOAuth2ServiceDelegate();
     oauth2_service_delegate_->SetOnRefreshTokenRevokedNotified(
         base::DoNothing());
     test_service_observation_.Observe(oauth2_service_delegate_.get());
@@ -408,7 +404,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
 };
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   CoreAccountId primary_account_id =
       CoreAccountId::FromGaiaId(GaiaId("primaryAccount"));
 
@@ -437,7 +433,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        PersistenceRevokeCredentials) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   CoreAccountId account_id_1 =
       CoreAccountId::FromGaiaId(GaiaId("account_id_1"));
   std::string refresh_token_1 = "refresh_token_1";
@@ -472,7 +468,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        UpdateCredentialsClearsUnreadableTokens) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   oauth2_service_delegate_->LoadCredentials(
       /*primary_account_id=*/CoreAccountId());
   WaitForRefreshTokensLoaded();
@@ -513,7 +509,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 // actually happens.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        UpdateCredentialsWithNoErrorDoesNotClearUnreadableTokens) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   oauth2_service_delegate_->LoadCredentials(
       /*primary_account_id=*/CoreAccountId());
   WaitForRefreshTokensLoaded();
@@ -539,7 +535,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        UpdateCredentialsBeforeLoadCompletesDoesNotClearUnreadableTokens) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
 
   // Populate the database with some tokens.
   CoreAccountId account_a = CoreAccountId::FromGaiaId(GaiaId("a"));
@@ -570,7 +566,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadCredentialsStateEmptyPrimaryAccountId) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   // Verify DB is clean.
   ASSERT_TRUE(oauth2_service_delegate_->GetAccounts().empty());
 
@@ -606,7 +602,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     bool revoke_all_credentials_called_ = false;
   };
 
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kExplicitRevoke;
+  InitializeOAuth2ServiceDelegate();
 
   TokenServiceForceRevokeObserver token_service_observer(
       oauth2_service_delegate_.get());
@@ -624,8 +621,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(0, token_available_count_);
   EXPECT_EQ(2, token_revoked_count_);
   EXPECT_EQ(1, end_batch_changes_);
-  EXPECT_NE(RevokeAllTokensOnLoad::kNo,
-            oauth2_service_delegate_->revoke_all_tokens_on_load_);
   EXPECT_TRUE(token_service_observer.revoke_all_credentials_called_);
   EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account1));
   EXPECT_FALSE(oauth2_service_delegate_->RefreshTokenIsAvailable(account2));
@@ -634,7 +629,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        PersistenceLoadCredentials) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   const CoreAccountId account_id2 =
@@ -714,8 +709,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
-       PersistenceLoadCredentialsEmptyPrimaryAccountId_DiceEnabled) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+       PersistenceLoadCredentialsEmptyPrimaryAccountId) {
+  InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   const CoreAccountId account_id2 =
@@ -777,29 +772,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   ResetObserverCounts();
 }
 
-TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
-       LoadCredentialsClearsTokenDBWhenNoPrimaryAccount_DiceDisabled) {
-  // Populate DB with 2 valid tokens.
-  AddAuthTokenManually("AccountId-12345", "refresh_token");
-  AddAuthTokenManually("AccountId-67890", "refresh_token");
-
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
-  oauth2_service_delegate_->LoadCredentials(
-      /*primary_account_id=*/CoreAccountId());
-  WaitForRefreshTokensLoaded();
-
-  // No tokens were loaded.
-  EXPECT_EQ(1, tokens_loaded_count_);
-  EXPECT_EQ(0, token_available_count_);
-  EXPECT_EQ(2, token_revoked_count_);
-  EXPECT_EQ(1, end_batch_changes_);
-  EXPECT_EQ(0U, oauth2_service_delegate_->refresh_tokens_.size());
-
-  // Handle to the request reading tokens from database.
-  token_web_data_->GetAllTokens(this);
-  ASSERT_EQ(token_web_data_result_.Get()->GetValue().tokens.size(), 0u);
-}
-
 // Tests that calling UpdateCredentials revokes the old token, without sending
 // the notification.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeOnUpdate) {
@@ -807,7 +779,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeOnUpdate) {
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
 
   // Add a token.
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   ASSERT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
@@ -843,7 +815,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, DelayedRevoke) {
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
 
   client_->SetNetworkCallsDelayed(true);
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
   oauth2_service_delegate_->RevokeCredentials(account_id);
@@ -865,7 +837,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ShutdownDuringRevoke) {
 
   // Shutdown cancels the revocation.
   client_->SetNetworkCallsDelayed(true);
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   oauth2_service_delegate_->RevokeCredentials(account_id);
   EXPECT_EQ(1u, oauth2_service_delegate_->server_revokes_.size());
@@ -880,7 +852,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ShutdownDuringRevoke) {
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeRetries) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   const std::string url = GaiaUrls::GetInstance()->oauth2_revoke_url().spec();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -925,7 +897,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, UpdateInvalidToken) {
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   // Add the invalid token.
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   ASSERT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
   oauth2_service_delegate_->UpdateCredentials(
       account_id, GaiaConstants::kInvalidRefreshToken);
@@ -960,7 +932,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
                       signin_metrics::SourceForRefreshTokenOperation source));
   };
 
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   TokenServiceErrorObserver observer;
   oauth2_service_delegate_->AddObserver(&observer);
 
@@ -1000,7 +972,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadTokenWithInvalidAccountId) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   // Account ID without the "AccountId-" prefix.
   tokens["invalid_account_id"] = TokenWithBindingKey("refresh_token");
@@ -1017,7 +989,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadTokenWithInvalidCharacters) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1041,7 +1013,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadPrimaryTokenWithInvalidCharacters) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1073,7 +1045,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1097,7 +1069,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryAvailable) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
@@ -1116,7 +1088,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilityPrimaryNotAvailable) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
@@ -1135,7 +1107,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryAvailable) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
@@ -1154,7 +1126,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadAllCredentialsIntoMemoryAccountAvailabilitySecondaryNotAvailable) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   std::map<std::string, TokenWithBindingKey> tokens;
   const GaiaId gaia_id("gaia_id");
   const CoreAccountId account_id = CoreAccountId::FromGaiaId(gaia_id);
@@ -1169,7 +1141,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetTokenForMultilogin) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id1 =
       CoreAccountId::FromGaiaId(GaiaId("account_id1"));
   const CoreAccountId account_id2 =
@@ -1194,7 +1166,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceNotifications) {
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
 
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   oauth2_service_delegate_->UpdateCredentials(account_id, "refresh_token");
   ExpectOneTokenAvailableNotification();
 
@@ -1220,7 +1192,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetAccounts) {
   const CoreAccountId account_id2 =
       CoreAccountId::FromGaiaId(GaiaId("account_id2"));
 
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   EXPECT_TRUE(oauth2_service_delegate_->GetAccounts().empty());
 
   oauth2_service_delegate_->UpdateCredentials(account_id1, "refresh_token1");
@@ -1238,7 +1210,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetAccounts) {
 // Tests the access token fetcher choice without any test overrides. The choice
 // depends on whether the build uses official Google Chrome API keys or not.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, AccessTokenFetchSuccess) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
 
   const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
       GaiaId("account_id"), "test@google.com");
@@ -1297,7 +1269,7 @@ class MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest
 
 TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
        FetchSuccess) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
       GaiaId("account_id"), "test@google.com");
   oauth2_service_delegate_->UpdateCredentials(
@@ -1320,7 +1292,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
 
 TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
        FetchPersistentError) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   oauth2_service_delegate_->UpdateCredentials(account_id, "refreshToken");
@@ -1352,7 +1324,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
 
 TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
        RetryBackoff) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   oauth2_service_delegate_->UpdateCredentials(account_id, "refreshToken");
@@ -1399,7 +1371,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
 
 TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
        ResetBackoff) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
   oauth2_service_delegate_->UpdateCredentials(account_id, "refreshToken");
@@ -1447,33 +1419,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     [](const auto& info) { return info.param ? "IssueToken" : "GetToken"; });
 
-TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
-       LoadPrimaryAccountOnlyWhenAccountConsistencyDisabled) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
-  CoreAccountId primary_account =
-      CoreAccountId::FromGaiaId(GaiaId("primaryaccount"));
-  CoreAccountId secondary_account =
-      CoreAccountId::FromGaiaId(GaiaId("secondaryaccount"));
 
-  // Verify DB is clean.
-  ASSERT_TRUE(oauth2_service_delegate_->GetAccounts().empty());
-  ResetObserverCounts();
-  AddAuthTokenManually("AccountId-" + primary_account.ToString(),
-                       "refresh_token");
-  AddAuthTokenManually("AccountId-" + secondary_account.ToString(),
-                       "refresh_token");
-  oauth2_service_delegate_->LoadCredentials(primary_account);
-  WaitForRefreshTokensLoaded();
-
-  EXPECT_EQ(1, tokens_loaded_count_);
-  EXPECT_EQ(1, token_available_count_);
-  EXPECT_EQ(1, token_revoked_count_);
-  EXPECT_EQ(1, end_batch_changes_);
-  EXPECT_TRUE(
-      oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account));
-  EXPECT_FALSE(
-      oauth2_service_delegate_->RefreshTokenIsAvailable(secondary_account));
-}
 
 // Regression test for https://crbug.com/823707
 // Checks that OnAuthErrorChanged() is called during UpdateCredentials(), and
@@ -1508,7 +1454,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
     bool error_changed_ = false;
   };
 
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
 
   // Start with the SigninErrorController in error state, so that it calls
   // OnErrorChanged() from AddProvider().
@@ -1532,7 +1478,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, OnAuthErrorChanged) {
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        OnAuthErrorChangedAfterUpdatingCredentials) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("gaia_id"));
   testing::StrictMock<signin::MockProfileOAuth2TokenServiceObserver> observer(
       oauth2_service_delegate_.get());
@@ -1565,7 +1511,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetAuthError) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   // Accounts have no error by default.
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1646,7 +1592,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     bool token_available_ = false;
   };
 
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   TokenServiceErrorObserver token_service_observer(
       oauth2_service_delegate_.get());
   oauth2_service_delegate_->UpdateCredentials(
@@ -1663,7 +1609,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ClearTokensOnStartup) {
   client_->SetNetworkCallsDelayed(true);
   revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kExplicitRevoke;
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled);
+  InitializeOAuth2ServiceDelegate();
   CoreAccountId primary_account =
       CoreAccountId::FromGaiaId(GaiaId("primaryaccount"));
   CoreAccountId secondary_account =
@@ -1726,9 +1672,8 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
 
-  ProfileOAuth2TokenService token_service(
-      &pref_service_,
-      CreateOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled));
+  ProfileOAuth2TokenService token_service(&pref_service_,
+                                          CreateOAuth2ServiceDelegate());
   token_service.SetRefreshTokenAvailableFromSourceCallback(
       base::BindRepeating(&MutableProfileOAuth2TokenServiceDelegateTest::
                               OnRefreshTokenAvailableFromSource,
@@ -1802,7 +1747,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ExtractCredentials) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   oauth2_service_delegate_->LoadCredentials(CoreAccountId());
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1863,8 +1808,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     auto histograms = std::make_unique<base::HistogramTester>();
 
     LoadTokenDatabase(os_crypt.get());
-    InitializeOAuth2ServiceDelegate(
-        signin::AccountConsistencyMethod::kDisabled);
+    InitializeOAuth2ServiceDelegate();
 
     return base::ScopedClosureRunner(base::BindLambdaForTesting(
         [this, expected_prefix, expect_reencrypt, expected_writes,
@@ -1989,7 +1933,6 @@ class MutableProfileOAuth2TokenServiceDelegateBoundTokensTest
  public:
   void InitializeOAuth2ServiceDelegateWithTokenBinding() {
     oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
-        signin::AccountConsistencyMethod::kDice,
         std::make_unique<TokenBindingHelper>(std::visit(
             [](auto& uks) -> unexportable_keys::UnexportableKeyService& {
               return uks;
@@ -2253,7 +2196,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   sync_preferences::TestingPrefServiceSyncable dest_prefs;
   ProfileOAuth2TokenService::RegisterProfilePrefs(dest_prefs.registry());
   auto dest_delegate = CreateOAuth2ServiceDelegate(
-      signin::AccountConsistencyMethod::kDice,
       std::make_unique<TokenBindingHelper>(dest_uks));
   ProfileOAuth2TokenService dest_token_service(&dest_prefs,
                                                std::move(dest_delegate));
@@ -2316,7 +2258,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
       SetIgnoreNonOfficialApiKeysForTesting();
 
   // Initialize the delegate without the token binding support.
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
 
   const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
       GaiaId("account_id"), "test@google.com");
@@ -2423,7 +2365,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        KeepPrimaryAccountTokenOnStartupWithClearOnExit) {
   client_->SetNetworkCallsDelayed(true);
   revoke_all_tokens_on_load_ = RevokeAllTokensOnLoad::kDeleteSiteDataOnExit;
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  InitializeOAuth2ServiceDelegate();
   CoreAccountId primary_account =
       CoreAccountId::FromGaiaId(GaiaId("primary_account"));
   char refresh_token_primary[] = "refresh_token_primary";
@@ -2479,7 +2421,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
       mock_unexportable_key_service;
   oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
-      signin::AccountConsistencyMethod::kDice,
       std::make_unique<TokenBindingHelper>(mock_unexportable_key_service));
 
   EXPECT_CALL(mock_unexportable_key_service, FromWrappedSigningKeySlowlyAsync)
@@ -2504,7 +2445,6 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest,
   testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
       mock_unexportable_key_service;
   oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
-      signin::AccountConsistencyMethod::kDice,
       std::make_unique<TokenBindingHelper>(mock_unexportable_key_service));
   oauth2_service_delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
   test_service_observation_.Observe(oauth2_service_delegate_.get());

@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -70,7 +69,6 @@ std::unique_ptr<ProfileOAuth2TokenServiceDelegate> CreateCrOsOAuthDelegate(
 std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate>
 CreateMutableProfileOAuthDelegate(
     AccountTrackerService* account_tracker_service,
-    signin::AccountConsistencyMethod account_consistency,
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,
     SigninClient* signin_client,
@@ -80,11 +78,9 @@ CreateMutableProfileOAuthDelegate(
         reauth_callback,
 #endif
     network::NetworkConnectionTracker* network_connection_tracker) {
-  // When signin cookies are cleared on exit and Dice is enabled, all tokens
-  // should also be cleared.
+  // When signin cookies are cleared on exit, all tokens should also be cleared.
   RevokeAllTokensOnLoad revoke_all_tokens_on_load =
-      (account_consistency == signin::AccountConsistencyMethod::kDice) &&
-              delete_signin_cookies_on_exit
+      delete_signin_cookies_on_exit
           ? RevokeAllTokensOnLoad::kDeleteSiteDataOnExit
           : RevokeAllTokensOnLoad::kNo;
 
@@ -97,7 +93,7 @@ CreateMutableProfileOAuthDelegate(
 
   return std::make_unique<MutableProfileOAuth2TokenServiceDelegate>(
       signin_client, account_tracker_service, network_connection_tracker,
-      token_web_data, account_consistency, revoke_all_tokens_on_load,
+      token_web_data, revoke_all_tokens_on_load,
       std::move(token_binding_helper),
 #if BUILDFLAG(IS_WIN)
       reauth_callback
@@ -111,7 +107,6 @@ CreateMutableProfileOAuthDelegate(
 std::unique_ptr<ProfileOAuth2TokenServiceDelegate>
 CreateOAuth2TokenServiceDelegate(
     AccountTrackerService* account_tracker_service,
-    signin::AccountConsistencyMethod account_consistency,
     SigninClient* signin_client,
 #if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManagerFacade* account_manager_facade,
@@ -146,9 +141,8 @@ CreateOAuth2TokenServiceDelegate(
   // Fall back to |MutableProfileOAuth2TokenServiceDelegate| on all platforms
   // other than Android, iOS, and Chrome OS (Ash).
   return CreateMutableProfileOAuthDelegate(
-      account_tracker_service, account_consistency,
-      delete_signin_cookies_on_exit, token_web_data, signin_client,
-      unexportable_key_service,
+      account_tracker_service, delete_signin_cookies_on_exit, token_web_data,
+      signin_client, unexportable_key_service,
 #if BUILDFLAG(IS_WIN)
       reauth_callback,
 #endif  // BUILDFLAG(IS_WIN)
@@ -164,7 +158,6 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     PrefService* pref_service,
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
-    signin::AccountConsistencyMethod account_consistency,
 #if BUILDFLAG(IS_CHROMEOS)
     account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
@@ -192,23 +185,22 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
 #endif
 
   return std::make_unique<ProfileOAuth2TokenService>(
-      pref_service,
-      CreateOAuth2TokenServiceDelegate(
-          account_tracker_service, account_consistency, signin_client,
+      pref_service, CreateOAuth2TokenServiceDelegate(
+                        account_tracker_service, signin_client,
 #if BUILDFLAG(IS_CHROMEOS)
-          account_manager_facade, is_regular_profile,
+                        account_manager_facade, is_regular_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-          delete_signin_cookies_on_exit,
+                        delete_signin_cookies_on_exit,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-          token_web_data, unexportable_key_service,
+                        token_web_data, unexportable_key_service,
 #endif
 #if BUILDFLAG(IS_IOS)
-          std::move(device_accounts_provider),
+                        std::move(device_accounts_provider),
 #endif
 #if BUILDFLAG(IS_WIN)
-          reauth_callback,
+                        reauth_callback,
 #endif
-          network_connection_tracker));
+                        network_connection_tracker));
 }

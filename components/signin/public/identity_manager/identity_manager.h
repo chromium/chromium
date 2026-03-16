@@ -449,8 +449,6 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<AccountsMutator> accounts_mutator;
     std::unique_ptr<DeviceAccountsSynchronizer> device_accounts_synchronizer;
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
-    AccountConsistencyMethod account_consistency =
-        AccountConsistencyMethod::kDisabled;
     raw_ptr<SigninClient> signin_client = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
     raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
@@ -493,11 +491,6 @@ class IdentityManager : public KeyedService,
   // Returns pointer to the object used to obtain diagnostics about the internal
   // state of IdentityManager.
   DiagnosticsProvider* GetDiagnosticsProvider();
-
-  // Returns account consistency method for this profile.
-  AccountConsistencyMethod GetAccountConsistency() {
-    return account_consistency_;
-  }
 
   // Calling this method provides a hint that a new account may be added in the
   // near future, and front-loads some processing to speed that up.
@@ -798,9 +791,6 @@ class IdentityManager : public KeyedService,
       observer_list_;
   base::ObserverList<DiagnosticsObserver, true>::Unchecked
       diagnostics_observation_list_;
-
-  AccountConsistencyMethod account_consistency_ =
-      AccountConsistencyMethod::kDisabled;
 
 #if BUILDFLAG(IS_ANDROID)
   // Java-side IdentityManager object.

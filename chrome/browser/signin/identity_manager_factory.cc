@@ -14,7 +14,6 @@
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -127,8 +126,6 @@ IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   signin::IdentityManagerBuildParams params;
-  params.account_consistency =
-      AccountConsistencyModeManager::GetMethodForProfile(profile),
   params.image_decoder = std::make_unique<ImageDecoderImpl>();
   params.local_state = g_browser_process->local_state();
   params.network_connection_tracker = content::GetNetworkConnectionTracker();

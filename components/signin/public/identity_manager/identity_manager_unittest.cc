@@ -36,7 +36,6 @@
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/primary_account_mutator_impl.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
@@ -285,7 +284,6 @@ class IdentityManagerTest : public testing::Test {
     IdentityManager::RegisterLocalStatePrefs(pref_service_.registry());
 
     RecreateIdentityManager(
-        AccountConsistencyMethod::kDisabled,
         PrimaryAccountManagerSetup::kWithAuthenticatedAccout);
     primary_account_id_ =
         identity_manager_->PickAccountIdForAccount(kTestGaiaId, kTestEmail);
@@ -326,7 +324,6 @@ class IdentityManagerTest : public testing::Test {
   // performing some other setup.
   void RecreateIdentityManager() {
     RecreateIdentityManager(
-        AccountConsistencyMethod::kDisabled,
         PrimaryAccountManagerSetup::kNoAuthenticatedAccount);
   }
 
@@ -336,7 +333,6 @@ class IdentityManagerTest : public testing::Test {
   // IdentityManager and its dependencies, then remakes them. Dependencies that
   // outlive PrimaryAccountManager (e.g. SigninClient) will be reused.
   void RecreateIdentityManager(
-      AccountConsistencyMethod account_consistency,
       PrimaryAccountManagerSetup primary_account_manager_setup) {
     // Remove observers first, otherwise IdentityManager destruction might
     // trigger a DCHECK because there are still living observers.
@@ -394,8 +390,6 @@ class IdentityManagerTest : public testing::Test {
         std::make_unique<image_fetcher::FakeImageDecoder>(),
         std::make_unique<FakeAccountFetcherFactory>());
 
-    DCHECK_EQ(account_consistency, AccountConsistencyMethod::kDisabled)
-        << "AccountConsistency is not used by PrimaryAccountManager";
     auto primary_account_manager = std::make_unique<PrimaryAccountManager>(
         &signin_client_, token_service.get(), account_tracker_service.get(),
         &profile_metrics_service_);

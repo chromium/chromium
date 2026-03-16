@@ -1122,7 +1122,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SigninLoadTokenFromDB">
   <int value="0" label="Loaded"/>
   <int value="1" label="Revoked by Dice migration"/>
-  <int value="2" label="Revoked as secondary account"/>
+  <int value="2" label="(Obsolete) Revoked as secondary account"/>
   <int value="3" label="Revoked on load due to cookie settings"/>
   <int value="4" label="Revoked on load due to invalid token characters"/>
   <int value="5" label="Revoked on load due to invalid account ID"/>

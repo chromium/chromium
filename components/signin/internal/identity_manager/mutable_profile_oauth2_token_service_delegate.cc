@@ -28,7 +28,6 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 #include "components/signin/internal/identity_manager/token_binding_oauth2_access_token_fetcher.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_client.h"
@@ -321,7 +320,6 @@ MutableProfileOAuth2TokenServiceDelegate::
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
         scoped_refptr<TokenWebData> token_web_data,
-        signin::AccountConsistencyMethod account_consistency,
         RevokeAllTokensOnLoad revoke_all_tokens_on_load,
         std::unique_ptr<TokenBindingHelper> token_binding_helper,
         FixRequestErrorCallback fix_request_error_callback)
@@ -331,7 +329,6 @@ MutableProfileOAuth2TokenServiceDelegate::
       account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),
       token_web_data_(token_web_data),
-      account_consistency_(account_consistency),
       revoke_all_tokens_on_load_(revoke_all_tokens_on_load),
       token_binding_helper_(std::move(token_binding_helper)),
       fix_request_error_callback_(fix_request_error_callback) {
@@ -339,7 +336,6 @@ MutableProfileOAuth2TokenServiceDelegate::
   DCHECK(client);
   DCHECK(account_tracker_service_);
   DCHECK(network_connection_tracker_);
-  DCHECK_NE(signin::AccountConsistencyMethod::kMirror, account_consistency_);
   network_connection_tracker_->AddNetworkConnectionObserver(this);
 }
 
@@ -683,13 +679,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     }();
 
     const bool revoke_token = [&] {
-      // Revoke all secondary accounts when account consistency is disabled.
-      if (!is_primary_account &&
-          account_consistency_ != signin::AccountConsistencyMethod::kDice) {
-        load_token_status =
-            LoadTokenFromDBStatus::kTokenRevokedSecondaryAccount;
-        return true;
-      }
       if (revoke_token_on_load) {
         load_token_status = LoadTokenFromDBStatus::kTokenRevokedOnLoad;
         return true;

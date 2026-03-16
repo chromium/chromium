@@ -65,7 +65,6 @@ WebViewIdentityManagerFactory::BuildServiceInstanceFor(
       WebViewSigninClientFactory::GetForBrowserState(browser_state);
 
   signin::IdentityManagerBuildParams params;
-  params.account_consistency = signin::AccountConsistencyMethod::kDisabled;
   params.device_accounts_provider =
       std::make_unique<WebViewDeviceAccountsProviderImpl>();
   params.image_decoder = image_fetcher::CreateIOSImageDecoder();

@@ -20,7 +20,6 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
-#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -66,9 +65,10 @@ enum class LoadTokenFromDBStatus {
   // Token was revoked as part of Dice migration.
   // kTokenRevokedDiceMigration = 1,
 
+  // DEPRECATED
   // Token was revoked because it is a secondary account and account consistency
   // is disabled.
-  kTokenRevokedSecondaryAccount = 2,
+  // kTokenRevokedSecondaryAccount = 2,
 
   // Token was revoked on load due to cookie settings.
   kTokenRevokedOnLoad = 3,
@@ -106,7 +106,6 @@ class MutableProfileOAuth2TokenServiceDelegate
       AccountTrackerService* account_tracker_service,
       network::NetworkConnectionTracker* network_connection_tracker,
       scoped_refptr<TokenWebData> token_web_data,
-      signin::AccountConsistencyMethod account_consistency,
       RevokeAllTokensOnLoad revoke_all_tokens_on_load,
       std::unique_ptr<TokenBindingHelper> token_binding_helper,
       FixRequestErrorCallback fix_request_error_callback);
@@ -165,16 +164,12 @@ class MutableProfileOAuth2TokenServiceDelegate
                            PersistenceDBUpgrade);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            FetchPersistentError);
-  FRIEND_TEST_ALL_PREFIXES(
-      MutableProfileOAuth2TokenServiceDelegateTest,
-      PersistenceLoadCredentialsEmptyPrimaryAccountId_DiceEnabled);
-  FRIEND_TEST_ALL_PREFIXES(
-      MutableProfileOAuth2TokenServiceDelegateTest,
-      LoadCredentialsClearsTokenDBWhenNoPrimaryAccount_DiceDisabled);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            RevokeAllCredentialsDuringLoad);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            PersistenceLoadCredentials);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           PersistenceLoadCredentialsEmptyPrimaryAccountId);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            RevokeOnUpdate);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -356,7 +351,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   raw_ptr<AccountTrackerService, DanglingUntriaged> account_tracker_service_;
   raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   scoped_refptr<TokenWebData> token_web_data_;
-  signin::AccountConsistencyMethod account_consistency_;
 
   // Revokes all the tokens after loading them. Secondary accounts will be
   // completely removed, and the primary account will be kept in authentication

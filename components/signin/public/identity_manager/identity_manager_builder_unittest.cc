@@ -93,7 +93,6 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 #endif
 
   IdentityManagerBuildParams params;
-  params.account_consistency = AccountConsistencyMethod::kDisabled;
   params.image_decoder = std::make_unique<image_fetcher::FakeImageDecoder>();
   params.local_state = GetPrefService();
   params.network_connection_tracker =

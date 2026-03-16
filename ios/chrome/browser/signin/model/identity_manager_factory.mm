@@ -56,7 +56,6 @@ std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(
   signin::IdentityManagerBuildParams params;
   ChromeAccountManagerService* chrome_account_manager_service =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
-  params.account_consistency = signin::AccountConsistencyMethod::kMirror;
   params.device_accounts_provider =
       std::make_unique<DeviceAccountsProviderImpl>(
           chrome_account_manager_service);
