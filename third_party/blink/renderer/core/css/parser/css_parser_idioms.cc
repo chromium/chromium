@@ -60,17 +60,15 @@ String ConsumeName(CSSTokenizerInputStream& input) {
   StringBuilder result;
   while (true) {
     UChar cc = input.NextInputChar();
-    input.Advance();
     if (IsNameCodePoint(cc)) {
+      input.Advance();
       result.Append(cc);
-      continue;
-    }
-    if (TwoCharsAreValidEscape(cc, input.PeekWithoutReplacement(0))) {
+    } else if (TwoCharsAreValidEscape(cc, input.PeekWithoutReplacement(1))) {
+      input.Advance();
       result.Append(ConsumeEscape(input));
-      continue;
+    } else {
+      return result.ReleaseString();
     }
-    input.PushBack(cc);
-    return result.ReleaseString();
   }
 }
 

@@ -722,6 +722,9 @@ bool CSSTokenizer::NextCharsAreIdentifier(UChar first) {
 }
 
 bool CSSTokenizer::NextCharsAreIdentifier() {
+  if (input_.AtEnd()) {
+    return false;
+  }
   UChar first = Consume();
   bool are_identifier = NextCharsAreIdentifier(first);
   Reconsume(first);
