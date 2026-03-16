@@ -4,9 +4,16 @@
 
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
+
 // </if>
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {BrowserProxy} from './../browser_proxy.js';
+
+const policyPageMojoMigrationEnabled =
+    loadTimeData.getBoolean('policyPageMojoMigrationEnabled');
 
 /**
  * Must be kept in sync with the C++ enums of the same names (see
@@ -92,39 +99,58 @@ export const LevelNamesToValues: {[key: string]: PolicyLevel} = {
   mandatory: PolicyLevel.LEVEL_MANDATORY_VAL,
 };
 
-let instance: PolicyTestBrowserProxy|null = null;
-
-export class PolicyTestBrowserProxy {
-  applyTestPolicies(policies: string, profileSeparationResponse: string) {
-    return sendWithPromise(
-        'setLocalTestPolicies', policies, profileSeparationResponse);
+export namespace PolicyTestBrowserProxy {
+  export function applyTestPolicies(
+      policies: string, profileSeparationResponse: string) {
+    if (policyPageMojoMigrationEnabled) {
+      return BrowserProxy.getInstance().handler.setLocalTestPolicies(
+          policies, profileSeparationResponse);
+    } else {
+      return sendWithPromise(
+          'setLocalTestPolicies', policies, profileSeparationResponse);
+    }
   }
 
-  listenPoliciesUpdates() {
+  export function listenPoliciesUpdates() {
     return sendWithPromise('listenPoliciesUpdates');
   }
 
-  revertTestPolicies() {
-    return sendWithPromise('revertLocalTestPolicies');
+  export function revertTestPolicies() {
+    if (policyPageMojoMigrationEnabled) {
+      BrowserProxy.getInstance().handler.revertLocalTestPolicies();
+    } else {
+      chrome.send('revertLocalTestPolicies');
+    }
   }
 
-  restartWithTestPolicies(jsonString: string) {
-    return sendWithPromise('restartBrowser', jsonString);
+  export function restartWithTestPolicies(jsonString: string) {
+    if (policyPageMojoMigrationEnabled) {
+      BrowserProxy.getInstance().handler.restartBrowser(jsonString);
+    } else {
+      chrome.send('restartBrowser', [jsonString]);
+    }
   }
 
-  setUserAffiliation(affiliation: boolean) {
-    return sendWithPromise('setUserAffiliation', affiliation);
+  export function setUserAffiliation(affiliation: boolean) {
+    if (policyPageMojoMigrationEnabled) {
+      return BrowserProxy.getInstance().handler.setUserAffiliated(affiliation);
+    } else {
+      return sendWithPromise('setUserAffiliation', affiliation);
+    }
   }
 
-  async getAppliedTestPolicies(): Promise<PolicyInfo[]> {
-    const policies: string = await sendWithPromise('getAppliedTestPolicies');
+  export async function getAppliedTestPolicies(): Promise<PolicyInfo[]> {
+    let policies: string;
+    if (policyPageMojoMigrationEnabled) {
+      policies =
+          (await BrowserProxy.getInstance().handler.getAppliedTestPolicies())
+              .policies;
+    } else {
+      policies = await sendWithPromise('getAppliedTestPolicies');
+    }
     if (!policies.length) {
       return [];
     }
     return JSON.parse(policies);
-  }
-
-  static getInstance(): PolicyTestBrowserProxy {
-    return instance || (instance = new PolicyTestBrowserProxy());
   }
 }

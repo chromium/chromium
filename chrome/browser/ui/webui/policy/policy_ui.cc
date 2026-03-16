@@ -251,7 +251,8 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 
 PolicyUI::PolicyUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  web_ui->AddMessageHandler(std::make_unique<PolicyUIHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<PolicyUIHandler>(Profile::FromWebUI(web_ui)));
   CreateAndAddPolicyUIHtmlSource(Profile::FromWebUI(web_ui));
 }
 
@@ -266,8 +267,8 @@ void PolicyUI::BindInterface(
 void PolicyUI::CreateHandler(
     mojo::PendingReceiver<policy::mojom::PolicyPageHandler> handler,
     mojo::PendingRemote<policy::mojom::PolicyPageClient> client) {
-  page_handler_ =
-      std::make_unique<PolicyUIHandler>(std::move(handler), std::move(client));
+  page_handler_ = std::make_unique<PolicyUIHandler>(
+      std::move(handler), std::move(client), Profile::FromWebUI(web_ui()));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PolicyUI)

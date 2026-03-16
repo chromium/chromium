@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
@@ -86,6 +87,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -126,12 +128,15 @@ BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
-PolicyUIHandler::PolicyUIHandler() = default;
+PolicyUIHandler::PolicyUIHandler(Profile* profile) : profile_(*profile) {}
 
 PolicyUIHandler::PolicyUIHandler(
     mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
-    mojo::PendingRemote<policy::mojom::PolicyPageClient> client)
-    : receiver_(this, std::move(receiver)), client_(std::move(client)) {}
+    mojo::PendingRemote<policy::mojom::PolicyPageClient> client,
+    Profile* profile)
+    : receiver_(this, std::move(receiver)),
+      client_(std::move(client)),
+      profile_(*profile) {}
 
 PolicyUIHandler::~PolicyUIHandler() {
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
@@ -361,11 +366,26 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::ListValue& args) {
 }
 
 void PolicyUIHandler::HandleSetLocalTestPolicies(const base::ListValue& args) {
+  CHECK_EQ(args.size(), 3u);
   const std::string& policies = args[1].GetString();
+  const std::string& profile_separation_policy_response = args[2].GetString();
+  SetLocalTestPoliciesImpl(policies, profile_separation_policy_response);
   AllowJavascript();
+  ResolveJavascriptCallback(args[0], true);
+}
 
-  if (!PolicyUI::ShouldLoadTestPage(Profile::FromWebUI(web_ui()))) {
-    ResolveJavascriptCallback(args[0], true);
+void PolicyUIHandler::SetLocalTestPolicies(
+    const std::string& policies,
+    const std::string& profile_separation_policy_response,
+    SetLocalTestPoliciesCallback callback) {
+  SetLocalTestPoliciesImpl(policies, profile_separation_policy_response);
+  std::move(callback).Run();
+}
+
+void PolicyUIHandler::SetLocalTestPoliciesImpl(
+    const std::string& policies,
+    const std::string& profile_separation_policy_response) {
+  if (!PolicyUI::ShouldLoadTestPage(&*profile_)) {
     return;
   }
 
@@ -373,47 +393,47 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(const base::ListValue& args) {
       static_cast<policy::LocalTestPolicyProvider*>(
           g_browser_process->browser_policy_connector()
               ->local_test_policy_provider());
-
   CHECK(local_test_provider);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  const std::string& profile_separation_policy_response = args[2].GetString();
-  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
+  profile_->GetPrefs()->ClearPref(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
-  Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
+  profile_->GetPrefs()->SetDefaultPrefValue(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
       base::Value(profile_separation_policy_response));
 #endif
 
-  Profile::FromWebUI(web_ui())
-      ->GetProfilePolicyConnector()
-      ->UseLocalTestPolicyProvider();
+  profile_->GetProfilePolicyConnector()->UseLocalTestPolicyProvider();
 
   local_test_provider->LoadJsonPolicies(policies);
-  ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
     const base::ListValue& args) {
-  if (!PolicyUI::ShouldLoadTestPage(Profile::FromWebUI(web_ui()))) {
+  RevertLocalTestPolicies();
+}
+
+void PolicyUIHandler::RevertLocalTestPolicies() {
+  if (!PolicyUI::ShouldLoadTestPage(&*profile_)) {
     return;
   }
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
+  profile_->GetPrefs()->ClearPref(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
-  Profile::FromWebUI(web_ui())->GetPrefs()->SetDefaultPrefValue(
+  profile_->GetPrefs()->SetDefaultPrefValue(
       prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
       base::Value(std::string()));
 #endif
-  Profile::FromWebUI(web_ui())
-      ->GetProfilePolicyConnector()
-      ->RevertUseLocalTestPolicyProvider();
+  profile_->GetProfilePolicyConnector()->RevertUseLocalTestPolicyProvider();
 }
 
 void PolicyUIHandler::HandleRestartBrowser(const base::ListValue& args) {
-  CHECK(args.size() == 2);
-  const std::string& policies = args[1].GetString();
+  CHECK_EQ(args.size(), 1u);
+  const std::string& policies = args[0].GetString();
+  RestartBrowser(policies);
+}
 
+void PolicyUIHandler::RestartBrowser(const std::string& policies) {
   // Set policies to preference
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup,
@@ -426,25 +446,41 @@ void PolicyUIHandler::HandleRestartBrowser(const base::ListValue& args) {
 void PolicyUIHandler::HandleSetUserAffiliated(const base::ListValue& args) {
   CHECK_EQ(args.size(), 2u);
   bool affiliated = args[1].GetBool();
+  SetUserAffiliatedImpl(affiliated);
+  AllowJavascript();
+  ResolveJavascriptCallback(args[0], true);
+}
 
+void PolicyUIHandler::SetUserAffiliated(bool affiliated,
+                                        SetUserAffiliatedCallback callback) {
+  SetUserAffiliatedImpl(affiliated);
+  std::move(callback).Run();
+}
+
+void PolicyUIHandler::SetUserAffiliatedImpl(bool affiliated) {
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
       g_browser_process->browser_policy_connector()
           ->local_test_policy_provider());
   local_test_provider->SetUserAffiliated(affiliated);
-  AllowJavascript();
-  ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleGetAppliedTestPolicies(
     const base::ListValue& args) {
   CHECK_EQ(args.size(), 1u);
+  AllowJavascript();
+  ResolveJavascriptCallback(args[0], GetAppliedTestPoliciesImpl());
+}
 
+void PolicyUIHandler::GetAppliedTestPolicies(
+    GetAppliedTestPoliciesCallback callback) {
+  std::move(callback).Run(GetAppliedTestPoliciesImpl());
+}
+
+const std::string& PolicyUIHandler::GetAppliedTestPoliciesImpl() {
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
       g_browser_process->browser_policy_connector()
           ->local_test_policy_provider());
-
-  AllowJavascript();
-  ResolveJavascriptCallback(args[0], local_test_provider->GetPolicies());
+  return local_test_provider->GetPolicies();
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::ListValue& args) {

@@ -58,12 +58,13 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
                         public policy::SchemaRegistry::Observer {
  public:
   // Constructs legacy WebUIMessageHandler.
-  PolicyUIHandler();
+  explicit PolicyUIHandler(Profile* profile);
 
   // Constructs mojo handler.
   PolicyUIHandler(
       mojo::PendingReceiver<policy::mojom::PolicyPageHandler> receiver,
-      mojo::PendingRemote<policy::mojom::PolicyPageClient> client);
+      mojo::PendingRemote<policy::mojom::PolicyPageClient> client,
+      Profile* profile);
 
   PolicyUIHandler(const PolicyUIHandler&) = delete;
   PolicyUIHandler& operator=(const PolicyUIHandler&) = delete;
@@ -91,6 +92,15 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   // policy::mojom::PolicyPageHandler implementation.
   void GetDebugString(GetDebugStringCallback callback) override;
+  void RestartBrowser(const std::string& policies) override;
+  void SetUserAffiliated(bool affiliated,
+                         SetUserAffiliatedCallback callback) override;
+  void GetAppliedTestPolicies(GetAppliedTestPoliciesCallback callback) override;
+  void RevertLocalTestPolicies() override;
+  void SetLocalTestPolicies(
+      const std::string& policies,
+      const std::string& profile_separation_policy_response,
+      SetLocalTestPoliciesCallback callback) override;
 
  private:
   void HandleExportPoliciesJson(const base::ListValue& args);
@@ -108,6 +118,22 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleUploadReport(const base::ListValue& args);
 #endif
+
+  // Core logic for setting the user affiliation status for test policies.
+  // This is used to simulate user affiliation for testing purposes.
+  void SetUserAffiliatedImpl(bool affiliated);
+
+  // Core logic for retrieving the currently applied local test policies as a
+  // JSON string. Returns the current set of policies loaded in the
+  // LocalTestPolicyProvider.
+  const std::string& GetAppliedTestPoliciesImpl();
+
+  // Core logic for setting local test policies from a JSON string.
+  // This function is the core implementation for applying test policies
+  // to the LocalTestPolicyProvider.
+  void SetLocalTestPoliciesImpl(
+      const std::string& policies,
+      const std::string& profile_separation_policy_response);
 
   // Handler functions for chrome://policy/logs.
   void HandleGetPolicyLogs(const base::ListValue& args);
@@ -172,6 +198,8 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   const mojo::Receiver<policy::mojom::PolicyPageHandler> receiver_{this};
   const mojo::Remote<policy::mojom::PolicyPageClient> client_{
       mojo::NullRemote()};
+
+  raw_ref<Profile> profile_;
 
   base::WeakPtrFactory<PolicyUIHandler> weak_factory_{this};
 };

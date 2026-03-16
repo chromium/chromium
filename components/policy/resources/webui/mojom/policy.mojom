@@ -9,6 +9,31 @@ interface PolicyPageHandler {
   // Test function to verify the mojo interface works.
   // TODO: crbug.com/40897784 - clean this up once the migration is complete.
   GetDebugString() => (string message);
+
+  // Saves the provided `policies` (expected to be a JSON string) to the local
+  // state preferences and triggers a browser restart to apply them on the next
+  // startup.
+  RestartBrowser(string policies);
+
+  // Simulates user affiliation on the LocalTestPolicyProvider.
+  // The callback is invoked once the affiliation state has been successfully
+  // updated.
+  SetUserAffiliated(bool affiliated) => ();
+
+  // Retrieves the currently applied test policies from the
+  // LocalTestPolicyProvider.
+  // Returns `policies` as a JSON-formatted string.
+  GetAppliedTestPolicies() => (string policies);
+
+  // Clears any applied test policies and profile separation preferences,
+  // reverting the browser back to its standard policy provider behavior.
+  RevertLocalTestPolicies();
+
+  // Applies the given `policies` (expected to be a JSON string) and
+  // `profile_separation_response` to the LocalTestPolicyProvider.
+  // The callback is invoked once the policies have been successfully loaded.
+  SetLocalTestPolicies(string policies, string profile_separation_response)
+      => ();
 };
 
 // Messages sent from the browser process C++ to the renderer WebUI TS.
@@ -23,7 +48,6 @@ interface PolicyPageHandlerFactory {
   // Called by the renderer to initialize the communication channel.
   // `handler` is used to send commands from TypeScript to C++.
   // `client` is used to send spontaneous updates from C++ to TypeScript.
-  CreateHandler(
-      pending_receiver<PolicyPageHandler> handler,
-      pending_remote<PolicyPageClient> client);
+  CreateHandler(pending_receiver<PolicyPageHandler> handler,
+                pending_remote<PolicyPageClient> client);
 };

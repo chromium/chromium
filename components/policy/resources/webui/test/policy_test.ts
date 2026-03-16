@@ -11,9 +11,6 @@ import type {PolicyInfo} from './policy_test_browser_proxy.js';
 import {LevelNamesToValues, PolicyLevel, PolicyScope, PolicySource, PolicyTestBrowserProxy, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
 import type {PolicyTestTableElement} from './policy_test_table.js';
 
-const policyTestBrowserProxy: PolicyTestBrowserProxy =
-    PolicyTestBrowserProxy.getInstance();
-
 async function initialize() {
   await initializeTable();
   getRequiredElement('import-policies-file-input')
@@ -34,7 +31,7 @@ async function initialize() {
     "profileSeparationDataMigrationSettings": 2
   }`;
   addWebUiListener('schema-updated', onSchemaUpdated);
-  policyTestBrowserProxy.listenPoliciesUpdates();
+  PolicyTestBrowserProxy.listenPoliciesUpdates();
 }
 
 // Fired from PolicyUIHandler, called when the policy schema changes e.g.
@@ -55,7 +52,7 @@ function uploadPoliciesFile() {
 }
 
 async function initializeTable() {
-  const policies = await policyTestBrowserProxy.getAppliedTestPolicies();
+  const policies = await PolicyTestBrowserProxy.getAppliedTestPolicies();
   if (policies.length === 0) {
     return;
   }
@@ -173,8 +170,8 @@ async function applyPolicies() {
   getRequiredElement<HTMLButtonElement>('apply-policies').disabled = true;
   const userAffiliation =
       getRequiredElement<HTMLInputElement>('user-affiliated').checked;
-  await policyTestBrowserProxy.setUserAffiliation(userAffiliation);
-  await policyTestBrowserProxy.applyTestPolicies(
+  await PolicyTestBrowserProxy.setUserAffiliation(userAffiliation);
+  await PolicyTestBrowserProxy.applyTestPolicies(
       policies || '[]', profileSeparationResponse);
 
   getRequiredElement<HTMLButtonElement>('revert-applied-policies').disabled =
@@ -190,7 +187,7 @@ function clearPolicies() {
 }
 
 function resetPolicies(event: Event) {
-  policyTestBrowserProxy.revertTestPolicies();
+  PolicyTestBrowserProxy.revertTestPolicies();
   (event.target as HTMLButtonElement).disabled = true;
 }
 
@@ -218,11 +215,11 @@ function restartBrowser() {
       getRequiredElement<PolicyTestTableElement>('policy-test-table')
           .getTestPoliciesJsonString();
   if (jsonString) {
-    policyTestBrowserProxy.restartWithTestPolicies(jsonString);
+    PolicyTestBrowserProxy.restartWithTestPolicies(jsonString);
   }
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
 
 addWebUiListener('schema-updated', onSchemaUpdated);
-policyTestBrowserProxy.listenPoliciesUpdates();
+PolicyTestBrowserProxy.listenPoliciesUpdates();

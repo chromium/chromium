@@ -249,8 +249,8 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
 
 PolicyUI::PolicyUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  web_ui->AddMessageHandler(std::make_unique<PolicyUIHandler>());
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
+  web_ui->AddMessageHandler(std::make_unique<PolicyUIHandler>(profile));
   web::WebUIIOSDataSource::Add(profile, CreatePolicyUIHtmlSource(profile));
 
   if (base::FeatureList::IsEnabled(
@@ -313,7 +313,8 @@ void PolicyUI::CreateHandler(
     mojo::PendingReceiver<policy::mojom::PolicyPageHandler> handler,
     mojo::PendingRemote<policy::mojom::PolicyPageClient> client) {
   handler_ =
-      std::make_unique<PolicyUIHandler>(std::move(handler), std::move(client));
+      std::make_unique<PolicyUIHandler>(std::move(handler), std::move(client),
+                                        ProfileIOS::FromWebUIIOS(web_ui()));
 }
 
 PolicyUI::~PolicyUI() {
