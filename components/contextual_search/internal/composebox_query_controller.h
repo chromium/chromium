@@ -135,11 +135,11 @@ class ComposeboxQueryController
     return !pending_search_url_request_.is_null();
   }
 
-  void update_file_upload_status_for_testing(
-      const base::UnguessableToken& file_token,
+  void update_context_upload_status_for_testing(
+      const base::UnguessableToken& context_token,
       contextual_search::ContextUploadStatus status,
       std::optional<contextual_search::ContextUploadErrorType> error_type) {
-    UpdateFileUploadStatus(file_token, status, error_type);
+    UpdateContextUploadStatus(context_token, status, error_type);
   }
 
   // Enum for testing to track the state of the query controller.
@@ -209,10 +209,10 @@ class ComposeboxQueryController
 
     std::vector<uint8_t> file_content;
 
-    // The access token fetcher used for getting OAuth for the file upload
+    // The access token fetcher used for getting OAuth for the context upload
     // request. Will be discarded after the OAuth headers are created.
     std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-        file_upload_access_token_fetcher_;
+        context_upload_access_token_fetcher_;
 
     // The upload requests.
     std::vector<std::unique_ptr<UploadRequest>> upload_requests_;
@@ -385,17 +385,17 @@ class ComposeboxQueryController
   // changed callback if it has changed.
   void SetQueryControllerState(QueryControllerState new_state);
 
-  // Returns if file status is considered to be in the terminal state.
-  bool IsTerminalFileStatus(contextual_search::ContextUploadStatus status);
+  // Returns if context status is considered to be in the terminal state.
+  bool IsTerminalContextStatus(contextual_search::ContextUploadStatus status);
 
-  // Marks file upload as in terminal state (success, replaced, failed,
-  // expired, validation failed) for given file token, and if
-  // there are no more files to upload, create search URL.
-  void MarkFileUploadAsInTerminalState(base::UnguessableToken file_token);
+  // Marks context upload as in terminal state (success, replaced, failed,
+  // expired, validation failed) for given context token, and if
+  // there are no more contexts to upload, create search URL.
+  void MarkContextUploadAsInTerminalState(base::UnguessableToken context_token);
 
-  // Updates the file upload status and notifies the file upload status
+  // Updates the context upload status and notifies the context upload status
   // observers with an optional error type if the upload failed.
-  void UpdateFileUploadStatus(
+  void UpdateContextUploadStatus(
       base::UnguessableToken file_token,
       contextual_search::ContextUploadStatus status,
       std::optional<contextual_search::ContextUploadErrorType> error_type);
@@ -595,7 +595,7 @@ class ComposeboxQueryController
   // The set of file tokens for files that are currently in a non-terminal
   // upload status. This is different from `active_files_` because
   // that map tracks files that are able to be part of a query based on
-  // `IsValidFileUploadStatusForMultimodalRequest()`, whereas
+  // `IsValidContextUploadStatusForMultimodalRequest()`, whereas
   // this tracks which of those active files are still uploading.
   std::set<base::UnguessableToken> pending_context_uploads_;
 

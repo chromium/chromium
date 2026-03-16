@@ -27,15 +27,15 @@ class TestContextualSearchContextController
   TestContextualSearchContextController() = default;
   ~TestContextualSearchContextController() override = default;
 
-  void TriggerFileUploadStatusChanged(
-      const base::UnguessableToken& file_token,
+  void TriggerContextUploadStatusChanged(
+      const base::UnguessableToken& context_token,
       lens::MimeType mime_type,
-      contextual_search::ContextUploadStatus file_upload_status,
+      contextual_search::ContextUploadStatus context_upload_status,
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) {
     for (auto& observer : observers_) {
-      observer.OnContextUploadStatusChanged(file_token, mime_type,
-                                            file_upload_status, error_type);
+      observer.OnContextUploadStatusChanged(context_token, mime_type,
+                                            context_upload_status, error_type);
     }
   }
 
@@ -93,8 +93,8 @@ class ContextualSearchSessionEntryTest : public testing::Test {
   std::unique_ptr<ContextualSearchSessionEntry> session_entry_;
 };
 
-TEST_F(ContextualSearchSessionEntryTest, ForwardsFileUploadStatusChanged) {
-  base::UnguessableToken file_token = base::UnguessableToken::Create();
+TEST_F(ContextualSearchSessionEntryTest, ForwardsContextUploadStatusChanged) {
+  base::UnguessableToken context_token = base::UnguessableToken::Create();
   lens::MimeType mime_type = lens::MimeType::kPdf;
   contextual_search::ContextUploadStatus status =
       contextual_search::ContextUploadStatus::kUploadSuccessful;
@@ -105,8 +105,8 @@ TEST_F(ContextualSearchSessionEntryTest, ForwardsFileUploadStatusChanged) {
               OnContextUploadStatusChanged(mime_type, status, error_type))
       .Times(1);
 
-  controller_ptr_->TriggerFileUploadStatusChanged(file_token, mime_type, status,
-                                                  error_type);
+  controller_ptr_->TriggerContextUploadStatusChanged(context_token, mime_type,
+                                                     status, error_type);
 }
 
 }  // namespace contextual_search

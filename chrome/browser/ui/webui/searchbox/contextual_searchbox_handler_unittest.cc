@@ -1104,11 +1104,12 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContext_DelayUpload) {
   EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged)
       .Times(1)
       .WillOnce(
-          [&status](const base::UnguessableToken& file_token,
-                    contextual_search::ContextUploadStatus file_upload_status,
-                    std::optional<contextual_search::ContextUploadErrorType>
-                        file_upload_error_type) {
-            status = file_upload_status;
+          [&status](
+              const base::UnguessableToken& context_token,
+              contextual_search::ContextUploadStatus context_upload_status,
+              std::optional<contextual_search::ContextUploadErrorType>
+                  context_upload_error_type) {
+            status = context_upload_status;
           });
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
@@ -1683,22 +1684,23 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetTabPreview_Success) {
   EXPECT_EQ(preview.value(), webui::GetBitmapDataUrl(bitmap));
 }
 
-class ContextualSearchboxHandlerFileUploadStatusTest
+class ContextualSearchboxHandlerContextUploadStatusTest
     : public ContextualSearchboxHandlerTest,
       public testing::WithParamInterface<
           composebox_query::mojom::ContextUploadStatus> {};
 
-TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
+TEST_P(ContextualSearchboxHandlerContextUploadStatusTest,
        OnContextUploadStatusChanged) {
   contextual_search::ContextUploadStatus status;
   EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged)
       .Times(1)
       .WillOnce(
-          [&status](const base::UnguessableToken& file_token,
-                    contextual_search::ContextUploadStatus file_upload_status,
-                    std::optional<contextual_search::ContextUploadErrorType>
-                        file_upload_error_type) {
-            status = file_upload_status;
+          [&status](
+              const base::UnguessableToken& context_token,
+              contextual_search::ContextUploadStatus context_upload_status,
+              std::optional<contextual_search::ContextUploadErrorType>
+                  context_upload_error_type) {
+            status = context_upload_status;
           });
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
@@ -1717,7 +1719,7 @@ TEST_P(ContextualSearchboxHandlerFileUploadStatusTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ContextualSearchboxHandlerFileUploadStatusTest,
+    ContextualSearchboxHandlerContextUploadStatusTest,
     testing::Values(
         composebox_query::mojom::ContextUploadStatus::kNotUploaded,
         composebox_query::mojom::ContextUploadStatus::kProcessing,

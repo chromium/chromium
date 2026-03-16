@@ -399,7 +399,7 @@ void LensSearchController::CloseLensAsync(
   // moved. It needs to be reset here to avoid a crash when the query router is
   // eventually destroyed.
   if (query_router_) {
-    query_router_->reset_file_upload_status_observation();
+    query_router_->reset_context_upload_status_observation();
   }
 
   // Close the side panel if it is showing. This provides a smooth closing
