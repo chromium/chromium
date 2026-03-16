@@ -756,6 +756,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   MemoryPurgeManager memory_purge_manager_;
 
+  base::TimeTicks last_input_use_case_time_ = base::TimeTicks::Min();
+
   base::RepeatingClosure update_policy_closure_;
   DeadlineTaskRunner delayed_update_policy_runner_;
   CancelableClosureHolder end_renderer_hidden_idle_period_closure_;
