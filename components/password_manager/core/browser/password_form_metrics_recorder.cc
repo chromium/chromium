@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <string_view>
 #include <variant>
 
 #include "base/check_deref.h"
@@ -442,11 +443,12 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
     }
 
     if (account_storage_usage_level_) {
-      std::string suffix =
+      std::string_view suffix =
           metrics_util::GetPasswordAccountStorageUsageLevelHistogramSuffix(
               *account_storage_usage_level_);
       base::UmaHistogramEnumeration(
-          "PasswordManager.FillingAssistance." + suffix, filling_assistance);
+          base::StrCat({"PasswordManager.FillingAssistance.", suffix}),
+          filling_assistance);
     }
 
     if (filling_source_) {

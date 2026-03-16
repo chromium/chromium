@@ -4,7 +4,10 @@
 
 #include "components/password_manager/core/browser/password_session_durations_metrics_recorder.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 
@@ -14,11 +17,12 @@ namespace {
 
 void LogStateDuration(features_util::PasswordAccountStorageUserState user_state,
                       base::TimeDelta session_length) {
-  std::string suffix =
+  std::string_view suffix =
       metrics_util::GetPasswordAccountStorageUserStateHistogramSuffix(
           user_state);
   base::UmaHistogramLongTimes(
-      "PasswordManager.AccountStorageUserStateDuration." + suffix,
+      base::StrCat(
+          {"PasswordManager.AccountStorageUserStateDuration.", suffix}),
       session_length);
 }
 

@@ -103,7 +103,7 @@ GetDuplicateCredentialsTypes(
 
 }  // namespace
 
-std::string GetPasswordAccountStorageUserStateHistogramSuffix(
+std::string_view GetPasswordAccountStorageUserStateHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUserState
         user_state) {
   switch (user_state) {
@@ -123,7 +123,7 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
   NOTREACHED();
 }
 
-std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
+std::string_view GetPasswordAccountStorageUsageLevelHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUsageLevel
         usage_level) {
   switch (usage_level) {
@@ -165,7 +165,7 @@ void LeakDialogMetricsRecorder::LogLeakDialogTypeAndDismissalReason(
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }
 
-const char* LeakDialogMetricsRecorder::GetUMASuffix() const {
+std::string_view LeakDialogMetricsRecorder::GetUMASuffix() const {
   switch (type_) {
     case LeakDialogType::kCheckup:
       return "Checkup";
@@ -191,11 +191,11 @@ void LogSaveUIDismissalReason(
                                 NUM_UI_RESPONSES);
 
   if (user_state.has_value()) {
-    std::string suffix =
+    std::string_view suffix =
         GetPasswordAccountStorageUserStateHistogramSuffix(user_state.value());
     base::UmaHistogramEnumeration(
-        "PasswordManager.SaveUIDismissalReason." + suffix, reason,
-        NUM_UI_RESPONSES);
+        base::StrCat({"PasswordManager.SaveUIDismissalReason.", suffix}),
+        reason, NUM_UI_RESPONSES);
   }
 
   if (log_adoption_metric) {
@@ -383,10 +383,10 @@ void LogIfSavedPasswordWasGenerated(
   base::UmaHistogramBoolean("PasswordManager.SavedPasswordIsGenerated",
                             is_generated_password);
   ukm_entry_builder.SetIsPasswordGenerated(is_generated_password);
-  std::string suffix = GetPasswordAccountStorageUsageLevelHistogramSuffix(
+  std::string_view suffix = GetPasswordAccountStorageUsageLevelHistogramSuffix(
       account_storage_usage_level);
   base::UmaHistogramBoolean(
-      "PasswordManager.SavedPasswordIsGenerated." + suffix,
+      base::StrCat({"PasswordManager.SavedPasswordIsGenerated.", suffix}),
       is_generated_password);
 
   ukm_entry_builder.Record(ukm::UkmRecorder::Get());
