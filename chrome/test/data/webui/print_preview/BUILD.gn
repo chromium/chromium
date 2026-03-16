@@ -62,6 +62,7 @@ build_webui_tests("build") {
     "scaling_settings_test.ts",
     "select_mixin_test.ts",
     "settings_select_test.ts",
+    "test_listener.ts",
     "test_plugin_proxy.ts",
   ]
 

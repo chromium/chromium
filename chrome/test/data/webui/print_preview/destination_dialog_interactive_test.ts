@@ -9,7 +9,7 @@ import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
-import {setupTestListenerElement} from './print_preview_test_utils.js';
+import {setupTestListenerElement} from './test_listener.js';
 
 suite('DestinationDialogInteractiveTest', function() {
   let dialog: PrintPreviewDestinationDialogElement;

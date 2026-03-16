@@ -11,7 +11,8 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
-import {getDestinations, getSaveAsPdfDestination, setupTestListenerElement} from './print_preview_test_utils.js';
+import {getDestinations, getSaveAsPdfDestination} from './print_preview_test_utils.js';
+import {setupTestListenerElement} from './test_listener.js';
 
 suite('DestinationSettingsTest', function() {
   let destinationSettings: PrintPreviewDestinationSettingsElement;

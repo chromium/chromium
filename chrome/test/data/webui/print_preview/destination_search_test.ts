@@ -10,7 +10,8 @@ import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/cha
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
-import {createDestinationStore, getCddTemplate, setupTestListenerElement} from './print_preview_test_utils.js';
+import {createDestinationStore, getCddTemplate} from './print_preview_test_utils.js';
+import {setupTestListenerElement} from './test_listener.js';
 
 suite('DestinationSearchTest', function() {
   let dialog: PrintPreviewDestinationDialogElement;

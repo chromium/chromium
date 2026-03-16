@@ -37,6 +37,7 @@ build_webui_tests("build") {
     "save_controls_mixin_test.ts",
     "scroll_with_form_field_focused_test.ts",
     "swipe_detector_test.ts",
+    "test_bookmarks.ts",
     "test_util.ts",
     "title_test.ts",
     "touch_handling_test.ts",

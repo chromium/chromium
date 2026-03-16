@@ -10,7 +10,8 @@ import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
-import {createDestinationStore, getDestinations, getExtensionDestinations, setupTestListenerElement} from './print_preview_test_utils.js';
+import {createDestinationStore, getDestinations, getExtensionDestinations} from './print_preview_test_utils.js';
+import {setupTestListenerElement} from './test_listener.js';
 
 suite('DestinationDialogTest', function() {
   let dialog: PrintPreviewDestinationDialogElement;

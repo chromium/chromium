@@ -5,7 +5,9 @@
 // Utilities that are used in multiple tests.
 
 // clang-format off
-import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import './test_bookmarks.js';
+
+import type {DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement, SelectableIconButtonElement, ViewerBottomToolbarDropdownElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
@@ -13,8 +15,10 @@ import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, MIN_TEXTBOX_SIZE_PX, hexToCo
 // </if>
 // <if expr="enable_pdf_save_to_drive">
 import {SaveToDriveBubbleAction, SaveToDriveBubbleState, SaveToDriveSaveType } from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+
 // </if>
-import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {TestBookmarksElement} from './test_bookmarks.js';
+
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -278,33 +282,6 @@ export function createMockPdfPluginForTest(): MockPdfPluginElement {
       MockPdfPluginElement;
 }
 
-class TestBookmarksElement extends CrLitElement {
-  static get is() {
-    return 'test-bookmarks';
-  }
-
-  override render() {
-    return this.bookmarks.map(
-        item => html`<viewer-bookmark .bookmark="${item}" depth="0">
-             </viewer-bookmark>`);
-  }
-
-  static override get properties() {
-    return {
-      bookmarks: {type: Array},
-    };
-  }
-
-  accessor bookmarks: Bookmark[] = [];
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'test-bookmarks': TestBookmarksElement;
-  }
-}
-
-customElements.define(TestBookmarksElement.is, TestBookmarksElement);
 
 /**
  * @return An element containing a dom-repeat of bookmarks, for
