@@ -851,24 +851,19 @@ void CrosDisplayConfigImpl::SetUnifiedDesktopEnabled(bool enabled) {
   GetDisplayManager()->SetUnifiedDesktopEnabled(enabled);
 }
 
-void CrosDisplayConfigImpl::OverscanCalibration(
+crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::OverscanCalibration(
     const std::string& display_id,
     crosapi::mojom::DisplayConfigOperation op,
-    const std::optional<gfx::Insets>& delta,
-    OverscanCalibrationCallback callback) {
+    const std::optional<gfx::Insets>& delta) {
   display::Display display = GetDisplay(display_id);
   if (display.id() == display::kInvalidDisplayId) {
-    std::move(callback).Run(
-        crosapi::mojom::DisplayConfigResult::kInvalidDisplayIdError);
-    return;
+    return crosapi::mojom::DisplayConfigResult::kInvalidDisplayIdError;
   }
 
   OverscanCalibrator* calibrator = GetOverscanCalibrator(display_id);
   if (!calibrator && op != crosapi::mojom::DisplayConfigOperation::kStart) {
     DISPLAY_LOG(ERROR) << "Calibrator does not exist for op=" << op;
-    std::move(callback).Run(
-        crosapi::mojom::DisplayConfigResult::kCalibrationNotAvailableError);
-    return;
+    return crosapi::mojom::DisplayConfigResult::kCalibrationNotAvailableError;
   }
   switch (op) {
     case crosapi::mojom::DisplayConfigOperation::kStart: {
@@ -887,9 +882,7 @@ void CrosDisplayConfigImpl::OverscanCalibration(
       if (!delta) {
         DISPLAY_LOG(ERROR) << "Delta not provided for for adjust: "
                            << display_id;
-        std::move(callback).Run(
-            crosapi::mojom::DisplayConfigResult::kCalibrationFailedError);
-        return;
+        return crosapi::mojom::DisplayConfigResult::kCalibrationFailedError;
       }
       calibrator->UpdateInsets(calibrator->insets() + *delta);
       break;
@@ -904,16 +897,12 @@ void CrosDisplayConfigImpl::OverscanCalibration(
       break;
     case crosapi::mojom::DisplayConfigOperation::kShowNative:
       DISPLAY_LOG(ERROR) << "Operation not supported: " << op;
-      std::move(callback).Run(
-          crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
-      return;
+      return crosapi::mojom::DisplayConfigResult::kInvalidOperationError;
     case crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays:
       DISPLAY_LOG(ERROR) << "Operation not supported: " << op;
-      std::move(callback).Run(
-          crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
-      return;
+      return crosapi::mojom::DisplayConfigResult::kInvalidOperationError;
   }
-  std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
+  return crosapi::mojom::DisplayConfigResult::kSuccess;
 }
 
 void CrosDisplayConfigImpl::TouchCalibration(

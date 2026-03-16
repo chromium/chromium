@@ -305,9 +305,10 @@ DisplayInfoProviderChromeOS::GetDisplayLayout() {
 bool DisplayInfoProviderChromeOS::OverscanCalibrationStart(
     const std::string& id) {
   if (cros_display_config_) {
-    cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt,
-        base::BindOnce(&LogErrorResult));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config_->OverscanCalibration(
+            id, crosapi::mojom::DisplayConfigOperation::kStart, std::nullopt);
+    LogErrorResult(result);
   }
   return true;
 }
@@ -316,9 +317,11 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationAdjust(
     const std::string& id,
     const system_display::Insets& delta) {
   if (cros_display_config_) {
-    cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kAdjust, GetInsets(delta),
-        base::BindOnce(&LogErrorResult));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config_->OverscanCalibration(
+            id, crosapi::mojom::DisplayConfigOperation::kAdjust,
+            GetInsets(delta));
+    LogErrorResult(result);
   }
   return true;
 }
@@ -326,9 +329,10 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationAdjust(
 bool DisplayInfoProviderChromeOS::OverscanCalibrationReset(
     const std::string& id) {
   if (cros_display_config_) {
-    cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt,
-        base::BindOnce(&LogErrorResult));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config_->OverscanCalibration(
+            id, crosapi::mojom::DisplayConfigOperation::kReset, std::nullopt);
+    LogErrorResult(result);
   }
   return true;
 }
@@ -336,9 +340,11 @@ bool DisplayInfoProviderChromeOS::OverscanCalibrationReset(
 bool DisplayInfoProviderChromeOS::OverscanCalibrationComplete(
     const std::string& id) {
   if (cros_display_config_) {
-    cros_display_config_->OverscanCalibration(
-        id, crosapi::mojom::DisplayConfigOperation::kComplete, std::nullopt,
-        base::BindOnce(&LogErrorResult));
+    crosapi::mojom::DisplayConfigResult result =
+        cros_display_config_->OverscanCalibration(
+            id, crosapi::mojom::DisplayConfigOperation::kComplete,
+            std::nullopt);
+    LogErrorResult(result);
   }
   return true;
 }

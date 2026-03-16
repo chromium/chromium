@@ -115,10 +115,12 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
     NOTREACHED();
   }
   void SetUnifiedDesktopEnabled(bool enabled) override {}
-  void OverscanCalibration(const std::string& display_id,
-                           crosapi::mojom::DisplayConfigOperation op,
-                           const std::optional<gfx::Insets>& delta,
-                           OverscanCalibrationCallback callback) override {}
+  crosapi::mojom::DisplayConfigResult OverscanCalibration(
+      const std::string& display_id,
+      crosapi::mojom::DisplayConfigOperation op,
+      const std::optional<gfx::Insets>& delta) override {
+    NOTREACHED();
+  }
   void TouchCalibration(const std::string& display_id,
                         crosapi::mojom::DisplayConfigOperation op,
                         crosapi::mojom::TouchCalibrationPtr calibration,

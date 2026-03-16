@@ -24,7 +24,7 @@ class OverscanCalibratorTest : public AshTestBase {
   OverscanCalibrator* StartCalibration(const std::string& id) {
     Shell::Get()->cros_display_config()->OverscanCalibration(
         id, crosapi::mojom::DisplayConfigOperation::kStart,
-        gfx::Insets() /* not used */, base::DoNothing());
+        gfx::Insets() /* not used */);
     return Shell::Get()->cros_display_config()->GetOverscanCalibrator(id);
   }
 };

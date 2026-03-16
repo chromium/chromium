@@ -130,13 +130,9 @@ class CrosDisplayConfigTest : public AshTestBase {
   bool OverscanCalibration(int64_t id,
                            crosapi::mojom::DisplayConfigOperation op,
                            const std::optional<gfx::Insets>& delta) {
-    crosapi::mojom::DisplayConfigResult result;
-    base::RunLoop run_loop;
-    cros_display_config()->OverscanCalibration(
-        base::NumberToString(id), op, delta,
-        base::BindOnce(&SetResult, &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result == crosapi::mojom::DisplayConfigResult::kSuccess;
+    return cros_display_config()->OverscanCalibration(base::NumberToString(id),
+                                                      op, delta) ==
+           crosapi::mojom::DisplayConfigResult::kSuccess;
   }
 
   bool DisplayExists(int64_t display_id) {

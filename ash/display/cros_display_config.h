@@ -21,14 +21,7 @@ class TouchCalibratorController;
 // Interface for configuring displays in Chrome OS.
 class CrosDisplayConfig {
  public:
-  // TODO(crbug.com/485123493): Get rid of callbacks where possible.
-  using OverscanCalibrationCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
-  using OverscanCalibrationMojoCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
   using TouchCalibrationCallback =
-      base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
-  using TouchCalibrationMojoCallback =
       base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
 
   class Observer : public base::CheckedObserver {
@@ -68,12 +61,11 @@ class CrosDisplayConfig {
 
   // Starts, updates, completes, or resets overscan calibration for the display
   // with identifier |display_id|. If |op| is kAdjust, |delta| describes the
-  // amount to change the overscan value. Runs the callback after performing the
-  // operation or on error.
-  virtual void OverscanCalibration(const std::string& display_id,
-                                   crosapi::mojom::DisplayConfigOperation op,
-                                   const std::optional<gfx::Insets>& delta,
-                                   OverscanCalibrationCallback callback) = 0;
+  // amount to change the overscan value.
+  virtual crosapi::mojom::DisplayConfigResult OverscanCalibration(
+      const std::string& display_id,
+      crosapi::mojom::DisplayConfigOperation op,
+      const std::optional<gfx::Insets>& delta) = 0;
 
   // Starts, completes, or resets touch calibration for the display with
   // identifier |display_id|. If |op| is kShowNative shows the native
@@ -122,10 +114,10 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
       crosapi::mojom::DisplayConfigPropertiesPtr properties,
       crosapi::mojom::DisplayConfigSource source) override;
   void SetUnifiedDesktopEnabled(bool enabled) override;
-  void OverscanCalibration(const std::string& display_id,
-                           crosapi::mojom::DisplayConfigOperation op,
-                           const std::optional<gfx::Insets>& delta,
-                           OverscanCalibrationCallback callback) override;
+  crosapi::mojom::DisplayConfigResult OverscanCalibration(
+      const std::string& display_id,
+      crosapi::mojom::DisplayConfigOperation op,
+      const std::optional<gfx::Insets>& delta) override;
   void TouchCalibration(const std::string& display_id,
                         crosapi::mojom::DisplayConfigOperation op,
                         crosapi::mojom::TouchCalibrationPtr calibration,
