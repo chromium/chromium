@@ -10,10 +10,13 @@
 
 namespace policy {
 
+class UserCloudPolicyInvalidator;
+
 // Creates an instance of UserCloudPolicyInvalidator for each profile.
 class UserCloudPolicyInvalidatorFactory : public ProfileKeyedServiceFactory {
  public:
   static UserCloudPolicyInvalidatorFactory* GetInstance();
+  static UserCloudPolicyInvalidator* GetForProfile(Profile* profile);
 
   UserCloudPolicyInvalidatorFactory(const UserCloudPolicyInvalidatorFactory&) =
       delete;

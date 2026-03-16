@@ -34,7 +34,7 @@ namespace policy {
 UserCloudPolicyInvalidator::UserCloudPolicyInvalidator(
     Profile* profile,
     CloudPolicyManager* policy_manager)
-    : policy_manager_(policy_manager) {
+    : profile_(profile), policy_manager_(policy_manager) {
   DCHECK(profile);
 
   // Register for notification that profile creation is complete. The
@@ -49,6 +49,30 @@ UserCloudPolicyInvalidator::UserCloudPolicyInvalidator(
 }
 
 UserCloudPolicyInvalidator::~UserCloudPolicyInvalidator() = default;
+
+void UserCloudPolicyInvalidator::StartExtensionInstallInvalidator() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  CHECK(base::FeatureList::IsEnabled(
+      policy::features::kEnableExtensionInstallPolicyFetching));
+
+  invalidation::ProfileInvalidationProvider* invalidation_provider =
+      GetInvalidationProvider(profile_);
+  if (!invalidation_provider) {
+    return;
+  }
+  auto* core = policy_manager_->extension_install_core();
+  CHECK(core) << "Extension install core must be initialized.";
+  extension_install_invalidator_ =
+      std::make_unique<ExtensionInstallPolicyInvalidator>(
+          PolicyInvalidationScope::kUser,
+          invalidation_provider->GetInvalidationListener(
+              policy::kPolicyInvalidationProjectNumber),
+          core, base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::DefaultClock::GetInstance());
+#else
+  NOTREACHED();
+#endif
+}
 
 void UserCloudPolicyInvalidator::Shutdown() {
   profile_observation_.Reset();
@@ -84,19 +108,6 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
       policy_manager_->core(),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::DefaultClock::GetInstance());
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (base::FeatureList::IsEnabled(
-          policy::features::kEnableExtensionInstallPolicyFetching)) {
-    extension_install_invalidator_ =
-        std::make_unique<ExtensionInstallPolicyInvalidator>(
-            PolicyInvalidationScope::kUser,
-            invalidation_provider->GetInvalidationListener(
-                policy::kPolicyInvalidationProjectNumber),
-            policy_manager_->core(),
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            base::DefaultClock::GetInstance());
-  }
-#endif
 }
 
 }  // namespace policy

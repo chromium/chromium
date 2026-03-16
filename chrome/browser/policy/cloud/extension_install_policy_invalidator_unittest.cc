@@ -313,11 +313,11 @@ std::string
 ExtensionInstallPolicyInvalidatorTestBase::GetPolicyInvalidationType() const {
   switch (GetPolicyInvalidationScope()) {
     case PolicyInvalidationScope::kUser:
-      return "EXTENSION_INSTALL_POLICY_FETCH";
+      return "EXTENSION_INSTALL_CLOUD_POLICY_FETCH";
     case PolicyInvalidationScope::kDevice:
-      return "EXTENSION_INSTALL_POLICY_FETCH";
+      return "EXTENSION_INSTALL_CLOUD_POLICY_FETCH";
     case PolicyInvalidationScope::kCBCM:
-      return "EXTENSION_INSTALL_POLICY_FETCH";
+      return "EXTENSION_INSTALL_CLOUD_POLICY_FETCH";
     case PolicyInvalidationScope::kDeviceLocalAccount:
       NOTREACHED();
   }
@@ -589,21 +589,21 @@ TEST_F(ExtensionInstallPolicyInvalidatorOwnerNameTest, GetTypeForUserScope) {
   scope_ = PolicyInvalidationScope::kUser;
   StartInvalidator();
   ASSERT_TRUE(invalidator());
-  EXPECT_EQ("EXTENSION_INSTALL_POLICY_FETCH", invalidator()->GetType());
+  EXPECT_EQ("EXTENSION_INSTALL_CLOUD_POLICY_FETCH", invalidator()->GetType());
 }
 
 TEST_F(ExtensionInstallPolicyInvalidatorOwnerNameTest, GetTypeForDeviceScope) {
   scope_ = PolicyInvalidationScope::kDevice;
   StartInvalidator();
   ASSERT_TRUE(invalidator());
-  EXPECT_EQ("EXTENSION_INSTALL_POLICY_FETCH", invalidator()->GetType());
+  EXPECT_EQ("EXTENSION_INSTALL_CLOUD_POLICY_FETCH", invalidator()->GetType());
 }
 
 TEST_F(ExtensionInstallPolicyInvalidatorOwnerNameTest, GetTypeForCbcmScope) {
   scope_ = PolicyInvalidationScope::kCBCM;
   StartInvalidator();
   ASSERT_TRUE(invalidator());
-  EXPECT_EQ("EXTENSION_INSTALL_POLICY_FETCH", invalidator()->GetType());
+  EXPECT_EQ("EXTENSION_INSTALL_CLOUD_POLICY_FETCH", invalidator()->GetType());
 }
 
 class ExtensionInstallPolicyInvalidatorUserTypedTest

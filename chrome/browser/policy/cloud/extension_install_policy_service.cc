@@ -18,8 +18,11 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/cloud/user_cloud_policy_invalidator.h"
+#include "chrome/browser/policy/cloud/user_cloud_policy_invalidator_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_types.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -193,6 +196,12 @@ ExtensionInstallPolicyServiceImpl::ExtensionInstallPolicyServiceImpl(
     // If there is not store available, then that manager does not support
     // extension install policies yet.
     if (!info.manager->IsSupportingExtensionInstallPolicies()) {
+      continue;
+    }
+    // If there is an extension install core, then there is nothing to do.
+    // This is required because the the machine level policy manager may have
+    // been initialized by an earlier profile launch.
+    if (info.manager->extension_install_core()) {
       continue;
     }
     initialization_waiters_.emplace(
@@ -406,6 +415,23 @@ void ExtensionInstallPolicyServiceImpl::OnCloudPolicyManagerReady(
   OnPolicyChecksEnabledChanged();
 
   initialization_waiters_.erase(manager);
+
+  if (manager == profile_->GetCloudPolicyManager()) {
+    UserCloudPolicyInvalidator* invalidator =
+        UserCloudPolicyInvalidatorFactory::GetForProfile(&profile_.get());
+    if (invalidator) {
+      invalidator->StartExtensionInstallInvalidator();
+    }
+    return;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (ChromeBrowserCloudManagementController* controller =
+          g_browser_process->browser_policy_connector()
+              ->chrome_browser_cloud_management_controller()) {
+    controller->MaybeStartExtensionInstallPolicyInvalidator();
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void ExtensionInstallPolicyServiceImpl::Shutdown() {
