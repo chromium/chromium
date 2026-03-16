@@ -2093,8 +2093,6 @@ void QuotaManagerImpl::AddBucketTableEntry(
 void QuotaManagerImpl::OnDbError(int error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  sql::UmaHistogramSqliteResult("Quota.QuotaDatabaseError", error_code);
-
   // Start the storage eviction routine on a full disk error.
   if (static_cast<sql::SqliteErrorCode>(error_code) ==
       sql::SqliteErrorCode::kFullDisk) {

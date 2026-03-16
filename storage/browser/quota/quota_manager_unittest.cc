@@ -1051,7 +1051,7 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
   ASSERT_TRUE(GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName)
                   .has_value());
 
-  histograms.ExpectTotalCount("Quota.QuotaDatabaseError",
+  histograms.ExpectTotalCount("Sql.Database.Statement.Error.Quota",
                               /*expected_count=*/0);
 
   // Corrupt QuotaDatabase so any future request returns a QuotaError.
@@ -1066,7 +1066,7 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseResultHistogram) {
   EXPECT_THAT(GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName),
               base::test::ErrorIs(QuotaError::kDatabaseError));
 
-  histograms.ExpectTotalCount("Quota.QuotaDatabaseError",
+  histograms.ExpectTotalCount("Sql.Database.Statement.Error.Quota",
                               /*expected_count=*/1);
 }
 
