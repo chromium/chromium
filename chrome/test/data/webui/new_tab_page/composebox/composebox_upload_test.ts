@@ -7,6 +7,7 @@ import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode as Comp
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ToolMode} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -1239,4 +1240,152 @@ suite('NewTabPageComposeboxUploadTest', () => {
             testProxy.element.getNumOfFilesForTesting(), 1,
             'Same tab should be added back after clearing all.');
       });
+
+  test('addSearchContext handles file attachments', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement(testProxy);
+    testProxy.element.searchboxNextEnabled = true;
+
+    await microtasksFinished();
+
+    const fileAttachment = {
+      uuid: FAKE_TOKEN_STRING,
+      name: 'test.jpg',
+      imageDataUrl: 'data:image/jpeg;base64,...',
+      mimeType: 'image/jpeg',
+    };
+
+    const context = {
+      input: 'hello world',
+      files: [],
+      attachments: [
+        {fileAttachment: fileAttachment, tabAttachment: undefined},
+      ],
+      toolMode: ToolMode.kDefault,
+    };
+
+    testProxy.element.addSearchContext(context);
+    await microtasksFinished();
+
+    // Verify file added.
+    const files = testProxy.element.$.carousel.files;
+    assertEquals(1, files.length);
+    assertEquals('test.jpg', files[0]!.name);
+  });
+
+  test('addSearchContext rejects invalid file attachments', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement(testProxy);
+    testProxy.element.searchboxNextEnabled = true;
+
+    await microtasksFinished();
+
+    const fileAttachment = {
+      uuid: FAKE_TOKEN_STRING,
+      name: 'test.txt',
+      imageDataUrl: null,
+      mimeType: 'text/plain',
+    };
+
+    const context = {
+      input: 'hello world',
+      files: [],
+      attachments: [
+        {fileAttachment: fileAttachment, tabAttachment: undefined},
+      ],
+      toolMode: ToolMode.kDefault,
+    };
+
+    testProxy.element.addSearchContext(context);
+    await microtasksFinished();
+
+    // Verify file is NOT added to carousel.
+    assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
+    // Verify correct error message is shown.
+    assertEquals(
+        loadTimeData.getString('composeFileTypesAllowedError'),
+        testProxy.element.$.errorScrim.errorMessage);
+  });
+
+  test('addSearchContext handles tab attachments', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement(testProxy);
+    testProxy.element.searchboxNextEnabled = true;
+
+    await microtasksFinished();
+
+    const tabAttachment = {
+      tabId: 10,
+      title: 'Tab Title',
+      url: 'http://example.com',
+    };
+
+    const context = {
+      input: 'hello world',
+      files: [],
+      attachments: [
+        {fileAttachment: undefined, tabAttachment: tabAttachment},
+      ],
+      toolMode: ToolMode.kDefault,
+    };
+
+    testProxy.searchboxHandler.setPromiseResolveFor(
+        ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
+
+    testProxy.element.addSearchContext(context);
+    await microtasksFinished();
+
+    // Verify proxy was called with correct delayUpload argument
+    assertEquals(
+        1, testProxy.searchboxHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+    const [tabId, delayUpload] =
+        testProxy.searchboxHandler.getArgs(ADD_TAB_CONTEXT_FN)[0];
+    assertEquals(10, tabId);
+    assertFalse(delayUpload);
+
+    // Verify tab added.
+    const files = testProxy.element.$.carousel.files;
+    assertEquals(1, files.length);
+    assertEquals('Tab Title', files[0]!.name);
+  });
+
+  test('addSearchContext sets tool modes correctly', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement(testProxy);
+    testProxy.element.searchboxNextEnabled = true;
+
+    await microtasksFinished();
+
+    const deepSearchContext = {
+      input: '',
+      files: [],
+      attachments: [],
+      toolMode: ToolMode.kDeepSearch,
+    };
+    testProxy.element.addSearchContext(deepSearchContext);
+    await microtasksFinished();
+    assertEquals(
+        ComposeboxToolMode.kDeepSearch, testProxy.element.activeToolMode);
+
+    const imageContext = {
+      input: '',
+      files: [],
+      attachments: [],
+      toolMode: ToolMode.kCreateImage,
+    };
+    testProxy.element.addSearchContext(imageContext);
+    await microtasksFinished();
+    assertEquals(
+        ComposeboxToolMode.kImageGen, testProxy.element.activeToolMode);
+
+    const canvasContext = {
+      input: '',
+      files: [],
+      attachments: [],
+      toolMode: ToolMode.kCanvas,
+    };
+    testProxy.element.addSearchContext(canvasContext);
+    await microtasksFinished();
+    assertEquals(ComposeboxToolMode.kCanvas, testProxy.element.activeToolMode);
+  });
 });

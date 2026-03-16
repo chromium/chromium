@@ -136,4 +136,156 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
       assertEquals(testProxy.searchboxHandler.getCallCount('getRecentTabs'), 2);
     });
   });
+
+  suite('Context menu mouse events', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        composeboxShowContextMenu: true,
+      });
+    });
+
+    test('mousedown prevents default when not Compact', async () => {
+      createComposeboxElement(testProxy);
+      testProxy.element.searchboxLayoutMode = 'TallTopContext';
+      await testProxy.element.updateComplete;
+
+      const contextMenuContainer =
+          testProxy.element.shadowRoot.querySelector('#contextMenuContainer');
+      assertTrue(!!contextMenuContainer);
+
+      const mousedownEvent = new MouseEvent('mousedown', {
+        bubbles: true,
+        cancelable: true,
+        composed: false,
+      });
+      contextMenuContainer.dispatchEvent(mousedownEvent);
+      assertTrue(mousedownEvent.defaultPrevented);
+    });
+
+    test(
+        'mousedown does not prevent default when layout is Compact',
+        async () => {
+          createComposeboxElement(testProxy);
+          testProxy.element.searchboxLayoutMode = 'Compact';
+          await testProxy.element.updateComplete;
+
+          const contextMenuContainer =
+              testProxy.element.shadowRoot.querySelector(
+                  '#contextMenuContainer');
+          assertTrue(!!contextMenuContainer);
+
+          const mousedownEvent = new MouseEvent('mousedown', {
+            bubbles: true,
+            cancelable: true,
+            composed: false,
+          });
+
+          contextMenuContainer.dispatchEvent(mousedownEvent);
+          assertFalse(mousedownEvent.defaultPrevented);
+        });
+
+    test(
+        'mousedown does not prevent default when target is not container',
+        async () => {
+          createComposeboxElement(testProxy);
+          testProxy.element.searchboxLayoutMode = 'TallTopContext';
+          await testProxy.element.updateComplete;
+
+          const contextMenuContainer =
+              testProxy.element.shadowRoot.querySelector(
+                  '#contextMenuContainer');
+          assertTrue(!!contextMenuContainer);
+
+          const innerElement = document.createElement('div');
+          innerElement.id = 'innerElement';
+          contextMenuContainer.appendChild(innerElement);
+
+          const mousedownEvent = new MouseEvent('mousedown', {
+            bubbles: true,
+            cancelable: true,
+            composed: false,
+          });
+
+          innerElement.dispatchEvent(mousedownEvent);
+          assertFalse(mousedownEvent.defaultPrevented);
+        });
+
+    test('mouse click prevents default and focuses input', async () => {
+      createComposeboxElement(testProxy);
+      testProxy.element.searchboxLayoutMode = 'TallTopContext';
+      await testProxy.element.updateComplete;
+
+      const contextMenuContainer =
+          testProxy.element.shadowRoot.querySelector('#contextMenuContainer');
+      assertTrue(!!contextMenuContainer);
+
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        composed: false,
+        button: 0,
+      });
+
+      let focusCalled = false;
+      testProxy.element.focusInput = () => {
+        focusCalled = true;
+      };
+
+      contextMenuContainer.dispatchEvent(clickEvent);
+      assertTrue(clickEvent.defaultPrevented);
+      assertTrue(focusCalled);
+    });
+
+    test('mouse click ignores non-primary button', async () => {
+      createComposeboxElement(testProxy);
+      testProxy.element.searchboxLayoutMode = 'TallTopContext';
+      await testProxy.element.updateComplete;
+
+      const contextMenuContainer =
+          testProxy.element.shadowRoot.querySelector('#contextMenuContainer');
+      assertTrue(!!contextMenuContainer);
+
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        composed: false,
+        button: 1,
+      });
+
+      let focusCalled = false;
+      testProxy.element.focusInput = () => {
+        focusCalled = true;
+      };
+
+      contextMenuContainer.dispatchEvent(clickEvent);
+      assertTrue(clickEvent.defaultPrevented);
+      assertFalse(focusCalled);
+    });
+
+    test('mouse click does not focus input when Compact', async () => {
+      createComposeboxElement(testProxy);
+      testProxy.element.searchboxLayoutMode = 'Compact';
+      await testProxy.element.updateComplete;
+
+      const contextMenuContainer =
+          testProxy.element.shadowRoot.querySelector('#contextMenuContainer');
+      assertTrue(!!contextMenuContainer);
+
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        composed: false,
+        button: 0,
+      });
+
+      let focusCalled = false;
+      testProxy.element.focusInput = () => {
+        focusCalled = true;
+      };
+
+      contextMenuContainer.dispatchEvent(clickEvent);
+      assertTrue(clickEvent.defaultPrevented);
+      assertFalse(focusCalled);
+    });
+  });
 });
