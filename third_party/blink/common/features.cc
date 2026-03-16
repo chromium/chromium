@@ -1577,15 +1577,12 @@ BASE_FEATURE(kLowLatencyUsageSupportedForCanvas2D,
 #endif  // BUILDFLAG(IS_ANDROID)
 );
 
+#if BUILDFLAG(IS_ANDROID)
 // Allow low latency WebGL to be in overlay (generally meaning scanned out
 // directly to display), even if regular canvases are not in overlay.
 BASE_FEATURE(kLowLatencyUsageSupportedForWebGL,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-);
 
 BASE_FEATURE(kLowPriorityAsyncScriptExecution,
 // TODO(crbug/429069717): Fix the high power consumption on ChromeOS.
