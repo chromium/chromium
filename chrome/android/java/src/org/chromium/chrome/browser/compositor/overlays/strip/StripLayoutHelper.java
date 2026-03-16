@@ -3638,8 +3638,13 @@ public class StripLayoutHelper
                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP);
         TabRemover tabRemover = mTabGroupModelFilter.getTabModel().getTabRemover();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID)) {
-            int nextIndex = getNextIndexAfterClose(Collections.singleton(tab));
-            paramsBuilder.recommendedNextTab(mModel.getTabAt(nextIndex));
+            if (isSelectedTab(tabId)) {
+                // Iff closing the selected tab, set the recommended next tab. Explicitly set here
+                // in order to follow tab strip's next tab heuristic (left vs. right, expanded vs.
+                // collapsed, etc.).
+                int nextIndex = getNextIndexAfterClose(Collections.singleton(tab));
+                paramsBuilder.recommendedNextTab(mModel.getTabAt(nextIndex));
+            }
             tabRemover.closeTabs(paramsBuilder.build(), /* allowDialog= */ true, listener);
         } else {
             tabRemover.prepareCloseTabs(
