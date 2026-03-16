@@ -23,12 +23,11 @@ AnnotationIndexClientImpl::~AnnotationIndexClientImpl() = default;
 
 void AnnotationIndexClientImpl::GetUrlFilterSuggestions(
     const GURL& url,
-    std::string_view task_type,
-    base::span<const FilterAttribute> filter_attributes,
+    base::span<const FilterAnnotation> filter_annotations,
     base::OnceCallback<void(std::optional<std::vector<UrlFilterSuggestion>>)>
         callback) {
   // TODO(crbug.com/483677417): Implement the logic to retrieve the
-  // UrlFilterSuggestions for a given url, task type and filter attributes.
+  // `UrlFilterSuggestion`s for a given url and filter annotations.
   NOTIMPLEMENTED();
   std::move(callback).Run(std::nullopt);
 }
@@ -47,7 +46,7 @@ void AnnotationIndexClientImpl::ExtractFilterAnnotation(
     const GURL& url,
     base::OnceCallback<void(std::optional<FilterAnnotation>)> callback) {
   // TODO(crbug.com/483677417): Implement the logic to retrieve the extracted
-  // FilterAnnotation from the url.
+  // `FilterAnnotation` from the url.
   NOTIMPLEMENTED();
   std::move(callback).Run(std::nullopt);
 }

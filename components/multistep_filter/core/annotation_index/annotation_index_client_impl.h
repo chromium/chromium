@@ -15,7 +15,6 @@
 
 namespace multistep_filter {
 
-struct FilterAttribute;
 struct FilterAnnotation;
 class UrlFilterSuggestion;
 
@@ -27,8 +26,7 @@ class AnnotationIndexClientImpl : public AnnotationIndexClient {
   // AnnotationIndexClient overrides:
   void GetUrlFilterSuggestions(
       const GURL& url,
-      std::string_view task_type,
-      base::span<const FilterAttribute> filter_attributes,
+      base::span<const FilterAnnotation> filter_annotations,
       base::OnceCallback<void(std::optional<std::vector<UrlFilterSuggestion>>)>
           callback) override;
 

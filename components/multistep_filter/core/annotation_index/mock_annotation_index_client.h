@@ -27,8 +27,7 @@ class MockAnnotationIndexClient : public AnnotationIndexClient {
       void,
       GetUrlFilterSuggestions,
       (const GURL& url,
-       std::string_view task_type,
-       base::span<const FilterAttribute> filter_attributes,
+       base::span<const FilterAnnotation> filter_annotations,
        base::OnceCallback<void(std::optional<std::vector<UrlFilterSuggestion>>)>
            callback),
       (override));

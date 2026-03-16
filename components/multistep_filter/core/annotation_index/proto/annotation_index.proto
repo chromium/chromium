@@ -70,8 +70,11 @@ message ExecutionCandidate {
   // The candidate ID provided by the client.
   string candidate_id = 1;
 
+  // The task type to apply (e.g., "SEARCH_FLIGHTS").
+  string task_type = 2;
+
   // The list of task attributes to apply if this candidate is chosen.
-  repeated TaskAttribute task_attributes = 2;
+  repeated TaskAttribute task_attributes = 3;
 }
 
 // Request to generate an execution strategy, providing multiple options
