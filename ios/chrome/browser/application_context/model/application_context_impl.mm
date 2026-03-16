@@ -91,7 +91,6 @@
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "net/log/net_log.h"
 #import "net/log/net_log_capture_mode.h"
-#import "net/socket/client_socket_pool_manager.h"
 #import "net/url_request/url_request_context_getter.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
 #import "services/network/network_change_manager.h"
@@ -762,12 +761,6 @@ void ApplicationContextImpl::CreateLocalState() {
   DCHECK(local_state_);
 
   sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
-
-  net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
-      net::HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::max(std::min<size_t>(net::kDefaultMaxSocketsPerProxyChain, 99u),
-               net::ClientSocketPoolManager::max_sockets_per_group(
-                   net::HttpNetworkSession::NORMAL_SOCKET_POOL)));
 
   // Cleanup obsolete preferences.
   MigrateObsoleteLocalStatePrefs(local_state_.get());

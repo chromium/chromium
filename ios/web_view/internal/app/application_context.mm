@@ -36,7 +36,6 @@
 #import "ios/web_view/internal/cwv_flags_internal.h"
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "net/log/net_log.h"
-#import "net/socket/client_socket_pool_manager.h"
 #import "services/network/network_change_manager.h"
 #import "services/network/public/cpp/network_connection_tracker.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -146,14 +145,6 @@ PrefService* ApplicationContext::GetLocalState() {
     local_state_ = factory.Create(pref_registry.get());
 
     sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
-
-    size_t max_normal_socket_pool_count =
-        net::ClientSocketPoolManager::max_sockets_per_group(
-            net::HttpNetworkSession::NORMAL_SOCKET_POOL);
-    size_t socket_count = std::max<size_t>(net::kDefaultMaxSocketsPerProxyChain,
-                                           max_normal_socket_pool_count);
-    net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
-        net::HttpNetworkSession::NORMAL_SOCKET_POOL, socket_count);
   }
   return local_state_.get();
 }
