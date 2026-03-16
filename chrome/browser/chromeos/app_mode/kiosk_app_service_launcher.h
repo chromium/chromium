@@ -16,7 +16,6 @@
 #include "base/scoped_observation.h"
 #include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -24,6 +23,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "components/services/app_service/public/cpp/launch_result.h"
 
 namespace chromeos {
 

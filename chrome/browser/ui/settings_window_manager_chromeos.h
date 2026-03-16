@@ -9,8 +9,8 @@
 #include <string_view>
 
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
-#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chromeos/ash/experiences/settings_ui/settings_app_manager.h"
+#include "components/services/app_service/public/cpp/launch_result.h"
 #include "components/sessions/core/session_id.h"
 #include "ui/display/types/display_constants.h"
 

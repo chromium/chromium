@@ -24,6 +24,7 @@ component("app_types") {
     "icon_types.h",
     "intent_filter.cc",
     "intent_filter.h",
+    "launch_result.h",
     "menu.cc",
     "menu.h",
     "package_id.cc",

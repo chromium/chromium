@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_RESULT_TYPE_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_RESULT_TYPE_H_
+#ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_LAUNCH_RESULT_H_
+#define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_LAUNCH_RESULT_H_
 
 #include "base/functional/callback_forward.h"
 
@@ -17,4 +17,4 @@ using LaunchCallback = base::OnceCallback<void(LaunchResult)>;
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_LAUNCH_RESULT_TYPE_H_
+#endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_LAUNCH_RESULT_H_
