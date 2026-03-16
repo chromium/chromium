@@ -26,6 +26,7 @@ shim_headers("ffmpeg_shim") {
     "libavcodec/packet.h",
     "libavformat/avformat.h",
     "libavutil/imgutils.h",
+    "libavutil/rational.h",
   ]
 }
 
