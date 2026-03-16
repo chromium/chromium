@@ -7,13 +7,17 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/cfi_buildflags.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/strcat.h"
@@ -323,6 +327,34 @@ std::string_view GetRejectHistoryOptinScript() {
         const rejectButton =
             appElement.shadowRoot.querySelector('#rejectButton');
         rejectButton.click();
+        return true;
+      })();
+    )";
+    return kScript;
+  }
+}
+
+std::string_view GetAcceptHistoryOptinScript() {
+  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+    static constexpr std::string_view kScript = R"(
+      (() => {
+        const appElement =
+            document.querySelector('history-sync-optin-app-refresh');
+        const acceptButton =
+            appElement.shadowRoot.querySelector('#acceptButton');
+        acceptButton.click();
+        return true;
+      })();
+    )";
+    return kScript;
+  } else {
+    static constexpr std::string_view kScript = R"(
+      (() => {
+        const appElement =
+            document.querySelector('history-sync-optin-app');
+        const acceptButton =
+            appElement.shadowRoot.querySelector('#acceptButton');
+        acceptButton.click();
         return true;
       })();
     )";
@@ -927,19 +959,10 @@ class ProfilePickerCreationFlowBrowserTest
 
   // TODO(crbug.com/447584795): Add retry logic.
   void AcceptHistoryOptin() {
-    ASSERT_TRUE(base::FeatureList::IsEnabled(
+    CHECK(base::FeatureList::IsEnabled(
         syncer::kReplaceSyncPromosWithSignInPromos));
-    constexpr char kAcceptHistory[] =
-        "(() => {"
-        "  const historySyncOptinApp = "
-        "      document.querySelector('history-sync-optin-app');"
-        "  const acceptButton = "
-        "      historySyncOptinApp.shadowRoot.querySelector('#acceptButton');"
-        "  acceptButton.click();"
-        "  return true;"
-        "})();";
-
-    EXPECT_EQ(true, content::EvalJs(web_contents(), kAcceptHistory));
+    CHECK_EQ(content::EvalJs(web_contents(), GetAcceptHistoryOptinScript()),
+             true);
   }
 
  protected:
