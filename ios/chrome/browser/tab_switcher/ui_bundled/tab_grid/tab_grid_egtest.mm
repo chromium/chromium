@@ -296,7 +296,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       [self isRunningTest:@selector(testCloseOtherTabsUnavailableInEditMenu)] ||
       [self isRunningTest:@selector
             (testCloseOtherTabsUnavailableInContextMenu)]) {
-    config.features_enabled.push_back(kCloseOtherTabs);
     config.features_disabled.push_back(kTabSwitcherOverflowMenu);
   }
 

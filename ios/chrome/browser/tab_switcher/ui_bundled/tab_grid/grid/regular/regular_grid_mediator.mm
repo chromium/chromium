@@ -436,9 +436,6 @@ using ScopedTabGroupSyncObservation =
 
 // Returns YES if "Close Other Tabs" should be enabled.
 - (BOOL)canCloseOtherTabs {
-  if (!IsCloseOtherTabsEnabled()) {
-    return NO;
-  }
   if (!self.webStateList) {
     return NO;
   }

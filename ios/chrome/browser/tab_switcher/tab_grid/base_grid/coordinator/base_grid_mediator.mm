@@ -1006,7 +1006,6 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
 }
 
 - (void)closeTabsExceptID:(web::WebStateID)itemID {
-  CHECK(IsCloseOtherTabsEnabled());
   if (!self.webStateList) {
     return;
   }

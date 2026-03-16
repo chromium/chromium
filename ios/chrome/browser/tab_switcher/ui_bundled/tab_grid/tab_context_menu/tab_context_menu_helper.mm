@@ -286,23 +286,21 @@ using tab_groups::SharingState;
     [menuElements addObject:collectionsMenu];
   }
 
-  if (IsCloseOtherTabsEnabled()) {
-    if ([self canCloseOtherTabsForTabWithID:tabID]) {
-      UIAction* closeOtherTabsAction =
-          [actionFactory actionToCloseAllOtherTabsWithBlock:^{
-            RecordTabGridCloseOtherTabs(weakSelf.incognito);
-            [weakSelf.contextMenuDelegate
-                closeTabsExceptIdentifier:tabID
-                                incognito:weakSelf.incognito];
-          }];
+  if ([self canCloseOtherTabsForTabWithID:tabID]) {
+    UIAction* closeOtherTabsAction =
+        [actionFactory actionToCloseAllOtherTabsWithBlock:^{
+          RecordTabGridCloseOtherTabs(weakSelf.incognito);
+          [weakSelf.contextMenuDelegate
+              closeTabsExceptIdentifier:tabID
+                              incognito:weakSelf.incognito];
+        }];
 
-      UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
-                                               image:nil
-                                          identifier:nil
-                                             options:UIMenuOptionsDisplayInline
-                                            children:@[ closeOtherTabsAction ]];
-      [menuElements addObject:closeOtherMenu];
-    }
+    UIMenu* closeOtherMenu = [UIMenu menuWithTitle:@""
+                                             image:nil
+                                        identifier:nil
+                                           options:UIMenuOptionsDisplayInline
+                                          children:@[ closeOtherTabsAction ]];
+    [menuElements addObject:closeOtherMenu];
   }
 
   return menuElements;

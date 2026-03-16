@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
@@ -48,7 +47,6 @@ class TabContextMenuHelperTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(kCloseOtherTabs);
   }
 
  protected:
@@ -56,7 +54,6 @@ class TabContextMenuHelperTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   TabContextMenuHelper* helper_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests "Close Other Tabs" with only regular tabs.

@@ -1573,7 +1573,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)closeTabsExceptIdentifier:(web::WebStateID)identifier
                         incognito:(BOOL)incognito {
-  CHECK(IsCloseOtherTabsEnabled());
   if (incognito) {
     [self.incognitoTabsMediator closeTabsExceptID:identifier];
     return;

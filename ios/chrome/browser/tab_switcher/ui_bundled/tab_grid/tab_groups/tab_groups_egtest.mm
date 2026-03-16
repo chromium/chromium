@@ -320,7 +320,6 @@ void TapTabGridEditButton() {
     config.features_disabled.push_back(kTabSwitcherOverflowMenu);
   } else if ([self isRunningTest:@selector(testCloseOtherTabsInGroup)]) {
     config.features_disabled.push_back(kTabSwitcherOverflowMenu);
-    config.features_enabled.push_back(kCloseOtherTabs);
   } else {
     config.features_enabled.push_back(kTabSwitcherOverflowMenu);
   }

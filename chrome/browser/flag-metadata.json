@@ -1708,11 +1708,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "close-other-tabs",
-    "owners": [ "ewannpv@chromium.org", "bling-meridian@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "cloud-gaming-device",
     "owners": [
       "chenjih@google.com",

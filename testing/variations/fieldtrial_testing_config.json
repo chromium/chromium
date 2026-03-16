@@ -11966,21 +11966,6 @@
             ]
         }
     ],
-    "IOSCloseOtherTabs": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CloseOtherTabs"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSConfirmationButtonSwapOrder": [
         {
             "platforms": [
