@@ -46,16 +46,6 @@ constexpr auto kMoreButtonSize = gfx::Size(24, 24);
 constexpr gfx::Insets kMoreButtonMargins =
     gfx::Insets::TLBR(0, projects_panel::kListItemSpacingBetweenChildren, 0, 0);
 
-// Insets for share Tab icon.
-constexpr gfx::Insets kShareIconMargins =
-    gfx::Insets::TLBR(4,
-                      4 + projects_panel::kListItemSpacingBetweenChildren,
-                      4,
-                      4);
-
-// Height and width of shared Tab group icon and more button icon.
-constexpr int kTrailingIconSize = 16;
-
 // Whether animations should be disabled.
 static bool disable_animations_for_testing_ = false;
 
@@ -100,9 +90,11 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
   if (group.is_shared_tab_group()) {
     shared_icon_ = AddChildView(std::make_unique<views::ImageView>());
     shared_icon_->SetCanProcessEventsWithinSubtree(false);
-    shared_icon_->SetProperty(views::kMarginsKey, kShareIconMargins);
+    shared_icon_->SetProperty(views::kMarginsKey,
+                              projects_panel::kTrailingIconMargins);
     ui::ImageModel shared_group_image_model = ui::ImageModel::FromVectorIcon(
-        kPeopleGroupIcon, kColorProjectsPanelButtonIcon, kTrailingIconSize);
+        kPeopleGroupIcon, kColorProjectsPanelButtonIcon,
+        projects_panel::kTrailingIconSize);
     shared_icon_->SetImage(shared_group_image_model);
     shared_icon_->SetProperty(
         views::kElementIdentifierKey,
@@ -119,7 +111,7 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
                           base::Unretained(this))));
   ui::ImageModel menu_icon_image_model = ui::ImageModel::FromVectorIcon(
       kBrowserToolsChromeRefreshIcon, kColorProjectsPanelButtonIcon,
-      kTrailingIconSize);
+      projects_panel::kTrailingIconSize);
   more_button_->SetPreferredSize(kMoreButtonSize);
   more_button_->SetImageModel(ButtonState::STATE_NORMAL, menu_icon_image_model);
   auto more_button_accessibility_label =

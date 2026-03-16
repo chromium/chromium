@@ -69,6 +69,16 @@ inline constexpr ui::ColorId kProjectsPanelBackgroundColor =
 inline constexpr gfx::Insets kProjectsPanelRegionInteriorMargins =
     gfx::Insets::VH(12, 12);
 
+// Insets for an item's trailing icon.
+inline constexpr gfx::Insets kTrailingIconMargins =
+    gfx::Insets::TLBR(3,
+                      3 + projects_panel::kListItemSpacingBetweenChildren,
+                      3,
+                      3);
+
+// Height and width of an item's trailing icon.
+inline constexpr int kTrailingIconSize = 18;
+
 }  // namespace projects_panel
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_LAYOUT_CONSTANTS_H_

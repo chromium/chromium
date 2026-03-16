@@ -14,6 +14,7 @@ void AddProjectsPanelColorMixer(ui::ColorProvider* provider,
                                 const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorProjectsPanelBackground] = {ui::kColorSysSurface2};
+  mixer[kColorProjectsPanelButtonDisabledIcon] = {ui::kColorSysStateDisabled};
   mixer[kColorProjectsPanelButtonHoverBackground] = {
       ui::kColorSysStateHoverOnSubtle};
   mixer[kColorProjectsPanelButtonIcon] = {ui::kColorSysOnSurfaceSubtle};
