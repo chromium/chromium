@@ -1100,6 +1100,42 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
     if (cleared_rect != ClearedRect()) {
       SetClearedRectInternal(cleared_rect);
     }
+
+    // When is_thread_safe() is true, multiple threads can access the backings.
+    // If a GL backing was written to, we proactively sync its content to all
+    // other backings. This is required to support multithreading scenarios
+    // where GL access happens on the GPU main thread and skia or other kind of
+    // access happens on a different thread. Note that this is only enabled when
+    // kUseDynamicBackingAllocations is enabled where CompoundImageBacking can
+    // dynamically allocate GL backing on a different thread during runtime.
+    // When dynamic allocations are not enabled, existing backings already
+    // handles the proactive sync where needed (eg:
+    // WrappedGraphiteTextureBacking via
+    // GLTexturePassthroughFallbackImageRepresentation). Note that this solution
+    // will not work if we start with GLTextureImageBacking and than want to
+    // reallocate on a different thread where we can't access GL texture. We
+    // will need to handle that case with another solution.
+    // Also note that we are copying back to all the backings here, even to
+    // those that will never be read. This can be a performance bottleneck when
+    // there are multiple backings.
+    if (base::FeatureList::IsEnabled(
+            features::kUseCompoundImageBackingAsDefault) &&
+        base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
+        is_thread_safe() &&
+        (backing->GetType() == SharedImageBackingType::kGLTexture)) {
+      for (auto& element : elements_) {
+        auto* dst_backing = element.GetBacking();
+        if (dst_backing && dst_backing != backing &&
+            element.content_id_ != latest_content_id_) {
+          if (copy_manager_->CopyImage(backing, dst_backing)) {
+            element.content_id_ = latest_content_id_;
+          } else {
+            LOG(ERROR) << "DCSI: Proactive copy from " << backing->GetName()
+                       << " to " << dst_backing->GetName() << " failed.";
+          }
+        }
+      }
+    }
   }
 }
 
