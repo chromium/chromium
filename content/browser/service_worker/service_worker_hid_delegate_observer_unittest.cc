@@ -79,7 +79,7 @@ class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
 
   void OnStarted(int64_t version_id,
                  const GURL& scope,
-                 int process_id,
+                 ChildProcessId process_id,
                  const GURL& script_url,
                  const blink::ServiceWorkerToken& token,
                  const blink::StorageKey& key) override {

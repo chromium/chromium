@@ -13,6 +13,7 @@
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/common/child_process_id.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
@@ -39,7 +40,7 @@ class ServiceWorkerContextCoreObserver {
   virtual void OnStarting(int64_t version_id) {}
   virtual void OnStarted(int64_t version_id,
                          const GURL& scope,
-                         int process_id,
+                         ChildProcessId process_id,
                          const GURL& script_url,
                          const blink::ServiceWorkerToken& token,
                          const blink::StorageKey& key) {}
@@ -57,7 +58,7 @@ class ServiceWorkerContextCoreObserver {
   virtual void OnVersionRouterRulesChanged(int64_t version_id,
                                            const std::string& router_rules) {}
   virtual void OnVersionDevToolsRoutingIdChanged(int64_t version_id,
-                                                 int process_id,
+                                                 ChildProcessId process_id,
                                                  int devtools_agent_route_id) {}
   virtual void OnMainScriptResponseSet(int64_t version_id,
                                        base::Time script_response_time,

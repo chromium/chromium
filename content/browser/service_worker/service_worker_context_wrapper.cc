@@ -475,7 +475,7 @@ void ServiceWorkerContextWrapper::OnStarting(int64_t version_id) {
 void ServiceWorkerContextWrapper::OnStarted(
     int64_t version_id,
     const GURL& scope,
-    int process_id,
+    ChildProcessId process_id,
     const GURL& script_url,
     const blink::ServiceWorkerToken& token,
     const blink::StorageKey& key) {
@@ -488,9 +488,11 @@ void ServiceWorkerContextWrapper::OnStarted(
   ServiceWorkerRunningInfo::ServiceWorkerVersionStatus version_status =
       version ? GetRunningInfoVersionStatusForStatus(version->status())
               : ServiceWorkerRunningInfo::ServiceWorkerVersionStatus::kUnknown;
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   auto insertion_result = running_service_workers_.insert(std::make_pair(
-      version_id, ServiceWorkerRunningInfo(script_url, scope, key, process_id,
-                                           token, version_status)));
+      version_id, ServiceWorkerRunningInfo(script_url, scope, key,
+                                           process_id.GetUnsafeValue(), token,
+                                           version_status)));
   DCHECK(insertion_result.second);
 
   const auto& running_info = insertion_result.first->second;

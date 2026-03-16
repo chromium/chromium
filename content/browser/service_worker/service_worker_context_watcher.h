@@ -92,7 +92,7 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
   void OnStarting(int64_t version_id) override;
   void OnStarted(int64_t version_id,
                  const GURL& scope,
-                 int process_id,
+                 ChildProcessId process_id,
                  const GURL& script_url,
                  const blink::ServiceWorkerToken& token,
                  const blink::StorageKey& key) override;
@@ -105,7 +105,7 @@ class CONTENT_EXPORT ServiceWorkerContextWatcher
   void OnVersionRouterRulesChanged(int64_t version_id,
                                    const std::string& router_rules) override;
   void OnVersionDevToolsRoutingIdChanged(int64_t version_id,
-                                         int process_id,
+                                         ChildProcessId process_id,
                                          int devtools_agent_route_id) override;
   void OnMainScriptResponseSet(int64_t version_id,
                                base::Time script_response_time,

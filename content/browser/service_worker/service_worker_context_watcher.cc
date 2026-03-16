@@ -227,7 +227,7 @@ void ServiceWorkerContextWatcher::OnStarting(int64_t version_id) {
 void ServiceWorkerContextWatcher::OnStarted(
     int64_t version_id,
     const GURL& scope,
-    int process_id,
+    ChildProcessId process_id,
     const GURL& script_url,
     const blink::ServiceWorkerToken& token,
     const blink::StorageKey& key) {
@@ -275,18 +275,19 @@ void ServiceWorkerContextWatcher::OnVersionRouterRulesChanged(
 
 void ServiceWorkerContextWatcher::OnVersionDevToolsRoutingIdChanged(
     int64_t version_id,
-    int process_id,
+    ChildProcessId process_id,
     int devtools_agent_route_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto it = version_info_map_.find(version_id);
   if (it == version_info_map_.end())
     return;
   ServiceWorkerVersionInfo* version = it->second.get();
-  if (version->process_id == process_id &&
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  if (version->process_id == process_id.GetUnsafeValue() &&
       version->devtools_agent_route_id == devtools_agent_route_id) {
     return;
   }
-  version->process_id = process_id;
+  version->process_id = process_id.GetUnsafeValue();
   version->devtools_agent_route_id = devtools_agent_route_id;
   SendVersionInfo(*version);
   if (IsStoppedAndRedundant(*version))
