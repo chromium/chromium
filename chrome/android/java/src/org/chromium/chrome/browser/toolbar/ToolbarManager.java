@@ -2356,7 +2356,8 @@ public class ToolbarManager
                 new OneshotSupplierImpl<BottomControlsContentDelegate>();
         bottomBarContainerOneshotSupplier.set(
                 new BottomBarContainerCoordinator(
-                        bottomAppBarContainer.findViewById(R.id.bottom_container_slot)));
+                        bottomAppBarContainer.findViewById(R.id.bottom_container_slot),
+                        mBottomControlsStacker::requestLayerUpdate));
         var bottomAppBarCoordinator =
                 new BottomControlsCoordinator(
                         mWindowAndroid,

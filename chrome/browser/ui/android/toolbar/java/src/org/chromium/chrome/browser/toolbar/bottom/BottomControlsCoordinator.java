@@ -140,6 +140,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         browserControlsVisibilityDelegate,
                         fullscreenManager,
                         layerType,
+                        contentDelegateSupplier,
                         tabObscuringHandler,
                         bottomControlsHeightRes,
                         root.getTopShadowHeight(),

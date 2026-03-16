@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.bottombar;
 
 import android.widget.FrameLayout;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -23,6 +27,9 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
     @SuppressWarnings("unused")
     private final FrameLayout mBottomBarContainer;
 
+    @SuppressWarnings("unused")
+    private final Callback<Boolean> mRequestLayerUpdateCallback;
+
     private BottomControlsVisibilityController mVisibilityController;
 
     @SuppressWarnings("unused")
@@ -30,9 +37,12 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
 
     /**
      * @param bottomBarContainer The {@link FrameLayout} for the bottom bar.
+     * @param requestLayerUpdateCallback A callback to request layer updates.
      */
-    public BottomBarContainerCoordinator(FrameLayout bottomBarContainer) {
+    public BottomBarContainerCoordinator(
+            FrameLayout bottomBarContainer, Callback<Boolean> requestLayerUpdateCallback) {
         mBottomBarContainer = bottomBarContainer;
+        mRequestLayerUpdateCallback = requestLayerUpdateCallback;
     }
 
     @Initializer
@@ -48,4 +58,14 @@ public class BottomBarContainerCoordinator implements BottomControlsContentDeleg
 
     @Override
     public void destroy() {}
+
+    @Override
+    public @LayerScrollBehavior int getScrollBehavior() {
+        return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
+    }
+
+    @Override
+    public @Nullable @ColorInt Integer getBackgroundColor() {
+        return null;
+    }
 }

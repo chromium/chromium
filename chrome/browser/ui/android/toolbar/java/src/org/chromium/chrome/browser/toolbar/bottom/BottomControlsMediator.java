@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
@@ -63,6 +66,8 @@ class BottomControlsMediator
     /** The layer type of the bottom controls. */
     private final @LayerType int mLayerType;
 
+    private final OneshotSupplier<BottomControlsContentDelegate> mContentDelegateSupplier;
+
     private final TabObscuringHandler mTabObscuringHandler;
 
     /** The height of the bottom bar in pixels, not including the top shadow. */
@@ -101,6 +106,7 @@ class BottomControlsMediator
      * @param fullscreenManager A {@link FullscreenManager} for events related to the browser
      *     controls.
      * @param layerType The layer type of the bottom controls.
+     * @param contentDelegateSupplier Supplier of delegate for bottom controls UI operations.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param bottomControlsHeight The height of the bottom bar in pixels.
      * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
@@ -116,6 +122,7 @@ class BottomControlsMediator
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
             @LayerType int layerType,
+            OneshotSupplier<BottomControlsContentDelegate> contentDelegateSupplier,
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
             int bottomControlsShadowHeight,
@@ -133,6 +140,7 @@ class BottomControlsMediator
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mFullscreenManager = fullscreenManager;
         mLayerType = layerType;
+        mContentDelegateSupplier = contentDelegateSupplier;
         mTabObscuringHandler = tabObscuringHandler;
         tabObscuringHandler.addObserver(this);
 
@@ -312,12 +320,21 @@ class BottomControlsMediator
 
     @Override
     public @LayerScrollBehavior int getScrollBehavior() {
+        BottomControlsContentDelegate delegate = mContentDelegateSupplier.get();
+        if (delegate != null) return delegate.getScrollBehavior();
         return LayerScrollBehavior.DEFAULT_SCROLL_OFF;
     }
 
     @Override
     public @LayerVisibility int getLayerVisibility() {
         return isCompositedViewVisible() ? LayerVisibility.VISIBLE : LayerVisibility.HIDDEN;
+    }
+
+    @Override
+    public @Nullable @ColorInt Integer getBackgroundColor() {
+        BottomControlsContentDelegate delegate = mContentDelegateSupplier.get();
+        if (delegate != null) return delegate.getBackgroundColor();
+        return null;
     }
 
     @Override
