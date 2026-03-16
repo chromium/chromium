@@ -61,6 +61,9 @@ export class OverlayBorderGlowElement extends CrLitElement {
   }
 
   protected getBoundsStyles(): string {
+    if (!this.selectionOverlayRect) {
+      return '';
+    }
     /* Height and width must be larger than the diagonal of the viewport,
     in order to prevent gaps at the corners while rotating. */
     const longestSide = Math.max(

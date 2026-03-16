@@ -4,6 +4,7 @@
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -173,6 +174,22 @@ export abstract class SelectionOverlayBaseLitElement extends
   private updateCursorPositionRequestId?: number;
   private onPointerMoveRequestId?: number;
   private handleResizeRequestId?: number;
+
+  getSelectionElementColor(): string {
+    const theme = this.theme;
+    if (!theme?.selectionElement) {
+      return '';
+    }
+    return skColorToHexColor(theme.selectionElement);
+  }
+
+  getPrimaryColor(): string {
+    const theme = this.theme;
+    if (!theme?.primary) {
+      return '';
+    }
+    return skColorToHexColor(theme.primary);
+  }
 
   abstract get selectionElements(): {
     backgroundImageCanvas: HTMLCanvasElement,
@@ -414,7 +431,7 @@ export abstract class SelectionOverlayBaseLitElement extends
     document.body.style.cursor = 'crosshair';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
-    this.style.setProperty(CURSOR_IMG_URL, 'url("lens.svg")');
+    this.style.setProperty(CURSOR_IMG_URL, this.defaultCursorIconUrl);
   }
 
   // Called on object hover.
@@ -422,14 +439,18 @@ export abstract class SelectionOverlayBaseLitElement extends
     // No dragging for objects, so no need to set body cursor style.
     this.cursorOffsetX = 11;
     this.cursorOffsetY = 17;
-    this.style.setProperty(CURSOR_IMG_URL, 'url("lens.svg")');
+    this.style.setProperty(CURSOR_IMG_URL, this.defaultCursorIconUrl);
   }
 
   protected resetCursor() {
     document.body.style.cursor = 'unset';
     this.cursorOffsetX = 3;
     this.cursorOffsetY = 6;
-    this.style.setProperty(CURSOR_IMG_URL, 'url("lens.svg")');
+    this.style.setProperty(CURSOR_IMG_URL, this.defaultCursorIconUrl);
+  }
+
+  protected get defaultCursorIconUrl() {
+    return 'url("lens.svg")';
   }
   // LINT.ThenChange(//chrome/browser/resources/lens/overlay/cursor_tooltip.ts:CursorOffsetValues)
 
