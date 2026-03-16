@@ -24,6 +24,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -33,9 +34,6 @@
 namespace storage {
 
 namespace {
-// After this many consecutive commit errors we'll throw away the entire
-// database.
-const int kSessionStorageCommitErrorThreshold = 8;
 
 // Limits on the cache size and number of areas in memory, over which the areas
 // are purged.
@@ -602,7 +600,7 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
   }
 
   commit_error_count_++;
-  if (commit_error_count_ > kSessionStorageCommitErrorThreshold) {
+  if (commit_error_count_ > kCommitErrorThreshold) {
     if (tried_to_recover_from_commit_errors_) {
       // We already tried to recover from a high commit error rate before, but
       // are still having problems: there isn't really anything left to try, so

@@ -36,10 +36,6 @@
 namespace storage {
 namespace {
 
-// After this many consecutive commit errors we'll throw away the entire
-// database.
-const int kCommitErrorThreshold = 8;
-
 // Limits on the cache size and number of areas in memory, over which the areas
 // are purged.
 #if BUILDFLAG(IS_ANDROID)
