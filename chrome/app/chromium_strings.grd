@@ -1162,9 +1162,8 @@ Chromium is unable to recover your settings.
       </message>
 
       <!-- Signin Search AI Mode promo -->
-      <!-- TODO(crbug.com/486858498): Finalize and make transalteable. -->
-      <message name="IDS_AI_SIGNIN_PROMO_SUBTITLE" translateable="false">
-        Sign in to Chromium to ask AI mode about your tabs. You'll also get your passwords and more on all your devices.
+      <message name="IDS_AI_SIGNIN_PROMO_SUBTITLE" desc="The message shown in a sign-in promo bubble that is shown to users not signed-in to the browser when they click in an AI Mode Search result link.">
+        To ask AI Mode about your tab without leaving the page, sign in to Chromium. You'll also get your passwords and more on all your devices.
       </message>
       <message name="IDS_AI_SIGNIN_PROMO_AVATAR_PILL_TEXT" translateable="false" meaning="Text shown on the expanded avatar pill when the Signin Search AI Bubble promo is shown to the user">
         Sign in to Chromium?

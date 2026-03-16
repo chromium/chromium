@@ -14,7 +14,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -56,7 +59,13 @@ SearchAIModeSignInPromoView::~SearchAIModeSignInPromoView() {
 void SearchAIModeSignInPromoView::AddedToWidget() {
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
                                     kSearchAIModeSignInPromoFrameViewId);
-  // TODO(crbug.com/486858498): Add the dialog's image here once available.
+
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<views::ImageView>(
+      bundle.GetThemedLottieImageNamed(IDR_SEARCH_AI_MODE_SIGNIN_PROMO_LOTTIE));
+  image_view->GetViewAccessibility().SetIsInvisible(true);
+
+  GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
 // TODO(crbug.com/486858498): Implement self-dismissal logic after X seconds.

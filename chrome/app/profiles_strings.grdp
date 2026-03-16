@@ -187,9 +187,11 @@
   </message>
 
    <!-- Signin Search AI Mode promo. -->
-   <!-- TODO(crbug.com/486858498): Finalize and make transalteable. -->
-  <message name="IDS_AI_SIGNIN_PROMO_TITLE" translateable="false">
-    Continue the conversation with AI Mode
+  <message name="IDS_AI_SIGNIN_PROMO_TITLE" desc="The title of in the sign-in promo bubble that is shown to users not signed-in to the browser when they click on search AI Mode result.">
+    Keep AI Mode nearby while you browse
+  </message>
+  <message name="IDS_AI_VERIFY_PROMO_SUBTITLE" desc="The message shown in a sign-in promo bubble that is shown to users that were previously signed in to the browser but their sign-in credentials have expired state, when they click in an AI Mode Search result link.">
+    To ask AI Mode about your tab without leaving the page, verify it's you. You'll also get your passwords and more on all your devices.
   </message>
 
   <if expr="use_titlecase">

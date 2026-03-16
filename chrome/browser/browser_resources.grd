@@ -64,6 +64,9 @@
 
         <!-- Toolbar Lottie resources -->
         <structure type="lottie" name="IDR_APP_MENU_BUTTON_HOVER_LOTTIE" file="resources/toolbar/app_menu_button_hover.json" compress="brotli" />
+
+        <!-- Search AI Mode Lottie resources -->
+        <structure type="lottie" name="IDR_SEARCH_AI_MODE_SIGNIN_PROMO_LOTTIE" file="resources/search_ai_mode/search_ai_mode_signin_promo.json" compress="brotli" />
         </if>
         </structures>
     <includes>
