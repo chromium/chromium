@@ -292,13 +292,9 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
      *     search box.
      * @param isTablet Whether the device is a tablet.
      */
-    void updateTilesLayoutMargins(
-            boolean shouldShowLogo, boolean isWhiteBackgroundOnSearchBoxApplied, boolean isTablet) {
+    void updateTilesLayoutMargins(boolean shouldShowLogo, boolean isTablet) {
         NewTabPageUtils.updateTilesLayoutTopMargin(
-                mMvTilesContainerLayout,
-                shouldShowLogo,
-                isWhiteBackgroundOnSearchBoxApplied,
-                isTablet);
+                mMvTilesContainerLayout, shouldShowLogo, isTablet);
     }
 
     public void onSwitchToForeground() {

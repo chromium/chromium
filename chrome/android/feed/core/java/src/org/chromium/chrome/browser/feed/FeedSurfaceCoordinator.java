@@ -179,6 +179,8 @@ public class FeedSurfaceCoordinator
          */
         RootView(Context context) {
             super(context);
+            setClipChildren(false);
+            setClipToPadding(false);
         }
 
         @Override
@@ -672,13 +674,13 @@ public class FeedSurfaceCoordinator
     }
 
     void updateNtpCustomizationButtonVisibility() {
-        int min_margin =
+        int minMargin =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.min_margin_for_ntp_customization_button);
         assumeNonNull(mNtpCustomizationButton);
         mNtpCustomizationButton.setVisibility(
-                mRecyclerView.getPaddingLeft() >= min_margin ? View.VISIBLE : View.GONE);
+                mRecyclerView.getPaddingLeft() >= minMargin ? View.VISIBLE : View.GONE);
     }
 
     void showNtpCustomizationBottomSheet(@Nullable ModuleRegistry moduleRegistry) {
@@ -948,6 +950,7 @@ public class FeedSurfaceCoordinator
         assumeNonNull(view);
         view.setId(R.id.feed_stream_recycler_view);
         view.setClipToPadding(false);
+        view.setClipChildren(false);
 
         RecyclerView.ItemAnimator animator = view.getItemAnimator();
         if (animator != null) {

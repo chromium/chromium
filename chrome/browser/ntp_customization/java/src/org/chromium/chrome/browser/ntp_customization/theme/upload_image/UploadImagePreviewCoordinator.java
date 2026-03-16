@@ -319,13 +319,10 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
 
         propertyModel.set(
                 SEARCH_BOX_HEIGHT,
-                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
-                        resources, showSearchBoxTall, /* hasShadowApplied= */ true));
+                NtpCustomizationUtils.getSearchBoxHeightWithShadows(resources, showSearchBoxTall));
 
         propertyModel.set(
-                SEARCH_BOX_TOP_MARGIN,
-                NtpCustomizationUtils.getLogoViewBottomMarginPx(
-                        resources, /* applyShadow= */ true));
+                SEARCH_BOX_TOP_MARGIN, NtpCustomizationUtils.getLogoViewBottomMarginPx(resources));
     }
 
     PropertyModel getPropertyModelForTesting() {

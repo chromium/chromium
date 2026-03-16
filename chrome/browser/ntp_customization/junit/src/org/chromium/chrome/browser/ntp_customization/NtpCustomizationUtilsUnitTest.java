@@ -1323,36 +1323,19 @@ public class NtpCustomizationUtilsUnitTest {
         int searchBoxHeightTall =
                 mResources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall);
         int searchBoxHeight = mResources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
-        int paddingForShadowBottom =
-                mResources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
 
-        // Test case 1: Tall search box with shadow.
-        int expectedHeight = searchBoxHeightTall + (paddingForShadowBottom * 2);
+        // Test case 1: Tall search box.
+        int expectedHeight = searchBoxHeightTall;
         int actualHeight =
                 NtpCustomizationUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ true, /* hasShadowApplied= */ true);
+                        mResources, /* showSearchBoxTall= */ true);
         assertEquals(expectedHeight, actualHeight);
 
-        // Test case 2: Tall search box without shadow.
-        expectedHeight = searchBoxHeightTall;
-        actualHeight =
-                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ true, /* hasShadowApplied= */ false);
-        assertEquals(expectedHeight, actualHeight);
-
-        // Test case 3: Regular search box with shadow.
-        expectedHeight = searchBoxHeight + (paddingForShadowBottom * 2);
-        actualHeight =
-                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ false, /* hasShadowApplied= */ true);
-        assertEquals(expectedHeight, actualHeight);
-
-        // Test case 4: Regular search box without shadow.
+        // Test case 2: Regular search box.
         expectedHeight = searchBoxHeight;
         actualHeight =
                 NtpCustomizationUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ false, /* hasShadowApplied= */ false);
+                        mResources, /* showSearchBoxTall= */ false);
         assertEquals(expectedHeight, actualHeight);
     }
 

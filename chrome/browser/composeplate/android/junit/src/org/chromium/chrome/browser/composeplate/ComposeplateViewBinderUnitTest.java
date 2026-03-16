@@ -134,14 +134,6 @@ public class ComposeplateViewBinderUnitTest {
         assertNotEquals(0, Float.compare(0f, expectedElevation));
         Drawable defaultBackground =
                 mContext.getDrawable(R.drawable.home_surface_search_box_background);
-        int paddingForShadowLateralPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.composeplate_view_button_padding_for_shadow_lateral);
-        int paddingForShadowBottomPx =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.composeplate_view_button_padding_for_shadow_bottom);
 
         View composeplateButton = mView.findViewById(R.id.composeplate_button);
         View incognitoButton = mView.findViewById(R.id.incognito_button);
@@ -149,19 +141,12 @@ public class ComposeplateViewBinderUnitTest {
         mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, true);
         verifyApplyBackground(composeplateButton, expectedElevation);
         verifyApplyBackground(incognitoButton, expectedElevation);
-        assertEquals(paddingForShadowLateralPx, mView.getPaddingStart());
-        assertEquals(paddingForShadowLateralPx, mView.getPaddingEnd());
-        ViewGroup.MarginLayoutParams marginLayoutParams =
-                (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
-        assertEquals(0, marginLayoutParams.topMargin);
+        assertEquals(0, Float.compare(expectedElevation, mView.getElevation()));
 
         mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, false);
         verifyResetBackground(composeplateButton, defaultBackground);
         verifyResetBackground(incognitoButton, defaultBackground);
-        assertEquals(0, mView.getPaddingStart());
-        assertEquals(0, mView.getPaddingEnd());
-        marginLayoutParams = (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
-        assertEquals(paddingForShadowBottomPx, marginLayoutParams.topMargin);
+        assertEquals(0, Float.compare(0f, mView.getElevation()));
     }
 
     @Test

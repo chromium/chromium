@@ -29,22 +29,12 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 @NullMarked
 public class SearchBoxContainerView extends LinearLayout {
     private static final String TAG = "SearchBoxContainer";
-    private final int mPaddingForShadowLateralPx;
-    private final int mPaddingForShadowBottomPx;
 
     private ImageView mDseIconView;
 
     /** Constructor for inflating from XML. */
     public SearchBoxContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mPaddingForShadowLateralPx =
-                context.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.composeplate_view_button_padding_for_shadow_lateral);
-        mPaddingForShadowBottomPx =
-                context.getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.composeplate_view_button_padding_for_shadow_bottom);
     }
 
     @Override
@@ -96,16 +86,6 @@ public class SearchBoxContainerView extends LinearLayout {
      */
     void applyWhiteBackgroundWithShadow(boolean apply) {
         Context context = getContext();
-        if (apply) {
-            // Adds paddings on each sides of the view to prevent shadow from being cut.
-            setPadding(
-                    mPaddingForShadowLateralPx,
-                    mPaddingForShadowBottomPx,
-                    mPaddingForShadowLateralPx,
-                    mPaddingForShadowBottomPx);
-        } else {
-            setPadding(0, 0, 0, 0);
-        }
 
         View searchBoxContainerView = findViewById(R.id.search_box_container);
         if (searchBoxContainerView != null) {

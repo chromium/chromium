@@ -330,9 +330,7 @@ public class NewTabPageCoordinator {
         Resources resources = mActivity.getResources();
         int searchBoxHeight =
                 NtpCustomizationUtils.getSearchBoxHeightWithShadows(
-                        resources,
-                        assumeNonNull(mIsComposeplateEnabled),
-                        Boolean.TRUE.equals(mIsWhiteBackgroundOnSearchBoxApplied));
+                        resources, assumeNonNull(mIsComposeplateEnabled));
         mSearchBoxCoordinator.setHeight(searchBoxHeight);
 
         mSearchBoxBoundsVerticalInset =
@@ -454,12 +452,6 @@ public class NewTabPageCoordinator {
         ViewStub composeplateViewStub =
                 mNewTabPageLayout.findViewById(R.id.composeplate_view_v2_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
-            // TODO(https://crbug.com/423579377): Moves the layout parameters to
-            //  composeplate_view_layout_v2.xml after the feature NewTabPageCustomizationV2 is
-            //  launched.
-            NewTabPageUtils.applyUpdatedLayoutParamsForComposeplateView(composeplateView);
-        }
         mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
@@ -736,12 +728,7 @@ public class NewTabPageCoordinator {
     private void updateTilesLayoutMargins() {
         if (mMostVisitedTilesCoordinator == null) return;
 
-        mMostVisitedTilesCoordinator.updateTilesLayoutMargins(
-                shouldShowLogo(),
-                mIsWhiteBackgroundOnSearchBoxApplied == null
-                        ? false
-                        : mIsWhiteBackgroundOnSearchBoxApplied,
-                mIsTablet);
+        mMostVisitedTilesCoordinator.updateTilesLayoutMargins(shouldShowLogo(), mIsTablet);
     }
 
     /**
@@ -880,10 +867,8 @@ public class NewTabPageCoordinator {
     private void setLogoViewBottomMargin() {
         if (mLogoCoordinator == null) return;
 
-        boolean shouldShowShadow = Boolean.TRUE.equals(mIsWhiteBackgroundOnSearchBoxApplied);
         int logoViewBottomMarginPx =
-                NtpCustomizationUtils.getLogoViewBottomMarginPx(
-                        mActivity.getResources(), shouldShowShadow);
+                NtpCustomizationUtils.getLogoViewBottomMarginPx(mActivity.getResources());
         mLogoCoordinator.setBottomMargin(logoViewBottomMarginPx);
     }
 
@@ -1179,14 +1164,6 @@ public class NewTabPageCoordinator {
         if (mComposeplateCoordinator != null) {
             mComposeplateCoordinator.applyWhiteBackgroundWithShadow(
                     applyWhiteBackgroundOnSearchBox);
-        }
-
-        setLogoViewBottomMargin();
-        // Update the search box height and bounds vertical inset since the shadow padding changed.
-        setSearchBoxHeightBoundsVerticalInset();
-
-        if (mMostVisitedTilesCoordinator != null) {
-            updateTilesLayoutMargins();
         }
     }
 

@@ -85,10 +85,7 @@ public class MostVisitedTilesCoordinatorUnitTest {
 
     @Test
     public void testUpdateTilesLayoutMargins() {
-        mCoordinator.updateTilesLayoutMargins(
-                /* shouldShowLogo= */ true,
-                /* isWhiteBackgroundOnSearchBoxApplied= */ false,
-                /* isTablet= */ false);
-        verify(mMediator).updateTilesLayoutMargins(eq(true), eq(false), eq(false));
+        mCoordinator.updateTilesLayoutMargins(/* shouldShowLogo= */ true, /* isTablet= */ false);
+        verify(mMediator).updateTilesLayoutMargins(eq(true), eq(false));
     }
 }

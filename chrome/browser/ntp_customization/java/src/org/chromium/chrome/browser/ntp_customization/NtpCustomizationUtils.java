@@ -1437,15 +1437,12 @@ public class NtpCustomizationUtils {
      *     extra paddings on top and bottom of the search box.
      */
     public static int getSearchBoxHeightWithShadows(
-            Resources resources, boolean showSearchBoxTall, boolean hasShadowApplied) {
+            Resources resources, boolean showSearchBoxTall) {
         int searchBoxHeight =
                 showSearchBoxTall
                         ? resources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall)
                         : resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
-        if (!hasShadowApplied) return searchBoxHeight;
-
-        int extraPadding = getLogoVerticalPaddingForShadowPx(resources) * 2;
-        return searchBoxHeight + extraPadding;
+        return searchBoxHeight;
     }
 
     /**
@@ -1456,29 +1453,11 @@ public class NtpCustomizationUtils {
      * consistent, regardless of whether the shadow is present.
      *
      * @param resources Android resources.
-     * @param applyShadow Whether to account for the search box's shadow padding.
      * @return The final adjusted bottom margin in pixels.
      */
-    public static int getLogoViewBottomMarginPx(Resources resources, boolean applyShadow) {
+    public static int getLogoViewBottomMarginPx(Resources resources) {
         int bottomMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
-        if (applyShadow) {
-            bottomMargin -= getLogoVerticalPaddingForShadowPx(resources);
-        }
         return bottomMargin;
-    }
-
-    /**
-     * Returns the internal padding required to accommodate the search box shadow.
-     *
-     * <p>This padding provides the necessary space for the shadow to be rendered without being
-     * clipped by the view's boundaries.
-     *
-     * @param resources Android resources.
-     * @return The shadow padding in pixels.
-     */
-    private static int getLogoVerticalPaddingForShadowPx(Resources resources) {
-        return resources.getDimensionPixelSize(
-                R.dimen.composeplate_view_button_padding_for_shadow_bottom);
     }
 
     /**

@@ -88,34 +88,6 @@ public class NewTabPageUtilUnitTest {
     }
 
     @Test
-    public void testApplyUpdatedLayoutParamsForComposeplateView() {
-        Resources resources = mContext.getResources();
-        int originalPaddingStart = mView.getPaddingStart();
-        int originalPaddingEnd = mView.getPaddingEnd();
-
-        int paddingBottomPx =
-                resources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
-        int composeplateViewHeight =
-                resources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_height_with_padding_for_shadow);
-
-        NewTabPageUtils.applyUpdatedLayoutParamsForComposeplateView(mView);
-
-        // Verify padding
-        assertEquals(
-                originalPaddingStart, mView.getPaddingStart()); // Padding start should not change
-        assertEquals(paddingBottomPx, mView.getPaddingTop());
-        assertEquals(originalPaddingEnd, mView.getPaddingEnd()); // Padding end should not change
-        assertEquals(paddingBottomPx, mView.getPaddingBottom());
-
-        // Verify layout parameters
-        MarginLayoutParams layoutParams = (MarginLayoutParams) mView.getLayoutParams();
-        assertEquals(composeplateViewHeight, layoutParams.height);
-        assertEquals(paddingBottomPx, layoutParams.topMargin);
-    }
-
-    @Test
     public void testUpdateTilesLayoutTopMargin_shouldShowLogo_phones() {
         Resources resources = mContext.getResources();
         int mvtContainerTopMargin =
@@ -137,22 +109,11 @@ public class NewTabPageUtilUnitTest {
 
     private void testUpdateTilesLayoutTopMargin_shouldShowLogoImpl(
             boolean isTablet, int expectedMvtContainerTopMargin) {
-        Resources resources = mContext.getResources();
-        int paddingBottomPx =
-                resources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
+        verifyTilesLayoutTopMargin(
+                /* shouldShowLogo= */ true, isTablet, expectedMvtContainerTopMargin);
 
         verifyTilesLayoutTopMargin(
-                /* shouldShowLogo= */ true,
-                /* isWhiteBackgroundOnSearchBoxApplied= */ false,
-                isTablet,
-                expectedMvtContainerTopMargin);
-
-        verifyTilesLayoutTopMargin(
-                /* shouldShowLogo= */ true,
-                /* isWhiteBackgroundOnSearchBoxApplied= */ true,
-                isTablet,
-                expectedMvtContainerTopMargin - paddingBottomPx);
+                /* shouldShowLogo= */ true, isTablet, expectedMvtContainerTopMargin);
     }
 
     @Test
@@ -177,31 +138,14 @@ public class NewTabPageUtilUnitTest {
 
     private void testUpdateTilesLayoutTopMargin_shouldNotShowLogoImpl(
             boolean isTablet, int expectedTopMargin) {
-        Resources resources = mContext.getResources();
-        int paddingBottomPx =
-                resources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
+        verifyTilesLayoutTopMargin(/* shouldShowLogo= */ false, isTablet, expectedTopMargin);
 
-        verifyTilesLayoutTopMargin(
-                /* shouldShowLogo= */ false,
-                /* isWhiteBackgroundOnSearchBoxApplied= */ false,
-                isTablet,
-                expectedTopMargin);
-
-        verifyTilesLayoutTopMargin(
-                /* shouldShowLogo= */ false,
-                /* isWhiteBackgroundOnSearchBoxApplied= */ true,
-                isTablet,
-                expectedTopMargin - paddingBottomPx);
+        verifyTilesLayoutTopMargin(/* shouldShowLogo= */ false, isTablet, expectedTopMargin);
     }
 
     private void verifyTilesLayoutTopMargin(
-            boolean shouldShowLogo,
-            boolean isWhiteBackgroundOnSearchBoxApplied,
-            boolean isTablet,
-            int expectedTopMargin) {
-        NewTabPageUtils.updateTilesLayoutTopMargin(
-                mView, shouldShowLogo, isWhiteBackgroundOnSearchBoxApplied, isTablet);
+            boolean shouldShowLogo, boolean isTablet, int expectedTopMargin) {
+        NewTabPageUtils.updateTilesLayoutTopMargin(mView, shouldShowLogo, isTablet);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mView.getLayoutParams();
         assertEquals(expectedTopMargin, layoutParams.topMargin);
     }

@@ -191,12 +191,6 @@ public class SearchBoxMediatorUnitTest {
     public void testApplyWhiteBackgroundWithShadow() {
         Resources recources = mContext.getResources();
         float expectedElevation = recources.getDimensionPixelSize(R.dimen.ntp_search_box_elevation);
-        int paddingForShadowLateralPx =
-                recources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_button_padding_for_shadow_lateral);
-        int paddingForShadowBottomPx =
-                recources.getDimensionPixelSize(
-                        R.dimen.composeplate_view_button_padding_for_shadow_bottom);
         assertNotEquals(0, Float.compare(0f, expectedElevation));
         Drawable defaultBackground =
                 mContext.getDrawable(R.drawable.home_surface_search_box_background);
@@ -214,10 +208,6 @@ public class SearchBoxMediatorUnitTest {
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
         verifyApplyBackground(searchBoxContainer, expectedElevation);
-        assertEquals(paddingForShadowLateralPx, mView.getPaddingStart());
-        assertEquals(paddingForShadowLateralPx, mView.getPaddingEnd());
-        assertEquals(paddingForShadowBottomPx, mView.getPaddingTop());
-        assertEquals(paddingForShadowBottomPx, mView.getPaddingBottom());
 
         // Tests the case to remove the white background with shadow.
         resId = R.style.TextAppearance_FakeSearchBoxTextMedium;
@@ -231,10 +221,6 @@ public class SearchBoxMediatorUnitTest {
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
         verifyResetBackground(searchBoxContainer, defaultBackground);
-        assertEquals(0, mView.getPaddingStart());
-        assertEquals(0, mView.getPaddingEnd());
-        assertEquals(0, mView.getPaddingTop());
-        assertEquals(0, mView.getPaddingBottom());
     }
 
     @Test
