@@ -779,6 +779,9 @@ test("components_unittests") {
 
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser:unit_tests" ]
+    if (!enable_extensions_core) {
+      deps += [ "//components/guest_view/browser/slim_web_view:unit_tests" ]
+    }
   }
 
   if (!is_android) {

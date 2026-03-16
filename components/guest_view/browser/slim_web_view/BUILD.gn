@@ -68,3 +68,21 @@ grit_strings("strings") {
   outputs = [ "grit/slim_web_view_strings.h" ]
   output_prefix = "slim_web_view_strings_"
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "slim_web_view_permission_helper_unittest.cc" ]
+
+  deps = [
+    ":mojo_bindings",
+    ":slim_web_view",
+    "//base",
+    "//base/test:test_support",
+    "//components/guest_view/browser",
+    "//components/guest_view/browser:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
