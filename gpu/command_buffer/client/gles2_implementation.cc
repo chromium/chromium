@@ -454,7 +454,7 @@ bool GLES2Implementation::CanCopySharedImageToGLTextureViaSkia(
   // requested.
   // TODO(crbug.com/40159723): Figure out whether premultiply options here are
   // accurate.
-  // TODO(crbug.com/343011436): Remove the `is_opaque` param by querying the
+  // TODO(crbug.com/492116792): Remove the `is_opaque` param by querying the
   // SharedImage's format directly after verifying that this doesn't change
   // behavior for any existing callers.
   bool is_premul = is_opaque || dst_alpha_type == kPremul_SkAlphaType;
