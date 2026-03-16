@@ -35,22 +35,21 @@ TEST(EventFiltersTest, FilterEvents) {
   events.push_back(tabs_api::mojom::TabsEvent::NewNodeMovedEvent(
       std::move(tab_moved_event)));
 
-  auto tab_data_changed = tabs_api::mojom::OnDataChangedEvent::New();
-  auto changed_tab = tabs_api::mojom::Tab::New();
-  changed_tab->id = tabs_api::NodeId(tabs_api::NodeId::Type::kContent, "333");
-  tab_data_changed->data =
-      tabs_api::mojom::Data::NewTab(std::move(changed_tab));
+  auto tab_change = tabs_api::mojom::TabChange::New();
+  tab_change->data = tabs_api::mojom::Tab::New();
+  tab_change->data->id =
+      tabs_api::NodeId(tabs_api::NodeId::Type::kContent, "333");
+  tab_change->mask = tabs_api::mojom::TabFieldMask::New();
   events.push_back(tabs_api::mojom::TabsEvent::NewDataChangedEvent(
-      std::move(tab_data_changed)));
+      tabs_api::mojom::OnDataChangedEvent::NewTab(std::move(tab_change))));
 
-  auto group_data_changed = tabs_api::mojom::OnDataChangedEvent::New();
-  auto changed_group = tabs_api::mojom::TabGroup::New();
-  changed_group->id =
+  auto group_change = tabs_api::mojom::TabGroupChange::New();
+  group_change->data = tabs_api::mojom::TabGroup::New();
+  group_change->data->id =
       tabs_api::NodeId(tabs_api::NodeId::Type::kCollection, "444");
-  group_data_changed->data =
-      tabs_api::mojom::Data::NewTabGroup(std::move(changed_group));
   events.push_back(tabs_api::mojom::TabsEvent::NewDataChangedEvent(
-      std::move(group_data_changed)));
+      tabs_api::mojom::OnDataChangedEvent::NewTabGroup(
+          std::move(group_change))));
 
   auto created_event = tabs_api::mojom::OnCollectionCreatedEvent::New();
   events.push_back(tabs_api::mojom::TabsEvent::NewCollectionCreatedEvent(
@@ -74,11 +73,11 @@ TEST(EventFiltersTest, FilterEvents) {
   EXPECT_EQ(created_groups.size(), 1u);
   EXPECT_NE(created_groups[0], nullptr);
 
-  ASSERT_TRUE(data_changed_events[0]->data->is_tab());
-  EXPECT_EQ(data_changed_events[0]->data->get_tab()->id.Id(), "333");
+  ASSERT_TRUE(data_changed_events[0]->is_tab());
+  EXPECT_EQ(data_changed_events[0]->get_tab()->data->id.Id(), "333");
 
-  ASSERT_TRUE(data_changed_events[1]->data->is_tab_group());
-  EXPECT_EQ(data_changed_events[1]->data->get_tab_group()->id.Id(), "444");
+  ASSERT_TRUE(data_changed_events[1]->is_tab_group());
+  EXPECT_EQ(data_changed_events[1]->get_tab_group()->data->id.Id(), "444");
 }
 
 }  // namespace

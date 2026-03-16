@@ -44,3 +44,16 @@ struct Position {
   // The index within the parent collection specified by the path.
   uint32 index;
 };
+
+// Granular field mask for Tabs to indicate which properties have changed.
+struct TabFieldMask {
+  bool title;
+  bool url;
+  bool favicon;
+  bool alert_states;
+  bool network_state;
+  bool is_active;
+  bool is_selected;
+  bool is_blocked;
+  bool last_active;
+};

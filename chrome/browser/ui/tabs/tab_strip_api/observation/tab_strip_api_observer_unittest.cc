@@ -82,7 +82,7 @@ TEST(TabStripApiObserver, Dispatch) {
     buffer.clear();
     TrivialTabStripApiObserver data_changed_test;
     buffer.push_back(mojom::TabsEvent::NewDataChangedEvent(
-        mojom::OnDataChangedEvent::New()));
+        mojom::OnDataChangedEvent::NewTab(mojom::TabChange::New())));
     data_changed_test.OnTabEvents(buffer);
     ASSERT_TRUE(data_changed_test.on_data_changed_invoked);
   }

@@ -145,19 +145,16 @@ export class TabListPlaygroundElement extends CustomElement implements
   }
 
   onDataChanged(onDataChangedEvent: OnDataChangedEvent) {
-    const data = onDataChangedEvent.data;
-    if (data.tab) {
-      const tab = data.tab;
-      const element = this.findNodeElement_(tab.id);
+    if (onDataChangedEvent.tab) {
+      const {data} = onDataChangedEvent.tab;
+      const element = this.findNodeElement_(data.id);
       if (element instanceof TabElement) {
-        element.tab = tab;
+        element.tab = data;
       }
-    } else if (data.tabGroup) {
-      const tabGroup = data.tabGroup;
-      if (tabGroup) {
-        this.findOrCreateTabGroupElement_(tabGroup.id)
-            .updateVisuals(this.toTabGroupVisualData_(tabGroup));
-      }
+    } else if (onDataChangedEvent.tabGroup) {
+      const {data} = onDataChangedEvent.tabGroup;
+      this.findOrCreateTabGroupElement_(data.id).updateVisuals(
+          this.toTabGroupVisualData_(data));
     }
   }
 

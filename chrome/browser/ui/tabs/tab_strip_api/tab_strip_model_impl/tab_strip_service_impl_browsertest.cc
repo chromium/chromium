@@ -81,25 +81,18 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
     // TODO(crbug.com/412738255): this is a hack, because we are not correctly
     // adding the initial tab that is created by the tab strip. We should have
     // a test for GetTabSnapshot and properly populate the initial tab.
-    const auto& data = event->data;
-    switch (data->which()) {
-      case tabs_api::mojom::Data::Tag::kTab: {
-        const auto& tab = data->get_tab();
+    switch (event->which()) {
+      case tabs_api::mojom::OnDataChangedEvent::Tag::kTab: {
+        const auto& tab = event->get_tab()->data;
         std::string id_str = std::string(tab->id.Id());
         if (tabs.contains(id_str)) {
           tabs.at(id_str) = tab.Clone();
         }
         break;
       }
-      case tabs_api::mojom::Data::Tag::kTabGroup:
-      case tabs_api::mojom::Data::Tag::kSplitTab:
+      case tabs_api::mojom::OnDataChangedEvent::Tag::kTabGroup:
+      case tabs_api::mojom::OnDataChangedEvent::Tag::kSplitTab:
         // TODO(crbug.com/412955607): implement this.
-        break;
-      case tabs_api::mojom::Data::Tag::kTabStrip:
-      case tabs_api::mojom::Data::Tag::kPinnedTabs:
-      case tabs_api::mojom::Data::Tag::kUnpinnedTabs:
-      case tabs_api::mojom::Data::Tag::kWindow:
-        NOTIMPLEMENTED();
         break;
     }
   }

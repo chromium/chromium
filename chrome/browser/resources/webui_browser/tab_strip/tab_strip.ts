@@ -13,7 +13,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {Container, Tab as TabData, TabCreatedContainer, TabGroupVisualData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import {DataFieldTags, whichData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import {OnDataChangedEventFieldTags, whichOnDataChangedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
@@ -141,27 +141,21 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
   */
 
   onDataChanged(onDataChangedEvent: OnDataChangedEvent) {
-    const data = onDataChangedEvent.data;
-    const tag = whichData(data);
+    const tag = whichOnDataChangedEvent(onDataChangedEvent);
     switch (tag) {
-      case DataFieldTags.TAB:
-        const tab = data.tab!;
+      case OnDataChangedEventFieldTags.TAB:
+        const tab = onDataChangedEvent.tab!.data;
         this.updateTab(tab);
         if (tab.isActive) {
           this.activeTab_ = tab.id;
         }
         break;
-      case DataFieldTags.TAB_GROUP:
-        const tabGroup = data.tabGroup!;
+      case OnDataChangedEventFieldTags.TAB_GROUP:
+        const tabGroup = onDataChangedEvent.tabGroup!.data;
         this.setTabGroupVisualData(tabGroup.id, tabGroup.data);
         break;
-      case DataFieldTags.TAB_STRIP:
-      case DataFieldTags.PINNED_TABS:
-      case DataFieldTags.UNPINNED_TABS:
-      case DataFieldTags.TAB_GROUP:
-      case DataFieldTags.SPLIT_TAB:
-      case DataFieldTags.WINDOW:
-        throw new Error(`unimplemented type: ${data}`);
+      case OnDataChangedEventFieldTags.SPLIT_TAB:
+        throw new Error('unimplemented type: splitTab');
       default:
         assertNotReachedCase(tag);
     }

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_MODEL_IMPL_CONVERTERS_TAB_CONVERTERS_H_
 
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/tab_states.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
@@ -24,6 +25,13 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabInterface* tab,
 // CHECK to enforce that precondition.
 tabs_api::mojom::DataPtr BuildMojoTabCollectionData(
     tabs::TabCollectionHandle handle);
+
+// Builds a field mask based on the internal TabChangeType.
+tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMask(TabChangeType type);
+
+// Builds a field mask specifically for selection or activation changes.
+tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMaskForSelection(bool active,
+                                                               bool selected);
 
 // Converts mojom::NetworkState back to a TabNetworkState.
 // TODO(crbug.com/458095449): Consider using bimap or just static casting these

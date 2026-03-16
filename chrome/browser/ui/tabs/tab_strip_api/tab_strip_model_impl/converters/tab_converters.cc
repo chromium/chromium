@@ -79,6 +79,40 @@ mojom::AlertState ToMojo(tabs::TabAlert state) {
   }
 }
 
+tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMask(TabChangeType type) {
+  auto mask = tabs_api::mojom::TabFieldMask::New();
+  // These mappings should match the signals dispatched from TabStripModel.
+  // Note that kAll specifically excludes the other TabChangeTypes. It acts as
+  // catch-all for the non granular updates.
+  switch (type) {
+    case TabChangeType::kAll:
+      mask->title = true;
+      mask->url = true;
+      mask->favicon = true;
+      mask->alert_states = true;
+      mask->last_active = true;
+      break;
+    case TabChangeType::kLoadingOnly:
+      mask->network_state = true;
+      break;
+    case TabChangeType::kAttentionOnly:
+      // AttentionOnly affects "needs_attention" which is not yet exposed.
+      break;
+    case TabChangeType::kBlockedOnly:
+      mask->is_blocked = true;
+      break;
+  }
+  return mask;
+}
+
+tabs_api::mojom::TabFieldMaskPtr BuildTabFieldMaskForSelection(bool active,
+                                                               bool selected) {
+  auto mask = tabs_api::mojom::TabFieldMask::New();
+  mask->is_active = active;
+  mask->is_selected = selected;
+  return mask;
+}
+
 std::vector<mojom::AlertState> ToMojo(
     const std::vector<tabs::TabAlert>& states) {
   std::vector<mojom::AlertState> result;

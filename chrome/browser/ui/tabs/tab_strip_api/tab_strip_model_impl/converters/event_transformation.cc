@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters/tab_converters.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/browser_apis/tab_strip/tab_strip_api_events.mojom.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
 #include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_group.h"
@@ -110,18 +111,33 @@ mojom::OnDataChangedEventPtr ToEvent(
     const tabs_api::TabStripModelAdapter& adapter,
     size_t index,
     TabChangeType change_type) {
-  auto event = mojom::OnDataChangedEvent::New();
+  auto tab_change = mojom::TabChange::New();
   auto tabs = adapter.GetTabs();
   if (index < tabs.size()) {
     auto& handle = tabs.at(index);
     const ui::ColorProvider& color_provider = adapter.GetColorProvider();
 
-    auto mojo_tab = tabs_api::converters::BuildMojoTab(
+    tab_change->data = tabs_api::converters::BuildMojoTab(
         handle.Get(), color_provider, adapter.GetTabStates(handle));
-    event->data = mojom::Data::NewTab(std::move(mojo_tab));
+    tab_change->mask = tabs_api::converters::BuildTabFieldMask(change_type);
   }
 
-  return event;
+  return mojom::OnDataChangedEvent::NewTab(std::move(tab_change));
+}
+
+mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
+  CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kVisualsChanged);
+  TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
+      tab_group_change.group);
+
+  auto tab_group_change_record = mojom::TabGroupChange::New();
+  tab_group_change_record->data =
+      tabs_api::converters::BuildMojoTabCollectionData(
+          tab_group->GetCollectionHandle())
+          ->get_tab_group()
+          .Clone();
+  return mojom::OnDataChangedEvent::NewTabGroup(
+      std::move(tab_group_change_record));
 }
 
 std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
@@ -162,24 +178,30 @@ std::vector<Event> ToEvent(const TabStripSelectionChange& selection,
     if (!adapter.GetIndexForHandle(affected_tab).has_value()) {
       continue;
     }
-    auto event = mojom::OnDataChangedEvent::New();
+
+    bool active_changed =
+        selection.active_tab_changed() &&
+        ((selection.old_tab &&
+          selection.old_tab->GetHandle() == affected_tab) ||
+         (selection.new_tab && selection.new_tab->GetHandle() == affected_tab));
+
+    bool selection_changed = false;
+    if (selection.selection_changed()) {
+      auto index = adapter.GetIndexForHandle(affected_tab).value();
+      selection_changed = selection.old_model.IsSelected(index) !=
+                          selection.new_model.IsSelected(index);
+    }
+
     const ui::ColorProvider& color_provider = adapter.GetColorProvider();
-    auto mojo_tab = tabs_api::converters::BuildMojoTab(
+    auto tab_change = mojom::TabChange::New();
+    tab_change->data = tabs_api::converters::BuildMojoTab(
         affected_tab.Get(), color_provider, adapter.GetTabStates(affected_tab));
-    event->data = mojom::Data::NewTab(std::move(mojo_tab));
-    events.push_back(std::move(event));
+    tab_change->mask = tabs_api::converters::BuildTabFieldMaskForSelection(
+        active_changed, selection_changed);
+
+    events.push_back(mojom::OnDataChangedEvent::NewTab(std::move(tab_change)));
   }
   return events;
-}
-
-mojom::OnDataChangedEventPtr ToEvent(const TabGroupChange& tab_group_change) {
-  CHECK_EQ(tab_group_change.type, TabGroupChange::Type::kVisualsChanged);
-  TabGroup* tab_group = tab_group_change.model->group_model()->GetTabGroup(
-      tab_group_change.group);
-  auto event = mojom::OnDataChangedEvent::New();
-  event->data = tabs_api::converters::BuildMojoTabCollectionData(
-      tab_group->GetCollectionHandle());
-  return event;
 }
 
 }  // namespace tabs_api::events

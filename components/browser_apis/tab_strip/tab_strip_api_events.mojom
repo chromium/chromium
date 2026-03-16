@@ -17,10 +17,29 @@ struct OnTabsClosedEvent {
   array<NodeId> tabs;
 };
 
-struct OnDataChangedEvent {
-  // The updated data for the node in the tab strip. The client can use the ID
-  // within the data union to identify which node was updated.
-  Data data;
+// Fired when the data properties of an existing node have changed, but the
+// node itself has not moved.
+union OnDataChangedEvent {
+  TabChange tab;
+  TabGroupChange tab_group;
+  SplitTabChange split_tab;
+};
+
+struct TabChange {
+  // Updated tab data.
+  Tab data;
+  // Field mask indicating which fields in 'data' have changed.
+  TabFieldMask mask;
+};
+
+struct TabGroupChange {
+  // Updated tab group data
+  TabGroup data;
+};
+
+struct SplitTabChange {
+  // Updated split tab data
+  SplitTab data;
 };
 
 struct OnCollectionCreatedEvent {
