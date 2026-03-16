@@ -21,7 +21,6 @@
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/install_static/install_details.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "components/prefs/mock_pref_change_callback.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -34,28 +33,6 @@
 namespace chrome {
 
 namespace {
-
-// An install details that randomizes the install_suffix. This means that
-// install_static::GetRegistryPath() returns a unique path for each instance of
-// the test, even if they are all using a shared registry redirect (e.g. two
-// tests are located in the same process space).
-class RandomInstallSuffixInstallDetails
-    : public install_static::PrimaryInstallDetails {
- public:
-  explicit RandomInstallSuffixInstallDetails(bool system_level)
-      : random_install_suffix_(base::SysUTF8ToWide(
-            base::Uuid::GenerateRandomV4().AsLowercaseString())),
-        constants_(install_static::kInstallModes[0]) {
-    constants_.install_suffix = random_install_suffix_.data();
-
-    set_mode(&constants_);
-    set_system_level(system_level);
-  }
-
- private:
-  std::wstring random_install_suffix_;
-  install_static::InstallConstants constants_;
-};
 
 class MockAppBoundEncryptionOverrides
     : public os_crypt::AppBoundEncryptionOverridesForTesting {
@@ -221,8 +198,7 @@ TEST_P(IsolatedBrowserSupportTest, SetState) {
   const auto IsSystemInstall = GetParam;
 
   install_static::ScopedInstallDetails details(
-      std::make_unique<RandomInstallSuffixInstallDetails>(
-          /*system_level=*/IsSystemInstall()));
+      /*system_level=*/IsSystemInstall());
   EXPECT_FALSE(IsIsolationEnabled());
 
   base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
@@ -243,9 +219,7 @@ INSTANTIATE_TEST_SUITE_P(, IsolatedBrowserSupportTest, ::testing::Bool());
 using IsolatedBrowserSupportSystemTest = IsolatedBrowserSupportTestBase;
 
 TEST_F(IsolatedBrowserSupportSystemTest, CommandLine) {
-  install_static::ScopedInstallDetails details(
-      std::make_unique<RandomInstallSuffixInstallDetails>(
-          /*system_level=*/true));
+  install_static::ScopedInstallDetails details(/*system_level=*/true);
 
   base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
   SetIsolationState(IsolationState::kProcessIsolation, &prefs_,
@@ -262,9 +236,7 @@ TEST_F(IsolatedBrowserSupportSystemTest, CommandLine) {
 }
 
 TEST_F(IsolatedBrowserSupportSystemTest, SetIsolationStateTwice) {
-  install_static::ScopedInstallDetails details(
-      std::make_unique<RandomInstallSuffixInstallDetails>(
-          /*system_level=*/true));
+  install_static::ScopedInstallDetails details(/*system_level=*/true);
 
   for (size_t i = 0; i < 2; ++i) {
     base::test::TestFuture<base::expected<IsolationState, HRESULT>> future;
@@ -294,9 +266,7 @@ class IsolatedBrowserSupportSystemTestWithFailures
 
 TEST_P(IsolatedBrowserSupportSystemTestWithFailures, InjectFailures) {
   const auto AreFailuresInjected = GetParam;
-  install_static::ScopedInstallDetails details(
-      std::make_unique<RandomInstallSuffixInstallDetails>(
-          /*system_level=*/true));
+  install_static::ScopedInstallDetails details(/*system_level=*/true);
   TestingPrefServiceSimple prefs;
   os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(
       prefs.registry());
