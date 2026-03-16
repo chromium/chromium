@@ -98,9 +98,17 @@ void SelectionChangeObserver::OnEvent(const x11::Event& xev) {
   }
 }
 
-x11::Window GetSelectionOwner(x11::Atom selection) {
-  auto response = x11::Connection::Get()->GetSelectionOwner({selection}).Sync();
-  return response ? response->owner : x11::Window::None;
+void GetSelectionOwner(x11::Atom selection,
+                       base::OnceCallback<void(x11::Window)> callback) {
+  x11::Connection::Get()
+      ->GetSelectionOwner({selection})
+      .OnResponse(base::BindOnce(
+          [](base::OnceCallback<void(x11::Window)> callback,
+             x11::GetSelectionOwnerResponse response) {
+            std::move(callback).Run(response ? response->owner
+                                             : x11::Window::None);
+          },
+          std::move(callback)));
 }
 
 }  // namespace
@@ -184,7 +192,18 @@ void XClipboardHelper::ReadAsync(
     const std::vector<x11::Atom>& types,
     base::OnceCallback<void(SelectionData)> callback) {
   x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
-  if (GetSelectionOwner(selection_name) == x_window_) {
+  GetSelectionOwner(selection_name,
+                    base::BindOnce(&XClipboardHelper::OnReadAsync, GetWeakPtr(),
+                                   buffer, types, std::move(callback)));
+}
+
+void XClipboardHelper::OnReadAsync(
+    ClipboardBuffer buffer,
+    const std::vector<x11::Atom>& types,
+    base::OnceCallback<void(SelectionData)> callback,
+    x11::Window owner) {
+  x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
+  if (owner == x_window_) {
     // We can local fastpath instead of playing the nested run loop game
     // with the X server.
     const SelectionFormatMap& format_map = LookupStorageForAtom(selection_name);
@@ -309,9 +328,16 @@ void XClipboardHelper::IsFormatAvailableAsync(
           format, std::move(callback)));
 }
 
-bool XClipboardHelper::IsSelectionOwner(ClipboardBuffer buffer) const {
+void XClipboardHelper::IsSelectionOwnerAsync(
+    ClipboardBuffer buffer,
+    base::OnceCallback<void(bool)> callback) const {
   x11::Atom selection = LookupSelectionForClipboardBuffer(buffer);
-  return GetSelectionOwner(selection) == x_window_;
+  GetSelectionOwner(selection, base::BindOnce(
+                                   [](base::OnceCallback<void(bool)> callback,
+                                      x11::Window x_window, x11::Window owner) {
+                                     std::move(callback).Run(owner == x_window);
+                                   },
+                                   std::move(callback), x_window_));
 }
 
 std::vector<x11::Atom> XClipboardHelper::GetTextAtoms() const {
@@ -335,7 +361,17 @@ void XClipboardHelper::GetTargetListAsync(
     ClipboardBuffer buffer,
     base::OnceCallback<void(TargetList)> callback) {
   x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
-  if (GetSelectionOwner(selection_name) == x_window_) {
+  GetSelectionOwner(selection_name,
+                    base::BindOnce(&XClipboardHelper::OnGetTargetList,
+                                   GetWeakPtr(), buffer, std::move(callback)));
+}
+
+void XClipboardHelper::OnGetTargetList(
+    ClipboardBuffer buffer,
+    base::OnceCallback<void(TargetList)> callback,
+    x11::Window owner) {
+  x11::Atom selection_name = LookupSelectionForClipboardBuffer(buffer);
+  if (owner == x_window_) {
     // We can local fastpath and return the list of local targets.
     const SelectionFormatMap& format_map = LookupStorageForAtom(selection_name);
     std::vector<x11::Atom> out;

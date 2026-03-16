@@ -82,8 +82,9 @@ void X11ClipboardOzone::GetAvailableMimeTypes(
   helper_->GetAvailableMimeTypesAsync(buffer, std::move(callback));
 }
 
-bool X11ClipboardOzone::IsSelectionOwner(ClipboardBuffer buffer) {
-  return helper_->IsSelectionOwner(buffer);
+void X11ClipboardOzone::IsSelectionOwner(ClipboardBuffer buffer,
+                                         IsSelectionOwnerClosure callback) {
+  helper_->IsSelectionOwnerAsync(buffer, std::move(callback));
 }
 
 void X11ClipboardOzone::SetClipboardDataChangedCallback(
