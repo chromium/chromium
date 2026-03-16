@@ -415,11 +415,15 @@ void ToastService::RegisterToasts(
   }
 
   if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
-    // TODO (crbug.com/492163207): Use the UX approved icon for this toast.
     toast_registry_->RegisterToast(
         ToastId::kMultistepFilterSuggestion,
-        ToastSpecification::Builder(vector_icons::kPlayArrowChromeRefreshIcon,
-                                    IDS_MULTISTEP_FILTER_SUGGESTION_TITLE)
+        ToastSpecification::Builder(
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            vector_icons::kPlayCircleSparkIcon,
+#else
+            vector_icons::kPlayArrowChromeRefreshIcon,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            IDS_MULTISTEP_FILTER_SUGGESTION_TITLE)
             .AddActionButton(
                 IDS_MULTISTEP_FILTER_SUGGESTION_APPLY_BUTTON,
                 base::BindRepeating(
