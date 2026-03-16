@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="1557622599341396706">Zobraziť názov plochy</translation>
 <translation id="1569384531973824928">Týmto povolíte prístup všetkým aplikáciám a webom s povoleniami používať kameru a mikrofón. Zrejme budete musieť obnoviť webovú stránku alebo reštartovať aplikáciu.</translation>
+<translation id="1570235441606255261">Inštalátor aplikácie Steam</translation>
 <translation id="1571697193564730395">Prepnúť režim bez vyrušení. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Vybraná rukoväť ľavého okraja, presuňte klávesmi so šípkami</translation>
 <translation id="1576623706766186887">Oddialenie pri zapnutej lupe</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1637505162081889933">Zariadenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Načítava sa</translation>
+<translation id="1642895994345928121">Na otvorenie tejto aplikácie nie je v zariadení dostatok priestoru. Uvoľnite miesto a skúste znova.</translation>
 <translation id="1647986356840967552">Predchádzajúca stránka</translation>
 <translation id="1651914502370159744">Otvorenie stránky História</translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
@@ -401,6 +403,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2383521554963939360">Skupiny aplikácií a kariet</translation>
 <translation id="2386292613071805067">Výber celého obsahu stránky</translation>
 <translation id="2389423187722941333">Prepnúť Gemini</translation>
+<translation id="2391805183137601570">Otvoriť Steam</translation>
 <translation id="2392659840443812875">Nie je k dispozícii žiadny hotspot. Uistite sa, že zariadenie je nablízku a je zapnuté rozhranie Bluetooth.</translation>
 <translation id="2397416548179033562">Zobraziť Ponuku Chrome</translation>
 <translation id="240006516586367791">Ovládanie médií</translation>
@@ -422,12 +425,14 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="243878895369688216">Otvorené včera</translation>
 <translation id="2440978926514840421">GIF bol zaznamenaný</translation>
 <translation id="2441427462554639370">Nahrávanie bolo ukončené, pretože sa takmer úplne minul voľný priestor</translation>
+<translation id="2447587550790814052">Steam pre Chromebook (beta) už môžete používať</translation>
 <translation id="2449089818483227734">Nízky stav batérie</translation>
 <translation id="2450205753526923158">Režim snímky obrazovky</translation>
 <translation id="2453860139492968684">Dokončiť</translation>
 <translation id="2455994958736234930">Pridanie reťazcov www. a .com do panela s adresou a následné otvorenie webu</translation>
 <translation id="2456008742792828469">Kalendár, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Prechod hlbšie</translation>
+<translation id="2462332841984057083">Steam sa už nastavuje. Počkajte, kým sa nastavovanie dokončí.</translation>
 <translation id="2465145153332031561">Stav batérie: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, počet cyklov: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Potvrďte rozlíšenie</translation>
 <translation id="2475783092753560388">Vložiť <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2486214324139475545">Ukážka plochy <ph name="DESK_NAME" />. Plocha je aktívna.</translation>
 <translation id="2486405091093637109">Rozlíšenie obrazovky <ph name="DISPLAY_NAME" /> bolo zmenené na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ak to nepotvrdíte, predchádzajúce nastavenia budú obnovené o <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pripojiť sa</translation>
+<translation id="2494555621641843783">Steam sa nedá nainštalovať</translation>
 <translation id="2496180316473517155">História prehliadania</translation>
 <translation id="2499445554382787206">Ponuka profilu plochy. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Funkcia sticky keys</translation>
@@ -512,6 +518,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2727175239389218057">Odpovedať</translation>
 <translation id="2727744317940422214">Žiaľ, niečo sa pokazilo. V opise odošlite spätnú väzbu s hashtagom #bruschetta. Kód chyby je <ph name="ERROR" />. Nepodarilo sa vymazať, zrejme to budete musieť urobiť manuálne.</translation>
 <translation id="2727977024730340865">Batéria je zapojená do nabíjačky s nízkym výkonom. Nabíjanie batérie nemusí byť spoľahlivé.</translation>
+<translation id="2737538893171115082">Steam pre Chromebook (beta) zablokoval váš správca. Váš správca musí zapnúť tieto pravidlá:</translation>
 <translation id="2743301740238894839">Spustiť</translation>
 <translation id="2743387203779672305">Kopírovať do schránky</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3033912566804961911">Zlúčiť s plochou <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Úroveň batérie dotykového pera: <ph name="PERCENTAGE" />.</translation>
 <translation id="304097922505898963">Otvoriť aplikáciu Klávesové skratky</translation>
+<translation id="3040982432432547149">Pomôžte nám zlepšiť Steam pre Chromebook</translation>
 <translation id="304417730895741346">Pripnuté a otvorené aplikácie sú na poličke. Ak chcete pripnúť aplikáciu na poličku, kliknite na ňu pravým tlačidlom alebo klepnite dvoma prstami na touchpad.</translation>
 <translation id="3045670165536837541">Vybraná pravá horná rukoväť, presuňte klávesmi so šípkami</translation>
 <translation id="3047761520276763270">Skúste povedať:</translation>
@@ -656,6 +664,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3181441307743005334">Reštart môže chvíľu trvať</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Pripojené k zariadeniu}few{Pripojené k # zariadeniam}many{Connected to # devices}other{Pripojené k # zariadeniam}}</translation>
 <translation id="3203405173652969239">Ovládanie prepínačmi je aktivované</translation>
+<translation id="3204648577100496185">Údaje spojené s touto aplikáciou môžu byť z tohto zariadenia odstránené</translation>
 <translation id="3206735939915734551">Zapnutie alebo vypnutie klávesa Caps Lock</translation>
 <translation id="3207953481422525583">Nastavenia používateľa</translation>
 <translation id="3208321278970793882">Aplikácia</translation>
@@ -677,6 +686,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3271554781793662131">Vyhľadaním vložíte</translation>
 <translation id="3274634049061007184">Zobrazujte si aplikácie z telefónu</translation>
 <translation id="3279230909244266691">Tento proces môže trvať niekoľko minút. Spúšťa sa virtuálny počítač.</translation>
+<translation id="3285465040399788513">Na dokončenie nastavenia nie je v zariadení dostatok priestoru. Uvoľnite miesto a skúste znova.</translation>
 <translation id="3289364673986435196">Ponuka vypínača</translation>
 <translation id="3289544412142055976">Aplikácie pre Linux nie sú momentálne podporované</translation>
 <translation id="3289674678944039601">Nabíja sa cez adaptér</translation>
@@ -702,6 +712,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369111525500416043">Termín je čoskoro</translation>
 <translation id="3371140690572404006">zariadenia USB-C (port vpravo vpredu)</translation>
+<translation id="3373196968211632036">Steam pre Chromebook (beta) nie je k dispozícii pre účty Google detí</translation>
 <translation id="3375634426936648815">Pripojené</translation>
 <translation id="3386978599540877378">lupa na celú obrazovku</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3477079411857374384">Ctrl-Shift-medzerník</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Polička sa bude automaticky skrývať</translation>
+<translation id="3496797737329654668">Poďme si zahrať hry</translation>
 <translation id="3505066820268455558">Batéria sa nabíja</translation>
 <translation id="3509391053705095206">Váš telefón sa nedá nájsť. Skontrolujte, či v ňom máte zapnuté rozhranie Bluetooth.</translation>
 <translation id="3510164367642747937">Zvýrazniť ukazovateľ myši</translation>
@@ -800,6 +812,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="3633851487917460983">Otvoriť schránku</translation>
 <translation id="363473492175527493">Zameranie úlohy je nastavené na <ph name="TASK_NAME" />. Ak chcete úlohu upraviť, stlačte Enter.</translation>
 <translation id="3638400994746983214">Prepnúť obrazovku ochrany súkromia. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam pre Chromebook (beta) je potrebné aktualizovať. Reštartujte Chromebook a skúste to znova.</translation>
 <translation id="3649256019230929621">Minimalizovať okno</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3702809606464356667">Keď sa zobrazujú okná aktuálnej plochy, stlačením šípky nahor zobrazíte okná všetkých plôch.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Zábava</translation>
+<translation id="370665806235115550">Načítava sa...</translation>
 <translation id="3707093869106077605">Funkcie <ph name="UNAVAILABLE_DLC_ONE" /> a <ph name="UNAVAILABLE_DLC_TWO" /> nie sú k dispozícii.</translation>
 <translation id="3708186454126126312">Predtým pripojené zariadenia</translation>
 <translation id="3712143870407382523">Vyberte okno pre túto stranu</translation>
@@ -860,6 +874,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3831226344927851293">Ukončiť zobrazenie návodu</translation>
 <translation id="383629559565718788">Zobraziť nastavenia klávesnice</translation>
 <translation id="384082539148746321">Chcete šablónu odstrániť?</translation>
+<translation id="3841282988425489367">Steam pre Chromebook (beta) sa nedá nastaviť</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, potom <ph name="KEY_ONE" /> alebo <ph name="KEY_TWO" /> alebo <ph name="KEY_THREE" /> alebo <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Informácie o sieti nie sú k dispozícii</translation>
 <translation id="3848526302597027234">Má prístup k týmto povoleniam:</translation>
@@ -951,6 +966,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4146671046252289537">Kurzor sa presunie na koniec ďalšieho slova</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4151054805501931758">Retuš portrétu</translation>
+<translation id="4151449637210235443">Povedzte nám o svojom nedávnom hraní</translation>
 <translation id="4156293514828496577">Zostávajúca batéria: <ph name="PERCENTAGE" /> % (približne <ph name="TIME_LEFT" />).
 Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translation>
 <translation id="4158003972857765638">Usporiadanie na novej ploche</translation>
@@ -968,6 +984,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4192112279662688596">Alebo</translation>
 <translation id="4193857202545160520">Zobraziť kliknutia a klávesy</translation>
 <translation id="4193969623755915875">Skratkou <ph name="NEW_SHORTCUT" /> otvorte pomocníka v sekcii Preskúmať aplikáciu.</translation>
+<translation id="4195001808989442226">Steam pre Chromebook (beta) sa nedá otvoriť</translation>
 <translation id="4195579532193195633">Aktuálna verzia <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Pokračujte tam, kde ste prestali</translation>
 <translation id="4195877955194704651">Tlačidlo automatického kliknutia</translation>
@@ -983,6 +1000,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4221957499226645091">Nainštalovaná aplikácia <ph name="APP_NAME" /> bola pozastavená</translation>
 <translation id="4228078597006700451">Ovládanie nie je nastavené</translation>
 <translation id="4230560241506423345">Novinka</translation>
+<translation id="4231231258999726714">Steam pre Chromebook sa nastavuje</translation>
 <translation id="4236726631849783264">Pripomenutie týkajúce sa navrhovaných akcií</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Režim prehľadu</translation>
@@ -1067,6 +1085,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4471432286288241507">{0,plural, =0{Ihneď aktualizujte zariadenie}=1{Aktualizujte zariadenie do 1 sekundy}few{Aktualizujte zariadenie do # sekúnd}many{Aktualizujte zariadenie do # sekundy}other{Aktualizujte zariadenie do # sekúnd}}</translation>
 <translation id="4472575034687746823">Začíname</translation>
 <translation id="4473489370276014885">Kontakty Google</translation>
+<translation id="4473996011558324141">odhadovaný čas</translation>
 <translation id="4477350412780666475">Ďalšia stopa</translation>
 <translation id="4477751544736611934">Môžu sa účtovať poplatky za dáta.
 Pripojené je jedno zariadenie.</translation>
@@ -1108,6 +1127,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4585337515783392668">Zastaviť prenos do neznámeho zariadenia</translation>
 <translation id="4596144739579517758">Tmavý motív je vypnutý</translation>
 <translation id="4596442969149038771">Zdieľal používateľ <ph name="USER" /></translation>
+<translation id="4598556348158889687">Správa úložiska</translation>
 <translation id="4610493115106525653">Dobrý vstup</translation>
 <translation id="4611292653554630842">Prihlásiť sa</translation>
 <translation id="462160925400706389">Bolo pripojené zariadenie <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4633636853437260449">Položku odstránite stlačením klávesov Ctrl + W</translation>
 <translation id="4635501805800894201">{0,plural, =0{Teraz aktualizujte zariadenie na predchádzajúcu verziu}=1{Do 1 sekundy aktualizujte zariadenie na predchádzajúcu verziu}few{Do # sekúnd aktualizujte zariadenie na predchádzajúcu verziu}many{Do # sekundy aktualizujte zariadenie na predchádzajúcu verziu}other{Do # sekúnd aktualizujte zariadenie na predchádzajúcu verziu}}</translation>
 <translation id="4642092649622328492">Vytvorenie čiastočnej snímky obrazovky</translation>
+<translation id="4642587497923912728">Steam pre Chromebook (beta) je k dispozícii iba pre účet, ktorý bol v tomto Chromebooku prihlásený ako prvý.</translation>
 <translation id="4644727592819780893">Oblasť je príliš malá na zobrazenie ukážky v kamere</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, odporúčanie aplikácie</translation>
 <translation id="4649019912155580914">Upravili ste vy</translation>
@@ -1350,6 +1371,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="5352250171825660495">Tmavý motív je zapnutý</translation>
 <translation id="5354804064646502504">Môžu sa účtovať poplatky za dáta.
 Nie sú pripojené žiadne zariadenia.</translation>
+<translation id="5355498626146154079">Musíte zapnúť experimentálnu funkciu Borealis Enabled</translation>
 <translation id="5356963482258194581">Prepínajte medzi tmavým a svetlým motívom. Pravým tlačidlom kliknite na pracovnú plochu a vyberte Tapety a štýl.</translation>
 <translation id="536019650977002321">Správca nepovoľuje záznam zvuku. Ďalšie informácie vám poskytne správca.</translation>
 <translation id="5361524080961918551">Rečové súbory v jazyku <ph name="LANGUAGE" /> sú čiastočne stiahnuté</translation>
@@ -1360,6 +1382,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5377367976106153749">Chcete zapnúť prístup ku kamere?</translation>
 <translation id="5378450298115733949">Viac</translation>
 <translation id="5379115545237091094">Príliš veľa pokusov</translation>
+<translation id="5380526436444479273">Počkajte niekoľko minút a skúste to znova</translation>
 <translation id="5383434787520761436">Žiadne súbory z Disku Google</translation>
 <translation id="5391307769715781764">Chcete nahradiť uloženú plochu?</translation>
 <translation id="5392327145184648521">Vypočítava sa percento batérie…</translation>
@@ -1371,6 +1394,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5409208741270395213">Označiť úlohu ako dokončenú</translation>
 <translation id="5413656666631274079">Stránka Nastavenia</translation>
 <translation id="5414198321558177633">Obnovuje sa zoznam profilov. Môže to trvať niekoľko minút.</translation>
+<translation id="5415328625985164836">Toto je beta program. Pomocou aplikácie Steam môžete teraz hrať v Chromebooku niektoré hry.</translation>
 <translation id="5426063383988017631">Ponuka Nastavenia bola zavretá</translation>
 <translation id="5428899915242071344">Začať výber</translation>
 <translation id="5429993543155113935">Okná inkognito momentálne nie sú momentálne podporované.</translation>
@@ -1466,6 +1490,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="5712132663381964774">Vykonávajte všetko potrebné v zariadení <ph name="PRODUCT_NAME" /> pomocou aplikácií. Nájdete ich v Spúšťači.</translation>
 <translation id="571295407079589142">Mobilné dáta sú vypnuté</translation>
 <translation id="5727460725221669831">Ak ste zabudli heslo alebo ste nedávno zmenili heslo účtu Google, skúste tohto používateľa obnoviť.</translation>
+<translation id="572914206753951782">Skontrolujte, či máte v Chromebooku najnovšiu verziu softvéru. Potom ho reštartujte a skúste to znova.</translation>
 <translation id="5733630091161562207">Uvítacie upozornenie</translation>
 <translation id="573413375004481890">Toto zariadenie nedokázalo podporovať všetky vaše obrazovky, takže jedna bola odpojená</translation>
 <translation id="574392208103952083">Stredné</translation>
@@ -1713,6 +1738,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6507042703812908515">Otvorte aplikáciu Klávesové skratky skratkou <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Prepnutie na ďalšiu dostupnú metódu vstupu</translation>
 <translation id="6508923215158854599">Skontrolujte, či sú Chromebook a zariadenie Chromecast pripojené k rovnakej sieti Wi‑Fi.</translation>
+<translation id="6511607461419653612">Reštartujte Chromebook a skúste to znova</translation>
 <translation id="6515727200518652613">Spojenie s kamerou bolo prerušené, prebieha pokus o jeho obnovenie.</translation>
 <translation id="651753338596587143">Ľutujeme, pri inštalácii dependencií stiahnuteľného obsahu sa niečo pokazilo. Vyskúšajte reštartovať a ak problém pretrváva, odošlite spätnú väzbu s hashtagom #bruschetta v opise. Kód chyby je <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Vyberte okno, ktoré chcete nasnímať</translation>
@@ -1738,6 +1764,7 @@ Nová inštalácia</translation>
 <translation id="6574587113394758819">Upozornenie z aplikácie <ph name="APP_TITLE" /> je skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="6574622320167699133">Odomknuté vaším telefónom. Pokračujte klepnutím alebo kliknutím.</translation>
 <translation id="6578407462441924264">Bez názvu</translation>
+<translation id="6580060371127789208">Dokončené: <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6582012689384648647">Ak chcete mať k dispozícii prispôsobené zoznamy skladieb na sústredenie, povoľte prístup k službe YouTube Music</translation>
 <translation id="6582034443359256692">Vypočítava sa úroveň nabitia batérie.</translation>
 <translation id="6585808820553845416">Relácia sa skončí o <ph name="SESSION_TIME_REMAINING" /></translation>
@@ -1787,6 +1814,7 @@ Nová inštalácia</translation>
 <translation id="6723839937902243910">Napájanie</translation>
 <translation id="672609503628871915">Zobraziť novinky</translation>
 <translation id="6727969043791803658">Pripojené, <ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
+<translation id="6731320427842222405">Môže to trvať niekoľko minút</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera a mikrofón sa používajú</translation>
@@ -1858,6 +1886,7 @@ Nová inštalácia</translation>
 <translation id="6961840794482373852">Klávesová skratka Alt + šípka nahor bola zmenená. Ak chcete použiť kláves Page Up, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + šípka nahor.</translation>
 <translation id="696267987219125751">Centrovanie kamery je vypnuté.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Všetky aplikácie a hry nainštalované pomocou aplikácie Steam pre Chromebook (beta) budú z tohto zariadenia odstránené. Odstránia sa aj údaje, ktoré sú s týmito aplikáciami a hrami spojené. Pred odinštalovaním nezabudnite uložené aplikácie a hry zálohovať.</translation>
 <translation id="6972629891077993081">Zariadenia HID</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6980402667292348590">insert (vložiť)</translation>
@@ -1889,6 +1918,7 @@ Nová inštalácia</translation>
 <translation id="7067196344162293536">Automatické otáčanie</translation>
 <translation id="7076293881109082629">Prihlásenie</translation>
 <translation id="7076878155205969899">Vypnúť zvuk</translation>
+<translation id="7083774521940805477">Steam pre Chromebook (beta) nie je vo vašom Chromebooku k dispozícii.</translation>
 <translation id="7083848064787091821">Sústredenie</translation>
 <translation id="7084678090004350185">Prepnúť hotspot. Hotspot je zapnutý, počet pripojených zariadení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7086931198345821656">Táto aktualizácia vyžaduje spustiť Powerwash zariadenia <ph name="DEVICE_TYPE" />. Všetky údaje budú odstránené. Prečítajte si viac o najnovšej aktualizácii aplikácie <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Nová inštalácia</translation>
 <translation id="7130207228079676353">S NAJVÄČŠOU PRAVDEPODOBNOSŤOU</translation>
 <translation id="7131634465328662194">Odhlásenie prebehne automaticky.</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
+<translation id="7143409552554575716">Experimentálne funkcie systému ChromeOS</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
 <translation id="7144942256906679589">Stav batérie</translation>
 <translation id="7145639536026937076">Batéria je nabitá na <ph name="PERCENTAGE" /> % a nabíja sa. Šetrič batérie je zapnutý.</translation>
 <translation id="7147587499155271409">Žiadna história prehliadania</translation>
 <translation id="7147657298465433425">Ak chcete získať prístup ku klávesom F, stlačte kláves Fn a klávesy horného radu</translation>
 <translation id="7149149900052329230">Spravujte svoje miestne súbory a súbory na Disku Google v aplikácii Súbory.</translation>
+<translation id="7154020516215182599">Zdieľajte svoju spätnú väzbu alebo opíšte problém. Ak je to možné, uveďte postup, ako sa dá problém reprodukovať.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7726391492136714301">Zobrazujte si upozornenia a aplikácie svojho telefónu</translation>
 <translation id="7727952505535211425">Otvorenie webu na paneli s adresou na novej karte</translation>
 <translation id="7728657226117099693">Vypnúť Caps Lock</translation>
+<translation id="7732702411411810416">Skontrolujte, či máte internetové pripojenie, a skúste to znova</translation>
 <translation id="7742327441377685481">Žiadne upozornenia</translation>
 <translation id="7748275671948949022">Zvýraznenie tlačidla Spúšťača na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
@@ -2121,6 +2154,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7866482334467279021">zapnuté</translation>
 <translation id="7870790288828963061">Nenašli sa žiadne aplikácie Kiosku s novšou verziou. Nie je čo aktualizovať. Odoberte kľúč USB.</translation>
 <translation id="7872786842639831132">Vypnuté</translation>
+<translation id="7873386145597434863">Steam pre Chromebook</translation>
 <translation id="7875575368831396199">Rozhranie Bluetooth je v zariadení <ph name="DEVICE_TYPE" /> zrejme vypnuté. Ak chcete použiť Telefónne centrum, zapnite ho.</translation>
 <translation id="7884446017008693258">Nastavenia hotspotu</translation>
 <translation id="7884902759927478774">Zrušenie presúvania kariet</translation>
@@ -2469,6 +2503,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8980862970816311842">Presun ikony aplikácie do priečinka v mriežke aplikácií alebo z neho</translation>
 <translation id="8982906748181120328">Viditeľnosť nablízku</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Víta vás Steam pre Chromebook</translation>
 <translation id="8990809378771970590">Práve sa používa <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Zrušíte to stlačením klávesov Fn + Rýchlo vložiť alebo Shift.</translation>
 <translation id="899350903320462459">Ak chcete vykonať akciu s upozornením, odomknite zariadenie ako <ph name="LOGIN_ID" /></translation>
@@ -2485,6 +2520,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="9047624247355796468">Otvoriť nastavenia siete <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth nie je k dispozícii</translation>
 <translation id="9050999376345823055">Uvoľníte stlačením klávesa „.“</translation>
+<translation id="9061694916020926968">Ak chcete používať Steam pre Chromebook (beta), musíte sa prihlásiť do účtu Google. Prihláste sa a skúste to znova.</translation>
 <translation id="906458777597946297">Maximalizovať okno</translation>
 <translation id="9065203028668620118">Upraviť</translation>
 <translation id="9068849894565669697">Výber farby</translation>

@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">请求切换到移动版网站</translation>
 <translation id="2362083820973145409">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。打开设置。</translation>
 <translation id="2371084566192454134">标签页和标签页分组</translation>
+<translation id="2371303771137626249">新建</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2384692388811649784">隐藏无痕式标签页</translation>
 <translation id="2386793615875593361">已选择 1 张</translation>
@@ -689,6 +690,7 @@
 <translation id="3530206579861815432">在所有已同步的设备上快速找到当前打开的和最近关闭的标签页。</translation>
 <translation id="3530767473765895035">管理此设备上的账号…</translation>
 <translation id="3533436815740441613">打开新的标签页</translation>
+<translation id="3534738261102690620">问问 Gemini</translation>
 <translation id="3540141921715814660">添加到书签</translation>
 <translation id="3546122170015471515">Google.com 上的地图预览</translation>
 <translation id="3547356470684043247">查看客户对产品、服务或体验的评估结果，以根据评价做出明智决策</translation>
@@ -1087,6 +1089,7 @@
 <translation id="4944543191714094452">在网页中查找…</translation>
 <translation id="4945756290001680296">访问密码设置</translation>
 <translation id="4949302115427722371">管理设置…</translation>
+<translation id="4952050521954075618">相机胶卷中的照片不会在您的不同设备之间同步</translation>
 <translation id="4958444002117714549">展开列表</translation>
 <translation id="496392417432935267">已在别处打开</translation>
 <translation id="4970724460420203313">使用受管理的账号登录 Chrome 有助于您将与组织相关的浏览数据（包括标签页、历史记录和密码）与其他浏览数据分开</translation>
@@ -1286,6 +1289,7 @@
 <translation id="5647702255748985085">退出分组？</translation>
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5652623411397330904">您跟踪的商品会在此处显示。</translation>
+<translation id="5653100054596780862">所有标签页</translation>
 <translation id="5656431592348714536">增强型日历</translation>
 <translation id="5659593005791499971">邮箱</translation>
 <translation id="5665739277590037307">需遵守《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 的回答未必正确无误，请注意核查。</translation>
@@ -1751,6 +1755,7 @@
 <translation id="7300448350764260141">增添一层额外的安全保障，防范在线威胁。</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7313347584264171202">您已打开的无痕模式标签页会显示在此处</translation>
+<translation id="7322186060879266048">{count,plural, =1{键盘上方显示了 {count} 个自动填充选项。}other{键盘上方显示了 {count} 个自动填充选项。}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7345061034321640811">不得导入</translation>

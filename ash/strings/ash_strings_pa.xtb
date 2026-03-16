@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">ਨੀਲਾ</translation>
 <translation id="1557622599341396706">ਡੈਸਕ ਦਾ ਨਾਮ ਦਿਖਾਓ</translation>
 <translation id="1569384531973824928">ਇਸ ਨਾਲ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਪਹੁੰਚ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਇਜਾਜ਼ਤਾਂ ਹਨ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
+<translation id="1570235441606255261">ਸਟ੍ਰੀਮ ਸਥਾਪਨਾਕਾਰ</translation>
 <translation id="1571697193564730395">'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">ਖੱਬੇ ਕਿਨਾਰੇ 'ਤੇ ਮੌਜੂਦ ਹੈਂਡਲ ਨੂੰ ਚੁਣਿਆ ਗਿਆ, ਇਸਨੂੰ ਮੂਵ ਕਰਨ ਲਈ ਤੀਰ ਵਾਲੇ ਬਟਨ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="1576623706766186887">ਵੱਡਦਰਸ਼ੀ ਦੇ ਚਾਲੂ ਹੋਣ 'ਤੇ ਜ਼ੂਮ ਘਟਾਓ</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">ਸਵਿੱਚ ਪਹੁੰਚ ਨੂੰ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਬੰਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="1642895994345928121">ਇਸ ਐਪ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਲੋੜੀਂਦੀ ਡੀਵਾਈਸ ਸਟੋਰੇਜ ਨਹੀਂ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ ਕਰੋ।</translation>
 <translation id="1647986356840967552">ਪਿਛਲਾ ਪੰਨਾ</translation>
 <translation id="1651914502370159744">'ਇਤਿਹਾਸ' ਪੰਨਾ ਖੋਲ੍ਹੋ</translation>
 <translation id="1668469839109562275">ਅੰਦਰ-ਮੌਜੂਦ VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">ਐਪ ਅਤੇ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="2386292613071805067">ਪੰਨੇ 'ਤੇ ਸਭ ਕੁਝ ਚੁਣੋ</translation>
 <translation id="2389423187722941333">Gemini ਨੂੰ ਟੌਗਲ ਕਰੋ</translation>
+<translation id="2391805183137601570">Steam ਖੋਲ੍ਹੋ</translation>
 <translation id="2392659840443812875">ਕੋਈ ਹੌਟਸਪੌਟ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਨਜ਼ਦੀਕ ਹੈ ਅਤੇ ਉਸਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="2397416548179033562">Chrome ਮੀਨੂ ਦਿਖਾਓ</translation>
 <translation id="240006516586367791">ਮੀਡੀਆ ਕੰਟਰੋਲ</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">ਬੀਤੇ ਕੱਲ੍ਹ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="2440978926514840421">GIF ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
 <translation id="2441427462554639370">ਸਟੋਰੇਜ ਵਿੱਚ ਬਹੁਤ ਘੱਟ ਜਗ੍ਹਾ ਹੋਣ ਕਰਕੇ ਰਿਕਾਰਡਿੰਗ ਸਮਾਪਤ ਹੋਈ</translation>
+<translation id="2447587550790814052">ਤੁਸੀਂ ਹੁਣ Steam for Chromebook (ਬੀਟਾ) ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="2449089818483227734">ਬੈਟਰੀ ਘੱਟ ਹੈ</translation>
 <translation id="2450205753526923158">ਸਕ੍ਰੀਨਸ਼ਾਟ ਮੋਡ</translation>
 <translation id="2453860139492968684">ਖ਼ਤਮ</translation>
 <translation id="2455994958736234930">ਪਤਾ ਬਾਰ ਵਿੱਚ www. ਅਤੇ .com ਸ਼ਾਮਲ ਕਰੋ, ਫਿਰ ਵੈੱਬਸਾਈਟ ਖੋਲ੍ਹੋ</translation>
 <translation id="2456008742792828469">ਕੈਲੰਡਰ, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">ਬਰੀਕੀ ਨਾਲ ਸਮਝੋ</translation>
+<translation id="2462332841984057083">Steam ਦਾ ਪਹਿਲਾਂ ਹੀ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਸੈੱਟਅੱਪ ਪੂਰਾ ਹੋਣ ਦੀ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="2465145153332031561">ਬੈਟਰੀ ਦੀ ਹਾਲਤ <ph name="BATTERY_HEALTH_PERCENTAGE" />%, ਸਾਈਕਲ ਕਾਊਂਟ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਦੀ ਤਸਦੀਕੀ ਕਰੋ</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ਦੀ ਪੂਰਵ-ਝਲਕ। ਕਿਰਿਆਸ਼ੀਲ ਡੈਸਕ।</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ਨੂੰ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ਰੈਜ਼ੋਲਿਊਸ਼ਨ 'ਤੇ ਬਦਲ ਦਿੱਤਾ ਗਿਆ। ਤਸਦੀਕ ਕਰਨ ਤੋਂ ਬਿਨਾਂ, ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2487915095798731898">ਸ਼ਾਮਲ ਹੋਵੋ</translation>
+<translation id="2494555621641843783">Steam ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2496180316473517155">ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ</translation>
 <translation id="2499445554382787206">ਡੈਸਕ ਪ੍ਰੋਫਾਈਲ ਮੀਨੂ। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ਸਟਿਕੀ ਕੁੰਜੀਆਂ</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">ਜਵਾਬ ਦਿਓ</translation>
 <translation id="2727744317940422214">ਮਾਫ਼ ਕਰਨਾ, ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਵਰਣਨ ਵਿੱਚ #bruschetta ਸ਼ਾਮਲ ਕਰ ਕੇ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰੋ। ਗੜਬੜ ਕੋਡ <ph name="ERROR" /> ਹੈ। ਸਾਫ਼ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਅਸਫਲ ਰਹੀ, ਤੁਹਾਨੂੰ ਇਸਨੂੰ ਹੱਥੀਂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
 <translation id="2727977024730340865">ਇੱਕ ਘੱਟ-ਪਾਵਰ ਦੇ ਚਾਰਜਰ ਨਾਲ ਪਲੱਗ-ਇਨ ਕੀਤਾ ਗਿਆ। ਬੈਟਰੀ ਚਾਰਜਿੰਗ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਵੀ ਹੋ ਸਕਦੀ।</translation>
+<translation id="2737538893171115082">Steam for Chromebook (ਬੀਟਾ) ਨੂੰ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਇਹ ਨੀਤੀਆਂ ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ:</translation>
 <translation id="2743301740238894839">ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2743387203779672305">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ਨਾਲ ਜੋੜੋ</translation>
 <translation id="3039939407102840004">ਸਟਾਈਲਸ ਦੀ ਬੈਟਰੀ <ph name="PERCENTAGE" /> ਪ੍ਰਤੀਸ਼ਤ ਹੈ।</translation>
 <translation id="304097922505898963">Key Shortcuts ਐਪ ਖੋਲ੍ਹੋ</translation>
+<translation id="3040982432432547149">Chromebook 'ਤੇ Steam ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="304417730895741346">ਤੁਹਾਡੀਆਂ ਪਿੰਨ ਕੀਤੀਆਂ ਅਤੇ ਖੁੱਲ੍ਹੀਆਂ ਐਪਾਂ ਸ਼ੈਲਫ ਵਿੱਚ ਮੌਜੂਦ ਹਨ। ਕਿਸੇ ਐਪ ਨੂੰ ਸ਼ੈਲਫ 'ਤੇ ਪਿੰਨ ਕਰਨ ਲਈ, ਐਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਆਪਣੇ ਟੱਚਪੈਡ 'ਤੇ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ।</translation>
 <translation id="3045670165536837541">ਸਿਖਰਲੇ ਸੱਜੇ ਪਾਸੇ ਮੌਜੂਦ ਹੈਂਡਲ ਨੂੰ ਚੁਣਿਆ ਗਿਆ, ਇਸਨੂੰ ਮੂਵ ਕਰਨ ਲਈ ਤੀਰ ਵਾਲੇ ਬਟਨ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="3047761520276763270">ਇਹ ਕਹਿ ਕੇ ਦੇਖੋ:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਕੁਝ ਸਮਾਂ ਲੱਗ ਸਕਦਾ ਹੈ</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ਇੱਕ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}one{# ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}other{# ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="3203405173652969239">ਸਵਿੱਚ ਪਹੁੰਚ ਚਾਲੂ ਹੈ</translation>
+<translation id="3204648577100496185">ਸ਼ਾਇਦ ਇਸ ਐਪ ਨਾਲ ਸੰਬੰਧਿਤ ਡਾਟੇ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇ</translation>
 <translation id="3206735939915734551">Caps Lock ਨੂੰ ਚਾਲੂ/ਬੰਦ ਕਰੋ</translation>
 <translation id="3207953481422525583">ਵਰਤੋਂਕਾਰ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3208321278970793882">ਐਪ</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ਦਾਖਲ ਕਰਨ ਲਈ ਖੋਜੋ</translation>
 <translation id="3274634049061007184">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਐਪਾਂ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="3279230909244266691">ਇਸ ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ। ਆਭਾਸੀ ਮਸ਼ੀਨ ਸ਼ੁਰੂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
+<translation id="3285465040399788513">ਸੈੱਟਅੱਪ ਪੂਰਾ ਕਰਨ ਲਈ ਲੋੜੀਂਦੀ ਡੀਵਾਈਸ ਸਟੋਰੇਜ ਨਹੀਂ ਹੈ। ਜਗ੍ਹਾ ਖਾਲੀ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ ਕਰੋ।</translation>
 <translation id="3289364673986435196">ਪਾਵਰ ਮੀਨੂ</translation>
 <translation id="3289544412142055976">Linux ਐਪਾਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
 <translation id="3289674678944039601">ਅਡਾਪਟਰ ਨਾਲ ਚਾਰਜ ਹੋ ਰਿਹਾ ਹੈ</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="3369111525500416043">ਭੁਗਤਾਨ ਦੀ ਤਾਰੀਖ ਨੇੜੇ ਹੈ</translation>
 <translation id="3371140690572404006">USB-C ਡੀਵਾਈਸ (ਸੱਜੇ ਪਾਸੇ ਅਗਲਾ ਪੋਰਟ)</translation>
+<translation id="3373196968211632036">Steam for Chromebook (ਬੀਟਾ) ਬੱਚਿਆਂ ਦੇ Google ਖਾਤਿਆਂ ਲਈ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="3375634426936648815">ਕਨੈਕਟ ਹੈ</translation>
 <translation id="3386978599540877378">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵੱਡਦਰਸ਼ੀ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ਸ਼ੈਲਫ਼ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਲੁਕ ਜਾਵੇਗੀ</translation>
+<translation id="3496797737329654668">ਆਓ ਗੇਮ ਖੇਡੀਏ</translation>
 <translation id="3505066820268455558">ਬੈਟਰੀ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ</translation>
 <translation id="3509391053705095206">ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਹੀਂ ਲੱਭਿਆ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3510164367642747937">ਮਾਊਸ ਕਰਸਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">ਕਲਿੱਪਬੋਰਡ ਖੋਲ੍ਹੋ</translation>
 <translation id="363473492175527493">ਫੋਕਸ ਕਰਨ ਲਈ ਚੁਣਿਆ ਗਿਆ ਕਾਰਜ: <ph name="TASK_NAME" />. ਕਾਰਜ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ।</translation>
 <translation id="3638400994746983214">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />।</translation>
+<translation id="3641070112313110357">Chromebook ਲਈ Steam (ਬੀਟਾ) ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਆਪਣੀ Chromebook ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3649256019230929621">window ਨੂੰ ਨਿਊਨਤਮ ਬਣਾਓ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ, ਸਾਰੇ ਡੈਸਕਾਂ ਤੋਂ ਵਿੰਡੋਆਂ ਦਿਖਾਉਣ ਲਈ ਉੱਪਰ ਤੀਰ ਵਾਲੀ ਕੁੰਜੀ ਦਬਾਓ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">ਮਨੋਰੰਜਨ</translation>
+<translation id="370665806235115550">ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ਅਤੇ <ph name="UNAVAILABLE_DLC_TWO" /> ਮੌਜੂਦ ਨਹੀਂ ਹਨ।</translation>
 <translation id="3708186454126126312">ਪਹਿਲਾਂ ਤੋਂ ਕਨੈਕਟ ਕੀਤੇ</translation>
 <translation id="3712143870407382523">ਇਸ ਪਾਸੇ ਲਈ ਵਿੰਡੋ ਨੂੰ ਚੁਣੋ</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">ਟਿਊਟੋਰੀਅਲ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
 <translation id="383629559565718788">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="384082539148746321">ਕੀ ਟੈਮਪਲੇਟ ਮਿਟਾਉਣਾ ਹੈ?</translation>
+<translation id="3841282988425489367">Steam for Chromebook (ਬੀਟਾ) ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> ਫਿਰ <ph name="KEY_ONE" /> ਜਾਂ <ph name="KEY_TWO" /> ਜਾਂ <ph name="KEY_THREE" /> ਜਾਂ <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">ਕੋਈ ਵੀ ਨੈੱਟਵਰਕ ਜਾਣਕਾਰੀ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="3848526302597027234">ਹੇਠਾਂ ਦਿੱਤੀਆਂ ਇਜਾਜ਼ਤਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ:</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">ਅਗਲੇ ਸ਼ਬਦ ਦੇ ਅਖੀਰ 'ਤੇ ਜਾਓ</translation>
 <translation id="4150201353443180367">ਡਿਸਪਲੇ</translation>
 <translation id="4151054805501931758">ਪੋਰਟਰੇਟ ਟੱਚ-ਅੱਪ</translation>
+<translation id="4151449637210235443">ਸਾਨੂੰ ਆਪਣੇ ਹਾਲੀਆ ਗੇਮਪਲੇ ਬਾਰੇ ਦੱਸੋ</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ (ਲਗਭਗ <ph name="TIME_LEFT" />)।
 ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਸੀਮਤ ਹਨ।</translation>
 <translation id="4158003972857765638">ਨਵੇਂ ਡੈਸਕ ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">ਜਾਂ</translation>
 <translation id="4193857202545160520">ਕਲਿੱਕਾਂ ਅਤੇ ਕੁੰਜੀਆਂ ਦਿਖਾਓ</translation>
 <translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />" ਦੇ ਨਾਲ 'ਪੜਚੋਲ ਕਰੋ' ਐਪ ਵਿੱਚ "ਮਦਦ" ਨੂੰ ਖੋਲ੍ਹੋ।</translation>
+<translation id="4195001808989442226">Steam for Chromebook (ਬੀਟਾ) ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="4195579532193195633">ਮੌਜੂਦਾ ਵਰਜਨ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ਜਾਰੀ ਰੱਖ ਜਿੱਥੇ ਤੁਸੀਂ ਬੰਦ ਛੱਡਿਆ ਸੀ</translation>
 <translation id="4195877955194704651">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਕਲਿੱਕ ਕਰਨ ਲਈ ਬਟਨ</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ਸਥਾਪਤ ਕੀਤੀ ਗਈ ਐਪ, ਰੋਕੀ ਗਈ</translation>
 <translation id="4228078597006700451">ਕੰਟਰੋਲਾਂ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4230560241506423345">ਨਵਾਂ</translation>
+<translation id="4231231258999726714">Steam for Chromebook ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4236726631849783264">ਸੁਝਾਈਆਂ ਗਈਆਂ ਕਾਰਵਾਈਆਂ ਬਾਰੇ ਰਿਮਾਈਂਡਰ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ਰੂਪ-ਰੇਖਾ ਮੋਡ</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{ਡੀਵਾਈਸ ਨੂੰ ਹੁਣੇ ਅੱਪਡੇਟ ਕਰੋ}=1{ਡੀਵਾਈਸ ਨੂੰ 1 ਸਕਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਸਕਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">ਅੰਦਾਜ਼ਨ ਸਮਾਂ</translation>
 <translation id="4477350412780666475">ਅਗਲਾ ਟਰੈਕ</translation>
 <translation id="4477751544736611934">ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚ ਹੋ ਸਕਦਾ ਹੈ।
 1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ।</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">ਕਿਸੇ ਅਗਿਆਤ ਪ੍ਰਾਪਤਕਰਤਾ 'ਤੇ ਕਾਸਟ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="4596144739579517758">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਹੈ।</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ਨੇ ਸਾਂਝਾ ਕੀਤਾ</translation>
+<translation id="4598556348158889687">ਸਟੋਰੇਜ ਪ੍ਰਬੰਧਨ</translation>
 <translation id="4610493115106525653">ਵਧੀਆ ਆਊਟਪੁੱਟ</translation>
 <translation id="4611292653554630842">ਲੌਗ ਇਨ ਕਰੋ</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ਕਨੈਕਟ ਹੈ</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">ਮਿਟਾਉਣ ਲਈ Ctrl+W ਦਬਾਓ</translation>
 <translation id="4635501805800894201">{0,plural, =0{ਡੀਵਾਈਸ ਨੂੰ ਹੁਣੇ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}=1{ਡੀਵਾਈਸ ਨੂੰ 1 ਸਕਿੰਟ ਵਿੱਚ ਹੀ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਸਕਿੰਟਾਂ ਵਿੱਚ ਹੀ ਪੁਰਾਣੇ ਵਰਜਨ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="4642092649622328492">ਛੋਟਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਵੋ</translation>
+<translation id="4642587497923912728">Steam for Chromebook (ਬੀਟਾ) ਸਿਰਫ਼ ਉਨ੍ਹਾਂ ਖਾਤਿਆਂ ਲਈ ਹੀ ਉਪਲਬਧ ਹੈ, ਜਿਨ੍ਹਾਂ ਨਾਲ ਪਹਿਲਾਂ ਇਸ Chromebook 'ਤੇ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="4644727592819780893">ਕੈਮਰਾ ਪੂਰਵ-ਝਲਕ ਵਿੱਚ ਫਿੱਟ ਆਉਣ ਲਈ ਇਲਾਕਾ ਬਹੁਤ ਛੋਟਾ ਹੈ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ਐਪ ਸਿਫ਼ਾਰਸ਼</translation>
 <translation id="4649019912155580914">ਤੁਸੀਂ ਸੰਪਾਦਨ ਕੀਤਾ</translation>
@@ -1351,6 +1372,7 @@
 <translation id="5352250171825660495">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਹੈ</translation>
 <translation id="5354804064646502504">ਇਸ ਨਾਲ ਡਾਟਾ ਖਰਚ ਹੋ ਸਕਦਾ ਹੈ।
 ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</translation>
+<translation id="5355498626146154079">ਤੁਹਾਨੂੰ “Borealis Enabled” ਫਲੈਗ ਚਾਲੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="5356963482258194581">ਗੂੜ੍ਹੇ ਅਤੇ ਹਲਕੇ ਥੀਮ ਵਿਚਕਾਰ ਸਵਿੱਚ ਕਰੋ। ਡੈਸਕਟਾਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ 'ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ' ਚੁਣੋ।</translation>
 <translation id="536019650977002321">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਆਡੀਓ ਨੂੰ ਕੈਪਚਰ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦਾ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> ਦੀਆਂ ਬੋਲੀ ਫ਼ਾਈਲਾਂ ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ</translation>
@@ -1361,6 +1383,7 @@
 <translation id="5377367976106153749">ਕੀ ਕੈਮਰਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5378450298115733949">ਹੋਰ</translation>
 <translation id="5379115545237091094">ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ</translation>
+<translation id="5380526436444479273">ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਉਡੀਕ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="5383434787520761436">ਕੋਈ Google Drive ਫ਼ਾਈਲ ਨਹੀਂ</translation>
 <translation id="5391307769715781764">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="5392327145184648521">ਬੈਟਰੀ % ਦੀ ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
@@ -1372,6 +1395,7 @@
 <translation id="5409208741270395213">ਕਾਰਜ ਦੀ ਮੁਕੰਮਲ ਵਜੋਂ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
 <translation id="5413656666631274079">'ਸੈਟਿੰਗਾਂ' ਪੰਨਾ</translation>
 <translation id="5414198321558177633">ਪ੍ਰੋਫਾਈਲ ਸੂਚੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
+<translation id="5415328625985164836">ਇਹ ਇੱਕ ਬੀਟਾ ਪ੍ਰੋਗਰਾਮ ਹੈ। ਤੁਸੀਂ ਹੁਣ ਆਪਣੀ Chromebook 'ਤੇ ਕੁਝ ਗੇਮਾਂ ਖੇਡਣ ਲਈ Steam ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="5426063383988017631">ਸੈਟਿੰਗ ਮੀਨੂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5428899915242071344">ਚੁਣਨਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="5429993543155113935">ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਫ਼ਿਲਹਾਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
@@ -1467,6 +1491,7 @@
 <translation id="5712132663381964774">ਆਪਣੇ <ph name="PRODUCT_NAME" /> 'ਤੇ ਲੋੜੀਂਦੀ ਹਰ ਚੀਜ਼ ਕਰਨ ਲਈ ਐਪਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ। ਤੁਸੀਂ ਲਾਂਚਰ ਵਿੱਚ ਆਪਣੀਆਂ ਐਪਾਂ ਲੱਭ ਸਕਦੇ ਹੋ।</translation>
 <translation id="571295407079589142">ਮੋਬਾਈਲ ਡਾਟਾ ਬੰਦ ਕੀਤਾ ਹੋਇਆ ਹੈ</translation>
 <translation id="5727460725221669831">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਵਰਡ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ Google ਖਾਤਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਇਸ ਵਰਤੋਂਕਾਰ ਲਈ ਇਸਨੂੰ ਮੁੜ-ਹਾਸਲ ਕਰ ਕੇ ਦੇਖੋ।</translation>
+<translation id="572914206753951782">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੀ Chromebook 'ਤੇ ਨਵੀਨਤਮ ਵਰਜਨ ਚੱਲ ਰਿਹਾ ਹੈ। ਫਿਰ, ਆਪਣੀ Chromebook ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="5733630091161562207">ਸੁਆਗਤੀ ਸੂਚਨਾ</translation>
 <translation id="573413375004481890">ਇਹ ਡੀਵਾਈਸ ਤੁਹਾਡੇ ਸਾਰੇ ਡਿਸਪਲੇਆਂ ਨੂੰ ਸਮਰਥਿਤ ਨਹੀਂ ਕਰ ਸਕੀ, ਇਸ ਲਈ ਇੱਕ ਨੂੰ ਡਿਸਕਨੈਕਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="574392208103952083">ਦਰਮਿਆਨਾ</translation>
@@ -1714,6 +1739,7 @@
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" ਨਾਲ Key Shortcuts ਐਪ ਖੋਲ੍ਹੋ।</translation>
 <translation id="6507618042428827377">ਅਗਲੀ ਉਪਲਬਧ ਇਨਪੁੱਟ ਵਿਧੀ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="6508923215158854599">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੀ Chromebook ਅਤੇ ਤੁਹਾਡਾ Chromecast ਡੀਵਾਈਸ ਇੱਕੋ ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ 'ਤੇ ਹਨ।</translation>
+<translation id="6511607461419653612">ਆਪਣੀ Chromebook ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="6515727200518652613">ਕੈਮਰੇ ਦਾ ਕਨੈਕਸ਼ਨ ਟੁੱਟ ਗਿਆ ਹੈ, ਮੁੜ-ਕਨੈਕਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="651753338596587143">ਮਾਫ਼ ਕਰਨਾ, DLC ਨਿਰਭਰਤਾਵਾਂ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵੇਲੇ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਕਿਰਪਾ ਕਰਕੇ ਰੀਬੂਟ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਅਤੇ ਜੇ ਸਮੱਸਿਆ ਬਣੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ ਵਰਣਨ ਵਿੱਚ #bruschetta ਸ਼ਾਮਲ ਕਰ ਕੇ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰੋ। ਗੜਬੜ ਕੋਡ <ph name="ERROR" /> ਹੈ।</translation>
 <translation id="6520517963145875092">ਕੈਪਚਰ ਕਰਨ ਲਈ ਕੋਈ ਵਿੰਡੋ ਚੁਣੋ</translation>
@@ -1739,6 +1765,7 @@
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> ਸੂਚਨਾ ਲੁਕੀ ਹੋਈ ਹੈ ਕਿਉਂਕਿ ਦੇਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਹੈ</translation>
 <translation id="6574622320167699133">ਤੁਹਾਡੇ ਫ਼ੋਨ ਤੋਂ ਅਣਲਾਕ ਕੀਤੀ ਗਈ। ਦਾਖਲ ਹੋਣ ਲਈ ਟੈਪ ਜਾਂ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6578407462441924264">ਬੇਨਾਮ</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% ਪੂਰੀ ਹੋ ਗਈ</translation>
 <translation id="6582012689384648647">ਵਿਅਕਤੀਗਤ ਫੋਕਸ ਪਲੇਲਿਸਟਾਂ ਲਈ, YouTube Music ਤੱਕ ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="6582034443359256692">ਬੈਟਰੀ ਚਾਰਜ ਪੱਧਰ ਦੀ ਗਣਨਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।</translation>
 <translation id="6585808820553845416">ਸੈਸ਼ਨ <ph name="SESSION_TIME_REMAINING" /> ਵਿੱਚ ਖ਼ਤਮ ਹੋਵੇਗਾ।</translation>
@@ -1788,6 +1815,7 @@
 <translation id="6723839937902243910">ਪਾਵਰ</translation>
 <translation id="672609503628871915">ਦੇਖੋ ਕਿ ਕੀ ਨਵਾਂ ਹੈ</translation>
 <translation id="6727969043791803658">ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ, <ph name="BATTERY_PERCENTAGE" />% ਬੈਟਰੀ</translation>
+<translation id="6731320427842222405">ਇਸ ਵਿੱਚ ਥੋੜ੍ਹੀ ਦੇਰ ਲੱਗ ਸਕਦੀ ਹੈ</translation>
 <translation id="6732087373923685049">ਕੈਮਰਾ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋਂ ਵਿੱਚ ਹਨ</translation>
@@ -1859,6 +1887,7 @@
 <translation id="6961840794482373852">Alt + ਉੱਪਰ ਤੀਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। Page Up ਕੁੰਜੀ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਉੱਪਰ ਤੀਰ ਦਬਾਓ।</translation>
 <translation id="696267987219125751">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਬੰਦ ਹੈ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
+<translation id="6967112302799758487">Steam for Chromebook (ਬੀਟਾ) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਸਥਾਪਤ ਕੀਤੀਆਂ ਗਈਆਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਗੇਮਾਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਇਨ੍ਹਾਂ ਐਪਾਂ ਅਤੇ ਗੇਮਾਂ ਨਾਲ ਸੰਬੰਧਿਤ ਡਾਟੇ ਨੂੰ ਵੀ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਅਣਸਥਾਪਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਐਪਾਂ ਅਤੇ ਗੇਮਾਂ ਦਾ ਬੈਕਅੱਪ ਲੈਣਾ ਪੱਕਾ ਕਰੋ।</translation>
 <translation id="6972629891077993081">HID ਡੀਵਾਈਸ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">ਦਾਖਲ ਕਰੋ</translation>
@@ -1890,6 +1919,7 @@
 <translation id="7067196344162293536">ਸਵੈ ਘੁੰਮਾਓ</translation>
 <translation id="7076293881109082629">ਸਾਈਨ ਇਨ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7076878155205969899">ਧੁਨੀ ਮਿਊਟ ਕਰੋ</translation>
+<translation id="7083774521940805477">Steam for Chromebook (ਬੀਟਾ) ਤੁਹਾਡੀ Chromebook 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7083848064787091821">ਫੋਕਸ</translation>
 <translation id="7084678090004350185">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, <ph name="DEVICECOUNT" /> ਡੀਵਾਈਸ ਕਨੈਕਟ ਹਨ।</translation>
 <translation id="7086931198345821656">ਇਸ ਅੱਪਡੇਟ ਲਈ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕੀਤੇ ਜਾਣ ਦੀ ਲੋੜ ਹੈ। ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਨਵੀਨਤਮ <ph name="SYSTEM_APP_NAME" /> ਅੱਪਡੇਟ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
@@ -1907,12 +1937,14 @@
 <translation id="7130207228079676353">ਸਭ ਤੋਂ ਵੱਧ ਸੰਭਾਵੀ ਐਪਾਂ</translation>
 <translation id="7131634465328662194">ਤੁਹਾਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="7143409552554575716">ChromeOS ਫਲੈਗ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7144942256906679589">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ</translation>
 <translation id="7145639536026937076">ਬੈਟਰੀ <ph name="PERCENTAGE" />% ਹੈ ਅਤੇ ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ।</translation>
 <translation id="7147587499155271409">ਕੋਈ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨਹੀਂ</translation>
 <translation id="7147657298465433425">F ਕੁੰਜੀਆਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ, fn ਕੁੰਜੀ + ਸਿਖਰ ਵਾਲੀ ਕਤਾਰ ਦੀਆਂ ਕੁੰਜੀਆਂ ਦਬਾਓ</translation>
 <translation id="7149149900052329230">ਆਪਣੀਆਂ ਸਾਰੀਆਂ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਦਾ Files ਐਪ ਵਿੱਚ ਹੀ ਪ੍ਰਬੰਧਨ ਕਰੋ।</translation>
+<translation id="7154020516215182599">ਆਪਣਾ ਵਿਚਾਰ ਸਾਂਝਾ ਕਰੋ ਜਾਂ ਆਪਣੀ ਸਮੱਸਿਆ ਦਾ ਵਰਣਨ ਕਰੋ। ਜੇ ਸੰਭਵ ਹੋਵੇ, ਤਾਂ ਆਪਣੀ ਸਮੱਸਿਆ ਬਾਰੇ ਦੱਸਣ ਲਈ ਪੜਾਅ ਸ਼ਾਮਲ ਕਰੋ।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@
 <translation id="7726391492136714301">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਅਤੇ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="7727952505535211425">ਵੈੱਬਸਾਈਟ ਨੂੰ ਨਵੀਂ ਟੈਬ ਦੀ ਪਤਾ ਬਾਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="7728657226117099693">Caps Lock ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="7732702411411810416">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਸੀਂ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7742327441377685481">ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ</translation>
 <translation id="7748275671948949022">ਸ਼ੈਲਫ 'ਤੇ ਲਾਂਚਰ ਬਟਨ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="7749443890790263709">ਡੈਸਕਾਂ ਦੀ ਅਧਿਕਤਮ ਸੰਖਿਆ ਪੂਰੀ ਹੋ ਗਈ।</translation>
@@ -2122,6 +2155,7 @@
 <translation id="7866482334467279021">ਚਾਲੂ</translation>
 <translation id="7870790288828963061">ਨਵੇਂ ਵਰਜਨ ਵਾਲੀਆਂ ਕੋਈ ਕਿਓਸਕ ਐਪਾਂ ਨਹੀਂ ਮਿਲਿਆਂ। ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ। ਕਿਰਪਾ ਕਰਕੇ USB ਸਟਿੱਕ ਹਟਾਓ।</translation>
 <translation id="7872786842639831132">ਬੰਦ ਹੈ</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਫ਼ੋਨ ਹੱਬ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="7884446017008693258">ਹੌਟਸਪੌਟ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="7884902759927478774">ਟੈਬ ਨੂੰ ਘਸੀਟਣਾ ਰੱਦ ਕਰੋ</translation>
@@ -2471,6 +2505,7 @@
 <translation id="8980862970816311842">ਐਪ ਗਰਿੱਡ ਵਿੱਚ ਐਪ ਪ੍ਰਤੀਕ ਨੂੰ ਫੋਲਡਰ ਦੇ ਅੰਦਰ/ਬਾਹਰ ਲਿਜਾਓ</translation>
 <translation id="8982906748181120328">ਨਜ਼ਦੀਕੀ ਦਿਖਣਯੋਗਤਾ</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebook ਲਈ Steam ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ਦੀ ਵਰਤੋਂ ਹੋ ਰਹੀ ਹੈ</translation>
 <translation id="8991648557324317894">ਰੱਦ ਕਰਨ ਲਈ fn + ਕਵਿੱਕ ਇੰਸਰਟ ਜਾਂ Shift ਦਬਾਓ।</translation>
 <translation id="899350903320462459">ਸੂਚਨਾ 'ਤੇ ਕਾਰਵਾਈ ਕਰਨ ਲਈ <ph name="LOGIN_ID" /> ਵਜੋਂ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰੋ</translation>
@@ -2487,6 +2522,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ਲਈ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="9050012935252397793">ਬਲੂਟੁੱਥ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="9050999376345823055">ਛੱਡਣ ਲਈ "." ਦਬਾਓ</translation>
+<translation id="9061694916020926968">ਤੁਹਾਨੂੰ Steam for Chromebook (ਬੀਟਾ) ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਸਾਈਨ-ਇਨ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="906458777597946297">window ਨੂੰ ਅਧਿਕਤਮ ਬਣਾਓ</translation>
 <translation id="9065203028668620118">ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="9068849894565669697">ਰੰਗ ਚੁਣੋ</translation>

@@ -239,6 +239,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="200114059308480249">Zahrnovat při vyhledávání na Googlu okolní text?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, připnutá ztlumená anonymní karta</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
+<translation id="2024195579772565064">Smazání vyhledávače</translation>
 <translation id="2029669011553795746">Přihlášení k oznámením s tipy otevřené na polovinu výšky</translation>
 <translation id="2038563949887743358">Zapnout funkci Verze webu pro PC</translation>
 <translation id="204321170514947529">Aplikace <ph name="APP_NAME" /> má také data v Chromu</translation>
@@ -556,6 +557,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3384347053049321195">Sdílet obrázek</translation>
 <translation id="3387650086002190359">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu chyb systému souborů.</translation>
 <translation id="3414952576877147120">Velikost:</translation>
+<translation id="3417835166382867856">Hledat karty</translation>
 <translation id="3430670036890315772">Vypnutím zámku profilu odstraníte uložené informace</translation>
 <translation id="3435465986463792564">Otevřeli jste si víc oken? Tady je můžete spravovat</translation>
 <translation id="3435575784518354875">Pokud chcete zachovat přístup ke svým heslům, exportujte je, aktualizujte Služby Google Play a poté je importujte zpět do Správce hesel Google. <ph name="BEGIN_LINK" />Zobrazit úplné pokyny<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6896758677409633944">Kopírovat</translation>
 <translation id="6898797562238201317">Veškerá data Chromu ve vašem účtu Google šifrovat pomocí vaší vlastní heslové fráze</translation>
 <translation id="6900532703269623216">Vylepšená ochrana</translation>
+<translation id="6900654715912436255">Opravdu chcete tento vyhledávač smazat?</translation>
 <translation id="6903907808598579934">Zapnout synchronizaci</translation>
 <translation id="6906448540340261898">Zajistěte, abyste vždy mohli používat hesla ve svém účtu Google</translation>
 <translation id="6908230663105268638">Oznámení webu <ph name="SITE_NAME" /> jsou povolena</translation>

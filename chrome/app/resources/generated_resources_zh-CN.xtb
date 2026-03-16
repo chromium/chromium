@@ -835,7 +835,6 @@
 <translation id="156793199942386351">“<ph name="CURRENTKEY" />”键已分配给“<ph name="ACTION" />”操作。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="1567993339577891801">JavaScript 控制台</translation>
 <translation id="1569466257325986920">下次您的 Google 账号密码发生更改时，系统将在您登录 Google 账号后自动恢复您的本地数据</translation>
-<translation id="1570235441606255261">Steam 安装程序</translation>
 <translation id="1570604804919108255">将通知取消静音</translation>
 <translation id="1570990174567554976">已创建“<ph name="BOOKMARK_TITLE" />”书签文件夹。</translation>
 <translation id="1571041387761170095">没有安全系数低或重复使用的密码</translation>
@@ -960,7 +959,6 @@
 <translation id="1642299742557467312">此文件可能会损害您的设备</translation>
 <translation id="1642492862748815878">已连接到设备“<ph name="DEVICE" />”以及另外 <ph name="NUMBER_OF_DEVICES" /> 部蓝牙设备</translation>
 <translation id="1642494467033190216">要启用其他调试功能，必须先取消根文件系统保护并重启设备。</translation>
-<translation id="1642895994345928121">设备存储空间不足，无法打开此应用。请释放空间，然后重试。</translation>
 <translation id="1643072738649235303">采用 SHA-1 算法的 X9.62 ECDSA 签名</translation>
 <translation id="1643921258693943800">若要使用“附近分享”功能，请开启蓝牙和 Wi-Fi</translation>
 <translation id="1644574205037202324">历史记录</translation>
@@ -2058,7 +2056,6 @@
 <translation id="2390347491606624519">无法连接到代理，请重新登录</translation>
 <translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">标准字体</translation>
-<translation id="2391805183137601570">打开 Steam</translation>
 <translation id="239185270194776190">您的 Gemini 对话位于另一个窗口中。点击此侧边栏上的任意位置，即可将对话移至此处。</translation>
 <translation id="2392369802118427583">激活</translation>
 <translation id="2393136602862631930">在 Chromebook 上设置 <ph name="APP_NAME" /></translation>
@@ -2140,7 +2137,6 @@
 <translation id="2445484935443597917">创建新的个人资料</translation>
 <translation id="2445726032315793326">局部放大镜</translation>
 <translation id="244641233057214044">与您搜索过的内容相关</translation>
-<translation id="2447587550790814052">您现在可以使用 Steam for Chromebook（Beta 版）了</translation>
 <translation id="2448312741937722512">类型</translation>
 <translation id="2448810255793562605">开关控制自动扫描</translation>
 <translation id="2450021089947420533">历程</translation>
@@ -2167,7 +2163,6 @@
 <translation id="2460826998961521840">使用您 Google 账号中保存的通行密钥</translation>
 <translation id="2461550163693930491">不允许网站滚动和缩放分享的标签页</translation>
 <translation id="2461593638794842577">您可以关闭此设置，以便仅将密码保存在此设备上</translation>
-<translation id="2462332841984057083">已经在设置 Steam 了。请等待设置完成。</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
 <translation id="2462752602710430187">已添加<ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">这里显示的是推荐的文件，方便您轻松继续最近在 Microsoft SharePoint 和 OneDrive 中进行的活动。
@@ -2222,7 +2217,6 @@
 <translation id="2491587035099903063"><ph name="LANGUAGE" />语音预览</translation>
 <translation id="2492461744635776704">正在准备证书签名请求</translation>
 <translation id="249330843868392562">打开文字转语音设置</translation>
-<translation id="2494555621641843783">无法安装 Steam</translation>
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2496616243169085015">摄影</translation>
 <translation id="2497229222757901769">鼠标速度</translation>
@@ -2274,6 +2268,7 @@
 <translation id="252418934079508528">安装 <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">询问关于此标签页的问题</translation>
 <translation id="2525746158911982776">系统存储空间不足导致更新失败。</translation>
+<translation id="2525842906387880861">此页面不会再显示建议</translation>
 <translation id="2526590354069164005">桌面</translation>
 <translation id="2526619973349913024">检查是否有更新</translation>
 <translation id="2527167509808613699">各种连接</translation>
@@ -2577,7 +2572,6 @@
 <translation id="27349076983469322">浅色背景</translation>
 <translation id="2735712963799620190">时间安排</translation>
 <translation id="2737363922397526254">收起...</translation>
-<translation id="2737538893171115082">您的管理员已禁止使用 Steam for Chromebook（Beta 版）。您的管理员需要开启以下政策：</translation>
 <translation id="2737719817922589807">书签和清单(&amp;B)</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" />想与 <ph name="TARGET_NAME" /> 分享您屏幕上的内容。</translation>
 <translation id="2738030019664645674">不允许网站使用您设备上安装的字体</translation>
@@ -3040,7 +3034,6 @@
 <translation id="3039491566278747710">未能在此设备上安装离线政策。</translation>
 <translation id="303955801043931176">标签页已关闭</translation>
 <translation id="3040435070100611531">您的 Google 钱包卡券</translation>
-<translation id="3040982432432547149">欢迎帮助我们改进 Chromebook 版 Steam</translation>
 <translation id="304169924727249890">加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组</translation>
 <translation id="3042097545107738107">更改优化充电策略。</translation>
 <translation id="3043016484125065343">登录即可查看您的书签</translation>
@@ -3249,7 +3242,6 @@
 <translation id="3201422919974259695">可用的 USB 设备会显示在此处。</translation>
 <translation id="3202499879214571401">暂停将屏幕投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="3202578601642193415">创建时间（从晚到早）</translation>
-<translation id="3204648577100496185">系统可能会从此设备上移除与该应用相关的数据</translation>
 <translation id="3206289903841621620">用户字典 <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">系统会根据您的近期活动向您推荐您可能感兴趣的搜索内容和购物折扣。
         <ph name="BREAK" />
@@ -3357,7 +3349,6 @@
 <translation id="3283148363895519428">按照手机上的说明继续设置。确保您的手机就在附近且已开启蓝牙。</translation>
 <translation id="3284050785966252943">自动填充元数据预览</translation>
 <translation id="3285322247471302225">打开新的标签页(&amp;T)</translation>
-<translation id="3285465040399788513">设备存储空间不足，无法完成设置。请释放一些空间，然后重试。</translation>
 <translation id="3285500645985761267">允许关联网站查看您在该群组中的活动记录</translation>
 <translation id="328571385944182268">保存您的密码？</translation>
 <translation id="3289668031376215426">自动大写</translation>
@@ -3480,7 +3471,6 @@
 <translation id="3372602033006349389">其他设备上</translation>
 <translation id="337286756654493126">读取您在该应用中打开的文件夹</translation>
 <translation id="3373059063088819384">在阅读模式下打开</translation>
-<translation id="3373196968211632036">儿童 Google 账号无法使用 Steam for Chromebook（Beta 版）</translation>
 <translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
 <translation id="3374294321938930390">已将书签“<ph name="BOOKMARK_TITLE" />”移入文件夹“<ph name="NEW_FOLDER_TITLE" />”。</translation>
 <translation id="3376035595160918049">查看应用更新</translation>
@@ -3663,7 +3653,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" />（未选择）</translation>
 <translation id="3496689104192986836">电池电量 <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">可供收集数据的数据源</translation>
-<translation id="3496797737329654668">现在就开始玩游戏吧</translation>
 <translation id="3496995426334945408">网站通常使用 JavaScript 显示互动功能，例如视频游戏或网络表单</translation>
 <translation id="3497501929010263034">由<ph name="VENDOR_NAME" />供应的 USB 设备（产品 <ph name="PRODUCT_ID" />）</translation>
 <translation id="3497560059572256875">分享涂鸦</translation>
@@ -3876,7 +3865,6 @@
 <translation id="3637203148990213388">其他账号</translation>
 <translation id="3640347231390550691">保护您的密码，防范钓鱼式攻击</translation>
 <translation id="364100968401221170">若要从所有同步的设备和您的 Google 账号中删除浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
-<translation id="3641070112313110357">需要更新 Chromebook 版 Steam（Beta 版）。请重启 Chromebook，然后重试。</translation>
 <translation id="3641299252000913351">正在更新调制解调器固件。请勿关闭设备。</translation>
 <translation id="3641456520301071208">网站可以请求获取您的位置信息</translation>
 <translation id="3642064270296434810">您现在可以使用 Google 智能镜头搜索屏幕上显示的任何内容</translation>
@@ -4213,7 +4201,6 @@
 <translation id="383891835335927981">未对任何网站设置缩放级别</translation>
 <translation id="3839516600093027468">始终禁止 <ph name="HOST" /> 查看剪贴板</translation>
 <translation id="3840096463915153852">对话记录</translation>
-<translation id="3841282988425489367">无法设置 Steam for Chromebook（Beta 版）</translation>
 <translation id="3841319830220785495">默认自然语音</translation>
 <translation id="3841356782900714251">智能卡读卡器</translation>
 <translation id="3841964634449506551">密码无效</translation>
@@ -4660,7 +4647,6 @@
 <translation id="4148195018520464922">您可以设置限制，只允许某些用户登录。此操作会移除登录界面上的“添加用户”选项。您还可以移除当前用户。</translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="4150201353443180367">显示</translation>
-<translation id="4151449637210235443">欢迎与我们分享您近期的游戏内容</translation>
 <translation id="4151503145138736576">没有可清理的离线存储空间</translation>
 <translation id="4152011295694446843">您的书签会显示在此处</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 个标签页}other{# 个标签页}}</translation>
@@ -4711,7 +4697,6 @@
 <translation id="4193251682249731404">可信 CA</translation>
 <translation id="4193575319002689239">显示卡片</translation>
 <translation id="419427585139779713">一次输入 1 个音节</translation>
-<translation id="4195001808989442226">无法打开 Steam for Chromebook（Beta 版）</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
 <translation id="4198268995694216131">更多网站</translation>
@@ -4757,7 +4742,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
 <translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">正在设置 Steam for Chromebook</translation>
 <translation id="4232375817808480934">配置 Kerberos</translation>
 <translation id="4232376164796433044">密码和自动填充</translation>
 <translation id="4232484478444192782">Android 手机可协助您完成操作。系统正在传输您的 Wi-Fi 凭证和密码。</translation>
@@ -5116,7 +5100,6 @@
 <translation id="4472533928615930332">生成了第 <ph name="INDEX" /> 张<ph name="SUBJECT" />图片，样式是<ph name="STYLE" /></translation>
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4473559657152613417">右键点击某个标签页，然后选择“向新组添加标签页”</translation>
-<translation id="4473996011558324141">正在估算用时</translation>
 <translation id="4474155171896946103">为所有标签页添加书签...</translation>
 <translation id="4476198534886170024">已允许。请开启<ph name="LINK_BEGIN" />系统相机使用权<ph name="LINK_END" />。</translation>
 <translation id="4476590490540813026">运动员</translation>
@@ -5351,7 +5334,6 @@
 <translation id="4638930039313743000">启用 ADB 调试</translation>
 <translation id="4639390152280993480">若要查看此页面的简化视图，请前往“更多工具”&gt;“朗读模式”</translation>
 <translation id="4641539339823703554">Chrome无法设置系统时间。请检查下面的时间，并在必要时进行更正。</translation>
-<translation id="4642587497923912728">只有第一个在此 Chromebook 上登录的账号可以使用 Steam for Chromebook（Beta 版）。</translation>
 <translation id="4643612240819915418">在新标签页中打开视频(&amp;O)</translation>
 <translation id="4643833688073835173">您的 Chromebook 使用内置传感器检测是否有人位于设备前。所有数据都会立即在您的设备上处理，完成后便会删除。传感器数据绝不会发送给 Google。</translation>
 <translation id="4644205769234414680">在无痕模式下启用</translation>
@@ -6354,7 +6336,6 @@
 <translation id="5353769147530541973">从设为非活跃状态的标签页列表中移除“<ph name="SITE_NAME" />”</translation>
 <translation id="5355099869024327351">允许 Google 助理向您显示通知</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
-<translation id="5355498626146154079">您需要开启“Borealis Enabled”这个 flag</translation>
 <translation id="5355501370336370394">注册企业设备</translation>
 <translation id="5357010010552553606">不得自动进入全屏模式</translation>
 <translation id="5359910752122114278">1 条结果</translation>
@@ -6384,7 +6365,6 @@
 <translation id="5376931455988532197">文件过大</translation>
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379140238605961210">继续禁止使用麦克风</translation>
-<translation id="5380526436444479273">请过几分钟后再试</translation>
 <translation id="5382591305415226340">管理支持的链接</translation>
 <translation id="5384401776498845256">哪些对象可与您分享内容</translation>
 <translation id="5385628342687007304">这个密码仅会保存到此设备上。若要在其他设备上使用该密码，请将它保存到您的 Google 账号。</translation>
@@ -6439,7 +6419,6 @@
 <translation id="5414198321558177633">正在刷新配置文件列表。这可能需要几分钟的时间。</translation>
 <translation id="5414566801737831689">读取您访问过的网站对应的图标</translation>
 <translation id="5414836363063783498">正在验证…</translation>
-<translation id="5415328625985164836">这是一项 Beta 版计划。现在，您可以在 Chromebook 上使用 Steam 玩某些游戏了。</translation>
 <translation id="5415497281076257439">词组</translation>
 <translation id="5415871492522952905">在您的所有设备上同步历史记录和标签页，以便您继续执行先前未完成的工作</translation>
 <translation id="5417293056300086453">此网站可以使用标识符播放受保护内容。</translation>
@@ -6878,7 +6857,6 @@
 <translation id="5727728807527375859">扩展功能、应用和主题背景可能会损害您的计算机。您确定要继续吗？</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
 <translation id="5728450728039149624">Smart Lock 屏幕锁定选项</translation>
-<translation id="572914206753951782">确保您的 Chromebook 是最新版本。然后，重启 Chromebook 并重试。</translation>
 <translation id="5729712731028706266">视图(&amp;V)</translation>
 <translation id="5731247495086897348">粘贴并转到(&amp;S)</translation>
 <translation id="5733109311583381874">将您自己的字词添加到用户字典中，以便自定义候选转换字词。</translation>
@@ -7992,7 +7970,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />”想在此设备上安装以下应用：}other{“<ph name="APP_NAME" />”想在此设备上安装以下应用：}}</translation>
 <translation id="6508248480704296122">已与“<ph name="NAME_PH" />”关联</translation>
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">请重启 Chromebook，然后重试</translation>
 <translation id="6511827214781912955">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码</translation>
 <translation id="6512759338201777379">生成了第 <ph name="INDEX" /> 张<ph name="SUBJECT" />图片，情感基调是<ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
@@ -8101,7 +8078,6 @@
 <translation id="657866106756413002">网络状况概要</translation>
 <translation id="6579369886355986318">显示所有控件(&amp;C)</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 已分享桌面内容</translation>
-<translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">扫描速度</translation>
 <translation id="6580676117087365538">若要在您的所有电脑上使用此扩展程序，请验证您的身份</translation>
 <translation id="6581356304040102696">无法导入密码，文件大小应小于 1 MB。</translation>
@@ -8320,7 +8296,6 @@
 <translation id="6729280095610283088">森林上空闪耀着明亮的北极光。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6730744976532805323">与 Gemini 分享当前标签页，即使切换标签页也无妨</translation>
-<translation id="6731320427842222405">可能需要几分钟时间</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID：<ph name="EXTENSION_OR_APP_ID" />）</translation>
 <translation id="6736243959894955139">地址</translation>
 <translation id="6737663862851963468">移除 Kerberos 票据</translation>
@@ -8670,7 +8645,6 @@
 <translation id="6965648386495488594">端口</translation>
 <translation id="6965978654500191972">设备</translation>
 <translation id="6966831944134814478">关闭</translation>
-<translation id="6967112302799758487">系统将从此设备中移除使用 Steam for Chromebook（Beta 版）安装的所有应用和游戏。与这些应用和游戏关联的数据也将被移除。请务必先备份已保存的应用和游戏，然后再卸载。</translation>
 <translation id="6967430741871315905">无法检查是否已允许此设备运行虚拟机</translation>
 <translation id="6968288415730398122">需输入您的密码，才能配置屏幕锁定</translation>
 <translation id="6969047215179982698">关闭“附近分享”功能</translation>
@@ -8842,7 +8816,6 @@
 <translation id="7082568314107259011">“<ph name="NETWORK_NAME" />”由您的管理员管理</translation>
 <translation id="7082850163410901674">通知在 Mac 系统设置中已关闭</translation>
 <translation id="7083729794572207131">网站通常会请求安装 Web 应用，以便提升您在该网站上的体验</translation>
-<translation id="7083774521940805477">您的 Chromebook 无法使用 Steam for Chromebook（Beta 版）。</translation>
 <translation id="7084095352418993433">问问 Google 有关此页面的问题：<ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">（未配置）</translation>
 <translation id="7086377898680121060">调高亮度</translation>
@@ -8921,7 +8894,6 @@
 <translation id="7141844554192012199">检查</translation>
 <translation id="714301620504747562">与标准预加载相比，浏览和搜索速度更快</translation>
 <translation id="7143207342074048698">正在连接</translation>
-<translation id="7143409552554575716">ChromeOS 相关 flag</translation>
 <translation id="7144363643182336710">屏幕上不会弹出通知。不过，您仍可点击屏幕右下角的“勿扰”图标来查看通知。</translation>
 <translation id="7144856456372460176">安装“<ph name="APP" />”(&amp;I)…</translation>
 <translation id="7144878232160441200">重试</translation>
@@ -8932,7 +8904,6 @@
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
 <translation id="7153101072880472645">高对比度模式开/关</translation>
 <translation id="715396040729904728">启动器键 + Shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">分享您的反馈或描述您的问题。如果可能的话，请附上重现问题的步骤。</translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">获取更优质的视频并减少耗电量。视频仅会在支持 Cast 的屏幕上播放。</translation>
 <translation id="7159695867335480590">播放/暂停</translation>
@@ -9784,7 +9755,6 @@
 <translation id="7728668285692163452">系统将在稍后应用版本更改</translation>
 <translation id="7730449930968088409">截取您屏幕上的内容</translation>
 <translation id="7730683939467795481">此网页被扩展程序“<ph name="EXTENSION_NAME" />”更改了</translation>
-<translation id="7732702411411810416">请确保您已连接到互联网，然后重试</translation>
 <translation id="773511996612364297">重音符号</translation>
 <translation id="7735558909644181051">中间证书</translation>
 <translation id="7736119438443237821">您即将撤消此设备对通行密钥的访问权限</translation>
@@ -9982,7 +9952,6 @@
 <translation id="7871691770940645922">虚拟盲文显示器</translation>
 <translation id="787268756490971083">已关闭</translation>
 <translation id="7872758299142009420">嵌套的群组过多：<ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">无法修改快捷方式</translation>
 <translation id="7876243839304621966">全部删除</translation>
 <translation id="7877126887274043657">修正同步问题(&amp;S)</translation>
@@ -11639,7 +11608,6 @@
 <translation id="8983018820925880511">这份新个人资料将由 <ph name="DOMAIN" /> 管理。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> 可修改 <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">您的设备将会对所有人可见，时长为 <ph name="MINUTES" /> 分钟。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">欢迎使用 Chromebook 版 Steam</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前曾有活动</translation>
 <translation id="8985561265504464578">检测阈值</translation>
 <translation id="8985661493893822002">请连接到互联网以登录您的 <ph name="DEVICE_TYPE" />。</translation>
@@ -11771,7 +11739,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{每天大约 1 条通知}other{每天大约 {NUM_NOTIFICATION} 条通知}}</translation>
 <translation id="9058760336383947367">查看打印机 PPD</translation>
 <translation id="9061521313218438086">如果 Chrome 发现您的密码在公开数据泄露事件中外泄，Google 密码管理工具可能会在您登录时建议更改密码。</translation>
-<translation id="9061694916020926968">您需要登录 Google 账号，才能使用 Steam for Chromebook（Beta 版）。请登录，然后重试。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9062873887761404531">清除导航快捷键</translation>
 <translation id="9063208415146866933">第 <ph name="ERROR_LINE_START" /> 行到第 <ph name="ERROR_LINE_END" /> 行存在错误</translation>

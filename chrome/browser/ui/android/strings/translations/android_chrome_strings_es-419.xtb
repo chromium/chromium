@@ -239,6 +239,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="200114059308480249">¿Quieres incluir el texto adyacente en las búsquedas de Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pestaña de incógnito fijada y silenciada</translation>
 <translation id="2021896219286479412">Controles en pantalla completa</translation>
+<translation id="2024195579772565064">Borrar el motor de búsqueda</translation>
 <translation id="2029669011553795746">Se abrió la opción de habilitar las notificaciones de sugerencias a media altura</translation>
 <translation id="2038563949887743358">Activar la opción para solicitar versión de escritorio</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> también tiene datos en Chrome</translation>
@@ -556,6 +557,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3384347053049321195">Compartir imagen</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> no se pudo descargar debido a errores del sistema de archivos.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
+<translation id="3417835166382867856">Buscar pestañas</translation>
 <translation id="3430670036890315772">Si desactivas el bloqueo de perfil, se quitará la información guardada</translation>
 <translation id="3435465986463792564">¿Tienes muchas ventanas? Puedes administrarlas desde aquí.</translation>
 <translation id="3435575784518354875">Para mantener el acceso a tus contraseñas, expórtalas ahora, actualiza los Servicios de Google Play y, luego, vuelve a importarlas al Administrador de contraseñas de Google. <ph name="BEGIN_LINK" />Consulta las instrucciones completas<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898797562238201317">Usar tu propia frase de contraseña para encriptar todos los datos de Chrome en tu Cuenta de Google</translation>
 <translation id="6900532703269623216">Protección mejorada</translation>
+<translation id="6900654715912436255">¿Estás seguro de que deseas borrar este motor de búsqueda?</translation>
 <translation id="6903907808598579934">Activar la sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de que siempre puedas usar las contraseñas en tu Cuenta de Google</translation>
 <translation id="6908230663105268638">Se permiten notificaciones para <ph name="SITE_NAME" /></translation>

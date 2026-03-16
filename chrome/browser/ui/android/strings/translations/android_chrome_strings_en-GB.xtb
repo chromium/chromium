@@ -239,6 +239,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pinned muted Incognito tab</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
+<translation id="2024195579772565064">Delete search engine</translation>
 <translation id="2029669011553795746">Tips notifications opt-in opened at half height</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> also has data in Chrome</translation>
@@ -556,6 +557,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3384347053049321195">Share image</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> download failed due to file system errors.</translation>
 <translation id="3414952576877147120">Size:</translation>
+<translation id="3417835166382867856">Search tabs</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
 <translation id="3435465986463792564">Got many windows? You can manage them from here</translation>
 <translation id="3435575784518354875">To keep access to your passwords, export them now, update Google Play services and then import them back to Google Password Manager. <ph name="BEGIN_LINK" />See full instructions<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6898797562238201317">Use your own passphrase to encrypt all the Chrome data in your Google Account</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
+<translation id="6900654715912436255">Are you sure that you want to delete this search engine?</translation>
 <translation id="6903907808598579934">Turn on sync</translation>
 <translation id="6906448540340261898">Make sure that you can always use the passwords in your Google Account</translation>
 <translation id="6908230663105268638">Notifications allowed for <ph name="SITE_NAME" /></translation>

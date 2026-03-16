@@ -840,7 +840,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="156793199942386351">La tecla <ph name="CURRENTKEY" /> ja està assignada a l'acció <ph name="ACTION" />. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1569466257325986920">La propera vegada que es canviï la contrasenya del teu Compte de Google, les dades locals es recuperaran automàticament quan iniciïs la sessió al compte</translation>
-<translation id="1570235441606255261">Instal·lador de Steam</translation>
 <translation id="1570604804919108255">Deixa de silenciar les notificacions</translation>
 <translation id="1570990174567554976">S'ha creat la carpeta d'adreces d'interès "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">No tens cap contrasenya poc segura o reutilitzada</translation>
@@ -965,7 +964,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1642299742557467312">Aquest fitxer podria malmetre el dispositiu</translation>
 <translation id="1642492862748815878">Connectat a <ph name="DEVICE" /> i <ph name="NUMBER_OF_DEVICES" /> dispositius Bluetooth més.</translation>
 <translation id="1642494467033190216">Abans d'activar altres funcions de depuració, heu d'eliminar la protecció del sistema de fitxers rootfs i reiniciar el sistema.</translation>
-<translation id="1642895994345928121">No hi ha prou emmagatzematge al dispositiu per obrir aquesta aplicació. Allibera espai i torna-ho a provar.</translation>
 <translation id="1643072738649235303">Signatura d'ECDSA X9.62 amb SHA-1</translation>
 <translation id="1643921258693943800">Per utilitzar Compartició Nearby, activa el Bluetooth i la Wi‑Fi</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -2065,7 +2063,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2390347491606624519">No es pot establir connexió amb el servidor intermediari; torna a iniciar la sessió</translation>
 <translation id="2390782873446084770">Sincronització Wi‑Fi</translation>
 <translation id="2391419135980381625">Tipus de lletra estàndard</translation>
-<translation id="2391805183137601570">Obre Steam</translation>
 <translation id="239185270194776190">La teva conversa amb Gemini es troba en una altra finestra. Fes clic en qualsevol lloc d'aquest tauler lateral per moure-la aquí.</translation>
 <translation id="2392369802118427583">Activa</translation>
 <translation id="2393136602862631930">Configura <ph name="APP_NAME" /> al Chromebook</translation>
@@ -2147,7 +2144,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2445484935443597917">Crea un perfil</translation>
 <translation id="2445726032315793326">Lupa parcial</translation>
 <translation id="244641233057214044">Relacionat amb la teva cerca</translation>
-<translation id="2447587550790814052">Ja pots utilitzar Steam per a Chromebook (beta)</translation>
 <translation id="2448312741937722512">Tipus</translation>
 <translation id="2448810255793562605">Cerca automàtica de l'accés amb interruptors</translation>
 <translation id="2450021089947420533">Recorreguts</translation>
@@ -2174,7 +2170,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2460826998961521840">Per usar claus d'accés del Compte de Google</translation>
 <translation id="2461550163693930491">No permetis que els llocs web es desplacin ni facin zoom a les pestanyes compartides</translation>
 <translation id="2461593638794842577">Pots desactivar aquesta opció de configuració per desar les contrasenyes només en aquest dispositiu</translation>
-<translation id="2462332841984057083">Ja s'està configurant Steam. Espera que finalitzi la configuració.</translation>
 <translation id="2462724976360937186">Identificador de clau d'entitat emissora de certificats</translation>
 <translation id="2462752602710430187">S'ha afegit <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Veus fitxers suggerits perquè puguis tornar fàcilment a la teva activitat més recent a Microsoft SharePoint i OneDrive.
@@ -2229,7 +2224,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2491587035099903063">previsualitza la veu per a <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">S'està preparant la sol·licitud de signatura del certificat</translation>
 <translation id="249330843868392562">Obre la configuració de text a parla</translation>
-<translation id="2494555621641843783">No es pot instal·lar Steam</translation>
 <translation id="2496180316473517155">Historial de navegació</translation>
 <translation id="2496616243169085015">Fotografia</translation>
 <translation id="2497229222757901769">Velocitat del ratolí</translation>
@@ -2585,7 +2579,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="27349076983469322">Fons clar</translation>
 <translation id="2735712963799620190">Programació</translation>
 <translation id="2737363922397526254">Redueix...</translation>
-<translation id="2737538893171115082">El teu administrador ha bloquejat Steam per a Chromebook (beta). L'administrador ha d'activar aquestes polítiques:</translation>
 <translation id="2737719817922589807">Adreces d'interès i llistes</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> vol compartir el contingut de la teva pantalla amb <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">No permetis que els llocs web utilitzin els tipus de lletra instal·lats al teu dispositiu</translation>
@@ -3048,7 +3041,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3039491566278747710">No s'ha pogut instal·lar la política sense connexió al dispositiu.</translation>
 <translation id="303955801043931176">Pestanya tancada</translation>
 <translation id="3040435070100611531">Els teus passis de Google Wallet</translation>
-<translation id="3040982432432547149">Ajuda'ns a millorar Steam per a Chromebook</translation>
 <translation id="304169924727249890">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Canvia l'estratègia de càrrega optimitzada.</translation>
 <translation id="3043016484125065343">Inicia la sessió per veure les teves adreces d'interès</translation>
@@ -3257,7 +3249,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3201422919974259695">Els dispositius USB disponibles es mostraran aquí.</translation>
 <translation id="3202499879214571401">Posa en pausa l'emissió de la pantalla a <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Els més recents</translation>
-<translation id="3204648577100496185">Pot ser que les dades associades a aquesta aplicació se suprimeixin del dispositiu</translation>
 <translation id="3206289903841621620">Diccionari de l'usuari <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Veus suggeriments de cerca i de descomptes en compres que et poden interessar en funció de la teva activitat recent.
         <ph name="BREAK" />
@@ -3365,7 +3356,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3283148363895519428">Segueix les instruccions del telèfon per continuar amb la configuració. Assegura't que el telèfon estigui a prop i que el Bluetooth estigui activat.</translation>
 <translation id="3284050785966252943">Previsualització de les metadades d'Emplenament automàtic</translation>
 <translation id="3285322247471302225">Pes&amp;tanya nova</translation>
-<translation id="3285465040399788513">No hi ha prou emmagatzematge al dispositiu per completar la configuració. Allibera espai i torna-ho a provar.</translation>
 <translation id="3285500645985761267">Permet que els llocs web relacionats vegin la meva activitat al grup</translation>
 <translation id="328571385944182268">Vols desar les contrasenyes?</translation>
 <translation id="3289668031376215426">Majúscules automàtiques</translation>
@@ -3488,7 +3478,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3372602033006349389">En altres dispositius</translation>
 <translation id="337286756654493126">Llegir carpetes que s'obrin a l'aplicació</translation>
 <translation id="3373059063088819384">Obre en mode de lectura</translation>
-<translation id="3373196968211632036">Steam per a Chromebook (beta) no està disponible als Comptes de Google per a infants</translation>
 <translation id="3373701465337594448">Quan aquesta opció està activada, aquí es mostra una llista dels llocs web que visites i que determinen els teus interessos</translation>
 <translation id="3374294321938930390">S'ha mogut <ph name="BOOKMARK_TITLE" /> a <ph name="NEW_FOLDER_TITLE" />.</translation>
 <translation id="3376035595160918049">Revisa l'actualització de l'aplicació</translation>
@@ -3671,7 +3660,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (no seleccionat)</translation>
 <translation id="3496689104192986836">Nivell de bateria: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Fonts de dades per recollir informació</translation>
-<translation id="3496797737329654668">A jugar!</translation>
 <translation id="3496995426334945408">Els llocs web solen utilitzar JavaScript per mostrar funcions interactives, com ara videojocs o formularis web</translation>
 <translation id="3497501929010263034">Dispositiu USB de <ph name="VENDOR_NAME" /> (producte <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Comparteix el doodle</translation>
@@ -3884,7 +3872,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3637203148990213388">Comptes addicionals</translation>
 <translation id="3640347231390550691">Protegeix les contrasenyes contra la pesca de credencials</translation>
 <translation id="364100968401221170">Per suprimir les dades de navegació de tots els dispositius sincronitzats i del teu Compte de Google, <ph name="BEGIN_LINK" />inicia la sessió<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Cal actualitzar Steam per a Chromebook (beta). Reinicia el Chromebook i torna-ho a provar.</translation>
 <translation id="3641299252000913351">Actualització de microprogramari del mòdem en curs. No apaguis el dispositiu.</translation>
 <translation id="3641456520301071208">Els llocs web poden demanar-te la ubicació</translation>
 <translation id="3642064270296434810">Ara pots utilitzar Google Lens per cercar qualsevol cosa que vegis en pantalla</translation>
@@ -4221,7 +4208,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="383891835335927981">No s'ha ampliat ni reduït cap lloc</translation>
 <translation id="3839516600093027468">No permetis mai que <ph name="HOST" /> vegi el porta-retalls</translation>
 <translation id="3840096463915153852">Historial de converses</translation>
-<translation id="3841282988425489367">No es pot configurar Steam per a Chromebook (beta)</translation>
 <translation id="3841319830220785495">Veu natural predeterminada</translation>
 <translation id="3841356782900714251">Lectors de targetes intel·ligents</translation>
 <translation id="3841964634449506551">La contrasenya no és vàlida</translation>
@@ -4668,7 +4654,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4148195018520464922">Pots limitar l'inici de sessió a usuaris concrets. D'aquesta manera, se suprimirà l'opció Afegeix una persona de la pantalla d'inici de sessió. També pots suprimir els usuaris actuals.</translation>
 <translation id="4148957013307229264">S'està instal·lant...</translation>
 <translation id="4150201353443180367">Pantalla</translation>
-<translation id="4151449637210235443">Explica'ns la teva partida recent</translation>
 <translation id="4151503145138736576">No hi ha emmagatzematge sense connexió per netejar</translation>
 <translation id="4152011295694446843">Trobaràs les adreces d'interès aquí</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestanya}other{# pestanyes}}</translation>
@@ -4719,7 +4704,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4193251682249731404">CA de confiança</translation>
 <translation id="4193575319002689239">Mostra les targetes</translation>
 <translation id="419427585139779713">Introdueix una síl·laba cada vegada</translation>
-<translation id="4195001808989442226">No es pot obrir Steam per a Chromebook (versió beta)</translation>
 <translation id="4195643157523330669">Obre en una pestanya nova</translation>
 <translation id="4195814663415092787">Continua des d'on ho vaig deixar</translation>
 <translation id="4198268995694216131">Llocs web addicionals</translation>
@@ -4765,7 +4749,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Aquesta extensió no està permesa}other{Algunes extensions no estan permeses}}</translation>
 <translation id="4231053948789591973">Actualment l'emissió està en pausa. Pots reprendre o aturar l'emissió de la pantalla en qualsevol moment.</translation>
 <translation id="4231095370974836764">Instal·la aplicacions i jocs de Google Play al dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">S'està configurant Steam per a Chromebook</translation>
 <translation id="4232375817808480934">Configura Kerberos</translation>
 <translation id="4232376164796433044">Contrasenyes i emplenament automàtic</translation>
 <translation id="4232484478444192782">El teu telèfon Android té tot el que necessites. La Wi-Fi i la contrasenya s'estan transferint.</translation>
@@ -5124,7 +5107,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4472533928615930332">Imatge generada <ph name="INDEX" /> de <ph name="SUBJECT" />, d'estil <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4473559657152613417">Fes clic amb el botó dret en una pestanya i selecciona Afegeix una pestanya a un grup nou</translation>
-<translation id="4473996011558324141">S'està estimant el temps</translation>
 <translation id="4474155171896946103">Afegeix totes les pestanyes a les adreces d'interès...</translation>
 <translation id="4476198534886170024">Concedit. Activa l'<ph name="LINK_BEGIN" />accés a la càmera del sistema<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Atleta</translation>
@@ -5359,7 +5341,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4638930039313743000">Activa la depuració d'ADB</translation>
 <translation id="4639390152280993480">Per veure una visualització simplificada d'aquesta pàgina, ves a Més eines &gt; Mode de lectura</translation>
 <translation id="4641539339823703554">Chrome no ha pogut establir l'hora del sistema. Comproveu-la més avall i corregiu-la si cal.</translation>
-<translation id="4642587497923912728">Steam per a Chromebook (beta) només està disponible al compte amb què s'ha iniciat la sessió per primera vegada en aquest Chromebook.</translation>
 <translation id="4643612240819915418">O&amp;bre el vídeo en una pestanya nova</translation>
 <translation id="4643833688073835173">El Chromebook utilitza un sensor integrat per detectar persones davant del dispositiu. Totes les dades es processen immediatament al dispositiu i, a continuació, se suprimeixen. Les dades del sensor no s'envien mai a Google.</translation>
 <translation id="4644205769234414680">Permet en mode d'incògnit</translation>
@@ -6363,7 +6344,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5353769147530541973">Suprimeix <ph name="SITE_NAME" /> de la llista de pestanyes que s'han de desactivar</translation>
 <translation id="5355099869024327351">Permet que l'Assistent et mostri notificacions</translation>
 <translation id="5355191726083956201">La protecció millorada està activada</translation>
-<translation id="5355498626146154079">Cal que activis la marca "Borealis Enabled"</translation>
 <translation id="5355501370336370394">Inscriu un dispositiu d'empresa</translation>
 <translation id="5357010010552553606">Sense permís per entrar automàticament en pantalla completa</translation>
 <translation id="5359910752122114278">1 resultat</translation>
@@ -6393,7 +6373,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5376931455988532197">El fitxer és massa gran</translation>
 <translation id="5377367976106153749">Vols activar l'accés a la càmera?</translation>
 <translation id="5379140238605961210">Continua bloquejant l'accés al micròfon</translation>
-<translation id="5380526436444479273">Espera uns quants minuts i torna-ho a provar</translation>
 <translation id="5382591305415226340">Gestiona els enllaços admesos</translation>
 <translation id="5384401776498845256">Qui pot compartir contingut amb tu</translation>
 <translation id="5385628342687007304">La contrasenya només es desarà en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google.</translation>
@@ -6448,7 +6427,6 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5414198321558177633">S'està actualitzant la llista de perfils. Aquest procés pot tardar uns minuts.</translation>
 <translation id="5414566801737831689">Llegeix les icones dels llocs web visitats</translation>
 <translation id="5414836363063783498">S'està verificant...</translation>
-<translation id="5415328625985164836">Això és un programa beta. Ara pots utilitzar Steam per jugar a alguns jocs al teu Chromebook.</translation>
 <translation id="5415497281076257439">Frase</translation>
 <translation id="5415871492522952905">Tindràs el teu historial i les teves pestanyes en tots els dispositius perquè puguis continuar el que estaves fent</translation>
 <translation id="5417293056300086453">Aquest lloc web pot utilitzar identificadors per reproduir contingut protegit.</translation>
@@ -6888,7 +6866,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5727728807527375859">Les extensions, les aplicacions i els temes poden malmetre el vostre equip. Segur que voleu continuar?</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
 <translation id="5728450728039149624">Opcions de bloqueig de pantalla de Smart Lock</translation>
-<translation id="572914206753951782">Assegura't que el Chromebook tingui la versió més recent. A continuació, reinicia'l i torna-ho a provar.</translation>
 <translation id="5729712731028706266">&amp;Lector</translation>
 <translation id="5731247495086897348">En&amp;ganxa i ves-hi</translation>
 <translation id="5733109311583381874">Afegeix paraules pròpies als diccionaris de l'usuari per personalitzar els candidats de la conversió.</translation>
@@ -8002,7 +7979,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> vol instal·lar l'aplicació següent en aquest dispositiu:}other{<ph name="APP_NAME" /> vol instal·lar les aplicacions següents en aquest dispositiu:}}</translation>
 <translation id="6508248480704296122">Relacionada amb <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicació: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Reinicia el Chromebook i torna-ho a provar</translation>
 <translation id="6511827214781912955">Et recomanem que suprimeixis <ph name="FILENAME" /> perquè els altres usuaris que utilitzen aquest dispositiu no puguin veure les teves contrasenyes.</translation>
 <translation id="6512759338201777379">Imatge generada <ph name="INDEX" /> de <ph name="SUBJECT" />, amb un estat d'ànim <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilitzarà dades mòbils si no esteu connectat a una altra xarxa.</translation>
@@ -8111,7 +8087,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="657866106756413002">Instantània de l'estat de la xarxa</translation>
 <translation id="6579369886355986318">Mostra tots els &amp;controls</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: el contingut de l'escriptori es comparteix</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% completat</translation>
 <translation id="6580203076670148210">Velocitat de cerca</translation>
 <translation id="6580676117087365538">Per obtenir aquesta extensió en tots els teus ordinadors, verifica la teva identitat</translation>
 <translation id="6581356304040102696">Les contrasenyes no es poden importar. La mida del fitxer ha de ser inferior a 1 MB.</translation>
@@ -8330,7 +8305,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6729280095610283088">Corrents brillants d'aurores boreals sobre un bosc.</translation>
 <translation id="6729493062119577923">Activitat del grup de pestanyes compartit</translation>
 <translation id="6730744976532805323">Comparteix la pestanya actual amb Gemini, fins i tot quan canviïs de pestanya</translation>
-<translation id="6731320427842222405">Això pot trigar una estona</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (identificador: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adreça</translation>
 <translation id="6737663862851963468">Suprimeix el tiquet de Kerberos</translation>
@@ -8680,7 +8654,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Dispositiu</translation>
 <translation id="6966831944134814478">Desactiva</translation>
-<translation id="6967112302799758487">Qualsevol aplicació o joc que s'hagi instal·lat mitjançant Steam per a Chromebook (beta) se suprimirà d'aquest dispositiu. També se suprimiran les dades associades a aquestes aplicacions i aquests jocs. Assegura't de crear una còpia de seguretat de les aplicacions i dels jocs desats abans de fer la desinstal·lació.</translation>
 <translation id="6967430741871315905">No es pot comprovar si el dispositiu està permès</translation>
 <translation id="6968288415730398122">Introdueix la contrasenya per configurar el bloqueig de pantalla</translation>
 <translation id="6969047215179982698">Desactiva Compartició Nearby</translation>
@@ -8852,7 +8825,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7082568314107259011">L'administrador gestiona la xarxa <ph name="NETWORK_NAME" />.</translation>
 <translation id="7082850163410901674">Les notificacions estan desactivades a la configuració del sistema de Mac</translation>
 <translation id="7083729794572207131">Els llocs web solen demanar permís per instal·lar aplicacions web a fi de millorar la teva experiència al lloc web</translation>
-<translation id="7083774521940805477">Steam per a Chromebook (beta) no està disponible al teu Chromebook.</translation>
 <translation id="7084095352418993433">Pregunta a Google sobre aquesta pàgina: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(sense configurar)</translation>
 <translation id="7086377898680121060">augmenta la brillantor</translation>
@@ -8931,7 +8903,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7141844554192012199">Comprova</translation>
 <translation id="714301620504747562">Navegar i fer cerques és més ràpid que amb la precàrrega estàndard</translation>
 <translation id="7143207342074048698">Connectant</translation>
-<translation id="7143409552554575716">Marques de ChromeOS</translation>
 <translation id="7144363643182336710">Les notificacions no apareixeran a la pantalla. Pots continuar veient-les fent clic a la icona del mode No molestis que hi ha a la part inferior dreta de la pantalla.</translation>
 <translation id="7144856456372460176">&amp;Instal·la <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
@@ -8942,7 +8913,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7152478047064750137">Aquesta extensió no requereix cap permís especial</translation>
 <translation id="7153101072880472645">Contrast alt activat/desactivat</translation>
 <translation id="715396040729904728">menú d'aplicacions+Maj+<ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Comparteix els teus suggeriments o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
 <translation id="7154130902455071009">Canvia la pàgina d'inici per: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Obtén una millor qualitat de vídeo i estalvia bateria. El vídeo només es reproduirà a la pantalla compatible amb Cast.</translation>
 <translation id="7159695867335480590">Reproduir / Posar en pausa</translation>
@@ -9794,7 +9764,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7728668285692163452">El canvi de canal s'aplicarà més tard</translation>
 <translation id="7730449930968088409">Capturar el contingut de la pantalla</translation>
 <translation id="7730683939467795481">L'extensió "<ph name="EXTENSION_NAME" />" ha fet canvis en aquesta pàgina</translation>
-<translation id="7732702411411810416">Comprova que tinguis connexió a Internet i torna-ho a provar</translation>
 <translation id="773511996612364297">Accents</translation>
 <translation id="7735558909644181051">Certificats intermedis</translation>
 <translation id="7736119438443237821">Estàs a punt de suprimir l'accés a les teves claus d'accés en aquest dispositiu</translation>
@@ -9992,7 +9961,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7871691770940645922">Pantalla Braille virtual</translation>
 <translation id="787268756490971083">Desactivat</translation>
 <translation id="7872758299142009420">Hi ha massa grups imbricats: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam per a Chromebook</translation>
 <translation id="7876027585589532670">No es pot editar la drecera</translation>
 <translation id="7876243839304621966">Suprimeix-ho tot</translation>
 <translation id="7877126887274043657">Corregeix el problema de &amp;sincronització</translation>
@@ -11649,7 +11617,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8983018820925880511"><ph name="DOMAIN" /> gestionarà aquest perfil nou. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> pot editar <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Tothom podrà veure el teu dispositiu durant <ph name="MINUTES" /> minuts. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Et donem la benvinguda a Steam per a Chromebook</translation>
 <translation id="8985264973231822211">Actiu fa <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dia</translation>
 <translation id="8985561265504464578">Llindar de detecció</translation>
 <translation id="8985661493893822002">Connecta't a Internet per iniciar la sessió a <ph name="DEVICE_TYPE" />.</translation>
@@ -11781,7 +11748,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Aproximadament 1 notificació al dia}other{Aproximadament {NUM_NOTIFICATION} notificacions al dia}}</translation>
 <translation id="9058760336383947367">Mostra el fitxer PPD de la impressora</translation>
 <translation id="9061521313218438086">Si Chrome troba que una de les teves contrasenyes s'ha fet pública a causa d'una violació de les dades, el gestor de contrasenyes de Google et pot oferir canviar-la si tens la sessió iniciada.</translation>
-<translation id="9061694916020926968">Per utilitzar Steam per a Chromebook (beta), has de tenir la sessió iniciada en un Compte de Google. Inicia la sessió i torna-ho a provar.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Esborra la drecera de navegació</translation>
 <translation id="9063208415146866933">Error des de la línia <ph name="ERROR_LINE_START" /> fins a la <ph name="ERROR_LINE_END" /></translation>

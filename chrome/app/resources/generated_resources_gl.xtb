@@ -839,7 +839,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="156793199942386351">A tecla <ph name="CURRENTKEY" /> xa se lle asignou á acción <ph name="ACTION" />. Preme calquera tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">consola de JavaScript</translation>
 <translation id="1569466257325986920">A próxima vez que cambie o contrasinal da túa Conta de Google, os teus datos locais recuperaranse automaticamente despois de iniciar sesión nela</translation>
-<translation id="1570235441606255261">Instalador de Steam</translation>
 <translation id="1570604804919108255">Deixar de silenciar notificacións</translation>
 <translation id="1570990174567554976">Cartafol de marcadores creado: <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Non se atopou ningún contrasinal pouco seguro nin reutilizado</translation>
@@ -964,7 +963,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1642299742557467312">Este ficheiro podería danar o teu dispositivo</translation>
 <translation id="1642492862748815878">Conexión establecida cos seguintes dispositivos Bluetooth: <ph name="DEVICE" /> e <ph name="NUMBER_OF_DEVICES" /> máis</translation>
 <translation id="1642494467033190216">Necesítase a eliminación e o reinicio da protección rootfs antes de activar outras funcións de depuración.</translation>
-<translation id="1642895994345928121">Non hai suficiente almacenamento dispoñible no dispositivo para abrir esta aplicación. Libera espazo e téntao de novo.</translation>
 <translation id="1643072738649235303">Sinatura X9.62 ECDSA con SHA-1</translation>
 <translation id="1643921258693943800">Para utilizar Compartir por Nearby, activa o Bluetooth e a wifi</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -2064,7 +2062,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2390347491606624519">Non se puido establecer conexión co proxy. Inicia sesión de novo</translation>
 <translation id="2390782873446084770">Sincronización wifi</translation>
 <translation id="2391419135980381625">Fonte estándar</translation>
-<translation id="2391805183137601570">Abrir Steam</translation>
 <translation id="239185270194776190">A túa conversa con Gemini está noutra ventá. Fai clic en calquera parte deste panel lateral para movelo aquí.</translation>
 <translation id="2392369802118427583">Activar</translation>
 <translation id="2393136602862631930">Instala a aplicación <ph name="APP_NAME" /> no teu Chromebook</translation>
@@ -2146,7 +2143,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2445484935443597917">Crear un novo perfil</translation>
 <translation id="2445726032315793326">Lupa parcial</translation>
 <translation id="244641233057214044">Contido relacionado coa túa busca</translation>
-<translation id="2447587550790814052">Xa podes usar Steam para Chromebook (beta)</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448810255793562605">Exploración automática de Acceso con interruptores</translation>
 <translation id="2450021089947420533">Percorridos</translation>
@@ -2173,7 +2169,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2460826998961521840">Para usar as claves de acceso gardadas na túa Conta de Google</translation>
 <translation id="2461550163693930491">Non permitir que os sitios se despracen nin fagan zoom polas pestanas compartidas</translation>
 <translation id="2461593638794842577">Podes desactivar esta opción de configuración para gardar os contrasinais só neste dispositivo</translation>
-<translation id="2462332841984057083">Xa se está configurando Steam. Agarda a que remate o proceso.</translation>
 <translation id="2462724976360937186">ID de clave de autoridade de certificación</translation>
 <translation id="2462752602710430187">Engadiuse <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Estánseche mostrando ficheiros suxeridos para que poidas retomar rapidamente á túa actividade máis recente en Microsoft Sharepoint e OneDrive.
@@ -2228,7 +2223,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2491587035099903063">mostra de voz en <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Preparando solicitude de sinatura do certificado</translation>
 <translation id="249330843868392562">Abre a configuración da conversión de texto a voz</translation>
-<translation id="2494555621641843783">Non se pode instalar Steam</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2496616243169085015">Fotográfico</translation>
 <translation id="2497229222757901769">Velocidade do rato</translation>
@@ -2584,7 +2578,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="27349076983469322">Fondo claro</translation>
 <translation id="2735712963799620190">Programación</translation>
 <translation id="2737363922397526254">Contraer...</translation>
-<translation id="2737538893171115082">A persoa administradora bloqueou Steam para Chromebook (beta). Cómpre que active estas políticas:</translation>
 <translation id="2737719817922589807">Marcadores e listas</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> solicita que compartas o contido da túa pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Non permitir que os sitios utilicen os tipos de letra instalados no dispositivo</translation>
@@ -3047,7 +3040,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3039491566278747710">Non se puido instalar a política sen conexión no dispositivo.</translation>
 <translation id="303955801043931176">Pestana pechada</translation>
 <translation id="3040435070100611531">Os teus pases de Google Wallet</translation>
-<translation id="3040982432432547149">Axúdanos a mellorar Steam para Chromebook</translation>
 <translation id="304169924727249890">Unirte ao grupo de pestanas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Cambiar a estratexia de carga optimizada.</translation>
 <translation id="3043016484125065343">Inicia sesión para ver os marcadores</translation>
@@ -3258,7 +3250,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3201422919974259695">Os dispositivos USB dispoñibles aparecerán aquí.</translation>
 <translation id="3202499879214571401">Pór en pausa a emisión da pantalla no seguinte dispositivo: <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Máis recente</translation>
-<translation id="3204648577100496185">Os datos asociados a esta aplicación pódense quitar deste dispositivo</translation>
 <translation id="3206289903841621620">Dicionario do usuario <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Estás vendo buscas suxeridas e descontos para compras que poderían interesarche en función da túa actividade recente.
         <ph name="BREAK" />
@@ -3366,7 +3357,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3283148363895519428">Sigue as instrucións que se mostran no teléfono para continuar coa configuración. Asegúrate de ter o teléfono preto e de que o Bluetooth estea activado.</translation>
 <translation id="3284050785966252943">Vista previa dos metadatos de autocompletar</translation>
 <translation id="3285322247471302225">Nova &amp;pestana</translation>
-<translation id="3285465040399788513">Non hai suficiente almacenamento dispoñible no dispositivo para completar a configuración. Libera espazo e téntao de novo.</translation>
 <translation id="3285500645985761267">Permitir que os sitios relacionados vexan a túa actividade no grupo</translation>
 <translation id="328571385944182268">Queres gardar os teus contrasinais?</translation>
 <translation id="3289668031376215426">Usar maiúsculas automaticamente</translation>
@@ -3489,7 +3479,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3372602033006349389">Noutros dispositivos</translation>
 <translation id="337286756654493126">Ler cartafoles que abres na aplicación</translation>
 <translation id="3373059063088819384">Abrir en modo de lectura</translation>
-<translation id="3373196968211632036">Steam para Chromebook (beta) non está dispoñible para as Contas de Google infantís</translation>
 <translation id="3373701465337594448">Cando esta opción de configuración está activada, aquí móstrase unha lista dos sitios que visitas e nos que se estiman os teus intereses</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" moveuse a "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3376035595160918049">Revisar actualización da aplicación</translation>
@@ -3672,7 +3661,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (non seleccionado)</translation>
 <translation id="3496689104192986836">Nivel de batería <ph name="PERCENTAGE" /> %</translation>
 <translation id="3496692428582464972">Fontes de datos para a recompilación</translation>
-<translation id="3496797737329654668">Xoguemos!</translation>
 <translation id="3496995426334945408">Os sitios adoitan usar JavaScript para ofrecerche determinadas funcións interactivas (por exemplo, videoxogos ou formularios web)</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (produto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Compartir doodle</translation>
@@ -3885,7 +3873,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3637203148990213388">Contas adicionais</translation>
 <translation id="3640347231390550691">Protexe os teus contrasinais dos ataques de phishing</translation>
 <translation id="364100968401221170">Para eliminar os datos de navegación de todos os dispositivos sincronizados e da túa Conta de Google, tes que <ph name="BEGIN_LINK" />iniciar sesión<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Cómpre actualizar Steam para Chromebook (versión beta). Reinicia o Chromebook e téntao de novo.</translation>
 <translation id="3641299252000913351">A actualización do firmware do módem está en curso. Non apagues o dispositivo.</translation>
 <translation id="3641456520301071208">Os sitios poden pedirche permiso para acceder á localización</translation>
 <translation id="3642064270296434810">Agora podes usar Google Lens para buscar calquera cousa que vexas na pantalla</translation>
@@ -4225,7 +4212,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="383891835335927981">Non se achegou nin se afastou o zoom en ningún sitio</translation>
 <translation id="3839516600093027468">Impedir sempre que o host <ph name="HOST" /> vexa o contido do portapapeis</translation>
 <translation id="3840096463915153852">Historial de conversa</translation>
-<translation id="3841282988425489367">Non se puido configurar Steam para Chromebook (beta)</translation>
 <translation id="3841319830220785495">Voz natural predeterminada</translation>
 <translation id="3841356782900714251">Lectores de tarxetas intelixentes</translation>
 <translation id="3841964634449506551">O contrasinal non é válido</translation>
@@ -4673,7 +4659,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4148195018520464922">Podes limitar o inicio de sesión a determinados usuarios. Se o fas, a opción Engadir unha persoa quitarase da pantalla de inicio de sesión. Tamén podes quitar usuarios.</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="4150201353443180367">Pantalla</translation>
-<translation id="4151449637210235443">Cóntanos que tal foi a túa partida máis recente</translation>
 <translation id="4151503145138736576">Non hai espazo de almacenamento sen conexión para liberar</translation>
 <translation id="4152011295694446843">Aquí atoparás os teus marcadores</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{Unha pestana}other{# pestanas}}</translation>
@@ -4724,7 +4709,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4193251682249731404">Autoridade certificadora de confianza</translation>
 <translation id="4193575319002689239">Mostrar tarxetas</translation>
 <translation id="419427585139779713">Escribir sílabas de unha en unha</translation>
-<translation id="4195001808989442226">Non se puido abrir Steam para Chromebook (beta)</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4195814663415092787">Continuar onde o deixaches</translation>
 <translation id="4198268995694216131">Máis sitios</translation>
@@ -4770,7 +4754,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Esta extensión non está permitida}other{Algunhas extensións non están permitidas}}</translation>
 <translation id="4231053948789591973">A emisión está en pausa. Podes retomala ou detela en calquera momento.</translation>
 <translation id="4231095370974836764">Instala aplicacións e xogos de Google Play no dispositivo <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Configurando Steam para Chromebook</translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
 <translation id="4232376164796433044">Contrasinais e autocompletado</translation>
 <translation id="4232484478444192782">O teu teléfono Android ten todo o que precisas. A túa rede wifi e o teu contrasinal estanse transferindo.</translation>
@@ -5129,7 +5112,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4472533928615930332">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estilo: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4473559657152613417">Fai clic co botón dereito nunha pestana e selecciona Engadir pestana ao novo grupo</translation>
-<translation id="4473996011558324141">calculando tempo necesario</translation>
 <translation id="4474155171896946103">Engadir todas as pestanas a marcadores...</translation>
 <translation id="4476198534886170024">Permiso concedido. Activa o <ph name="LINK_BEGIN" />acceso á cámara do sistema<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Atleta</translation>
@@ -5364,7 +5346,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4638930039313743000">Activar depuración de ADB</translation>
 <translation id="4639390152280993480">Para ver unha vista simplificada desta páxina, vai a Máis ferramentas &gt; Modo de lectura</translation>
 <translation id="4641539339823703554">Chrome non puido establecer a hora do sistema. Comproba a hora a continuación e corríxea se é necesario.</translation>
-<translation id="4642587497923912728">Steam para Chromebook (beta) só está dispoñible para a conta coa que primeiro iniciases sesión neste Chromebook.</translation>
 <translation id="4643612240819915418">&amp;Abrir vídeo nunha pestana nova</translation>
 <translation id="4643833688073835173">O teu Chromebook utiliza un sensor integrado para detectar as persoas que se atopan diante do dispositivo. Todos os datos se procesan no teu dispositivo de inmediato e, logo, elimínanse. Os datos do sensor nunca se lle envían a Google.</translation>
 <translation id="4644205769234414680">Permitir no modo de incógnito</translation>
@@ -6369,7 +6350,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5353769147530541973">Quitar <ph name="SITE_NAME" /> da lista de pestanas para desactivala</translation>
 <translation id="5355099869024327351">Permite que o Asistente che mostre notificacións</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
-<translation id="5355498626146154079">Debes activar a función experimental Borealis Enabled</translation>
 <translation id="5355501370336370394">Inscribir dispositivo de empresa</translation>
 <translation id="5357010010552553606">Permiso denegado para acceder ao modo de pantalla completa automaticamente</translation>
 <translation id="5359910752122114278">1 resultado</translation>
@@ -6399,7 +6379,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5376931455988532197">O ficheiro é demasiado grande</translation>
 <translation id="5377367976106153749">Queres activar o acceso á cámara?</translation>
 <translation id="5379140238605961210">Continuar bloqueando o acceso ao micrófono</translation>
-<translation id="5380526436444479273">Agarda uns minutos e téntao de novo</translation>
 <translation id="5382591305415226340">Xestionar ligazóns compatibles</translation>
 <translation id="5384401776498845256">Quen pode compartir contido contigo?</translation>
 <translation id="5385628342687007304">Este contrasinal está gardado só neste dispositivo. Para usalo noutros, gárdao na túa Conta de Google.</translation>
@@ -6454,7 +6433,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5414198321558177633">Actualizando lista de perfís. Esta acción pode tardar uns minutos.</translation>
 <translation id="5414566801737831689">Ler as iconas dos sitios web que visitas</translation>
 <translation id="5414836363063783498">Verificando...</translation>
-<translation id="5415328625985164836">Este é un programa beta. Xa podes usar Steam para xogar no Chromebook.</translation>
 <translation id="5415497281076257439">Expresión</translation>
 <translation id="5415871492522952905">Terás o teu historial e as pestanas en todos os teus dispositivos para que poidas seguir co que estabas facendo</translation>
 <translation id="5417293056300086453">Este sitio pode usar identificadores para reproducir contido protexido.</translation>
@@ -6893,7 +6871,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5727728807527375859">As extensións, aplicacións e temas poden danar o teu ordenador. Seguro que queres continuar?</translation>
 <translation id="5728072125198221967">Servizos de Google vinculados</translation>
 <translation id="5728450728039149624">Opcións de bloqueo de pantalla de Smart Lock</translation>
-<translation id="572914206753951782">Asegúrate de que o Chromebook teña instalado o software máis recente. Despois reiníciao e téntao de novo.</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pe&amp;gar e acceder</translation>
 <translation id="5733109311583381874">Engade as túas propias palabras aos dicionarios de usuario para personalizar as suxestións de conversión.</translation>
@@ -8007,7 +7984,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> quere instalar a seguinte aplicación neste dispositivo:}other{<ph name="APP_NAME" /> quere instalar as seguintes aplicacións neste dispositivo:}}</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Reinicia o Chromebook e téntao de novo</translation>
 <translation id="6511827214781912955">Considera a posibilidade de eliminar <ph name="FILENAME" />, de modo que outras persoas que usen este dispositivo non vexan os teus contrasinais</translation>
 <translation id="6512759338201777379">Imaxe xerada <ph name="INDEX" /> de <ph name="SUBJECT" />. Estado de ánimo: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará datos móbiles se non estás conectado a outra rede.</translation>
@@ -8116,7 +8092,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="657866106756413002">Instantánea do estado da rede</translation>
 <translation id="6579369886355986318">Mostrar todos os &amp;controis</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: compartindo contido do ordenador</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % completado</translation>
 <translation id="6580203076670148210">Velocidade de exploración</translation>
 <translation id="6580676117087365538">Para poder acceder a esta extensión en todos os teus ordenadores, verifica a túa identidade</translation>
 <translation id="6581356304040102696">Non se puideron importar os contrasinais. O ficheiro debe ocupar menos de 1 MB.</translation>
@@ -8335,7 +8310,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6729280095610283088">Feixes luminosos dunha aurora boreal sobre un bosque.</translation>
 <translation id="6729493062119577923">Actividade do grupo de pestanas compartido</translation>
 <translation id="6730744976532805323">Compártese a pestana actual con Gemini, mesmo cando cambias de pestana</translation>
-<translation id="6731320427842222405">É posible que isto tarde uns minutos</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (código: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Enderezo</translation>
 <translation id="6737663862851963468">Quitar tícket de Kerberos</translation>
@@ -8685,7 +8659,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6965648386495488594">Porto</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6966831944134814478">Desactivar</translation>
-<translation id="6967112302799758487">Quitaranse deste dispositivo todos os xogos e aplicacións que se instalasen con Steam para Chromebook (beta), así como os datos asociados a eles. Lembra facer unha copia de seguranza das aplicacións e dos xogos antes de que se desinstalen.</translation>
 <translation id="6967430741871315905">Non se puido comprobar se o dispositivo está permitido ou non</translation>
 <translation id="6968288415730398122">Introduce o contrasinal para configurar o bloqueo da pantalla</translation>
 <translation id="6969047215179982698">Desactivar Compartir por Nearby</translation>
@@ -8856,7 +8829,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7082568314107259011">O teu administrador xestiona a rede <ph name="NETWORK_NAME" /></translation>
 <translation id="7082850163410901674">As notificacións están desactivadas na configuración do sistema de Mac</translation>
 <translation id="7083729794572207131">Os sitios normalmente piden permiso para instalar aplicacións web co obxecto de mellorar a túa experiencia neles</translation>
-<translation id="7083774521940805477">Steam para Chromebook (beta) non está dispoñible no teu Chromebook.</translation>
 <translation id="7084095352418993433">Preguntarlle a Google sobre esta páxina: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(sen configurar)</translation>
 <translation id="7086377898680121060">Aumenta o brillo</translation>
@@ -8935,7 +8907,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7141844554192012199">Revisión</translation>
 <translation id="714301620504747562">A navegación e a busca son máis rápidas que coa precarga estándar</translation>
 <translation id="7143207342074048698">Conectando</translation>
-<translation id="7143409552554575716">Funcións experimentais de ChromeOS</translation>
 <translation id="7144363643182336710">As notificacións non aparecerán na pantalla. Para consultalas, fai clic na icona do modo Non molestar que está na parte inferior dereita da pantalla.</translation>
 <translation id="7144856456372460176">&amp;Instalar <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
@@ -8946,7 +8917,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7152478047064750137">Esta extensión non necesita permisos especiais</translation>
 <translation id="7153101072880472645">Activar ou desactivar contraste alto</translation>
 <translation id="715396040729904728">menú de aplicacións + maiúsculas + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Comparte os teus comentarios ou describe o problema. Se é posible, inclúe os pasos para reproducilo.</translation>
 <translation id="7154130902455071009">Cambiar a páxina de inicio a: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Desfruta dunha mellor calidade de vídeo e aforra batería. O vídeo só se reproducirá na túa pantalla compatible con Cast.</translation>
 <translation id="7159695867335480590">Reproducir/Pór en pausa</translation>
@@ -9798,7 +9768,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7728668285692163452">O cambio de canle aplicarase máis tarde</translation>
 <translation id="7730449930968088409">Capturar o contido da pantalla</translation>
 <translation id="7730683939467795481">A extensión <ph name="EXTENSION_NAME" /> cambiou esta páxina</translation>
-<translation id="7732702411411810416">Comproba se tes conexión a Internet e téntao de novo</translation>
 <translation id="773511996612364297">Acentos</translation>
 <translation id="7735558909644181051">Certificados intermedios</translation>
 <translation id="7736119438443237821">Estás a piques de quitar o acceso ás túas claves de acceso neste dispositivo</translation>
@@ -9996,7 +9965,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7871691770940645922">Visualización de braille virtual</translation>
 <translation id="787268756490971083">Non</translation>
 <translation id="7872758299142009420">Hai demasiados grupos aniñados: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam para Chromebook</translation>
 <translation id="7876027585589532670">Non se puido editar o atallo</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7877126887274043657">Solucionar problema de &amp;sincronización</translation>
@@ -11653,7 +11621,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="8983018820925880511"><ph name="DOMAIN" /> xestionará este perfil novo. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> pode editar <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Todas as persoas poderán verte durante <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Dámosche a benvida a Steam para Chromebooks</translation>
 <translation id="8985264973231822211">Dispositivo activo hai <ph name="DEVICE_LAST_ACTIVATED_TIME" /> día</translation>
 <translation id="8985561265504464578">Límite de detección</translation>
 <translation id="8985661493893822002">Conéctate a Internet para iniciar sesión co teu dispositivo (<ph name="DEVICE_TYPE" />).</translation>
@@ -11785,7 +11752,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Arredor de 1 notificación ao día}other{Arredor de {NUM_NOTIFICATION} notificacións ao día}}</translation>
 <translation id="9058760336383947367">Ver PPD da impresora</translation>
 <translation id="9061521313218438086">Se Chrome detecta un dos teus contrasinais nunha violación da seguranza dos datos, o xestor de contrasinais de Google pode ofrecerche a opción de cambialo por ti se tes a sesión iniciada.</translation>
-<translation id="9061694916020926968">Para poder usar Steam para Chromebook (beta), debes ter a sesión iniciada nunha Conta de Google. Inicia sesión e téntao de novo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Borrar atallo de navegación</translation>
 <translation id="9063208415146866933">Produciuse un erro da liña <ph name="ERROR_LINE_START" /> á <ph name="ERROR_LINE_END" /></translation>

@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Niebieski</translation>
 <translation id="1557622599341396706">Pokaż nazwę biurka</translation>
 <translation id="1569384531973824928">Zezwala na dostęp wszystkim aplikacjom i stronom internetowym, które mają uprawnienia do korzystania z kamery i mikrofonu. Konieczne może być odświeżenie strony lub ponowne uruchomienie aplikacji.</translation>
+<translation id="1570235441606255261">Instalator Steam</translation>
 <translation id="1571697193564730395">Włącz lub wyłącz tryb Nie przeszkadzać. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Wybrano uchwyt lewej krawędzi. Aby go przesunąć, użyj klawiszy strzałek</translation>
 <translation id="1576623706766186887">Pomniejsz, gdy lupa jest włączona</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="1637505162081889933">Urządzenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Wczytuję</translation>
+<translation id="1642895994345928121">Na urządzeniu jest za mało miejsca, aby otworzyć tę aplikację. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="1647986356840967552">Poprzednia strona</translation>
 <translation id="1651914502370159744">Otwórz stronę Historia</translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
@@ -401,6 +403,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2383521554963939360">Grupy aplikacji i kart</translation>
 <translation id="2386292613071805067">Zaznacz wszystko na stronie</translation>
 <translation id="2389423187722941333">Przełącz Gemini</translation>
+<translation id="2391805183137601570">Otwórz Steam</translation>
 <translation id="2392659840443812875">Brak dostępnego hotspota. Upewnij się, że urządzenie jest w pobliżu i ma włączony Bluetooth.</translation>
 <translation id="2397416548179033562">Pokaż menu Chrome</translation>
 <translation id="240006516586367791">Sterowanie multimediami</translation>
@@ -422,12 +425,14 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="243878895369688216">Otwierane wczoraj</translation>
 <translation id="2440978926514840421">GIF został nagrany</translation>
 <translation id="2441427462554639370">Nagrywanie zostało zakończone z powodu krytycznie małej ilości dostępnego miejsca</translation>
+<translation id="2447587550790814052">Teraz możesz używać aplikacji Steam na Chromebooka (beta)</translation>
 <translation id="2449089818483227734">Słaba bateria</translation>
 <translation id="2450205753526923158">Tryb zrzutu ekranu</translation>
 <translation id="2453860139492968684">Zakończ</translation>
 <translation id="2455994958736234930">Dodaj na pasku adresu www. i .com, a następnie otwórz witrynę</translation>
 <translation id="2456008742792828469">Kalendarz, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Przejdź do bardziej szczegółowego widoku</translation>
+<translation id="2462332841984057083">Aplikacja Steam jest już konfigurowana. Poczekaj na zakończenie tego procesu.</translation>
 <translation id="2465145153332031561">Stan baterii: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, Liczba cykli: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Potwierdź rozdzielczość</translation>
 <translation id="2475783092753560388">Wstaw: <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> – podgląd. Biurko aktywne.</translation>
 <translation id="2486405091093637109">Rozdzielczość wyświetlacza „<ph name="DISPLAY_NAME" />” została zmieniona na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Jeśli tego nie potwierdzisz, za <ph name="TIMEOUT_SECONDS" /> zostaną przywrócone poprzednie ustawienia.</translation>
 <translation id="2487915095798731898">Dołącz</translation>
+<translation id="2494555621641843783">Nie udało się zainstalować Steam</translation>
 <translation id="2496180316473517155">Historia przeglądania</translation>
 <translation id="2499445554382787206">Menu profilu biurka. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Klawisze trwałe</translation>
@@ -512,6 +518,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2727175239389218057">Odpowiedz</translation>
 <translation id="2727744317940422214">Coś poszło nie tak. Prześlij opinię z hashtagiem #bruschetta w opisie. Kod błędu: <ph name="ERROR" />. Nie udało się wyczyścić – być może trzeba to będzie zrobić ręcznie.</translation>
 <translation id="2727977024730340865">Podłączono ładowarkę o małej mocy. Ładowanie baterii może być nieprawidłowe.</translation>
+<translation id="2737538893171115082">Aplikacja Steam na Chromebooka (beta) została zablokowana przez administratora. Administrator musi włączyć te zasady:</translation>
 <translation id="2743301740238894839">Rozpocznij</translation>
 <translation id="2743387203779672305">Skopiuj do schowka</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3033912566804961911">Połącz z: <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Poziom baterii rysika wynosi <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="304097922505898963">Otwórz aplikację Skróty klawiszowe</translation>
+<translation id="3040982432432547149">Pomóż nam ulepszyć Steam na Chromebooka</translation>
 <translation id="304417730895741346">Przypięte i otwarte aplikacje są widoczne na półce. Aby przypiąć aplikację do półki, kliknij ją prawym przyciskiem myszy lub dotknij touchpada 2 palcami.</translation>
 <translation id="3045670165536837541">Wybrano uchwyt w prawym górnym rogu. Aby go przesunąć, użyj klawiszy strzałek</translation>
 <translation id="3047761520276763270">Powiedz:</translation>
@@ -656,6 +664,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3181441307743005334">Ponowne uruchomienie może trochę potrwać</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Połączono z urządzeniem}few{Połączono z # urządzeniami}many{Połączono z # urządzeniami}other{Połączono z # urządzenia}}</translation>
 <translation id="3203405173652969239">Włączono funkcję Switch Access</translation>
+<translation id="3204648577100496185">Dane powiązane z tą aplikacją mogą zostać usunięte z urządzenia</translation>
 <translation id="3206735939915734551">Włącz/wyłącz Caps Lock</translation>
 <translation id="3207953481422525583">Ustawienia użytkownika</translation>
 <translation id="3208321278970793882">Aplikacja</translation>
@@ -677,6 +686,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3271554781793662131">Wyszukaj, aby wstawić</translation>
 <translation id="3274634049061007184">Wyświetlaj aplikacje z telefonu</translation>
 <translation id="3279230909244266691">Może to potrwać kilka minut. Uruchamiam maszynę wirtualną.</translation>
+<translation id="3285465040399788513">Na urządzeniu jest za mało miejsca, aby ukończyć konfigurację. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="3289364673986435196">Menu zasilania</translation>
 <translation id="3289544412142055976">Aplikacje na Linuksa nie są obecnie obsługiwane</translation>
 <translation id="3289674678944039601">Ładowanie z zasilacza.</translation>
@@ -702,6 +712,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3368922792935385530">Połączone</translation>
 <translation id="3369111525500416043">Bliski termin</translation>
 <translation id="3371140690572404006">Urządzenie USB-C (przedni port na prawym boku)</translation>
+<translation id="3373196968211632036">Aplikacja Steam na Chromebooka (beta) jest niedostępna na kontach Google dzieci</translation>
 <translation id="3375634426936648815">Połączono</translation>
 <translation id="3386978599540877378">Lupa pełnoekranowa</translation>
 <translation id="3387527074123400161">System operacyjny Chromium</translation>
@@ -739,6 +750,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3477079411857374384">Control+Shift+spacja</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Półka ukryta automatycznie</translation>
+<translation id="3496797737329654668">Granie czas zacząć</translation>
 <translation id="3505066820268455558">Bateria się ładuje</translation>
 <translation id="3509391053705095206">Nie udało się znaleźć telefonu. Sprawdź, czy jest na nim włączony Bluetooth.</translation>
 <translation id="3510164367642747937">Podświetlaj wskaźnik myszy</translation>
@@ -800,6 +812,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="3633851487917460983">Otwórz schowek</translation>
 <translation id="363473492175527493">Zadanie, na którym chcesz się skupić: <ph name="TASK_NAME" />. Aby edytować zadanie, naciśnij Enter.</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Musisz zaktualizować aplikację Steam na Chromebooka (beta). Uruchom ponownie Chromebooka i spróbuj jeszcze raz.</translation>
 <translation id="3649256019230929621">Minimalizuj okno</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3702809606464356667">Pokazuję okna z aktualnego biurka, naciśnij klawisz strzałki w górę, aby wyświetlić okna ze wszystkich biurek</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Rozrywka</translation>
+<translation id="370665806235115550">Ładuję...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> i <ph name="UNAVAILABLE_DLC_TWO" /> są niedostępne.</translation>
 <translation id="3708186454126126312">Wcześniej połączone</translation>
 <translation id="3712143870407382523">Wybierz okno dla tej strony</translation>
@@ -860,6 +874,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3831226344927851293">Zamknij widok samouczka</translation>
 <translation id="383629559565718788">Pokaż ustawienia klawiatury</translation>
 <translation id="384082539148746321">Usunąć szablon?</translation>
+<translation id="3841282988425489367">Nie można skonfigurować aplikacji Steam na Chromebooka (beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" />, a potem <ph name="KEY_ONE" /> lub <ph name="KEY_TWO" /> lub <ph name="KEY_THREE" /> lub <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="3848526302597027234">Uzyskiwanie dostępu do tych uprawnień:</translation>
@@ -951,6 +966,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4146671046252289537">Przejdź na koniec następnego słowa</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
 <translation id="4151054805501931758">Retusz portretowy</translation>
+<translation id="4151449637210235443">Opisz nam swoją ostatnią rozgrywkę</translation>
 <translation id="4156293514828496577">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />).
 W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
 <translation id="4158003972857765638">Uporządkuj na nowym biurku</translation>
@@ -968,6 +984,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4192112279662688596">lub</translation>
 <translation id="4193857202545160520">Pokaż kliknięcia i klawisze</translation>
 <translation id="4193969623755915875">Otwórz „Pomoc” w aplikacji Odkrywaj, naciskając „<ph name="NEW_SHORTCUT" />”.</translation>
+<translation id="4195001808989442226">Nie można otworzyć aplikacji Steam na Chromebooka (beta)</translation>
 <translation id="4195579532193195633">Aktualna wersja <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Kontynuuj od tego samego miejsca</translation>
 <translation id="4195877955194704651">Automatyczne klikanie przycisku</translation>
@@ -983,6 +1000,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4221957499226645091"><ph name="APP_NAME" />, zainstalowana aplikacja, wstrzymana</translation>
 <translation id="4228078597006700451">Elementy sterujące nie są skonfigurowane</translation>
 <translation id="4230560241506423345">Nowy</translation>
+<translation id="4231231258999726714">Konfigurowanie Steam na Chromebooka</translation>
 <translation id="4236726631849783264">Przypomnienie o sugerowanych działaniach</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Tryb przeglądu</translation>
@@ -1067,6 +1085,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4471432286288241507">{0,plural, =0{Aktualizacja urządzenia nastąpi teraz}=1{Aktualizacja urządzenia nastąpi w ciągu 1 sekundy}few{Aktualizacja urządzenia nastąpi w ciągu # sekund}many{Aktualizacja urządzenia nastąpi w ciągu # sekund}other{Aktualizacja urządzenia nastąpi w ciągu # sekundy}}</translation>
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4473489370276014885">Kontakty Google</translation>
+<translation id="4473996011558324141">szacuję czas</translation>
 <translation id="4477350412780666475">Następny utwór</translation>
 <translation id="4477751544736611934">Może to spowodować koszty związane z przesyłaniem danych.
 Połączono 1 urządzenie.</translation>
@@ -1108,6 +1127,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4585337515783392668">Zakończ przesyłanie do nieznanego odbiornika</translation>
 <translation id="4596144739579517758">Ciemny motyw jest wyłączony</translation>
 <translation id="4596442969149038771">Udostępniony przez: <ph name="USER" /></translation>
+<translation id="4598556348158889687">Zarządzanie pamięcią</translation>
 <translation id="4610493115106525653">Dobre wyniki</translation>
 <translation id="4611292653554630842">Zaloguj się</translation>
 <translation id="462160925400706389">Połączono: <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4633636853437260449">Aby usunąć, naciśnij Ctrl+W</translation>
 <translation id="4635501805800894201">{0,plural, =0{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego teraz}=1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 sekundy}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekund}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekund}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekundy}}</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
+<translation id="4642587497923912728">Aplikacja Steam na Chromebooka (beta) jest dostępna tylko na koncie zalogowanym na tym Chromebooku jako pierwsze.</translation>
 <translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomendowana aplikacja</translation>
 <translation id="4649019912155580914">Edytowany przez Ciebie</translation>
@@ -1350,6 +1371,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="5352250171825660495">Ciemny motyw jest włączony</translation>
 <translation id="5354804064646502504">Może to spowodować koszty związane z przesyłaniem danych.
 Brak połączonych urządzeń.</translation>
+<translation id="5355498626146154079">Musisz włączyć flagę „Borealis Enabled”</translation>
 <translation id="5356963482258194581">Przełącz między ciemnym i jasnym motywem. Kliknij prawym przyciskiem na pulpicie i wybierz Tapeta i styl.</translation>
 <translation id="536019650977002321">Administrator nie zezwala na rejestrowanie dźwięku. Aby dowiedzieć się więcej, skontaktuj się z administratorem.</translation>
 <translation id="5361524080961918551">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały częściowo pobrane</translation>
@@ -1360,6 +1382,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5377367976106153749">Włączyć dostęp do aparatu?</translation>
 <translation id="5378450298115733949">Więcej</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
+<translation id="5380526436444479273">Poczekaj kilka minut i spróbuj ponownie</translation>
 <translation id="5383434787520761436">Brak plików na Dysku Google</translation>
 <translation id="5391307769715781764">Zastąpić zapisane biurko?</translation>
 <translation id="5392327145184648521">Obliczam procent naładowania baterii…</translation>
@@ -1371,6 +1394,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5409208741270395213">Oznacz zadanie jako ukończone</translation>
 <translation id="5413656666631274079">Strona ustawień</translation>
 <translation id="5414198321558177633">Odświeżam listę profili. Może to potrwać kilka minut.</translation>
+<translation id="5415328625985164836">To jest program testów beta. Dzięki Steam możesz teraz grać na Chromebooku w niektóre gry.</translation>
 <translation id="5426063383988017631">Zamknięto menu ustawień</translation>
 <translation id="5428899915242071344">Rozpocznij zaznaczanie</translation>
 <translation id="5429993543155113935">Okna incognito nie są obecnie obsługiwane</translation>
@@ -1466,6 +1490,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5712132663381964774">Dzięki aplikacjom możesz robić na urządzeniu <ph name="PRODUCT_NAME" /> wszystko, co chcesz. Aplikacje znajdziesz w Menu z aplikacjami.</translation>
 <translation id="571295407079589142">Mobilna transmisja danych jest wyłączona</translation>
 <translation id="5727460725221669831">Jeśli nie pamiętasz hasła lub od niedawna masz nowe hasło do konta Google, spróbuj przywrócić konto tego użytkownika.</translation>
+<translation id="572914206753951782">Upewnij się, że masz najnowszą wersję Chromebooka. Następnie uruchom ponownie Chromebooka i spróbuj jeszcze raz.</translation>
 <translation id="5733630091161562207">Powiadomienie powitalne</translation>
 <translation id="573413375004481890">To urządzenie nie może obsługiwać wszystkich Twoich wyświetlaczy, dlatego jeden z nich został odłączony</translation>
 <translation id="574392208103952083">Średni</translation>
@@ -1713,6 +1738,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6507042703812908515">Otwórz aplikację Skróty klawiszowe, naciskając „<ph name="NEW_SHORTCUT" />”.</translation>
 <translation id="6507618042428827377">Przełącz na kolejną dostępną metodę wprowadzania</translation>
 <translation id="6508923215158854599">Upewnij się, że Chromebook jest połączony z tą samą siecią Wi-Fi co Chromecast.</translation>
+<translation id="6511607461419653612">Uruchom ponownie Chromebooka i spróbuj jeszcze raz</translation>
 <translation id="6515727200518652613">Brak sygnału z kamery. Łączę ponownie.</translation>
 <translation id="651753338596587143">Podczas instalowania zależności DLC coś poszło nie tak. Zrestartuj urządzenie, a jeśli problem nie ustąpi, prześlij opinię z hashtagiem #bruschetta w opisie. Kod błędu: <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Wybierz okno, które chcesz przechwycić</translation>
@@ -1737,6 +1763,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6574587113394758819">Powiadomienie z aplikacji <ph name="APP_TITLE" /> zostało ukryte, bo masz włączoną ochronę przeglądania</translation>
 <translation id="6574622320167699133">Odblokowany przez Twój telefon. Kliknij, aby rozpocząć.</translation>
 <translation id="6578407462441924264">Bez nazwy</translation>
+<translation id="6580060371127789208">Ukończono <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6582012689384648647">Aby korzystać ze spersonalizowanych playlist z muzyką pomagającą się skupić, zezwól na dostęp do YouTube Music</translation>
 <translation id="6582034443359256692">Obliczam poziom naładowania baterii.</translation>
 <translation id="6585808820553845416">Sesja kończy się za <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1786,6 +1813,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6723839937902243910">Zasilanie</translation>
 <translation id="672609503628871915">Zobacz, co nowego</translation>
 <translation id="6727969043791803658">Połączono, bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">Może to potrwać kilka minut</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera i mikrofon w użyciu</translation>
@@ -1857,6 +1885,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6961840794482373852">Skrót klawiszowy Alt + strzałka w górę został zmieniony. Aby użyć klawisza Page Up, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w górę.</translation>
 <translation id="696267987219125751">Kadrowanie jest wyłączone.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Wszystkie aplikacje i gry zainstalowane przy użyciu aplikacji Steam na Chromebooka (beta) zostaną usunięte z tego urządzenia. Dotyczy to też powiązanych z nimi danych. Zanim odinstalujesz aplikację, utwórz kopie zapasowe zapisanych aplikacji i gier.</translation>
 <translation id="6972629891077993081">Urządzenia HID</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6980402667292348590">Insert</translation>
@@ -1888,6 +1917,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7067196344162293536">Obracanie automatyczne</translation>
 <translation id="7076293881109082629">Loguję</translation>
 <translation id="7076878155205969899">Wycisz dźwięk</translation>
+<translation id="7083774521940805477">Aplikacja Steam na Chromebooka (beta) jest niedostępna na Twoim Chromebooku.</translation>
 <translation id="7083848064787091821">Skupienie</translation>
 <translation id="7084678090004350185">Przełącz hotspota. Hotspot jest włączony. Połączono z <ph name="DEVICECOUNT" /> urządzeniami.</translation>
 <translation id="7086931198345821656">Ta aktualizacja wymaga wykonania na urządzeniu <ph name="DEVICE_TYPE" /> procedury Powerwash. Wszystkie dane zostaną usunięte. Więcej informacji o najnowszej aktualizacji <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1905,12 +1935,14 @@ Brak połączonych urządzeń.</translation>
 <translation id="7130207228079676353">NAJBARDZIEJ PRAWDOPODOBNE</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
+<translation id="7143409552554575716">Flagi ChromeOS</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
 <translation id="7144942256906679589">Stan baterii</translation>
 <translation id="7145639536026937076">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie. Włączone jest Oszczędzanie baterii.</translation>
 <translation id="7147587499155271409">Brak historii przeglądania</translation>
 <translation id="7147657298465433425">Aby uzyskać dostęp do klawiszy F, naciśnij klawisz fn + klawisze z górnego rzędu</translation>
 <translation id="7149149900052329230">W aplikacji Pliki możesz zarządzać plikami lokalnymi i tymi z Dysku Google.</translation>
+<translation id="7154020516215182599">Podziel się opinią lub opisz problem. Jeśli to możliwe, wykonaj kroki umożliwiające odtworzenie problemu.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2086,6 +2118,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7726391492136714301">Zobacz powiadomienia i aplikacje z telefonu</translation>
 <translation id="7727952505535211425">Otwórz stronę z paska adresu w nowej karcie</translation>
 <translation id="7728657226117099693">Wyłącz Caps Lock</translation>
+<translation id="7732702411411810416">Upewnij się, że masz połączenie z internetem, i spróbuj ponownie</translation>
 <translation id="7742327441377685481">Brak powiadomień</translation>
 <translation id="7748275671948949022">Podświetl przycisk Menu z aplikacjami na półce</translation>
 <translation id="7749443890790263709">Osiągnięto maksymalną liczbę biurek.</translation>
@@ -2120,6 +2153,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7866482334467279021">włączono</translation>
 <translation id="7870790288828963061">Nie odnaleziono nowszej wersji aplikacji kiosku. Aktualizacja nie jest wymagana. Odłącz pamięć USB.</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
+<translation id="7873386145597434863">Steam na Chromebooka</translation>
 <translation id="7875575368831396199">Wygląda na to, że Twoje urządzenie (<ph name="DEVICE_TYPE" />) ma wyłączony Bluetooth. Włącz go, by korzystać ze sterowania telefonem.</translation>
 <translation id="7884446017008693258">Ustawienia hotspota</translation>
 <translation id="7884902759927478774">Anuluj przeciąganie karty</translation>
@@ -2469,6 +2503,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8980862970816311842">Przenieś ikonę aplikacji do folderu lub poza folder w siatce aplikacji</translation>
 <translation id="8982906748181120328">Widoczność w pobliżu</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Witaj w aplikacji Steam na Chromebooka</translation>
 <translation id="8990809378771970590">W użyciu jest <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Naciśnij fn + szybkie wstawianie lub Shift, aby anulować.</translation>
 <translation id="899350903320462459">Odblokuj urządzenie jako <ph name="LOGIN_ID" />, by zareagować na powiadomienie</translation>
@@ -2485,6 +2520,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth jest niedostępny</translation>
 <translation id="9050999376345823055">Aby zwolnić, naciśnij „.”</translation>
+<translation id="9061694916020926968">Aby używać aplikacji Steam na Chromebooka (beta), musisz się zalogować na konto Google. Zaloguj się i spróbuj ponownie.</translation>
 <translation id="906458777597946297">Maksymalizuj okno</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9068849894565669697">Wybierz kolor</translation>

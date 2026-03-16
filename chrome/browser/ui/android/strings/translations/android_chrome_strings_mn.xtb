@@ -240,6 +240,7 @@
 <translation id="200114059308480249">Google-н хайлтуудад эргэн тойрны текстийг оруулах уу?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Бэхлэгдэж, дууг нь хаасан нууцлалтай таб</translation>
 <translation id="2021896219286479412">Бүтэн дэлгэцийн сайтын хяналт</translation>
+<translation id="2024195579772565064">Хайлтын системийг устгах</translation>
 <translation id="2029669011553795746">Зөвлөгөөний мэдэгдэлд нэгдэх сонголтыг тал өндрөөр нээсэн</translation>
 <translation id="2038563949887743358">Сайтыг компьютерийн горимоор харах хүсэлтийг асаах</translation>
 <translation id="204321170514947529">Мөн Chrome-д <ph name="APP_NAME" />-н өгөгдөл байна</translation>
@@ -559,6 +560,7 @@
 <translation id="3384347053049321195">Зураг хуваалцах</translation>
 <translation id="3387650086002190359">Файлын системийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="3414952576877147120">Хэмжээ:</translation>
+<translation id="3417835166382867856">Табуудыг хайх</translation>
 <translation id="3430670036890315772">Профайлынхаа түгжээг унтраах нь таны хадгалсан мэдээллийг хасна</translation>
 <translation id="3435465986463792564">Олон цонхтой юу? Та тэдгээрийг эндээс удирдах боломжтой</translation>
 <translation id="3435575784518354875">Нууц үгэндээ хандах эрхээ хадгалахын тулд одоо нууц үгээ экспортолж, Google Play үйлчилгээг шинэчилж, дараа нь буцааж Google Нууц үгний менежер лүү импортолно уу. <ph name="BEGIN_LINK" />Бүтэн зааварчилгааг харна уу<ph name="END_LINK" />.</translation>
@@ -1445,6 +1447,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6896758677409633944">Хуулах</translation>
 <translation id="6898797562238201317">Google Бүртгэлийнхээ Chrome-н бүх өгөгдлийг шифрлэхийн тулд өөрийн нэвтрэх үгийг ашиглах</translation>
 <translation id="6900532703269623216">Сайжруулсан хамгаалалт</translation>
+<translation id="6900654715912436255">Та энэ хайлтын системийг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="6903907808598579934">Синк хийхийг асаах</translation>
 <translation id="6906448540340261898">Та Google Бүртгэлдээ нууц үгнүүдийг үргэлж ашиглах боломжтой болохоо баталгаажуулна уу</translation>
 <translation id="6908230663105268638"><ph name="SITE_NAME" />-н мэдэгдлийг зөвшөөрсөн</translation>

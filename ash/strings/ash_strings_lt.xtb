@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="1557622599341396706">Rodyti darbalaukio pavadinimą</translation>
 <translation id="1569384531973824928">Suteikiama prieiga visoms programoms ir svetainėms, turinčioms fotoaparato ir mikrofono leidimus. Gali reikėti atnaujinti tinklalapį arba paleisti programą iš naujo.</translation>
+<translation id="1570235441606255261">„Steam“ diegimo programa</translation>
 <translation id="1571697193564730395">Perjungti netrukdymo režimą. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Pasirinkta kairioji kraštinė rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="1576623706766186887">Tolinti, kai įjungtas didintuvas</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
 <translation id="1637505162081889933">Įrenginių: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Įkeliama</translation>
+<translation id="1642895994345928121">Nepakanka įrenginio saugyklos vietos, kad būtų galima atidaryti šią programą. Atlaisvinkite vietos ir bandykite dar kartą.</translation>
 <translation id="1647986356840967552">Ankstesnis puslapis</translation>
 <translation id="1651914502370159744">Atidaryti istorijos puslapį</translation>
 <translation id="1668469839109562275">Įtaisytasis VPN</translation>
@@ -401,6 +403,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2383521554963939360">Programų ir skirtukų grupės</translation>
 <translation id="2386292613071805067">Pasirinkti viską puslapyje</translation>
 <translation id="2389423187722941333">Perjungti „Gemini“</translation>
+<translation id="2391805183137601570">Atidaryti „Steam“</translation>
 <translation id="2392659840443812875">Nėra pasiekiamo viešosios interneto prieigos taško. Įsitikinkite, kad įrenginys yra netoliese ir įjungtas „Bluetooth“.</translation>
 <translation id="2397416548179033562">Rodyti „Chrome“ meniu</translation>
 <translation id="240006516586367791">Medijos valdikliai</translation>
@@ -422,12 +425,14 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="243878895369688216">Atidaryta vakar</translation>
 <translation id="2440978926514840421">GIF įrašas įrašytas</translation>
 <translation id="2441427462554639370">Įrašymas baigtas, nes yra labai mažai saugyklos vietos</translation>
+<translation id="2447587550790814052">Dabar galite naudoti „Steam“, skirtą „Chromebook“ (beta versija)</translation>
 <translation id="2449089818483227734">Senka akumuliatorius</translation>
 <translation id="2450205753526923158">Ekrano kopijos režimas</translation>
 <translation id="2453860139492968684">Užbaigti</translation>
 <translation id="2455994958736234930">Pridėti www. ir .com adreso juostoje, tada atidaryti svetainę</translation>
 <translation id="2456008742792828469">Kalendorius, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Gilintis</translation>
+<translation id="2462332841984057083">„Steam“ jau nustatoma. Palaukite, kol bus baigta sąranka.</translation>
 <translation id="2465145153332031561">Akumuliatoriaus būsena: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, ciklų skaičius: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Patvirtinkite skyrą</translation>
 <translation id="2475783092753560388">Įterpti „<ph name="SEARCH_RESULT_TEXT" />“</translation>
@@ -439,6 +444,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">„<ph name="DESK_NAME" />“ peržiūra. Aktyvus darbalaukis.</translation>
 <translation id="2486405091093637109">„<ph name="DISPLAY_NAME" />“ skyra pakeista į <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Jei nepatvirtinsite, ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Prisijungti</translation>
+<translation id="2494555621641843783">Nepavyko įdiegti „Steam“</translation>
 <translation id="2496180316473517155">Naršymo istorija</translation>
 <translation id="2499445554382787206">Darbalaukio profilio meniu. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Fiksuotos pozicijos klavišai</translation>
@@ -512,6 +518,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2727175239389218057">Atsakyti</translation>
 <translation id="2727744317940422214">Deja, kažkas nepavyko. Pateikite atsiliepimą apraše nurodydami #bruschetta. Klaidos kodas yra <ph name="ERROR" />. Nepavyko išvalyti. Tai gali reikėti atlikti neautomatiškai.</translation>
 <translation id="2727977024730340865">Prijungtas mažos galios įkroviklis. Akumuliatoriaus įkrovimas gali būti nepatikimas.</translation>
+<translation id="2737538893171115082">Jūsų administratorius užblokavo „Steam“, skirtą „Chromebook“ (beta versija). Administratorius turi įjungti toliau nurodytą politiką.</translation>
 <translation id="2743301740238894839">Pradėti</translation>
 <translation id="2743387203779672305">Kopijuoti į iškarpinę</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3033912566804961911">Sujungti su „<ph name="DESK_NAME" />“</translation>
 <translation id="3039939407102840004">Rašiklio akumuliatoriaus lygis: <ph name="PERCENTAGE" /> proc.</translation>
 <translation id="304097922505898963">Atidaryti pagrindinių šaukinių programą</translation>
+<translation id="3040982432432547149">Padėkite tobulinti „Steam“, skirtą „Chromebook“</translation>
 <translation id="304417730895741346">Prisegtos ir atidarytos programos yra lentynoje. Jei norite prisegti programą lentynoje, dešiniuoju pelės klavišu spustelėkite programą arba palieskite jutiklinę dalį dviem pirštais.</translation>
 <translation id="3045670165536837541">Pasirinkta viršutinė dešinioji rankenėlė, naudokite rodyklių klavišus, kad perkeltumėte</translation>
 <translation id="3047761520276763270">Pabandykite pasakyti:</translation>
@@ -656,6 +664,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3181441307743005334">Paleidimas iš naujo gali šiek tiek užtrukti</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Prisijungta prie įrenginio}one{Prisijungta prie # įrenginio}few{Prisijungta prie # įrenginių}many{Prisijungta prie # įrenginio}other{Prisijungta prie # įrenginių}}</translation>
 <translation id="3203405173652969239">Prieiga jungikliu įgalinta</translation>
+<translation id="3204648577100496185">Su šia programa susieti duomenys gali būti pašalinti iš šio įrenginio</translation>
 <translation id="3206735939915734551">Įjungti ir (arba) išjungti didžiąsias raides</translation>
 <translation id="3207953481422525583">Naudotojo nustatymai</translation>
 <translation id="3208321278970793882">Programa</translation>
@@ -677,6 +686,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3271554781793662131">Ieškokite, jei norite įterpti</translation>
 <translation id="3274634049061007184">Peržiūrėkite telefono programas</translation>
 <translation id="3279230909244266691">Šis procesas gali užtrukti kelias minutes. Paleidžiamas virtualus įrenginys.</translation>
+<translation id="3285465040399788513">Nepakanka įrenginio saugyklos vietos, kad būtų galima užbaigti sąranką. Atlaisvinkite vietos ir bandykite dar kartą.</translation>
 <translation id="3289364673986435196">Įjungimo meniu</translation>
 <translation id="3289544412142055976">„Linux“ programos šiuo metu nepalaikomos</translation>
 <translation id="3289674678944039601">Įkraunama naudojant adapterį</translation>
@@ -702,6 +712,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3368922792935385530">Prijungta</translation>
 <translation id="3369111525500416043">Terminas netrukus</translation>
 <translation id="3371140690572404006">USB-C įrenginys (prievadas dešinėje, priekinėje dalyje)</translation>
+<translation id="3373196968211632036">„Steam“, skirta „Chromebook“ (beta versija), nepasiekiama prisijungus prie „Google“ vaikų paskyrų</translation>
 <translation id="3375634426936648815">Prijungta</translation>
 <translation id="3386978599540877378">viso ekrano didinimas</translation>
 <translation id="3387527074123400161">„Chromium“ OS</translation>
@@ -739,6 +750,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3477079411857374384">„Control“ + „Shift“ + „Space“</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Lentyna automatiškai slepiama</translation>
+<translation id="3496797737329654668">Pradėkite žaisti</translation>
 <translation id="3505066820268455558">Akumuliatorius įkraunamas</translation>
 <translation id="3509391053705095206">Nepavyko rasti telefono. Patikrinkite, ar įjungtas telefono „Bluetooth“ ryšys.</translation>
 <translation id="3510164367642747937">Paryškinti pelės žymeklį</translation>
@@ -800,6 +812,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="3633851487917460983">Atidaryti iškarpinę</translation>
 <translation id="363473492175527493">Nustatytas dėmesio sutelkimas į užduotį „<ph name="TASK_NAME" />“. Paspauskite „Enter“, kad galėtumėte redaguoti užduotį.</translation>
 <translation id="3638400994746983214">Perjunkite privatumo ekraną. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Reikia atnaujinti „Steam“, skirtą „Chromebook“ (beta versija). Paleiskite „Chromebook“ iš naujo ir bandykite dar kartą.</translation>
 <translation id="3649256019230929621">Sumažinti langą</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3702809606464356667">Rodomi dabartinio darbastalio langai. Paspauskite rodyklės aukštyn klavišą, kad būtų rodomi visų darbastalių langai</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Pramogos</translation>
+<translation id="370665806235115550">Įkeliama...</translation>
 <translation id="3707093869106077605">Elementai „<ph name="UNAVAILABLE_DLC_ONE" />“ ir „<ph name="UNAVAILABLE_DLC_TWO" />“ nepasiekiami.</translation>
 <translation id="3708186454126126312">Anksčiau susieti</translation>
 <translation id="3712143870407382523">Pasirinkti langą šiai pusei</translation>
@@ -860,6 +874,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3831226344927851293">Išeiti iš mokomosios medžiagos peržiūros</translation>
 <translation id="383629559565718788">Rodyti klaviatūros nustatymus</translation>
 <translation id="384082539148746321">Ištrinti šabloną?</translation>
+<translation id="3841282988425489367">Nepavyko nustatyti „Steam“, skirtos „Chromebook“ (beta versija)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> <ph name="MODIFIER_TWO" />, tada <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> arba <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Nėra tinklo informacijos</translation>
 <translation id="3848526302597027234">Prieiga prie toliau nurodytų leidimų.</translation>
@@ -951,6 +966,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="4146671046252289537">Perkelti žymeklį į kito žodžio pabaigą</translation>
 <translation id="4150201353443180367">Pateiktis</translation>
 <translation id="4151054805501931758">Portreto retušavimas</translation>
+<translation id="4151449637210235443">Papasakokite apie naujausią žaidimo eigą</translation>
 <translation id="4156293514828496577">Liko <ph name="PERCENTAGE" /> proc. akumuliatoriaus energijos (apie <ph name="TIME_LEFT" />).
 Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veikimo laiką.</translation>
 <translation id="4158003972857765638">Tvarkyti naujame darbalaukyje</translation>
@@ -968,6 +984,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4192112279662688596">Arba</translation>
 <translation id="4193857202545160520">Rodyti paspaudimus ir klavišus</translation>
 <translation id="4193969623755915875">Atidarykite pagalbos skiltį programoje „Explore“ naudodami <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4195001808989442226">Nepavyko atidaryti „Steam“, skirtos „Chromebook“ (beta)</translation>
 <translation id="4195579532193195633">Dabartinė versija: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Tęskite ten, kur baigėte</translation>
 <translation id="4195877955194704651">Automatinis paspaudimų mygtukas</translation>
@@ -983,6 +1000,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4221957499226645091">„<ph name="APP_NAME" />“, įdiegta programa, pristabdyta</translation>
 <translation id="4228078597006700451">Valdikliai nenustatyti</translation>
 <translation id="4230560241506423345">Naujas</translation>
+<translation id="4231231258999726714">„Steam“ nustatoma „Chromebook“ įrenginyje</translation>
 <translation id="4236726631849783264">Priminimas apie siūlomus veiksmus</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Apžvalgos režimas</translation>
@@ -1067,6 +1085,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4471432286288241507">{0,plural, =0{Atnaujinkite įrenginį dabar}=1{Atnaujinkite įrenginį per vieną sekundę}one{Atnaujinkite įrenginį per # sekundę}few{Atnaujinkite įrenginį per # sekundes}many{Atnaujinkite įrenginį per # sekundės}other{Atnaujinkite įrenginį per # sekundžių}}</translation>
 <translation id="4472575034687746823">Pradėkite</translation>
 <translation id="4473489370276014885">„Google“ kontaktai</translation>
+<translation id="4473996011558324141">numatytas laikas</translation>
 <translation id="4477350412780666475">Kitas takelis</translation>
 <translation id="4477751544736611934">Dėl to gali būti taikomas duomenų mokestis.
 Prijungtas vienas įrenginys.</translation>
@@ -1108,6 +1127,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4585337515783392668">Sustabdyti perdavimą į nežinomą imtuvą</translation>
 <translation id="4596144739579517758">Tamsioji tema išjungta</translation>
 <translation id="4596442969149038771"><ph name="USER" /> bendrino</translation>
+<translation id="4598556348158889687">Saugyklos tvarkymas</translation>
 <translation id="4610493115106525653">Gera išvestis</translation>
 <translation id="4611292653554630842">Prisijungti</translation>
 <translation id="462160925400706389">Prijungta: <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4633636853437260449">Paspauskite „Ctrl“ + W, kad ištrintumėte</translation>
 <translation id="4635501805800894201">{0,plural, =0{Grąžinkite ankstesnę įrenginio versiją dabar}=1{Grąžinkite ankstesnę įrenginio versiją per sekundę}one{Grąžinkite ankstesnę įrenginio versiją per # sekundę}few{Grąžinkite ankstesnę įrenginio versiją per # sekundes}many{Grąžinkite ankstesnę įrenginio versiją per # sekundės}other{Grąžinkite ankstesnę įrenginio versiją per # sekundžių}}</translation>
 <translation id="4642092649622328492">Padaryti dalinę ekrano kopiją</translation>
+<translation id="4642587497923912728">„Steam“, skirta „Chromebook“ (beta versija), pasiekiama tik naudojant paskyrą, prie kurios buvo prisijungta šiame „Chromebook“ įrenginyje pirmiau.</translation>
 <translation id="4644727592819780893">Sritis per maža, kad būtų galima pateikti fotoaparato peržiūroje</translation>
 <translation id="4648249871170053485">„<ph name="APP_NAME" />“, programos rekomendacija</translation>
 <translation id="4649019912155580914">Jūs redagavote</translation>
@@ -1350,6 +1371,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5352250171825660495">Tamsioji tema įjungta</translation>
 <translation id="5354804064646502504">Dėl to gali būti taikomas duomenų mokestis.
 Nėra jokių prijungtų įrenginių.</translation>
+<translation id="5355498626146154079">Turite įjungti žymą „Borealis Enabled“</translation>
 <translation id="5356963482258194581">Perjunkite iš tamsiosios į šviesiąją temą ir atvirkščiai. Dešiniuoju klavišu spustelėkite darbalaukyje ir pasirinkite „Ekrano fonas ir stilius“.</translation>
 <translation id="536019650977002321">Jūsų administratorius neleidžia fiksuoti garso įrašų. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
 <translation id="5361524080961918551">Iš dalies atsisiųsti <ph name="LANGUAGE" /> kalbos failai</translation>
@@ -1360,6 +1382,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5377367976106153749">Įjungti prieigą prie vaizdo kameros?</translation>
 <translation id="5378450298115733949">Daugiau</translation>
 <translation id="5379115545237091094">Per daug bandymų</translation>
+<translation id="5380526436444479273">Palaukite kelias minutes ir bandykite dar kartą</translation>
 <translation id="5383434787520761436">Nėra jokių „Google“ disko failų</translation>
 <translation id="5391307769715781764">Pakeisti išsaugotą darbalaukį?</translation>
 <translation id="5392327145184648521">Skaičiuojamas akumuliatoriaus įkrovos lygis (%)...</translation>
@@ -1371,6 +1394,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5409208741270395213">Žymėti užduotį kaip baigtą</translation>
 <translation id="5413656666631274079">Nustatymų puslapis</translation>
 <translation id="5414198321558177633">Atnaujinamas profilių sąrašas. Tai gali užtrukti kelias minutes.</translation>
+<translation id="5415328625985164836">Tai beta versijos programa. Dabar galite naudodami „Steam“ žaisti kai kuriuos žaidimus „Chromebook“ įrenginyje.</translation>
 <translation id="5426063383988017631">Nustatymų meniu uždarytas</translation>
 <translation id="5428899915242071344">Pradėti rinktis</translation>
 <translation id="5429993543155113935">Inkognito langai šiuo metu nepalaikomi</translation>
@@ -1466,6 +1490,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="5712132663381964774">Viską, ką reikia padaryti „<ph name="PRODUCT_NAME" />“, galite atlikti naudodamiesi programomis. Programas rasite paleidimo priemonėje.</translation>
 <translation id="571295407079589142">Mobiliojo ryšio duomenys išjungti</translation>
 <translation id="5727460725221669831">Jei pamiršote slaptažodį arba neseniai pakeitėte „Google“ paskyros slaptažodį, pabandykite atkurti šį naudotoją.</translation>
+<translation id="572914206753951782">Įsitikinkite, kad „Chromebook“ įrenginyje įdiegta naujausia versija. Tada paleiskite „Chromebook“ iš naujo ir bandykite dar kartą.</translation>
 <translation id="5733630091161562207">Pasisveikinimo pranešimas</translation>
 <translation id="573413375004481890">Šis įrenginys negali palaikyti visų ekranų, todėl vienas iš jų buvo atjungtas</translation>
 <translation id="574392208103952083">Vidutinis</translation>
@@ -1713,6 +1738,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6507042703812908515">Atidarykite Sparčiųjų klavišų programą naudodami „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6507618042428827377">Perjungti į kitą pasiekiamą įvesties metodą</translation>
 <translation id="6508923215158854599">Įsitikinkite, kad „Chromebook“ prijungtas prie to paties „Wi-Fi“ tinklo kaip „Chromecast“ įrenginys.</translation>
+<translation id="6511607461419653612">Paleiskite „Chromebook“ iš naujo ir bandykite dar kartą</translation>
 <translation id="6515727200518652613">Fotoaparatas atsijungė, bandoma prijungti iš naujo.</translation>
 <translation id="651753338596587143">Deja, diegiant atsisiunčiamo turinio būtinuosius šaltinius kažkas nepavyko. Pabandykite paleisti iš naujo. Jei problema išlieka, pateikite atsiliepimą apraše nurodydami #bruschetta. Klaidos kodas: <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Pasirinkite norimą užfiksuoti langą</translation>
@@ -1738,6 +1764,7 @@ Naujas įdiegimas</translation>
 <translation id="6574587113394758819">„<ph name="APP_TITLE" />“ pranešimas paslėptas, nes įjungta peržiūros apsauga</translation>
 <translation id="6574622320167699133">Atrakinta naudojant telefoną. Palieskite arba spustelėkite, kad įjungtumėte.</translation>
 <translation id="6578407462441924264">Be pavadinimo</translation>
+<translation id="6580060371127789208">Baigta <ph name="PERCENTAGE_COMPLETE" /> proc.</translation>
 <translation id="6582012689384648647">Kad galėtumėte klausytis suasmenintų grojaraščių, padedančių sutelkti dėmesį, leiskite pasiekti „YouTube Music“</translation>
 <translation id="6582034443359256692">Skaičiuojamas akumuliatoriaus įkrovos lygis.</translation>
 <translation id="6585808820553845416">Sesija baigsis po <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Naujas įdiegimas</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
 <translation id="672609503628871915">Sužinokite, kas naujo</translation>
 <translation id="6727969043791803658">Prisijungta, akumuliatoriaus įkrovos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
+<translation id="6731320427842222405">Tai gali užtrukti kelias minutes</translation>
 <translation id="6732087373923685049">fotoaparatas</translation>
 <translation id="6732800389263199929">Dar <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Naudojamas fotoaparatas ir mikrofonas</translation>
@@ -1858,6 +1886,7 @@ Naujas įdiegimas</translation>
 <translation id="6961840794482373852">Pakeistas spartusis klavišas „Alt“ + rodyklė aukštyn. Jei norite naudoti klavišą „Page Up“, paspauskite <ph name="LAUNCHER_KEY_NAME" /> klavišą + rodyklę aukštyn.</translation>
 <translation id="696267987219125751">Fotoaparato kadravimo funkcija išjungta.</translation>
 <translation id="6965382102122355670">Gerai</translation>
+<translation id="6967112302799758487">Visos programos ir žaidimai, įdiegti naudojant „Steam“, skirtą „Chromebook“ (beta versija), bus pašalinti iš šio įrenginio. Su šiomis programomis ir žaidimais susieti duomenys taip pat bus pašalinti. Prieš pašalindami būtinai sukurkite atsarginę išsaugotų programų ir žaidimų kopiją.</translation>
 <translation id="6972629891077993081">HID įrenginiai</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>
 <translation id="6980402667292348590">įterpti</translation>
@@ -1889,6 +1918,7 @@ Naujas įdiegimas</translation>
 <translation id="7067196344162293536">Automatinis kaitaliojimas</translation>
 <translation id="7076293881109082629">Prisijungimas</translation>
 <translation id="7076878155205969899">Nutildyti garsą</translation>
+<translation id="7083774521940805477">„Steam“, skirta „Chromebook“ (beta versija), nepasiekiama jūsų „Chromebook“ įrenginyje.</translation>
 <translation id="7083848064787091821">Focus</translation>
 <translation id="7084678090004350185">Perjunkite viešosios interneto prieigos tašką. Viešosios interneto prieigos taškas įjungtas, prijungta tiek įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="7086931198345821656">Norint pritaikyti šį naujinį, reikia naudoti funkciją „Powerwash“ jūsų įrenginyje „<ph name="DEVICE_TYPE" />“. Visi duomenys bus ištrinti. Sužinokite daugiau apie naujausią „<ph name="SYSTEM_APP_NAME" />“ naujinį.</translation>
@@ -1906,12 +1936,14 @@ Naujas įdiegimas</translation>
 <translation id="7130207228079676353">TIKRIAUSIAI SPUSTELĖJAMOS PROGRAMOS</translation>
 <translation id="7131634465328662194">Būsite automatiškai atjungti.</translation>
 <translation id="7143207342074048698">Jungiama</translation>
+<translation id="7143409552554575716">„ChromeOS“ žymos</translation>
 <translation id="7144878232160441200">Kartoti</translation>
 <translation id="7144942256906679589">Akumuliatoriaus būsena</translation>
 <translation id="7145639536026937076">Akumuliatoriaus įkrovos lygis <ph name="PERCENTAGE" /> proc. ir jis įkraunamas. Akumuliatoriaus tausojimo priemonė įjungta.</translation>
 <translation id="7147587499155271409">Naršymo istorijos nėra</translation>
 <translation id="7147657298465433425">Jei norite pasiekti funkcijų klavišus, paspauskite klavišą „fn“ ir viršutinės eilutės klavišus</translation>
 <translation id="7149149900052329230">Tvarkykite vietinius ir „Google“ disko failus programoje Failai.</translation>
+<translation id="7154020516215182599">Pateikite atsiliepimą arba aprašykite problemą. Jei įmanoma, įtraukite problemos atkūrimo veiksmus.</translation>
 <translation id="7165278925115064263">„Alt“ + „Shift“ + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7726391492136714301">Peržiūrėkite telefono pranešimus ir programas</translation>
 <translation id="7727952505535211425">Atidaryti svetainę adreso juostoje naujame skirtuke</translation>
 <translation id="7728657226117099693">Išjungti didžiąsias raides</translation>
+<translation id="7732702411411810416">Įsitikinkite, kad esate prisijungę prie interneto, ir bandykite dar kartą</translation>
 <translation id="7742327441377685481">Nėra pranešimų</translation>
 <translation id="7748275671948949022">Paryškinti Paleidimo priemonės mygtuką lentynoje</translation>
 <translation id="7749443890790263709">Pasiektas didžiausias pultų skaičius.</translation>
@@ -2121,6 +2154,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7866482334467279021">įjungta</translation>
 <translation id="7870790288828963061">Nerasta jokių naujesnių versijų viešojo terminalo programų. Naujinių nėra. Atjunkite USB atmintuką.</translation>
 <translation id="7872786842639831132">Išjungta</translation>
+<translation id="7873386145597434863">„Steam“, skirta „Chromebook“</translation>
 <translation id="7875575368831396199">Panašu, kad „Bluetooth“ ryšys išjungtas jūsų „<ph name="DEVICE_TYPE" />“ įrenginyje. Įjunkite „Bluetooth“, kad galėtumėte naudoti „Phone Hub“.</translation>
 <translation id="7884446017008693258">Viešosios interneto prieigos taško nustatymai</translation>
 <translation id="7884902759927478774">Atšaukti skirtuko vilkimą</translation>
@@ -2470,6 +2504,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8980862970816311842">Perkelti programos piktogramą į aplanką ir (arba) iš jo programų tinklelyje</translation>
 <translation id="8982906748181120328">Matomumas netoliese</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Sveiki! Tai – „Chromebook“ skirta „Steam“</translation>
 <translation id="8990809378771970590">Naudojama <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Paspauskite funkcijos klavišą ir spartųjį įterpimą arba „Shift“, kad atšauktumėte.</translation>
 <translation id="899350903320462459">Atrakinkite įrenginį su <ph name="LOGIN_ID" />, kad galėtumėte įvykdyti pranešimo veiksmą</translation>
@@ -2486,6 +2521,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="9047624247355796468">Atidaryti „<ph name="NETWORK_NAME" />“ nustatymus</translation>
 <translation id="9050012935252397793">„Bluetooth“ ryšys nepasiekiamas</translation>
 <translation id="9050999376345823055">Paspauskite „.“, kad atleistumėte</translation>
+<translation id="9061694916020926968">Kad galėtumėte naudoti „Steam“, skirtą „Chromebook“ (beta versija), turite būti prisijungę prie „Google“ paskyros. Prisijunkite ir bandykite dar kartą.</translation>
 <translation id="906458777597946297">Padidinti langą</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9068849894565669697">Pasirinkite spalvą</translation>

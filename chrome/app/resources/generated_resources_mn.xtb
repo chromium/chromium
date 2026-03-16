@@ -839,7 +839,6 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />'-г аль хэдийн '<ph name="ACTION" />' үйлдэлд оноосон байна. <ph name="RESPONSE" />-н тулд дурын товчлуурыг дарна уу.</translation>
 <translation id="1567993339577891801">JavaScript консол</translation>
 <translation id="1569466257325986920">Дараагийн удаа таны Google Бүртгэлийн нууц үг өөрчлөгдөхөд таныг Google Бүртгэлдээ нэвтэрсний дараа дотоод өгөгдлийг тань автоматаар сэргээнэ</translation>
-<translation id="1570235441606255261">Steam суулгагч</translation>
 <translation id="1570604804919108255">Мэдэгдлийн дууг нээх</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' хавчуургын фолдерыг үүсгэсэн.</translation>
 <translation id="1571041387761170095">Ямар ч сул эсвэл дахин ашигласан нууц үг байхгүй</translation>
@@ -964,7 +963,6 @@
 <translation id="1642299742557467312">Энэ файл таны төхөөрөмжийг гэмтээж болно</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> болон бусад <ph name="NUMBER_OF_DEVICES" /> Bluetooth төхөөрөмжтэй холбогдсон</translation>
 <translation id="1642494467033190216">Бусад алдаа засах тохируулгыг идэвхжүүлэхээс өмнө үндсэн хамгаалалт болон дахин ачаалах үйлдлийг зогсоож арилгах шаардлагатай.</translation>
-<translation id="1642895994345928121">Энэ аппыг нээхэд төхөөрөмжийн хангалттай хадгалах сан байхгүй байна. Сул зай гаргаад, дахин оролдоно уу.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA SHA-1-тэй гарын үсэг</translation>
 <translation id="1643921258693943800">Ойролцоо хуваалцах онцлогийг ашиглахын тулд Bluetooth болон Wi-Fi-г асаана уу</translation>
 <translation id="1644574205037202324">Түүх</translation>
@@ -2077,7 +2075,6 @@
 <translation id="2390347491606624519">Проксид холбогдох боломжгүй байна, дахин нэвтэрнэ үү</translation>
 <translation id="2390782873446084770">Wi-Fi синк</translation>
 <translation id="2391419135980381625">Стандарт үсгийн фонт</translation>
-<translation id="2391805183137601570">Steam-г нээх</translation>
 <translation id="239185270194776190">Таны Gemini-тай хийсэн харилцан яриа өөр цонхонд байна. Энэ хажуугийн самбарыг ийш зөөхийн тулд самбарын дурын хэсэгт товшино уу.</translation>
 <translation id="2392369802118427583">Идэвхжүүлэх</translation>
 <translation id="2393136602862631930"><ph name="APP_NAME" />-г Chromebook дээрээ тохируулна уу</translation>
@@ -2159,7 +2156,6 @@
 <translation id="2445484935443597917">Шинэ профайл үүсгэх</translation>
 <translation id="2445726032315793326">Хэсэгчилсэн томруулагч</translation>
 <translation id="244641233057214044">Таны хайлттай холбоотой</translation>
-<translation id="2447587550790814052">Та одоо Chromebook-н Steam-г (Бета) ашиглах боломжтой</translation>
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2448810255793562605">Сэлгүүрийн автомат скан</translation>
 <translation id="2450021089947420533">Аяллууд</translation>
@@ -2186,7 +2182,6 @@
 <translation id="2460826998961521840">Google Бүртгэлдээ хадгалсан нэвтрэх түлхүүрийг ашиглахын тулд</translation>
 <translation id="2461550163693930491">Сайтуудад хуваалцсан табуудыг гүйлгэж, томруулахыг бүү зөвшөөр</translation>
 <translation id="2461593638794842577">Та нууц үгнүүдээ зөвхөн энэ төхөөрөмжид хадгалахын тулд энэ тохиргоог унтраах боломжтой</translation>
-<translation id="2462332841984057083">Steam-г аль хэдийн тохируулж байна. Тохируулгыг дуусахыг хүлээнэ үү.</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" />-г нэмсэн</translation>
 <translation id="2464075479326723132">Та Microsoft SharePoint, OneDrive дахь хамгийн сүүлийн үйл ажиллагаа руу тань хялбархан буцаж очиход туслах санал болгосон файлуудыг харж байна.
@@ -2241,7 +2236,6 @@
 <translation id="2491587035099903063"><ph name="LANGUAGE" />-н дуу хоолойг урьдчилан сонсох</translation>
 <translation id="2492461744635776704">Гэрчилгээнд гарын үсэг зурах хүсэлтийг бэлтгэж байна</translation>
 <translation id="249330843868392562">Бичвэрийг ярианд хувиргах тохиргоог нээх</translation>
-<translation id="2494555621641843783">Steam-г суулгах боломжгүй</translation>
 <translation id="2496180316473517155">Хайлтын түүх</translation>
 <translation id="2496616243169085015">Гэрэл зураг</translation>
 <translation id="2497229222757901769">Хулганы хурд</translation>
@@ -2598,7 +2592,6 @@
 <translation id="27349076983469322">Цайвар дэвсгэр</translation>
 <translation id="2735712963799620190">Хуваарь</translation>
 <translation id="2737363922397526254">Гэмтэлтэй байна ...</translation>
-<translation id="2737538893171115082">Chromebook-н Steam-г (Бета) танай администратор блоклосон. Таны администратор эдгээр бодлогыг асаах шаардлагатай:</translation>
 <translation id="2737719817922589807">&amp;Хавчуурга болон жагсаалтууд</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> таны дэлгэцийн контентыг <ph name="TARGET_NAME" />-тай хуваалцахыг хүсэж байна.</translation>
 <translation id="2738030019664645674">Сайтуудад таны төхөөрөмж дээр суулгасан фонтуудыг ашиглахыг бүү зөвшөөр</translation>
@@ -3062,7 +3055,6 @@
 <translation id="3039491566278747710">Офлайн удирдамжийг төхөөрөмж дээр суулгаж чадсангүй.</translation>
 <translation id="303955801043931176">Цонх хаагдсан</translation>
 <translation id="3040435070100611531">Таны Google Wallet-н карт</translation>
-<translation id="3040982432432547149">Бидэнд Chromebook-д зориулсан Steam-г сайжруулахад тусална уу</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" />-н байгаа табын бүлэгт нэгдэх</translation>
 <translation id="3042097545107738107">Оновчилсон байдлаар цэнэглэх стратегийг өөрчилнө үү.</translation>
 <translation id="3043016484125065343">Хавчуургаа харахын тулд нэвтрэх</translation>
@@ -3273,7 +3265,6 @@
 <translation id="3201422919974259695">Боломжтой USB төхөөрөмжүүд энд харагдана.</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" />-д дэлгэц дамжуулахыг түр зогсоох</translation>
 <translation id="3202578601642193415">Хамгийн шинэ</translation>
-<translation id="3204648577100496185">Энэ апптай холбоотой өгөгдлийг энэ төхөөрөмжөөс хасаж магадгүй</translation>
 <translation id="3206289903841621620">Хэрэглэгчийн <ph name="NUMBER" />-р толь</translation>
 <translation id="3207344462385471911">Таны саяхны үйл ажиллагаанд тулгуурлан сонирхлыг тань татаж магадгүй санал болгосон хайлт болон худалдан авалтын хөнгөлөлтийг та харж байна.
         <ph name="BREAK" />
@@ -3381,7 +3372,6 @@
 <translation id="3283148363895519428">Тохируулгыг үргэлжлүүлэхийн тулд утасныхаа зааварчилгааг дагана уу. Таны утас ойролцоо бөгөөд Bluetooth-г асаасан эсэхийг шалгана уу.</translation>
 <translation id="3284050785966252943">Автоматаар бөглөх хэсгийн мета өгөгдлийг урьдчилан үзэх</translation>
 <translation id="3285322247471302225">Шинэ &amp;Цонх</translation>
-<translation id="3285465040399788513">Тохируулгыг дуусгахад хангалттай хадгалах сан байхгүй байна. Сул зай гаргаад дахин оролдоно уу.</translation>
 <translation id="3285500645985761267">Холбоотой сайтуудад таны бүлэг дэх үйл ажиллагааг харахыг зөвшөөрнө үү</translation>
 <translation id="328571385944182268">Таны нууц үгийг хадгалах уу?</translation>
 <translation id="3289668031376215426">Автоматаар томруулах</translation>
@@ -3504,7 +3494,6 @@
 <translation id="3372602033006349389">Бусад төхөөрөмжид</translation>
 <translation id="337286756654493126">Програмд нээсэн хавтасуудыг унших</translation>
 <translation id="3373059063088819384">Уншлагын горимд нээх</translation>
-<translation id="3373196968211632036">Chromebook-н Steam (Бета) нь хүүхдийн Google Бүртгэлд боломжгүй</translation>
 <translation id="3373701465337594448">Асаалттай үед таны зочилсон сонирхлыг тань таамагладаг сайтуудын жагсаалт энд гарч ирнэ</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />'-г '<ph name="NEW_FOLDER_TITLE" />' руу зөөсөн.</translation>
 <translation id="3376035595160918049">Аппын шинэчлэлтийг хянах</translation>
@@ -3687,7 +3676,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (сонгоогүй)</translation>
 <translation id="3496689104192986836">Батарейн түвшин <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Цуглуулах дата сурвалжууд</translation>
-<translation id="3496797737329654668">Тоглоцгооё</translation>
 <translation id="3496995426334945408">Сайтууд ихэвчлэн видео тоглоом эсвэл веб маягтууд зэрэг интерактив онцлогуудыг үзүүлэхийн тулд JavaScript-г ашигладаг</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> (бүтээгдэхүүн <ph name="PRODUCT_ID" />)-н USB төхөөрөмж</translation>
 <translation id="3497560059572256875">Doodle-г хуваалцах</translation>
@@ -3900,7 +3888,6 @@
 <translation id="3637203148990213388">Нэмэлт бүртгэлүүд</translation>
 <translation id="3640347231390550691">Нууц үгээ фишингээс хамгаалаарай</translation>
 <translation id="364100968401221170">Интернэтээр үзсэн өгөгдлийг синк хийсэн бүх төхөөрөмж болон Google Бүртгэлээсээ устгахын тулд <ph name="BEGIN_LINK" />нэвтэрнэ үү<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steam for Chromebook-г (бета) шинэчлэх шаардлагатай. Chromebook-ээ дахин эхлүүлээд, дахин оролдоно уу.</translation>
 <translation id="3641299252000913351">Модемын жижиг программыг шинэчилж байна. Төхөөрөмжөө бүү унтраа.</translation>
 <translation id="3641456520301071208">Сайтууд таны байршлыг асуух боломжтой</translation>
 <translation id="3642064270296434810">Та одоо дэлгэц дээрээ харсан дурын зүйлийг хайхад Google Lens-г ашиглах боломжтой</translation>
@@ -4237,7 +4224,6 @@
 <translation id="383891835335927981">Томруулж, жижигрүүлсэн сайт алга</translation>
 <translation id="3839516600093027468"><ph name="HOST" />-г түр санах ой харахыг тогтмол хориглох</translation>
 <translation id="3840096463915153852">Харилцан ярианы түүх</translation>
-<translation id="3841282988425489367">Chromebook-н Steam-г (Бета) тохируулах боломжгүй</translation>
 <translation id="3841319830220785495">Өгөгдмөл төрөлхийн дуу хоолой</translation>
 <translation id="3841356782900714251">Ухаалаг карт уншигчид</translation>
 <translation id="3841964634449506551">Нууц үг буруу байна</translation>
@@ -4684,7 +4670,6 @@
 <translation id="4148195018520464922">Та тодорхой хэрэглэгчдийг нэвтрэхийг хязгаарлах боломжтой. Энэ нь нэвтрэх дэлгэц дээрх "Хүн нэмэх" сонголтыг хасна. Та мөн одоогийн хэрэглэгчдийг хасах боломжтой.</translation>
 <translation id="4148957013307229264">Суулгаж байна...</translation>
 <translation id="4150201353443180367">Дэлгэц</translation>
-<translation id="4151449637210235443">Саяхны тоглоомынхоо тухай бидэнд хэлнэ үү</translation>
 <translation id="4151503145138736576">Цэвэрлэх ямар ч офлайн хадгалах сан байхгүй</translation>
 <translation id="4152011295694446843">Та хавчуургуудаа эндээс олох болно</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 цонх}other{# цонх}}</translation>
@@ -4735,7 +4720,6 @@
 <translation id="4193251682249731404">Итгэмжлэгдсэн CA</translation>
 <translation id="4193575319002689239">Картыг харуулах</translation>
 <translation id="419427585139779713">Нэг удаад нэг үе оруулах</translation>
-<translation id="4195001808989442226">Chromebook-н Steam-г (Бета) нээх боломжгүй</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
 <translation id="4195814663415092787">Орхисон хэсгээсээ үргэлжлүүлэх</translation>
 <translation id="4198268995694216131">Бусад сайт</translation>
@@ -4781,7 +4765,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Энэ өргөтгөлийг зөвшөөрдөггүй}other{Зарим өргөтгөлийг зөвшөөрдөггүй}}</translation>
 <translation id="4231053948789591973">Дамжуулалтыг одоогоор түр зогсоосон. Та дэлгэцээ дамжуулахыг хүссэн үедээ үргэлжлүүлэх эсвэл зогсоох боломжтой.</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> дээрээ Google Play-с апп болон тоглоомууд суулгана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Chromebook-н Steam-г тохируулах</translation>
 <translation id="4232375817808480934">Kerberos-г тохируулах</translation>
 <translation id="4232376164796433044">Нууц үг, автоматаар бөглөх хэсэг</translation>
 <translation id="4232484478444192782">Таны Android утас бүх зүйлд тань анхаарал тавьсан. Таны Wi-Fi болон нууц үгийг шилжүүлж байна.</translation>
@@ -5140,7 +5123,6 @@
 <translation id="4472533928615930332"><ph name="STYLE" /> хэв маягтай, <ph name="SUBJECT" />-н сэдэвтэй үүсгэсэн <ph name="INDEX" />-р зураг</translation>
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4473559657152613417">Таб дээр хулганын баруун талыг товшоод, "Табыг шинэ бүлэгт нэмэх"-ийг сонгоно уу</translation>
-<translation id="4473996011558324141">хугацааг тооцоолж байна</translation>
 <translation id="4474155171896946103">Бүх цонхнуудыг хадгалж жагсаах ...</translation>
 <translation id="4476198534886170024">Зөвшөөрсөн. <ph name="LINK_BEGIN" />Системийн камерын хандалтыг<ph name="LINK_END" /> асаана уу.</translation>
 <translation id="4476590490540813026">Тамирчин</translation>
@@ -5376,7 +5358,6 @@
 <translation id="4638930039313743000">ADB алдаа засахыг идэвхжүүлэх</translation>
 <translation id="4639390152280993480">Энэ хуудасны хялбарчилсан харагдах байдлыг харахын тулд Бусад хэрэгсэл &gt; Унших горим руу очно уу</translation>
 <translation id="4641539339823703554">Chrome-оос системийн цагийг тохируулах боломжгүй байсан. Доор байгаа цагийг шалгаад шаардлагатай бол зөв болгоно уу.</translation>
-<translation id="4642587497923912728">Chromebook-н Steam (Бета) нь зөвхөн энэ Chromebook-д анх нэвтэрсэн бүртгэлд боломжтой.</translation>
 <translation id="4643612240819915418">&amp; Шинэ цонхонд видеог нээх</translation>
 <translation id="4643833688073835173">Таны Chromebook нь таны төхөөрөмжийн урд байгаа хүмүүсийг илрүүлэхдээ бүрэлдэхүүн мэдрэгчийг ашиглана. Бүх өгөгдлийг таны төхөөрөмж дээр тэр даруй боловсруулдаг бөгөөд дараа нь устгадаг. Мэдрэгчийн өгөгдлийг Google рүү хэзээ ч илгээдэггүй.</translation>
 <translation id="4644205769234414680">Нууцлалтай горимд зөвшөөрөх</translation>
@@ -6381,7 +6362,6 @@
 <translation id="5353769147530541973">Идэвхгүй болгохын тулд <ph name="SITE_NAME" />-г табын жагсаалтаас хасна уу</translation>
 <translation id="5355099869024327351">Туслахад танд мэдэгдэл харуулахыг зөвшөөрөх</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
-<translation id="5355498626146154079">Та “Borealis Enabled” дарцгийг асаах шаардлагатай</translation>
 <translation id="5355501370336370394">Байгууллагын төхөөрөмж бүртгүүлэх</translation>
 <translation id="5357010010552553606">Бүтэн дэлгэцэд автоматаар орохыг зөвшөөрдөггүй</translation>
 <translation id="5359910752122114278">1 илэрц</translation>
@@ -6411,7 +6391,6 @@
 <translation id="5376931455988532197">Файл хэтэрхий том байна</translation>
 <translation id="5377367976106153749">Камерын хандалтыг асаах уу?</translation>
 <translation id="5379140238605961210">Микрофон руу нэвтрэхийг үргэлжүүлэн хориглох</translation>
-<translation id="5380526436444479273">Хэдэн минут хүлээгээд дахин оролдоно уу</translation>
 <translation id="5382591305415226340">Дэмжсэн холбоосыг удирдах</translation>
 <translation id="5384401776498845256">Тантай хэн хуваалцаж болох вэ?</translation>
 <translation id="5385628342687007304">Энэ нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмждөө ашиглахын тулд Google Бүртгэлдээ хадгална уу.</translation>
@@ -6466,7 +6445,6 @@
 <translation id="5414198321558177633">Профайлын жагсаалтыг сэргээж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
 <translation id="5414566801737831689">Өөрийн ордог вэбсайтуудынхаа дүрснүүдийг уншуулна уу</translation>
 <translation id="5414836363063783498">Баталгаажуулж байна ...</translation>
-<translation id="5415328625985164836">Энэ нь бета программ юм. Та одоо Steam-г Chromebook-дээ зарим тоглоомыг тоглохдоо ашиглах боломжтой.</translation>
 <translation id="5415497281076257439">Хэллэг</translation>
 <translation id="5415871492522952905">Таны түүх, табууд бүх төхөөрөмж дээр тань байх бөгөөд ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
 <translation id="5417293056300086453">Энэ сайт хамгаалагдсан контент тоглуулахын тулд танигч ашиглах боломжтой.</translation>
@@ -6909,7 +6887,6 @@
 <translation id="5727728807527375859">Өргөтгөлүүд, аппликейшнууд болон сэдвүүд нь таны компьютерт хохирол учруулж болох юм. Та цааш нь үргэлжлүүлэхийг хүсч байна уу?</translation>
 <translation id="5728072125198221967">Google-н холбосон үйлчилгээнүүд</translation>
 <translation id="5728450728039149624">Smart Lock-н дэлгэцийн түгжээний сонголт</translation>
-<translation id="572914206753951782">Таны Chromebook хамгийн сүүлийн үеийн хувилбартай эсэхийг шалгана уу. Дараа нь Chromebook-ээ дахин эхлүүлээд дахин оролдоно уу.</translation>
 <translation id="5729712731028706266">Харах</translation>
 <translation id="5731247495086897348">Хуулан буулгах &amp; Үргэлжлүүлэх</translation>
 <translation id="5733109311583381874">Хөрвүүлэлтийн хувилбаруудыг өөрчлөхийн тулд та өөрийн үгийг хэрэглэгчийн тольд нэмнэ үү.</translation>
@@ -7329,6 +7306,7 @@
 <translation id="6011193465932186973">Хурууны хээ</translation>
 <translation id="6011308810877101166">Хайлтын зөвлөмжийг сайжруулах</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" />-д холбоос илгээж байна</translation>
+<translation id="6013003831291591200">Даалгаврыг дуусгасан</translation>
 <translation id="6013027779243312217">Аудио болон видеондоо хадмал аваарай</translation>
 <translation id="6014293228235665243">Уншаагүй</translation>
 <translation id="6015776718598175635">Од</translation>
@@ -8024,7 +8002,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" энэ төхөөрөмжид дараах аппыг суулгах хүсэлтэй байна:}other{"<ph name="APP_NAME" />" энэ төхөөрөмжид дараах аппуудыг суулгах хүсэлтэй байна:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" />-тай холбоотой</translation>
 <translation id="6508261954199872201">Аппликейшн: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Chromebook-ээ дахин эхлүүлээд дахин оролдоно уу</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />-г устгах талаар бодож үзээрэй. Ингэснээр энэ төхөөрөмжийг ашигладаг бусад хүн таны нууц үгийг харах боломжгүй болно</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> сэтгэл санааны байдалтай, <ph name="SUBJECT" />-н сэдэвтэй үүсгэсэн <ph name="INDEX" />-р зураг.</translation>
 <translation id="6513247462497316522">Хэрэв та өөр сүлжээнд холбогдоогүй байгаа тохиолдолд Google Chrome нь таны гар утасны дата эрхийг ашиглах болно.</translation>
@@ -8133,7 +8110,6 @@
 <translation id="657866106756413002">Сүлжээний эрүүл мэндийн агшин зураг</translation>
 <translation id="6579369886355986318">Бүх &amp;хяналтыг харуулах</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Дэлгэцийн агуулгыг хуваалцаж байна</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />%-ийг гүйцээсэн</translation>
 <translation id="6580203076670148210">Скан хийх хурд</translation>
 <translation id="6580676117087365538">Энэ өргөтгөлийг бүх компьютер дээрээ авахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="6581356304040102696">Нууц үгийг импортлох боломжгүй. Файлын хэмжээ 1 МБ-аас бага байх ёстой.</translation>
@@ -8353,7 +8329,6 @@
 <translation id="6729280095610283088">Ойн дээгүүрх туйлын туяаны тод гэрэл.</translation>
 <translation id="6729493062119577923">Хуваалцсан табын бүлгийн үйл ажиллагаа</translation>
 <translation id="6730744976532805323">Таныг таб сэлгэсэн ч одоогийн табыг Gemini-тай хуваалцана</translation>
-<translation id="6731320427842222405">Та түр хүлээнэ үү.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Хаяг</translation>
 <translation id="6737663862851963468">Kerberos тасалбарыг хасах</translation>
@@ -8703,7 +8678,6 @@
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Төхөөрөмж</translation>
 <translation id="6966831944134814478">Унтраах</translation>
-<translation id="6967112302799758487">Chromebook-н Steam-г (Бета) ашиглан суулгасан аливаа апп болон тоглоомыг энэ төхөөрөмжөөс хасна. Эдгээр апп болон тоглоомтой холбоотой өгөгдлийг мөн хасна. Устгахаасаа өмнө хадгалсан апп болон тоглоомуудыг хуулбарлаарай.</translation>
 <translation id="6967430741871315905">Төхөөрөмжийг зөвшөөрөгдсөн эсэхийг шалгах боломжгүй байна</translation>
 <translation id="6968288415730398122">Дэлгэцийн түгжээг тохируулахын тулд нууц үгээ оруулна уу</translation>
 <translation id="6969047215179982698">Ойролцоо хуваалцах онцлогийг унтраах</translation>
@@ -8874,7 +8848,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" />-г таны администратор удирддаг</translation>
 <translation id="7082850163410901674">Mac системийн тохиргоонд мэдэгдлүүдийг унтраасан</translation>
 <translation id="7083729794572207131">Сайтууд ихэвчлэн таны сайт дээрх хэрэглээг сайжруулахын тулд аппуудыг суулгахыг хүсдэг</translation>
-<translation id="7083774521940805477">Chromebook-н Steam (Бета) нь таны Chromebook-д боломжгүй.</translation>
 <translation id="7084095352418993433">Энэ хуудасны тухай Google-с асуух: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(тохируулаагүй)</translation>
 <translation id="7086377898680121060">Гэрэлтүүлгийг нэмэх</translation>
@@ -8953,7 +8926,6 @@
 <translation id="7141844554192012199">Хяналт</translation>
 <translation id="714301620504747562">Үзэх болон хайх нь стандарт урьдчилан ачаалахаас илүү хурдан байдаг</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
-<translation id="7143409552554575716">ChromeOS-н дарцгууд</translation>
 <translation id="7144363643182336710">Мэдэгдлүүд дэлгэцэд гарч ирэхгүй. Та дэлгэцийн баруун доор байх Бүү саад бол онцлогийн дүрс тэмдгийг товшсоноор мэдэгдлүүдийг харах боломжтой хэвээр байна.</translation>
 <translation id="7144856456372460176"><ph name="APP" />-г &amp;суулгах...</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
@@ -8964,7 +8936,6 @@
 <translation id="7152478047064750137">Энэ өргөтгөл ямар нэгэн тусгай зөвшөөрөл шаарддаггүй</translation>
 <translation id="7153101072880472645">Өндөр ялгарлыг асаах/унтраах</translation>
 <translation id="715396040729904728">эхлүүлэгч + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Санал хүсэлтээ хуваалц эсвэл асуудлаа тайлбарлана уу. Боломжтой бол асуудлаа дахин гаргах алхмуудыг оруулаарай.</translation>
 <translation id="7154130902455071009">Өөрийн эхлэх хуудсыг :<ph name="START_PAGE" /> болгож өөрчлөх</translation>
 <translation id="7155161204362351654">Илүү чанартай видео авч батарейн ажиллах хугацаагаа хэмнээрэй. Видео нь зөвхөн таны дамжуулалтыг нь идэвхжүүлсэн дэлгэцэд тоглоно.</translation>
 <translation id="7159695867335480590">Тоглуулах/түр зогсоох</translation>
@@ -9817,7 +9788,6 @@
 <translation id="7728668285692163452">Сувагт орсон өөрчлөлт дараа хийгдэнэ</translation>
 <translation id="7730449930968088409">Дэлгэцийнхээ агуулгыг аваарай</translation>
 <translation id="7730683939467795481">Энэ хуудсыг "<ph name="EXTENSION_NAME" />" өргөтгөлөөр өөрчилсөн байна</translation>
-<translation id="7732702411411810416">Та интернэтэд холбогдсон эсэхээ шалгаад дахин оролдоно уу</translation>
 <translation id="773511996612364297">Өргөлтийн тэмдгүүд</translation>
 <translation id="7735558909644181051">Завсрын сертификат</translation>
 <translation id="7736119438443237821">Та энэ төхөөрөмж дээрх нэвтрэх түлхүүрүүдийнхээ хандалтыг хасах гэж байна</translation>
@@ -10016,7 +9986,6 @@
 <translation id="7871691770940645922">Виртуал Брайлийн дэлгэц</translation>
 <translation id="787268756490971083">Унтраалттай</translation>
 <translation id="7872758299142009420">Хэт олон бүлэг байрлуулсан байна: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Chromebook-н Steam</translation>
 <translation id="7876027585589532670">Товчлолыг засах боломжгүй</translation>
 <translation id="7876243839304621966">Бүгдийг устгах</translation>
 <translation id="7877126887274043657">&amp;Синк хийхтэй холбоотой асуудлыг засах</translation>
@@ -11670,7 +11639,6 @@
 <translation id="8983018820925880511">Энэ шинэ профайлыг <ph name="DOMAIN" /> удирдана. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г засах боломжтой</translation>
 <translation id="8984694057134206124">Та бүх хүнд <ph name="MINUTES" /> минутын турш харагдана. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook-д зориулсан Steam-д тавтай морилно уу</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> өдрийн өмнө идэвхтэй</translation>
 <translation id="8985561265504464578">Илрүүлэх босго</translation>
 <translation id="8985661493893822002">Та өөрийн <ph name="DEVICE_TYPE" />-д нэвтрэхийн тулд интернэтэд холбогдоно уу.</translation>
@@ -11802,7 +11770,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Хоногт ойролцоогоор 1 мэдэгдэл}other{Хоногт ойролцоогоор {NUM_NOTIFICATION} мэдэгдэл}}</translation>
 <translation id="9058760336383947367">Принтерийн PPD харах</translation>
 <translation id="9061521313218438086">Хэрэв Chrome таны аль нэг нууц үгийг олон нийтийн өгөгдлийн зөрчлөөс олбол таныг нэвтэрсэн тохиолдолд Google Нууц үгний менежер танд зориулж нууц үгийг тань өөрчлөхийг санал болгож болно.</translation>
-<translation id="9061694916020926968">Chromebook-н Steam (Бета)-г ашиглахын тулд та Google Бүртгэлд нэвтэрсэн байх шаардлагатай. Нэвтрээд дахин оролдоно уу.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Навигацын товчлолыг арилгах</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />-с <ph name="ERROR_LINE_END" /> мөрийн алдаа</translation>

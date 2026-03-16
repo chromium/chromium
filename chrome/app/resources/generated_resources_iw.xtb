@@ -840,7 +840,6 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' כבר מוקצה לפעולה '<ph name="ACTION" />'. יש להקיש על מקש כלשהו כדי <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">‏קונסולת JavaScript</translation>
 <translation id="1569466257325986920">‏בשינוי הבא של הסיסמה לחשבון Google, הנתונים המקומיים ישוחזרו באופן אוטומטי אחרי הכניסה לחשבון Google</translation>
-<translation id="1570235441606255261">‏מנהל ההתקנה של אפליקציית Steam</translation>
 <translation id="1570604804919108255">ביטול ההשתקה של ההתראות</translation>
 <translation id="1570990174567554976">נוצרה תיקיית הסימניות '<ph name="BOOKMARK_TITLE" />'.</translation>
 <translation id="1571041387761170095">אין סיסמאות חלשות או סיסמאות בשימוש חוזר</translation>
@@ -965,7 +964,6 @@
 <translation id="1642299742557467312">הקובץ הזה עלול להזיק למכשיר</translation>
 <translation id="1642492862748815878">‏קיים חיבור אל <ph name="DEVICE" /> ול-<ph name="NUMBER_OF_DEVICES" /> מכשירי Bluetooth נוספים</translation>
 <translation id="1642494467033190216">‏הסרה של הגנת rootfs והפעלה מחדש נדרשות לפני שמפעילים תכונות אחרות של ניפוי באגים.</translation>
-<translation id="1642895994345928121">אין מספיק נפח אחסון במכשיר לפתיחת האפליקציה הזו. עליך לפנות מקום ולנסות שוב.</translation>
 <translation id="1643072738649235303">‏חתימת X9.62 ECDSA עם SHA-1</translation>
 <translation id="1643921258693943800">‏כדי להשתמש באפשרות 'שיתוף בקרבת מקום', יש להפעיל את Bluetooth ו-Wi-Fi</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
@@ -2076,7 +2074,6 @@
 <translation id="2390347491606624519">‏לא ניתן להתחבר לשרת proxy, יש להיכנס שוב</translation>
 <translation id="2390782873446084770">‏סנכרון Wi-Fi</translation>
 <translation id="2391419135980381625">גופן רגיל</translation>
-<translation id="2391805183137601570">‏פתיחת Steam</translation>
 <translation id="239185270194776190">‏השיחה עם Gemini נמצאת בחלון אחר. כדי להעביר את החלונית הצדדית לכאן, צריך ללחוץ עליה (לא משנה איפה).</translation>
 <translation id="2392369802118427583">הפעלה</translation>
 <translation id="2393136602862631930">‏הגדרת האפליקציה <ph name="APP_NAME" /> ב-Chromebook</translation>
@@ -2158,7 +2155,6 @@
 <translation id="2445484935443597917">יצירת פרופיל חדש</translation>
 <translation id="2445726032315793326">זכוכית מגדלת חלקית</translation>
 <translation id="244641233057214044">קשור לחיפוש שלך</translation>
-<translation id="2447587550790814052">‏עכשיו אפשר להשתמש ב-Steam ל-Chromebook (בטא)</translation>
 <translation id="2448312741937722512">סוג</translation>
 <translation id="2448810255793562605">סריקה אוטומטית של גישה באמצעות מתג</translation>
 <translation id="2450021089947420533">תהליכים</translation>
@@ -2185,7 +2181,6 @@
 <translation id="2460826998961521840">‏כדי להשתמש במפתחות הגישה ששמורים בחשבון שלך ב-Google</translation>
 <translation id="2461550163693930491">לא לאפשר לאתרים לגלול ולשנות את מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="2461593638794842577">אפשר להשבית את ההגדרה הזו כדי שסיסמאות יישמרו רק במכשיר הזה</translation>
-<translation id="2462332841984057083">‏כבר התחלנו להתקין את Steam במכשיר. צריך להמתין לסיום ההתקנה.</translation>
 <translation id="2462724976360937186">מזהה מפתח של רשות אישורים</translation>
 <translation id="2462752602710430187">המדפסת <ph name="PRINTER_NAME" /> נוספה</translation>
 <translation id="2464075479326723132">‏מוצגות לך הצעות לקבצים כדי שיהיה לך קל לחזור לפעילות האחרונה שלך ב-Microsoft SharePoint וב-OneDrive.
@@ -2240,7 +2235,6 @@
 <translation id="2491587035099903063">האזנה לקול ב<ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">המערכת מכינה את בקשת החתימה על אישור</translation>
 <translation id="249330843868392562">פתיחת ההגדרות של המרת טקסט לדיבור</translation>
-<translation id="2494555621641843783">‏אי אפשר להתקין את Steam במכשיר</translation>
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2496616243169085015">צילום</translation>
 <translation id="2497229222757901769">מהירות העכבר</translation>
@@ -2596,7 +2590,6 @@
 <translation id="27349076983469322">רקע בהיר</translation>
 <translation id="2735712963799620190">לוח זמנים</translation>
 <translation id="2737363922397526254">כיווץ...</translation>
-<translation id="2737538893171115082">‏האדמין חסם את Steam ל-Chromebook (בטא). הוא צריך להפעיל את כללי המדיניות הבאים:</translation>
 <translation id="2737719817922589807">סימניות ורשימות</translation>
 <translation id="2737916598897808047">האפליקציה <ph name="APP_NAME" /> מבקשת הרשאה לשתף את המסך שלך עם <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">לא לאפשר לאתרים להשתמש בגופנים שמותקנים במכשיר</translation>
@@ -3059,7 +3052,6 @@
 <translation id="3039491566278747710">התקנת המדיניות במצב אופליין במכשיר נכשלה.</translation>
 <translation id="303955801043931176">הכרטיסייה נסגרה</translation>
 <translation id="3040435070100611531">‏הכרטיסים שלך ב-Google Wallet</translation>
-<translation id="3040982432432547149">‏נשמח לעזרתך בשיפור של Steam ב-Chromebook</translation>
 <translation id="304169924727249890">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">שינוי אסטרטגיית הטעינה האופטימלית.</translation>
 <translation id="3043016484125065343">צריך להיכנס לחשבון כדי לראות את הסימניות</translation>
@@ -3270,7 +3262,6 @@
 <translation id="3201422919974259695">‏התקני USB זמינים יופיעו כאן.</translation>
 <translation id="3202499879214571401">השהיה של העברת המסך אל <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">החדש ביותר</translation>
-<translation id="3204648577100496185">יכול להיות שיוסרו מהמכשיר נתונים המשויכים לאפליקציה הזו</translation>
 <translation id="3206289903841621620">מילון משתמש <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">‏מוצגות לך הצעות לחיפושים והנחות לקניות שעשויות לעניין אותך על סמך הפעילות שלך מהזמן האחרון.
         <ph name="BREAK" />
@@ -3378,7 +3369,6 @@
 <translation id="3283148363895519428">‏כדי להמשיך בהגדרה, עליך לפעול לפי ההוראות בטלפון. חשוב לוודא שהטלפון נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
 <translation id="3284050785966252943">תצוגה מקדימה למילוי אוטומטי של מטא-נתונים</translation>
 <translation id="3285322247471302225">כרטיסייה &amp;חדשה</translation>
-<translation id="3285465040399788513">אין מספיק נפח אחסון במכשיר להשלמת ההתקנה. עליך לפנות מקום ולנסות שוב.</translation>
 <translation id="3285500645985761267">אישור לאתרים קשורים לראות את הפעילות שלך בקבוצה</translation>
 <translation id="328571385944182268">לשמור את הסיסמאות?</translation>
 <translation id="3289668031376215426">אותיות רישיות באופן אוטומטי</translation>
@@ -3501,7 +3491,6 @@
 <translation id="3372602033006349389">במכשירים אחרים</translation>
 <translation id="337286756654493126">קריאת תיקיות שנפתחות באפליקציה</translation>
 <translation id="3373059063088819384">פתיחה במצב קריאה</translation>
-<translation id="3373196968211632036">‏אי אפשר להשתמש ב-Steam ל-Chromebook (בטא) בחשבונות Google של ילדים</translation>
 <translation id="3373701465337594448">כשההגדרה מופעלת, מוצגת כאן רשימה של אתרים שיכולים להעריך את תחומי העניין שלך</translation>
 <translation id="3374294321938930390">העברת את '<ph name="BOOKMARK_TITLE" />' אל '<ph name="NEW_FOLDER_TITLE" />'.</translation>
 <translation id="3376035595160918049">בדיקת העדכון לאפליקציה</translation>
@@ -3684,7 +3673,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (לא נבחרה)</translation>
 <translation id="3496689104192986836">רמת הטעינה של הסוללה: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">מקורות נתונים לאיסוף</translation>
-<translation id="3496797737329654668">רוצה להתחיל לשחק?</translation>
 <translation id="3496995426334945408">‏לרוב אתרים משתמשים ב-JavaScript כדי להציג תכונות אינטראקטיביות, כמו משחקי וידאו או טפסים באינטרנט</translation>
 <translation id="3497501929010263034">‏התקן USB מ-<ph name="VENDOR_NAME" /> (מוצר <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">שיתוף הדודל</translation>
@@ -3897,7 +3885,6 @@
 <translation id="3637203148990213388">חשבונות נוספים</translation>
 <translation id="3640347231390550691">הגנה על הסיסמאות מפני פישינג</translation>
 <translation id="364100968401221170">‏כדי למחוק את נתוני הגלישה מכל המכשירים המסונכרנים ומהחשבון שלך ב-Google, <ph name="BEGIN_LINK" />עליך להיכנס לחשבון<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">‏צריך לעדכן את Steam ל-Chromebook (בטא). עליך להפעיל את Chromebook מחדש ולנסות שוב.</translation>
 <translation id="3641299252000913351">מתבצע עדכון קושחה של המודם. אין לכבות את המכשיר.</translation>
 <translation id="3641456520301071208">אתרים יכולים לבקש הרשאת גישה למיקומך</translation>
 <translation id="3642064270296434810">‏עכשיו אפשר להשתמש ב-Google Lens כדי לחפש את כל מה שרואים במסך</translation>
@@ -4234,7 +4221,6 @@
 <translation id="383891835335927981">באף אתר לא השתנה המרחק מהתצוגה</translation>
 <translation id="3839516600093027468">יש למנוע תמיד מ-<ph name="HOST" /> לגשת אל הלוח</translation>
 <translation id="3840096463915153852">היסטוריית השיחות</translation>
-<translation id="3841282988425489367">‏לא ניתן להתקין את Steam ל-Chromebook (בטא)</translation>
 <translation id="3841319830220785495">קול טבעי בברירת מחדל</translation>
 <translation id="3841356782900714251">קוראי כרטיסים חכמים</translation>
 <translation id="3841964634449506551">הסיסמה לא חוקית</translation>
@@ -4682,7 +4668,6 @@
 <translation id="4148195018520464922">אפשר להגביל את הכניסה של משתמשים מסוימים. הפעולה הזו תסיר את האפשרות 'הוספת משתמש' ממסך הכניסה. אפשר גם להסיר משתמשים קיימים.</translation>
 <translation id="4148957013307229264">מתקין...</translation>
 <translation id="4150201353443180367">תצוגה</translation>
-<translation id="4151449637210235443">‏איך היה מהלך המשחק (gameplay) האחרון שלך?</translation>
 <translation id="4151503145138736576">אין אחסון אופליין לניקוי</translation>
 <translation id="4152011295694446843">הסימניות זמינות כאן</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{כרטיסייה אחת}one{# כרטיסיות}two{# כרטיסיות}other{# כרטיסיות}}</translation>
@@ -4733,7 +4718,6 @@
 <translation id="4193251682249731404">רשות אישורים מהימנה</translation>
 <translation id="4193575319002689239">הצגת הכרטיסים</translation>
 <translation id="419427585139779713">צריך להזין כל הברה בנפרד</translation>
-<translation id="4195001808989442226">‏אי אפשר להפעיל את Steam ל-Chromebook (בטא)</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
 <translation id="4198268995694216131">אתרים נוספים</translation>
@@ -4779,7 +4763,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{אסור להתקין את התוסף הזה}one{אסור להתקין את חלק מהתוספים האלה}two{אסור להתקין את חלק מהתוספים האלה}other{אסור להתקין את חלק מהתוספים האלה}}</translation>
 <translation id="4231053948789591973">‏הפעלת ה-Cast מושהית. אפשר להמשיך להפעיל Cast של המסך או להפסיק את ההפעלה בכל שלב.</translation>
 <translation id="4231095370974836764">‏ניתן להתקין אפליקציות ומשחקים מ-Google Play ב-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">‏אנחנו מתקינים את Steam ל-Chromebook במכשיר</translation>
 <translation id="4232375817808480934">‏הגדרת Kerberos</translation>
 <translation id="4232376164796433044">סיסמאות ומילוי אוטומטי</translation>
 <translation id="4232484478444192782">‏יש כל מה שצריך בטלפון Android שלך. רשת ה-Wi-Fi והסיסמה מועברות.</translation>
@@ -5139,7 +5122,6 @@
 <translation id="4472533928615930332">תמונה <ph name="INDEX" /> של <ph name="SUBJECT" /> שנוצרה, בסגנון <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4473559657152613417">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה חדשה'</translation>
-<translation id="4473996011558324141">ממש עוד רגע נציג לך הערכת זמן</translation>
 <translation id="4474155171896946103">יצירת סימנייה לכל הכרטיסיות...</translation>
 <translation id="4476198534886170024">יש הרשאה. צריך להפעיל את ה<ph name="LINK_BEGIN" />גישה למצלמת המערכת<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">ספורטאית</translation>
@@ -5374,7 +5356,6 @@
 <translation id="4638930039313743000">‏הפעלה של ניפוי באגים באמצעות ADB</translation>
 <translation id="4639390152280993480">כדי לראות את הדף הזה בתצוגה פשוטה יותר, צריך לעבור אל 'כלים נוספים' &gt; 'מצב קריאה'</translation>
 <translation id="4641539339823703554">‏Chrome לא הצליח להגדיר את שעת המערכת. יש לבדוק את השעה המצוינת בהמשך ולתקן אותה במקרה הצורך.</translation>
-<translation id="4642587497923912728">‏אפשר להשתמש ב-Steam ל-Chromebook (בטא) רק בחשבון הראשון שאליו נכנסו ב-Chromebook הזה.</translation>
 <translation id="4643612240819915418">&amp;פתיחת סרטון בכרטיסייה חדשה</translation>
 <translation id="4643833688073835173">‏חיישן מובנה ב-Chromebook משמש לזיהוי אנשים שנמצאים מול המכשיר. מתבצע עיבוד מיידי של כל הנתונים במכשיר ואז הם נמחקים. נתוני החיישנים אף פעם לא נשלחים אל Google.</translation>
 <translation id="4644205769234414680">לאפשר במצב פרטי</translation>
@@ -6379,7 +6360,6 @@
 <translation id="5353769147530541973">צריך להסיר את <ph name="SITE_NAME" /> מרשימת הכרטיסיות כדי להשבית אותן</translation>
 <translation id="5355099869024327351">‏מתן הרשאה ל-Assistant להציג הודעות</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
-<translation id="5355498626146154079">‏עליך להפעיל את התכונה הניסיונית Borealis Enabled.</translation>
 <translation id="5355501370336370394">רישום של מכשיר ארגוני</translation>
 <translation id="5357010010552553606">אין הרשאה לעבור למסך מלא באופן אוטומטי</translation>
 <translation id="5359910752122114278">תוצאה אחת</translation>
@@ -6409,7 +6389,6 @@
 <translation id="5376931455988532197">הקובץ גדול מדי</translation>
 <translation id="5377367976106153749">להפעיל את הגישה למצלמה?</translation>
 <translation id="5379140238605961210">להמשיך לחסום גישה למיקרופון</translation>
-<translation id="5380526436444479273">צריך לחכות כמה דקות ואז לנסות שוב.</translation>
 <translation id="5382591305415226340">ניהול קישורים נתמכים</translation>
 <translation id="5384401776498845256">מי יכול לשתף איתך</translation>
 <translation id="5385628342687007304">‏הסיסמה הזו שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, עליך לשמור אותה בחשבון Google.</translation>
@@ -6464,7 +6443,6 @@
 <translation id="5414198321558177633">מתבצע רענון של רשימת הפרופילים. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="5414566801737831689">קריאה של סמלי האתרים שבהם מבקרים</translation>
 <translation id="5414836363063783498">בתהליך אימות…</translation>
-<translation id="5415328625985164836">‏זוהי תוכנית בטא. עכשיו אפשר להשתמש ב-Steam כדי לשחק במשחקים מסוימים ב-Chromebook.</translation>
 <translation id="5415497281076257439">ביטוי</translation>
 <translation id="5415871492522952905">ההיסטוריה והכרטיסיות יופיעו בכל המכשירים שלך, כך שתהיה לך אפשרות להמשיך מהמקום שבו הפסקת.</translation>
 <translation id="5417293056300086453">האתר הזה יכול להשתמש במזהים כדי להפעיל תוכן מוגן.</translation>
@@ -6905,7 +6883,6 @@
 <translation id="5727728807527375859">‏תוספים, Google Apps ועיצובים עלולים לפגוע במחשב שלך. להמשיך?</translation>
 <translation id="5728072125198221967">‏שירותי Google מקושרים</translation>
 <translation id="5728450728039149624">‏אפשרויות נעילת מסך ב-Smart Lock</translation>
-<translation id="572914206753951782">‏צריך לוודא שמותקנת ב-Chromebook הגרסה הכי עדכנית. אחר כך צריך להפעיל את Chromebook מחדש ולנסות שוב.</translation>
 <translation id="5729712731028706266">&amp;הצגה</translation>
 <translation id="5731247495086897348">הד&amp;בקה ומעבר אל</translation>
 <translation id="5733109311583381874">יש לך אפשרות להוסיף מילים משלך למילוני המשתמש כדי להתאים אישית את הצעות ההמרה.</translation>
@@ -8020,7 +7997,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציה הבאה במכשיר הזה:}one{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציות הבאות במכשיר הזה:}two{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציות הבאות במכשיר הזה:}other{התקבלה בקשה מהאפליקציה י<ph name="APP_NAME" />י להתקין את האפליקציות הבאות במכשיר הזה:}}</translation>
 <translation id="6508248480704296122">קשור אל <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">יישום: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">‏עליך להפעיל את Chromebook מחדש ולנסות שוב.</translation>
 <translation id="6511827214781912955">כדאי למחוק את <ph name="FILENAME" /> כדי שמשתמשים אחרים במכשיר לא יוכלו לראות את הסיסמאות שלך</translation>
 <translation id="6512759338201777379">תמונה <ph name="INDEX" /> של <ph name="SUBJECT" /> שנוצרה, באווירה <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">‏Google Chrome ישתמש בחבילת הגלישה אם אין לך חיבור לרשת אחרת.</translation>
@@ -8129,7 +8105,6 @@
 <translation id="657866106756413002">תמונת מצב של תקינות הרשת</translation>
 <translation id="6579369886355986318">הצגת כל &amp;הפקדים</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - תוכן שולחן העבודה משותף</translation>
-<translation id="6580060371127789208">הושלמו: %<ph name="PERCENTAGE_COMPLETE" /></translation>
 <translation id="6580203076670148210">מהירות הסריקה</translation>
 <translation id="6580676117087365538">כדי לקבל את התוסף הזה בכל המחשבים, צריך לאמת את הזהות שלך</translation>
 <translation id="6581356304040102696">‏לא ניתן לייבא את הסיסמאות. גודל הקובץ צריך להיות פחות מ-1MB.</translation>
@@ -8352,7 +8327,6 @@
 <translation id="6729280095610283088">אורות בוהקים של הזוהר הצפוני מעל יער.</translation>
 <translation id="6729493062119577923">פעילות בקבוצת הכרטיסיות המשותפת</translation>
 <translation id="6730744976532805323">‏שיתוף הכרטיסייה הנוכחית עם Gemini, גם במעבר בין כרטיסיות</translation>
-<translation id="6731320427842222405">זה יכול לקחת כמה דקות</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (מזהה: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">כתובת</translation>
 <translation id="6737663862851963468">‏הסרה של כרטיס Kerberos</translation>
@@ -8702,7 +8676,6 @@
 <translation id="6965648386495488594">יציאה</translation>
 <translation id="6965978654500191972">מכשיר</translation>
 <translation id="6966831944134814478">השבתה</translation>
-<translation id="6967112302799758487">‏כל האפליקציות והמשחקים שהותקנו באמצעות Steam ל-Chromebook (בטא) יוסרו מהמכשיר הזה. יוסרו גם הנתונים שמשויכים לאפליקציות ולמשחקים האלה. לפני ההסרה, חשוב לגבות אפליקציות ומשחקים שנשמרו.</translation>
 <translation id="6967430741871315905">לא ניתן לבדוק אם המכשיר הזה מורשה</translation>
 <translation id="6968288415730398122">יש להזין את הסיסמה כדי להגדיר את נעילת המסך</translation>
 <translation id="6969047215179982698">כיבוי של 'שיתוף בקרבת מקום'</translation>
@@ -8874,7 +8847,6 @@
 <translation id="7082568314107259011">הרשת <ph name="NETWORK_NAME" /> מנוהלת על ידי האדמין שלך</translation>
 <translation id="7082850163410901674">‏ההתראות מושבתות בהגדרות המערכת של Mac</translation>
 <translation id="7083729794572207131">בדרך כלל אתרים מבקשים להתקין אפליקציות אינטרנט כדי לשפר את חוויית השימוש שלך באתר</translation>
-<translation id="7083774521940805477">‏ב-Chromebook שלך אי אפשר להשתמש ב-Steam ל-Chromebook (בטא).</translation>
 <translation id="7084095352418993433">‏אפשר לשאול את Google לגבי הדף הזה: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(לא מוגדרת)</translation>
 <translation id="7086377898680121060">הגברת הבהירות</translation>
@@ -8953,7 +8925,6 @@
 <translation id="7141844554192012199">בדיקה</translation>
 <translation id="714301620504747562">הגלישה והחיפוש מהירים יותר ביחס לטעינה רגילה מראש</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
-<translation id="7143409552554575716">‏תכונות ניסיוניות ב-Chrome OS</translation>
 <translation id="7144363643182336710">לא יופיעו התראות במסך. עדיין אפשר לראות התראות על ידי לחיצה על הסמל 'נא לא להפריע' בפינה השמאלית התחתונה של המסך.</translation>
 <translation id="7144856456372460176">&amp;התקנת <ph name="APP" />…</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
@@ -8964,7 +8935,6 @@
 <translation id="7152478047064750137">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה</translation>
 <translation id="7153101072880472645">הפעלה או השבתה של ניגודיות גבוהה</translation>
 <translation id="715396040729904728">‏מרכז האפליקציות + Shift +‏ <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">נשמח לקבל ממך משוב או תיאור של הבעיה. אם אפשר, יש לכלול את השלבים לשחזור הבעיה.</translation>
 <translation id="7154130902455071009">שינוי דף הפתיחה ל: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">‏שיפור איכות הווידאו וחיסכון בחיי הסוללה. תוכן וידאו יופעל רק במסך שתומך ב-Cast.</translation>
 <translation id="7159695867335480590">הפעלה והשהיה</translation>
@@ -9816,7 +9786,6 @@
 <translation id="7728668285692163452">שינוי הערוץ ייכנס לתוקף מאוחר יותר</translation>
 <translation id="7730449930968088409">צילום של תוכן המסך</translation>
 <translation id="7730683939467795481">התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף הזה</translation>
-<translation id="7732702411411810416">עליך לוודא שיש חיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="773511996612364297">סימני הטעמה</translation>
 <translation id="7735558909644181051">אישורי ביניים</translation>
 <translation id="7736119438443237821">בחרת להפסיק את השימוש במפתחות הגישה במכשיר הזה</translation>
@@ -10014,7 +9983,6 @@
 <translation id="7871691770940645922">תצוגת ברייל וירטואלית</translation>
 <translation id="787268756490971083">כבוי</translation>
 <translation id="7872758299142009420">יותר מדי קבוצות מקוננות: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">‏Steam ל-Chromebook</translation>
 <translation id="7876027585589532670">לא ניתן לערוך את קיצור הדרך</translation>
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7877126887274043657">תיקון &amp;הבעיה בסנכרון</translation>
@@ -11675,7 +11643,6 @@
 <translation id="8983018820925880511">הפרופיל החדש הזה ינוהל על ידי <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">ל-<ph name="ORIGIN" /> יש הרשאה לערוך את <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">המכשיר יהיה גלוי לכולם למשך <ph name="MINUTES" /> דקות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">‏ברוך בואך ל-Steam ל-Chromebook</translation>
 <translation id="8985264973231822211">שימוש אחרון: לפני יום אחד (<ph name="DEVICE_LAST_ACTIVATED_TIME" />)</translation>
 <translation id="8985561265504464578">הסף לזיהוי</translation>
 <translation id="8985661493893822002">צריך להתחבר לאינטרנט כדי להיכנס אל <ph name="DEVICE_TYPE" />.</translation>
@@ -11807,7 +11774,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{בערך התראה אחת ביום}one{בערך {NUM_NOTIFICATION} התראות ביום}two{בערך {NUM_NOTIFICATION} התראות ביום}other{בערך {NUM_NOTIFICATION} התראות ביום}}</translation>
 <translation id="9058760336383947367">‏אפשר לראות את קובץ PPD של המדפסת</translation>
 <translation id="9061521313218438086">‏אם Chrome מוצא שאחת מהסיסמאות שלך נכללת במידע שדלף בפרצה באבטחת מידע, מנהל הסיסמאות של Google יכול להציע לשנות אותה בשבילך אם החשבון מחובר.</translation>
-<translation id="9061694916020926968">‏צריך להיכנס לחשבון Google כדי להשתמש ב-Steam ל-Chromebook (בטא). עליך להיכנס לחשבון ולנסות שוב.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">מחיקת קיצור הדרך לניווט</translation>
 <translation id="9063208415146866933">שגיאה משורה <ph name="ERROR_LINE_START" /> עד <ph name="ERROR_LINE_END" /></translation>

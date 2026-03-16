@@ -843,7 +843,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="156793199942386351">Klawisz „<ph name="CURRENTKEY" />” jest już przypisany do czynności „<ph name="ACTION" />”. Naciśnij dowolny klawisz, aby <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konsola JavaScript</translation>
 <translation id="1569466257325986920">Po następnej zmianie hasła do konta Google dane lokalne zostaną automatycznie przywrócone, gdy zalogujesz się na to konto</translation>
-<translation id="1570235441606255261">Instalator Steam</translation>
 <translation id="1570604804919108255">Wyłącz wyciszenie powiadomień</translation>
 <translation id="1570990174567554976">Utworzono folder zakładek „<ph name="BOOKMARK_TITLE" />”.</translation>
 <translation id="1571041387761170095">Brak słabych lub ponownie użytych haseł</translation>
@@ -968,7 +967,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1642299742557467312">Ten plik może uszkodzić urządzenie</translation>
 <translation id="1642492862748815878">Połączono z urządzeniem <ph name="DEVICE" /> i <ph name="NUMBER_OF_DEVICES" /> innymi urządzeniami Bluetooth</translation>
 <translation id="1642494467033190216">Zanim włączysz inne funkcje debugowania, musisz wyłączyć zabezpieczenie rootfs i ponownie uruchomić urządzenie.</translation>
-<translation id="1642895994345928121">Na urządzeniu jest za mało miejsca, aby otworzyć tę aplikację. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="1643072738649235303">Podpis X9.62 ECDSA z SHA-1</translation>
 <translation id="1643921258693943800">Aby używać Udostępniania w pobliżu, włącz Bluetooth i Wi-Fi</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -2057,7 +2055,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2390347491606624519">Nie udało się nawiązać połączenia z serwerem proxy. Zaloguj się ponownie.</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Czcionka standardowa</translation>
-<translation id="2391805183137601570">Otwórz Steam</translation>
 <translation id="239185270194776190">Twoja rozmowa z Gemini jest dostępna w innym oknie. Kliknij dowolne miejsce w tym panelu bocznym, aby przenieść ją tutaj.</translation>
 <translation id="2392369802118427583">Aktywuj</translation>
 <translation id="2393136602862631930">Zainstaluj <ph name="APP_NAME" /> na swoim Chromebooku</translation>
@@ -2139,7 +2136,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2445484935443597917">Utwórz nowy profil</translation>
 <translation id="2445726032315793326">Lupa częściowa</translation>
 <translation id="244641233057214044">Związane z Twoim wyszukiwaniem</translation>
-<translation id="2447587550790814052">Teraz możesz używać aplikacji Steam na Chromebooka (beta)</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2448810255793562605">Automatyczne skanowanie Switch Access</translation>
 <translation id="2450021089947420533">Serie czynności</translation>
@@ -2166,7 +2162,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2460826998961521840">Aby używać kluczy dostępu z konta Google</translation>
 <translation id="2461550163693930491">Nie zezwalaj witrynom na przewijanie ani powiększanie udostępnionych kart</translation>
 <translation id="2461593638794842577">Możesz wyłączyć to ustawienie, aby zapisywać hasła tylko na tym urządzeniu</translation>
-<translation id="2462332841984057083">Aplikacja Steam jest już konfigurowana. Poczekaj na zakończenie tego procesu.</translation>
 <translation id="2462724976360937186">Identyfikator klucza urzędu certyfikacji</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Widzisz sugerowane pliki, aby łatwiej było Ci wrócić do swojej ostatniej aktywności w Microsoft SharePoint i OneDrive.
@@ -2219,7 +2214,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2491587035099903063">odsłuchaj głos dla języka: <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Przygotowuję żądanie podpisania certyfikatu</translation>
 <translation id="249330843868392562">Otwórz ustawienia zamiany tekstu na mowę</translation>
-<translation id="2494555621641843783">Nie udało się zainstalować Steam</translation>
 <translation id="2496180316473517155">Historia przeglądania</translation>
 <translation id="2496616243169085015">Fotografia</translation>
 <translation id="2497229222757901769">Szybkość myszy</translation>
@@ -2573,7 +2567,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="27349076983469322">Jasne tło</translation>
 <translation id="2735712963799620190">Harmonogram</translation>
 <translation id="2737363922397526254">Zwiń...</translation>
-<translation id="2737538893171115082">Aplikacja Steam na Chromebooka (beta) została zablokowana przez administratora. Administrator musi włączyć te zasady:</translation>
 <translation id="2737719817922589807">&amp;Zakładki i listy</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> chce udostępnić zawartość ekranu stronie <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Nie zezwalaj witrynom na używanie czcionek zainstalowanych na urządzeniu</translation>
@@ -3037,7 +3030,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3039491566278747710">Nie udało się zainstalować zasad offline na urządzeniu.</translation>
 <translation id="303955801043931176">Karta została zamknięta</translation>
 <translation id="3040435070100611531">Twoje karty i bilety w Portfelu Google</translation>
-<translation id="3040982432432547149">Pomóż nam ulepszyć Steam na Chromebooka</translation>
 <translation id="304169924727249890">Dołącz do grupy kart, w której jest już <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Zmień strategię ładowania zoptymalizowanego.</translation>
 <translation id="3043016484125065343">Zaloguj się, aby wyświetlić swoje zakładki</translation>
@@ -3246,7 +3238,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3201422919974259695">Tutaj będą widoczne dostępne urządzenia USB.</translation>
 <translation id="3202499879214571401">Wstrzymaj przesyłanie ekranu na urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Najnowsza</translation>
-<translation id="3204648577100496185">Dane powiązane z tą aplikacją mogą zostać usunięte z urządzenia</translation>
 <translation id="3206289903841621620">Słownik użytkownika <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Widzisz sugerowane wyszukiwania i rabaty na zakupy, które mogą Cię zainteresować na podstawie Twojej ostatniej aktywności.
         <ph name="BREAK" />
@@ -3354,7 +3345,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3283148363895519428">Aby kontynuować konfigurację, postępuj zgodnie z instrukcjami na telefonie. Upewnij się, że telefon jest w pobliżu i ma włączony Bluetooth.</translation>
 <translation id="3284050785966252943">Podgląd metadanych autouzupełniania</translation>
 <translation id="3285322247471302225">Nowa &amp;karta</translation>
-<translation id="3285465040399788513">Na urządzeniu jest za mało miejsca, aby ukończyć konfigurację. Zwolnij miejsce i spróbuj ponownie.</translation>
 <translation id="3285500645985761267">Zezwalaj powiązanym witrynom na dostęp do danych o Twojej aktywności w grupie</translation>
 <translation id="328571385944182268">Zapisywać Twoje hasła?</translation>
 <translation id="3289668031376215426">Automatyczne wstawianie wielkich liter</translation>
@@ -3475,7 +3465,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3372602033006349389">Na innych urządzeniach</translation>
 <translation id="337286756654493126">Odczytywanie folderów otwieranych w aplikacji</translation>
 <translation id="3373059063088819384">Otwórz w trybie czytania</translation>
-<translation id="3373196968211632036">Aplikacja Steam na Chromebooka (beta) jest niedostępna na kontach Google dzieci</translation>
 <translation id="3373701465337594448">Gdy ta opcja jest włączona, w tym miejscu wyświetla się lista witryn, które próbują rozpoznać Twoje zainteresowania</translation>
 <translation id="3374294321938930390">Zakładka „<ph name="BOOKMARK_TITLE" />” została przeniesiona do folderu „<ph name="NEW_FOLDER_TITLE" />”.</translation>
 <translation id="3376035595160918049">Sprawdź aktualizację aplikacji</translation>
@@ -3658,7 +3647,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (nie wybrano)</translation>
 <translation id="3496689104192986836">Poziom naładowania baterii: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Źródła z danymi do zebrania</translation>
-<translation id="3496797737329654668">Granie czas zacząć</translation>
 <translation id="3496995426334945408">Strony zwykle używają JavaScriptu do wyświetlania elementów interaktywnych, takich jak gry wideo czy formularze</translation>
 <translation id="3497501929010263034">Urządzenie USB firmy <ph name="VENDOR_NAME" /> (produkt <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Udostępnij doodla</translation>
@@ -3871,7 +3859,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3637203148990213388">Dodatkowe konta</translation>
 <translation id="3640347231390550691">Chroń hasła przed phishingiem</translation>
 <translation id="364100968401221170">Aby usunąć dane przeglądania ze wszystkich zsynchronizowanych urządzeń i z konta Google, <ph name="BEGIN_LINK" />zaloguj się<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Musisz zaktualizować aplikację Steam na Chromebooka (beta). Uruchom ponownie Chromebooka i spróbuj jeszcze raz.</translation>
 <translation id="3641299252000913351">Trwa aktualizacja oprogramowania modemu. Nie wyłączaj urządzenia.</translation>
 <translation id="3641456520301071208">Strony mogą prosić o informacje o Twojej lokalizacji</translation>
 <translation id="3642064270296434810">Teraz możesz używać Obiektywu Google do wyszukiwania wszystkiego, co widzisz na ekranie</translation>
@@ -4206,7 +4193,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="383891835335927981">Żadna strona nie jest powiększana ani pomniejszana</translation>
 <translation id="3839516600093027468">Zawsze blokuj stronie <ph name="HOST" /> dostęp do schowka</translation>
 <translation id="3840096463915153852">Historia rozmowy</translation>
-<translation id="3841282988425489367">Nie można skonfigurować aplikacji Steam na Chromebooka (beta)</translation>
 <translation id="3841319830220785495">Domyślny naturalny głos</translation>
 <translation id="3841356782900714251">Czytniki kart inteligentnych</translation>
 <translation id="3841964634449506551">Nieprawidłowe hasło</translation>
@@ -4654,7 +4640,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4148195018520464922">Możesz ograniczyć logowanie do wybranych użytkowników. Spowoduje to usunięcie opcji „Dodaj osobę” z ekranu logowania. Możesz też usunąć bieżących użytkowników.</translation>
 <translation id="4148957013307229264">Trwa instalowanie...</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
-<translation id="4151449637210235443">Opisz nam swoją ostatnią rozgrywkę</translation>
 <translation id="4151503145138736576">Brak miejsca na dane offline do wyczyszczenia</translation>
 <translation id="4152011295694446843">Tu znajdziesz swoje zakładki</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 karta}few{# karty}many{# kart}other{# karty}}</translation>
@@ -4705,7 +4690,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4193251682249731404">Zaufany urząd certyfikacji</translation>
 <translation id="4193575319002689239">Pokaż karty</translation>
 <translation id="419427585139779713">Wpisywanie całych sylab</translation>
-<translation id="4195001808989442226">Nie można otworzyć aplikacji Steam na Chromebooka (beta)</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4195814663415092787">Kontynuuj od tego samego miejsca</translation>
 <translation id="4198268995694216131">Dodatkowe witryny</translation>
@@ -4751,7 +4735,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{To rozszerzenie jest niedozwolone}few{Niektóre rozszerzenia są niedozwolone}many{Niektóre rozszerzenia są niedozwolone}other{Niektóre rozszerzenia są niedozwolone}}</translation>
 <translation id="4231053948789591973">Przesyłanie jest obecnie wstrzymane. Przesyłanie ekranu możesz w każdej chwili wznowić lub zakończyć.</translation>
 <translation id="4231095370974836764">Instaluj aplikacje i gry z Google Play na urządzeniu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Konfigurowanie Steam na Chromebooka</translation>
 <translation id="4232375817808480934">Konfigurowanie Kerberos</translation>
 <translation id="4232376164796433044">Hasła i autouzupełnianie</translation>
 <translation id="4232484478444192782">Wszystko masz na telefonie z Androidem. Przenoszę sieć Wi-Fi i hasło.</translation>
@@ -5110,7 +5093,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4472533928615930332">Wygenerowany obraz nr <ph name="INDEX" /> – temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Rozpocznij</translation>
 <translation id="4473559657152613417">Kliknij kartę prawym przyciskiem i wybierz „Dodaj kartę do nowej grupy”</translation>
-<translation id="4473996011558324141">szacuję czas</translation>
 <translation id="4474155171896946103">Dodaj wszystkie karty do zakładek...</translation>
 <translation id="4476198534886170024">Zezwolono. Włącz <ph name="LINK_BEGIN" />w systemie dostęp do aparatu<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Sportowiec</translation>
@@ -5346,7 +5328,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4638930039313743000">Włącz debugowanie ADB</translation>
 <translation id="4639390152280993480">Aby zobaczyć uproszczony widok tej strony, kliknij Więcej narzędzi &gt; Tryb czytania</translation>
 <translation id="4641539339823703554">Chrome nie może ustawić czasu systemowego. Sprawdź i w razie potrzeby popraw godzinę poniżej.</translation>
-<translation id="4642587497923912728">Aplikacja Steam na Chromebooka (beta) jest dostępna tylko na koncie zalogowanym na tym Chromebooku jako pierwsze.</translation>
 <translation id="4643612240819915418">&amp;Otwórz film w nowej karcie</translation>
 <translation id="4643833688073835173">Twój Chromebook korzysta z wbudowanego czujnika, który wykrywa osoby znajdujące się przed ekranem. Wszystkie dane są od razu przetwarzane na urządzeniu i potem usuwane. Czujnik nigdy nie wysyła zebranych danych do Google.</translation>
 <translation id="4644205769234414680">Zezwalaj w trybie incognito</translation>
@@ -6349,7 +6330,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5353769147530541973">Usuń stronę <ph name="SITE_NAME" /> z listy kart, aby stała się nieaktywna</translation>
 <translation id="5355099869024327351">Pozwól Asystentowi wyświetlać powiadomienia</translation>
 <translation id="5355191726083956201">Włączona jest silniejsza ochrona</translation>
-<translation id="5355498626146154079">Musisz włączyć flagę „Borealis Enabled”</translation>
 <translation id="5355501370336370394">Zarejestruj urządzenie firmowe</translation>
 <translation id="5357010010552553606">Nie zezwolono na automatyczne włączanie pełnego ekranu</translation>
 <translation id="5359910752122114278">1 wynik</translation>
@@ -6379,7 +6359,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5376931455988532197">Plik jest za duży</translation>
 <translation id="5377367976106153749">Włączyć dostęp do aparatu?</translation>
 <translation id="5379140238605961210">Nadal blokuj dostęp do mikrofonu</translation>
-<translation id="5380526436444479273">Poczekaj kilka minut i spróbuj ponownie</translation>
 <translation id="5382591305415226340">Zarządzaj obsługiwanymi linkami</translation>
 <translation id="5384401776498845256">Kto może Ci udostępniać dane</translation>
 <translation id="5385628342687007304">To hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz je na swoim koncie Google.</translation>
@@ -6433,7 +6412,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5414198321558177633">Odświeżam listę profili. Może to potrwać kilka minut.</translation>
 <translation id="5414566801737831689">Odczyt ikon otwieranych stron</translation>
 <translation id="5414836363063783498">Weryfikuję…</translation>
-<translation id="5415328625985164836">To jest program testów beta. Dzięki Steam możesz teraz grać na Chromebooku w niektóre gry.</translation>
 <translation id="5415497281076257439">Wyrażenie</translation>
 <translation id="5415871492522952905">Będziesz mieć dostęp do swojej historii i kart na wszystkich urządzeniach, więc będzie można kontynuować przeglądanie od ostatniego miejsca</translation>
 <translation id="5417293056300086453">Ta strona może używać identyfikatorów do odtwarzania treści chronionych.</translation>
@@ -6875,7 +6853,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5727728807527375859">Rozszerzenia, aplikacje i motywy mogą wyrządzić szkody na komputerze. Czy na pewno chcesz kontynuować?</translation>
 <translation id="5728072125198221967">Połączone usługi Google</translation>
 <translation id="5728450728039149624">Opcje ekranu blokady Smart Lock</translation>
-<translation id="572914206753951782">Upewnij się, że masz najnowszą wersję Chromebooka. Następnie uruchom ponownie Chromebooka i spróbuj jeszcze raz.</translation>
 <translation id="5729712731028706266">&amp;Widok</translation>
 <translation id="5731247495086897348">Wkl&amp;ej i otwórz</translation>
 <translation id="5733109311583381874">Dodaj własne słowa do słowników użytkownika, aby dostosować kandydatury do konwersji.</translation>
@@ -7296,6 +7273,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6011193465932186973">Odcisk palca</translation>
 <translation id="6011308810877101166">Ulepszanie sugestii wyszukiwania</translation>
 <translation id="6011908034087870826">Wysyłam link na urządzenie <ph name="DEVICE_NAME" /></translation>
+<translation id="6013003831291591200">Zadanie ukończone</translation>
 <translation id="6013027779243312217">Odtwarzaj dźwięk i wideo z napisami</translation>
 <translation id="6014293228235665243">Nieprzeczytane</translation>
 <translation id="6015776718598175635">Gwiazdy</translation>
@@ -7991,7 +7969,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu tę aplikację:}few{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu te aplikacje:}many{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu te aplikacje:}other{„<ph name="APP_NAME" />” chce zainstalować na tym urządzeniu te aplikacje:}}</translation>
 <translation id="6508248480704296122">Powiązane z: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikacja: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Uruchom ponownie Chromebooka i spróbuj jeszcze raz</translation>
 <translation id="6511827214781912955">Zastanów się, czy nie usunąć pliku <ph name="FILENAME" />, aby Twoich haseł nie zobaczyły inne osoby korzystające z tego urządzenia</translation>
 <translation id="6512759338201777379">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, nastrój: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome będzie używać komórkowej transmisji danych, jeśli nie jest dostępne połączenie z inną siecią.</translation>
@@ -8100,7 +8077,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="657866106756413002">Przegląd stanu sieci</translation>
 <translation id="6579369886355986318">Pokaż wszystkie &amp;elementy sterujące</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – udostępnia zawartość pulpitu</translation>
-<translation id="6580060371127789208">Ukończono <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Szybkość skanowania</translation>
 <translation id="6580676117087365538">Aby korzystać z tego rozszerzenia na wszystkich swoich komputerach, potwierdź swoją tożsamość</translation>
 <translation id="6581356304040102696">Nie udało się zaimportować haseł. Rozmiar pliku powinien być mniejszy niż 1 MB.</translation>
@@ -8324,7 +8300,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6729280095610283088">Jasne smugi zorzy polarnej nad lasem.</translation>
 <translation id="6729493062119577923">Aktywność w udostępnianej grupie kart</translation>
 <translation id="6730744976532805323">Udostępnia Gemini bieżącą kartę, nawet gdy przełączasz karty</translation>
-<translation id="6731320427842222405">Może to potrwać kilka minut</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6737663862851963468">Usuwanie zgłoszenia Kerberos</translation>
@@ -8672,7 +8647,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Urządzenie</translation>
 <translation id="6966831944134814478">Wyłącz</translation>
-<translation id="6967112302799758487">Wszystkie aplikacje i gry zainstalowane przy użyciu aplikacji Steam na Chromebooka (beta) zostaną usunięte z tego urządzenia. Dotyczy to też powiązanych z nimi danych. Zanim odinstalujesz aplikację, utwórz kopie zapasowe zapisanych aplikacji i gier.</translation>
 <translation id="6967430741871315905">Nie można sprawdzić, czy urządzenie zostało dopuszczone</translation>
 <translation id="6968288415730398122">Wpisz hasło, by skonfigurować blokadę ekranu</translation>
 <translation id="6969047215179982698">Wyłącz Udostępnianie w pobliżu</translation>
@@ -8844,7 +8818,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7082568314107259011">Siecią <ph name="NETWORK_NAME" /> zarządza administrator</translation>
 <translation id="7082850163410901674">Powiadomienia zostały wyłączone w ustawieniach systemowych Maca</translation>
 <translation id="7083729794572207131">Witryny zwykle proszą o instalację aplikacji internetowych, aby poprawić wygodę swoich użytkowników</translation>
-<translation id="7083774521940805477">Aplikacja Steam na Chromebooka (beta) jest niedostępna na Twoim Chromebooku.</translation>
 <translation id="7084095352418993433">Zapytaj Google o tę stronę: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(nie skonfigurowano)</translation>
 <translation id="7086377898680121060">Zwiększ jasność</translation>
@@ -8923,7 +8896,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7141844554192012199">Sprawdzanie</translation>
 <translation id="714301620504747562">Przeglądanie i wyszukiwanie jest szybsze niż standardowe wstępne wczytywanie</translation>
 <translation id="7143207342074048698">Łączenie</translation>
-<translation id="7143409552554575716">Flagi ChromeOS</translation>
 <translation id="7144363643182336710">Powiadomienia nie będą pojawiać się na ekranie. Nadal możesz je zobaczyć, klikając ikonę Nie przeszkadzać w prawym dolnym rogu ekranu.</translation>
 <translation id="7144856456372460176">&amp;Zainstaluj: <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -8934,7 +8906,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7152478047064750137">To rozszerzenie nie wymaga specjalnych uprawnień</translation>
 <translation id="7153101072880472645">Włącz/wyłącz wysoki kontrast</translation>
 <translation id="715396040729904728">Menu z aplikacjami + Shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Podziel się opinią lub opisz problem. Jeśli to możliwe, wykonaj kroki umożliwiające odtworzenie problemu.</translation>
 <translation id="7154130902455071009">Zmiana strony startowej na: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Lepsza jakość filmów i dłuższy czas pracy na baterii. Filmy będą odtwarzane tylko na ekranie obsługującym Cast.</translation>
 <translation id="7159695867335480590">Odtwarzaj / wstrzymaj odtwarzanie</translation>
@@ -9786,7 +9757,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7728668285692163452">Zmiana wersji nastąpi później</translation>
 <translation id="7730449930968088409">Przechwytywanie zawartości ekranu</translation>
 <translation id="7730683939467795481">Strona została zmieniona przez rozszerzenie „<ph name="EXTENSION_NAME" />”</translation>
-<translation id="7732702411411810416">Upewnij się, że masz połączenie z internetem, i spróbuj ponownie</translation>
 <translation id="773511996612364297">Znaki akcentowane</translation>
 <translation id="7735558909644181051">Certyfikaty pośrednie</translation>
 <translation id="7736119438443237821">Zamierzasz usunąć możliwość korzystania z kluczy dostępu na tym urządzeniu</translation>
@@ -9985,7 +9955,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7871691770940645922">Wirtualny monitor brajlowski</translation>
 <translation id="787268756490971083">Wyłączono</translation>
 <translation id="7872758299142009420">Za dużo zagnieżdżonych grup: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam na Chromebooka</translation>
 <translation id="7876027585589532670">Nie można edytować skrótu</translation>
 <translation id="7876243839304621966">Usuń wszystkie</translation>
 <translation id="7877126887274043657">Rozwiąż problem z &amp;synchronizacją</translation>
@@ -11640,7 +11609,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8983018820925880511">Ten nowy profil będzie zarządzany w ramach domeny <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Strona <ph name="ORIGIN" /> może edytować plik <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Przez <ph name="MINUTES" /> min urządzenie będzie widoczne dla wszystkich. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Witaj w aplikacji Steam na Chromebooka</translation>
 <translation id="8985264973231822211">Aktywność <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dzień temu</translation>
 <translation id="8985561265504464578">Próg wykrywania</translation>
 <translation id="8985661493893822002">Aby zalogować się na urządzeniu <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
@@ -11772,7 +11740,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Około 1 powiadomienia dziennie}few{Około {NUM_NOTIFICATION} powiadomień dziennie}many{Około {NUM_NOTIFICATION} powiadomień dziennie}other{Około {NUM_NOTIFICATION} powiadomienia dziennie}}</translation>
 <translation id="9058760336383947367">Wyświetl plik PPD drukarki</translation>
 <translation id="9061521313218438086">Gdy Chrome wykryje, że któreś z Twoich haseł zostało ujawnione w wyniku publicznego naruszenia bezpieczeństwa danych, to gdy się zalogujesz, Menedżer haseł Google może Ci zaproponować zmianę hasła.</translation>
-<translation id="9061694916020926968">Aby używać aplikacji Steam na Chromebooka (beta), musisz się zalogować na konto Google. Zaloguj się i spróbuj ponownie.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Wyczyść skrót nawigacji</translation>
 <translation id="9063208415146866933">Błąd w wierszach od <ph name="ERROR_LINE_START" /> do <ph name="ERROR_LINE_END" /></translation>

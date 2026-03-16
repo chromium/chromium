@@ -239,6 +239,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, 고정되고 음소거된 시크릿 탭</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
+<translation id="2024195579772565064">검색엔진 삭제</translation>
 <translation id="2029669011553795746">팁 알림 수신 동의가 절반 높이로 열림</translation>
 <translation id="2038563949887743358">데스크톱 버전으로 보기 사용 설정</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" />도 Chrome에서 데이터를 보유하고 있습니다</translation>
@@ -556,6 +557,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3384347053049321195">이미지 공유</translation>
 <translation id="3387650086002190359">파일 시스템에 오류가 발생하여 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="3414952576877147120">크기:</translation>
+<translation id="3417835166382867856">탭 검색</translation>
 <translation id="3430670036890315772">프로필 잠금을 사용 중지하면 저장된 정보가 삭제됩니다.</translation>
 <translation id="3435465986463792564">창이 많이 열렸나요? 여기에서 관리할 수 있습니다.</translation>
 <translation id="3435575784518354875">비밀번호에 대한 액세스를 유지하려면 지금 비밀번호를 내보내고 Google Play 서비스를 업데이트한 후 Google 비밀번호 관리자로 다시 가져오세요. <ph name="BEGIN_LINK" />전체 안내 보기<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6896758677409633944">복사</translation>
 <translation id="6898797562238201317">나만의 암호를 사용하여 Google 계정에 있는 모든 Chrome 데이터를 암호화하세요</translation>
 <translation id="6900532703269623216">향상된 보호 모드</translation>
+<translation id="6900654715912436255">이 검색엔진을 삭제하시겠습니까?</translation>
 <translation id="6903907808598579934">동기화 사용 설정</translation>
 <translation id="6906448540340261898">Google 계정의 비밀번호를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="6908230663105268638"><ph name="SITE_NAME" />의 알림이 허용됨</translation>

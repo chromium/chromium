@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="1557622599341396706">የዴስክ ስምን አሳይ</translation>
 <translation id="1569384531973824928">ይህ የካሜራ እና የማይክሮፎን ፈቃዶች ላሏቸው ለሁሉም መተግበሪያዎች እና ድር ጣቢያዎች መዳረሻ ይፈቅዳል። ድረ-ገጹን ማደስ ወይም መተግበሪያውን እንደገና ማስጀመር ሊኖርብዎት ይችላል።</translation>
+<translation id="1570235441606255261">የSteam ጫኝ</translation>
 <translation id="1571697193564730395">አትረብሽን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">የተመረጠ የግራ ጠርዝ መያዣ፣ ለማንቀሳቀስ የቀስት ቋልፎችን ይጠቀሙ</translation>
 <translation id="1576623706766186887">ማጉያ ሲበራ አሳንሥ</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">የመዳረሻ መቀየሪያ በቅንብሮች &gt; ተደራሽነት ውስጥ ሊሰናከል ይችላል።</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> መሣሪያዎች</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
+<translation id="1642895994345928121">ይህን መተግበሪያ ለመክፈት በቂ የመሣሪያ ማከማቻ የለም። ቦታ ያስለቅቁ እና እንደገና ይሞክሩ።</translation>
 <translation id="1647986356840967552">ቀዳሚ ገፅ</translation>
 <translation id="1651914502370159744">የታሪክ ገጽን ይክፈቱ</translation>
 <translation id="1668469839109562275">አብሮገነብ VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">የመተግበሪያ እና ትር ቡድኖች</translation>
 <translation id="2386292613071805067">በገጹ ላይ ሁሉንም ይምረጡ</translation>
 <translation id="2389423187722941333">Geminiን ይቀያይሩ</translation>
+<translation id="2391805183137601570">Steam ክፈት</translation>
 <translation id="2392659840443812875">ምንም መገናኛ ነጥብ የለም። ስልከዎ በአቅራቢያ መሆኑን እና ብሉቱዝ መብራቱን ያረጋግጡ።</translation>
 <translation id="2397416548179033562">የChrome ምናሌ አሳይ</translation>
 <translation id="240006516586367791">የሚዲያ መቆጣጠሪያዎች</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">ትናንት የተከፈተ</translation>
 <translation id="2440978926514840421">የGIF ቅጂ ተወስዷል</translation>
 <translation id="2441427462554639370">እጅግ አነስተኛ በሆነ የማከማቻ ቦታ ምክንያት ቀረጻ ጨርሷል</translation>
+<translation id="2447587550790814052">አሁን Steam for Chromebook (ቅድመ ይሁንታ) መጠቀም ይችላሉ</translation>
 <translation id="2449089818483227734">ዝቅተኛ ባትሪ</translation>
 <translation id="2450205753526923158">የቅጽበታዊ ገፅ ዕይታ ሁነታ</translation>
 <translation id="2453860139492968684">ጨርስ</translation>
 <translation id="2455994958736234930">ወደ አድራሻ አሞሌው www. እና .com ያክሉ፣ ከዚያ ድር ጣቢያን ይክፈቱ</translation>
 <translation id="2456008742792828469">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">ወደታች ቆፍር</translation>
+<translation id="2462332841984057083">Steam አስቀድሞ ተዋቅሯል። ማዋቀር እስከሚጠናቀቅ ድረስ ይጠብቁ።</translation>
 <translation id="2465145153332031561">የባትሪ ጤና <ph name="BATTERY_HEALTH_PERCENTAGE" />%፣ የዑደት ቁጥር <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ጥራትን ያረጋግጡ</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ያስገቡ</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ቅድመ ዕይታ። ገቢር ዴስክ።</translation>
 <translation id="2486405091093637109">«<ph name="DISPLAY_NAME" />» ወደ የ<ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ጥራት ተቀይሯል። ሳይረጋገጥ ቀዳሚዎቹ ቅንብሮች በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ</translation>
 <translation id="2487915095798731898">ተቀላቀል</translation>
+<translation id="2494555621641843783">Steamን መጫን አልተቻለም</translation>
 <translation id="2496180316473517155">ታሪክ አሰሳ</translation>
 <translation id="2499445554382787206">የዴስክ መገለጫ ምናሌ። <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ተጣባቂ ቁልፎች</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">ምላሽ ስጥ</translation>
 <translation id="2727744317940422214">ይቅርታ፣ የሆነ ችግር ተፈጥሯል። እባክዎ በመግለጫው ውስጥ #bruschettaን በማካተት ግብረመልስ ያስገቡ። የስህተት ኮድ <ph name="ERROR" /> ነው። ማጽዳት አልተሳካም፣ በራስዎ ማድረግ ሊኖርብዎ ይችላል።</translation>
 <translation id="2727977024730340865">አነስተኛ ኃይል ወዳለው ባትሪ መሙያ ተሰክቷል። የባትሪ መሙላት አስተማማኝ ላይሆን ይችላል።</translation>
+<translation id="2737538893171115082">Steam for Chromebook (ቅድመ ይሁንታ) በአስተዳዳሪዎ ታግዷል። አስተዳዳሪዎ እነዚህን መመሪያዎች ማብራት አለበት፦</translation>
 <translation id="2743301740238894839">ጀምር</translation>
 <translation id="2743387203779672305">ወደ ቅንጥብ ሰሌዳ ገልብጥ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />፣ <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911">ከ<ph name="DESK_NAME" /> ጋር ማጣመር</translation>
 <translation id="3039939407102840004">ስታይለስ ባትሪ <ph name="PERCENTAGE" /> በመቶ ላይ ነው።</translation>
 <translation id="304097922505898963">የቁልፍ አቋራጮች መተግበሪያን ይክፈቱ</translation>
+<translation id="3040982432432547149">Steam ለChromebookን እንድናሻሽል ያግዙን</translation>
 <translation id="304417730895741346">የእርስዎ የተሰኩ እና ክፍት መተግበሪያዎች በመደርደሪያው ላይ ናቸው። አንድን መተግበሪያ መደርደሪያው ላይ ለመሰካት አንድ መተግበሪያ ላይ በቀኝ ጠቅ ያድርጉት ወይም የመዳሰሻ ሰሌዳዎን በሁለት ጣቶች መታ ያድርጉ።</translation>
 <translation id="3045670165536837541">የተመረጠ የላይኛው ቀኝ መያዣ፣ ለማንቀሳቀስ የቀስት ቁልፎችን ይጠቀሙ</translation>
 <translation id="3047761520276763270">ይህን ለማለት ይሞክሩ፦</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">ዳግም ማስነሳት ትንሽ ጊዜ ሊወስድ ይችላል</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ከአንድ መሣሪያ ጋር ተገናኝቷል}one{ከ# መሣሪያዎች ጋር ተገናኝቷል}other{ከ# መሣሪያዎች ጋር ተገናኝቷል}}</translation>
 <translation id="3203405173652969239">የመዳረሻ መቀየሪያ ነቅቷል</translation>
+<translation id="3204648577100496185">ከዚህ መተግበሪያ ጋር የተጎዳኘ ውሂብ ከዚህ መሣሪያ ላይ ሊወገድ ይችላል</translation>
 <translation id="3206735939915734551">Caps Lock ያብሩ/ያጥፉ</translation>
 <translation id="3207953481422525583">የተጠቃሚ ቅንብሮች</translation>
 <translation id="3208321278970793882">መተግበሪያ</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ለማስገባት ይፈልጉ</translation>
 <translation id="3274634049061007184">የስልክዎን መተግበሪያዎች ይመልከቱ</translation>
 <translation id="3279230909244266691">ይህ ሂደት ጥቂት ደቂቃዎች ሊወስድ ይችላል። ምናባዊ ማሽኑን በመጀመር ላይ።</translation>
+<translation id="3285465040399788513">ውቅረትን ለማጠናቀቅ በቂ የመሣሪያ ማከማቻ የለም። ቦታ ያስለቅቁና እንደገና ይሞክሩ።</translation>
 <translation id="3289364673986435196">የኃይል ምናሌ</translation>
 <translation id="3289544412142055976">የሊኑክስ መተግበሪያዎች በአሁኑ ጊዜ አይደገፉም</translation>
 <translation id="3289674678944039601">በአስማሚ በኩል በመሙላት ላይ</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">ተያይዟል</translation>
 <translation id="3369111525500416043">በቅርብ ጊዜ ያበቃል</translation>
 <translation id="3371140690572404006">የUSB-C መሣሪያ (የቀኝ ጎን የፊት ወደብ)</translation>
+<translation id="3373196968211632036">Steam for Chromebook (ቅድመ ይሁንታ) ለልጅ Google መለያዎች አይገኝም</translation>
 <translation id="3375634426936648815">ተገናኝቷል</translation>
 <translation id="3386978599540877378">የሙሉ ማያ ገፅ ማጉያ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">መደርደሪያ በራስ-ሰር ተደብቋል</translation>
+<translation id="3496797737329654668">ጨዋታ እንጫወት</translation>
 <translation id="3505066820268455558">ባትሪ ኃይል በመሙላት ላይ</translation>
 <translation id="3509391053705095206">የእርስዎን ስልክ ማግኘት አልተቻለም። የእርስዎ ስልክ ብሉቱዝ እንደበራ ያረጋግጡ።</translation>
 <translation id="3510164367642747937">የመዳፊት ጠቋሚን አድምቅ</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">ቅንጥብ ሰሌዳን ክፈት</translation>
 <translation id="363473492175527493">ተግባሩ በ<ph name="TASK_NAME" /> ላይ እንዲያተኩር ተቀናብሯል።. ተግባሩን ዓርታኦት ለመስጠት አስገባ የሚለውን ይጫኑ።</translation>
 <translation id="3638400994746983214">የግላዊነት ማያ ገጽን ቀያይር። <ph name="STATE_TEXT" />።</translation>
+<translation id="3641070112313110357">Steam ለChromebook (ቅድመ ይሁንታ) መዘመን አለበት። የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ።</translation>
 <translation id="3649256019230929621">መስኮትን ያሳንሱት</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">አሁን ካለው ዴስክ ላይ መስኮቶችን በማሳየት ላይ፣ መስኮቶችን ከሁሉም ዴስኮች ለማሳየት የላይ ቀስት ቁልፍን ይጫኑ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">መዝናኛ</translation>
+<translation id="370665806235115550">በመጫን ላይ…</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> እና <ph name="UNAVAILABLE_DLC_TWO" /> አይገኙም</translation>
 <translation id="3708186454126126312">ከዚህ ቀደም የተገናኘ</translation>
 <translation id="3712143870407382523">ለዚህ ጎን መስኮት ይምረጡ</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">ከአጋዥ ሥልጠና ዕይታ ውጣ</translation>
 <translation id="383629559565718788">የቁልፍ ሰሌዳ ቅንብሮችን አሳይ</translation>
 <translation id="384082539148746321">ቅንብር ደንቡን ይሰረዝ?</translation>
+<translation id="3841282988425489367">Steam for Chromebookን (ቅድመ ይሁንታ) ማዋቀር አልተቻለም</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> በመቀጠል <ph name="KEY_ONE" /> ወይም <ph name="KEY_TWO" /> ወይም <ph name="KEY_THREE" /> ወይም <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">ምንም የአውታረ መረብ መረጃ አይገኝም</translation>
 <translation id="3848526302597027234">የሚከተሉትን ፈቃዶች ይድረሱባቸው፦</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">ወደ ቀጣዩ ቃል መጨረሻ ይንቀሳቀሱ</translation>
 <translation id="4150201353443180367">ማሳያ</translation>
 <translation id="4151054805501931758">የቁም ፎቶ ማሳመሪያ</translation>
+<translation id="4151449637210235443">ስለ ቅርብ ጊዜ የጨዋታ ዘዴዎ ይንገሩን</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ባትሪ ይቀራል (<ph name="TIME_LEFT" /> አካባቢ)።
 የባትሪ ዕድሜን ለመጨመር አንዳንድ ባህሪዎች ተገድበዋል።</translation>
 <translation id="4158003972857765638">በአዲስ ዴስክ ውስጥ አደራጅ</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">ወይም</translation>
 <translation id="4193857202545160520">ጠቅታዎች እና ቁልፎችን አሳይ</translation>
 <translation id="4193969623755915875">በአሰሳ መተግበሪያ ውስጥ "እገዛ"ን በ "<ph name="NEW_SHORTCUT" />"ይክፈቱ።</translation>
+<translation id="4195001808989442226">Steam for Chromebook መክፈት አልተቻለም (ቅድመ ይሁንታ)</translation>
 <translation id="4195579532193195633">የአሁን ስሪት <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ካቆምክበት ቀጥል</translation>
 <translation id="4195877955194704651">ራስሰር ጠቅታዎች አዝራር</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />፣ የተጫነ መረግበሪያ፣ ባለበት ቆሟል</translation>
 <translation id="4228078597006700451">መቆጣጠሪያዎች አልተዋቀሩም</translation>
 <translation id="4230560241506423345">አዲስ</translation>
+<translation id="4231231258999726714">Steam for Chromebook በማዋቀር ላይ</translation>
 <translation id="4236726631849783264">ስለ የተጠቆሙ ድርጊቶች አስታዋሽ</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
 <translation id="4240486403425279990">የአጠቃላይ ዕይታ ሁነታ</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{አሁን መሣሪያን ያዘምኑ}=1{በ1 ሰከንድ ውስጥ መሣሪያን ያዘምኑ}one{በ# ሰከንዶች ውስጥ መሣሪያን ያዘምኑ}other{በ# ሰከንዶች ውስጥ መሣሪያን ያዘምኑ}}</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4473489370276014885">የGoogle እውቂያዎች</translation>
+<translation id="4473996011558324141">ጊዜ መገመት</translation>
 <translation id="4477350412780666475">ቀጣይ ትራክ</translation>
 <translation id="4477751544736611934">ይህ የውሂብ ወጪን ሊያስከትል ይችላል።
 1 መሣሪያ ተገናኝቷል።</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">ወደ ያልታወቀ ተቀባይ cast ማድረግን አስቁም</translation>
 <translation id="4596144739579517758">ጠቆር ያለ ገጽታ ጠፍቷል</translation>
 <translation id="4596442969149038771">በ<ph name="USER" /> የተጋራ</translation>
+<translation id="4598556348158889687">የማከማቻ አስተዳደር</translation>
 <translation id="4610493115106525653">ጥሩ ውጤት</translation>
 <translation id="4611292653554630842">ግባ</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ተገናኝቷል</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">ለመሰረዝ Ctrl+Wን ይጫኑ</translation>
 <translation id="4635501805800894201">{0,plural, =0{አሁኑኑ መሣሪያውን ወደ ቀዳሚው ስሪት ያዘምኑ}=1{በ1 ሰከንድ ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ያዘምኑ}one{በ# ሰከንድ ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ያዘምኑ}other{በ# ሰከንዶች ውስጥ መሣሪያውን ወደ ቀዳሚው ስሪት ያዘምኑ}}</translation>
 <translation id="4642092649622328492">ከፊል ቅጽበታዊ ገፅ ዕይታን ያንሱ</translation>
+<translation id="4642587497923912728">Steam for Chromebook (ቅድመ ይሁንታ) የሚገኘው በዚህ Chromebook መጀመሪያ ለገባው መለያ ብቻ ነው።</translation>
 <translation id="4644727592819780893">ካሜራን ለማስገባት ቦታው በጣም ትንሽ ነው</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />፣ የመተግበሪያ ምክር</translation>
 <translation id="4649019912155580914">እርስዎ አርትዖት አድርገዋል</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">ጠቆር ያለ ገጽታ በርቷል</translation>
 <translation id="5354804064646502504">ይህ የውሂብ ወጪን ሊያስከትል ይችላል።
 ምንም መሣሪያዎች አልተገናኙም።</translation>
+<translation id="5355498626146154079">«Borealis Enabled» የሚለውን ጠቋሚ ማብራት አለብዎ</translation>
 <translation id="5356963482258194581">ጠቆር ያለ እና ነጣ ያለ ገጽታ ይቀያይሩ። በዴስክቶፕ ላይ የቀኝ ጠቅታ ያድርጉ ከዚያም ልጣፍ እና ቅጥን ይምረጡ።</translation>
 <translation id="536019650977002321">አስተዳዳሪዎ የኦዲዮ መቅዳትን አይፈቅድም። ለተጨማሪ መረጃ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> የንግግር ፋይሎች በከፊል ወርደዋል</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">የካሜራ መዳረሻ ይብራ?</translation>
 <translation id="5378450298115733949">ተጨማሪ</translation>
 <translation id="5379115545237091094">በጣም ብዙ ሙከራዎች</translation>
+<translation id="5380526436444479273">ጥቂት ደቂቃዎች ይጠብቁ እና እንደገና ይሞክሩ</translation>
 <translation id="5383434787520761436">ምንም የGoogle Drive ፋይሎች የሉም</translation>
 <translation id="5391307769715781764">የተቀመጠ ዴስክ ይተካ?</translation>
 <translation id="5392327145184648521">የባትሪ % በማስላት ላይ...</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">ተግባሩ እንደተጠናቀቀ ምልክት አድርግ</translation>
 <translation id="5413656666631274079">የቅንብሮች ገፅ</translation>
 <translation id="5414198321558177633">የመገለጫ ዝርዝርን በማደስ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
+<translation id="5415328625985164836">ይህ የቅድመ-ይሁንታ ፕሮግራም ነው። አሁን በእርስዎ Chromebook ላይ አንዳንድ ጨዋታዎችን ለመጫወት Steam መጠቀም ይችላሉ።</translation>
 <translation id="5426063383988017631">የቅንብሮች ምናሌ ተዘግቷል</translation>
 <translation id="5428899915242071344">መምረጥ ይጀምሩ</translation>
 <translation id="5429993543155113935">ማንነት የማያሳውቁ መስኮቶች በአሁኑ ጊዜ አይደገፉም</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774">በእርስዎ <ph name="PRODUCT_NAME" /> ላይ የሚያስፈልግዎት ነገር ሁሉ ለማድረግ መተግበሪያዎችን ይጠቀሙ። መተግበሪያዎችዎን በማስጀመሪያ ውስጥ ማግኘት ይችላሉ።</translation>
 <translation id="571295407079589142">የተንቀሳቃሽ ስልክ ውሂብ ጠፍቷል</translation>
 <translation id="5727460725221669831">የይለፍ ቃልዎን ከረሱ ወይም የGoogle መለያ የይለፍ ቃልዎን በቅርቡ ከለወጡ ይህን ተጠቃሚ መልሰው ለማግኘት ይሞክሩ።</translation>
+<translation id="572914206753951782">የእርስዎ Chromebook በአዲሱ ስሪት ላይ መሆኑን ያረጋግጡ። ከዚያ የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ</translation>
 <translation id="5733630091161562207">የእንኳን ደህና መጡ ማሳወቂያ</translation>
 <translation id="573413375004481890">ይህ መሣሪያ ሁሉንም የእርስዎ ማሳያዎች መደገፍ ስለማይችል አንዱ ግንኙነቱ እንዲቋረጥ ተደርጓል</translation>
 <translation id="574392208103952083">መካከለኛ</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">በ«<ph name="NEW_SHORTCUT" />» የቁልፍ አቋራጮች መተግበሪያን ይክፈቱ።</translation>
 <translation id="6507618042428827377">ቀጥሎ ወደሚገኘው የግቤት ስልት ይቀይሩ</translation>
 <translation id="6508923215158854599">የእርስዎ Chromebook ከእርስዎ Chromecast መሣሪያ ጋር ተመሳሳይ የሆነ የWi-Fi አውታረ መረብ ላይ እንደሆነ ያረጋግጡ።</translation>
+<translation id="6511607461419653612">የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ</translation>
 <translation id="6515727200518652613">ካሜራ ጠፍቷል፣ ዳግም ለማገናኘት በመሞከር ላይ።</translation>
 <translation id="651753338596587143">ይቅርታ፣ የDLC ጥገኛዎችን መጫን ላይ የሆነ ችግር ተፈጥሯል። እባክዎ ዳግም አስነስተው ይሞክሩ እና ችግሩ ከቀጠለ በመግለጫው ውስጥ #bruschettaን አካትተው ግብረመልስ ይስጡ። የስህተት ኮድ <ph name="ERROR" /> ነው።</translation>
 <translation id="6520517963145875092">ለመቅረጽ መስኮት ይምረጡ</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819">የእይታ ጥበቃ ስለበራ የ<ph name="APP_TITLE" /> ማሳወቂያ ተደብቋል</translation>
 <translation id="6574622320167699133">በስልክዎ ተከፍቷል። ለመግባት መታ ወይም ጠቅ ያድርጉ።</translation>
 <translation id="6578407462441924264">ያልተሰየመ</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% ተጠናቅቋል</translation>
 <translation id="6582012689384648647">ግላዊ የተደረጉ የትኩረት አጫዋች ዝርዝሮችን ለማግኘት ወደ YouTube Music መዳረሻ ይፈቀዱ</translation>
 <translation id="6582034443359256692">የባትሪ ቻርጅ መጠኑን ባማስላት ላይ።</translation>
 <translation id="6585808820553845416">ክፍለ-ጊዜ በ<ph name="SESSION_TIME_REMAINING" /> ውስጥ ያበቃል።</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">ኃይል</translation>
 <translation id="672609503628871915">ምን አዲስ ነገር እንዳለ ይመልከቱ</translation>
 <translation id="6727969043791803658">ተገናኝቷል፣ <ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
+<translation id="6731320427842222405">ይሄ ጥቂት ደቂቃዎችን ሊወስደ ይችላል</translation>
 <translation id="6732087373923685049">ካሜራ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ካሜራ እና ማይክሮፎን ሥራ ላይ ናቸው</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">የAlt + የላይ ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የላይ ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የላይ ቀስት ይጫኑ።</translation>
 <translation id="696267987219125751">የካሜራ ክፈፍ መስራት ጠፍቷል።</translation>
 <translation id="6965382102122355670">እሺ</translation>
+<translation id="6967112302799758487">በSteam for Chromebook (ቅድመ ይሁንታ) የተጫኑ ማናቸውም መተግበሪያዎች እና ጨዋታዎች ከዚህ መሣሪያ ይወገዳሉ። ከእነዚህ መተግበሪያዎች እና ጨዋታዎች ጋር የተገናኘ ውሂብም ይወገዳል። ከማራገፍዎ በፊት የተቀመጡ መተግበሪያዎችን እና ጨዋታዎችን ምትኬ ማስቀመጥዎን ያረጋግጡ።</translation>
 <translation id="6972629891077993081">HID መሣሪያዎች</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">አስገባ</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">በራስ-አሽከርክር</translation>
 <translation id="7076293881109082629">በመግባት ላይ</translation>
 <translation id="7076878155205969899">ድምጽን ዝጋ</translation>
+<translation id="7083774521940805477">Steam for Chromebook (ቅድመ ይሁንታ) በእርስዎ Chromebook ላይ የለም።</translation>
 <translation id="7083848064787091821">ትኩረት</translation>
 <translation id="7084678090004350185">መገናኛ ነጥብ ይቀያይሩ። መገናኛ ነጥብ በርቷል፣ <ph name="DEVICECOUNT" /> መሣሪያዎች ተገናኝተዋል።</translation>
 <translation id="7086931198345821656">ይህ ዝማኔ የእርስዎን <ph name="DEVICE_TYPE" /> powerwashing ይፈልጋል። ሁሉም ውሂብ ይሰረዛል። ስለቅርብ ጊዜው የ<ph name="SYSTEM_APP_NAME" /> ዝማኔ የበለጠ ይወቁ።</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">የመሆን ዕድላቸው ከፍ ያለ ነው</translation>
 <translation id="7131634465328662194">በራስሰር ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
+<translation id="7143409552554575716">የChromeOS ጠቋሚዎች</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="7144942256906679589">የባትሪ ሁኔታ</translation>
 <translation id="7145639536026937076">ባትሪ <ph name="PERCENTAGE" />% ላይ ነው እና ኃይል እየሞላ ነው። ባትሪ ኃይል ቆጣቢ በርቷል።</translation>
 <translation id="7147587499155271409">ምንም የአሰሳ ታሪክ የለም</translation>
 <translation id="7147657298465433425">የF ቁልፎችን ለመድረስ፣ fn ቁልፍ + የላይኛው ረድፍ ቁልፎችን ይጫኑ</translation>
 <translation id="7149149900052329230">ሁሉንም አካባቢያዊ ፋይሎችዎን እና የGoogle Drive ፋይሎችዎን በፋይሎች መተግበሪያው ውስጥ ያቀናብሩ።</translation>
+<translation id="7154020516215182599">የእርስዎን ግብረመልስ ያጋሩ ወይም የእርስዎን ችግር ይግለጹ። ከተቻለ የእርስዎን ችግር ዳግም ለመስራት እርምጃዎችን ያካትቱ።</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />፣
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@
 <translation id="7726391492136714301">የስልክዎን ማሳወቂያዎች እና መተግበሪያዎች ይመልከቱ</translation>
 <translation id="7727952505535211425">ድር ጣቢያውን በአድራሻ አሞሌው ውስጥ በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="7728657226117099693">Caps Lock አጥፋ</translation>
+<translation id="7732702411411810416">ከበይነመረቡ ጋር መገናኘትዎን ያረጋግጡ እና እንደገና ይሞክሩ</translation>
 <translation id="7742327441377685481">ምንም ማሳወቂያዎች የሉም</translation>
 <translation id="7748275671948949022">የማስጀመሪያ አዝራርን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="7749443890790263709">የተደረሰባቸው የዴስኮች ከፍተኛ ብዛት።</translation>
@@ -2122,6 +2155,7 @@
 <translation id="7866482334467279021">በርቷል</translation>
 <translation id="7870790288828963061">ምንም አዲስ ስሪት ያላቸው የKiosk መተግበሪያዎች አልተገኙም። ምንም የሚዘምን ነገር የለም። እባክዎ የዩ.ኤስ.ቢ. ስቲኩን ያስወግዱ።</translation>
 <translation id="7872786842639831132">አጥፋ</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199">ብሉቱዝ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የጠፋ ይመስላል። የስልክ ሃብን ለመጠቀም እባክዎ ብሉቱዝን ያብሩ።</translation>
 <translation id="7884446017008693258">የመገናኛ ነጥብ ቅንብሮች</translation>
 <translation id="7884902759927478774">የትር ማንሸራተትን ይሰርዙ</translation>
@@ -2472,6 +2506,7 @@
 <translation id="8980862970816311842">የመተግበሪያ አዶን በመተግበሪያ ፍርግርግ ውስጥ ከአቃፊ ወደ ውስጥ/ውጭ ያንቀሳቅሳል</translation>
 <translation id="8982906748181120328">በአቅራቢያ ያለ ታይነት</translation>
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>
+<translation id="8985191021574400965">እንኳን ወደ የChromebook Steam በደህና መጡ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />ን በመጠቀም ላይ</translation>
 <translation id="8991648557324317894">ለመሰረዝ fn + ፈጣን ማስገቢያን ወይም ቀያይርን ይጫኑ።</translation>
 <translation id="899350903320462459">የማሳወቅ እርምጃውን ለማከናወን መሣሪያን እንደ <ph name="LOGIN_ID" /> ይክፈቱ</translation>
@@ -2488,6 +2523,7 @@
 <translation id="9047624247355796468">ለ <ph name="NETWORK_NAME" /> ቅንብሮችን ክፈት</translation>
 <translation id="9050012935252397793">ብሉቱዝ አይገኝም</translation>
 <translation id="9050999376345823055">ለመልቀቅ «.» ይጫኑ</translation>
+<translation id="9061694916020926968">Steam for Chromebook (ቅድመ ይሁንታ) ለመጠቀም ወደ Google መለያ መግባት አለብዎት። በመለያ ይግቡ እና እንደገና ይሞክሩ።</translation>
 <translation id="906458777597946297">መስኮቱን ያስፉት</translation>
 <translation id="9065203028668620118">አርትዕ</translation>
 <translation id="9068849894565669697">ቀለም ይምረጡ</translation>

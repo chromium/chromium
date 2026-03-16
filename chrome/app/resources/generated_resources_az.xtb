@@ -840,7 +840,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' artıq '<ph name="ACTION" />' əməliyyatına təyin edilib. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>
 <translation id="1567993339577891801">JavaScript Konsolu</translation>
 <translation id="1569466257325986920">Növbəti dəfə Google Hesabınızın parolu dəyişdikdə Google Hesabına daxil olduqdan sonra lokal datanız avtomatik bərpa ediləcək</translation>
-<translation id="1570235441606255261">Steam quraşdırıcısı</translation>
 <translation id="1570604804919108255">Bildirişləri səssiz rejimdən çıxarın</translation>
 <translation id="1570990174567554976">"<ph name="BOOKMARK_TITLE" />" əlfəcin qovluğu yaradıldı.</translation>
 <translation id="1571041387761170095">Zəif və ya təkrar işlənən parol yoxdur</translation>
@@ -965,7 +964,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1642299742557467312">Bu fayl cihazınızı zədələyə bilər</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> və digər <ph name="NUMBER_OF_DEVICES" /> Bluetooth cihazına qoşulub</translation>
 <translation id="1642494467033190216">Digər debaq funksiyalarını aktiv etmədən öncə kök qorunmasının silinməsi və yenidən başlanma tələb olunur.</translation>
-<translation id="1642895994345928121">Bu tətbiqi açmaq üçün kifayət qədər cihaz yaddaşı yoxdur. Yer boşaldın və təkrar cəhd edin.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA SHA-1 ilə imza</translation>
 <translation id="1643921258693943800">Yaxınlıqda Paylaşımdan istifadə etmək üçün Bluetooth və Wi-Fi'ın aktiv edin</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
@@ -2068,7 +2066,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2390347491606624519">Proksiyə qoşulmaq olmur, yenidən daxil olun</translation>
 <translation id="2390782873446084770">Wi-Fi Sinxronlaşdırması</translation>
 <translation id="2391419135980381625">Standart şrift</translation>
-<translation id="2391805183137601570">Steam-i açın</translation>
 <translation id="239185270194776190">Gemini söhbətiniz başqa pəncərədədir. Bu yan paneli buraya köçürmək üçün istənilən yerə klikləyin.</translation>
 <translation id="2392369802118427583">Aktivləşdirin</translation>
 <translation id="2393136602862631930">Chromebook'da <ph name="APP_NAME" /> tətbiqini quraşdırın</translation>
@@ -2150,7 +2147,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2445484935443597917">Yeni Profil Yaradın</translation>
 <translation id="2445726032315793326">Qismən böyüdücü</translation>
 <translation id="244641233057214044">Axtarışınız ilə əlaqəli</translation>
-<translation id="2447587550790814052">Chromebook üçün Steam (Beta) istifadə edə bilərsiniz</translation>
 <translation id="2448312741937722512">Növ</translation>
 <translation id="2448810255793562605">Düymə ilə giriş avtomatik skanlaması</translation>
 <translation id="2450021089947420533">Baxışlar</translation>
@@ -2177,7 +2173,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2460826998961521840">Google Hesabında yadda saxlanmış giriş açarlarından istifadə etmək üçün</translation>
 <translation id="2461550163693930491">Saytlara paylaşılan tabları sürüşdürüb zumlamaq icazəsi verməyin</translation>
 <translation id="2461593638794842577">Parolları yalnız bu cihazda yadda saxlamaq üçün bu ayarı söndürə bilərsiniz</translation>
-<translation id="2462332841984057083">Steam ayarlanır. Ayarlamanın tamamlanmasını gözləyin.</translation>
 <translation id="2462724976360937186">Sertifikatlaşdırma İcazəsi Açar ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> əlavə edildi</translation>
 <translation id="2464075479326723132">Microsoft SharePoint və OneDrive-da ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etməsi üçün təklif olunan faylları görürsünüz.
@@ -2232,7 +2227,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> üzrə səsi öncədən dinləyin</translation>
 <translation id="2492461744635776704">Sertifikat giriş sorğusu hazırlanır</translation>
 <translation id="249330843868392562">Mətndən-nitqə ayarlarını açın</translation>
-<translation id="2494555621641843783">Steam quraşdırılmır</translation>
 <translation id="2496180316473517155">Brauzer tarixçəsi</translation>
 <translation id="2496616243169085015">Fotoqrafiya</translation>
 <translation id="2497229222757901769">Maus sürəti</translation>
@@ -2588,7 +2582,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="27349076983469322">Açıq arxa fon</translation>
 <translation id="2735712963799620190">Rejim</translation>
 <translation id="2737363922397526254">Yığcamlaşdırın...</translation>
-<translation id="2737538893171115082">Chromebook üçün Steam (Beta) administrator tərəfindən bloklanıb. Administrator bu siyasətləri aktiv etməlidir:</translation>
 <translation id="2737719817922589807">&amp;Əlfəcin və siyahılar</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" />ekranınızın məzmununu <ph name="TARGET_NAME" /> ilə paylaşmaq istəyir.</translation>
 <translation id="2738030019664645674">Saytlara cihazınızda quraşdırılmış şriftlərdən istifadə etmək icazəsi verməyin</translation>
@@ -3051,7 +3044,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3039491566278747710">Cihazda oflayn siyasət quraşdırılmadı.</translation>
 <translation id="303955801043931176">Tab bağlanıb</translation>
 <translation id="3040435070100611531">Google Pulqabınızın keçidləri</translation>
-<translation id="3040982432432547149">Chromebook üçün Steam-i təkmilləşdirməyə kömək edin</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> ilə tab qrupuna qoşulun</translation>
 <translation id="3042097545107738107">Optimallaşdırılmış şarj strategiyasını dəyişin.</translation>
 <translation id="3043016484125065343">Əlfəcinlərinizi görmək üçün daxil olun</translation>
@@ -3262,7 +3254,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3201422919974259695">Əlçatan USB cihazları burada görünəcək.</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> cihazında ekran yayımını durdurun</translation>
 <translation id="3202578601642193415">Ən yeni</translation>
-<translation id="3204648577100496185">Bu tətbiqlə bağlı data bu cihazdan silinəcək</translation>
 <translation id="3206289903841621620">İstifadəçi lüğəti <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Son fəaliyyətə əsasən axtarış və şopinq endirimləri üzrə təkliflər görürsünüz.
         <ph name="BREAK" />
@@ -3370,7 +3361,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3283148363895519428">Ayarlamağa davam etmək üçün telefondakı təlimatlara əməl edin. Telefonun yaxınlıqda, Bluetooth-un isə aktiv olduğuna əmin olun.</translation>
 <translation id="3284050785966252943">Metadatanın avtomatik doldurulmasını önizləmə</translation>
 <translation id="3285322247471302225">Yeni Tab</translation>
-<translation id="3285465040399788513">Ayarlamanı tamamlamaq üçün kifayət qədər yaddaş yoxdur. Yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="3285500645985761267">Əlaqədar saytlara qrupdakı fəaliyyətinizi görməyə icazə verin</translation>
 <translation id="328571385944182268">Parollar yadda saxlanılsın?</translation>
 <translation id="3289668031376215426">Avto-kapitalizasiya</translation>
@@ -3493,7 +3483,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3372602033006349389">Digər cihazlarda</translation>
 <translation id="337286756654493126">Tətbiqlərdə açdığınız qovluqlar haqqında oxuyun</translation>
 <translation id="3373059063088819384">Oxu Rejimində açın</translation>
-<translation id="3373196968211632036">Chromebook üçün Steam (Beta) uşaqların Google Hesabında əlçatan deyil</translation>
 <translation id="3373701465337594448">Aktiv olduqda, maraqlarınızı təxmin edən ziyarət etdiyiniz saytların siyahısı burada görünür</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' buraya köçürülüb: '<ph name="NEW_FOLDER_TITLE" />'.</translation>
 <translation id="3376035595160918049">Tətbiq güncəllənməsini nəzərdən keçirin</translation>
@@ -3676,7 +3665,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (seçilməyib)</translation>
 <translation id="3496689104192986836">Batareya səviyyəsi: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Toplamaq üçün data mənbələri</translation>
-<translation id="3496797737329654668">Gəlin oynayaq</translation>
 <translation id="3496995426334945408">Saytlar videooyun və ya veb-formalar kimi interaktiv funksiyalar üçün JavaScript istifadə edir</translation>
 <translation id="3497501929010263034">USB cihazı təmin edən: <ph name="VENDOR_NAME" /> (məhsul <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle Paylaşın</translation>
@@ -3889,7 +3877,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3637203148990213388">Əlavə hesablar</translation>
 <translation id="3640347231390550691">Parolları fişinqdən qoruyun</translation>
 <translation id="364100968401221170">Baxış datasını sinxronlaşdırılmış cihazlardan və Google Hesabından silmək üçün <ph name="BEGIN_LINK" />daxil olun<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Chromebook üçün Steam (Beta) güncəllənməlidir. Chromebook-u yenidən başladın və təkrar cəhd edin.</translation>
 <translation id="3641299252000913351">Modem iç proqram güncəllənməsi davam edir. Cihazı deaktiv etməyin.</translation>
 <translation id="3641456520301071208">Saytlar məkanınızı tələb edə bilər</translation>
 <translation id="3642064270296434810">Artıq ekranda gördüyünüz hər şeyi axtarmaq üçün Google Linzadan istifadə edə bilərsiniz</translation>
@@ -4226,7 +4213,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="383891835335927981">Heç bir sayt yaxınlaşdırılmayıb və ya uzaqlaşdırılmayıb</translation>
 <translation id="3839516600093027468">Həmişə <ph name="HOST" /> hostunun buferi görməsini blok edin</translation>
 <translation id="3840096463915153852">Söhbət tarixçəsi</translation>
-<translation id="3841282988425489367">Chromebook üçün Steam (Beta) ayarlamaq olmur</translation>
 <translation id="3841319830220785495">Defolt təbii səs</translation>
 <translation id="3841356782900714251">Smart kart oxuyanlar</translation>
 <translation id="3841964634449506551">Parol yanlışdır</translation>
@@ -4672,7 +4658,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4148195018520464922">Girişi müəyyən istifadəçilərə məhdudlaşdıra bilərsiniz. Bu zaman giriş ekranında "Şəxs əlavə edin" seçimi silinir. Cari istifadəçiləri də silə bilərsiniz.</translation>
 <translation id="4148957013307229264">Quraşdırılır...</translation>
 <translation id="4150201353443180367">Ekran</translation>
-<translation id="4151449637210235443">Son oyun sürəsi haqqında bildirin</translation>
 <translation id="4151503145138736576">Təmizlənəcək oflayn yaddaş yoxdur</translation>
 <translation id="4152011295694446843">Əlfəcinləri burada tapa bilərsiniz</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 panel}other{# panel}}</translation>
@@ -4723,7 +4708,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4193251682249731404">Etibarlı CA</translation>
 <translation id="4193575319002689239">Kartları göstərin</translation>
 <translation id="419427585139779713">Hər dəfə bir heca daxil edin</translation>
-<translation id="4195001808989442226">Chromebook üçün Steam-i (Beta) açmaq olmur</translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4195814663415092787">Qaldığınız yerdən davam edin</translation>
 <translation id="4198268995694216131">Əlavə saytlar</translation>
@@ -4769,7 +4753,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Bu artırmaya icazə verilmir}other{Bəzi artırmalara icazə verilmir}}</translation>
 <translation id="4231053948789591973">Yayım durdurulub. İstənilən vaxt ekran yayımını bərpa edə, yaxud dayandıra bilərsiniz.</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> cihazında Google Play'dən tətbiq və oyunlar quraşdırın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Chromebook üçün Steam ayarlanır</translation>
 <translation id="4232375817808480934">Kerberos'u konfiqurasiya edin</translation>
 <translation id="4232376164796433044">Parollar və avto-doldurma</translation>
 <translation id="4232484478444192782">Android telefonu işinizə yarayacaq. WiFi və parol ötürülür.</translation>
@@ -5128,7 +5111,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4472533928615930332"><ph name="STYLE" /> üslubunda <ph name="INDEX" /> indeksli <ph name="SUBJECT" /> şəkli yaradıldı</translation>
 <translation id="4472575034687746823">Başlayın</translation>
 <translation id="4473559657152613417">Taba sağ düymə ilə toxunun və "Tabı yeni qrupa əlavə edin" seçin</translation>
-<translation id="4473996011558324141">vaxt hesablanır</translation>
 <translation id="4474155171896946103">Bütün panelləri əlfəcinləyin...</translation>
 <translation id="4476198534886170024">İcazə verilib. <ph name="LINK_BEGIN" />Sistem kamera girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="4476590490540813026">Atlet</translation>
@@ -5363,7 +5345,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4638930039313743000">ADB sazlamasını aktiv edin</translation>
 <translation id="4639390152280993480">Bu səhifənin sadə versiyasına baxmaq üçün Digər alətlər &gt; Oxu rejimi bölməsinə keçin</translation>
 <translation id="4641539339823703554">Chrome sistem vaxtını ayarlaya bilmədi. Aşağıda vaxtı yoxlayın və gərək olduğu halda düzəldin.</translation>
-<translation id="4642587497923912728">Chromebook üçün Steam (Beta) bu Chromebook-da yalnız ilk daxil olan hesabda əlçatandır.</translation>
 <translation id="4643612240819915418">&amp;Videonu Yeni Paneldə Açın</translation>
 <translation id="4643833688073835173">Cihazınızın qarşısındakı insanları aşkar etmək üçün Chromebook cihazınız daxili sensordan istifadə edir. Bütün data dərhal cihazınızda işlənir və sonra silinir. Sensor datası heç vaxt Google'a göndərilmir.</translation>
 <translation id="4644205769234414680">Anonim rejimdə icazə verin</translation>
@@ -6368,7 +6349,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5353769147530541973">Qeyri-aktiv etmək üçün tab siyahısından <ph name="SITE_NAME" /> saytını silin</translation>
 <translation id="5355099869024327351">Assistentə bildirişləri göstərmək icazəsi verir</translation>
 <translation id="5355191726083956201">Qabaqcıl Qoruma aktivdir</translation>
-<translation id="5355498626146154079">"Borealis Enabled" bayrağını aktiv etməlisiniz</translation>
 <translation id="5355501370336370394">Müəssisə cihazını qeydiyyatdan keçirin</translation>
 <translation id="5357010010552553606">Tam ekrana avtomatik daxil olmaq icazəsi verilməyib</translation>
 <translation id="5359910752122114278">1 nəticə</translation>
@@ -6398,7 +6378,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5376931455988532197">Fayl çox böyükdür</translation>
 <translation id="5377367976106153749">Kamera girişi aktiv edilsin?</translation>
 <translation id="5379140238605961210">Mikrofon girişini bloklamağa davam edin</translation>
-<translation id="5380526436444479273">Bir neçə dəqiqə gözləyin və yenidən cəhd edin</translation>
 <translation id="5382591305415226340">Dəstəklənən linkləri idarə edin</translation>
 <translation id="5384401776498845256">Sizinlə kim paylaşa bilər</translation>
 <translation id="5385628342687007304">Bu parol yalnız bu cihazda yadda saxlanır. Onu digər cihazlarda istifadə etmək üçün Google Hesabında yadda saxlayın.</translation>
@@ -6453,7 +6432,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5414198321558177633">Profil siyahısı təzələnir. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="5414566801737831689">Ziyarət etdiyiniz saytlardakı ikonaları oxuyun</translation>
 <translation id="5414836363063783498">Doğrulanır...</translation>
-<translation id="5415328625985164836">Bu, beta proqramıdır. Chromebook-da bəzi oyunları oynamaq üçün Steam istifadə edə bilərsiniz.</translation>
 <translation id="5415497281076257439">İfadə</translation>
 <translation id="5415871492522952905">Qaldığınız yerdən davam etmək üçün tarixçə və tablar bütün cihazlarda olacaq</translation>
 <translation id="5417293056300086453">Bu sayt qorunan kontenti oxutmaq üçün identifikatorlardan istifadə edə bilər.</translation>
@@ -6894,7 +6872,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5727728807527375859">Artırmalar, tətbiqlər və temalar kompüterinizə zərər vura bilər. Davam etmək istəyirsiniz?</translation>
 <translation id="5728072125198221967">Əlaqələndirilmiş Google xidmətləri</translation>
 <translation id="5728450728039149624">Ağıllı Kilid ekran kilidi seçimləri</translation>
-<translation id="572914206753951782">Chromebook son versiyada olmalıdır. Sonra Chromebook-u yenidən başladın və təkrar cəhd edin.</translation>
 <translation id="5729712731028706266">&amp;Görünüş</translation>
 <translation id="5731247495086897348">Yerləşdirin və keçin</translation>
 <translation id="5733109311583381874">Çevirmə namizədlərini fərdiləşdirmək üçün istifadəçi lüğətlərinə öz sözlərinizi əlavə edin.</translation>
@@ -8007,7 +7984,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" bu cihazda aşağıdakı tətbiqi quraşdırmaq istəyir:}other{"<ph name="APP_NAME" />" bu cihazda aşağıdakı tətbiqləri quraşdırmaq istəyir:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> ilə əlaqədar</translation>
 <translation id="6508261954199872201">Tətbiq: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Chromebook-u yenidən başladın və təkrar cəhd edin</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> faylını silin ki, bu cihazı istifadə edən başqa şəxslər parollarınızı görməsin</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> əhvalı ilə <ph name="INDEX" /> indeksli <ph name="SUBJECT" /> şəkli yaradıldı.</translation>
 <translation id="6513247462497316522">Digər şəbəkəyə qoşulmadığınız halda Google Chrome mobil data istifadə edəcək.</translation>
@@ -8116,7 +8092,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="657866106756413002">Şəbəkə vəziyyətinə baxış</translation>
 <translation id="6579369886355986318">Bütün &amp;nizamlayıcıları göstərin</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Masaüstü kontent paylaşıldı</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% tamamlanıb</translation>
 <translation id="6580203076670148210">Skan sürəti</translation>
 <translation id="6580676117087365538">Bu artırmanı bütün kompüterlərinizdə əldə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="6581356304040102696">Parolları import etmək olmur. Faylın ölçüsü 1 MB-dan az olmalıdır.</translation>
@@ -8335,7 +8310,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6729280095610283088">Meşə üzərində Aurora Borealis-in parlaq axınları.</translation>
 <translation id="6729493062119577923">Paylaşılan tab qrupu fəaliyyəti</translation>
 <translation id="6730744976532805323">Tabları dəyişsəniz belə, cari tabı Gemini ilə paylaşır</translation>
-<translation id="6731320427842222405">Bir neçə dəqiqə vaxt apara bilər</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Ünvan:</translation>
 <translation id="6737663862851963468">Kerberos biletini silin</translation>
@@ -8685,7 +8659,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Cihaz</translation>
 <translation id="6966831944134814478">Deaktiv edin</translation>
-<translation id="6967112302799758487">Chromebook üçün Steam (Beta) ilə quraşdırılmış tətbiq və oyunlar bu cihazdan silinəcək. Bu tətbiq və oyunların datası da silinəcək. Sistemdən silməzdən əvvəl yadda saxlanmış tətbiq və oyunları yedəkləyin.</translation>
 <translation id="6967430741871315905">Cihaza icazə verilib-verilmədiyini yoxlamaq olmur</translation>
 <translation id="6968288415730398122">Ekran kilidini konfiqurasiya etmək üçün parolu daxil edin</translation>
 <translation id="6969047215179982698">Yaxındakılarla Paylaşmanı deaktiv edin</translation>
@@ -8856,7 +8829,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> administratorunuz tərəfindən idarə olunur</translation>
 <translation id="7082850163410901674">Mac sistem ayarlarında bildirişlər söndürülüb</translation>
 <translation id="7083729794572207131">Saytlar, adətən, veb-sayt təcrübənizi yaxşılaşdırmaq üçün veb-tətbiqlərin quraşdırılmasını istəyir</translation>
-<translation id="7083774521940805477">Chromebook üçün Steam (beta) sizin Chromebook-da əlçatan deyil.</translation>
 <translation id="7084095352418993433">Bu səhifə haqqında Google-dan soruşun: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(konfiqurasiya edilməyib)</translation>
 <translation id="7086377898680121060">Parlaqlığı artırın</translation>
@@ -8935,7 +8907,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7141844554192012199">Yoxlanış</translation>
 <translation id="714301620504747562">Baxış və axtarış əvvəlcədən yükləmənin standart versiyasından sürətlidir</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
-<translation id="7143409552554575716">ChromeOS bayraqları</translation>
 <translation id="7144363643182336710">Bildirişlər ekranda görünməyəcək. Ekranın aşağı sağ tərəfində Narahat Etməyin ikonasına klikləyərək bildirişlərə baxa bilərsiniz.</translation>
 <translation id="7144856456372460176"><ph name="APP" /> tətbiqini quraşdırın...</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
@@ -8946,7 +8917,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7152478047064750137">Bu artırma xüsusi icazələr tələb etmir</translation>
 <translation id="7153101072880472645">Yüksək kontrastı aktiv/deaktiv edin</translation>
 <translation id="715396040729904728">başladıcı + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Rəyinizi paylaşın və ya probleminizi təsvir edin. Mümkünsə, probleminizi təkrarlamaq üçün addımlar əlavə edin.</translation>
 <translation id="7154130902455071009">Başlanğıc səhifənizi buna dəyişin: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Daha yaxşı video keyfiyyəti əldə edin və batareyaya qənaət edin. Video yalnız yayım icazəli ekranda oxudulacaq.</translation>
 <translation id="7159695867335480590">Oxudun/durdurun</translation>
@@ -9798,7 +9768,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7728668285692163452">Kanal dəyişikliyi daha sonra tətbiq ediləcək</translation>
 <translation id="7730449930968088409">Ekran kontentinizi kəsin</translation>
 <translation id="7730683939467795481">Bu səhifə "<ph name="EXTENSION_NAME" />" artırması tərəfindən dəyişdirilib</translation>
-<translation id="7732702411411810416">İnternetə qoşulub, yenidən cəhd edin</translation>
 <translation id="773511996612364297">Vurğu işarələri</translation>
 <translation id="7735558909644181051">Orta sertifikatlar</translation>
 <translation id="7736119438443237821">Bu cihazda giriş açarlarına girişi silmək üzrəsiniz</translation>
@@ -9996,7 +9965,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7871691770940645922">Virtual Brayl Displeyi</translation>
 <translation id="787268756490971083">Deaktiv</translation>
 <translation id="7872758299142009420">Həddindən çox iç-içə qrup: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Chromebook üçün Steam</translation>
 <translation id="7876027585589532670">Qısayolu redaktə etmək olmur</translation>
 <translation id="7876243839304621966">Hamısını silin</translation>
 <translation id="7877126887274043657">Sinxronlaşdırma &amp;problemini düzəldin</translation>
@@ -11651,7 +11619,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="8983018820925880511">Bu yeni profil <ph name="DOMAIN" /> tərəfindən idarə olunacaq. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylını redaktə edə bilər</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> dəqiqə ərzində hər kəs sizi görəcək. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook üçün Steam'ə xoş gəlmisiniz</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> gün öncə aktiv olub</translation>
 <translation id="8985561265504464578">Aşkarlama həddi</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> cihazınıza daxil olmaq üçün internetə qoşulun.</translation>
@@ -11783,7 +11750,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Gündə təxminən 1 bildiriş}other{Gündə təxminən {NUM_NOTIFICATION} bildiriş}}</translation>
 <translation id="9058760336383947367">Printer PPD'nə baxın</translation>
 <translation id="9061521313218438086">Chrome parollarınızdan birini ictimai data pozuntusunda aşkar edərsə, hesabınıza daxil olduğunuz halda, Google Parol Meneceri sizin əvəzinizə parolu dəyişdirməyi təklif edə bilər.</translation>
-<translation id="9061694916020926968">Chromebook üçün Steam (Beta) istifadə etmək məqsədilə Google Hesabına daxil olmalısınız. Daxil olun və yenidən cəhd edin.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Naviqasiya qısayolunu silin</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> - <ph name="ERROR_LINE_END" /> üzrə xəta baş verdi</translation>

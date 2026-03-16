@@ -239,6 +239,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="200114059308480249">Inclure le texte à proximité dans les recherches Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé avec son désactivé</translation>
 <translation id="2021896219286479412">Contrôles du site en plein écran</translation>
+<translation id="2024195579772565064">Supprimer le moteur de recherche</translation>
 <translation id="2029669011553795746">Fenêtre d'activation des notifications de conseils ouverte à mi-hauteur</translation>
 <translation id="2038563949887743358">Activer l’option Demander site pour ordinateurs de bureau</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> a aussi des données dans Chrome</translation>
@@ -556,6 +557,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3384347053049321195">Partager une image</translation>
 <translation id="3387650086002190359">Échec du téléchargement de <ph name="FILE_NAME" /> en raison d'erreurs du système de fichiers.</translation>
 <translation id="3414952576877147120">Taille :</translation>
+<translation id="3417835166382867856">Rechercher dans les onglets</translation>
 <translation id="3430670036890315772">La désactivation du verrouillage de votre profil supprimera vos informations enregistrées</translation>
 <translation id="3435465986463792564">Vous avez de nombreuses fenêtres ouvertes? Vous pouvez les gérer à partir d'ici</translation>
 <translation id="3435575784518354875">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, mettez à jour les services Google Play, puis réimportez-les dans le gestionnaire de mots de passe Google. <ph name="BEGIN_LINK" />Affichez les instructions complètes.<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6898797562238201317">Utiliser votre propre phrase de passe pour chiffrer toutes les données Chrome de votre compte Google</translation>
 <translation id="6900532703269623216">Protection renforcée</translation>
+<translation id="6900654715912436255">Voulez-vous vraiment supprimer ce moteur de recherche?</translation>
 <translation id="6903907808598579934">Activer la synchronisation</translation>
 <translation id="6906448540340261898">S'assurer de toujours pouvoir utiliser les mots de passe dans votre compte Google</translation>
 <translation id="6908230663105268638">Les notifications sont autorisées pour <ph name="SITE_NAME" /></translation>

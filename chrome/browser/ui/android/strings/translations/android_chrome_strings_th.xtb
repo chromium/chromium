@@ -240,6 +240,7 @@
 <translation id="200114059308480249">รวมข้อความที่อยู่โดยรอบในการค้นหาบน Google ไหม</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, แท็บที่ไม่ระบุตัวตนที่ปักหมุดซึ่งปิดเสียงอยู่</translation>
 <translation id="2021896219286479412">ส่วนควบคุมเว็บไซต์แบบเต็มหน้าจอ</translation>
+<translation id="2024195579772565064">ลบเครื่องมือค้นหา</translation>
 <translation id="2029669011553795746">การเลือกรับการแจ้งเตือนเคล็ดลับเปิดอยู่ครึ่งหน้าจอ</translation>
 <translation id="2038563949887743358">เปิดการขอเว็บไซต์เดสก์ท็อป</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> มีข้อมูลอยู่ใน Chrome ด้วย</translation>
@@ -557,6 +558,7 @@
 <translation id="3384347053049321195">แชร์รูปภาพ</translation>
 <translation id="3387650086002190359">การดาวน์โหลด <ph name="FILE_NAME" /> ล้มเหลวเพราะเกิดข้อผิดพลาดกับระบบไฟล์</translation>
 <translation id="3414952576877147120">ขนาด:</translation>
+<translation id="3417835166382867856">ค้นหาแท็บ</translation>
 <translation id="3430670036890315772">การปิดการล็อกโปรไฟล์จะนําข้อมูลที่บันทึกไว้ออก</translation>
 <translation id="3435465986463792564">หากมีหน้าต่างเปิดอยู่หลายหน้า คุณจัดการหน้าต่างเหล่านั้นได้จากที่นี่</translation>
 <translation id="3435575784518354875">หากต้องการเข้าถึงรหัสผ่านต่อไป ให้ส่งออกรหัสผ่านตอนนี้ อัปเดตบริการ Google Play แล้วนำเข้ากลับไปยังเครื่องมือจัดการรหัสผ่านบน Google <ph name="BEGIN_LINK" />ดูวิธีการโดยละเอียด<ph name="END_LINK" /></translation>
@@ -1442,6 +1444,7 @@
 <translation id="6896758677409633944">คัดลอก</translation>
 <translation id="6898797562238201317">ใช้รหัสผ่านของคุณเองในการเข้ารหัสข้อมูล Chrome ทั้งหมดในบัญชี Google</translation>
 <translation id="6900532703269623216">การปกป้องที่ดียิ่งขึ้น</translation>
+<translation id="6900654715912436255">คุณแน่ใจไหมว่าต้องการลบเครื่องมือค้นหานี้</translation>
 <translation id="6903907808598579934">เปิดการซิงค์</translation>
 <translation id="6906448540340261898">ตรวจสอบว่าคุณใช้รหัสผ่านในบัญชี Google ได้เสมอ</translation>
 <translation id="6908230663105268638">อนุญาตให้ <ph name="SITE_NAME" /> แสดงการแจ้งเตือน</translation>

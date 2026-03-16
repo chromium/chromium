@@ -240,6 +240,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, guia anônima com áudio desativado fixada</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
+<translation id="2024195579772565064">Excluir mecanismo de pesquisa</translation>
 <translation id="2029669011553795746">A opção de ativar as notificações de dicas foi aberta na metade da altura</translation>
 <translation id="2038563949887743358">Ativar "Ver versão para computador"</translation>
 <translation id="204321170514947529">O app <ph name="APP_NAME" /> também tem dados no Chrome</translation>
@@ -559,6 +560,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3384347053049321195">Compartilhar imagem</translation>
 <translation id="3387650086002190359">Falha no download de <ph name="FILE_NAME" /> devido a erros do sistema de arquivos.</translation>
 <translation id="3414952576877147120">Tamanho:</translation>
+<translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3430670036890315772">Se o bloqueio de perfil for desativado, as informações salvas serão removidas</translation>
 <translation id="3435465986463792564">Muitas janelas? Gerencie aqui.</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas senhas, exporte-as agora, atualize o Google Play Services e importe-as de volta ao Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Ver instruções completas<ph name="END_LINK" />.</translation>
@@ -1446,6 +1448,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898797562238201317">Use sua senha longa para criptografar todos os dados do Chrome na sua Conta do Google</translation>
 <translation id="6900532703269623216">Proteção reforçada</translation>
+<translation id="6900654715912436255">Tem certeza de que você quer excluir esse mecanismo de pesquisa?</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
 <translation id="6906448540340261898">Garanta que você sempre possa usar as senhas na sua Conta do Google</translation>
 <translation id="6908230663105268638">Notificações permitidas para <ph name="SITE_NAME" /></translation>

@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="1557622599341396706">显示桌面名称</translation>
 <translation id="1569384531973824928">这将允许所有具有摄像头和麦克风使用权限的应用和网站使用摄像头/麦克风。您可能需要刷新网页或重启应用。</translation>
+<translation id="1570235441606255261">Steam 安装程序</translation>
 <translation id="1571697193564730395">开启/关闭“勿扰”模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">已选择左边缘手柄，使用箭头键即可移动</translation>
 <translation id="1576623706766186887">开启放大镜时缩小</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="1639239467298939599">正在加载</translation>
+<translation id="1642895994345928121">设备存储空间不足，无法打开此应用。请释放空间，然后重试。</translation>
 <translation id="1647986356840967552">上一页</translation>
 <translation id="1651914502370159744">打开“历史记录”页</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">应用和标签页分组</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
 <translation id="2389423187722941333">切换 Gemini</translation>
+<translation id="2391805183137601570">打开 Steam</translation>
 <translation id="2392659840443812875">没有可用的热点。确保您的设备就在附近且已开启蓝牙。</translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">昨天打开过</translation>
 <translation id="2440978926514840421">已完成 GIF 录制</translation>
 <translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
+<translation id="2447587550790814052">您现在可以使用 Steam for Chromebook（Beta 版）了</translation>
 <translation id="2449089818483227734">电池电量低</translation>
 <translation id="2450205753526923158">截屏模式</translation>
 <translation id="2453860139492968684">完成</translation>
 <translation id="2455994958736234930">在地址栏中添加 www. 和 .com，然后打开网站</translation>
 <translation id="2456008742792828469">日历，<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">展开细目</translation>
+<translation id="2462332841984057083">已经在设置 Steam 了。请等待设置完成。</translation>
 <translation id="2465145153332031561">电池健康度为 <ph name="BATTERY_HEALTH_PERCENTAGE" />%，充电循环次数为 <ph name="CYCLE_COUNT" /> 次</translation>
 <translation id="2473177541599297363">确认分辨率</translation>
 <translation id="2475783092753560388">插入<ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">“<ph name="DESK_NAME" />”预览。活动桌面。</translation>
 <translation id="2486405091093637109">“<ph name="DISPLAY_NAME" />”的分辨率已更改为 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。如果不确认，系统将在 <ph name="TIMEOUT_SECONDS" />后恢复以前的设置。</translation>
 <translation id="2487915095798731898">加入</translation>
+<translation id="2494555621641843783">无法安装 Steam</translation>
 <translation id="2496180316473517155">浏览记录</translation>
 <translation id="2499445554382787206">桌面个人资料菜单。<ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">粘滞键</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">回复</translation>
 <translation id="2727744317940422214">抱歉，出了点问题。请在说明中提交反馈并附上 #bruschetta。错误代码为 <ph name="ERROR" />。清理失败，您可能需要手动清理。</translation>
 <translation id="2727977024730340865">已插入低功率充电器；可能无法保证充电成功。</translation>
+<translation id="2737538893171115082">您的管理员已禁止使用 Steam for Chromebook（Beta 版）。您的管理员需要开启以下政策：</translation>
 <translation id="2743301740238894839">开始</translation>
 <translation id="2743387203779672305">复制到剪贴板</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />，<ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911">与“<ph name="DESK_NAME" />”合并</translation>
 <translation id="3039939407102840004">触控笔电池电量为 <ph name="PERCENTAGE" />%。</translation>
 <translation id="304097922505898963">打开“键盘快捷键”应用</translation>
+<translation id="3040982432432547149">欢迎帮助我们改进 Chromebook 版 Steam</translation>
 <translation id="304417730895741346">您已固定的应用和已打开的应用会显示在任务栏上。若要将某个应用固定到任务栏，请右键点击该应用或用双指点按触控板。</translation>
 <translation id="3045670165536837541">已选择右上角手柄，使用箭头键即可移动</translation>
 <translation id="3047761520276763270">试着说：</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">重启可能需要一点时间</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{已连接到 1 台设备}other{已连接到 # 台设备}}</translation>
 <translation id="3203405173652969239">已启用“开关控制”</translation>
+<translation id="3204648577100496185">系统可能会从此设备上移除与该应用相关的数据</translation>
 <translation id="3206735939915734551">开启/关闭大写锁定</translation>
 <translation id="3207953481422525583">用户设置</translation>
 <translation id="3208321278970793882">应用</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">搜索即可插入</translation>
 <translation id="3274634049061007184">查看手机中的应用</translation>
 <translation id="3279230909244266691">此过程可能需要几分钟的时间。正在启动虚拟机。</translation>
+<translation id="3285465040399788513">设备存储空间不足，无法完成设置。请释放一些空间，然后重试。</translation>
 <translation id="3289364673986435196">电源菜单</translation>
 <translation id="3289544412142055976">尚不支持 Linux 应用</translation>
 <translation id="3289674678944039601">正在通过适配器充电</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3369111525500416043">即将到期</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
+<translation id="3373196968211632036">儿童 Google 账号无法使用 Steam for Chromebook（Beta 版）</translation>
 <translation id="3375634426936648815">已连接</translation>
 <translation id="3386978599540877378">全屏放大镜</translation>
 <translation id="3387527074123400161">Chromium 操作系统</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">任务栏已自动隐藏</translation>
+<translation id="3496797737329654668">现在就开始玩游戏吧</translation>
 <translation id="3505066820268455558">电池正在充电</translation>
 <translation id="3509391053705095206">找不到您的手机。请确保手机已开启蓝牙功能。</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">打开剪贴板</translation>
 <translation id="363473492175527493">设为要专注处理的任务：<ph name="TASK_NAME" />。按 Enter 键即可修改任务。</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
+<translation id="3641070112313110357">需要更新 Chromebook 版 Steam（Beta 版）。请重启 Chromebook，然后重试。</translation>
 <translation id="3649256019230929621">最小化窗口</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />，
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">正在显示当前桌面中的窗口，按向上键即可显示所有桌面中的窗口</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">娱乐</translation>
+<translation id="370665806235115550">正在加载...</translation>
 <translation id="3707093869106077605">“<ph name="UNAVAILABLE_DLC_ONE" />”和“<ph name="UNAVAILABLE_DLC_TWO" />”不可用。</translation>
 <translation id="3708186454126126312">曾经连接过</translation>
 <translation id="3712143870407382523">选择这一侧的窗口</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">退出教程视图</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
 <translation id="384082539148746321">删除此模板？</translation>
+<translation id="3841282988425489367">无法设置 Steam for Chromebook（Beta 版）</translation>
 <translation id="3844627820291068572">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />，然后按 <ph name="KEY_ONE" /> 或 <ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /> 或 <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">没有可用的网络信息</translation>
 <translation id="3848526302597027234">访问以下权限：</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">移动到下一个字词的末尾</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4151054805501931758">人像美化</translation>
+<translation id="4151449637210235443">欢迎与我们分享您近期的游戏内容</translation>
 <translation id="4156293514828496577">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。为了延长电池续航时间，部分功能会受到限制。</translation>
 <translation id="4158003972857765638">在新桌面中整理</translation>
 <translation id="4160919062868802509">检测到多个音频源</translation>
@@ -967,6 +983,7 @@
 <translation id="4192112279662688596">或</translation>
 <translation id="4193857202545160520">显示点击操作和按键</translation>
 <translation id="4193969623755915875">使用“<ph name="NEW_SHORTCUT" />”在“探索”应用内打开“帮助”。</translation>
+<translation id="4195001808989442226">无法打开 Steam for Chromebook（Beta 版）</translation>
 <translation id="4195579532193195633">当前版本为 <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
 <translation id="4195877955194704651">“自动点击”按钮</translation>
@@ -982,6 +999,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>
 <translation id="4228078597006700451">尚未设置控件</translation>
 <translation id="4230560241506423345">新建</translation>
+<translation id="4231231258999726714">正在设置 Steam for Chromebook</translation>
 <translation id="4236726631849783264">建议的操作注意事项</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
@@ -1066,6 +1084,7 @@
 <translation id="4471432286288241507">{0,plural, =0{立即更新此设备}=1{请在 1 秒内更新此设备}other{请在 # 秒内更新此设备}}</translation>
 <translation id="4472575034687746823">开始使用</translation>
 <translation id="4473489370276014885">Google 通讯录</translation>
+<translation id="4473996011558324141">正在估算用时</translation>
 <translation id="4477350412780666475">下一首</translation>
 <translation id="4477751544736611934">这可能会产生流量费用。
 已连接 1 部设备。</translation>
@@ -1107,6 +1126,7 @@
 <translation id="4585337515783392668">停止投放至不明接收器</translation>
 <translation id="4596144739579517758">深色主题已关闭</translation>
 <translation id="4596442969149038771"><ph name="USER" />分享过</translation>
+<translation id="4598556348158889687">存储空间管理</translation>
 <translation id="4610493115106525653">输出质量良好</translation>
 <translation id="4611292653554630842">登录</translation>
 <translation id="462160925400706389">已连接到“<ph name="NAME" />”</translation>
@@ -1116,6 +1136,7 @@
 <translation id="4633636853437260449">按 Ctrl+W 即可删除</translation>
 <translation id="4635501805800894201">{0,plural, =0{立即将设备回滚为上一个版本}=1{在 1 秒内将设备回滚为上一个版本}other{在 # 秒内将设备回滚为上一个版本}}</translation>
 <translation id="4642092649622328492">截取局部屏幕截图</translation>
+<translation id="4642587497923912728">只有第一个在此 Chromebook 上登录的账号可以使用 Steam for Chromebook（Beta 版）。</translation>
 <translation id="4644727592819780893">区域太小，无法显示相机预览画面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推荐的应用</translation>
 <translation id="4649019912155580914">您编辑过</translation>
@@ -1348,6 +1369,7 @@
 <translation id="5352250171825660495">深色主题已开启</translation>
 <translation id="5354804064646502504">这可能会产生流量费用。
 未连接任何设备。</translation>
+<translation id="5355498626146154079">您需要开启“Borealis Enabled”这个 flag</translation>
 <translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和风格”。</translation>
 <translation id="536019650977002321">您的管理员不允许截取音频。如需了解详情，请联系您的管理员。</translation>
 <translation id="5361524080961918551">已下载<ph name="LANGUAGE" />语音文件的部分内容</translation>
@@ -1358,6 +1380,7 @@
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5378450298115733949">更多</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
+<translation id="5380526436444479273">请过几分钟后再试</translation>
 <translation id="5383434787520761436">没有 Google 云端硬盘文件</translation>
 <translation id="5391307769715781764">要替换已保存的桌面吗？</translation>
 <translation id="5392327145184648521">正在计算电池电量百分比…</translation>
@@ -1369,6 +1392,7 @@
 <translation id="5409208741270395213">将任务标记为已完成</translation>
 <translation id="5413656666631274079">“设置”页面</translation>
 <translation id="5414198321558177633">正在刷新配置文件列表。这可能需要几分钟的时间。</translation>
+<translation id="5415328625985164836">这是一项 Beta 版计划。现在，您可以在 Chromebook 上使用 Steam 玩某些游戏了。</translation>
 <translation id="5426063383988017631">已关闭“设置”菜单</translation>
 <translation id="5428899915242071344">开始选择</translation>
 <translation id="5429993543155113935">尚不支持无痕式窗口</translation>
@@ -1464,6 +1488,7 @@
 <translation id="5712132663381964774">您可在 <ph name="PRODUCT_NAME" /> 上使用应用完成各种任务。可以在启动器中查找相关应用。</translation>
 <translation id="571295407079589142">移动数据网络处于关闭状态</translation>
 <translation id="5727460725221669831">如果您忘记了密码，或最近更改过自己的 Google 账号密码，请尝试让此用户恢复登录。</translation>
+<translation id="572914206753951782">确保您的 Chromebook 是最新版本。然后，重启 Chromebook 并重试。</translation>
 <translation id="5733630091161562207">欢迎通知</translation>
 <translation id="573413375004481890">此设备无法支持您的所有显示屏，因此断开了与其中一个显示屏的连接</translation>
 <translation id="574392208103952083">中等</translation>
@@ -1711,6 +1736,7 @@
 <translation id="6507042703812908515">使用“<ph name="NEW_SHORTCUT" />”打开键盘快捷键应用。</translation>
 <translation id="6507618042428827377">切换到下一种可用输入法</translation>
 <translation id="6508923215158854599">确保您的 Chromebook 与 Chromecast 设备连接到同一个 Wi-Fi 网络。</translation>
+<translation id="6511607461419653612">请重启 Chromebook，然后重试</translation>
 <translation id="6515727200518652613">相机连接已中断，正在尝试重新连接。</translation>
 <translation id="651753338596587143">抱歉，安装 DLC 依赖项时出了点问题。请尝试重新启动。如果问题仍然存在，请提交反馈并在说明中附上 #bruschetta。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="6520517963145875092">选择一个窗口即可截图</translation>
@@ -1736,6 +1762,7 @@
 <translation id="6574587113394758819">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_TITLE" />通知</translation>
 <translation id="6574622320167699133">已通过手机解锁。点按或点击即可继续使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
+<translation id="6580060371127789208">已完成 <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6582012689384648647">如需使用个性化专注模式播放列表，请允许访问 YouTube Music</translation>
 <translation id="6582034443359256692">正在计算电池充电电量。</translation>
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
@@ -1785,6 +1812,7 @@
 <translation id="6723839937902243910">电源</translation>
 <translation id="672609503628871915">了解一下新变化</translation>
 <translation id="6727969043791803658">已连接，剩余电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">可能需要几分钟时间</translation>
 <translation id="6732087373923685049">摄像头</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">摄像头和麦克风正在使用中</translation>
@@ -1856,6 +1884,7 @@
 <translation id="6961840794482373852">键盘快捷键“Alt + 向上键”已更改。若要使用 Page Up 键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 向上键。</translation>
 <translation id="696267987219125751">相机取景功能已关闭。</translation>
 <translation id="6965382102122355670">确定</translation>
+<translation id="6967112302799758487">系统将从此设备中移除使用 Steam for Chromebook（Beta 版）安装的所有应用和游戏。与这些应用和游戏关联的数据也将被移除。请务必先备份已保存的应用和游戏，然后再卸载。</translation>
 <translation id="6972629891077993081">HID 设备</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6980402667292348590">插入</translation>
@@ -1887,6 +1916,7 @@
 <translation id="7067196344162293536">自动旋转</translation>
 <translation id="7076293881109082629">正在登录</translation>
 <translation id="7076878155205969899">静音</translation>
+<translation id="7083774521940805477">您的 Chromebook 无法使用 Steam for Chromebook（Beta 版）。</translation>
 <translation id="7083848064787091821">专注模式</translation>
 <translation id="7084678090004350185">开启/关闭热点。热点处于开启状态，且已连接 <ph name="DEVICECOUNT" /> 部设备。</translation>
 <translation id="7086931198345821656">这项更新需要对您的 <ph name="DEVICE_TYPE" /> 执行 Powerwash 操作。此设备中的所有数据都将被删除。详细了解最新的 <ph name="SYSTEM_APP_NAME" />更新。</translation>
@@ -1904,12 +1934,14 @@
 <translation id="7130207228079676353">很可能会点击的应用</translation>
 <translation id="7131634465328662194">您将会自动退出会话。</translation>
 <translation id="7143207342074048698">正在连接</translation>
+<translation id="7143409552554575716">ChromeOS 相关 flag</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="7144942256906679589">电池状态</translation>
 <translation id="7145639536026937076">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。省电模式已开启。</translation>
 <translation id="7147587499155271409">没有浏览记录</translation>
 <translation id="7147657298465433425">若要使用 F 键，请按 fn 键 + 顶行按键</translation>
 <translation id="7149149900052329230">在“文件”应用中一站式管理本地文件和 Google 云端硬盘文件。</translation>
+<translation id="7154020516215182599">分享您的反馈或描述您的问题。如果可能的话，请附上重现问题的步骤。</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />，
         <ph name="NETWORK" /></translation>
@@ -2085,6 +2117,7 @@
 <translation id="7726391492136714301">查看您手机上的通知和应用</translation>
 <translation id="7727952505535211425">在新标签页中打开地址栏中的网站</translation>
 <translation id="7728657226117099693">关闭大写锁定功能</translation>
+<translation id="7732702411411810416">请确保您已连接到互联网，然后重试</translation>
 <translation id="7742327441377685481">无通知</translation>
 <translation id="7748275671948949022">突出显示任务栏上的启动器按钮</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
@@ -2119,6 +2152,7 @@
 <translation id="7866482334467279021">开启</translation>
 <translation id="7870790288828963061">找不到自助服务终端应用的更高版本，因此没有要更新的内容。请拔下 U 盘。</translation>
 <translation id="7872786842639831132">关闭</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎未开启。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7884446017008693258">热点设置</translation>
 <translation id="7884902759927478774">取消标签页拖动操作</translation>
@@ -2468,6 +2502,7 @@
 <translation id="8980862970816311842">将某个应用图标移入或移出应用网格内的文件夹</translation>
 <translation id="8982906748181120328">“附近分享”的高可见度模式</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">欢迎使用 Chromebook 版 Steam</translation>
 <translation id="8990809378771970590">目前使用的是“<ph name="IME_NAME" />”</translation>
 <translation id="8991648557324317894">按 fn + 快捷插入键或 shift 键可取消。</translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解锁设备即可执行通知操作</translation>
@@ -2484,6 +2519,7 @@
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
 <translation id="9050012935252397793">蓝牙不可用</translation>
 <translation id="9050999376345823055">按“.”即可释放</translation>
+<translation id="9061694916020926968">您需要登录 Google 账号，才能使用 Steam for Chromebook（Beta 版）。请登录，然后重试。</translation>
 <translation id="906458777597946297">最大化窗口</translation>
 <translation id="9065203028668620118">修改</translation>
 <translation id="9068849894565669697">选择颜色</translation>

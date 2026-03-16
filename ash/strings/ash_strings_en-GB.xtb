@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Blue</translation>
 <translation id="1557622599341396706">Show desk name</translation>
 <translation id="1569384531973824928">This allows access for all apps and websites with the camera and microphone permissions. You may need to refresh the web page or restart the app.</translation>
+<translation id="1570235441606255261">Steam installer</translation>
 <translation id="1571697193564730395">Toggle Do Not Disturb. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Selected left-edge handle, use arrow keys to move</translation>
 <translation id="1576623706766186887">Zoom out when magnifier is on</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Switch Access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> devices</translation>
 <translation id="1639239467298939599">Loading</translation>
+<translation id="1642895994345928121">There is not enough device storage to open this app. Free up space and try again.</translation>
 <translation id="1647986356840967552">Previous page</translation>
 <translation id="1651914502370159744">Open History page</translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">App and tab groups</translation>
 <translation id="2386292613071805067">Select everything on page</translation>
 <translation id="2389423187722941333">Toggle Gemini</translation>
+<translation id="2391805183137601570">Open Steam</translation>
 <translation id="2392659840443812875">No available hotspot. Make sure that your device is nearby and Bluetooth is turned on.</translation>
 <translation id="2397416548179033562">Show Chrome menu</translation>
 <translation id="240006516586367791">Media controls</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Opened yesterday</translation>
 <translation id="2440978926514840421">GIF recording taken</translation>
 <translation id="2441427462554639370">Recording ended due to critically low storage space</translation>
+<translation id="2447587550790814052">You can now use Steam for Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Low battery</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2455994958736234930">Add www. and .com to the address bar, then open website</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Drill down</translation>
+<translation id="2462332841984057083">Steam is already being set up. Wait for setup to complete.</translation>
 <translation id="2465145153332031561">Battery health <ph name="BATTERY_HEALTH_PERCENTAGE" />%, cycle count <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Confirm resolution</translation>
 <translation id="2475783092753560388">Insert <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> preview. Active desk.</translation>
 <translation id="2486405091093637109">'<ph name="DISPLAY_NAME" />' was changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) resolution. Without confirming, the previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Join</translation>
+<translation id="2494555621641843783">Can't install Steam</translation>
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2499445554382787206">Desk profile menu. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky keys</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Reply</translation>
 <translation id="2727744317940422214">Sorry, something went wrong. Please file feedback with #bruschetta in the description. Error code is <ph name="ERROR" />. Cleaning up failed. You may need to do so manually.</translation>
 <translation id="2727977024730340865">Plugged in to a low-power charger. Battery charging may not be reliable.</translation>
+<translation id="2737538893171115082">Steam for Chromebook (Beta) is blocked by your administrator. Your administrator needs to turn on these policies:</translation>
 <translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3033912566804961911">Combine with <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Stylus battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="304097922505898963">Open Key Shortcuts app</translation>
+<translation id="3040982432432547149">Help us improve Steam for Chromebook</translation>
 <translation id="304417730895741346">Your pinned and open apps are on the shelf. To pin an app to the shelf, right-click an app or tap your touchpad with two fingers.</translation>
 <translation id="3045670165536837541">Selected top-right handle, use arrow keys to move</translation>
 <translation id="3047761520276763270">Try saying:</translation>
@@ -656,6 +664,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3181441307743005334">Restart may take a while</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connected to a device}other{Connected to # devices}}</translation>
 <translation id="3203405173652969239">Switch Access enabled</translation>
+<translation id="3204648577100496185">Data associated with this app may be removed from this device</translation>
 <translation id="3206735939915734551">Turn on/off Caps Lock</translation>
 <translation id="3207953481422525583">User settings</translation>
 <translation id="3208321278970793882">App</translation>
@@ -677,6 +686,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3271554781793662131">Search to insert</translation>
 <translation id="3274634049061007184">View your phone's apps</translation>
 <translation id="3279230909244266691">This process may take a few minutes. Starting the virtual machine.</translation>
+<translation id="3285465040399788513">There is not enough available storage to complete setup. Free up space and try again.</translation>
 <translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Linux apps aren’t currently supported</translation>
 <translation id="3289674678944039601">Charging via adaptor</translation>
@@ -702,6 +712,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3368922792935385530">Connected</translation>
 <translation id="3369111525500416043">Due soon</translation>
 <translation id="3371140690572404006">USB-C device (right-hand-side front port)</translation>
+<translation id="3373196968211632036">Steam for Chromebook (Beta) is not available for child Google Accounts</translation>
 <translation id="3375634426936648815">Connected</translation>
 <translation id="3386978599540877378">the full-screen magnifier</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Shelf auto hidden</translation>
+<translation id="3496797737329654668">Let’s get gaming</translation>
 <translation id="3505066820268455558">Battery charging</translation>
 <translation id="3509391053705095206">Can’t find your phone. Make sure that your phone’s Bluetooth is on.</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
@@ -800,6 +812,7 @@ Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS
 <translation id="3633851487917460983">Open clipboard</translation>
 <translation id="363473492175527493">Task set to focus on: <ph name="TASK_NAME" />. Press enter to edit the task.</translation>
 <translation id="3638400994746983214">Toggle privacy screen. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam for Chromebook (beta) needs to be updated. Restart your Chromebook and try again.</translation>
 <translation id="3649256019230929621">Minimise window</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Connect your device to power.</translation>
 <translation id="3702809606464356667">Showing windows from the current desk; press the Up arrow key to show windows from all desks</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Entertainment</translation>
+<translation id="370665806235115550">Loading...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> and <ph name="UNAVAILABLE_DLC_TWO" /> are not available.</translation>
 <translation id="3708186454126126312">Previously connected</translation>
 <translation id="3712143870407382523">Choose a window for this side</translation>
@@ -860,6 +874,7 @@ Connect your device to power.</translation>
 <translation id="3831226344927851293">Exit tutorial view</translation>
 <translation id="383629559565718788">Show keyboard settings</translation>
 <translation id="384082539148746321">Delete template?</translation>
+<translation id="3841282988425489367">Can’t set up Steam for Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, then <ph name="KEY_ONE" /> or <ph name="KEY_TWO" /> or <ph name="KEY_THREE" /> or <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">No network information available</translation>
 <translation id="3848526302597027234">Access the following permissions:</translation>
@@ -951,6 +966,7 @@ Connect your device to power.</translation>
 <translation id="4146671046252289537">Move to end of next word</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4151054805501931758">Portrait touch-up</translation>
+<translation id="4151449637210235443">Tell us about your recent gameplay</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% battery left (about <ph name="TIME_LEFT" />).
 Some features are limited to increase battery life.</translation>
 <translation id="4158003972857765638">Organise in a new desk</translation>
@@ -968,6 +984,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4192112279662688596">Or</translation>
 <translation id="4193857202545160520">Show clicks and keys</translation>
 <translation id="4193969623755915875">Open "Help" in the Explore app with "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">Can’t open Steam for Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Current version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continue where you left off</translation>
 <translation id="4195877955194704651">Automatic clicks button</translation>
@@ -983,6 +1000,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installed app, paused</translation>
 <translation id="4228078597006700451">Controls not set up</translation>
 <translation id="4230560241506423345">New</translation>
+<translation id="4231231258999726714">Setting up Steam for Chromebook</translation>
 <translation id="4236726631849783264">A reminder about suggested actions</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
@@ -1067,6 +1085,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Update device now}=1{Update device within 1 second}other{Update device within # seconds}}</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">estimating time</translation>
 <translation id="4477350412780666475">Next track</translation>
 <translation id="4477751544736611934">This may incur data cost.
 One device connected.</translation>
@@ -1108,6 +1127,7 @@ One device connected.</translation>
 <translation id="4585337515783392668">Stop casting on an unknown receiver</translation>
 <translation id="4596144739579517758">Dark theme is off</translation>
 <translation id="4596442969149038771"><ph name="USER" /> shared</translation>
+<translation id="4598556348158889687">Storage management</translation>
 <translation id="4610493115106525653">Good output</translation>
 <translation id="4611292653554630842">Log in</translation>
 <translation id="462160925400706389"><ph name="NAME" /> connected</translation>
@@ -1117,6 +1137,7 @@ One device connected.</translation>
 <translation id="4633636853437260449">Press Ctrl+W to delete</translation>
 <translation id="4635501805800894201">{0,plural, =0{Update device to previous version now}=1{Update device to previous version within 1 second}other{Update device to previous version within # seconds}}</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
+<translation id="4642587497923912728">Steam for Chromebook (Beta) is only available for the account that signed in first on this Chromebook.</translation>
 <translation id="4644727592819780893">Region is too small to fit camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app recommendation</translation>
 <translation id="4649019912155580914">You edited</translation>
@@ -1350,6 +1371,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="5352250171825660495">Dark theme is on</translation>
 <translation id="5354804064646502504">This may incur data cost.
 No devices connected.</translation>
+<translation id="5355498626146154079">You need to turn on the 'Borealis Enabled' flag</translation>
 <translation id="5356963482258194581">Switch between Dark and Light theme. Right-click on the desktop and select Wallpaper and style.</translation>
 <translation id="536019650977002321">Your administrator doesn’t allow audio capture. Contact your administrator for more info.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> speech files partially downloaded</translation>
@@ -1360,6 +1382,7 @@ No devices connected.</translation>
 <translation id="5377367976106153749">Turn on camera access?</translation>
 <translation id="5378450298115733949">More</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
+<translation id="5380526436444479273">Wait a few minutes and try again</translation>
 <translation id="5383434787520761436">No Google Drive files</translation>
 <translation id="5391307769715781764">Replace saved desk?</translation>
 <translation id="5392327145184648521">Calculating battery %…</translation>
@@ -1371,6 +1394,7 @@ No devices connected.</translation>
 <translation id="5409208741270395213">Mark task as completed</translation>
 <translation id="5413656666631274079">Settings page</translation>
 <translation id="5414198321558177633">Refreshing profile list. This may take a few minutes.</translation>
+<translation id="5415328625985164836">This is a beta program. You can now use Steam to play some games on your Chromebook.</translation>
 <translation id="5426063383988017631">Settings menu closed</translation>
 <translation id="5428899915242071344">Start selecting</translation>
 <translation id="5429993543155113935">Incognito windows aren’t currently supported</translation>
@@ -1466,6 +1490,7 @@ No devices connected.</translation>
 <translation id="5712132663381964774">Use apps to do everything that you need on your <ph name="PRODUCT_NAME" />. You can find your apps in the Launcher.</translation>
 <translation id="571295407079589142">Mobile data is turned off</translation>
 <translation id="5727460725221669831">If you forgot your password or changed your Google Account password recently, try recovering this user.</translation>
+<translation id="572914206753951782">Make sure your Chromebook is on the latest version. Then, restart your Chromebook and try again.</translation>
 <translation id="5733630091161562207">Welcome notification</translation>
 <translation id="573413375004481890">This device couldn't support all of your displays, so one has been disconnected</translation>
 <translation id="574392208103952083">Medium</translation>
@@ -1713,6 +1738,7 @@ No devices connected.</translation>
 <translation id="6507042703812908515">Open the Key shortcuts app with '<ph name="NEW_SHORTCUT" />'.</translation>
 <translation id="6507618042428827377">Switch to next available input method</translation>
 <translation id="6508923215158854599">Make sure that your Chromebook is on the same Wi-Fi network as your Chromecast device.</translation>
+<translation id="6511607461419653612">Restart your Chromebook and try again</translation>
 <translation id="6515727200518652613">Camera lost; trying to reconnect.</translation>
 <translation id="651753338596587143">Sorry, something went wrong installing DLC dependencies. Please try rebooting, and if the issue persists, file feedback with #bruschetta in the description. The error code is <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Select a window to capture</translation>
@@ -1738,6 +1764,7 @@ New install</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> notification is hidden because viewing protection is on</translation>
 <translation id="6574622320167699133">Unlocked by your phone. Tap or click to enter.</translation>
 <translation id="6578407462441924264">Unnamed</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% completed</translation>
 <translation id="6582012689384648647">For personalised Focus playlists, allow access to YouTube Music</translation>
 <translation id="6582034443359256692">Calculating battery charge level.</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ New install</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="672609503628871915">See what's new</translation>
 <translation id="6727969043791803658">Connected, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
+<translation id="6731320427842222405">This may take a few minutes</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Camera and microphone in use</translation>
@@ -1858,6 +1886,7 @@ New install</translation>
 <translation id="6961840794482373852">The Alt + up arrow keyboard shortcut has changed. To use the page up key, press the <ph name="LAUNCHER_KEY_NAME" /> key + up arrow.</translation>
 <translation id="696267987219125751">Camera framing is off.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Any apps and games installed using Steam for Chromebook (Beta) will be removed from this device. Data associated with these apps and games will also be removed. Make sure to back up saved apps and games before uninstalling.</translation>
 <translation id="6972629891077993081">HID devices</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1889,6 +1918,7 @@ New install</translation>
 <translation id="7067196344162293536">Auto rotate</translation>
 <translation id="7076293881109082629">Signing in</translation>
 <translation id="7076878155205969899">Mute sound</translation>
+<translation id="7083774521940805477">Steam for Chromebook (beta) is not available on your Chromebook.</translation>
 <translation id="7083848064787091821">Focus</translation>
 <translation id="7084678090004350185">Toggle hotspot. Hotspot is on, <ph name="DEVICECOUNT" /> devices connected.</translation>
 <translation id="7086931198345821656">This update requires powerwashing your <ph name="DEVICE_TYPE" />. All data will be deleted. Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update.</translation>
@@ -1906,12 +1936,14 @@ New install</translation>
 <translation id="7130207228079676353">MOST LIKELY</translation>
 <translation id="7131634465328662194">You will automatically be signed out.</translation>
 <translation id="7143207342074048698">Connecting</translation>
+<translation id="7143409552554575716">ChromeOS flags</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="7144942256906679589">Battery status</translation>
 <translation id="7145639536026937076">Battery at <ph name="PERCENTAGE" />% and charging. Battery Saver is on.</translation>
 <translation id="7147587499155271409">No browsing history</translation>
 <translation id="7147657298465433425">To access F keys, press fn key + top row keys</translation>
 <translation id="7149149900052329230">Manage your local files and your Google Drive files, all in the Files app.</translation>
+<translation id="7154020516215182599">Share your feedback or describe your issue. If possible, include steps to reproduce your issue.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7726391492136714301">View your phone's notifications and apps</translation>
 <translation id="7727952505535211425">Open the website in the address bar in a new tab</translation>
 <translation id="7728657226117099693">Turn off caps lock</translation>
+<translation id="7732702411411810416">Make sure you’re connected to the internet and try again</translation>
 <translation id="7742327441377685481">No notifications</translation>
 <translation id="7748275671948949022">Highlight Launcher button on shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
@@ -2121,6 +2154,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7866482334467279021">on</translation>
 <translation id="7870790288828963061">No Kiosk apps with newer version found. Nothing to update. Please remove the USB stick.</translation>
 <translation id="7872786842639831132">Off</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
 <translation id="7884446017008693258">Hotspot settings</translation>
 <translation id="7884902759927478774">Cancel tab dragging</translation>
@@ -2470,6 +2504,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8980862970816311842">Move an app icon in/out of a folder in app grid</translation>
 <translation id="8982906748181120328">Nearby visibility</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Welcome to Steam for Chromebook</translation>
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Press fn + Quick Insert or shift to cancel.</translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
@@ -2486,6 +2521,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9047624247355796468">Open settings for <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth is unavailable</translation>
 <translation id="9050999376345823055">Press '.' to release</translation>
+<translation id="9061694916020926968">You need to be signed-in to a Google Account to use Steam for Chromebook (Beta). Sign in and try again.</translation>
 <translation id="906458777597946297">Maximise window</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9068849894565669697">Select colour</translation>

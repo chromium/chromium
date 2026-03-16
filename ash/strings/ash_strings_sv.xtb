@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1557622599341396706">Visa skrivbordets namn</translation>
 <translation id="1569384531973824928">Detta ger åtkomst för alla appar och webbplatser med kamera- och mikrofonbehörighet. Du kan behöva uppdatera webbsidan eller starta om appen.</translation>
+<translation id="1570235441606255261">Installationsprogram för Steam</translation>
 <translation id="1571697193564730395">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Du har valt handtaget för vänster kant – använd piltangenterna för att flytta det</translation>
 <translation id="1576623706766186887">Zooma ut när skärmförstoring är aktiverat</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
+<translation id="1642895994345928121">Det finns inte tillräckligt med lagringsutrymme på enheten för att öppna den här appen. Frigör utrymme och försök igen.</translation>
 <translation id="1647986356840967552">Föregående sida</translation>
 <translation id="1651914502370159744">Öppna sidan Historik</translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">App- och flikgrupper</translation>
 <translation id="2386292613071805067">Markera allt på sidan</translation>
 <translation id="2389423187722941333">Aktivera/inaktivera Gemini</translation>
+<translation id="2391805183137601570">Öppna Steam</translation>
 <translation id="2392659840443812875">Ingen tillgänglig surfzon. Se till att enheten är i närheten och att Bluetooth har aktiverats.</translation>
 <translation id="2397416548179033562">Visa Chrome-menyn</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Öppnades i går</translation>
 <translation id="2440978926514840421">GIF-inspelningen har tagits</translation>
 <translation id="2441427462554639370">Inspelningen avslutades eftersom det är mycket ont om lagringsutrymme</translation>
+<translation id="2447587550790814052">Nu kan du använda Steam för Chromebook (beta)</translation>
 <translation id="2449089818483227734">Låg batterinivå</translation>
 <translation id="2450205753526923158">Skärmbildsläge</translation>
 <translation id="2453860139492968684">Slutför</translation>
 <translation id="2455994958736234930">Lägg till www. och .com i adressfältet och öppna sedan webbplatsen</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Visa detaljer</translation>
+<translation id="2462332841984057083">Steam konfigureras redan. Vänta på att konfigureringen slutförs.</translation>
 <translation id="2465145153332031561">Batterihälsa: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, antal cykler: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
 <translation id="2475783092753560388">Infoga <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Förhandsgranskning av <ph name="DESK_NAME" />. Aktivt skrivbord.</translation>
 <translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> har ändrats till upplösningen <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Om du inte bekräftar återställs de tidigare inställningarna om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Delta</translation>
+<translation id="2494555621641843783">Det går inte att installera Steam</translation>
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2499445554382787206">Meny för skrivbordsprofilen. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Låstangentsläge</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727744317940422214">Något gick fel. Skicka feedback och ange #bruschetta i beskrivningen. Felkoden är <ph name="ERROR" />. Det gick inte att rensa. Du kan behöva göra det manuellt.</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
+<translation id="2737538893171115082">Steam för Chromebook (beta) blockeras av administratören. Administratören måste aktivera följande policyer:</translation>
 <translation id="2743301740238894839">Börja</translation>
 <translation id="2743387203779672305">Kopiera till Urklipp</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3033912566804961911">Kombinera med <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">E-pennan har <ph name="PERCENTAGE" /> procent batteri.</translation>
 <translation id="304097922505898963">Öppna appen Kortkommandon</translation>
+<translation id="3040982432432547149">Hjälp oss att förbättra Steam för Chromebook</translation>
 <translation id="304417730895741346">Dina fästa och öppna appar finns på hyllan. Om du vill fästa en app på hyllan kan du högerklicka på appen eller trycka på styrplattan med två fingrar.</translation>
 <translation id="3045670165536837541">Du har valt handtaget uppe till höger – använd piltangenterna för att flytta det</translation>
 <translation id="3047761520276763270">Testa att säga detta:</translation>
@@ -656,6 +664,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3181441307743005334">Det kan ta en stund att starta om</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ansluten till en enhet}other{Ansluten till # enheter}}</translation>
 <translation id="3203405173652969239">Brytarstyrning har aktiverats</translation>
+<translation id="3204648577100496185">Data kopplad till den här appen kanske tas bort från enheten</translation>
 <translation id="3206735939915734551">Aktivera/inaktivera Caps Lock</translation>
 <translation id="3207953481422525583">Användarinställningar</translation>
 <translation id="3208321278970793882">App</translation>
@@ -677,6 +686,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3271554781793662131">Sök för att infoga</translation>
 <translation id="3274634049061007184">Visa telefonens appar</translation>
 <translation id="3279230909244266691">Detta kan ta några minuter. Den virtuella maskinen startas.</translation>
+<translation id="3285465040399788513">Det finns inte tillräckligt med lagringsutrymme på enheten för att slutföra konfigureringen. Frigör utrymme och försök igen.</translation>
 <translation id="3289364673986435196">Startmeny</translation>
 <translation id="3289544412142055976">Linux-appar stöds inte för närvarande</translation>
 <translation id="3289674678944039601">Laddas via adapter</translation>
@@ -702,6 +712,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369111525500416043">Inlämning snart</translation>
 <translation id="3371140690572404006">USB-C-enhet (främre porten på högra sidan)</translation>
+<translation id="3373196968211632036">Steam för Chromebook (beta) är inte tillgängligt för Google-konton som tillhör barn</translation>
 <translation id="3375634426936648815">Ansluten</translation>
 <translation id="3386978599540877378">helskärmsförstoraren</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3477079411857374384">Ctrl-Skift-Mellanslag</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Hyllan döljs automatiskt</translation>
+<translation id="3496797737329654668">Dags att spela</translation>
 <translation id="3505066820268455558">Batteriladdning</translation>
 <translation id="3509391053705095206">Det gick inte att hitta telefonen. Kontrollera att Bluetooth har aktiverats på telefonen.</translation>
 <translation id="3510164367642747937">Markera muspekaren</translation>
@@ -800,6 +812,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="3633851487917460983">Öppna Urklipp</translation>
 <translation id="363473492175527493">Uppgiften som du vill fokusera på är inställd på: <ph name="TASK_NAME" />. Tryck på Retur för att redigera uppgiften.</translation>
 <translation id="3638400994746983214">Aktivera och inaktivera integritetsskärmen. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam för Chromebook (beta) behöver uppdateras. Starta om Chromebook och försök igen.</translation>
 <translation id="3649256019230929621">Minimera fönstret</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3702809606464356667">Visar fönster från det aktuella skrivbordet, tryck på uppåtpilen för att visa fönster från alla skrivbord</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Nöje</translation>
+<translation id="370665806235115550">Läser in...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> och <ph name="UNAVAILABLE_DLC_TWO" /> är inte tillgängliga.</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
 <translation id="3712143870407382523">Välj ett fönster för den här sidan</translation>
@@ -860,6 +874,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3831226344927851293">Stäng guidevyn</translation>
 <translation id="383629559565718788">Visa tangentbordsinställningar</translation>
 <translation id="384082539148746321">Vill du radera mallen?</translation>
+<translation id="3841282988425489367">Det går inte att konfigurera Steam för Chromebook (beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> följt av <ph name="KEY_ONE" /> eller <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /> eller <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
 <translation id="3848526302597027234">Åtkomst till följande behörigheter:</translation>
@@ -951,6 +966,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4146671046252289537">Flytta till slutet av nästa ord</translation>
 <translation id="4150201353443180367">Skärm</translation>
 <translation id="4151054805501931758">Förbättra porträtt</translation>
+<translation id="4151449637210235443">Berätta om din senaste spelupplevelse</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />).
 Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4158003972857765638">Organisera på ett nytt skrivbord</translation>
@@ -968,6 +984,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4192112279662688596">Eller</translation>
 <translation id="4193857202545160520">Visa klick och tangenter</translation>
 <translation id="4193969623755915875">Öppna hjälpavsnittet i appen Utforska med <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4195001808989442226">Det går inte att öppna Steam för Chromebook (beta)</translation>
 <translation id="4195579532193195633">Aktuell version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
 <translation id="4195877955194704651">Knapp för Automatiska klick</translation>
@@ -983,6 +1000,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
 <translation id="4228078597006700451">Kontrollerna har inte ställts in</translation>
 <translation id="4230560241506423345">Ny</translation>
+<translation id="4231231258999726714">Konfigurerar Steam för Chromebook</translation>
 <translation id="4236726631849783264">En påminnelse om föreslagna åtgärder</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Översiktsläge</translation>
@@ -1067,6 +1085,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Uppdatera enheten nu}=1{Uppdatera enheten inom 1 sekund}other{Uppdatera enheten inom # sekunder}}</translation>
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4473489370276014885">Google Kontakter</translation>
+<translation id="4473996011558324141">uppskattar tid</translation>
 <translation id="4477350412780666475">Nästa spår</translation>
 <translation id="4477751544736611934">Detta kan innebära datakostnader.
 1 enhet är ansluten.</translation>
@@ -1108,6 +1127,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4585337515783392668">Sluta casta till en okänd mottagare</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4596442969149038771">Delad av <ph name="USER" /></translation>
+<translation id="4598556348158889687">Lagringshantering</translation>
 <translation id="4610493115106525653">Bra output</translation>
 <translation id="4611292653554630842">Logga in</translation>
 <translation id="462160925400706389"><ph name="NAME" /> har anslutits</translation>
@@ -1117,6 +1137,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4633636853437260449">Radera genom att trycka på Ctrl + W</translation>
 <translation id="4635501805800894201">{0,plural, =0{Uppdatera till en tidigare version av enheten nu}=1{Uppdatera till en tidigare version av enheten inom en sekund}other{Uppdatera till en tidigare version av enheten inom # sekunder}}</translation>
 <translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
+<translation id="4642587497923912728">Steam för Chromebook (beta) är endast tillgängligt för kontot som loggade in först på denna Chromebook.</translation>
 <translation id="4644727592819780893">Området är för litet för att visas i kameran</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, apprekommendation</translation>
 <translation id="4649019912155580914">Redigerades av dig</translation>
@@ -1350,6 +1371,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5354804064646502504">Detta kan innebära datakostnader.
 Inga enheter är anslutna.</translation>
+<translation id="5355498626146154079">Du måste aktivera flaggan Borealis Enabled</translation>
 <translation id="5356963482258194581">Byt mellan ljust och mörkt tema. Högerklicka på skrivbordet och välj Bakgrund och stil.</translation>
 <translation id="536019650977002321">Administratören tillåter inte ljudinspelning. Kontakta administratören för mer information.</translation>
 <translation id="5361524080961918551">Filer med tal på <ph name="LANGUAGE" /> har delvis laddats ned</translation>
@@ -1360,6 +1382,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5377367976106153749">Vill du aktivera kameraåtkomst?</translation>
 <translation id="5378450298115733949">Mer</translation>
 <translation id="5379115545237091094">För många försök</translation>
+<translation id="5380526436444479273">Försök igen om några minuter</translation>
 <translation id="5383434787520761436">Inga Google Drive-filer</translation>
 <translation id="5391307769715781764">Vill du ersätta det sparade skrivbordet?</translation>
 <translation id="5392327145184648521">Beräknar batteriprocent …</translation>
@@ -1371,6 +1394,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5409208741270395213">Markera uppgiften som slutförd</translation>
 <translation id="5413656666631274079">Inställningssida</translation>
 <translation id="5414198321558177633">Uppdaterar listan över profiler. Det kan ta några minuter.</translation>
+<translation id="5415328625985164836">Det här är ett betaprogram. Nu kan du använda Steam för att spela vissa spel på Chromebook.</translation>
 <translation id="5426063383988017631">Inställningsmenyn har stängts</translation>
 <translation id="5428899915242071344">Börja markera</translation>
 <translation id="5429993543155113935">Inkognitofönster stöds inte för närvarande</translation>
@@ -1466,6 +1490,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5712132663381964774">Använd appar för att göra allt du behöver på din <ph name="PRODUCT_NAME" />. Du hittar dina appar i Appstartaren.</translation>
 <translation id="571295407079589142">Mobildata har inaktiverats</translation>
 <translation id="5727460725221669831">Om du har glömt lösenordet eller bytt lösenord till Google-kontot nyligen kan du testa att återställa den här användaren.</translation>
+<translation id="572914206753951782">Kontrollera att din Chromebook har den senaste versionen. Starta sedan om Chromebook och försök igen.</translation>
 <translation id="5733630091161562207">Välkomstmeddelande</translation>
 <translation id="573413375004481890">Enheten har inte stöd för alla skärmar. Därför är en av skärmarna frånkopplad.</translation>
 <translation id="574392208103952083">Medelstark</translation>
@@ -1713,6 +1738,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6507042703812908515">Öppna appen Kortkommandon med <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Byt till nästa tillgängliga inmatningsmetod</translation>
 <translation id="6508923215158854599">Kontrollera att Chromebook är ansluten till samma wifi-nätverk som Chromecast-enheten.</translation>
+<translation id="6511607461419653612">Starta om Chromebook och försök igen</translation>
 <translation id="6515727200518652613">Kameran kopplades från. Försöker återansluta.</translation>
 <translation id="651753338596587143">Något gick fel när DLC-beroenden skulle installeras. Testa att starta om och om problemet kvarstår kan du skicka feedback och ange #bruschetta i beskrivningen. Felkoden är <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Välj ett fönster att ta en bild av</translation>
@@ -1738,6 +1764,7 @@ Nyligen installerad</translation>
 <translation id="6574587113394758819">Aviseringar från <ph name="APP_TITLE" /> har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="6574622320167699133">Upplåst av telefonen. Tryck eller klicka för att öppna.</translation>
 <translation id="6578407462441924264">Namnlös</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % slutförd</translation>
 <translation id="6582012689384648647">Tillåt åtkomst till YouTube Music för anpassade fokuseringsspellistor</translation>
 <translation id="6582034443359256692">Beräknar batteriladdningsnivå.</translation>
 <translation id="6585808820553845416">Sessionen upphör om <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Nyligen installerad</translation>
 <translation id="6723839937902243910">Batteri</translation>
 <translation id="672609503628871915">Kolla nyheterna</translation>
 <translation id="6727969043791803658">Ansluten, <ph name="BATTERY_PERCENTAGE" /> % batterinivå</translation>
+<translation id="6731320427842222405">Det kan ta några minuter</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kameran och mikrofonen används</translation>
@@ -1858,6 +1886,7 @@ Nyligen installerad</translation>
 <translation id="6961840794482373852">Kortkommandot Alt + uppåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + uppåtpil för att använda Page Up-tangenten.</translation>
 <translation id="696267987219125751">Kamerainramning är av.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Alla appar och spel som installerats med Steam för Chromebook (beta) tas bort från enheten. Data som är kopplad till dessa appar och spel tas också bort. Säkerhetskopiera sparade appar och spel innan du avinstallerar Steam.</translation>
 <translation id="6972629891077993081">HID-enheter</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1889,6 +1918,7 @@ Nyligen installerad</translation>
 <translation id="7067196344162293536">Rotera automatiskt</translation>
 <translation id="7076293881109082629">Logga in</translation>
 <translation id="7076878155205969899">Stäng av ljudet</translation>
+<translation id="7083774521940805477">Steam för Chromebook (beta) är inte tillgängligt på din Chromebook.</translation>
 <translation id="7083848064787091821">Fokus</translation>
 <translation id="7084678090004350185">Aktivera eller inaktivera surfzon. Surfzonen är aktiverad. <ph name="DEVICECOUNT" /> enheter är anslutna.</translation>
 <translation id="7086931198345821656">Denna uppdatering kräver att en powerwash görs av <ph name="DEVICE_TYPE" />. All data raderas. Läs mer om den senaste uppdateringen av <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Nyligen installerad</translation>
 <translation id="7130207228079676353">MEST TROLIGA</translation>
 <translation id="7131634465328662194">Du loggas ut automatiskt.</translation>
 <translation id="7143207342074048698">Ansluter</translation>
+<translation id="7143409552554575716">ChromeOS-flaggor</translation>
 <translation id="7144878232160441200">Försök igen</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7145639536026937076">Batterinivån är på <ph name="PERCENTAGE" /> % och batteriet laddas. Batterisparläget är aktiverat.</translation>
 <translation id="7147587499155271409">Ingen webbhistorik</translation>
 <translation id="7147657298465433425">Tryck på fn-tangenten + tangenterna på översta raden för att komma åt F-tangenterna</translation>
 <translation id="7149149900052329230">Hantera dina lokala filer och Google Drive-filer i appen Filer.</translation>
+<translation id="7154020516215182599">Ge feedback eller beskriv problemet. Om möjligt inkluderar du stegen för att återskapa problemet.</translation>
 <translation id="7165278925115064263">Alt + Skift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7726391492136714301">Visa telefonens aviseringar och appar</translation>
 <translation id="7727952505535211425">Öppna webbplatsen i adressfältet i en ny flik</translation>
 <translation id="7728657226117099693">Inaktivera Caps Lock</translation>
+<translation id="7732702411411810416">Kontrollera att enheten är ansluten till internet och försök igen</translation>
 <translation id="7742327441377685481">Inga aviseringar</translation>
 <translation id="7748275671948949022">Markera appstartarknappen på hyllan</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
@@ -2121,6 +2154,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7870790288828963061">Inga kioskappar med nyare version hittades. Det finns inget att uppdatera. Ta bort USB-minnet.</translation>
 <translation id="7872786842639831132">Av</translation>
+<translation id="7873386145597434863">Steam för Chromebook</translation>
 <translation id="7875575368831396199">Det verkar som om Bluetooth har inaktiverats på <ph name="DEVICE_TYPE" />. Aktivera Bluetooth om du vill använda Phone Hub.</translation>
 <translation id="7884446017008693258">Inställningar för surfzon</translation>
 <translation id="7884902759927478774">Avbryt trycka och dra för flik</translation>
@@ -2470,6 +2504,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8980862970816311842">Flytta appikoner till eller från en mapp i rutnätet för appar</translation>
 <translation id="8982906748181120328">Synl. i närheten</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Välkommen till Steam för Chromebook</translation>
 <translation id="8990809378771970590">Använder <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Tryck på FN + snabbinfogning eller Skift för att avbryta.</translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
@@ -2486,6 +2521,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9047624247355796468">Öppnar inställningarna för <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth är inte tillgängligt</translation>
 <translation id="9050999376345823055">Tryck på . för att släppa</translation>
+<translation id="9061694916020926968">Du måste vara inloggad på ett Google-konto för att använda Steam för Chromebook (beta). Logga in och försök igen.</translation>
 <translation id="906458777597946297">Maximera fönstret</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9068849894565669697">Välj färg</translation>

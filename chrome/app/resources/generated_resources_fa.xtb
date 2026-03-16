@@ -839,7 +839,6 @@
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» قبلاً به کنش «<ph name="ACTION" />» اختصاص یافته است. برای <ph name="RESPONSE" />، یکی از کلیدها را فشار دهید.</translation>
 <translation id="1567993339577891801">کنسول جاوا اسکریپت</translation>
 <translation id="1569466257325986920">‏دفعه بعد که گذرواژه «حساب Google» شما تغییر می‌کند، داده‌های محلی شما پس‌از ورود به «حساب Google» به‌طور خودکار بازیابی می‌شود</translation>
-<translation id="1570235441606255261">‏نصب‌کننده Steam</translation>
 <translation id="1570604804919108255">صدادار کردن اعلان‌ها</translation>
 <translation id="1570990174567554976">پوشه نشانک «<ph name="BOOKMARK_TITLE" />» ایجاد شد.</translation>
 <translation id="1571041387761170095">گذرواژه دوباره‌استفاده‌شده یا ضعیفی پیدا نشد</translation>
@@ -964,7 +963,6 @@
 <translation id="1642299742557467312">این فایل می‌تواند به دستگاهتان آسیب برساند</translation>
 <translation id="1642492862748815878">متصل به <ph name="DEVICE" /> و <ph name="NUMBER_OF_DEVICES" /> دستگاه بلوتوث دیگر</translation>
 <translation id="1642494467033190216">راه‌اندازی مجدد و برداشتن محافظت ویژگی‌های ریشه قبل از فعال کردن ویژگی‌های رفع‌اشکال دیگر لازم است.</translation>
-<translation id="1642895994345928121">فضای ذخیره‌سازی دستگاه برای باز کردن این برنامه کافی نیست. مقداری فضا آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="1643072738649235303">‏امضای X9.62 ECDSA با SHA-1</translation>
 <translation id="1643921258693943800">‏برای استفاده از «هم‌رسانی با اطراف»، بلوتوث و Wi-Fi را روشن کنید</translation>
 <translation id="1644574205037202324">سابقه</translation>
@@ -2075,7 +2073,6 @@
 <translation id="2390347491606624519">اتصال به پراکسی امکان‌پذیر نیست، لطفاً دوباره به سیستم وارد شوید</translation>
 <translation id="2390782873446084770">‏همگام‌سازی Wi-Fi</translation>
 <translation id="2391419135980381625">قلم استاندارد</translation>
-<translation id="2391805183137601570">‏باز کردن Steam</translation>
 <translation id="239185270194776190">‏مکالمه Gemini شما در پنجره دیگری است. برای انتقال آن به اینجا، روی هر جایی از این پانل کناری کلیک کنید.</translation>
 <translation id="2392369802118427583">فعالسازی</translation>
 <translation id="2393136602862631930">‏راه‌اندازی <ph name="APP_NAME" /> در Chromebook</translation>
@@ -2157,7 +2154,6 @@
 <translation id="2445484935443597917">ایجاد نمایه جدید</translation>
 <translation id="2445726032315793326">ذره‌بین جزئی</translation>
 <translation id="244641233057214044">مرتبط با جستجوی شما</translation>
-<translation id="2447587550790814052">‏اکنون می‌توانید از «Steam ویژه Chromebook» (بتا) استفاده کنید</translation>
 <translation id="2448312741937722512">نوع</translation>
 <translation id="2448810255793562605">اسکن خودکار دسترسی کلیدی</translation>
 <translation id="2450021089947420533">سفرها</translation>
@@ -2184,7 +2180,6 @@
 <translation id="2460826998961521840">‏برای استفاده از گذرکلیدهای ذخیره‌شده در «حساب Google»</translation>
 <translation id="2461550163693930491">به سایت‌ها اجازه پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده داده نشود</translation>
 <translation id="2461593638794842577">می‌توانید این تنظیم را خاموش کنید تا گذرواژه‌هایتان فقط در این دستگاه ذخیره شود</translation>
-<translation id="2462332841984057083">‏Steam اکنون درحال راه‌اندازی است. منتظر بمانید تا راه‌اندازی تکمیل شود.</translation>
 <translation id="2462724976360937186">شناسه کلید ارائه دهنده مجوز</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> اضافه شد</translation>
 <translation id="2464075479326723132">‏درحال دیدن فایل‌های پیشنهادی هستید تا به شما کمک کند به‌راحتی به آخرین فعالیتتان در Microsoft SharePoint و OneDrive برگردید.
@@ -2239,7 +2234,6 @@
 <translation id="2491587035099903063">پیش‌دید کردن صدای <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">درحال آماده‌سازی درخواست امضای گواهینامه</translation>
 <translation id="249330843868392562">باز کردن تنظیمات نوشتار به گفتار</translation>
-<translation id="2494555621641843783">‏Steam نصب نشد</translation>
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2496616243169085015">عکاسی</translation>
 <translation id="2497229222757901769">سرعت موشواره</translation>
@@ -2595,7 +2589,6 @@
 <translation id="27349076983469322">پس‌زمینه روشن</translation>
 <translation id="2735712963799620190">زمان‌بندی</translation>
 <translation id="2737363922397526254">کوچک کردن...</translation>
-<translation id="2737538893171115082">‏سرپرست شما «Steam ویژه Chromebook» (بتا) را مسدود کرده است. سرپرست شما باید این خط‌مشی‌ها را روشن کند:</translation>
 <translation id="2737719817922589807">&amp;نشانک‌ها و فهرست‌ها</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> می‌خواهد محتوای صفحه‌نمایشتان را با <ph name="TARGET_NAME" /> هم‌رسانی کند.</translation>
 <translation id="2738030019664645674">به سایت‌ها اجازه داده نشود از قلم‌های نصب‌شده در دستگاه استفاده کنند</translation>
@@ -3058,7 +3051,6 @@
 <translation id="3039491566278747710">خط‌مشی آفلاین روی دستگاه نصب نشد.</translation>
 <translation id="303955801043931176">برگه بسته شد</translation>
 <translation id="3040435070100611531">‏مجوزهای شما در «کیف پول Google»</translation>
-<translation id="3040982432432547149">‏به ما کمک کنید Steam را برای Chromebook بهبود ببخشیم</translation>
 <translation id="304169924727249890">به «گروه زبانه» با <ph name="OWNER_FIRST_NAME" /> بپیوندید</translation>
 <translation id="3042097545107738107">راهبرد شارژ بهینه‌سازی‌شده را تغییر می‌دهد.</translation>
 <translation id="3043016484125065343">برای دیدن نشانک‌ها، به سیستم وارد شوید</translation>
@@ -3269,7 +3261,6 @@
 <translation id="3201422919974259695">‏دستگاه‌های USB دردسترس در اینجا نشان داده می‌شود.</translation>
 <translation id="3202499879214571401">مکث پخش محتوای صفحه‌نمایش در <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">جدیدترین</translation>
-<translation id="3204648577100496185">داده‌های مرتبط با این برنامه ممکن است از این دستگاه برداشته شود.</translation>
 <translation id="3206289903841621620">واژه‌نامه کاربر <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">‏براساس فعالیت اخیرتان، جستجوهای پیشنهادی و تخفیف‌های خریدی را می‌بینید که شاید برایتان جالب باشد.
         <ph name="BREAK" />
@@ -3377,7 +3368,6 @@
 <translation id="3283148363895519428">برای ادامه راه‌اندازی، دستورالعمل‌های روی صفحه را دنبال کنید. تلفنتان باید نزدیک شما باشد و بلوتوث آن روشن باشد.</translation>
 <translation id="3284050785966252943">پیش‌نمایش تکمیل خودکار فراداده</translation>
 <translation id="3285322247471302225">&amp;برگه جدید</translation>
-<translation id="3285465040399788513">فضای ذخیره‌سازی دستگاه برای تمام کردن راه‌اندازی کافی نیست. مقداری فضا آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="3285500645985761267">به سایت‌های مرتبط اجازه دهید فعالیت شما را در گروه ببینند</translation>
 <translation id="328571385944182268">گذرواژه ذخیره شود؟</translation>
 <translation id="3289668031376215426">بزرگ‌نویسی خودکار</translation>
@@ -3500,7 +3490,6 @@
 <translation id="3372602033006349389">در دستگاه‌های دیگر</translation>
 <translation id="337286756654493126">خواندن پوشه‌هایی که در برنامه باز می‌کنید</translation>
 <translation id="3373059063088819384">باز کردن در «حالت خواندن»</translation>
-<translation id="3373196968211632036">‏«Steam ویژه Chromebook» (بتا) برای «حساب‌های Google» کودکان دردسترس نیست</translation>
 <translation id="3373701465337594448">وقتی روشن باشد، فهرست سایت‌هایی که بازدید می‌کنید و علایقتان را حدس می‌زنند، در اینجا نشان داده می‌شود</translation>
 <translation id="3374294321938930390">«<ph name="BOOKMARK_TITLE" />» به «<ph name="NEW_FOLDER_TITLE" />» منتقل شد.</translation>
 <translation id="3376035595160918049">بازبینی به‌روزرسانی برنامه</translation>
@@ -3683,7 +3672,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (انتخاب نشده است)</translation>
 <translation id="3496689104192986836">سطح باتری: <ph name="PERCENTAGE" />٪</translation>
 <translation id="3496692428582464972">منابع داده برای جمع‌آوری</translation>
-<translation id="3496797737329654668">بیایید بازی کنیم</translation>
 <translation id="3496995426334945408">سایت‌ها معمولاً برای نمایش ویژگی‌های تعاملی (مثل بازی‌های ویدیویی یا فرم‌های وب) از جاوا اسکریپت استفاده می‌کنند</translation>
 <translation id="3497501929010263034">‏دستگاه USB از <ph name="VENDOR_NAME" /> (محصول <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">‏هم‌رسانی Doodle</translation>
@@ -3896,7 +3884,6 @@
 <translation id="3637203148990213388">حساب‌های دیگر</translation>
 <translation id="3640347231390550691">از گذرواژه‌ها درمقابل رمزگیری محافظت کنید</translation>
 <translation id="364100968401221170">‏برای حذف کردن داده‌های مرور از همه دستگاه‌های همگام‌سازی‌شده و «حساب Google»، <ph name="BEGIN_LINK" />به سیستم وارد شوید<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">‏«Steam ویژه Chromebook» (بتا) باید به‌روزرسانی شود. ‫Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید.</translation>
 <translation id="3641299252000913351">سفت‌افزار مودم درحال به‌روزرسانی است. دستگاه را خاموش نکنید.</translation>
 <translation id="3641456520301071208">اجازه داشتن سایت‌ها برای خواستن مکان شما</translation>
 <translation id="3642064270296434810">‏اکنون می‌توانید از «لنز Google» برای جستجوی هر چیزی که در صفحه‌نمایش می‌بینید استفاده کنید</translation>
@@ -4233,7 +4220,6 @@
 <translation id="383891835335927981">هیچ سایتی بزرگ‌نمایی یا کوچک‌نمایی نشده است</translation>
 <translation id="3839516600093027468">دسترسی <ph name="HOST" /> به بریده‌‌دان همیشه مسدود باشد</translation>
 <translation id="3840096463915153852">سابقه مکالمه</translation>
-<translation id="3841282988425489367">‏Steam ویژه Chromebook (بتا) نصب نشد</translation>
 <translation id="3841319830220785495">صدای طبیعی پیش‌فرض</translation>
 <translation id="3841356782900714251">کارت‌خوان‌های هوشمند</translation>
 <translation id="3841964634449506551">گذرواژه نامعتبر است</translation>
@@ -4681,7 +4667,6 @@
 <translation id="4148195018520464922">می‌توانید ورود به سیستم را برای کاربران خاصی محدود کنید. با این کار، گزینه «افزودن شخص» در صفحه ورود به سیستم برداشته می‌شود. همچنین می‌توانید کاربران فعلی را نیز بردارید.</translation>
 <translation id="4148957013307229264">درحال نصب…</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
-<translation id="4151449637210235443">درباره تجربه بازی اخیرتان به ما بگویید</translation>
 <translation id="4151503145138736576">هیچ فضای ذخیره‌سازی آفلاینی برای پاک کردن نیست</translation>
 <translation id="4152011295694446843">نشانک‌ها را اینجا خواهید دید</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{‏۱ برگه}one{‏# برگه}other{‏# برگه}}</translation>
@@ -4732,7 +4717,6 @@
 <translation id="4193251682249731404">مرجع صدور گواهینامه مورداعتماد</translation>
 <translation id="4193575319002689239">نمایش کارت‌ها</translation>
 <translation id="419427585139779713">هر بار یک هجا وارد می‌شود</translation>
-<translation id="4195001808989442226">‏Steam ویژه Chromebook (بتا) باز نشد</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
 <translation id="4198268995694216131">سایت‌های بیشتر</translation>
@@ -4778,7 +4762,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{این افزونه مجاز نیست}one{برخی افزونه‌ها مجاز نیستند}other{برخی افزونه‌ها مجاز نیستند}}</translation>
 <translation id="4231053948789591973">پخش محتوا موقتاً متوقف شده است. هرزمان بخواهید می‌توانید پخش محتوای صفحه‌نمایش را ازسر بگیرید یا متوقف کنید.</translation>
 <translation id="4231095370974836764">‏برنامه‌ها و بازی‌ها را از Google Play در <ph name="DEVICE_TYPE" /> نصب کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">‏درحال راه‌اندازی «Steam ویژه Chromebook»</translation>
 <translation id="4232375817808480934">‏پیکربندی Kerberos</translation>
 <translation id="4232376164796433044">گذرواژه‌ها و تکمیل خودکار</translation>
 <translation id="4232484478444192782">‏تلفن Android به شما کمک می‌کند. ‫Wi-Fi و گذرواژه شما درحال انتقال است.</translation>
@@ -5137,7 +5120,6 @@
 <translation id="4472533928615930332">تصویر تولیدشده <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">شروع کنید</translation>
 <translation id="4473559657152613417">روی یکی از زبانه‌ها کلیک راست کنید و «افزودن زبانه به گروه جدید» را انتخاب کنید</translation>
-<translation id="4473996011558324141">زمان تخمینی</translation>
 <translation id="4474155171896946103">نشانک‌گذاری همه زبانه‌ها...</translation>
 <translation id="4476198534886170024">مجاز است. <ph name="LINK_BEGIN" />دسترسی دوربین سیستم<ph name="LINK_END" /> را روشن کنید.</translation>
 <translation id="4476590490540813026">ورزشکار</translation>
@@ -5372,7 +5354,6 @@
 <translation id="4638930039313743000">‏فعال‌سازی اشکال‌زدایی ADB (پل اشکال‌زدایی Android)</translation>
 <translation id="4639390152280993480">برای دیدن نمای ساده این صفحه، به «ابزارهای بیشتر &gt; حالت خواندن» بروید</translation>
 <translation id="4641539339823703554">‏Chrome نمی‌تواند زمان سیستم را تنظیم کند. لطفاً زمان را در زیر بررسی کرده و در صورت لزوم آن را درست کنید.</translation>
-<translation id="4642587497923912728">‏«Steam ویژه Chromebook» (بتا) فقط برای اولین حسابی که در این Chromebook به سیستم وارد شده است دردسترس است.</translation>
 <translation id="4643612240819915418">&amp;باز کردن فایل ویدئویی در برگهٔ جدید</translation>
 <translation id="4643833688073835173">‏Chromebook از حسگر داخلی برای شناسایی افراد مقابل دستگاه استفاده می‌کند. همه داده‌ها بلافاصله در دستگاهتان پردازش و سپس حذف می‌شود. داده‌های حسگر هرگز به Google ارسال نمی‌شود.</translation>
 <translation id="4644205769234414680">در «حالت ناشناس» مجاز است</translation>
@@ -6377,7 +6358,6 @@
 <translation id="5353769147530541973">برای غیرفعال کردن <ph name="SITE_NAME" />، آن را از فهرست زبانه‌ها حذف کنید</translation>
 <translation id="5355099869024327351">به «دستیار» اجازه می‌دهد اعلان نشان دهد</translation>
 <translation id="5355191726083956201">«محافظت بهبودیافته» روشن است</translation>
-<translation id="5355498626146154079">‏باید پرچم «Borealis Enabled» را روشن کنید</translation>
 <translation id="5355501370336370394">ثبت‌نام کردن دستگاه شرکتی</translation>
 <translation id="5357010010552553606">ورود خودکار به حالت تمام‌صفحه مجاز نیست</translation>
 <translation id="5359910752122114278">۱ نتیجه</translation>
@@ -6407,7 +6387,6 @@
 <translation id="5376931455988532197">فایل بسیار بزرگ است</translation>
 <translation id="5377367976106153749">دسترسی به دوربین روشن شود؟</translation>
 <translation id="5379140238605961210">ادامه مسدود کردن دسترسی به میکروفون</translation>
-<translation id="5380526436444479273">چند دقیقه صبر کنید و دوباره امتحان کنید</translation>
 <translation id="5382591305415226340">مدیریت پیوندهای پشتیبانی‌شده</translation>
 <translation id="5384401776498845256">چه کسانی می‌توانند با شما هم‌رسانی کنند</translation>
 <translation id="5385628342687007304">‏این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از این گذرواژه در دستگاه‌های دیگر، آن را در «حساب Google» خود ذخیره کنید.</translation>
@@ -6462,7 +6441,6 @@
 <translation id="5414198321558177633">درحال بازآوری فهرست نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="5414566801737831689">خواندن نمادهای وب‌سایت‌هایی که بازدید می‌کنید</translation>
 <translation id="5414836363063783498">در حال تأیید کردن…</translation>
-<translation id="5415328625985164836">‏این یک برنامه نسخه بتا است. اکنون می‌توانید از Steam برای اجرای برخی‌از بازی‌ها در Chromebook استفاده کنید.</translation>
 <translation id="5415497281076257439">عبارت</translation>
 <translation id="5415871492522952905">سابقه و برگه‌هایتان را در همه دستگاه‌هایتان دراختیار خواهید داشت تا بتوانید به کاری که انجام می‌دادید ادامه دهید</translation>
 <translation id="5417293056300086453">این سایت می‌تواند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کند.</translation>
@@ -6903,7 +6881,6 @@
 <translation id="5727728807527375859">ممکن است افزونه‌ها برنامه‌ها، و طرح‌های زمینه به رایانهٔ شما صدمه بزنند. آیا مطمئنید می‌خواهید ادامه دهید؟</translation>
 <translation id="5728072125198221967">‏سرویس‌های پیوندشده Google</translation>
 <translation id="5728450728039149624">‏گزینه‌های قفل صفحه Smart Lock</translation>
-<translation id="572914206753951782">‏مطمئن شوید که Chromebook از آخرین نسخه استفاده می‌کند. سپس، Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید.</translation>
 <translation id="5729712731028706266">&amp;نما</translation>
 <translation id="5731247495086897348">جا&amp;گذاری و رفتن</translation>
 <translation id="5733109311583381874">کلمات موردنظرتان را به فرهنگ‌های لغت کاربر اضافه کنید تا موارد برگزیده برای تبدیل را سفارشی کنید.</translation>
@@ -8018,7 +7995,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» می‌خواهد برنامه زیر را در این دستگاه نصب کند:}one{«<ph name="APP_NAME" />» می‌خواهد برنامه‌های زیر را در این دستگاه نصب کند:}other{«<ph name="APP_NAME" />» می‌خواهد برنامه‌های زیر را در این دستگاه نصب کند:}}</translation>
 <translation id="6508248480704296122">مرتبط با <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">برنامه: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">‏Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید</translation>
 <translation id="6511827214781912955">توصیه می‌کنیم <ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌هایتان را ببینند</translation>
 <translation id="6512759338201777379">تصویر تولیدشده <ph name="INDEX" /> از <ph name="SUBJECT" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">‏اگر به شبکه دیگری وصل نباشید Google Chrome از داده‌های تلفن همراه استفاده خواهد کرد.</translation>
@@ -8127,7 +8103,6 @@
 <translation id="657866106756413002">عکس آنی از وضعیت شبکه</translation>
 <translation id="6579369886355986318">نمایش همه &amp;کنترل‌ها</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - محتوای میز کار هم‌رسانی می‌شود</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> درصد تکمیل شده است</translation>
 <translation id="6580203076670148210">سرعت اسکن</translation>
 <translation id="6580676117087365538">برای دریافت این افزونه در همه رایانه‌هایتان، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="6581356304040102696">گذرواژه‌ها وارد نشد. اندازه فایل باید کمتر از ۱ مگابایت باشد.</translation>
@@ -8348,7 +8323,6 @@
 <translation id="6729280095610283088">جریان‌های درخشان شفق شمالی برفراز یک جنگل.</translation>
 <translation id="6729493062119577923">فعالیت گروه زبانه هم‌رسانی‌شده</translation>
 <translation id="6730744976532805323">‏زبانه فعلی را با Gemini هم‌رسانی می‌کند، حتی زمانی‌که بین زبانه‌ها جابه‌جا می‌شوید</translation>
-<translation id="6731320427842222405">این مرحله ممکن است چند دقیقه طول بکشد</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (شناسه: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">نشانی</translation>
 <translation id="6737663862851963468">‏حذف کردن بلیت Kerberos</translation>
@@ -8698,7 +8672,6 @@
 <translation id="6965648386495488594">درگاه</translation>
 <translation id="6965978654500191972">دستگاه</translation>
 <translation id="6966831944134814478">خاموش کردن</translation>
-<translation id="6967112302799758487">‏همه برنامه‌ها و بازی‌هایی که بااستفاده از «Steam ویژه Chromebook» (بتا) نصب شده‌اند از این دستگاه برداشته خواهند شد. داده‌های مرتبط با این برنامه‌ها و بازی‌ها نیز برداشته خواهند شد. قبل‌از حذف نصب، حتماً از برنامه‌ها و بازی‌های ذخیره‌شده پشتیبان‌گیری کنید.</translation>
 <translation id="6967430741871315905">امکان بررسی مجاز بودن یا نبودن دستگاه وجود ندارد</translation>
 <translation id="6968288415730398122">برای پیکربندی قفل صفحه، گذرواژه‌تان را وارد کنید</translation>
 <translation id="6969047215179982698">خاموش کردن «هم‌رسانی با اطراف»</translation>
@@ -8870,7 +8843,6 @@
 <translation id="7082568314107259011">سرپرستتان <ph name="NETWORK_NAME" /> را مدیریت می‌کند</translation>
 <translation id="7082850163410901674">‏اعلان‌ها در «تنظیمات سیستم Mac» خاموش است</translation>
 <translation id="7083729794572207131">سایت‌ها معمولاً درخواست می‌کنند برنامه‌های وب نصب کنند تا تجربه‌تان را در سایت بهبود دهند</translation>
-<translation id="7083774521940805477">‏«Steam ویژه Chromebook» (بتا) در Chromebook شما دردسترس نیست.</translation>
 <translation id="7084095352418993433">‏پرسیدن از Google درباره این صفحه: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(پیکربندی نشده است)</translation>
 <translation id="7086377898680121060">زیاد کردن روشنایی</translation>
@@ -8949,7 +8921,6 @@
 <translation id="7141844554192012199">بازرسی</translation>
 <translation id="714301620504747562">مرور و جستجو کردن سریع‌تر از پیش‌بارگیری استاندارد است</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
-<translation id="7143409552554575716">‏پرچم‌های ChromeOS</translation>
 <translation id="7144363643182336710">اعلان‌ها روی صفحه نشان داده نمی‌شوند. با کلیک کردن روی نماد «مزاحم نشوید» در پایین سمت چپ صفحه، همچنان می‌توانید اعلان‌ها را ببینید.</translation>
 <translation id="7144856456372460176">نصب <ph name="APP" />…</translation>
 <translation id="7144878232160441200">امتحان مجدد</translation>
@@ -8960,7 +8931,6 @@
 <translation id="7152478047064750137">این افزونه به مجوز خاصی نیاز ندارد</translation>
 <translation id="7153101072880472645">روشن/خاموش کردن کنتراست بالا</translation>
 <translation id="715396040729904728">راه‌انداز + تبدیل + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">بازخوردتان را با ما درمیان بگذارید یا مشکلتان را شرح دهید. درصورت امکان، مراحل لازم برای بازسازی مشکل را اضافه کنید.</translation>
 <translation id="7154130902455071009">تغییر صفحه شروعتان به: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">‏کیفیت ویدیو بهتری دریافت کنید و در مصرف باتری صرفه‌جویی کنید. ویدیو فقط در صفحه‌نمایش سازگار با Cast پخش خواهد شد.</translation>
 <translation id="7159695867335480590">پخش/ مکث</translation>
@@ -9812,7 +9782,6 @@
 <translation id="7728668285692163452">تغییر کانال بعداً اعمال خواهد شد</translation>
 <translation id="7730449930968088409">ثبت محتوا از صفحه شما</translation>
 <translation id="7730683939467795481">افزونه «<ph name="EXTENSION_NAME" />» این صفحه را تغییر داد</translation>
-<translation id="7732702411411810416">از اتصال به اینترنت مطمئن شوید و دوباره امتحان کنید</translation>
 <translation id="773511996612364297">نشانه‌های تکیه</translation>
 <translation id="7735558909644181051">گواهینامه‌های واسط</translation>
 <translation id="7736119438443237821">قصد دارید در این دستگاه دسترسی به گذرکلیدهایتان را بردارید</translation>
@@ -10010,7 +9979,6 @@
 <translation id="7871691770940645922">نمایشگر مجازی بریل</translation>
 <translation id="787268756490971083">خاموش</translation>
 <translation id="7872758299142009420">گروه‌های تودرتو خیلی زیاد هستند: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">‏Steam ویژه Chromebook</translation>
 <translation id="7876027585589532670">نمی‌توان میان‌بر را ویرایش کرد</translation>
 <translation id="7876243839304621966">حذف همه</translation>
 <translation id="7877126887274043657">رفع مشکل همگام‌سازی</translation>
@@ -11668,7 +11636,6 @@
 <translation id="8983018820925880511"><ph name="DOMAIN" /> این نمایه جدید را مدیریت خواهد کرد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> می‌تواند <ph name="FILENAME" /> را ویرایش کند</translation>
 <translation id="8984694057134206124">به‌مدت <ph name="MINUTES" /> دقیقه برای همه افراد نمایان خواهید بود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">‏به Steam ویژه Chromebook خوش آمدید</translation>
 <translation id="8985264973231822211">آخرین فعالیت: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> روز قبل</translation>
 <translation id="8985561265504464578">آستانه تشخیص</translation>
 <translation id="8985661493893822002">برای ورود به سیستم در <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
@@ -11800,7 +11767,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{حدود یک اعلان در روز}one{حدود {NUM_NOTIFICATION} اعلان در روز}other{حدود {NUM_NOTIFICATION} اعلان در روز}}</translation>
 <translation id="9058760336383947367">‏مشاهده PPD چاپگر</translation>
 <translation id="9061521313218438086">‏اگر Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه عمومی پیدا کند، «مدیر گذرواژه Google» می‌تواند درصورتی‌که به سیستم وارد شده باشید پیشنهاد دهد گذرواژه را برای شما تغییر دهد.</translation>
-<translation id="9061694916020926968">‏برای استفاده از «Steam ویژه Chromebook» (بتا) باید به سیستم «حساب Google» وارد شوید. به سیستم وارد شوید و دوباره امتحان کنید.</translation>
 <translation id="9062468308252555888">۱۴ برابر</translation>
 <translation id="9062873887761404531">پاک کردن میان‌بر پیمایش</translation>
 <translation id="9063208415146866933">خطا از خط <ph name="ERROR_LINE_START" /> تا <ph name="ERROR_LINE_END" /></translation>

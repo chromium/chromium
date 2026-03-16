@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="1557622599341396706">මේසයේ නම පෙන්වන්න</translation>
 <translation id="1569384531973824928">මෙය කැමරා සහ මයික්‍රොෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශයට ඉඩ දෙයි. ඔබට වෙබ් පිටුව නැවුම් කිරීමට හෝ යෙදුම නැවත ආරම්භ කිරීමට අවශ්‍ය වේවි.</translation>
+<translation id="1570235441606255261">Steam ස්ථාපකය</translation>
 <translation id="1571697193564730395">බාධා නොකරන්න ටොගල් කරන්න. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">වම් කෙළවරේ හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="1576623706766186887">විශාලකය සක්‍රීයව ඇති විට විශාලනය අඩු කරන්න</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">ප්‍රවේශය මාරු කිරීම සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළ අබල කළ හැක.</translation>
 <translation id="1637505162081889933">උපාංග <ph name="NUM_DEVICES" />ක්</translation>
 <translation id="1639239467298939599">පැටවෙමින්</translation>
+<translation id="1642895994345928121">මෙම යෙදුම විවෘත කිරීමට ප්‍රමාණවත් උපාංග ගබඩාවක් නොමැත. ඉඩ නිදහස් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="1647986356840967552">පෙර පිටුව</translation>
 <translation id="1651914502370159744">ඉතිහාස පිටුව විවෘත කරන්න</translation>
 <translation id="1668469839109562275">තිළැලි VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">යෙදුම් සහ පටිති සමූහ</translation>
 <translation id="2386292613071805067">පිටුවෙහි ඇති සියල්ල තෝරන්න</translation>
 <translation id="2389423187722941333">Gemini ටොගල් කරන්න</translation>
+<translation id="2391805183137601570">Steam විවෘත කරන්න</translation>
 <translation id="2392659840443812875">ලබා ගත හැකි හොට්ස්පොට් නැත. ඔබේ උපාංගය අවට ඇති බවත් බ්ලූටූත් ක්‍රියාත්මක කර ඇති බවත් සහතික කර ගන්න.</translation>
 <translation id="2397416548179033562">Chrome මෙනුව පෙන්වන්න</translation>
 <translation id="240006516586367791">මාධ්‍ය පාලන</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">ඊයේ විවෘත කරන ලදි</translation>
 <translation id="2440978926514840421">GIF පටිගත කිරීම ගන්නා ලදි</translation>
 <translation id="2441427462554639370">තීරණාත්මක ලෙස අඩු ගබඩා ඉඩ හේතුවෙන් පටිගත කිරීම අවසන් විය</translation>
+<translation id="2447587550790814052">ඔබට දැන් Chromebook (බීටා) සඳහා Steam භාවිත කළ හැක</translation>
 <translation id="2449089818483227734">බැටරිය අඩුයි</translation>
 <translation id="2450205753526923158">තිර රූ ප්‍රකාරය</translation>
 <translation id="2453860139492968684">අවසන් කරන්න</translation>
 <translation id="2455994958736234930">www. සහ .com ලිපින තීරුවට එක් කර, පසුව වෙබ් අඩවිය විවෘත කරන්න</translation>
 <translation id="2456008742792828469"><ph name="CURRENT_MONTH_YEAR" />, දින දර්ශනය</translation>
 <translation id="246052086404491029">ගැඹුරු මට්ටම් වෙත ප්‍රවේශ වන්න</translation>
+<translation id="2462332841984057083">Steam දැනටමත් පිහිටුවෙමින් ඇත. පිහිටුවීම සම්පූර්ණ වන තෙක් රැඳී සිටින්න.</translation>
 <translation id="2465145153332031561">බැටරි සෞඛ්‍යය <ph name="BATTERY_HEALTH_PERCENTAGE" />% | චක්‍ර ගණන <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">විභේදනය තහවුරු කරන්න</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ඇතුළත් කරන්න</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> පෙරදසුන. සක්‍රීය මේසය.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) විභේදනයට වෙනස් කරන ලදි. තහවුරු කිරීමකින් තොරව, පෙර සැකසීම් <ph name="TIMEOUT_SECONDS" /> හි ප්‍රතිසාධනය කරනු ලැබේ.</translation>
 <translation id="2487915095798731898">එක්වන්න</translation>
+<translation id="2494555621641843783">Steam ස්ථාපනය කළ නොහැක</translation>
 <translation id="2496180316473517155">බ්‍රවුස් ඉතිහාසය</translation>
 <translation id="2499445554382787206">මේස පැතිකඩ මෙනුව. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ඇලෙන යතුරු</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">පිළිතුරු දෙන්න</translation>
 <translation id="2727744317940422214">කණගාටුයි, යමක් වැරදී ඇත. විස්තරයේ #bruschetta සමග ප්‍රතිපෝෂණය ගොනු කරන්න. දෝෂ කේතය <ph name="ERROR" /> වේ. පිරිසිදු කිරීම අසමත් විය, ඔබ එය හස්තීයව සිදු කිරීමට අවශ්‍ය විය හැක.</translation>
 <translation id="2727977024730340865">අඩු බල චාජරයකට ප්ලග් ඉන් කර ඇත. බැටරිය චාජ් කිරිම විශ්වාස නැති විය හැක.</translation>
+<translation id="2737538893171115082">Chromebook (බීටා) සඳහා Steam ඔබේ පරිපාලක විසින් අවහිර කර ඇත. ඔබේ පරිපාලකයාට මෙම ප්‍රතිපත්ති ක්‍රියාත්මක කිරීමට අවශ්‍යයි:</translation>
 <translation id="2743301740238894839">අරඹන්න</translation>
 <translation id="2743387203779672305">ක්ලිප්බෝඩ් එකට පිටපත් කරන්න</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> සමග ඒකාබද්ධ කරන්න</translation>
 <translation id="3039939407102840004">පන්හිඳ බැටරිය සියයට <ph name="PERCENTAGE" />කි.</translation>
 <translation id="304097922505898963">යතුරු කෙටි මං යෙදුම් විවෘත කරන්න</translation>
+<translation id="3040982432432547149">Chromebook සඳහා Steam වැඩි දියුණු කිරීමට අපට උදවු කරන්න</translation>
 <translation id="304417730895741346">ඔබේ අමුණන ලද සහ විවෘත යෙදුම් රාක්කයේ ඇත. යෙදුමක් රාක්කයට ඇමිණීමට, යෙදුමක් දකුණු-ක්ලික් කරන්න හෝ ඇඟිලි දෙකකින් ඔබේ ස්පර්ශ පුවරුව තට්ටු කරන්න.</translation>
 <translation id="3045670165536837541">ඉහළ දකුණු හසුරුව තෝරා ඇත, ගෙන යාමට ඊතල යතුරු භාවිතා කරන්න</translation>
 <translation id="3047761520276763270">පැවසීමට උත්සාහ කරන්න:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">යළි ඇරඹීමට කෙටි වේලාවක් ගත විය හැක</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{උපාංගයකට සම්බන්ධ වී ඇත}one{උපාංග # කට සම්බන්ධ වී ඇත}other{උපාංග # කට සම්බන්ධ වී ඇත}}</translation>
 <translation id="3203405173652969239">ප්‍රවේශය මාරු කිරීම සබල කළා</translation>
+<translation id="3204648577100496185">මෙම යෙදුම සමඟ සම්බන්ධ දත්ත මෙම උපාංගයෙන් ඉවත් කළ හැකිය.</translation>
 <translation id="3206735939915734551">මහකුරු අගුල ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="3207953481422525583">පරිශීලක සැකසුම්</translation>
 <translation id="3208321278970793882">යෙදුම</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ඇතුළත් කිරීමට සොයන්න</translation>
 <translation id="3274634049061007184">ඔබේ දුරකථනයේ යෙදුම් බලන්න</translation>
 <translation id="3279230909244266691">මෙම ක්‍රියාවලියට විනාඩි කිහිපයක් ගත විය හැක. අතථ්‍ය යන්ත්‍රය අරඹමින්.</translation>
+<translation id="3285465040399788513">පිහිටුවීම සම්පූර්ණ කිරීමට ප්‍රමාණවත් උපාංග ආචයනයක් නොමැත. ඉඩ ටිකක් නිදහස් කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="3289364673986435196">බල මෙනුව</translation>
 <translation id="3289544412142055976">Linux යෙදුම් දැනට සහාය නොදක්වයි</translation>
 <translation id="3289674678944039601">ඇඩැප්ටරය හරහා ආරෝපණය වෙමින්</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">සම්බන්ධ කළ</translation>
 <translation id="3369111525500416043">ඉක්මනින් නියමිතයි</translation>
 <translation id="3371140690572404006">USB-C උපාංගය (දකුණුපස ඉදිරි තොට)</translation>
+<translation id="3373196968211632036">Chromebook (බීටා) සඳහා Steam ළමා Google ගිණුම් සඳහා නොමැත</translation>
 <translation id="3375634426936648815">සම්බන්ධයි</translation>
 <translation id="3386978599540877378">පූර්ණ තිර විශාලකය</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">පාලනය-Shift-ඉඩ</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">රාක්කය ස්වයංක්‍රීයව සැඟවී ඇත</translation>
+<translation id="3496797737329654668">දැන් ක්‍රීඩා කරමු</translation>
 <translation id="3505066820268455558">බැටරිය ආරෝපණය වේ</translation>
 <translation id="3509391053705095206">ඔබගේ දුරකථනය සොයා ගත නොහැකිය. ඔබගේ දුරකථනයේ බ්ලූටූත් ක්‍රියාත්මක බව සහතික කර ගන්න.</translation>
 <translation id="3510164367642747937">මූසිකයේ කර්සරය ඉස්මතු කරන්න</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">පසුරු පුවරුව විවෘත කරන්න</translation>
 <translation id="363473492175527493">කාර්යය අවධානය සක්‍රීය ලෙස සකසන ලදි: <ph name="TASK_NAME" />. කාර්යය සංස්කරණ කිරීමට Enter ඔබන්න.</translation>
 <translation id="3638400994746983214">පෞද්ගලිකත්ව තිරය ටොගල් කරන්න. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Chromebook (බීටා) සඳහා Steam යාවත්කාලීන කිරීමට අවශ්‍යයි. ඔබේ Chromebook යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
 <translation id="3649256019230929621">කවුළුව කුඩා කරන්න</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">වත්මන් මේසයෙන් කවුළු පෙන්වමින්, සියලු මේසවලින් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">විනෝදාස්වාදය</translation>
+<translation id="370665806235115550">පූරණය වේ...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" />, සහ <ph name="UNAVAILABLE_DLC_TWO" /> නොමැත.</translation>
 <translation id="3708186454126126312">පෙර සම්බන්ධිත</translation>
 <translation id="3712143870407382523">මෙම පැත්ත සඳහා කවුළුවක් තෝරන්න</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">නිබන්‍ධන දසුනින් පිට වන්න</translation>
 <translation id="383629559565718788">යතුරුපුවරු සැකසීම් පෙන්වන්න</translation>
 <translation id="384082539148746321">අච්චුව මකන්නද?</translation>
+<translation id="3841282988425489367">Chromebook (බීටා) සඳහා Steam පිහිටුවිය නොහැක</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> පසුව <ph name="KEY_ONE" /> හෝ <ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /> හෝ <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">ජාල තොරතුරු ලද නොහැක</translation>
 <translation id="3848526302597027234">පහත අවසර වෙත ප්‍රවේශ වන්න:</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">මීළඟ වචනයෙහි අවසානයට යන්න</translation>
 <translation id="4150201353443180367">සංදර්ශකය</translation>
 <translation id="4151054805501931758">ප්‍රතිමූර්තියේ ගුණත්වය වැඩි කිරීම</translation>
+<translation id="4151449637210235443">ඔබේ මෑත ක්‍රීඩා කිරීම ගැන අපට කියන්න</translation>
 <translation id="4156293514828496577">බැටරිය <ph name="PERCENTAGE" />% ඉතිරිව ඇත (<ph name="TIME_LEFT" /> පමණ).
 සමහර විශේෂාංග බැටරි ආයු කාලය වැඩි කිරීමට සීමා වේ.</translation>
 <translation id="4158003972857765638">නව මේසයක සංවිධානය කරන්න</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">හෝ</translation>
 <translation id="4193857202545160520">ක්ලික් කිරීම් සහ යතුරු පෙන්වන්න</translation>
 <translation id="4193969623755915875">ගවේෂණ යෙදුමේ "<ph name="NEW_SHORTCUT" />" සමග "උදවු" විවෘත කරන්න.</translation>
+<translation id="4195001808989442226">Chromebook සඳහා Steam (බීටා) භාවිත කළ නොහැක</translation>
 <translation id="4195579532193195633">වත්මන් අනුවාදය <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ඔබ ඉතිරි කළ තැනින් දිගටම කරගෙන යන්න</translation>
 <translation id="4195877955194704651">ස්වයංක්‍රීය ක්ලික් බොත්තම</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ස්ථාපිත යෙදුම, විරාම කරන ලදී</translation>
 <translation id="4228078597006700451">පාලන සකසා නැත</translation>
 <translation id="4230560241506423345">නව</translation>
+<translation id="4231231258999726714">Chromebook සඳහා Steam පිහිටුවීම</translation>
 <translation id="4236726631849783264">යෝජිත ක්‍රියාමාර්ග පිළිබඳ සිහිකැඳවීමක්</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">දළ විශ්ලේෂණ ආකාරය</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{උපාංගය දැන් යාවත්කාලීන කරන්න}=1{උපාංගය තත්පර 1ක් තුළ යාවත්කාලීන කරන්න}one{උපාංගය තත්පර #ක් තුළ යාවත්කාලීන කරන්න}other{උපාංගය තත්පර #ක් තුළ යාවත්කාලීන කරන්න}}</translation>
 <translation id="4472575034687746823">අරඹන්න</translation>
 <translation id="4473489370276014885">Google සම්බන්ධතා</translation>
+<translation id="4473996011558324141">කාලය ඇස්තමේන්තු කිරීම</translation>
 <translation id="4477350412780666475">ඊළඟ ඛණ්ඩය</translation>
 <translation id="4477751544736611934">මෙයට දත්ත පිරිවැයක් දැරීමට සිදු වේ.
 1 උපාංගයක් සම්බන්ධ කර ඇත.</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">නොදන්නා ග්‍රාහකයෙකු මත විකාශය කිරීම නවත්වන්න</translation>
 <translation id="4596144739579517758">අඳුරු තේමාව ක්‍රියාවිරහිතයි</translation>
 <translation id="4596442969149038771"><ph name="USER" /> බෙදා ගන්නා ලදි</translation>
+<translation id="4598556348158889687">ගබඩාව කළමනාකරණය</translation>
 <translation id="4610493115106525653">හොඳ ප්‍රතිදානය</translation>
 <translation id="4611292653554630842">පුරන්න</translation>
 <translation id="462160925400706389"><ph name="NAME" /> සම්බන්ධිතයි</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">මකා දැමීමට Ctrl+W ඔබන්න</translation>
 <translation id="4635501805800894201">{0,plural, =0{උපාංගය දැන් පෙර අනුවාදයට යාවත්කාලීන කරන්න}=1{තත්පර 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}one{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}other{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}}</translation>
 <translation id="4642092649622328492">අර්ධ තිර රුවක් ගන්න</translation>
+<translation id="4642587497923912728">Chromebook (බීටා) සඳහා Steam ලබා ගත හැක්කේ මෙම Chromebook හි පළමුව පුරනය වූ ගිණුම සඳහා පමණි.</translation>
 <translation id="4644727592819780893">කැමරාවට ගැළපීමට කලාපය කුඩා වැඩිය</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, යෙදුම් නිර්දේශය</translation>
 <translation id="4649019912155580914">ඔබ සංස්කරණ කළා</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">අඳුරු තේමාව ක්‍රියාත්මකයි</translation>
 <translation id="5354804064646502504">මෙයට දත්ත පිරිවැයක් දැරීමට සිදු වේ.
 උපාංග කිසිවක් සම්බන්ධ කර නැත.</translation>
+<translation id="5355498626146154079">ඔබට "Borealis සබලයි" සලකුණ ක්‍රියාත්මක කිරීමට අවශ්‍ය වේ</translation>
 <translation id="5356963482258194581">අඳුරු සහ ළා තේමා අතර මාරු වන්න. ඩෙස්ක්ටොප් එක මත දකුණු-ක්ලික් කර වෝල්පේපරය සහ ශෛලිය තෝරන්න.</translation>
 <translation id="536019650977002321">ඔබේ පරිපාලකයා ශ්‍රව්‍ය ග්‍රහණයට ඉඩ නොදෙයි. වැඩිදුර තතු සඳහා ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> කථන ගොනු අර්ධ වශයෙන් බාගත කර ඇත</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">කැමරා ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="5378450298115733949">තව</translation>
 <translation id="5379115545237091094">උත්සාහයන් විශාල ප්‍රමාණයකි</translation>
+<translation id="5380526436444479273">විනාඩි කිහිපයක් රැඳී සිට නැවත උත්සාහ කරන්න</translation>
 <translation id="5383434787520761436">Google Drive ගොනු නැත</translation>
 <translation id="5391307769715781764">සුරැකි මේසය ප්‍රතිස්ථාපනය කරන්නද?</translation>
 <translation id="5392327145184648521">බැටරිය ගණනය කරමින් %...</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">පාඨය සම්පූර්ණ කළ බවට සලකුණු කරන්න</translation>
 <translation id="5413656666631274079">සැකසුම් පිටුව</translation>
 <translation id="5414198321558177633">පැතිකඩ ලැයිස්තුව නැවුම් කරමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
+<translation id="5415328625985164836">මෙය බීටා වැඩසටහනකි. ඔබට දැන් ඔබේ Chromebook හි සමහර ක්‍රීඩා කිරීමට Steam භාවිත කළ හැක.</translation>
 <translation id="5426063383988017631">සැකසීම් මෙනුව වසන ලදි</translation>
 <translation id="5428899915242071344">තේරීම අරඹන්න</translation>
 <translation id="5429993543155113935">අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774">ඔබේ <ph name="PRODUCT_NAME" /> හි ඔබට අවශ්‍ය සියල්ල කිරීමට යෙදුම් භාවිත කරන්න. ඔබට දියත්කරණය තුළ ඔබේ යෙදුම් සොයා ගත හැක.</translation>
 <translation id="571295407079589142">ජංගම දත්ත ක්‍රියාවිරහිතයි</translation>
 <translation id="5727460725221669831">ඔබට ඔබේ මුරපදය අමතක වූවා නම් හෝ මෑතක දී ඔබේ Google ගිණුමේ මුරපදය වෙනස් කර ඇත්නම්, මෙම පරිශීලකයා ප්‍රතිසාධනය කිරීමට උත්සාහ කරන්න.</translation>
+<translation id="572914206753951782">ඔබේ Chromebook නවතම අනුවාදයෙහි ඇති බව සහතික කර ගන්න. ඉන්පසු, ඔබේ Chromebook යළි අරඹා නැවත උත්සාහ කරන්න.</translation>
 <translation id="5733630091161562207">පිළිගැනීමේ දැනුම්දීම</translation>
 <translation id="573413375004481890">මෙම උපාංගයට ඔබේ සංදර්ශක සියල්ලට සහය දැක්වීමට නොහැකි විය, එබැවින් එකක් විසන්ධි කර ඇත</translation>
 <translation id="574392208103952083">මධ්‍යම</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" සමග යතුරු කෙටිමං යෙදුම විවෘත කරන්න.</translation>
 <translation id="6507618042428827377">ලද හැකි මීළඟ ආදාන ක්‍රමයට මාරු වන්න</translation>
 <translation id="6508923215158854599">ඔබේ Chromebook ඔබේ Chromecast උපාංගයට සමාන Wi-Fi ජාලයක ඇති බව සහතික කර ගන්න.</translation>
+<translation id="6511607461419653612">ඔබේ Chromebook යළි අරඹා නැවත උත්සාහ කරන්න</translation>
 <translation id="6515727200518652613">කැමරාව නැති විය, නැවත සම්බන්ධ වීමට උත්සාහ කරමින්.</translation>
 <translation id="651753338596587143">සමාවන්න, DLC පරායත්ත ස්ථාපනය කිරීමේ දී යම් දෝෂයක් සිදු විය. නැවත පණගැන්වීමට උත්සාහ කරන්න සහ ගැටලුව දිගටම පවතින්නේ නම් විස්තරයේ #bruschetta සමග ප්‍රතිපෝෂණ ගොනු කරන්න. දෝෂ කේතය <ph name="ERROR" /> වේ.</translation>
 <translation id="6520517963145875092">ග්‍රහණය කිරීමට කවුළුවක් තෝරන්න</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> දැනුම්දීම බැලීමේ ආරක්ෂාව ක්‍රියාත්මක බැවින් සඟවා ඇත</translation>
 <translation id="6574622320167699133">ඔබගේ දුරකථනය මගින් අගුලු හරින ලදි. පිවිසීමට තට්ටු කරන්න හෝ ක්ලික් කරන්න.</translation>
 <translation id="6578407462441924264">නම් නොකළ</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% සම්පූර්ණයි</translation>
 <translation id="6582012689384648647">පෞද්ගලීකරණය කළ නාභිගත වාදන ලැයිස්තු සඳහා, YouTube Music වෙත ප්‍රවේශයට ඉඩ දෙන්න</translation>
 <translation id="6582034443359256692">බැටරි ආරෝපණ මට්ටම ගණනය කිරීම.</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />කින් සැසිය අවසන්වේ.</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">බලය</translation>
 <translation id="672609503628871915">අළුත් මොනවාදැයි බලන්න</translation>
 <translation id="6727969043791803658">සම්බන්ධිතයි, බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">මෙය මිනිත්තු කීපයක් ගතවිය හැක</translation>
 <translation id="6732087373923685049">කැමරාව</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">කැමරාව සහ මයික්‍රෆෝනය භාවිතා වේ</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Up යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළට ඊතලය ඔබන්න.</translation>
 <translation id="696267987219125751">කැමරා රාමු කිරීම ක්‍රියා විරහිතයි.</translation>
 <translation id="6965382102122355670">හරි</translation>
+<translation id="6967112302799758487">Chromebook (බීටා) සඳහා Steam භාවිතයෙන් ස්ථාපනය කර ඇති ඕනෑම යෙදුමක් සහ ක්‍රීඩාවක් මෙම උපාංගයෙන් ඉවත් කරනු ලැබේ. මෙම යෙදුම් සහ ක්‍රීඩා සමග ආශ්‍රිත දත්ත ද ඉවත් කරනු ලැබේ. අස්ථාපනය කිරීමට පෙර සුරකින ලද යෙදුම් සහ ක්‍රීඩා උපස්ථ කිරීමට වග බලා ගන්න.</translation>
 <translation id="6972629891077993081">HID උපාංග</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">ඇතුළත් කරන්න</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">ස්වයං කරකැවීම</translation>
 <translation id="7076293881109082629">පිවිසෙමින්</translation>
 <translation id="7076878155205969899">හඬ නිහඬ කරන්න</translation>
+<translation id="7083774521940805477">Chromebook (බීටා) සඳහා Steam ඔබේ Chromebook හි නොමැත.</translation>
 <translation id="7083848064787091821">අවධානය</translation>
 <translation id="7084678090004350185">හොට්ස්පොට් ටොගල් කරන්න. හොට්ස්පොට් ක්‍රියාත්මකයි, උපාංග <ph name="DEVICECOUNT" />ක් සම්බන්ධයි.</translation>
 <translation id="7086931198345821656">මෙම යාවත්කාලීනයට ඔබගේ <ph name="DEVICE_TYPE" /> බලසේදීමට අවශ්‍යයි. සියලු දත්ත මකනු ඇත. නවතම <ph name="SYSTEM_APP_NAME" /> යාවත්කාලීනය ගැන තව දැන ගන්න.</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">වැඩියෙන්ම ඉඩ ඇති</translation>
 <translation id="7131634465328662194">ඔබ ස්වයංක්‍රියව වරනය වනු ඇත.</translation>
 <translation id="7143207342074048698">සම්බන්ධ වෙමින්…</translation>
+<translation id="7143409552554575716">ChromeOS සලකුණු</translation>
 <translation id="7144878232160441200">නැවත උත්සහ කරන්න</translation>
 <translation id="7144942256906679589">බැටරි තත්ත්වය</translation>
 <translation id="7145639536026937076">බැටරිය <ph name="PERCENTAGE" />% වන අතර ආරෝපණය වේ. බැටරි සුරැකුම ක්‍රියාත්මකයි.</translation>
 <translation id="7147587499155271409">බ්‍රවුස් කිරීමේ ඉතිහාසයක් නැත</translation>
 <translation id="7147657298465433425">F යතුරු වෙත ප්‍රවේශ වීමට, fn යතුර + ඉහළ පේළි යතුරු ඔබන්න</translation>
 <translation id="7149149900052329230">ගොනු යෙදුම තුළ ඔබේ දේශීය ගොනු සහ ඔබේ Google Drive ගොනු කළමනාකරණය කරන්න.</translation>
+<translation id="7154020516215182599">ඔබගේ ප්‍රතිපෝෂණය බෙදා ගන්න හෝ ඔබගේ ගැටලුව විස්තර කරන්න. හැකි නම්, ඔබගේ ගැටලුව ප්‍රතිනිෂ්පාදනය කිරීමට පියවර ඇතුළත් කරන්න.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@
 <translation id="7726391492136714301">ඔබගේ දුරකථනයේ දැනුම්දීම් සහ යෙදුම් බලන්න</translation>
 <translation id="7727952505535211425">නව පටිත්තක ලිපින තීරුවේ වෙබ් අඩවිය විවෘත කරන්න</translation>
 <translation id="7728657226117099693">මහකුරු අගුල ක්‍රියාවිරහිත කරන්න</translation>
+<translation id="7732702411411810416">ඔබ අන්තර්ජාලයට සම්බන්ධ වී ඇති බවට වග බලා ගෙන නැවත උත්සාහ කරන්න</translation>
 <translation id="7742327441377685481">දැනුම්දීම් නැත</translation>
 <translation id="7748275671948949022">රාක්කයේ දියත්කරණ බොත්තම උද්දීපනය කරන්න</translation>
 <translation id="7749443890790263709">උපරිම මේස ගණන ළඟා විය.</translation>
@@ -2121,6 +2154,7 @@
 <translation id="7866482334467279021">ක්‍රියාත්මකයි</translation>
 <translation id="7870790288828963061">නව අනුවාදයක් සමග Kiosk යෙදුමක් සොයාගත නොහැකි විය. යාවත්කාලීන කිරීමට කිසිවක් නොමැත. කරුණාකර USB දණ්ඩ ඉවත් කරන්න.</translation>
 <translation id="7872786842639831132">ක්‍රියාවිරහිතයි</translation>
+<translation id="7873386145597434863">Chromebook සඳහා Steam</translation>
 <translation id="7875575368831396199">ඔබගේ <ph name="DEVICE_TYPE" /> හි බ්ලූටූත් ක්‍රියාවිරහිත කර ඇති බව පෙනේ. Phone Hub භාවිත කිරීමට කරුණාකර බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7884446017008693258">හොට්ස්පොට් සැකසීම්</translation>
 <translation id="7884902759927478774">පටිති ඇදගෙන යාම අවලංගු කරන්න</translation>
@@ -2470,6 +2504,7 @@
 <translation id="8980862970816311842">යෙදුම් නිරූපකයක් යෙදුම් ජාලකය තුළට සහ පිටතට ගෙන යන්න</translation>
 <translation id="8982906748181120328">ළඟ දෘශ්‍යතාව</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebook සඳහා Steam වෙත සාදරයෙන් පිළිගනිමු</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> භාවිත කිරීම</translation>
 <translation id="8991648557324317894">අවලංගු කිරීමට fn + ඉක්මන් ඇතුළත් කිරීම හෝ Shift ඔබන්න.</translation>
 <translation id="899350903320462459">ක්‍රියාකාරකම් දැනුම්දීම ඉටු කිරීමට, <ph name="LOGIN_ID" /> ලෙස උපාංගය අගුළු අරින්න</translation>
@@ -2486,6 +2521,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> සඳහ සැකසීම් විවෘත කරන්න</translation>
 <translation id="9050012935252397793">බ්ලූටූත් නොමැත</translation>
 <translation id="9050999376345823055">මුදා හැරීමට "." ඔබන්න.</translation>
+<translation id="9061694916020926968">Chromebook (බීටා) සඳහා Steam භාවිත කිරීමට ඔබ Google ගිණුමකට පුරනය වී සිටීමට අවශ්‍ය වේ. පුරනය වී නැවත උත්සාහ කරන්න.</translation>
 <translation id="906458777597946297">කවුළුව විහිදන්න</translation>
 <translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9068849894565669697">වර්ණය තෝරන්න</translation>

@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">青</translation>
 <translation id="1557622599341396706">デスク名を表示</translation>
 <translation id="1569384531973824928">カメラとマイクへのアクセス権を持つすべてのアプリとウェブサイトに対して、アクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
+<translation id="1570235441606255261">Steam インストーラ</translation>
 <translation id="1571697193564730395">サイレント モードを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">選択した左端のハンドル、矢印キーを使用して移動します</translation>
 <translation id="1576623706766186887">拡大鏡がオンのときにズームアウトします</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
+<translation id="1642895994345928121">デバイスのストレージが不足しているため、このアプリを起動できません。空き容量を増やしてからもう一度お試しください。</translation>
 <translation id="1647986356840967552">前のページ</translation>
 <translation id="1651914502370159744">[履歴] ページを開く</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">アプリとタブグループ</translation>
 <translation id="2386292613071805067">ページ上のすべてを選択する</translation>
 <translation id="2389423187722941333">Gemini を切り替える</translation>
+<translation id="2391805183137601570">Steam を開く</translation>
 <translation id="2392659840443812875">利用できるアクセス ポイントはありません。デバイスが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="2397416548179033562">Chrome メニューを表示</translation>
 <translation id="240006516586367791">メディア コントロール</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">昨日開いたファイル</translation>
 <translation id="2440978926514840421">GIF の録画が完了しました</translation>
 <translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
+<translation id="2447587550790814052">Steam for Chromebook（ベータ版）をご利用いただけるようになりました</translation>
 <translation id="2449089818483227734">バッテリー残量が少なくなっています</translation>
 <translation id="2450205753526923158">スクリーンショット モード</translation>
 <translation id="2453860139492968684">終了</translation>
 <translation id="2455994958736234930">アドレスバーに「www.」と「.com」を追加してからウェブサイトを開く</translation>
 <translation id="2456008742792828469">カレンダー、<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">ドリルダウン</translation>
+<translation id="2462332841984057083">Steam はすでに設定中です。セットアップが完了するまでお待ちください。</translation>
 <translation id="2465145153332031561">バッテリー ヘルス <ph name="BATTERY_HEALTH_PERCENTAGE" />%、サイクル数 <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">解像度の確定</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> を挿入</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> のプレビュー。使用中のデスクです。</translation>
 <translation id="2486405091093637109">「<ph name="DISPLAY_NAME" />」の解像度を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。確定しない場合、<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="2487915095798731898">参加</translation>
+<translation id="2494555621641843783">Steam をインストールできません</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2499445554382787206">デスクのプロファイル メニュー: <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">固定キー</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">返信</translation>
 <translation id="2727744317940422214">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。クリーンアップできませんでした。手動でのクリーンアップが必要な場合があります。</translation>
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
+<translation id="2737538893171115082">Steam for Chromebook（ベータ版）は管理者によってブロックされています。管理者が次のポリシーを有効にする必要があります。</translation>
 <translation id="2743301740238894839">開始</translation>
 <translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />、<ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> に移動</translation>
 <translation id="3039939407102840004">タッチペンのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="304097922505898963">キー ショートカット アプリを開く</translation>
+<translation id="3040982432432547149">Chromebook の Steam の改善にご協力ください</translation>
 <translation id="304417730895741346">シェルフには、固定したアプリまたは開いているアプリが表示されます。アプリをシェルフに固定するには、アプリを右クリックするか、2 本の指でタッチパッドをタップします。</translation>
 <translation id="3045670165536837541">選択した右上のハンドル、矢印キーを使用して移動します</translation>
 <translation id="3047761520276763270">次のように言ってみてください。</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">再起動には時間がかかる場合があります</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{1 台のデバイスと接続されています}other{# 台のデバイスと接続されています}}</translation>
 <translation id="3203405173652969239">スイッチ アクセスが有効になりました</translation>
+<translation id="3204648577100496185">このアプリに関連付けられているデータがこのデバイスから削除される可能性があります</translation>
 <translation id="3206735939915734551">CapsLock をオンまたはオフにする</translation>
 <translation id="3207953481422525583">ユーザー設定</translation>
 <translation id="3208321278970793882">アプリ</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">検索して挿入</translation>
 <translation id="3274634049061007184">スマートフォンのアプリを表示する</translation>
 <translation id="3279230909244266691">この処理には数分かかることがあります。仮想マシンを起動します。</translation>
+<translation id="3285465040399788513">デバイスのストレージが不足しているため、設定を完了できません。空き容量を増やしてから、もう一度お試しください。</translation>
 <translation id="3289364673986435196">電源ボタン メニュー</translation>
 <translation id="3289544412142055976">Linux アプリは現在サポートされていません</translation>
 <translation id="3289674678944039601">アダプター経由で充電しています</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">接続済み</translation>
 <translation id="3369111525500416043">期限間近</translation>
 <translation id="3371140690572404006">USB-C デバイス（右手前のポート）</translation>
+<translation id="3373196968211632036">Steam for Chromebook（ベータ版）は、お子様の Google アカウントではご利用いただけません</translation>
 <translation id="3375634426936648815">接続完了</translation>
 <translation id="3386978599540877378">全画面拡大鏡</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control+Shift+Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">シェルフは自動的に非表示になります</translation>
+<translation id="3496797737329654668">ゲームを始めましょう</translation>
 <translation id="3505066820268455558">バッテリー充電中</translation>
 <translation id="3509391053705095206">スマートフォンが見つかりません。スマートフォンの Bluetooth がオンであることを確認してください</translation>
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">クリップボードを開く</translation>
 <translation id="363473492175527493">集中するタスクを <ph name="TASK_NAME" /> に設定しました。タスクを編集するには Enter キーを押してください。</translation>
 <translation id="3638400994746983214">プライバシー スクリーンを切り替えます。<ph name="STATE_TEXT" />。</translation>
+<translation id="3641070112313110357">Chromebook 向け Steam（ベータ版）を更新する必要があります。Chromebook を再起動してもう一度お試しください。</translation>
 <translation id="3649256019230929621">ウィンドウを最小化</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />、
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">現在のデスクのウィンドウを表示しています、すべてのデスクのウィンドウを表示するには上矢印キーを押してください</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">エンターテイメント</translation>
+<translation id="370665806235115550">読み込んでいます...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> と <ph name="UNAVAILABLE_DLC_TWO" /> は使用できません。</translation>
 <translation id="3708186454126126312">以前に接続したデバイス</translation>
 <translation id="3712143870407382523">こちら側のウィンドウを選択</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">チュートリアル ビューを閉じる</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
 <translation id="384082539148746321">テンプレートを削除しますか？</translation>
+<translation id="3841282988425489367">Steam for Chromebook（ベータ版）を設定できません</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" /> キーを押してから、<ph name="KEY_ONE" />、<ph name="KEY_TWO" />、<ph name="KEY_THREE" />、<ph name="KEY_FOUR" /> のいずれかのキーを押す</translation>
 <translation id="3846575436967432996">利用可能なネットワーク情報がありません</translation>
 <translation id="3848526302597027234">次の権限へのアクセス:</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">次の単語の末尾に移動</translation>
 <translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4151054805501931758">ポートレート レタッチ</translation>
+<translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
 <translation id="4156293514828496577">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。
 バッテリー駆動時間を延ばすため、一部の機能が制限されています。</translation>
 <translation id="4158003972857765638">新しいデスクで整理する</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">または</translation>
 <translation id="4193857202545160520">クリックとキーを表示</translation>
 <translation id="4193969623755915875">「<ph name="NEW_SHORTCUT" />」で「使い方・ヒント」アプリの [ヘルプ] を開きます。</translation>
+<translation id="4195001808989442226">Steam for Chromebook（ベータ版）を開けません</translation>
 <translation id="4195579532193195633">現在のバージョン <ph name="VERSION_NAME" />（<ph name="OFFICIAL_STATUS" />）<ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4195877955194704651">自動クリックボタン</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />、インストール済みアプリ、一時停止中</translation>
 <translation id="4228078597006700451">コントロールが設定されていません</translation>
 <translation id="4230560241506423345">新規</translation>
+<translation id="4231231258999726714">Steam for Chromebook を設定しています</translation>
 <translation id="4236726631849783264">提案されたアクションに関する注意事項</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">複数画面モード</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{今すぐデバイスを更新してください}=1{1 秒以内にデバイスを更新してください}other{# 秒以内にデバイスを更新してください}}</translation>
 <translation id="4472575034687746823">始める</translation>
 <translation id="4473489370276014885">Google コンタクト</translation>
+<translation id="4473996011558324141">所要時間の目安</translation>
 <translation id="4477350412780666475">次の曲</translation>
 <translation id="4477751544736611934">データ料金が発生する場合があります。
 1 台のデバイスが接続されています。</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">不明な受信デバイスへのキャストを停止します</translation>
 <translation id="4596144739579517758">ダークモードはオフになっています</translation>
 <translation id="4596442969149038771"><ph name="USER" /> さんから共有されたファイル</translation>
+<translation id="4598556348158889687">ストレージ管理</translation>
 <translation id="4610493115106525653">結果に満足</translation>
 <translation id="4611292653554630842">ログイン</translation>
 <translation id="462160925400706389"><ph name="NAME" /> を接続しました</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">Ctrl+W キーを押して削除します</translation>
 <translation id="4635501805800894201">{0,plural, =0{今すぐデバイスを以前のバージョンに更新してください}=1{1 秒以内にデバイスを以前のバージョンに更新してください}other{# 秒以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
+<translation id="4642587497923912728">Steam for Chromebook（ベータ版）は、この Chromebook で最初にログインしたアカウントでのみご利用いただけます。</translation>
 <translation id="4644727592819780893">領域が小さすぎてカメラに合いません</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />、おすすめのアプリ</translation>
 <translation id="4649019912155580914">最終編集</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">ダークモードはオンになっています</translation>
 <translation id="5354804064646502504">データ料金が発生する場合があります。
 接続されているデバイスはありません。</translation>
+<translation id="5355498626146154079">「Borealis Enabled」フラグをオンにする必要があります</translation>
 <translation id="5356963482258194581">ダークモードとライトモードを切り替えます。デスクトップを右クリックして、[壁紙とスタイル] を選択します。</translation>
 <translation id="536019650977002321">管理者が音声キャプチャを許可していません。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> の音声ファイルを部分的にダウンロードしました</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
 <translation id="5378450298115733949">その他</translation>
 <translation id="5379115545237091094">試行回数が上限に達しました</translation>
+<translation id="5380526436444479273">数分待ってから、もう一度お試しください</translation>
 <translation id="5383434787520761436">Google ドライブのファイルはありません</translation>
 <translation id="5391307769715781764">保存済みのデスクを置き換えますか？</translation>
 <translation id="5392327145184648521">バッテリー残量（%）を計算しています...</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">タスクを完了としてマーク</translation>
 <translation id="5413656666631274079">設定ページ</translation>
 <translation id="5414198321558177633">プロファイル リストを更新しています。この処理には数分かかることがあります。</translation>
+<translation id="5415328625985164836">これはベータ版プログラムです。Chromebook で Steam を使用して、一部のゲームをプレイできるようになりました。</translation>
 <translation id="5426063383988017631">設定メニューは閉じています</translation>
 <translation id="5428899915242071344">選択を開始</translation>
 <translation id="5429993543155113935">シークレット ウィンドウは現在サポートされていません</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774"><ph name="PRODUCT_NAME" /> では、アプリを使用してさまざまな作業を行うことができます。アプリはランチャーに表示されます。</translation>
 <translation id="571295407079589142">モバイルデータ通信はオフです</translation>
 <translation id="5727460725221669831">パスワードを忘れた場合や Google アカウントのパスワードを最近変更した場合は、このユーザーを復元してみてください。</translation>
+<translation id="572914206753951782">Chromebook が最新バージョンであることを確認します。その後、Chromebook を再起動してもう一度お試しください。</translation>
 <translation id="5733630091161562207">ようこそ通知</translation>
 <translation id="573413375004481890">このデバイスでサポートできるディスプレイの上限数を超えたため、ディスプレイが 1 台切断されました</translation>
 <translation id="574392208103952083">中</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">「<ph name="NEW_SHORTCUT" />」でキー ショートカット アプリを開きます。</translation>
 <translation id="6507618042428827377">次の利用可能な入力方法に切り替える</translation>
 <translation id="6508923215158854599">Chromebook がお使いの Chromecast デバイスと同じ Wi-Fi ネットワークに接続されていることを確認します。</translation>
+<translation id="6511607461419653612">Chromebook を再起動してから、もう一度お試しください</translation>
 <translation id="6515727200518652613">カメラの接続が解除されました。再接続を試行しています。</translation>
 <translation id="651753338596587143">DLC の依存関係のインストール中にエラーが発生しました。再起動してみても問題が解決しない場合は、説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。</translation>
 <translation id="6520517963145875092">キャプチャするウィンドウを選択してください</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819">表示保護機能が有効になっているため、<ph name="APP_TITLE" /> の通知は表示されません</translation>
 <translation id="6574622320167699133">スマートフォンからロックを解除しました。タップまたはクリックで Chromebook を開きます。</translation>
 <translation id="6578407462441924264">名前なし</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% 完了しました</translation>
 <translation id="6582012689384648647">自分専用のフォーカス モード プレイリストを作成するには、YouTube Music へのアクセスを許可してください</translation>
 <translation id="6582034443359256692">バッテリー残量を計算しています。</translation>
 <translation id="6585808820553845416">セッション終了まであと <ph name="SESSION_TIME_REMAINING" />です。</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">電源</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
 <translation id="6727969043791803658">接続済み、<ph name="BATTERY_PERCENTAGE" />% のバッテリー残量</translation>
+<translation id="6731320427842222405">数分かかることがあります</translation>
 <translation id="6732087373923685049">カメラ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">カメラとマイクを使用中</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">キーボード ショートカット「Alt+上矢印」が変更されました。PageUp キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+上矢印キーを押してください。</translation>
 <translation id="696267987219125751">カメラのフレーミングはオフです。</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Steam for Chromebook（ベータ版）を使用してインストールしたアプリやゲームは、このデバイスから削除されます。これらのアプリやゲームに関連付けられているデータも削除されます。アンインストールする前に、保存したアプリやゲームを必ずバックアップしてください。</translation>
 <translation id="6972629891077993081">HID デバイス</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6980402667292348590">Insert</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">自動回転</translation>
 <translation id="7076293881109082629">ログイン中</translation>
 <translation id="7076878155205969899">音声をミュートする</translation>
+<translation id="7083774521940805477">Steam for Chromebook（ベータ版）は、この Chromebook ではご利用いただけません。</translation>
 <translation id="7083848064787091821">フォーカス モード</translation>
 <translation id="7084678090004350185">アクセス ポイントを切り替えます。アクセス ポイントはオンです。<ph name="DEVICECOUNT" /> 台のデバイスが接続されています。</translation>
 <translation id="7086931198345821656">このアップデートを適用するには、<ph name="DEVICE_TYPE" /> を Powerwash　する必要があります。データはすべて削除されます。<ph name="SYSTEM_APP_NAME" /> の最新アップデートの詳細をご確認ください。</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">これですか？</translation>
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
 <translation id="7143207342074048698">接続中</translation>
+<translation id="7143409552554575716">ChromeOS フラグ</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="7144942256906679589">バッテリーの状態</translation>
 <translation id="7145639536026937076">バッテリー残量が <ph name="PERCENTAGE" />% です（現在充電中）。バッテリー セーバーがオンになりました。</translation>
 <translation id="7147587499155271409">閲覧履歴がありません</translation>
 <translation id="7147657298465433425">F キーを使用する代わりに fn+最上段のキーを押してください</translation>
 <translation id="7149149900052329230">ファイルアプリでは、ローカルと Google ドライブのすべてのファイルを管理できます。</translation>
+<translation id="7154020516215182599">フィードバックまたは問題の内容を記入します。可能な場合は、問題の再現手順もお知らせください。</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />、
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@
 <translation id="7726391492136714301">スマートフォンの通知とアプリを表示します</translation>
 <translation id="7727952505535211425">新しいタブのアドレスバーでウェブサイトを開く</translation>
 <translation id="7728657226117099693">CapsLock をオフにする</translation>
+<translation id="7732702411411810416">インターネットに接続していることを確認してから、もう一度お試しください</translation>
 <translation id="7742327441377685481">通知なし</translation>
 <translation id="7748275671948949022">シェルフのランチャー ボタンをハイライト表示する</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
@@ -2122,6 +2155,7 @@
 <translation id="7866482334467279021">オン</translation>
 <translation id="7870790288828963061">新しいバージョンのキオスクアプリが見つかりませんでした。更新するものはありません。USB スティックを取り外してください。</translation>
 <translation id="7872786842639831132">オフ</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> で Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、Bluetooth をオンにしてください。</translation>
 <translation id="7884446017008693258">アクセス ポイント設定</translation>
 <translation id="7884902759927478774">タブのドラッグをキャンセルする</translation>
@@ -2470,6 +2504,7 @@
 <translation id="8980862970816311842">アプリグリッド内のフォルダにアプリアイコンを移動、または取り出します</translation>
 <translation id="8982906748181120328">周辺ユーザーによる検出</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebook 向け Steam へようこそ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> を使用しています</translation>
 <translation id="8991648557324317894">キャンセルするには、fn+クイック インサート キーまたは Shift キーを押してください。</translation>
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>
@@ -2486,6 +2521,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9050012935252397793">Bluetooth は使用できません</translation>
 <translation id="9050999376345823055">離すには「.」を押します</translation>
+<translation id="9061694916020926968">Steam for Chromebook（ベータ版）を使用するには、Google アカウントにログインする必要があります。ログインしてから、もう一度お試しください。</translation>
 <translation id="906458777597946297">ウィンドウを最大化</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9068849894565669697">色の選択</translation>

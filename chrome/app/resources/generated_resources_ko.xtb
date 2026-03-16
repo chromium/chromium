@@ -841,7 +841,6 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' 키는 이미 '<ph name="ACTION" />' 작업에 할당되었습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
 <translation id="1569466257325986920">다음에 Google 계정 비밀번호가 변경되면 Google 계정에 로그인한 후 로컬 데이터가 자동으로 복구됩니다</translation>
-<translation id="1570235441606255261">Steam 설치 프로그램</translation>
 <translation id="1570604804919108255">알림 숨기기 취소</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' 북마크 폴더가 생성되었습니다.</translation>
 <translation id="1571041387761170095">취약하거나 재사용된 비밀번호 없음</translation>
@@ -966,7 +965,6 @@
 <translation id="1642299742557467312">이 파일로 인해 기기가 손상될 수 있습니다.</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> 외 <ph name="NUMBER_OF_DEVICES" />개 블루투스 기기에 연결되었습니다</translation>
 <translation id="1642494467033190216">rootfs 보호를 삭제하고 다시 시작해야 다른 디버깅 기능을 사용 설정할 수 있습니다.</translation>
-<translation id="1642895994345928121">기기 저장용량이 부족하여 앱을 열 수 없습니다. 저장공간을 확보한 후 다시 시도하세요.</translation>
 <translation id="1643072738649235303">SHA-1을 포함한 X9.62 ECDSA 서명</translation>
 <translation id="1643921258693943800">Nearby Share를 사용하려면 Bluetooth 및 Wi-Fi를 사용 설정하세요</translation>
 <translation id="1644574205037202324">방문 기록</translation>
@@ -2080,7 +2078,6 @@
 <translation id="2390347491606624519">프록시에 연결할 수 없음: 다시 로그인해 주세요</translation>
 <translation id="2390782873446084770">Wi-Fi 동기화</translation>
 <translation id="2391419135980381625">표준 글꼴</translation>
-<translation id="2391805183137601570">Steam 열기</translation>
 <translation id="239185270194776190">Gemini 대화가 다른 창에 있습니다. 이 측면 패널의 아무 곳이나 클릭하여 여기로 Gemini를 이동시키세요.</translation>
 <translation id="2392369802118427583">활성화</translation>
 <translation id="2393136602862631930">Chromebook에 <ph name="APP_NAME" /> 설정</translation>
@@ -2162,7 +2159,6 @@
 <translation id="2445484935443597917">새 프로필 만들기</translation>
 <translation id="2445726032315793326">부분 돋보기</translation>
 <translation id="244641233057214044">검색 기록과 관련이 있음</translation>
-<translation id="2447587550790814052">이제 Chromebook용 Steam(베타)을 사용할 수 있습니다.</translation>
 <translation id="2448312741937722512">유형</translation>
 <translation id="2448810255793562605">스위치 제어 자동 스캔</translation>
 <translation id="2450021089947420533">탐색 여정</translation>
@@ -2189,7 +2185,6 @@
 <translation id="2460826998961521840">Google 계정에 저장된 패스키를 사용하려면</translation>
 <translation id="2461550163693930491">사이트에서 공유한 탭을 스크롤 및 확대/축소하도록 허용하지 않음</translation>
 <translation id="2461593638794842577">이 설정을 사용 중지하면 비밀번호를 이 기기에만 저장할 수 있습니다</translation>
-<translation id="2462332841984057083">이미 Steam을 설정하는 중입니다. 설정이 완료될 때까지 기다려 주세요.</translation>
 <translation id="2462724976360937186">인증 기관 키 ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> 추가됨</translation>
 <translation id="2464075479326723132">Microsoft SharePoint 및 OneDrive에서 최근 활동을 쉽게 확인할 수 있도록 추천 파일이 표시됩니다.
@@ -2244,7 +2239,6 @@
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> 음성 미리보기</translation>
 <translation id="2492461744635776704">인증서 로그인 요청 준비 중</translation>
 <translation id="249330843868392562">TTS(텍스트 음성 변환) 설정 열기</translation>
-<translation id="2494555621641843783">Steam을 설치할 수 없음</translation>
 <translation id="2496180316473517155">방문 기록</translation>
 <translation id="2496616243169085015">사진</translation>
 <translation id="2497229222757901769">마우스 속도</translation>
@@ -2600,7 +2594,6 @@
 <translation id="27349076983469322">밝은 배경</translation>
 <translation id="2735712963799620190">일정</translation>
 <translation id="2737363922397526254">접기...</translation>
-<translation id="2737538893171115082">관리자가 Chromebook용 Steam(베타)을 차단했습니다. 관리자가 다음 정책을 사용하도록 설정해야 합니다.</translation>
 <translation id="2737719817922589807">북마크 및 목록</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> 앱이 <ph name="TARGET_NAME" /> 사이트와 내 화면의 콘텐츠를 공유하려고 합니다.</translation>
 <translation id="2738030019664645674">사이트에서 기기에 설치된 글꼴을 사용할 수 없게 함</translation>
@@ -3063,7 +3056,6 @@
 <translation id="3039491566278747710">기기에 오프라인 정책을 설치하지 못했습니다.</translation>
 <translation id="303955801043931176">탭 닫음</translation>
 <translation id="3040435070100611531">내 Google 월렛 패스</translation>
-<translation id="3040982432432547149">Chromebook용 Steam 개선에 동참해 주세요</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" />님이 있는 탭 그룹에 참여</translation>
 <translation id="3042097545107738107">최적화된 충전 전략을 변경합니다.</translation>
 <translation id="3043016484125065343">북마크를 보려면 로그인하세요</translation>
@@ -3274,7 +3266,6 @@
 <translation id="3201422919974259695">사용 가능한 USB 기기가 여기에 표시됩니다.</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> 기기로의 화면 전송 일시중지</translation>
 <translation id="3202578601642193415">날짜순</translation>
-<translation id="3204648577100496185">앱과 관련된 데이터가 기기에서 삭제될 수 있습니다.</translation>
 <translation id="3206289903841621620">사용자 사전 <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">최근 활동을 바탕으로 내가 관심을 가질 만한 추천 검색어 및 쇼핑 할인이 표시됩니다.
         <ph name="BREAK" />
@@ -3382,7 +3373,6 @@
 <translation id="3283148363895519428">휴대전화의 안내에 따라 설정을 계속하세요. 휴대전화가 근처에 있고 블루투스가 켜져 있어야 합니다</translation>
 <translation id="3284050785966252943">자동 완성 메타데이터 미리보기</translation>
 <translation id="3285322247471302225">새 탭(&amp;T)</translation>
-<translation id="3285465040399788513">기기 저장용량이 부족하여 설정을 완료할 수 없습니다. 저장공간을 확보한 후 다시 시도해 주세요.</translation>
 <translation id="3285500645985761267">관련 사이트에서 내 그룹 활동을 볼 수 있도록 허용</translation>
 <translation id="328571385944182268">비밀번호를 저장하시겠습니까?</translation>
 <translation id="3289668031376215426">자동 대문자화</translation>
@@ -3505,7 +3495,6 @@
 <translation id="3372602033006349389">다른 기기에서</translation>
 <translation id="337286756654493126">애플리케이션에서 연 폴더 읽기</translation>
 <translation id="3373059063088819384">읽기 모드로 열기</translation>
-<translation id="3373196968211632036">자녀의 Google 계정에서는 Chromebook용 Steam(베타)을 사용할 수 없습니다.</translation>
 <translation id="3373701465337594448">이 설정을 사용하면 내 관심분야를 추측하는 내가 방문한 사이트 목록이 여기에 표시됩니다.</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' 항목을 '<ph name="NEW_FOLDER_TITLE" />' 색인으로 이동했습니다.</translation>
 <translation id="3376035595160918049">앱 업데이트 검토</translation>
@@ -3688,7 +3677,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" />(선택되지 않음)</translation>
 <translation id="3496689104192986836">배터리 잔량 <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">수집할 데이터 소스</translation>
-<translation id="3496797737329654668">게임을 즐겨 볼까요?</translation>
 <translation id="3496995426334945408">사이트에서는 일반적으로 비디오 게임 또는 웹 양식과 같은 대화형 기능을 실행하는 데 JavaScript를 사용합니다.</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />의 USB 기기(제품 <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">기념일 로고 공유</translation>
@@ -3901,7 +3889,6 @@
 <translation id="3637203148990213388">추가 계정</translation>
 <translation id="3640347231390550691">피싱 위험에서 비밀번호를 보호하세요</translation>
 <translation id="364100968401221170">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />하세요.</translation>
-<translation id="3641070112313110357">Chromebook용 Steam(베타)을 업데이트해야 합니다. Chromebook을 다시 시작한 후 다시 시도해 보세요.</translation>
 <translation id="3641299252000913351">모뎀 펌웨어 업데이트가 진행 중입니다. 기기를 끄지 마세요.</translation>
 <translation id="3641456520301071208">사이트에서 위치 정보를 요청할 수 있음</translation>
 <translation id="3642064270296434810">이제 Google 렌즈를 사용하여 화면에 보이는 모든 것을 검색할 수 있습니다.</translation>
@@ -4238,7 +4225,6 @@
 <translation id="383891835335927981">확대 또는 축소된 사이트가 없음</translation>
 <translation id="3839516600093027468"><ph name="HOST" />에서 클립보드를 볼 수 없도록 항상 차단</translation>
 <translation id="3840096463915153852">대화 기록</translation>
-<translation id="3841282988425489367">Chromebook용 Steam(베타)을 설정할 수 없음</translation>
 <translation id="3841319830220785495">기본 자연 음성</translation>
 <translation id="3841356782900714251">스마트 카드 리더기</translation>
 <translation id="3841964634449506551">잘못된 비밀번호입니다.</translation>
@@ -4684,7 +4670,6 @@
 <translation id="4148195018520464922">특정 사용자만 로그인할 수 있도록 제한할 수 있습니다. 이렇게 하면 로그인 화면에서 '사용자 추가' 옵션이 삭제됩니다. 현재 사용자를 삭제할 수도 있습니다.</translation>
 <translation id="4148957013307229264">설치 중...</translation>
 <translation id="4150201353443180367">디스플레이</translation>
-<translation id="4151449637210235443">최근 게임플레이에 관해 알려주세요.</translation>
 <translation id="4151503145138736576">정리할 오프라인 저장용량 없음</translation>
 <translation id="4152011295694446843">여기에서 북마크를 확인할 수 있습니다</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{탭 1개}other{탭 #개}}</translation>
@@ -4735,7 +4720,6 @@
 <translation id="4193251682249731404">신뢰할 수 있는 CA</translation>
 <translation id="4193575319002689239">카드 표시</translation>
 <translation id="419427585139779713">한 번에 한 음절 입력</translation>
-<translation id="4195001808989442226">Chromebook용 Steam(베타)을 열 수 없음</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
 <translation id="4195814663415092787">중단한 위치에서 계속하기</translation>
 <translation id="4198268995694216131">추가 사이트</translation>
@@ -4781,7 +4765,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 허용되지 않음}other{일부 확장 프로그램이 허용되지 않음}}</translation>
 <translation id="4231053948789591973">현재 전송이 일시중지되어 있습니다. 언제든지 화면 전송을 재개하거나 중지할 수 있습니다.</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Chromebook용 Steam 설정</translation>
 <translation id="4232375817808480934">Kerberos 설정</translation>
 <translation id="4232376164796433044">비밀번호 및 자동 완성</translation>
 <translation id="4232484478444192782">Android 스마트폰을 통해 Wi-Fi 및 비밀번호가 안전하게 전송되고 있습니다</translation>
@@ -5140,7 +5123,6 @@
 <translation id="4472533928615930332"><ph name="STYLE" /> 스타일로 생성된 <ph name="SUBJECT" />의 이미지 <ph name="INDEX" /></translation>
 <translation id="4472575034687746823">시작하기</translation>
 <translation id="4473559657152613417">탭을 마우스 오른쪽 버튼으로 클릭하고 '새 그룹에 탭 추가'를 선택합니다.</translation>
-<translation id="4473996011558324141">예상 소요 시간</translation>
 <translation id="4474155171896946103">모든 탭 북마크...</translation>
 <translation id="4476198534886170024">허용됨. <ph name="LINK_BEGIN" />시스템 카메라 액세스<ph name="LINK_END" />를 사용 설정하세요.</translation>
 <translation id="4476590490540813026">운동선수</translation>
@@ -5376,7 +5358,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4638930039313743000">ADB 디버깅 사용 설정</translation>
 <translation id="4639390152280993480">이 페이지를 간략하게 보려면 도구 더보기 &gt; 읽기 모드로 이동하세요.</translation>
 <translation id="4641539339823703554">Chrome에서 시스템 시간을 설정할 수 없습니다. 아래에서 시간을 확인한 다음 필요한 경우 수정해 주세요.</translation>
-<translation id="4642587497923912728">Chromebook용 Steam(베타)은 이 Chromebook에서 처음 로그인한 계정에서만 사용할 수 있습니다.</translation>
 <translation id="4643612240819915418">새 탭에서 동영상 열기(&amp;O)</translation>
 <translation id="4643833688073835173">Chromebook에 내장된 센서를 사용하여 기기 앞에 사람이 있는지 감지합니다. 모든 데이터는 기기에서 즉시 처리된 후 삭제됩니다. 센서 데이터는 Google로 전송되지 않습니다.</translation>
 <translation id="4644205769234414680">시크릿 모드에서 허용</translation>
@@ -6381,7 +6362,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5353769147530541973">비활성화하려면 탭 목록에서 <ph name="SITE_NAME" />을(를) 삭제하세요.</translation>
 <translation id="5355099869024327351">어시스턴트에서 알림을 표시할 수 있도록 허용</translation>
 <translation id="5355191726083956201">향상된 보호 모드를 사용 중입니다.</translation>
-<translation id="5355498626146154079">'Borealis Enabled' 플래그를 사용 설정해야 합니다.</translation>
 <translation id="5355501370336370394">회사 기기 등록</translation>
 <translation id="5357010010552553606">전체 화면으로 자동 전환하도록 허용되지 않음</translation>
 <translation id="5359910752122114278">검색결과 1개</translation>
@@ -6411,7 +6391,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5376931455988532197">파일이 너무 큼</translation>
 <translation id="5377367976106153749">카메라 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="5379140238605961210">마이크 액세스 계속 차단</translation>
-<translation id="5380526436444479273">잠시 기다렸다가 다시 시도해 보세요.</translation>
 <translation id="5382591305415226340">지원되는 링크 관리</translation>
 <translation id="5384401776498845256">나와 공유할 수 있는 대상</translation>
 <translation id="5385628342687007304">비밀번호는 이 기기에만 저장됩니다. 다른 기기에서도 이 비밀번호를 사용하려면 Google 계정에 저장하세요.</translation>
@@ -6466,7 +6445,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5414198321558177633">프로필 목록을 새로고침하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5414566801737831689">방문하는 웹사이트의 아이콘 조회</translation>
 <translation id="5414836363063783498">인증 중...</translation>
-<translation id="5415328625985164836">이 프로그램은 베타 버전입니다. 이제 Chromebook에서 Steam을 사용하여 게임을 즐길 수 있습니다.</translation>
 <translation id="5415497281076257439">구문</translation>
 <translation id="5415871492522952905">모든 기기에 방문 기록과 탭이 유지되므로 이전에 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="5417293056300086453">이 사이트에서 식별자를 사용하여 보호된 콘텐츠를 재생할 수 있습니다.</translation>
@@ -6907,7 +6885,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5727728807527375859">확장 프로그램, 애플리케이션, 테마로 인해 컴퓨터가 손상될 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="5728072125198221967">연결된 Google 서비스</translation>
 <translation id="5728450728039149624">Smart Lock 화면 잠금 옵션</translation>
-<translation id="572914206753951782">Chromebook이 최신 버전인지 확인하세요. 그런 다음 Chromebook을 다시 시작한 후 다시 시도해 보세요.</translation>
 <translation id="5729712731028706266">보기(&amp;V)</translation>
 <translation id="5731247495086897348">붙여넣어 바로가기(&amp;S)</translation>
 <translation id="5733109311583381874">변환 후보를 맞춤설정하려면 나만의 단어를 사용자 사전에 추가하세요</translation>
@@ -8022,7 +7999,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />"에서 기기에 다음 앱을 설치하려고 합니다.}other{"<ph name="APP_NAME" />"에서 기기에 다음 앱을 설치하려고 합니다.}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> 관련</translation>
 <translation id="6508261954199872201">애플리케이션:<ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Chromebook을 다시 시작한 후 다시 시도해 보세요.</translation>
 <translation id="6511827214781912955">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제해 보세요.</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> 분위기로 생성된 <ph name="SUBJECT" />의 이미지 <ph name="INDEX" /></translation>
 <translation id="6513247462497316522">다른 네트워크에 연결되어 있지 않을 경우 Chrome은 모바일 데이터를 사용합니다.</translation>
@@ -8131,7 +8107,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="657866106756413002">네트워크 상태 스냅샷</translation>
 <translation id="6579369886355986318">모든 제어 기능 표시(&amp;C)</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - 데스크톱 콘텐츠 공유됨</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% 완료됨</translation>
 <translation id="6580203076670148210">검색 속도</translation>
 <translation id="6580676117087365538">모든 컴퓨터에서 이 확장 프로그램을 사용하려면 본인 인증을 진행하세요.</translation>
 <translation id="6581356304040102696">비밀번호를 가져올 수 없습니다. 파일 크기는 1MB 미만이어야 합니다.</translation>
@@ -8350,7 +8325,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6729280095610283088">숲 위로 오로라의 빛줄기가 빛납니다.</translation>
 <translation id="6729493062119577923">공유 탭 그룹 활동</translation>
 <translation id="6730744976532805323">탭을 전환해도 현재 탭이 Gemini와 계속 공유됩니다.</translation>
-<translation id="6731320427842222405">몇 분이 걸릴 수 있습니다.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />(ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">주소</translation>
 <translation id="6737663862851963468">Kerberos 티켓 삭제</translation>
@@ -8700,7 +8674,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6965648386495488594">포트</translation>
 <translation id="6965978654500191972">기기</translation>
 <translation id="6966831944134814478">사용 중지</translation>
-<translation id="6967112302799758487">Chromebook용 Steam(베타)을 사용하여 설치한 모든 앱과 게임이 이 기기에서 삭제됩니다. 이러한 앱 및 게임과 관련된 데이터도 삭제됩니다. 설치를 제거하기 전에 저장된 앱과 게임을 백업하세요.</translation>
 <translation id="6967430741871315905">기기 허용 여부를 확인할 수 없습니다.</translation>
 <translation id="6968288415730398122">비밀번호를 입력하여 화면 잠금을 설정하세요.</translation>
 <translation id="6969047215179982698">Nearby Share 사용 중지</translation>
@@ -8872,7 +8845,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 네트워크는 관리자가 관리함</translation>
 <translation id="7082850163410901674">Mac 시스템 설정에서 알림이 사용 중지되어 있습니다</translation>
 <translation id="7083729794572207131">사이트에서는 일반적으로 사이트 환경을 개선하기 위해 웹 앱 설치를 요청합니다</translation>
-<translation id="7083774521940805477">이 Chromebook에서는 Chromebook용 Steam(베타)을 사용할 수 없습니다.</translation>
 <translation id="7084095352418993433">Google에 이 페이지 알아보기 요청: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(설정되지 않음)</translation>
 <translation id="7086377898680121060">밝게</translation>
@@ -8951,7 +8923,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7141844554192012199">진단</translation>
 <translation id="714301620504747562">탐색과 검색이 표준 미리 로드보다 빠릅니다.</translation>
 <translation id="7143207342074048698">연결 중</translation>
-<translation id="7143409552554575716">ChromeOS 플래그</translation>
 <translation id="7144363643182336710">화면에 알림이 표시되지 않습니다. 화면 오른쪽 하단의 방해 금지 모드 아이콘을 클릭하여 알림을 계속 확인할 수 있습니다.</translation>
 <translation id="7144856456372460176"><ph name="APP" /> 설치(&amp;I)…</translation>
 <translation id="7144878232160441200">다시 시도</translation>
@@ -8962,7 +8933,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
 <translation id="7153101072880472645">고대비 켜기/끄기</translation>
 <translation id="715396040729904728">런처 + Shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">의견을 공유하거나 문제를 설명해 주세요. 가능하면 문제를 재현하는 방법도 알려주세요.</translation>
 <translation id="7154130902455071009">다음으로 시작 페이지 변경: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">우수한 화질의 동영상을 감상하고 배터리를 더 오래 사용하세요. 동영상은 Cast 지원 화면에서만 재생됩니다.</translation>
 <translation id="7159695867335480590">재생/일시중지</translation>
@@ -9813,7 +9783,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7728668285692163452">채널 변경 추후 적용</translation>
 <translation id="7730449930968088409">화면의 콘텐츠 캡쳐</translation>
 <translation id="7730683939467795481">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 이 페이지를 변경했습니다.</translation>
-<translation id="7732702411411810416">인터넷에 연결되어 있는지 확인한 후 다시 시도하세요.</translation>
 <translation id="773511996612364297">악센트 기호</translation>
 <translation id="7735558909644181051">중간 인증서</translation>
 <translation id="7736119438443237821">이 기기의 패스키 액세스 권한을 삭제하려고 합니다</translation>
@@ -10012,7 +9981,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7871691770940645922">가상 점자 디스플레이</translation>
 <translation id="787268756490971083">사용 안함</translation>
 <translation id="7872758299142009420">중첩된 그룹이 너무 많음: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">바로가기를 수정할 수 없음</translation>
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7877126887274043657">동기화 문제 해결(&amp;S)</translation>
@@ -11669,7 +11637,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8983018820925880511">이 새 프로필은 <ph name="DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />에서 <ph name="FILENAME" />을(를) 수정할 수 있습니다.</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" />분 동안 모든 사용자에게 공개됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook용 Steam 시작하기</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
 <translation id="8985561265504464578">감지 기준</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요</translation>
@@ -11801,7 +11768,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{하루에 알림 약 1개}other{하루에 알림 약 {NUM_NOTIFICATION}개}}</translation>
 <translation id="9058760336383947367">프린터 PPD 보기</translation>
 <translation id="9061521313218438086">공개 정보 유출로 인해 노출된 비밀번호를 Chrome에서 발견하는 경우, Google 비밀번호 관리자는 사용자가 로그인 시 비밀번호를 변경할 수 있도록 제안합니다.</translation>
-<translation id="9061694916020926968">Chromebook용 Steam(베타)을 사용하려면 Google 계정에 로그인해야 합니다. 로그인한 후 다시 시도해 보세요.</translation>
 <translation id="9062468308252555888">14배</translation>
 <translation id="9062873887761404531">탐색 단축키 삭제</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />행부터 <ph name="ERROR_LINE_END" />행까지에 오류가 있음</translation>

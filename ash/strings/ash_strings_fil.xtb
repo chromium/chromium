@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Asul</translation>
 <translation id="1557622599341396706">Ipakita ang pangalan ng desk</translation>
 <translation id="1569384531973824928">Pinapayagan nito ang access para sa lahat ng app at website na may mga pahintulot sa camera at mikropono. Posibleng kailanganin mong i-refresh ang web page o i-restart ang app.</translation>
+<translation id="1570235441606255261">Installer ng Steam</translation>
 <translation id="1571697193564730395">I-toggle ang Huwag Istorbohin. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Napiling handle sa kaliwang gilid, gamitin ang mga arrow key para ilipat ito</translation>
 <translation id="1576623706766186887">Mag-zoom out kapag naka-on ang magnifier</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
+<translation id="1642895994345928121">Walang sapat na storage ang device para mabuksan ang app na ito. Magbakante ng space at subukan ulit.</translation>
 <translation id="1647986356840967552">Nakaraang page</translation>
 <translation id="1651914502370159744">Buksan ang page ng History</translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Mga grupo ng app at tab</translation>
 <translation id="2386292613071805067">I-highlight ang lahat sa page</translation>
 <translation id="2389423187722941333">I-toggle ang Gemini</translation>
+<translation id="2391805183137601570">Buksan ang Steam</translation>
 <translation id="2392659840443812875">Walang available na hotspot. Tiyaking nasa malapit ang iyong device at naka-on ang Bluetooth.</translation>
 <translation id="2397416548179033562">Ipakita ang menu ng Chrome</translation>
 <translation id="240006516586367791">Mga kontrol ng media</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Binuksan kahapon</translation>
 <translation id="2440978926514840421">Nag-record ng GIF</translation>
 <translation id="2441427462554639370">Natapos ang pag-record dahil sa sobrang kaunting storage space</translation>
+<translation id="2447587550790814052">Magagamit mo na ngayon ang Steam para sa Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Mahinang Baterya</translation>
 <translation id="2450205753526923158">Screenshot mode</translation>
 <translation id="2453860139492968684">Tapos na</translation>
 <translation id="2455994958736234930">Magdagdag ng www. at .com sa address bar, pagkatapos ay buksan ang website</translation>
 <translation id="2456008742792828469">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">I-drill down</translation>
+<translation id="2462332841984057083">Sine-set up na ang Steam. Hintaying matapos ang pag-set up.</translation>
 <translation id="2465145153332031561">Tagal ng baterya <ph name="BATTERY_HEALTH_PERCENTAGE" />%, bilang ng cycle <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Kumpirmahin ang Resolution</translation>
 <translation id="2475783092753560388">Ilagay ang <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Preview ng <ph name="DESK_NAME" />. Aktibong desk.</translation>
 <translation id="2486405091093637109">Pinalitan ang "<ph name="DISPLAY_NAME" />" at ginawang <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) na resolution. Kung hindi kukumpirmahin, mare-restore ang mga nakaraang setting sa loob ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Sumali</translation>
+<translation id="2494555621641843783">Hindi ma-install ang Steam</translation>
 <translation id="2496180316473517155">History ng Pag-browse</translation>
 <translation id="2499445554382787206">Menu ng profile sa desk. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Mga sticky key</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Sumagot</translation>
 <translation id="2727744317940422214">Pasensya na, nagkaproblema. Mag-file ng feedback nang may #bruschetta sa paglalarawan. Ang code ng error ay <ph name="ERROR" />. Hindi nilinis, posibleng kailanganin mong gawin ito nang manual.</translation>
 <translation id="2727977024730340865">Naka-saksak sa isang low-power charger. Maaaring hindi maging tiyak ang pag-charge ng baterya.</translation>
+<translation id="2737538893171115082">Na-block ng iyong administrator ang Steam para sa Chromebook (Beta). Kailangang i-on ng iyong administrator ang mga patakarang ito:</translation>
 <translation id="2743301740238894839">Simulan</translation>
 <translation id="2743387203779672305">Kopyahin sa clipboard</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3033912566804961911">Isama sa <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Nasa <ph name="PERCENTAGE" /> (na) porsyento ang baterya ng stylus.</translation>
 <translation id="304097922505898963">Buksan ang Key Shortcuts app</translation>
+<translation id="3040982432432547149">Tulungan kaming pahusayin ang Steam para sa Chromebook</translation>
 <translation id="304417730895741346">Nasa shelf ang iyong mga naka-pin at nakabukas na app. Para mag-pin ng app sa shelf, mag-right click sa isang app o i-tap ang iyong touchpad gamit ang dalawang daliri.</translation>
 <translation id="3045670165536837541">Napiling handle sa kanang bahagi sa itaas, gamitin ang mga arrow key para ilipat ito</translation>
 <translation id="3047761520276763270">Subukang sabihin ang:</translation>
@@ -656,6 +664,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3181441307743005334">Posibleng magtagal nang ilang sandali ang pag-restart</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Nakakonekta sa isang device}one{Nakakonekta sa # device}other{Nakakonekta sa # na device}}</translation>
 <translation id="3203405173652969239">Naka-enable ang Switch Access</translation>
+<translation id="3204648577100496185">Posibleng alisin sa device na ito ang data na nauugnay sa app na ito</translation>
 <translation id="3206735939915734551">I-on/i-off ang Caps Lock</translation>
 <translation id="3207953481422525583">Mga Setting ng User</translation>
 <translation id="3208321278970793882">App</translation>
@@ -677,6 +686,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3271554781793662131">Maghanap para ilagay</translation>
 <translation id="3274634049061007184">Tingnan ang mga app ng iyong telepono</translation>
 <translation id="3279230909244266691">Maaaring abutin nang ilang minuto ang prosesong ito. Sinisimulan ang virtual machine.</translation>
+<translation id="3285465040399788513">Hindi sapat ang storage ng device para makumpleto ang pag-set up. Magbakante ng espasyo at subukan ulit.</translation>
 <translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Kasalukuyang hindi sinusuportahan ang mga Linux app.</translation>
 <translation id="3289674678944039601">Nagcha-charge sa pamamagitan ng adapter</translation>
@@ -702,6 +712,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3368922792935385530">Nakakonekta</translation>
 <translation id="3369111525500416043">Malapit nang ipasa</translation>
 <translation id="3371140690572404006">USB-C device (port sa kanang bahagi sa harap)</translation>
+<translation id="3373196968211632036">Hindi available ang Steam para sa Chromebook (Beta) para sa mga child na Google Account</translation>
 <translation id="3375634426936648815">Nakakonekta</translation>
 <translation id="3386978599540877378">ang full-screen magnifier</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Awtomatikong itinago ang shelf</translation>
+<translation id="3496797737329654668">Maglaro na tayo</translation>
 <translation id="3505066820268455558">Nagcha-charge ang Baterya</translation>
 <translation id="3509391053705095206">Hindi makita ang iyong telepono. Tiyaking naka-on ang Bluetooth ng iyong telepono.</translation>
 <translation id="3510164367642747937">I-highlight ang cursor ng mouse</translation>
@@ -800,6 +812,7 @@ Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng <ph na
 <translation id="3633851487917460983">Buksan ang Clipboard</translation>
 <translation id="363473492175527493">Gawain kung saan nakatakdang mag-focus: <ph name="TASK_NAME" />. Pindutin ang enter para i-edit ang gawain.</translation>
 <translation id="3638400994746983214">I-toggle ang privacy screen. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Kailangang i-update ang Steam para sa Chromebook (Beta). I-restart ang iyong Chromebook at subukan ulit.</translation>
 <translation id="3649256019230929621">I-minimize ang window</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3702809606464356667">Ipinapakita ang mga window mula sa kasalukuyang desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa lahat ng desk</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Entertainment</translation>
+<translation id="370665806235115550">Naglo-load...</translation>
 <translation id="3707093869106077605">Hindi available ang <ph name="UNAVAILABLE_DLC_ONE" /> at <ph name="UNAVAILABLE_DLC_TWO" />.</translation>
 <translation id="3708186454126126312">Dating nakakonekta</translation>
 <translation id="3712143870407382523">Pumili ng window para sa bahaging ito</translation>
@@ -860,6 +874,7 @@ Isaksak ang iyong device.</translation>
 <translation id="3831226344927851293">Lumabas sa view ng tutorial</translation>
 <translation id="383629559565718788">Ipakita ang mga setting ng keyboard</translation>
 <translation id="384082539148746321">I-delete ang template?</translation>
+<translation id="3841282988425489367">Hindi ma-set up ang Steam para sa Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> pagkatapos ay <ph name="KEY_ONE" /> o <ph name="KEY_TWO" /> o <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Walang available na impormasyon sa network</translation>
 <translation id="3848526302597027234">I-access ang mga sumusunod na pahintulot:</translation>
@@ -951,6 +966,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4146671046252289537">Pumunta sa dulo ng susunod na salita</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4151054805501931758">Pag-touch up ng portrait</translation>
+<translation id="4151449637210235443">Sabihin sa amin ang tungkol sa iyong kamakailang gameplay</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% na lang ang baterya (humigit-kumulang <ph name="TIME_LEFT" />).
 Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4158003972857765638">Ayusin sa isang bagong desk</translation>
@@ -968,6 +984,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4192112279662688596">O</translation>
 <translation id="4193857202545160520">Ipakita ang mga click at key</translation>
 <translation id="4193969623755915875">Buksan ang "Tulong" sa Explore app gamit ang "<ph name="NEW_SHORTCUT" />."</translation>
+<translation id="4195001808989442226">Hindi mabuksan ang Steam para sa Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Kasalukuyang bersyon <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Magpatuloy kung saan ka tumigil</translation>
 <translation id="4195877955194704651">Button ng mga awtomatikong pag-click</translation>
@@ -983,6 +1000,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Naka-install na App, Naka-pause</translation>
 <translation id="4228078597006700451">Hindi naka-set up ang mga kontrol</translation>
 <translation id="4230560241506423345">Bago</translation>
+<translation id="4231231258999726714">Sine-set up ang Steam para sa Chromebook</translation>
 <translation id="4236726631849783264">Isang paalala tungkol sa mga suggested action</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
@@ -1067,6 +1085,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4471432286288241507">{0,plural, =0{I-update ang device ngayon}=1{I-update ang device sa loob ng 1 segundo}one{I-update ang device sa loob ng # segundo}other{I-update ang device sa loob ng # na segundo}}</translation>
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">tinatantya ang oras</translation>
 <translation id="4477350412780666475">Susunod na Track</translation>
 <translation id="4477751544736611934">Posibleng gumastos sa data.
 1 device ang nakakonekta.</translation>
@@ -1108,6 +1127,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4585337515783392668">Ihinto ang pag-cast sa isang hindi pa natutukoy na tagatanggap</translation>
 <translation id="4596144739579517758">Naka-off ang Madilim na tema</translation>
 <translation id="4596442969149038771">Na-share ni <ph name="USER" /></translation>
+<translation id="4598556348158889687">Pamamahala sa storage</translation>
 <translation id="4610493115106525653">Magandang output</translation>
 <translation id="4611292653554630842">Mag-log in</translation>
 <translation id="462160925400706389">Nakonekta ang <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4633636853437260449">Pindutin ang Ctrl+W para i-delete</translation>
 <translation id="4635501805800894201">{0,plural, =0{I-update sa nakaraang bersyon ang device ngayon}=1{I-update sa nakaraang bersyon ang device sa loob ng 1 segundo}one{I-update sa nakaraang bersyon ang device sa loob ng # segundo}other{I-update sa nakaraang bersyon ang device sa loob ng # na segundo}}</translation>
 <translation id="4642092649622328492">Kumuha ng screenshot ng bahagi ng screen</translation>
+<translation id="4642587497923912728">Available lang ang Steam para sa Chromebook (Beta) para sa account na unang nag-sign in sa Chromebook na ito.</translation>
 <translation id="4644727592819780893">Masyadong maliit ang rehiyon para ipakita ang preview ng camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Rekomendasyon sa app</translation>
 <translation id="4649019912155580914">Na-edit mo</translation>
@@ -1350,6 +1371,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5352250171825660495">Naka-on ang Madilim na tema</translation>
 <translation id="5354804064646502504">Posibleng gumastos sa data.
 Walang nakakonektang device.</translation>
+<translation id="5355498626146154079">Kailangan mong i-on ang flag na “Borealis Enabled”</translation>
 <translation id="5356963482258194581">Magpalipat-lipat sa madilim at maliwanag na tema. Mag-right click sa desktop at piliin ang Wallpaper at style.</translation>
 <translation id="536019650977002321">Hindi pinapayagan ng iyong administrator ang pag-capture ng audio. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5361524080961918551">Bahagyang na-download ang mga file ng <ph name="LANGUAGE" /> na speech</translation>
@@ -1360,6 +1382,7 @@ Walang nakakonektang device.</translation>
 <translation id="5377367976106153749">I-on ang access sa camera?</translation>
 <translation id="5378450298115733949">Higit pa</translation>
 <translation id="5379115545237091094">Masyadong maraming pagtatangka</translation>
+<translation id="5380526436444479273">Maghintay nang ilang minuto at subukan ulit</translation>
 <translation id="5383434787520761436">Walang file sa Google Drive</translation>
 <translation id="5391307769715781764">Palitan ang naka-save na desk?</translation>
 <translation id="5392327145184648521">Kinakalkula ang % ng baterya...</translation>
@@ -1371,6 +1394,7 @@ Walang nakakonektang device.</translation>
 <translation id="5409208741270395213">Markahan ang gawain bilang nakumpleto na</translation>
 <translation id="5413656666631274079">Page na Mga Setting</translation>
 <translation id="5414198321558177633">Nire-refresh ang listahan ng profile. Puwede itong tumagal nang ilang minuto.</translation>
+<translation id="5415328625985164836">Isa itong beta program. Magagamit mo na ngayon ang Steam para sa ilang laro sa iyong Chromebook.</translation>
 <translation id="5426063383988017631">Isinara ang menu ng Mga Setting</translation>
 <translation id="5428899915242071344">Simulang pumili</translation>
 <translation id="5429993543155113935">Kasalukuyang hindi sinusuportahan ang mga Incognito window</translation>
@@ -1466,6 +1490,7 @@ Walang nakakonektang device.</translation>
 <translation id="5712132663381964774">Gumamit ng mga app para gawin ang lahat ng kailangan mong gawin sa iyong <ph name="PRODUCT_NAME" />. Makikita mo ang iyong mga app sa Launcher.</translation>
 <translation id="571295407079589142">Naka-off ang mobile data</translation>
 <translation id="5727460725221669831">Kung nakalimutan mo ang iyong password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
+<translation id="572914206753951782">Tiyaking nasa pinakabagong bersyon ang iyong Chromebook. Pagkatapos, i-restart ang iyong Chromebook at subukan ulit.</translation>
 <translation id="5733630091161562207">Notification ng pagbati</translation>
 <translation id="573413375004481890">Hindi masuportahan ng device na ito ang lahat ng iyong display kaya may isang nadiskonekta</translation>
 <translation id="574392208103952083">Katamtaman</translation>
@@ -1713,6 +1738,7 @@ Walang nakakonektang device.</translation>
 <translation id="6507042703812908515">Buksan ang Key Shortcuts app gamit ang "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Lumipat sa susunod na available na pamamaraan ng pag-input</translation>
 <translation id="6508923215158854599">Tiyaking ang iyong Chromebook ay nasa parehong Wi-Fi network tulad ng Chromecast device mo.</translation>
+<translation id="6511607461419653612">I-restart ang iyong Chromebook at subukan ulit</translation>
 <translation id="6515727200518652613">Nawala ang camera, sinusubukang kumonekta ulit.</translation>
 <translation id="651753338596587143">Paumanhin, nagkaproblema sa pag-install ng mga dependency ng DLC. Pakisubukan ang pag-reboot at kung may isyu pa rin, magbigay ng feedback na may #bruschetta sa paglalarawan. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Pumili ng window na ika-capture</translation>
@@ -1738,6 +1764,7 @@ Kaka-install lang</translation>
 <translation id="6574587113394758819">Nakatago ang notification sa <ph name="APP_TITLE" /> dahil naka-on ang proteksyon sa pagtingin</translation>
 <translation id="6574622320167699133">Na-unlock ng iyong telepono. Mag-tap o mag-click para pumasok.</translation>
 <translation id="6578407462441924264">Walang Pangalan</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% na ang natapos</translation>
 <translation id="6582012689384648647">Para sa mga naka-personalize na playlist para sa pag-focus, payagan ang pag-access sa YouTube Music</translation>
 <translation id="6582034443359256692">Kinakalkula ang level ng charge ng baterya.</translation>
 <translation id="6585808820553845416">Matatapos ang session pagkalipas ng <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Kaka-install lang</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="672609503628871915">Tingnan kung ano'ng bago</translation>
 <translation id="6727969043791803658">Nakakonekta, <ph name="BATTERY_PERCENTAGE" />% ang baterya</translation>
+<translation id="6731320427842222405">Maaari itong tumagal nang ilang minuto</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Ginagamit ang camera at mikropono</translation>
@@ -1858,6 +1886,7 @@ Kaka-install lang</translation>
 <translation id="6961840794482373852">Nagbago ang keyboard shortcut na Alt + Pataas na Arrow. Para magamit ang Page Up key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pataas na Arrow.</translation>
 <translation id="696267987219125751">Naka-off ang camera framing.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Aalisin sa device na ito ang anumang app at larong na-install gamit ang Steam para sa Chromebook (Beta). Aalisin din ang data na nauugnay sa mga app at larong ito. Tiyaking mag-back up ng mga naka-save na app at laro bago mag-uninstall.</translation>
 <translation id="6972629891077993081">Mga HID device</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1889,6 +1918,7 @@ Kaka-install lang</translation>
 <translation id="7067196344162293536">Awtomatikong pag-rotate</translation>
 <translation id="7076293881109082629">Nagsa-sign in</translation>
 <translation id="7076878155205969899">I-mute ang tunog</translation>
+<translation id="7083774521940805477">Hindi available sa iyong Chromebook ang Steam para sa Chromebook (beta).</translation>
 <translation id="7083848064787091821">Pag-focus</translation>
 <translation id="7084678090004350185">I-toggle ang hotspot. Naka-on ang hotspot, <ph name="DEVICECOUNT" /> (na) device ang nakakonekta.</translation>
 <translation id="7086931198345821656">Kailangan sa update na ito na i-powerwash ang iyong <ph name="DEVICE_TYPE" />. Ide-delete ang lahat ng data. Matuto pa tungkol sa pinakabagong update sa <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Kaka-install lang</translation>
 <translation id="7130207228079676353">PINAKAMALAMANG</translation>
 <translation id="7131634465328662194">Awtomatiko kang masa-sign out.</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
+<translation id="7143409552554575716">Mga flag ng ChromeOS</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="7144942256906679589">Status ng baterya</translation>
 <translation id="7145639536026937076">Nasa <ph name="PERCENTAGE" />% ang baterya at nagcha-charge ito. Naka-on ang Pantipid ng Baterya.</translation>
 <translation id="7147587499155271409">Walang history ng pag-browse</translation>
 <translation id="7147657298465433425">Para i-access ang mga F key, pindutin ang fn key + mga key sa itaas na row</translation>
 <translation id="7149149900052329230">Pamahalaan ang mga lokal na file mo at iyong file sa Google Drive, lahat sa app na Mga File.</translation>
+<translation id="7154020516215182599">Ibahagi ang iyong feedback o ilarawan ang isyu mo. Kung posible, magsama ng mga hakbang para gawan ng kopya ang iyong isyu.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />, <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Magre-revert sa lumang resolution sa loob ng <ph name="TIMEOUT_SECONDS" /></translation>
@@ -2086,6 +2118,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7726391492136714301">Tingnan ang mga notification at app ng iyong telepono</translation>
 <translation id="7727952505535211425">Buksan ang website sa address bar sa bagong tab</translation>
 <translation id="7728657226117099693">I-off ang Caps Lock</translation>
+<translation id="7732702411411810416">Tiyaking nakakonekta ka sa internet at subukan ulit</translation>
 <translation id="7742327441377685481">Walang notification</translation>
 <translation id="7748275671948949022">I-highlight ang button ng Launcher sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
@@ -2120,6 +2153,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7866482334467279021">naka-on</translation>
 <translation id="7870790288828963061">Walang nahanap na mga Kiosk app na may mas bagong bersyon. Walang ia-update. Mangyaring alisin ang USB stick.</translation>
 <translation id="7872786842639831132">Naka-off</translation>
+<translation id="7873386145597434863">Steam para sa Chromebook</translation>
 <translation id="7875575368831396199">Mukhang naka-off ang Bluetooth sa iyong <ph name="DEVICE_TYPE" />. Paki-on ang Bluetooth para magamit ang Phone Hub.</translation>
 <translation id="7884446017008693258">Mga Setting ng Hotspot</translation>
 <translation id="7884902759927478774">Kanselahin ang pag-drag ng tab</translation>
@@ -2468,6 +2502,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8980862970816311842">Ilipat ang icon ng isang app sa/mula sa folder sa grid ng app</translation>
 <translation id="8982906748181120328">Visible Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Welcome sa Steam para sa Chromebook</translation>
 <translation id="8990809378771970590">Gamit ang <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Pindutin ang fn + Quick Insert o Shift para magkansela.</translation>
 <translation id="899350903320462459">I-unlock ang device bilang <ph name="LOGIN_ID" /> para maisagawa ang pagkilos sa notification</translation>
@@ -2484,6 +2519,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="9047624247355796468">Buksan ang mga setting para sa <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Hindi available ang Bluetooth</translation>
 <translation id="9050999376345823055">Pindutin ang "." para bitawan</translation>
+<translation id="9061694916020926968">Kailangang naka-sign in ka sa isang Google Account para magamit ang Steam para sa Chromebook (Beta). Mag-sign in at subukan ulit.</translation>
 <translation id="906458777597946297">I-maximize ang window</translation>
 <translation id="9065203028668620118">I-edit</translation>
 <translation id="9068849894565669697">Pumili ng kulay</translation>

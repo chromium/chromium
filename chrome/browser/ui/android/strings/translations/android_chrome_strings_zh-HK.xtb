@@ -213,6 +213,7 @@
 <translation id="1900260903084164610">繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。</translation>
 <translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="1910950723001426294">閂咗分享選項清單。</translation>
+<translation id="1912367671208932516">開啟擴充程式選單</translation>
 <translation id="191726024256261717">查看權限</translation>
 <translation id="1917766536967060661">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而<ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) 將無法再透過各項 Google 服務與你互動。</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
@@ -239,6 +240,7 @@
 <translation id="200114059308480249">要加入上下文來執行 Google 搜尋嗎？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，已經靜音嘅固定無痕式分頁</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
+<translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="2029669011553795746">選用提示通知的頁底面板目前顯示於畫面下半部</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> 在 Chrome 中也有資料</translation>
@@ -413,6 +415,7 @@
 <translation id="2789486458103222910">確定</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome 發現 1 個重用密碼，建議改用其他密碼}other{Chrome 發現 # 個重用密碼，建議改用其他密碼}}</translation>
 <translation id="2794551654724114396">開啟通知，接收有助你充分善用 Chrome 的實用貼士</translation>
+<translation id="2798977804328097977">在任何裝置上無縫繼續</translation>
 <translation id="2805210243313393104">在任何裝置上取用書籤及其他設定</translation>
 <translation id="2805756323405976993">應用程式</translation>
 <translation id="2819849308549746319">全部取消訂閱</translation>
@@ -468,6 +471,7 @@
 <translation id="2977350910003566746">根據上次打開嘅日期排序</translation>
 <translation id="297771753501244313">按上次開啟日期排序</translation>
 <translation id="2979639724566107830">在新視窗中開啟</translation>
+<translation id="2980545254049127870">輕鬆開啟訊息、文件和其他應用程式中的連結</translation>
 <translation id="2983102365694924129">根據您在網站上的活動推薦。此設定已關閉。</translation>
 <translation id="2983398917942897288">未啟用 (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">退出畫中畫</translation>
@@ -556,6 +560,7 @@
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3414952576877147120">大小：</translation>
+<translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3430670036890315772">如果關閉個人檔案鎖定，系統將移除已儲存的資料</translation>
 <translation id="3435465986463792564">開啟了很多視窗嗎？您可在此管理視窗</translation>
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回「Google 密碼管理工具」。<ph name="BEGIN_LINK" />查閱完整指示<ph name="END_LINK" />。</translation>
@@ -728,6 +733,7 @@
 <translation id="4137746084635924146">目前的裝置語言</translation>
 <translation id="414128724510021958">已根據預設要求顯示桌面版網站</translation>
 <translation id="4162867837470729563">分享選項清單宜家顯示喺成個畫面。</translation>
+<translation id="4164642020717536140">網絡瀏覽快速又安全</translation>
 <translation id="4165077084524712774">更多工具</translation>
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
 <translation id="4170577491341606575">正在擷取資料…</translation>
@@ -852,6 +858,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
 <translation id="4641919525231168205">前往下一頁</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
+<translation id="4643661539340338954">已開啟 Chrome「尋找」通知</translation>
 <translation id="4649493483932335039">查看最近開啟的分頁</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可保護您免受欺詐網站的威脅。如果您停用此功能，在瀏覽及輸入密碼時請提高警覺。</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
@@ -1440,6 +1447,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6898797562238201317">使用密碼短語加密 Google 帳戶中的所有 Chrome 資料</translation>
 <translation id="6900532703269623216">強化保護功能</translation>
+<translation id="6900654715912436255">確定要刪除此搜尋引擎嗎？</translation>
 <translation id="6903907808598579934">開啟同步處理功能</translation>
 <translation id="6906448540340261898">請確保您可隨時使用 Google 帳戶中的密碼</translation>
 <translation id="6908230663105268638">已允許 <ph name="SITE_NAME" /> 傳送通知</translation>
@@ -1649,6 +1657,7 @@
 <translation id="7686086654630106285">進一步瞭解網站建議的廣告</translation>
 <translation id="7690596512217303514">裝置無法開啟 Chrome。如要修正問題，請前往應用程式商店下載最新版的 Chrome 更新。</translation>
 <translation id="7692761875510935111">在瀏覽器中迅速開啟。按住這裡即可編輯此捷徑。</translation>
+<translation id="7695270712963178084">Chrome 尋找功能</translation>
 <translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中建立電郵</translation>
 <translation id="7702420606070050505">近期活動頁底面板宜家顯示喺成個畫面</translation>

@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Blár</translation>
 <translation id="1557622599341396706">Sýna heiti skrifborðs</translation>
 <translation id="1569384531973824928">Þetta veitir öllum forritum og vefsvæðum með myndavélar- og hljóðnemaheimildir aðgang. Þú gætir þurft að endurnýja vefsíðuna eða endurræsa forritið.</translation>
+<translation id="1570235441606255261">Uppsetningarforrit fyrir Steam</translation>
 <translation id="1571697193564730395">Kveikja/slökkva á „Ónáðið ekki“. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Dragkló á vinstri jaðri valin, notaðu örvalyklana til að færa rammann til</translation>
 <translation id="1576623706766186887">Minnka þegar kveikt er á stækkunargleri</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Hægt er að slökkva á rofaaðgangi í Stillingar &gt; Aðgengi.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> tæki</translation>
 <translation id="1639239467298939599">Hleður</translation>
+<translation id="1642895994345928121">Ekki er nægt geymslupláss tiltækt í tækinu til að opna þetta forrit. Losaðu pláss og reyndu aftur.</translation>
 <translation id="1647986356840967552">Fyrri síða</translation>
 <translation id="1651914502370159744">Opna síðu ferils</translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Forrita- og flipahópar</translation>
 <translation id="2386292613071805067">Velja allt á síðu</translation>
 <translation id="2389423187722941333">Velja/afvelja Gemini</translation>
+<translation id="2391805183137601570">Opna Steam</translation>
 <translation id="2392659840443812875">Enginn tiltækur heitur reitur. Gakktu úr skugga um að tækið sé nálægt og að kveikt sé á Bluetooth.</translation>
 <translation id="2397416548179033562">Sýna valmynd Chrome</translation>
 <translation id="240006516586367791">Efnisstýringar</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Opnað í gær</translation>
 <translation id="2440978926514840421">GIF-upptaka gerð</translation>
 <translation id="2441427462554639370">Upptöku lauk vegna mjög lítils geymslurýmis</translation>
+<translation id="2447587550790814052">Nú geturðu notað Steam fyrir Chromebook (beta)</translation>
 <translation id="2449089818483227734">Rafhlaða að tæmast</translation>
 <translation id="2450205753526923158">Skjámyndastilling</translation>
 <translation id="2453860139492968684">Ljúka</translation>
 <translation id="2455994958736234930">Bættu www. og .com við í veffangastikunni og opnaðu svo vefsvæði</translation>
 <translation id="2456008742792828469">Dagatal, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Rannsaka ítarlega</translation>
+<translation id="2462332841984057083">Uppsetning Steam er þegar í gangi. Bíddu þar til uppsetningu lýkur.</translation>
 <translation id="2465145153332031561">Ástand rafhlöðu: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, fjöldi endurhleðslna: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Staðfesta upplausn</translation>
 <translation id="2475783092753560388">Setja inn <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Forskoðun <ph name="DESK_NAME" />. Virkt skrifborð.</translation>
 <translation id="2486405091093637109">„<ph name="DISPLAY_NAME" />“ var breytt í <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) upplausn. Án staðfestingar verða fyrri stillingar endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Tengjast</translation>
+<translation id="2494555621641843783">Ekki er hægt að setja upp Steam</translation>
 <translation id="2496180316473517155">Vafraferill</translation>
 <translation id="2499445554382787206">Valmynd skrifborðsprófíls. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Festilyklar</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727744317940422214">Eitthvað fór úrskeiðis. Sendu ábendingu með #bruschetta í lýsingunni. Villukóðinn er <ph name="ERROR" />. Hreinsun mistókst, þú gætir þurft að framkvæma hana handvirkt.</translation>
 <translation id="2727977024730340865">Tengt við afllítið hleðslutæki. Hleðsla rafhlöðunnar kann að vera brigðul.</translation>
+<translation id="2737538893171115082">Kerfisstjórinn hefur lokað á Steam fyrir Chromebook (beta) Kerfisstjórinn þarf að kveikja á eftirfarandi reglum:</translation>
 <translation id="2743301740238894839">Hefja</translation>
 <translation id="2743387203779672305">Afrita á klippiborð</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3033912566804961911">Sameina með <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Rafhleðsla penna er <ph name="PERCENTAGE" /> prósent.</translation>
 <translation id="304097922505898963">Opna forritið Flýtilyklar</translation>
+<translation id="3040982432432547149">Hjálpaðu okkur að bæta Steam fyrir Chromebook</translation>
 <translation id="304417730895741346">Festu og opnu forritin þín eru í hillunni. Til að festa forrit í hilluna skaltu hægrismella á forrit eða ýta á snertiflötinn með tveimur fingrum.</translation>
 <translation id="3045670165536837541">Dragkló efst til hægri valin, notaðu örvalyklana til að færa rammann til</translation>
 <translation id="3047761520276763270">Prófaðu að segja:</translation>
@@ -656,6 +664,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3181441307743005334">Endurræsing gæti tekið nokkurn tíma</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Tengdist við tæki}one{Tengdist við # tæki}other{Tengdist við # tæki}}</translation>
 <translation id="3203405173652969239">Kveikt á rofaaðgangi</translation>
+<translation id="3204648577100496185">Gögn sem tengjast þessu forriti verða hugsanlega fjarlægð úr tækinu</translation>
 <translation id="3206735939915734551">Kveikja/slökkva á hástafalás</translation>
 <translation id="3207953481422525583">Notandastillingar</translation>
 <translation id="3208321278970793882">Forrit</translation>
@@ -677,6 +686,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3271554781793662131">Leita til að setja inn</translation>
 <translation id="3274634049061007184">Skoða forrit símans</translation>
 <translation id="3279230909244266691">Þetta ferli gæti tekið nokkrar mínútur. Ræsir sýndarvél.</translation>
+<translation id="3285465040399788513">Ekki er nægt geymslurými tiltækt í tækinu til að ljúka uppsetningu. Losaðu um pláss og reyndu aftur.</translation>
 <translation id="3289364673986435196">Aflrofavalmynd</translation>
 <translation id="3289544412142055976">Linux-forrit eru ekki studd eins og er</translation>
 <translation id="3289674678944039601">Hleður með hleðslutæki</translation>
@@ -702,6 +712,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3368922792935385530">Tengt</translation>
 <translation id="3369111525500416043">Skiladagur nálgast</translation>
 <translation id="3371140690572404006">USB-C tæki (tengi hægra megin að framan)</translation>
+<translation id="3373196968211632036">Steam fyrir Chromebook (beta) er ekki í boði fyrir Google-reikninga barna</translation>
 <translation id="3375634426936648815">Tengt</translation>
 <translation id="3386978599540877378">stækkunargler á öllum skjánum</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3477079411857374384">Control-Shift-bilslá</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> sendistyrkur</translation>
 <translation id="348799646910989694">Hilla falin sjálfkrafa</translation>
+<translation id="3496797737329654668">Spilum tölvuleiki</translation>
 <translation id="3505066820268455558">Rafhlaða í hleðslu</translation>
 <translation id="3509391053705095206">Ekki tókst að finna símann þinn. Gakktu úr skugga um að kveikt sé á Bluetooth í símanum.</translation>
 <translation id="3510164367642747937">Auðkenna músarbendil</translation>
@@ -800,6 +812,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="3633851487917460983">Opna klippiborð</translation>
 <translation id="363473492175527493">Verkefni stillt á einbeitingarlotu fyrir: <ph name="TASK_NAME" />. Ýttu á Enter til að breyta verkefninu.</translation>
 <translation id="3638400994746983214">Kveikja/slökkva á persónuverndarskjá. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Það þarf að uppfæra Steam fyrir Chromebook (Beta). Endurræstu Chromebook og reyndu aftur.</translation>
 <translation id="3649256019230929621">Minnka glugga</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3702809606464356667">Sýnir glugga núverandi skrifborðs, ýttu á ör upp til að sýna glugga allra skrifborða</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3706423975342040244">Afþreying</translation>
+<translation id="370665806235115550">Hleður...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> og <ph name="UNAVAILABLE_DLC_TWO" /> eru ekki tiltæk.</translation>
 <translation id="3708186454126126312">Áður tengt</translation>
 <translation id="3712143870407382523">Veldu glugga fyrir þessa hlið</translation>
@@ -860,6 +874,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3831226344927851293">Loka leiðsögn</translation>
 <translation id="383629559565718788">Sýna lyklaborðsstillingar</translation>
 <translation id="384082539148746321">Eyða sniðmáti?</translation>
+<translation id="3841282988425489367">Ekki er hægt að setja upp Steam fyrir Chromebook (beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> og svo <ph name="KEY_ONE" /> eða <ph name="KEY_TWO" /> eða <ph name="KEY_THREE" /> eða <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Engar netupplýsingar tiltækar</translation>
 <translation id="3848526302597027234">Fengið aðgang að eftirfarandi heimildum:</translation>
@@ -951,6 +966,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4146671046252289537">Fara að enda næsta orðs</translation>
 <translation id="4150201353443180367">Skjár</translation>
 <translation id="4151054805501931758">Lagfæring á andlitsmynd</translation>
+<translation id="4151449637210235443">Segðu okkur frá nýlegri leikjaspilun</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% eftir af rafhlöðu (u.þ.b. <ph name="TIME_LEFT" />).
 Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</translation>
 <translation id="4158003972857765638">Skipuleggja á nýju skrifborði</translation>
@@ -968,6 +984,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4192112279662688596">Eða</translation>
 <translation id="4193857202545160520">Sýna smelli og lykla</translation>
 <translation id="4193969623755915875">Opnaðu „Hjálp“ með „<ph name="NEW_SHORTCUT" />“ í forritinu „Kanna“.</translation>
+<translation id="4195001808989442226">Ekki er hægt að opna Steam fyrir Chromebook (betaútgáfa)</translation>
 <translation id="4195579532193195633">Núverandi útgáfa <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Halda áfram þaðan sem frá var horfið</translation>
 <translation id="4195877955194704651">Hnappur fyrir sjálfvirka smelli</translation>
@@ -983,6 +1000,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4221957499226645091"><ph name="APP_NAME" />, uppsett forrit, í bið</translation>
 <translation id="4228078597006700451">Stýringar ekki uppsettar</translation>
 <translation id="4230560241506423345">Nýtt</translation>
+<translation id="4231231258999726714">Setur upp Steam fyrir Chromebook</translation>
 <translation id="4236726631849783264">Áminning um tillögur að aðgerðum</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Yfirlitsstilling</translation>
@@ -1067,6 +1085,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4471432286288241507">{0,plural, =0{Uppfærðu tækið núna}=1{Uppfærðu tækið innan 1 sekúndu}one{Uppfærðu tækið innan # sekúndu}other{Uppfærðu tækið innan # sekúndna}}</translation>
 <translation id="4472575034687746823">Hefjast handa</translation>
 <translation id="4473489370276014885">Google-tengiliðir</translation>
+<translation id="4473996011558324141">áætlar tíma</translation>
 <translation id="4477350412780666475">Næsta lag</translation>
 <translation id="4477751544736611934">Þetta gæti haft í för með sér gagnakostnað.
 Eitt tæki er tengt.</translation>
@@ -1108,6 +1127,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4585337515783392668">Hætta að senda út í óþekkt tæki</translation>
 <translation id="4596144739579517758">Slökkt er á dökku þema</translation>
 <translation id="4596442969149038771"><ph name="USER" /> deildi</translation>
+<translation id="4598556348158889687">Stjórnun geymslu</translation>
 <translation id="4610493115106525653">Gott úttak</translation>
 <translation id="4611292653554630842">Skrá inn</translation>
 <translation id="462160925400706389">Tengt er við <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4633636853437260449">Ýttu á Ctrl+W til að eyða</translation>
 <translation id="4635501805800894201">{0,plural, =0{Uppfærðu tækið í fyrri útgáfu núna}=1{Uppfæra verður tækið í fyrri útgáfu innan 1 sekúndu}one{Uppfæra verður tækið í fyrri útgáfu innan # sekúndu}other{Uppfæra verður tækið í fyrri útgáfu innan # sekúndna}}</translation>
 <translation id="4642092649622328492">Taka mynd af hluta skjás</translation>
+<translation id="4642587497923912728">Steam fyrir Chromebook (beta) er aðeins í boði fyrir reikninginn sem skráði sig inn fyrst í þessari Chromebook.</translation>
 <translation id="4644727592819780893">Svæðið er of smátt til að hægt sé að mynda það</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, tillaga að forriti</translation>
 <translation id="4649019912155580914">Þú breyttir</translation>
@@ -1350,6 +1371,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5352250171825660495">Kveikt er á dökku þema</translation>
 <translation id="5354804064646502504">Þetta gæti haft í för með sér gagnakostnað.
 Engin tæki eru tengd.</translation>
+<translation id="5355498626146154079">Þú þarft að kveikja á flagginu „Borealis Enabled“</translation>
 <translation id="5356963482258194581">Skiptu á milli dökka og ljósa þemans. Hægrismelltu á skjáborðið og veldu „Veggfóður og stíll“.</translation>
 <translation id="536019650977002321">Stjórnandinn þinn leyfir ekki hljóð upptöku. Hafðu samband við stjórnandann til að fá frekari upplýsingar.</translation>
 <translation id="5361524080961918551">Raddskrám á <ph name="LANGUAGE" /> er hlaðið niður að hluta til</translation>
@@ -1360,6 +1382,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5377367976106153749">Viltu kveikja á aðgangi að myndavél?</translation>
 <translation id="5378450298115733949">Meira</translation>
 <translation id="5379115545237091094">Of margar tilraunir</translation>
+<translation id="5380526436444479273">Bíddu í nokkrar mínútur og reyndu aftur</translation>
 <translation id="5383434787520761436">Engar Google Drive-skrár</translation>
 <translation id="5391307769715781764">Skipta út vistuðu skrifborði?</translation>
 <translation id="5392327145184648521">Reikngar % rafhlöðu...</translation>
@@ -1371,6 +1394,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5409208741270395213">Merkja verkefni sem lokið</translation>
 <translation id="5413656666631274079">Stillingasíða</translation>
 <translation id="5414198321558177633">Endurnýjar prófílalista. Þetta gæti tekið nokkrar mínútur.</translation>
+<translation id="5415328625985164836">Þetta er betaverkefni. Nú geturðu notað Steam til að spila tiltekna leiki í Chromebook.</translation>
 <translation id="5426063383988017631">Stillingavalmynd lokað</translation>
 <translation id="5428899915242071344">Byrja að velja</translation>
 <translation id="5429993543155113935">Huliðsgluggar eru ekki studdir eins og er</translation>
@@ -1466,6 +1490,7 @@ Engin tæki eru tengd.</translation>
 <translation id="5712132663381964774">Notaðu forrit til að gera allt sem þú þarft í <ph name="PRODUCT_NAME" />-tækinu þínu. Þú finnur forritin þín í ræsiforritinu.</translation>
 <translation id="571295407079589142">Slökkt er á farsímagögnum</translation>
 <translation id="5727460725221669831">Ef þú gleymdir aðgangsorðinu þínu eða breyttir aðgangsorðinu að Google-reikningnum þínum nýlega geturðu reynt að endurheimta notandaaðganginn.</translation>
+<translation id="572914206753951782">Gakktu úr skugga um að Chromebook keyri nýjustu útgáfuna. Endurræstu svo Chromebook og reyndu aftur.</translation>
 <translation id="5733630091161562207">Móttökutilkynning</translation>
 <translation id="573413375004481890">Þetta tæki gat ekki stutt alla skjáina og því var einn aftengdur</translation>
 <translation id="574392208103952083">Miðlungs</translation>
@@ -1713,6 +1738,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6507042703812908515">Opnaðu flýtilyklaforritið með „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6507618042428827377">Skipta yfir í næstu tiltæku innfærsluaðferð</translation>
 <translation id="6508923215158854599">Gakktu úr skugga um að Chromebook-tækið sé á sama WiFi-neti og Chromecast-tækið.</translation>
+<translation id="6511607461419653612">Endurræstu Chromebook og reyndu aftur</translation>
 <translation id="6515727200518652613">Myndavél horfin, reynir að tengjast aftur.</translation>
 <translation id="651753338596587143">Eitthvað fór úrskeiðis við að setja upp ákvæði niðurhlaðanlegs efnis (DLC). Reyndu endurræsingu og ef vandamálið er viðvarandi skaltu senda ábendingu með #bruschetta í lýsingunni. Villukóðinn er <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Veldu glugga til að mynda</translation>
@@ -1738,6 +1764,7 @@ Ný uppsetning</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> tilkynning er falin vegna þess að kveikt er á gægjuvörn</translation>
 <translation id="6574622320167699133">Tekið úr lás af símanum. Ýttu eða smelltu til að opna.</translation>
 <translation id="6578407462441924264">Án heitis</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% lokið</translation>
 <translation id="6582012689384648647">Veittu aðgang að YouTube Music til að fá sérsniðna sem hjálpa þér ná góðri einbeitingu</translation>
 <translation id="6582034443359256692">Reiknar hleðslustöðu rafhlöðu.</translation>
 <translation id="6585808820553845416">Lotunni lýkur eftir <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Ný uppsetning</translation>
 <translation id="6723839937902243910">Orka</translation>
 <translation id="672609503628871915">Skoða nýjungarnar</translation>
 <translation id="6727969043791803658">Tengt, <ph name="BATTERY_PERCENTAGE" />% rafhlaða</translation>
+<translation id="6731320427842222405">Þetta getur tekið nokkrar mínútur</translation>
 <translation id="6732087373923685049">myndavél</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Myndavél og hljóðnemi í notkun</translation>
@@ -1858,6 +1886,7 @@ Ný uppsetning</translation>
 <translation id="6961840794482373852">Flýtilyklinum „Alt + ör upp“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör upp til að nota Page Up-lykilinn.</translation>
 <translation id="696267987219125751">Slökkt er á myndavélarramma.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
+<translation id="6967112302799758487">Öll forrit og leikir sem þú settir upp með Steam fyrir Chromebook (beta) verða fjarlægð úr þessu tæki. Gögn sem tengjast þessum forritum og leikjum verða einnig fjarlægð. Gakktu úr skugga um að taka afrit af vistuðum forritum og leikjum áður en þú fjarlægir.</translation>
 <translation id="6972629891077993081">HID-tæki</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1889,6 +1918,7 @@ Ný uppsetning</translation>
 <translation id="7067196344162293536">Sjálfvirkur snúningur</translation>
 <translation id="7076293881109082629">Skráir inn</translation>
 <translation id="7076878155205969899">Þagga hljóð</translation>
+<translation id="7083774521940805477">Steam fyrir Chromebook (beta) er ekki í boði í Chromebook.</translation>
 <translation id="7083848064787091821">Einbeiting</translation>
 <translation id="7084678090004350185">Kveikja/slökkva á heitum reit. Kveikt er á heitum reit, <ph name="DEVICECOUNT" /> tæki eru tengd.</translation>
 <translation id="7086931198345821656">Þessi uppfærsla krefst djúphreinsunar á <ph name="DEVICE_TYPE" />. Öllum gögnum verður eytt. Fáðu frekari upplýsingar um nýjustu uppfærslu <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Ný uppsetning</translation>
 <translation id="7130207228079676353">LÍKLEGAST</translation>
 <translation id="7131634465328662194">Þú verður skráð(ur) út sjálfkrafa.</translation>
 <translation id="7143207342074048698">Tengist</translation>
+<translation id="7143409552554575716">ChromeOS-flögg</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="7144942256906679589">Staða rafhlöðu</translation>
 <translation id="7145639536026937076">Rafhlaða í <ph name="PERCENTAGE" />% og í hleðslu. Kveikt er á rafhlöðusparnaði.</translation>
 <translation id="7147587499155271409">Enginn vafraferill</translation>
 <translation id="7147657298465433425">Til að nálgast F-lykla skaltu ýta á fn-lykilinn + lykla í efstu röð</translation>
 <translation id="7149149900052329230">Hafðu umsjón með staðbundnum skrám og Google Drive-skránum þínum í forritinu Skrár.</translation>
+<translation id="7154020516215182599">Sendu ábendingu eða lýstu vandamálinu. Ef mögulegt er skaltu taka fram skrefin sem leiddu til vandamálsins.</translation>
 <translation id="7165278925115064263">Alt+shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7726391492136714301">Skoðaðu tilkynningar og forrit símans</translation>
 <translation id="7727952505535211425">Opna vefsvæðið í veffangastikunni í nýjum flipa</translation>
 <translation id="7728657226117099693">Slökkva á hástafalás</translation>
+<translation id="7732702411411810416">Gakktu úr skugga um að þú sért með nettengingu og reyndu aftur</translation>
 <translation id="7742327441377685481">Engar tilkynningar</translation>
 <translation id="7748275671948949022">Auðkenna ræsihnapp á hillu</translation>
 <translation id="7749443890790263709">Hámarksfjölda skjáborða náð.</translation>
@@ -2121,6 +2154,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7866482334467279021">kveikja</translation>
 <translation id="7870790288828963061">Engin sjálfsalaforrit í nýrri útgáfu fundust. Ekkert til að uppfæra. Fjarlægðu USB-lykilinn.</translation>
 <translation id="7872786842639831132">Slökkt</translation>
+<translation id="7873386145597434863">Steam fyrir Chromebook</translation>
 <translation id="7875575368831396199">Svo virðist sem slökkt sé á Bluetooth í <ph name="DEVICE_TYPE" />. Kveiktu á Bluetooth til að nota Símstöð.</translation>
 <translation id="7884446017008693258">Stillingar fyrir heitan reit</translation>
 <translation id="7884902759927478774">Hætta við að draga flipa</translation>
@@ -2470,6 +2504,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8980862970816311842">Færa forritatákn inn í / út úr möppu í forritatöflu</translation>
 <translation id="8982906748181120328">Nærsýnileiki</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Velkomin(n) í Steam fyrir Chromebook</translation>
 <translation id="8990809378771970590">Notar <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Ýttu á fn + flýtiinnslátt eða Shift til að hætta við.</translation>
 <translation id="899350903320462459">Opnaðu tækið sem <ph name="LOGIN_ID" /> til að framkvæma aðgerð tilkynningarinnar</translation>
@@ -2486,6 +2521,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="9047624247355796468">Opna stillingar fyrir <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth er ekki tiltækt</translation>
 <translation id="9050999376345823055">Ýttu á „.“ til að sleppa</translation>
+<translation id="9061694916020926968">Þú þarft að skrá þig inn á Google-reikning til að nota Steam fyrir Chromebook (beta). Skráðu þig inn og reyndu aftur.</translation>
 <translation id="906458777597946297">Stækka glugga</translation>
 <translation id="9065203028668620118">Breyta</translation>
 <translation id="9068849894565669697">Veldu lit</translation>

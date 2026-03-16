@@ -182,6 +182,7 @@
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="1557622599341396706">إظهار اسم سطح المكتب</translation>
 <translation id="1569384531973824928">يتيح هذا الإجراء إمكانية الوصول إلى الكاميرا والميكروفون لجميع التطبيقات والمواقع الإلكترونية التي لديها هذا الإذن. قد تحتاج إلى إعادة تحميل صفحة الويب أو إعادة تشغيل التطبيق.</translation>
+<translation id="1570235441606255261">‏أداة تثبيت Steam</translation>
 <translation id="1571697193564730395">تبديل حالة "عدم الإزعاج": <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">مقبض الحافة اليمنى المحدَّد، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="1576623706766186887">التصغير عند يكون المكبِّر مفعّلاً</translation>
@@ -202,6 +203,7 @@
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> جهاز</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
+<translation id="1642895994345928121">لا تتوفّر مساحة تخزين كافية على الجهاز لفتح هذا التطبيق. يُرجى إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="1647986356840967552">الصفحة السابقة</translation>
 <translation id="1651914502370159744">فتح صفحة "السجلّ"</translation>
 <translation id="1668469839109562275">‏شبكة VPN المُدمجة</translation>
@@ -402,6 +404,7 @@
 <translation id="2383521554963939360">مجموعات التطبيقات وعلامات التبويب</translation>
 <translation id="2386292613071805067">اختيار كل محتوى الصفحة</translation>
 <translation id="2389423187722941333">‏تفعيل Gemini أو إيقافه</translation>
+<translation id="2391805183137601570">‏فتح Steam</translation>
 <translation id="2392659840443812875">لا تتوفّر نقطة اتصال. يجب تفعيل البلوتوث ووضع جهازك بالقرب منك.</translation>
 <translation id="2397416548179033562">‏لإظهار قائمة Chrome</translation>
 <translation id="240006516586367791">عناصر التحكُّم في الوسائط</translation>
@@ -423,12 +426,14 @@
 <translation id="243878895369688216">تم فتحه أمس.</translation>
 <translation id="2440978926514840421">‏تم تسجيل محتوى الشاشة بتنسيق GIF</translation>
 <translation id="2441427462554639370">تم إنهاء التسجيل نتيجة للانخفاض الكبير في مساحة التخزين.</translation>
+<translation id="2447587550790814052">‏يمكنك الآن استخدام تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي).</translation>
 <translation id="2449089818483227734">انخفاض طاقة البطارية</translation>
 <translation id="2450205753526923158">وضع لقطة الشاشة</translation>
 <translation id="2453860139492968684">اكتمل</translation>
 <translation id="2455994958736234930">‏إضافة www.‎ و‎.com إلى شريط العناوين، ثم فتح الموقع الإلكتروني</translation>
 <translation id="2456008742792828469">التقويم، <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">توغُّل</translation>
+<translation id="2462332841984057083">‏تجري الآن عملية إعداد تطبيق Steam. يُرجى الانتظار إلى أن تكتمل العملية.</translation>
 <translation id="2465145153332031561">حالة البطارية: %<ph name="BATTERY_HEALTH_PERCENTAGE" />. عدد الدورات: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">تأكيد درجة الدقة</translation>
 <translation id="2475783092753560388">إدراج "<ph name="SEARCH_RESULT_TEXT" />"</translation>
@@ -440,6 +445,7 @@
 <translation id="2486214324139475545">معاينة "<ph name="DESK_NAME" />": جهاز سطح المكتب نشِط.</translation>
 <translation id="2486405091093637109">‏تم تغيير درجة دقة "<ph name="DISPLAY_NAME" />" إلى ‎<ph name="RESOLUTION" /> (بمعدّل التحديث <ph name="REFRESH_RATE" /> هرتز). في حال عدم التأكيد، ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">انضمام</translation>
+<translation id="2494555621641843783">‏يتعذّر تثبيت تطبيق Steam</translation>
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2499445554382787206">قائمة الملف الشخصي على جهاز سطح المكتب "<ph name="DESK_NAME" />"</translation>
 <translation id="2501920221385095727">تثبيت المفاتيح</translation>
@@ -513,6 +519,7 @@
 <translation id="2727175239389218057">الرّد</translation>
 <translation id="2727744317940422214">‏حدث خطأ. يُرجى إرسال ملاحظاتك وإضافة عبارة ‎#bruschetta في الوصف. رمز الخطأ هو <ph name="ERROR" />. تعذَّر إتمام عملية الحذف، وقد يكون عليك إجراء ذلك يدويًا.</translation>
 <translation id="2727977024730340865">تمّ توصيل شاحن منخفض الطاقة. لذا قد لا تكون عملية شحن البطارية جديرة بالثقة.</translation>
+<translation id="2737538893171115082">‏حظَر المشرف تثبيت تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي). على المشرف تفعيل السياسات التالية:</translation>
 <translation id="2743301740238894839">البدء</translation>
 <translation id="2743387203779672305">نسخ إلى الحافظة</translation>
 <translation id="2749082172777216925">التطبيق <ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
@@ -606,6 +613,7 @@
 <translation id="3033912566804961911">دمج مع <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">مستوى شحن بطارية قلم الشاشة <ph name="PERCENTAGE" /> في المئة.</translation>
 <translation id="304097922505898963">فتح تطبيق "اختصارات لوحة المفاتيح"</translation>
+<translation id="3040982432432547149">‏المساعدة في تحسين تطبيق Steam على أجهزة Chromebook</translation>
 <translation id="304417730895741346">تطبيقاتك المثبَّتة والمفتوحة معروضة هنا على الرف. لتثبيت تطبيق في الرف، انقر بزر الماوس الأيمن عليه أو انقر بإصبعين على لوحة اللمس.</translation>
 <translation id="3045670165536837541">المقبض المحدَّد في أعلى اليسار، ويمكن استخدام مفاتيح الأسهم لتحريكه</translation>
 <translation id="3047761520276763270">حاوِِل قول:</translation>
@@ -653,6 +661,7 @@
 <translation id="3181441307743005334">قد تستغرق إعادة التشغيل بعض الوقت</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{تم الاتصال بجهاز واحد}zero{تم الاتصال بـ # جهاز}two{تم الاتصال بجهازين (#)}few{تم الاتصال بـ # أجهزة}many{تم الاتصال بـ # جهازًا}other{تم الاتصال بـ # جهاز}}</translation>
 <translation id="3203405173652969239">تم تفعيل ميزة "الوصول عبر مفتاح التحويل".</translation>
+<translation id="3204648577100496185">قد تتم إزالة البيانات المرتبطة بهذا التطبيق من هذا الجهاز.</translation>
 <translation id="3206735939915734551">‏تشغيل مفتاح Caps Lock أو إيقافه</translation>
 <translation id="3207953481422525583">إعدادات المستخدم</translation>
 <translation id="3208321278970793882">التطبيق</translation>
@@ -674,6 +683,7 @@
 <translation id="3271554781793662131">ابحث عن روابط أو ملفات لإدراجها</translation>
 <translation id="3274634049061007184">عرض التطبيقات في هاتفك</translation>
 <translation id="3279230909244266691">قد تستغرق هذه العملية بضع دقائق. جارٍ بدء الآلة الافتراضية.</translation>
+<translation id="3285465040399788513">لا تتوفّر مساحة تخزين كافية على الجهاز لإكمال عملية الإعداد. يُرجى إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="3289364673986435196">قائمة زر التشغيل</translation>
 <translation id="3289544412142055976">‏هذا الخيار غير متوفّر حاليًا لتطبيقات Linux.</translation>
 <translation id="3289674678944039601">جارٍ الشحن عبر المحوِّل.</translation>
@@ -699,6 +709,7 @@
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369111525500416043">مطلوب تسليمها قريبًا</translation>
 <translation id="3371140690572404006">‏جهاز USB-C (المنفذ الأمامي الأيمن)</translation>
+<translation id="3373196968211632036">‏لا يمكن تثبيت تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي) باستخدام حسابات الأطفال على Google.</translation>
 <translation id="3375634426936648815">متصلة</translation>
 <translation id="3386978599540877378">المكبِّر بملء الشاشة</translation>
 <translation id="3387527074123400161">‏نظام التشغيل Chromium</translation>
@@ -736,6 +747,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354">حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">إخفاء الرف تلقائيًا</translation>
+<translation id="3496797737329654668">فلنبدأ اللعب</translation>
 <translation id="3505066820268455558">جارٍ شحن البطارية</translation>
 <translation id="3509391053705095206">يتعذَّر العثور على هاتفك. تأكّد من أنّ البلوتوث مفعَّل على هاتفك.</translation>
 <translation id="3510164367642747937">تمييز مؤشر الماوس</translation>
@@ -797,6 +809,7 @@
 <translation id="3633851487917460983">فتح الحافظة</translation>
 <translation id="363473492175527493">‏تم ضبط المهمة للتركيز على: <ph name="TASK_NAME" />. اضغط على مفتاح Enter لتعديل المهمة.</translation>
 <translation id="3638400994746983214">تبديل شاشة الخصوصية <ph name="STATE_TEXT" /></translation>
+<translation id="3641070112313110357">‏يجب تحديث إصدار Steam لأجهزة Chromebook (الإصدار التجريبي). يُرجى إعادة تشغيل جهاز Chromebook وإعادة المحاولة.</translation>
 <translation id="3649256019230929621">تصغير النافذة</translation>
 <translation id="3653999174677652346">‏الحدث <ph name="EVENT_POSITION" />
         "<ph name="EVENT_SUMMARY" />"،
@@ -820,6 +833,7 @@
 <translation id="3702809606464356667">يتم الآن عرض النوافذ المفتوحة في سطح المكتب الحالي، ويمكنك الضغط على مفتاح السهم المتّجه للأعلى لعرض النوافذ المفتوحة في جميع أسطح المكتب.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">الترفيه</translation>
+<translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3707093869106077605">ميزتا "<ph name="UNAVAILABLE_DLC_ONE" />" و"<ph name="UNAVAILABLE_DLC_TWO" />" غير متوفّرتَين.</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
 <translation id="3712143870407382523">اختَر نافذة لهذا الجانب.</translation>
@@ -858,6 +872,7 @@
 <translation id="3831226344927851293">الخروج من عرض الدليل التوجيهي</translation>
 <translation id="383629559565718788">عرض إعدادات لوحة المفاتيح</translation>
 <translation id="384082539148746321">هل تريد حذف النموذج؟</translation>
+<translation id="3841282988425489367">‏يتعذّر إعداد تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي)</translation>
 <translation id="3844627820291068572">‏‫‎<ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />، ثم <ph name="KEY_ONE" /> أو <ph name="KEY_TWO" /> أو <ph name="KEY_THREE" /> أو <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">لا توجد معلومات متاحة حول الشبكة</translation>
 <translation id="3848526302597027234">الحصول على الأذونات التالية:</translation>
@@ -949,6 +964,7 @@
 <translation id="4146671046252289537">نقل إلى نهاية الكلمة التالية</translation>
 <translation id="4150201353443180367">عرض</translation>
 <translation id="4151054805501931758">تحسين صورة الوجه</translation>
+<translation id="4151449637210235443">أخبِرنا عن تجربتك مع اللّعب في الفترة الأخيرة.</translation>
 <translation id="4156293514828496577">‏يتبقّى ‎<ph name="PERCENTAGE" />% من شحن البطارية (حوالي <ph name="TIME_LEFT" />).
 لإطالة عمر البطارية، تم حصر وظائف بعض الميزات.</translation>
 <translation id="4158003972857765638">تنظيم الملفات في سطح مكتب جديد</translation>
@@ -966,6 +982,7 @@
 <translation id="4192112279662688596">أو</translation>
 <translation id="4193857202545160520">إظهار اختصارات لوحة المفاتيح والنقرات</translation>
 <translation id="4193969623755915875">افتح قسم "المساعدة" في تطبيق "استكشاف" من خلال الاختصار "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">‏يتعذّر فتح تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي)</translation>
 <translation id="4195579532193195633">‏الإصدار الحالي ‎<ph name="VERSION_NAME" /> ‏(حالته: <ph name="OFFICIAL_STATUS" />) اسم قناته <ph name="CHANNEL_NAME" /> بنيته <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">المتابعة من حيث توقفت</translation>
 <translation id="4195877955194704651">زر النقرات التلقائية</translation>
@@ -981,6 +998,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />، تطبيق مثبّت ومتوقف مؤقتًا</translation>
 <translation id="4228078597006700451">لم يتم إعداد عناصر التحكّم.</translation>
 <translation id="4230560241506423345">جديد</translation>
+<translation id="4231231258999726714">‏جارٍ إعداد تطبيق "Steam لأجهزة Chromebook"</translation>
 <translation id="4236726631849783264">تذكير بشأن الإجراءات المقترَحة</translation>
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
 <translation id="4240486403425279990">وضع "النظرة العامة"</translation>
@@ -1065,6 +1083,7 @@
 <translation id="4471432286288241507">{0,plural, =0{تحديث الجهاز الآن}=1{تحديث الجهاز خلال ثانية واحدة}two{تحديث الجهاز خلال ثانيتين}few{تحديث الجهاز خلال # ثوانٍ}many{تحديث الجهاز خلال # ثانية}other{تحديث الجهاز خلال # ثانية}}</translation>
 <translation id="4472575034687746823">الخطوات الأولى</translation>
 <translation id="4473489370276014885">‏جهات اتصال Google</translation>
+<translation id="4473996011558324141">جارٍ تقدير المدة</translation>
 <translation id="4477350412780666475">المقطع الصوتي التالي</translation>
 <translation id="4477751544736611934">قد يتم تحصيل رسوم منك مقابل ذلك.
 تم توصيل جهاز واحد.</translation>
@@ -1106,6 +1125,7 @@
 <translation id="4585337515783392668">إيقاف الإرسال إلى مستلم غير معروف</translation>
 <translation id="4596144739579517758">المظهر الداكن غير مُفعَّل.</translation>
 <translation id="4596442969149038771">تمت مشاركته من قِبل "<ph name="USER" />"</translation>
+<translation id="4598556348158889687">إدارة مساحة التخزين</translation>
 <translation id="4610493115106525653">نتيجة مناسبة</translation>
 <translation id="4611292653554630842">تسجيل الدخول</translation>
 <translation id="462160925400706389">تم ربط "<ph name="NAME" />"</translation>
@@ -1115,6 +1135,7 @@
 <translation id="4633636853437260449">‏اضغط على Ctrl+W للحذف.</translation>
 <translation id="4635501805800894201">{0,plural, =0{إعادة الجهاز إلى الإصدار السابق الآن}=1{إعادة الجهاز إلى الإصدار السابق في غضون ثانية واحدة}two{إعادة الجهاز إلى الإصدار السابق في غضون ثانيتَين}few{إعادة الجهاز إلى الإصدار السابق في غضون # ثوانٍ}many{إعادة الجهاز إلى الإصدار السابق في غضون # ثانية}other{إعادة الجهاز إلى الإصدار السابق في غضون # ثانية}}</translation>
 <translation id="4642092649622328492">أخذ لقطة شاشة جزئية</translation>
+<translation id="4642587497923912728">‏لا يمكن تثبيت تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي) إلا باستخدام الحساب الذي تم تسجيل الدخول إليه أولاً على جهاز Chromebook هذا.</translation>
 <translation id="4644727592819780893">مساحة عرض اللقطة الحالية صغيرة جدًا ولا تناسب معاينة الكاميرا.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، اقتراح تطبيق</translation>
 <translation id="4649019912155580914">عدّلته</translation>
@@ -1348,6 +1369,7 @@
 <translation id="5352250171825660495">المظهر الداكن مُفعَّل.</translation>
 <translation id="5354804064646502504">قد يتم تحصيل رسوم منك مقابل ذلك.
 ما مِن أجهزة متصلة.</translation>
+<translation id="5355498626146154079">‏يجب تفعيل العلامة "Borealis Enabled".</translation>
 <translation id="5356963482258194581">يمكنك التبديل بين المظهرَين الداكن والفاتح. انقر بزر الماوس الأيمن على سطح المكتب ثم اختَر "الخلفية والأسلوب".</translation>
 <translation id="536019650977002321">لا يسمح المشرف بتسجيل الصوت. يمكنك التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="5361524080961918551">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> جزئيًا</translation>
@@ -1358,6 +1380,7 @@
 <translation id="5377367976106153749">هل تريد تفعيل إمكانية الوصول إلى الكاميرا؟</translation>
 <translation id="5378450298115733949">المزيد</translation>
 <translation id="5379115545237091094">محاولات كثيرة جدًا</translation>
+<translation id="5380526436444479273">يُرجى الانتظار بضع دقائق ثم إعادة المحاولة.</translation>
 <translation id="5383434787520761436">‏لا تتوفّر ملفات على Google Drive</translation>
 <translation id="5391307769715781764">هل تريد استبدال سطح المكتب المحفوظ؟</translation>
 <translation id="5392327145184648521">جارٍ حساب نسبة شحن البطارية...</translation>
@@ -1369,6 +1392,7 @@
 <translation id="5409208741270395213">تحديد المهمة على أنها مكتملة</translation>
 <translation id="5413656666631274079">صفحة الإعدادات</translation>
 <translation id="5414198321558177633">جارٍ إعادة تحميل قائمة الملفات الشخصية. قد تستغرق هذه العملية بضع دقائق.</translation>
+<translation id="5415328625985164836">‏تم إطلاق تطبيق Steam ضمن برنامج تجريبي يتيح لك الآن تشغيل بعض الألعاب على جهاز Chromebook.</translation>
 <translation id="5426063383988017631">تم إغلاق قائمة الإعدادات.</translation>
 <translation id="5428899915242071344">بدء التحديد</translation>
 <translation id="5429993543155113935">هذا الخيار غير متوفّر حاليًا لنوافذ التصفّح المتخفي.</translation>
@@ -1464,6 +1488,7 @@
 <translation id="5712132663381964774">استخدِم التطبيقات لتنفيذ كل مهامك المطلوبة على <ph name="PRODUCT_NAME" />. وانتقِل إلى "مشغِّل التطبيقات" للعثور على كل تطبيقاتك.</translation>
 <translation id="571295407079589142">تم إيقاف بيانات الجوّال.</translation>
 <translation id="5727460725221669831">‏إذا نسيت كلمة المرور أو غيّرت كلمة مرور حسابك على Google مؤخرًا، جرِّب استرداد حساب هذا المستخدم.</translation>
+<translation id="572914206753951782">‏تأكَّد من تثبيت أحدث إصدار من نظام التشغيل على جهاز Chromebook. بعد ذلك، يُرجى إعادة تشغيل الجهاز وإعادة المحاولة.</translation>
 <translation id="5733630091161562207">إشعار الترحيب</translation>
 <translation id="573413375004481890">لا يمكن لهذا الجهاز توفير جميع شاشات العرض، لذلك تم قطع الاتصال بأحدها</translation>
 <translation id="574392208103952083">متوسط</translation>
@@ -1711,6 +1736,7 @@
 <translation id="6507042703812908515">يمكنك فتح تطبيق "اختصارات لوحة المفاتيح" بالضغط على <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">التبديل إلى أسلوب الإدخال المتاح التالي</translation>
 <translation id="6508923215158854599">‏تأكَّد من اتصال جهاز Chromebook بشبكة Wi-Fi نفسها التي يتصل بها جهاز Chromecast.</translation>
+<translation id="6511607461419653612">‏يُرجى إعادة تشغيل جهاز Chromebook وإعادة المحاولة.</translation>
 <translation id="6515727200518652613">انقطع الاتصال بالكاميرا، وجارٍ محاولة إعادة الاتصال.</translation>
 <translation id="651753338596587143">‏حدث خطأ أثناء تثبيت ملحقات المحتوى القابل للتنزيل (DLC). يُرجى محاولة إعادة تشغيل الجهاز وإذا استمرت المشكلة، يُرجى إرسال ملاحظاتك وإضافة عبارة ‎#bruschetta في الوصف. رمز الخطأ هو <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">يُرجى تحديد نافذة للحصول لالتقاط صورة لها.</translation>
@@ -1736,6 +1762,7 @@
 <translation id="6574587113394758819">‏تم حجب إشعار التطبيق <ph name="APP_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6574622320167699133">تم فتح قفل الجهاز باستخدام الهاتف. انقر لبدء استخدام الجهاز.</translation>
 <translation id="6578407462441924264">بدون اسم</translation>
+<translation id="6580060371127789208">اكتملت العملية بنسبة %<ph name="PERCENTAGE_COMPLETE" />.</translation>
 <translation id="6582012689384648647">‏للاستماع إلى قوائم تشغيل مخصَّصة تساعدك على التركيز، يجب السماح بالوصول إلى YouTube Music</translation>
 <translation id="6582034443359256692">جارٍ حساب مستوى شحن البطارية</translation>
 <translation id="6585808820553845416">تنتهي الجلسة في <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1785,6 +1812,7 @@
 <translation id="6723839937902243910">الطاقة</translation>
 <translation id="672609503628871915">تعرف على الجديد</translation>
 <translation id="6727969043791803658">البلوتوث متصل، ومستوى شحن البطارية: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6731320427842222405">قد يستغرق ذلك بضع دقائق</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">الكاميرا والميكروفون قيد الاستخدام</translation>
@@ -1856,6 +1884,7 @@
 <translation id="6961840794482373852">‏تم تغيير اختصارات لوحة المفاتيح "Alt + السهم المتّجه للأعلى". لاستخدام مفتاح Page Up، اضغط على المفتاحَين "<ph name="LAUNCHER_KEY_NAME" /> + السهم المتّجه للأعلى".</translation>
 <translation id="696267987219125751">ميزة "تكبير تلقائي" غير مفعّلة.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
+<translation id="6967112302799758487">‏ستُزال من هذا الجهاز أي تطبيقات وألعاب تم تثبيتها باستخدام تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي). ستتم أيضًا إزالة البيانات المرتبطة بهذه التطبيقات والألعاب. احرص على الاحتفاظ بنسخة احتياطية من التطبيقات والألعاب المحفوظة قبل إلغاء التثبيت.</translation>
 <translation id="6972629891077993081">‏أجهزة HID</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">‏مفتاح Insert</translation>
@@ -1887,6 +1916,7 @@
 <translation id="7067196344162293536">التدوير التلقائي</translation>
 <translation id="7076293881109082629">تسجيل الدخول</translation>
 <translation id="7076878155205969899">كتم الصوت</translation>
+<translation id="7083774521940805477">‏تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي) غير متاح لجهازك.</translation>
 <translation id="7083848064787091821">وضع التركيز</translation>
 <translation id="7084678090004350185">نقطة الاتصال مفعَّلة، ومتصل بها <ph name="DEVICECOUNT" /> جهاز. يمكنك إيقافها.</translation>
 <translation id="7086931198345821656">‏يتطلَّب إتمام التحديث إجراء عملية Powerwash لجهاز <ph name="DEVICE_TYPE" />. سيتم حذف جميع البيانات. تعرّف على المزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1904,12 +1934,14 @@
 <translation id="7130207228079676353">التطبيقات التي يرجح النقر عليها</translation>
 <translation id="7131634465328662194">سيتم تسجيل خروجك تلقائيًا.</translation>
 <translation id="7143207342074048698">اتصال</translation>
+<translation id="7143409552554575716">‏علامات ChromeOS</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7144942256906679589">حالة البطارية</translation>
 <translation id="7145639536026937076">‏مستوى البطارية عند ‎<ph name="PERCENTAGE" />% ويجري شحنها. وضع "توفير شحن البطارية" مفعّل.</translation>
 <translation id="7147587499155271409">لا يتوفّر سجلّ تصفُّح</translation>
 <translation id="7147657298465433425">‏للوصول إلى مفاتيح F، اضغط على مفتاح fn مع الضغط على مفاتيح الصف العلوي</translation>
 <translation id="7149149900052329230">‏يمكنك إدارة ملفاتك المحلية وملفاتك على Google Drive في تطبيق "الملفات".</translation>
+<translation id="7154020516215182599">يُرجى إخبارنا بملاحظاتك وآرائك أو توضيح مشكلتك. يُرجى تضمين خطوات إعادة إظهار المشكلة، إن أمكن.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149">‫<ph name="HOTSPOT" />،
         <ph name="NETWORK" /></translation>
@@ -2086,6 +2118,7 @@
 <translation id="7726391492136714301">عرض إشعارات هاتفك وتطبيقاته</translation>
 <translation id="7727952505535211425">فتح الموقع الإلكتروني بشريط العناوين في علامة تبويب جديدة</translation>
 <translation id="7728657226117099693">‏إيقاف مفتاح Caps Lock</translation>
+<translation id="7732702411411810416">يُرجى التأكّد من اتصال جهازك بالإنترنت وإعادة المحاولة.</translation>
 <translation id="7742327441377685481">ما مِن إشعارات</translation>
 <translation id="7748275671948949022">تمييز زر مشغّل التطبيقات على الرف</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
@@ -2120,6 +2153,7 @@
 <translation id="7866482334467279021">مفعّل</translation>
 <translation id="7870790288828963061">‏لا توجد إصدارات أحدث لتطبيق Kiosk. لا يوجد شيء لتحديثه. يُرجى إزالة جهاز USB.</translation>
 <translation id="7872786842639831132">غير مُفعَّل</translation>
+<translation id="7873386145597434863">‏تطبيق Steam على جهاز Chromebook</translation>
 <translation id="7875575368831396199">يبدو أنه تم إيقاف اتصال البلوتوث على <ph name="DEVICE_TYPE" />. يُرجى تفعيل البلوتوث لاستخدام ميزة "مركز التحكم بالهاتف".</translation>
 <translation id="7884446017008693258">إعدادات نقطة الاتصال</translation>
 <translation id="7884902759927478774">إيقاف ميزة سحب علامات التبويب</translation>
@@ -2469,6 +2503,7 @@
 <translation id="8980862970816311842">نقل رمز تطبيق داخل مجلد في شبكة التطبيقات أو خارجه</translation>
 <translation id="8982906748181120328">مشاركة عن قرب</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">‏مرحبًا بك في Steam على جهاز Chromebook</translation>
 <translation id="8990809378771970590">استخدام <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">‏للإلغاء، انقر على FN + مفتاح "الإدراج السريع" أو Shift.</translation>
 <translation id="899350903320462459">فتح قفل الجهاز بواسطة <ph name="LOGIN_ID" /> لتنفيذ إجراء الإشعارات</translation>
@@ -2485,6 +2520,7 @@
 <translation id="9047624247355796468">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">البلوتوث غير متوفّر</translation>
 <translation id="9050999376345823055">اضغط على "." للإفلات</translation>
+<translation id="9061694916020926968">‏يجب تسجيل الدخول إلى حساب Google لاستخدام تطبيق "Steam لأجهزة Chromebook" (الإصدار التجريبي). يُرجى تسجيل الدخول وإعادة المحاولة.</translation>
 <translation id="906458777597946297">تكبير النافذة</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9068849894565669697">اختيار اللون</translation>

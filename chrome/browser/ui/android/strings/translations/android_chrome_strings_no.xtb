@@ -239,6 +239,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="200114059308480249">Vil du inkludere omliggende tekst i Google-søk?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, festet inkognitofane med dempet lyd</translation>
 <translation id="2021896219286479412">Navigering i full skjerm</translation>
+<translation id="2024195579772565064">Slett søkemotoren</translation>
 <translation id="2029669011553795746">Samtykke for varsler for tips er åpnet i halv høyde</translation>
 <translation id="2038563949887743358">Slå på Bruk skrivebordsversjon</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> har også data i Chrome</translation>
@@ -556,6 +557,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3384347053049321195">Del bildet</translation>
 <translation id="3387650086002190359">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av filsystemfeil.</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
+<translation id="3417835166382867856">Søk i faner</translation>
 <translation id="3430670036890315772">Hvis du slår av profillåsen, fjernes den lagrede informasjonen din</translation>
 <translation id="3435465986463792564">Har du mange vinduer? Du kan administrere dem her</translation>
 <translation id="3435575784518354875">For å beholde tilgangen til passordene dine, eksporter dem nå, oppdater Google Play-tjenester, og importer dem til Google Passordlagring igjen. <ph name="BEGIN_LINK" />Se fullstendige instruksjoner.<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6898797562238201317">Bruk din egen passordfrase for å kryptere alle Chrome-dataene i Google-kontoen din</translation>
 <translation id="6900532703269623216">Økt beskyttelse</translation>
+<translation id="6900654715912436255">Er du sikker på at du vil slette denne søkemotoren?</translation>
 <translation id="6903907808598579934">Slå på synkronisering</translation>
 <translation id="6906448540340261898">Sørg for at du alltid kan bruke passordene i Google-kontoen din</translation>
 <translation id="6908230663105268638">Varsler er tillatt for <ph name="SITE_NAME" /></translation>

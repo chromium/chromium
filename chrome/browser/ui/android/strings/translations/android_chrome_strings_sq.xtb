@@ -240,6 +240,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="200114059308480249">Të përfshihet teksti përreth në kërkimet e Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, skeda "e fshehtë" e gozhduar dhe e vendosur në heshtje</translation>
 <translation id="2021896219286479412">Kontrollet e sajtit në ekranin e plotë</translation>
+<translation id="2024195579772565064">Fshi motorin e kërkimit</translation>
 <translation id="2029669011553795746">Regjistrimi për njoftimet e këshillave u hap në gjysmë lartësi</translation>
 <translation id="2038563949887743358">Aktivizo "Kërko sajtin për desktop"</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> ka gjithashtu të dhëna në Chrome</translation>
@@ -559,6 +560,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3384347053049321195">Ndaje imazhin</translation>
 <translation id="3387650086002190359">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të gabimeve të sistemit të skedarëve.</translation>
 <translation id="3414952576877147120">Madhësia:</translation>
+<translation id="3417835166382867856">Kërko skedat</translation>
 <translation id="3430670036890315772">Çaktivizimi i kyçjes së profilit do të heqë informacionet e tua të ruajtura</translation>
 <translation id="3435465986463792564">Ke shumë dritare? Mund t'i menaxhosh ato nga këtu</translation>
 <translation id="3435575784518354875">Për të mbajtur qasjen te fjalëkalimet e tua, eksportoji ato tani, përditëso shërbimet e Google Play dhe më pas importoji fjalëkalimet sërish te "Menaxheri i fjalëkalimeve i Google". <ph name="BEGIN_LINK" />Shiko udhëzimet e plota<ph name="END_LINK" />.</translation>
@@ -1445,6 +1447,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6896758677409633944">Kopjo</translation>
 <translation id="6898797562238201317">Përdor frazën e kalimit për të enkriptuar të gjitha të dhënat e Chrome në "Llogarinë tënde të Google"</translation>
 <translation id="6900532703269623216">Mbrojtja e përmirësuar</translation>
+<translation id="6900654715912436255">E konfirmon që dëshiron ta fshish këtë motor kërkimi?</translation>
 <translation id="6903907808598579934">Aktivizo sinkronizimin</translation>
 <translation id="6906448540340261898">Sigurohu që mund t'i përdorësh gjithmonë fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="6908230663105268638">Njoftimet lejohen për <ph name="SITE_NAME" /></translation>

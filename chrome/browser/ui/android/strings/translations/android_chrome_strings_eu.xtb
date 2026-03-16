@@ -239,6 +239,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="200114059308480249">Barne hartu nahi al duzu inguruko testua Google-ko bilaketetan?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> fitxa, ezkutuko modukoa, ainguratuta, audioa desaktibatuta</translation>
 <translation id="2021896219286479412">Webgunearen pantaila osoko aukerak</translation>
+<translation id="2024195579772565064">Ezabatu bilatzailea</translation>
 <translation id="2029669011553795746">Aholkuen jakinarazpenak jasotzea aukeratzeko leihoa altuera erdian irekita dago</translation>
 <translation id="2038563949887743358">Aktibatu ordenagailuetarako webgunea eskatzeko aukera</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> aplikazioak ere baditu datuak Chrome-n</translation>
@@ -556,6 +557,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3384347053049321195">Partekatu irudia</translation>
 <translation id="3387650086002190359">Ezin izan da deskargatu <ph name="FILE_NAME" />, fitxategi-sisteman erroreak daudelako.</translation>
 <translation id="3414952576877147120">Tamaina:</translation>
+<translation id="3417835166382867856">Bilatu fitxak</translation>
 <translation id="3430670036890315772">Profilaren blokeatzeko eginbidea desaktibatuz gero, gordeta daukazun informazioa kenduko da</translation>
 <translation id="3435465986463792564">Leiho gehiegi dituzu? Hemen kudea ditzakezu.</translation>
 <translation id="3435575784518354875">Pasahitzak atzitzen jarraitu ahal izateko, esporta itzazu, eguneratu Google Play Services eta, gero, inporta itzazu berriro Google-ren Pasahitz-kudeatzailea zerbitzura. <ph name="BEGIN_LINK" />Ikusi argibide guztiak<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6896758677409633944">Kopiatu</translation>
 <translation id="6898797562238201317">Erabili zeure pasaesaldia Google-ko kontuko Chrome-ko datu guztiak enkriptatzeko</translation>
 <translation id="6900532703269623216">Babes hobetua</translation>
+<translation id="6900654715912436255">Ziur bilatzailea ezabatu nahi duzula?</translation>
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
 <translation id="6906448540340261898">Izan beti Google-ko kontuko pasahitzak erabiltzeko aukera</translation>
 <translation id="6908230663105268638">Eman zaio jakinarazpenak bidaltzeko baimena <ph name="SITE_NAME" /> webguneari</translation>

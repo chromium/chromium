@@ -239,6 +239,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="200114059308480249">Google axtarışlarına ətrafdakı mətn daxil edilsin?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Bərkidilmiş, susdurulmuş anonim tab</translation>
 <translation id="2021896219286479412">Tam ekran sayt nəzarətləri</translation>
+<translation id="2024195579772565064">Axtarış sistemini silin</translation>
 <translation id="2029669011553795746">İpucu bildirişlərinə qoşulma pəncərəsi yarım hündürlükdə açıldı</translation>
 <translation id="2038563949887743358">Əsas Versiya Sorğusunu aktiv edin</translation>
 <translation id="204321170514947529">Həmçinin, <ph name="APP_NAME" /> tətbiqinin Chrome'da datası var</translation>
@@ -556,6 +557,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3384347053049321195">Şəkli paylaşın</translation>
 <translation id="3387650086002190359">Fayl sistem xətaları səbəbindən <ph name="FILE_NAME" /> faylı endirilmədi.</translation>
 <translation id="3414952576877147120">Ölçü:</translation>
+<translation id="3417835166382867856">Tabları axtarın</translation>
 <translation id="3430670036890315772">Profil kilidi deaktiv ediləndə yadda saxlanmış məlumatlar silinəcək</translation>
 <translation id="3435465986463792564">Çox sayda pəncərə var? Onları buradan idarə edə bilərsiniz</translation>
 <translation id="3435575784518354875">Parollarınıza girişi saxlamaq üçün onları indi eksport edin, Google Play Xidmətlərini güncəlləyin və sonra onları yenidən Google Parol Menecerinə import edin. <ph name="BEGIN_LINK" />Bütün təlimatlara baxın<ph name="END_LINK" />.</translation>
@@ -1438,6 +1440,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6898797562238201317">Google Hesabındakı bütün Chrome datasını şifrələmək üçün öz parol ifadələrinizdən istifadə edin</translation>
 <translation id="6900532703269623216">Təkmil qoruma</translation>
+<translation id="6900654715912436255">Bu axtarış sistemini silmək istədiyinizə əminsiniz?</translation>
 <translation id="6903907808598579934">Sinxronizasiyanı akitv edin</translation>
 <translation id="6906448540340261898">Google Hesabında hər zaman parollardan istifadə edə biləcəyinizdən əmin olun</translation>
 <translation id="6908230663105268638"><ph name="SITE_NAME" /> üçün bildirişlərə icazə verilib</translation>

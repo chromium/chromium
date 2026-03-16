@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="1557622599341396706">မျက်နှာပြင်အမည် ပြပါ</translation>
 <translation id="1569384531973824928">၎င်းက ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်များပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို သုံးခွင့်ပေးသည်။ အင်တာနက်စာမျက်နှာကို ပြန်လည်စတင်ရမည် (သို့) အက်ပ်ကို ပြန်စရမည်။</translation>
+<translation id="1570235441606255261">Steam ထည့်သွင်းကိရိယာ</translation>
 <translation id="1571697193564730395">‘မနှောင့်ယှက်ရ’ ဖွင့်/ပိတ် လုပ်ရန်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">ရွေးထားသည့် ဘယ်အစွန်းဖိဆွဲအထိန်း၊ ရွှေ့ရန် မြားခလုတ်များ သုံးပါ</translation>
 <translation id="1576623706766186887">မှန်ဘီလူးဖွင့်ထားပါက ဇူးမ်ဖြုတ်ရန်</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
 <translation id="1637505162081889933">စက် <ph name="NUM_DEVICES" /> ခု</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
+<translation id="1642895994345928121">ဤအက်ပ်ဖွင့်ရန် စက်သိုလှောင်ခန်း မလုံလောက်ပါ။ နေရာလွတ်ပြုလုပ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1647986356840967552">ယခင်စာမျက်နှာ</translation>
 <translation id="1651914502370159744">‘မှတ်တမ်း’ စာမျက်နှာ ဖွင့်ရန်</translation>
 <translation id="1668469839109562275">အသင့်ပါသော VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">အက်ပ်နှင့်တဘ် အုပ်စုများ</translation>
 <translation id="2386292613071805067">စာမျက်နှာပေါ်ရှိ အရာအားလုံးကို ရွေးရန်</translation>
 <translation id="2389423187722941333">Gemini ဖွင့်ရန်</translation>
+<translation id="2391805183137601570">Steam ဖွင့်ရန်</translation>
 <translation id="2392659840443812875">ရနိုင်သော ဟော့စပေါ့ မရှိပါ။ သင့်စက်က အနီးတွင်ရှိပြီး ဘလူးတုသ်ဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
 <translation id="2397416548179033562">Chrome မီနူးကို ပြရန်</translation>
 <translation id="240006516586367791">မီဒီယာ ထိန်းချုပ်မှုများ</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">မနေ့က ဖွင့်ထားသည်</translation>
 <translation id="2440978926514840421">GIF ရုပ်သံဖမ်းယူလိုက်သည်</translation>
 <translation id="2441427462554639370">သိုလှောင်ခန်းနေရာ အလွန်နည်းနေသဖြင့် ရိုက်ကူးမှု ရပ်သွားသည်</translation>
+<translation id="2447587550790814052">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို သုံးနိုင်ပါပြီ</translation>
 <translation id="2449089818483227734">ဘက်ထရီ အားနည်းနေသည်</translation>
 <translation id="2450205753526923158">ဖန်သားပြင်ဓာတ်ပုံမုဒ်</translation>
 <translation id="2453860139492968684">ပြီးပြီ</translation>
 <translation id="2455994958736234930">လိပ်စာဘားတွင် www. နှင့် .com ထည့်ပြီး ဝဘ်ဆိုက်ကို ဖွင့်ရန်</translation>
 <translation id="2456008742792828469">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">အောက်သို့ကျော်ရန်</translation>
+<translation id="2462332841984057083">Steam ကို လက်ရှိ ထည့်သွင်းလျက်ရှိသည်။ စနစ်ထည့်သွင်းပြီးသည်အထိ စောင့်ပါ။</translation>
 <translation id="2465145153332031561">ဘက်ထရီအခြေအနေ <ph name="BATTERY_HEALTH_PERCENTAGE" />%၊ သုံးစွဲမှု အကြိမ်ရေ <ph name="CYCLE_COUNT" /> ကြိမ်</translation>
 <translation id="2473177541599297363">ပုံရိပ်ပြတ်သားကိန်း အတည်ပြုခြင်း</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ထည့်ရန်</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> အစမ်းပြကွက်။ သုံးနေသည့် မျက်နှာပြင်။</translation>
 <translation id="2486405091093637109">“<ph name="DISPLAY_NAME" />” ကို <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ပုံရိပ်ပြတ်သားကိန်းသို့ ပြောင်းလိုက်သည်။ အတည်မပြုဘဲ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ပြောင်းပါမည်။</translation>
 <translation id="2487915095798731898">ချိတ်ဆက်ပါ</translation>
+<translation id="2494555621641843783">Steam ထည့်သွင်း၍မရပါ</translation>
 <translation id="2496180316473517155">အသုံးပြုခြင်း မှတ်တမ်း</translation>
 <translation id="2499445554382787206">မျက်နှာပြင် ပရိုဖိုင်မီနူး။ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ကပ်ခွာကီးများ</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">စာပြန်ရန်</translation>
 <translation id="2727744317940422214">ဝမ်းနည်းပါသည်၊ တစ်ခုခု မှားသွားသည်။ ဖော်ပြချက်တွင် #bruschetta ဖြင့် အကြံပြုချက်တင်ပါ။ အမှားကုဒ်မှာ <ph name="ERROR" /> ဖြစ်သည်။ ရှင်းထုတ်၍မရပါ။ ကိုယ်တိုင်လုပ်ရန် လုပ်အပ်နိုင်သည်။</translation>
 <translation id="2727977024730340865">ပါဝါနည်းသည့် အားသွင်းကိရိယာသို့ ချိတ်ဆက်ထားသည်။ ဘတ်ထရီအားသွင်းခြင်း အားကိုး၍ရမည် မဟုတ်ပါ။</translation>
+<translation id="2737538893171115082">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်။ သင့်စီမံခန့်ခွဲသူက ဤမူဝါဒများကို ဖွင့်ရန်လိုအပ်သည်-</translation>
 <translation id="2743301740238894839">စတင်ရန်</translation>
 <translation id="2743387203779672305">ကလစ်ဘုဒ်သို့ ကူးယူရန်</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />၊ <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ဖြင့် ပေါင်းစည်းနိုင်သည်</translation>
 <translation id="3039939407102840004">စတိုင်လပ်စ်ဘက်ထရီ <ph name="PERCENTAGE" /> ရာခိုင်နှုန်း ရှိသည်။</translation>
 <translation id="304097922505898963">‘လက်ကွက်ဖြတ်လမ်းများ’ အက်ပ် ဖွင့်ရန်</translation>
+<translation id="3040982432432547149">Chromebook အတွက် Steam ကို ပိုကောင်းအောင် ကူညီပါ</translation>
 <translation id="304417730895741346">ပင်ထိုးထားသော၊ ဖွင့်ထားသော အက်ပ်များသည် စင်ပေါ်တွင်ရှိသည်။ အက်ပ်ကို စင်ပေါ်သို့ ပင်ထိုးရန် အက်ပ်တွင် ညာဘက်ခလုတ်ကို နှိပ်ပါ (သို့) တာ့ချ်ပက်ကို လက်နှစ်ချောင်းဖြင့် တို့ပါ။</translation>
 <translation id="3045670165536837541">ရွေးထားသည့် ညာထိပ်ဖိဆွဲအထိန်း၊ ရွှေ့ရန် မြားခလုတ်များ သုံးပါ</translation>
 <translation id="3047761520276763270">ဤသို့ပြောကြည့်ပါ-</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">ပြန်စရန် အချိန်အနည်းငယ် ကြာနိုင်သည်</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{စက်ပစ္စည်းတစ်ခုသို့ ချိတ်ထားသည်}other{စက်ပစ္စည်း # ခုသို့ ချိတ်ထားသည်}}</translation>
 <translation id="3203405173652969239">'ခလုတ်သုံးခြင်း' ဖွင့်ထားသည်</translation>
+<translation id="3204648577100496185">ဤအက်ပ်နှင့်ဆက်စပ်သည့် ဒေတာကို ဤစက်ပစ္စည်းမှ ဖယ်ရှားနိုင်သည်</translation>
 <translation id="3206735939915734551">ကတ်ပ်လော့ ဖွင့်/ပိတ်ရန်</translation>
 <translation id="3207953481422525583">အသုံးပြုသူ ဆက်တင်များ</translation>
 <translation id="3208321278970793882">အက်ပ်</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ထည့်ရန်အတွက် ရှာရန်</translation>
 <translation id="3274634049061007184">သင့်ဖုန်းရှိ အက်ပ်များကို ကြည့်ရန်</translation>
 <translation id="3279230909244266691">ဤလုပ်ဆောင်ချက်သည် မိနစ်အနည်းငယ်ကြာနိုင်ပါသည်။ ပကတိအသွင်စက်ကို စတင်နေသည်။</translation>
+<translation id="3285465040399788513">စနစ်ထည့်သွင်းမှုအပြီးသတ်ရန် စက်သိုလှောင်ခန်း မလုံလောက်ပါ။ နေရာလွတ်ပြုလုပ်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3289364673986435196">ပါဝါမီနူး</translation>
 <translation id="3289544412142055976">Linux အက်ပ်များကို လောလောဆယ် ပံ့ပိုးမထားပါ</translation>
 <translation id="3289674678944039601">ကြားခံကိရိယာမှတစ်ဆင့် အားသွင်းနေသည်</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3369111525500416043">မကြာမီ ရက်စေ့မည်</translation>
 <translation id="3371140690572404006">USB-C ကိရိယာ (ညာ ပို့တ် အရှေ့ပိုင်း)</translation>
+<translation id="3373196968211632036">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို ကလေးသုံး Google Account များအတွက် မရနိုင်ပါ</translation>
 <translation id="3375634426936648815">ချိတ်ဆက်ထားသည်</translation>
 <translation id="3386978599540877378">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control−Shift−Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">စင်ကို အလိုလိုဖျောက်ထားသည်</translation>
+<translation id="3496797737329654668">ဂိမ်းကစားကြရအောင်</translation>
 <translation id="3505066820268455558">ဘက်ထရီ အားသွင်းနေသည်</translation>
 <translation id="3509391053705095206">သင့်ဖုန်းကို ရှာမတွေ့ပါ။ သင့်ဖုန်း၏ ဘလူးတုသ်ကို ဖွင့်ထားပါ။</translation>
 <translation id="3510164367642747937">မောက်စ်ကာဆာကို ထင်သာမြင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">ကလစ်ဘုတ် ဖွင့်ရန်</translation>
 <translation id="363473492175527493">ပြရန် သတ်မှတ်ထားသည့် လုပ်ဆောင်စရာ- <ph name="TASK_NAME" />။ လုပ်ဆောင်စရာကို ပြင်ရန် ‘Enter ခလုတ်’ နှိပ်ပါ။</translation>
 <translation id="3638400994746983214">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်ကို အဖွင့်အပိတ်လုပ်ရန်။ <ph name="STATE_TEXT" />။</translation>
+<translation id="3641070112313110357">Chromebook အတွက် Steam (စမ်းသပ်) ကို အပ်ဒိတ်လုပ်ရန် လိုအပ်သည်။ Chromebook ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3649256019230929621">ဝင်းဒိုး ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />၊
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">လက်ရှိမျက်နှာပြင်နေရာမှ ဝင်းဒိုးများကို ပြနေသည်၊ မျက်နှာပြင်နေရာ အားလုံးမှ ဝင်းဒိုးများကို ပြရန် ‘အပေါ်ညွှန်မြား’ ကီးကို နှိပ်ပါ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">ဖျော်ဖြေရေး</translation>
+<translation id="370665806235115550">တင်ပေးနေ...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> နှင့် <ph name="UNAVAILABLE_DLC_TWO" /> မရနိုင်ပါ။</translation>
 <translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
 <translation id="3712143870407382523">ဤဆလိုက်အတွက် ဝင်းဒိုးရွေးရန်</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">ရှင်းလင်းပို့ချချက်မြင်ကွင်းမှ ထွက်ရန်</translation>
 <translation id="383629559565718788">ကီးဘုတ်ဆက်တင်များကို ပြရန်</translation>
 <translation id="384082539148746321">နမူနာ ပုံစံကို ဖျက်မလား။</translation>
+<translation id="3841282988425489367">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို စနစ်ထည့်သွင်း၍မရပါ</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> ထို့နောက် <ph name="KEY_ONE" /> (သို့) <ph name="KEY_TWO" /> (သို့) <ph name="KEY_THREE" /> (သို့) <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">မည်သည့် ကွန်ရက် အချက်လက်မျှ မရနိုင်</translation>
 <translation id="3848526302597027234">အောက်ပါတို့ကို ခွင့်ပြုပါ-</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">လာမည့်စကားလုံးအဆုံးသို့ ရွှေ့ရန်</translation>
 <translation id="4150201353443180367">မျက်နှာပြင်ပြသမှု</translation>
 <translation id="4151054805501931758">အလှပုံ ခြယ်မှုန်းရန်</translation>
+<translation id="4151449637210235443">လတ်တလောဂိမ်းကစားခြင်းအကြောင်း ပြောပြပါ</translation>
 <translation id="4156293514828496577">ဘက်ထရီ <ph name="PERCENTAGE" />% ကျန်သည် (<ph name="TIME_LEFT" /> ခန့်)။
 ဘက်ထရီသက်တမ်းကြာစေရန် ဝန်ဆောင်မှုအချို့ကို ကန့်သတ်ထားသည်။</translation>
 <translation id="4158003972857765638">မျက်နှာပြင်အသစ်တွင် စီစဉ်ပါ</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">သို့မဟုတ်</translation>
 <translation id="4193857202545160520">ကလစ်နှင့် ကီးများပြပါ</translation>
 <translation id="4193969623755915875">‘စူးစမ်းလေ့လာခြင်း’ အက်ပ်တွင် “အကူအညီ” ကို “<ph name="NEW_SHORTCUT" />” ဖြင့်ဖွင့်ရန်</translation>
+<translation id="4195001808989442226">Chromebook အတွက် Steam (စမ်းသပ်) ကို ဖွင့်၍မရပါ</translation>
 <translation id="4195579532193195633">လက်ရှိဗားရှင်း <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">သင်ချန်ထားသည့်နေရာမှ ဆက်မည်</translation>
 <translation id="4195877955194704651">အလိုအလျောက် နှိပ်ခလုတ်</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />၊ ထည့်သွင်းထားသည့် အက်ပ်၊ ခဏရပ်ထားသည်</translation>
 <translation id="4228078597006700451">ထိန်းချုပ်မှုများ စနစ်ထည့်သွင်းမထားပါ</translation>
 <translation id="4230560241506423345">အသစ်</translation>
+<translation id="4231231258999726714">Chromebook အတွက် Steam ကို စနစ်ထည့်သွင်းနေသည်</translation>
 <translation id="4236726631849783264">အကြံပြုသည့် လုပ်ဆောင်ချက်များအကြောင်း သတိပေးချက်</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ခြုံကြည့်သည့်မုဒ်</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{စက်ကို ယခုအပ်ဒိတ်လုပ်ပါ}=1{စက်ကို ၁ စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို # စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="4472575034687746823">စကြရအောင်</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">ခန့်မှန်းကြာချိန်</translation>
 <translation id="4477350412780666475">နောက်တစ်ပုဒ်</translation>
 <translation id="4477751544736611934">ဒေတာခ ပေးရနိုင်သည်။
 စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">အမည်မသိ လက်ခံစက်သို့ ကာ့စ်လုပ်ခြင်း ရပ်တန့်ရန်</translation>
 <translation id="4596144739579517758">အမှောင်နောက်ခံ ပိတ်ထားသည်</translation>
 <translation id="4596442969149038771"><ph name="USER" /> က မျှဝေထားသည်</translation>
+<translation id="4598556348158889687">သိုလှောင်ခန်းစီမံခန့်ခွဲမှု</translation>
 <translation id="4610493115106525653">ထုတ်လုပ်ချက် ကောင်းသည်</translation>
 <translation id="4611292653554630842">အကောင့်ထဲဝင်ရန်</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ချိတ်ဆက်ပြီးပြီ</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">ဖျက်ရန် Ctrl+W နှိပ်ပါ</translation>
 <translation id="4635501805800894201">{0,plural, =0{စက်ကို ယခင်ဗားရှင်းသို့ ယခုအပ်ဒိတ်လုပ်ပါ}=1{စက်ကို ယခင်ဗားရှင်းသို့ ၁ စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # စက္ကန့်အတွင်း အပ်ဒိတ်လုပ်ပါ}}</translation>
 <translation id="4642092649622328492">ဖန်သားပြင်ဓာတ်ပုံကို တစ်စိတ်တစ်ပိုင်းသာ ရိုက်ရန်</translation>
+<translation id="4642587497923912728">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို ဤ Chromebook တွင် ပထမဆုံး လက်မှတ်ထိုးဝင်ထားသည့် အကောင့်အတွက်သာ ရနိုင်သည်။</translation>
 <translation id="4644727592819780893">ကင်မရာနေရာတကျဖြစ်ရန် နေရာအလွန်သေးသည်</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />၊ အက်ပ်အကြံပြုချက်</translation>
 <translation id="4649019912155580914">သင်တည်းဖြတ်ထားသည်</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">အမှောင်နောက်ခံ ဖွင့်ထားသည်</translation>
 <translation id="5354804064646502504">ဒေတာခ ပေးရနိုင်သည်။
 ချိတ်ဆက်ထားသောစက် မရှိပါ။</translation>
+<translation id="5355498626146154079">“Borealis Enabled” အလံကို ဖွင့်ရန်လိုအပ်သည်</translation>
 <translation id="5356963482258194581">အမှောင်နောက်ခံနှင့် အလင်းနောက်ခံကို ပြောင်းသုံးနိုင်သည်။ ဒက်စ်တော့ပေါ်တွင် ညာဘက်ခလုတ်ကို နှိပ်၍ ‘နောက်ခံနှင့် စတိုင်’ ကို ရွေးပါ။</translation>
 <translation id="536019650977002321">သင့်စီမံခန့်ခွဲသူက အသံဖမ်းယူခြင်းကို ခွင့်မပြုပါ။ နောက်ထပ် အချက်အလက်အတွက် သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> စကားသံဖိုင်များ တစ်ဝက်တစ်ပျက် ဒေါင်းလုဒ်လုပ်ထားသည်</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">ကင်မရာသုံးခွင့် ဖွင့်မလား။</translation>
 <translation id="5378450298115733949">နောက်ထပ်</translation>
 <translation id="5379115545237091094">စမ်းသပ်သည့်အကြိမ်ရေ အလွန်များနေပါပြီ</translation>
+<translation id="5380526436444479273">မိနစ်အနည်းငယ် စောင့်ပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="5383434787520761436">Google Drive ဖိုင်များမရှိပါ</translation>
 <translation id="5391307769715781764">သိမ်းထားသောမျက်နှာပြင်ကို အစားထိုးမလား။</translation>
 <translation id="5392327145184648521">ဘက်ထရီ % ကို တွက်ချက်နေသည်…</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">လုပ်ဆောင်စရာကို လုပ်ပြီးဟု မှတ်သားရန်</translation>
 <translation id="5413656666631274079">ဆက်တင်များ စာမျက်နှာ</translation>
 <translation id="5414198321558177633">ပရိုဖိုင်စာရင်းကို ပြန်လည် စတင်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
+<translation id="5415328625985164836">စမ်းသပ်ပရိုဂရမ် ဖြစ်သည်။ သင့် Chromebook တွင် ဂိမ်းအချို့ကစားရန်အတွက် Steam ကို သုံးနိုင်ပါပြီ။</translation>
 <translation id="5426063383988017631">ဆက်တင်များမီနူး ပိတ်ထားသည်</translation>
 <translation id="5428899915242071344">ရွေးချယ်ခြင်းကို စတင်ရန်</translation>
 <translation id="5429993543155113935">‘ရုပ်ဖျက်’ ဝင်ဒိုးများကို လောလောဆယ် ပံ့ပိုးမထားပါ</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774"><ph name="PRODUCT_NAME" /> တွင် သင်လိုသမျှအားလုံးပြုလုပ်ရန် အက်ပ်များကိုသုံးပါ။ သင့်အက်ပ်များကို Launcher တွင် တွေ့နိုင်သည်။</translation>
 <translation id="571295407079589142">မိုဘိုင်းဒေတာ ပိတ်ထားသည်</translation>
 <translation id="5727460725221669831">သင့်စကားဝှက်မေ့သွားပါက (သို့) သင့် Google Account စကားဝှက်ကို မကြာသေးမီက ပြောင်းထားပါက ဤအသုံးပြုသူကို ပြန်လည်ရယူကြည့်ပါ။</translation>
+<translation id="572914206753951782">သင့် Chromebook သည် နောက်ဆုံးထွက်ဗားရှင်းဖြစ်ကြောင်း သေချာပါစေ။ သင့် Chromebook ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="5733630091161562207">ကြိုဆိုရေး အကြောင်းကြားချက်</translation>
 <translation id="573413375004481890">ဤစက်သည် သင့်ဖန်သားပြင်ပြသမှုများအားလုံးကို မပံ့ပိုးသည့်အတွက် တစ်ခုကို ချိတ်ဆက်မှုဖြုတ်လိုက်ပါပြီ</translation>
 <translation id="574392208103952083">အလယ်အလတ်</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">‘လက်ကွက်ဖြတ်လမ်းများ’ အက်ပ်ကို “<ph name="NEW_SHORTCUT" />” ဖြင့် ဖွင့်ပါ။</translation>
 <translation id="6507618042428827377">ရနိုင်သော နောက်လက်ကွက်တစ်ခုသို့ ပြောင်းရန်</translation>
 <translation id="6508923215158854599">သင်၏ Chromebook နှင့် Chromecast စက်သည် Wi-Fi ကွန်ရက်တစ်ခုတည်းကို ချိတ်ဆက်ထားကြောင်း သေချာပါစေ။</translation>
+<translation id="6511607461419653612">Chromebook ကို ပြန်စပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="6515727200518652613">ကင်မရာပျောက်သွား၍ ပြန်လည်ချိတ်ဆက်နေသည်။</translation>
 <translation id="651753338596587143">DLC အထောက်အကူ ပရိုဂရမ်များကို ထည့်သွင်းနေစဉ် တစ်ခုခု မှားသွားသည်။ ပြန်လည်စတင်ကြည့်ပြီး ပြဿနာဆက်ရှိနေပါက ရှင်းလင်းချက်တွင် #bruschetta ဖြင့် အကြံပြုချက်ပို့ပါ။ အမှားကုဒ်မှာ <ph name="ERROR" /> ဖြစ်သည်။</translation>
 <translation id="6520517963145875092">ရိုက်ယူရန် ဝင်းဒိုးတစ်ခု ရွေးပါ</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်ကို ဖွင့်ထားသောကြောင့် <ph name="APP_TITLE" /> အကြောင်းကြားချက်ကို ဖျောက်ထားသည်</translation>
 <translation id="6574622320167699133">သင့်ဖုန်းက လော့ခ်ဖွင့်လိုက်သည်။ ဝင်ရန် တို့ပါ (သို့) နှိပ်ပါ။</translation>
 <translation id="6578407462441924264">အမည်ပေးမထား</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% ပြီးပါပြီ</translation>
 <translation id="6582012689384648647">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ထားသော အာရုံစိုက်ပလေးလစ်များအတွက် YouTube Music သုံးခွင့်ပြုပါ</translation>
 <translation id="6582034443359256692">ဘက်ထရီအားသွင်းမှုအဆင့်ကို တွက်ချက်နေသည်။</translation>
 <translation id="6585808820553845416">ချိတ်ဆက်ချိန်<ph name="SESSION_TIME_REMAINING" /> မှာ ပြီးဆုံးမည်။</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">ပါဝါ</translation>
 <translation id="672609503628871915">အသစ် ဘာတွေလဲ ကြည့်ရအောင်</translation>
 <translation id="6727969043791803658">ချိတ်ဆက်ပြီးပြီ၊ ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">မိနစ် အနည်းငယ်ခန့် ကြာနိုင်ည်</translation>
 <translation id="6732087373923685049">ကင်မရာ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ကင်မရာနှင့် မိုက်ခရိုဖုန်း သုံးနေသည်</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">‘Alt + အပေါ်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘စာမျက်နှာ အပေါ်သို့’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘အပေါ်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="696267987219125751">ကင်မရာဘောင်ချိန်ခြင်း ပိတ်ထားသည်။</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ဖြင့် ထည့်သွင်းထားသော အက်ပ်နှင့် ဂိမ်းတိုင်းကို ဤစက်မှ ဖယ်ရှားပါမည်။ ၎င်းအက်ပ်နှင့် ဂိမ်းများနှင့် ဆက်စပ်နေသည့် ဒေတာများကိုလည်း ဖယ်ရှားပါမည်။ ပရိုဂရမ်ကို ဖယ်ရှားခြင်းမပြုမီ သိမ်းထားသော အက်ပ်နှင့် ဂိမ်းများကို အရန်သိမ်းပါ။</translation>
 <translation id="6972629891077993081">HID စက်များ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">Insert</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">အော်တိုလှည့်ရန်</translation>
 <translation id="7076293881109082629">အကောင့်ထံဝင်ရောက်နေသည်</translation>
 <translation id="7076878155205969899">အသံတိတ်ပါ</translation>
+<translation id="7083774521940805477">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို သင်၏ Chromebook တွင် မရနိုင်ပါ။</translation>
 <translation id="7083848064787091821">အထူးပြသရန်</translation>
 <translation id="7084678090004350185">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် <ph name="DEVICECOUNT" /> ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="7086931198345821656">ဤအပ်ဒိတ်သည် သင့် <ph name="DEVICE_TYPE" /> ကို ပါဝါဝရှ် ပြုလုပ်ရန် သတ်မှတ်ထားသည်။ ဒေတာအားလုံးကို ဖျက်ပါမည်။ နောက်ဆုံးထွက် <ph name="SYSTEM_APP_NAME" /> အပ်ဒိတ်အကြောင်း ပိုမိုလေ့လာပါ။</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">ဖြစ်နိုင်ချေအများဆုံး</translation>
 <translation id="7131634465328662194">သင့်ကို အလိုအလျောက် ထွက်လိုက်ပါမည်။</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
+<translation id="7143409552554575716">ChromeOS အလံများ</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="7144942256906679589">ဘက်ထရီ အခြေအနေ</translation>
 <translation id="7145639536026937076">ဘက်ထရီ <ph name="PERCENTAGE" />% ရှိပြီး အားသွင်းနေသည်။ ‘ဘက်ထရီ အားထိန်း’ ဖွင့်ထားသည်။</translation>
 <translation id="7147587499155271409">ကြည့်ရှုမှုမှတ်တမ်း မရှိပါ</translation>
 <translation id="7147657298465433425">F ခလုတ်များကို သုံးရန်အတွက် fn ခလုတ် + ထိပ်ဆုံးအတန်းခလုတ်များကို နှိပ်ပါ</translation>
 <translation id="7149149900052329230">သင်၏ စက်တွင်းဖိုင်နှင့် Google Drive ဖိုင်များအားလုံးကို Files အက်ပ်တွင် စီမံနိုင်သည်။</translation>
+<translation id="7154020516215182599">သင့်အကြံပြုချက်ကို မျှဝေပါ (သို့) သင့်ပြဿနာကို ဖော်ပြပါ။ သင့်ပြဿနာ ပြန်လည်ဖော်ထုတ်ရန် လုပ်ဆောင်မှုအဆင့်များကို ဖြစ်နိုင်ပါက ထည့်သွင်းပါ။</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />၊
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@
 <translation id="7726391492136714301">သင့်ဖုန်း၏ အကြောင်းကြားချက်နှင့် အက်ပ်များကို ကြည့်နိုင်သည်</translation>
 <translation id="7727952505535211425">လိပ်စာဘားရှိ ဝဘ်ဆိုက်ကို တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="7728657226117099693">စာလုံးကြီး ပိတ်ရန်</translation>
+<translation id="7732702411411810416">အင်တာနက်နှင့် ချိတ်ဆက်ထားခြင်း ရှိ၊ မရှိ စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="7742327441377685481">အကြောင်းကြားချက် မရှိပါ</translation>
 <translation id="7748275671948949022">စင်ပေါ်တွင် Launcher ခလုတ်ကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
@@ -2121,6 +2154,7 @@
 <translation id="7866482334467279021">ဖွင့်</translation>
 <translation id="7870790288828963061">ပိုသစ်သည့် ဗားရှင်းဖြင့် Kiosk အက်ပ် တစ်ခုကိုမှ မတွေ့ခဲ့ပါ။ ကျေးဇူးပြုပြီး USB အချောင်းကို ဖယ်ရှားလိုက်ပါ။</translation>
 <translation id="7872786842639831132">ပိတ်</translation>
+<translation id="7873386145597434863">Chromebook အတွက် Steam</translation>
 <translation id="7875575368831396199">သင့် <ph name="DEVICE_TYPE" /> တွင် ဘလူးတုသ် ပိတ်ထားပုံရသည်။ 'ဖုန်းစင်တာ' အသုံးပြုရန် ဘလူးတုသ် ဖွင့်ပါ။</translation>
 <translation id="7884446017008693258">ဟော့စပေါ့ ဆက်တင်</translation>
 <translation id="7884902759927478774">တဘ်ဖိဆွဲခြင်း မလုပ်တော့</translation>
@@ -2471,6 +2505,7 @@
 <translation id="8980862970816311842">အက်ပ်ဇယားတွင် အက်ပ်သင်္ကေတကို ဖိုင်တွဲတစ်ခု၏ အတွင်း/အပြင်သို့ ရွှေ့ရန်</translation>
 <translation id="8982906748181120328">အနီးတစ်ဝိုက် မြင်နိုင်မှု</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebook ၏ Steam က ကြိုဆိုပါသည်</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ကို အသုံးပြုနေသည်</translation>
 <translation id="8991648557324317894">ပယ်ဖျက်ရန် fn + ‘အမြန်ထည့်’ (သို့) Shift နှိပ်ပါ။</translation>
 <translation id="899350903320462459">အကြောင်းကြားခြင်း လုပ်ဆောင်ရန်အတွက် <ph name="LOGIN_ID" /> အဖြစ် စက်ပစ္စည်းကို လော့ခ်ဖွင့်ပါ</translation>
@@ -2487,6 +2522,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> အတွက် ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="9050012935252397793">ဘလူးတုသ် မရနိုင်ပါ</translation>
 <translation id="9050999376345823055">လွှတ်လိုက်ရန် “.” ကို နှိပ်ပါ</translation>
+<translation id="9061694916020926968">‘Chromebook အတွက် Steam’ (စမ်းသပ်) ကို သုံးရန်အတွက် Google Account တစ်ခုသို့ လက်မှတ်ထိုးဝင်ရမည်။ လက်မှတ်ထိုးဝင်ပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="906458777597946297">ဝင်ဒိုးကို အကြီးဆုံး လုပ်ရန်</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="9068849894565669697">အရောင်ကို ရွေးရန်</translation>

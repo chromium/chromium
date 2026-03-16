@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Biru</translation>
 <translation id="1557622599341396706">Tampilkan nama desktop</translation>
 <translation id="1569384531973824928">Tindakan ini akan mengizinkan akses untuk semua aplikasi serta situs yang memiliki izin kamera dan mikrofon. Anda mungkin perlu memuat ulang halaman web atau memulai ulang aplikasi.</translation>
+<translation id="1570235441606255261">Penginstal Steam</translation>
 <translation id="1571697193564730395">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Tuas tepi kiri dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="1576623706766186887">Perkecil saat kaca pembesar diaktifkan</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> perangkat</translation>
 <translation id="1639239467298939599">Memuat</translation>
+<translation id="1642895994345928121">Penyimpanan perangkat tidak cukup untuk membuka aplikasi ini. Kosongkan ruang penyimpanan, lalu coba lagi.</translation>
 <translation id="1647986356840967552">Halaman sebelumnya</translation>
 <translation id="1651914502370159744">Buka halaman Histori</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Grup tab &amp; aplikasi</translation>
 <translation id="2386292613071805067">Pilih semuanya di halaman</translation>
 <translation id="2389423187722941333">Aktifkan/nonaktifkan Gemini</translation>
+<translation id="2391805183137601570">Buka Steam</translation>
 <translation id="2392659840443812875">Tidak ada hotspot yang tersedia. Pastikan perangkat berada di sekitar dan Bluetooth diaktifkan.</translation>
 <translation id="2397416548179033562">Tampilkan Menu Chrome</translation>
 <translation id="240006516586367791">Kontrol media</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Dibuka kemarin</translation>
 <translation id="2440978926514840421">Rekaman GIF diambil</translation>
 <translation id="2441427462554639370">Rekaman berakhir karena ruang penyimpanan hampir habis</translation>
+<translation id="2447587550790814052">Anda kini dapat menggunakan Steam untuk Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Baterai Lemah</translation>
 <translation id="2450205753526923158">Mode screenshot</translation>
 <translation id="2453860139492968684">Selesai</translation>
 <translation id="2455994958736234930">Tambahkan www. dan .com ke kolom URL, lalu buka situs</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Lihat perincian</translation>
+<translation id="2462332841984057083">Steam sedang disiapkan. Tunggu hingga penyiapan selesai.</translation>
 <translation id="2465145153332031561">Kesehatan baterai <ph name="BATTERY_HEALTH_PERCENTAGE" />%, jumlah siklus pengisian daya penuh <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Konfirmasi Resolusi</translation>
 <translation id="2475783092753560388">Sisipkan <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Pratinjau <ph name="DESK_NAME" />. Desktop virtual aktif.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah ke resolusi <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tanpa mengonfirmasi, setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Gabung</translation>
+<translation id="2494555621641843783">Tidak dapat menginstal Steam</translation>
 <translation id="2496180316473517155">Histori penjelajahan</translation>
 <translation id="2499445554382787206">Menu profil desktop virtual. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tombol lekat</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727744317940422214">Maaf, terjadi error. Berikan masukan dan cantumkan #bruschetta di deskripsi. Kode error adalah <ph name="ERROR" />. Pembersihan gagal, Anda mungkin perlu melakukannya secara manual.</translation>
 <translation id="2727977024730340865">Dipasang ke pengisi daya rendah. Pengisian daya baterai mungkin tidak dapat diandalkan.</translation>
+<translation id="2737538893171115082">Steam untuk Chromebook (Beta) diblokir oleh administrator Anda. Administrator Anda perlu mengaktifkan kebijakan berikut:</translation>
 <translation id="2743301740238894839">Mulai</translation>
 <translation id="2743387203779672305">Salin ke papan klip</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3033912566804961911">Gabungkan dengan <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Baterai stilus <ph name="PERCENTAGE" /> persen.</translation>
 <translation id="304097922505898963">Buka aplikasi Pintasan Keyboard</translation>
+<translation id="3040982432432547149">Bantu kami meningkatkan kualitas Steam untuk Chromebook</translation>
 <translation id="304417730895741346">Aplikasi yang disematkan dan terbuka ada di rak. Untuk menyematkan aplikasi ke rak, klik kanan aplikasi atau ketuk touchpad menggunakan dua jari.</translation>
 <translation id="3045670165536837541">Tuas kanan atas dipilih, gunakan tombol panah untuk memindahkan</translation>
 <translation id="3047761520276763270">Coba ucapkan:</translation>
@@ -656,6 +664,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3181441307743005334">Mulai ulang dapat memerlukan waktu beberapa saat</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Terhubung ke satu perangkat}other{Terhubung ke # perangkat}}</translation>
 <translation id="3203405173652969239">Tombol Akses diaktifkan</translation>
+<translation id="3204648577100496185">Data yang terkait dengan aplikasi ini dapat dihapus dari perangkat ini</translation>
 <translation id="3206735939915734551">Aktifkan/nonaktifkan Caps Lock</translation>
 <translation id="3207953481422525583">Setelan Pengguna</translation>
 <translation id="3208321278970793882">Aplikasi</translation>
@@ -677,6 +686,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3271554781793662131">Telusuri untuk menyisipkan</translation>
 <translation id="3274634049061007184">Lihat aplikasi ponsel Anda</translation>
 <translation id="3279230909244266691">Proses ini dapat memerlukan waktu beberapa menit. Memulai mesin virtual.</translation>
+<translation id="3285465040399788513">Penyimpanan perangkat tidak cukup untuk menyelesaikan penyiapan. Kosongkan ruang penyimpanan, lalu coba lagi.</translation>
 <translation id="3289364673986435196">Menu daya</translation>
 <translation id="3289544412142055976">Aplikasi Linux saat ini tidak didukung</translation>
 <translation id="3289674678944039601">Mengisi daya melalui adaptor</translation>
@@ -702,6 +712,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3368922792935385530">Terhubung</translation>
 <translation id="3369111525500416043">Mendekati tenggat</translation>
 <translation id="3371140690572404006">Perangkat USB-C (port depan sebelah kanan)</translation>
+<translation id="3373196968211632036">Steam untuk Chromebook (Beta) tidak tersedia untuk Akun Google anak</translation>
 <translation id="3375634426936648815">Terhubung</translation>
 <translation id="3386978599540877378">kaca pembesar layar penuh</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rak otomatis disembunyikan</translation>
+<translation id="3496797737329654668">Ayo mulai bermain game</translation>
 <translation id="3505066820268455558">Mengisi Daya Baterai</translation>
 <translation id="3509391053705095206">Tidak dapat menemukan ponsel Anda. Pastikan Bluetooth ponsel Anda aktif.</translation>
 <translation id="3510164367642747937">Sorot kursor mouse</translation>
@@ -800,6 +812,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="3633851487917460983">Membuka Papan klip</translation>
 <translation id="363473492175527493">Tugas yang ditetapkan untuk difokuskan: <ph name="TASK_NAME" />. Tekan enter untuk mengedit tugas.</translation>
 <translation id="3638400994746983214">Alihkan ke layar privasi. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam untuk Chromebook (Beta) perlu diupdate. Mulai ulang Chromebook Anda, lalu coba lagi.</translation>
 <translation id="3649256019230929621">Meminimalkan jendela</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3702809606464356667">Menampilkan jendela dari desktop saat ini, tekan tombol Panah atas untuk menampilkan jendela dari semua desktop</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Hiburan</translation>
+<translation id="370665806235115550">Memuat...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> dan <ph name="UNAVAILABLE_DLC_TWO" /> tidak tersedia.</translation>
 <translation id="3708186454126126312">Terhubung sebelumnya</translation>
 <translation id="3712143870407382523">Pilih jendela untuk sisi ini</translation>
@@ -860,6 +874,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3831226344927851293">Keluar dari tampilan tutorial</translation>
 <translation id="383629559565718788">Tampilkan setelan keyboard</translation>
 <translation id="384082539148746321">Hapus template?</translation>
+<translation id="3841282988425489367">Tidak dapat menyiapkan Steam untuk Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, lalu <ph name="KEY_ONE" /> atau <ph name="KEY_TWO" /> atau <ph name="KEY_THREE" /> atau <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Tidak tersedia informasi jaringan</translation>
 <translation id="3848526302597027234">Mengakses izin berikut:</translation>
@@ -951,6 +966,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4146671046252289537">Pindah ke akhir kata berikutnya</translation>
 <translation id="4150201353443180367">Tampilan</translation>
 <translation id="4151054805501931758">Sempurnakan penampilan</translation>
+<translation id="4151449637210235443">Beri tahu kami mengenai gameplay terbaru Anda</translation>
 <translation id="4156293514828496577">Daya baterai tersisa <ph name="PERCENTAGE" />% (sekitar <ph name="TIME_LEFT" />).
 Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4158003972857765638">Atur di desktop virtual baru</translation>
@@ -968,6 +984,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4192112279662688596">Atau</translation>
 <translation id="4193857202545160520">Tampilkan klik dan tombol</translation>
 <translation id="4193969623755915875">Buka "Bantuan" di aplikasi Jelajahi dengan "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">Tidak dapat membuka Steam untuk Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Versi sekarang <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Lanjutkan dari halaman terakhir yang dibuka</translation>
 <translation id="4195877955194704651">Tombol klik otomatis</translation>
@@ -983,6 +1000,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Aplikasi Terinstal, Dijeda</translation>
 <translation id="4228078597006700451">Kontrol belum disiapkan</translation>
 <translation id="4230560241506423345">Baru</translation>
+<translation id="4231231258999726714">Menyiapkan Steam untuk Chromebook</translation>
 <translation id="4236726631849783264">Pengingat tentang tindakan yang disarankan</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode ringkasan</translation>
@@ -1067,6 +1085,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Update perangkat sekarang}=1{Update perangkat dalam 1 detik}other{Update perangkat dalam # detik}}</translation>
 <translation id="4472575034687746823">Memulai</translation>
 <translation id="4473489370276014885">Google Kontak</translation>
+<translation id="4473996011558324141">memperkirakan waktu</translation>
 <translation id="4477350412780666475">Lagu Berikutnya</translation>
 <translation id="4477751544736611934">Anda mungkin akan dikenai biaya data.
 1 perangkat terhubung.</translation>
@@ -1108,6 +1127,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4585337515783392668">Hentikan transmisi pada penerima yang tidak dikenal</translation>
 <translation id="4596144739579517758">Tema gelap nonaktif</translation>
 <translation id="4596442969149038771"><ph name="USER" /> berbagi</translation>
+<translation id="4598556348158889687">Pengelolaan penyimpanan</translation>
 <translation id="4610493115106525653">Output bagus</translation>
 <translation id="4611292653554630842">Login</translation>
 <translation id="462160925400706389"><ph name="NAME" /> terhubung</translation>
@@ -1117,6 +1137,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4633636853437260449">Tekan Ctrl+W untuk menghapus</translation>
 <translation id="4635501805800894201">{0,plural, =0{Ubah perangkat ke versi sebelumnya sekarang}=1{Ubah perangkat ke versi sebelumnya dalam 1 detik}other{Ubah perangkat ke versi sebelumnya dalam # detik}}</translation>
 <translation id="4642092649622328492">Mengambil screenshot sebagian</translation>
+<translation id="4642587497923912728">Steam untuk Chromebook (Beta) hanya tersedia untuk akun yang digunakan untuk login pertama kali di Chromebook ini.</translation>
 <translation id="4644727592819780893">Wilayah terlalu kecil untuk ditampilkan di pratinjau kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Rekomendasi aplikasi</translation>
 <translation id="4649019912155580914">Diedit oleh Anda</translation>
@@ -1350,6 +1371,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5352250171825660495">Tema gelap aktif</translation>
 <translation id="5354804064646502504">Anda mungkin akan dikenai biaya data.
 Tidak ada perangkat yang terhubung.</translation>
+<translation id="5355498626146154079">Anda harus mengaktifkan tanda “Borealis Enabled”</translation>
 <translation id="5356963482258194581">Berpindah-pindah antara tema gelap dan terang. Klik kanan desktop lalu pilih Wallpaper &amp; Gaya.</translation>
 <translation id="536019650977002321">Administrator tidak mengizinkan perekaman audio. Hubungi administrator untuk mendapatkan info selengkapnya.</translation>
 <translation id="5361524080961918551">File ucapan <ph name="LANGUAGE" /> didownload sebagian</translation>
@@ -1360,6 +1382,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5377367976106153749">Aktifkan akses kamera?</translation>
 <translation id="5378450298115733949">Lainnya</translation>
 <translation id="5379115545237091094">Terlalu banyak upaya gagal</translation>
+<translation id="5380526436444479273">Tunggu beberapa menit, lalu coba lagi</translation>
 <translation id="5383434787520761436">Tidak ada file Google Drive</translation>
 <translation id="5391307769715781764">Ganti desktop tersimpan?</translation>
 <translation id="5392327145184648521">Menghitung baterai %...</translation>
@@ -1371,6 +1394,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5409208741270395213">Tandai tugas sebagai selesai</translation>
 <translation id="5413656666631274079">Halaman setelan</translation>
 <translation id="5414198321558177633">Memperbarui daftar profil. Proses ini mungkin perlu waktu beberapa menit.</translation>
+<translation id="5415328625985164836">Aplikasi ini merupakan program beta. Anda kini dapat menggunakan Steam untuk memainkan beberapa game di Chromebook.</translation>
 <translation id="5426063383988017631">Menu setelan ditutup</translation>
 <translation id="5428899915242071344">Mulai memilih</translation>
 <translation id="5429993543155113935">Jendela Samaran saat ini tidak didukung</translation>
@@ -1466,6 +1490,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="5712132663381964774">Gunakan aplikasi untuk melakukan semua hal yang Anda perlukan di <ph name="PRODUCT_NAME" />. Anda dapat menemukan aplikasi di Peluncur.</translation>
 <translation id="571295407079589142">Data seluler dinonaktifkan</translation>
 <translation id="5727460725221669831">Jika Anda lupa sandi atau mengubah sandi Akun Google Anda baru-baru ini, coba pulihkan pengguna ini.</translation>
+<translation id="572914206753951782">Pastikan Chromebook Anda menggunakan versi terbaru. Kemudian, mulai ulang Chromebook Anda dan coba lagi.</translation>
 <translation id="5733630091161562207">Notifikasi sambutan</translation>
 <translation id="573413375004481890">Perangkat ini tidak dapat mendukung semua layar Anda, jadi salah satu telah diputuskan sambungannya</translation>
 <translation id="574392208103952083">Sedang</translation>
@@ -1713,6 +1738,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6507042703812908515">Buka aplikasi Pintasan Keyboard dengan "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Beralih ke metode input berikutnya yang tersedia</translation>
 <translation id="6508923215158854599">Pastikan Chromebook berada di jaringan Wi-Fi yang sama dengan perangkat Chromecast.</translation>
+<translation id="6511607461419653612">Mulai ulang Chromebook Anda, lalu coba lagi</translation>
 <translation id="6515727200518652613">Koneksi kamera terputus, mencoba menghubungkan kembali.</translation>
 <translation id="651753338596587143">Maaf, terjadi error saat menginstal dependensi DLC. Coba mulai ulang. Jika masalah terus berlanjut, berikan masukan dan cantumkan #bruschetta di deskripsi. Kode error adalah <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Pilih jendela untuk diambil gambarnya</translation>
@@ -1738,6 +1764,7 @@ Baru diinstal</translation>
 <translation id="6574587113394758819">Notifikasi <ph name="APP_TITLE" /> disembunyikan karena perlindungan tampilan aktif</translation>
 <translation id="6574622320167699133">Dibuka oleh ponsel Anda. Ketuk atau klik untuk masuk.</translation>
 <translation id="6578407462441924264">Tanpa Nama</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% selesai</translation>
 <translation id="6582012689384648647">Untuk mendapatkan playlist untuk berfokus yang dipersonalisasi, izinkan akses ke YouTube Music</translation>
 <translation id="6582034443359256692">Menghitung tingkat pengisian daya baterai.</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Baru diinstal</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="672609503628871915">Lihat apa saja yang baru</translation>
 <translation id="6727969043791803658">Terhubung, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">Proses ini mungkin perlu waktu beberapa menit</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera dan mikrofon sedang digunakan</translation>
@@ -1858,6 +1886,7 @@ Baru diinstal</translation>
 <translation id="6961840794482373852">Pintasan keyboard Alt + Panah Atas telah diubah. Untuk menggunakan tombol Page Up, tekan tombol <ph name="LAUNCHER_KEY_NAME" /> + Panah Atas.</translation>
 <translation id="696267987219125751">Framing kamera nonaktif.</translation>
 <translation id="6965382102122355670">Oke</translation>
+<translation id="6967112302799758487">Semua aplikasi dan game yang diinstal menggunakan Steam untuk Chromebook (Beta) akan dihapus dari perangkat ini. Data yang terkait dengan aplikasi dan game ini juga akan dihapus. Pastikan untuk mencadangkan aplikasi dan game tersimpan sebelum meng-uninstal.</translation>
 <translation id="6972629891077993081">Perangkat HID</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1889,6 +1918,7 @@ Baru diinstal</translation>
 <translation id="7067196344162293536">Putar otomatis</translation>
 <translation id="7076293881109082629">Sedang masuk</translation>
 <translation id="7076878155205969899">Mematikan suara</translation>
+<translation id="7083774521940805477">Steam untuk Chromebook (beta) tidak tersedia di Chromebook Anda.</translation>
 <translation id="7083848064787091821">Fokus</translation>
 <translation id="7084678090004350185">Tombol hotspot. Hotspot aktif, <ph name="DEVICECOUNT" /> perangkat terhubung.</translation>
 <translation id="7086931198345821656">Update ini mengharuskan Anda melakukan powerwash <ph name="DEVICE_TYPE" />. Semua data akan dihapus. Pelajari update <ph name="SYSTEM_APP_NAME" /> terbaru lebih lanjut.</translation>
@@ -1906,12 +1936,14 @@ Baru diinstal</translation>
 <translation id="7130207228079676353">MUNGKIN DICARI</translation>
 <translation id="7131634465328662194">Anda akan logout otomatis.</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
+<translation id="7143409552554575716">Tanda ChromeOS</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
 <translation id="7144942256906679589">Status baterai</translation>
 <translation id="7145639536026937076">Daya baterai <ph name="PERCENTAGE" />% dan masih mengisi daya. Penghemat Baterai aktif.</translation>
 <translation id="7147587499155271409">Tidak ada histori penjelajahan</translation>
 <translation id="7147657298465433425">Untuk mengakses tombol F, tekan tombol fn + tombol baris atas</translation>
 <translation id="7149149900052329230">Kelola file lokal dan file Google Drive Anda, semuanya di aplikasi File.</translation>
+<translation id="7154020516215182599">Sampaikan masukan atau jelaskan masalah Anda. Jika memungkinkan, sertakan langkah-langkah untuk merekonstruksi masalah.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7726391492136714301">Lihat notifikasi dan aplikasi ponsel</translation>
 <translation id="7727952505535211425">Buka situs di kolom URL di tab baru</translation>
 <translation id="7728657226117099693">Nonaktifkan Caps Lock</translation>
+<translation id="7732702411411810416">Pastikan perangkat Anda terhubung ke internet, lalu coba lagi</translation>
 <translation id="7742327441377685481">Tidak ada notifikasi</translation>
 <translation id="7748275671948949022">Tandai tombol Peluncur di rak</translation>
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
@@ -2121,6 +2154,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="7866482334467279021">aktif</translation>
 <translation id="7870790288828963061">Tidak ada aplikasi Kios dengan versi lebih baru yang ditemukan. Tidak ada yang akan diperbarui. Lepaskan stik USB.</translation>
 <translation id="7872786842639831132">Nonaktif</translation>
+<translation id="7873386145597434863">Steam untuk Chromebook</translation>
 <translation id="7875575368831396199">Sepertinya Bluetooth dinonaktifkan di <ph name="DEVICE_TYPE" /> Anda. Aktifkan Bluetooth untuk menggunakan Phone Hub.</translation>
 <translation id="7884446017008693258">Setelan Hotspot</translation>
 <translation id="7884902759927478774">Batalkan penarikkan tab</translation>
@@ -2470,6 +2504,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="8980862970816311842">Pindahkan ikon aplikasi ke dalam/luar folder di petak aplikasi</translation>
 <translation id="8982906748181120328">Visibilitas Berbagi Langsung</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Selamat datang di Steam untuk Chromebook</translation>
 <translation id="8990809378771970590">Menggunakan <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Tekan fn + Penyisipan Cepat atau Shift untuk membatalkan.</translation>
 <translation id="899350903320462459">Buka kunci perangkat sebagai <ph name="LOGIN_ID" /> untuk melakukan tindakan notifikasi</translation>
@@ -2486,6 +2521,7 @@ Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translatio
 <translation id="9047624247355796468">Buka setelan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth tidak tersedia</translation>
 <translation id="9050999376345823055">Tekan "." untuk melepaskan</translation>
+<translation id="9061694916020926968">Anda harus login ke Akun Google untuk menggunakan Steam untuk Chromebook (Beta). Login, lalu coba lagi.</translation>
 <translation id="906458777597946297">Memaksimalkan jendela</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9068849894565669697">Pilih warna</translation>

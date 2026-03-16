@@ -239,6 +239,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="200114059308480249">Umgebenden Text in Google-Suchanfragen einschließen?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, angepinnter, stummgeschalteter Inkognitotab</translation>
 <translation id="2021896219286479412">Vollbild-Steuerelemente</translation>
+<translation id="2024195579772565064">Suchmaschine löschen</translation>
 <translation id="2029669011553795746">Opt-in für Benachrichtigungen mit Tipps halb geöffnet</translation>
 <translation id="2038563949887743358">"Desktopversion ansehen" aktivieren</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> hat auch Daten in Chrome</translation>
@@ -556,6 +557,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3384347053049321195">Bild teilen</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> konnte aufgrund von Dateisystemfehlern nicht heruntergeladen werden.</translation>
 <translation id="3414952576877147120">Größe:</translation>
+<translation id="3417835166382867856">Tabs suchen</translation>
 <translation id="3430670036890315772">Wenn du die Profilsperre deaktivierst, werden deine gespeicherten Informationen entfernt</translation>
 <translation id="3435465986463792564">Du verwendest viele Fenster? Du kannst sie hier verwalten.</translation>
 <translation id="3435575784518354875">Wenn du weiterhin auf deine Passwörter zugreifen möchtest, exportiere sie jetzt, aktualisiere die Google Play-Dienste und importiere sie dann wieder in den Google Passwortmanager. <ph name="BEGIN_LINK" />Vollständige Anleitung<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6898797562238201317">Eigene Passphrase für die Verschlüsselung aller Chrome-Daten in meinem Google-Konto verwenden</translation>
 <translation id="6900532703269623216">Erweitertes Safe Browsing</translation>
+<translation id="6900654715912436255">Möchtest du diese Suchmaschine wirklich löschen?</translation>
 <translation id="6903907808598579934">Synchronisierung aktivieren</translation>
 <translation id="6906448540340261898">Achte darauf, dass du die Passwörter in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="6908230663105268638">Benachrichtigungen zugelassen für <ph name="SITE_NAME" /></translation>

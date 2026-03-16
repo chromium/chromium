@@ -239,6 +239,7 @@
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，已固定的无痕式标签页，已设为静音</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
+<translation id="2024195579772565064">删除搜索引擎</translation>
 <translation id="2029669011553795746">提示通知选择启用底部动作条已以一半高度显示</translation>
 <translation id="2038563949887743358">开启“请求切换到桌面版网站”</translation>
 <translation id="204321170514947529">Chrome 中也有<ph name="APP_NAME" />的数据</translation>
@@ -413,6 +414,7 @@
 <translation id="2789486458103222910">确定</translation>
 <translation id="2791129728587938169">{NUM_PASSWORDS,plural, =1{Chrome 发现了 1 个重复使用的密码，建议您改进}other{Chrome 发现了 # 个重复使用的密码，建议您改进}}</translation>
 <translation id="2794551654724114396">开启通知，获取实用提示，尽享 Chrome 的出色功能</translation>
+<translation id="2798977804328097977">跨设备无缝衔接</translation>
 <translation id="2805210243313393104">在您的所有设备上获取书签等信息</translation>
 <translation id="2805756323405976993">应用</translation>
 <translation id="2819849308549746319">全部退订</translation>
@@ -468,6 +470,7 @@
 <translation id="2977350910003566746">按上次打开时间排序</translation>
 <translation id="297771753501244313">按上次打开时间排序</translation>
 <translation id="2979639724566107830">在新窗口中打开</translation>
+<translation id="2980545254049127870">轻松打开消息、文档和其他应用中的链接</translation>
 <translation id="2983102365694924129">根据您在网站上的活动。此设置已关闭。</translation>
 <translation id="2983398917942897288">非活跃（<ph name="ITEM_COUNT" /> 个）</translation>
 <translation id="2983835398644161987">退出“画中画”模式</translation>
@@ -556,6 +559,7 @@
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
 <translation id="3414952576877147120">大小：</translation>
+<translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435465986463792564">打开了许多窗口？您可在此处管理它们</translation>
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
@@ -728,6 +732,7 @@
 <translation id="4137746084635924146">当前设备语言</translation>
 <translation id="414128724510021958">默认请求桌面版网站</translation>
 <translation id="4162867837470729563">分享选项列表已全屏打开。</translation>
+<translation id="4164642020717536140">快速且安全的网页浏览体验</translation>
 <translation id="4165077084524712774">更多工具</translation>
 <translation id="4170011742729630528">此服务目前无法使用，请稍后再试。</translation>
 <translation id="4170577491341606575">正在获取您的数据\u2026</translation>
@@ -1440,6 +1445,7 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6898797562238201317">使用您自己的口令加密您 Google 账号中的所有 Chrome 数据</translation>
 <translation id="6900532703269623216">增强型保护</translation>
+<translation id="6900654715912436255">确定要删除此搜索引擎吗？</translation>
 <translation id="6903907808598579934">开启同步功能</translation>
 <translation id="6906448540340261898">请确保您可以一直使用 Google 账号的密码</translation>
 <translation id="6908230663105268638">已允许 <ph name="SITE_NAME" /> 发送通知</translation>

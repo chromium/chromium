@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Sinine</translation>
 <translation id="1557622599341396706">Kuva töölaua nimi</translation>
 <translation id="1569384531973824928">Sisselülitamisel antakse juurdepääsuluba kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele. Võimalik, et peate veebilehte värskendama või rakenduse taaskäivitama.</translation>
+<translation id="1570235441606255261">Steami installiprogramm</translation>
 <translation id="1571697193564730395">Režiimi Mitte segada lülitamine. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Valitud vasaku serva käepide, teisaldamiseks kasutage nooleklahve</translation>
 <translation id="1576623706766186887">Suumi välja, kui luup on sisse lülitatud</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> seadet</translation>
 <translation id="1639239467298939599">Laadimine</translation>
+<translation id="1642895994345928121">Selle rakenduse avamiseks ei ole seadmes piisavalt salvestusruumi. Vabastage ruumi ja proovige uuesti.</translation>
 <translation id="1647986356840967552">Eelmine leht</translation>
 <translation id="1651914502370159744">Lehe Ajalugu avamine</translation>
 <translation id="1668469839109562275">Sisseehitatud VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Rakenduste ja vahelehtede grupid</translation>
 <translation id="2386292613071805067">Lehel kõige valimine</translation>
 <translation id="2389423187722941333">Lülitage Gemini seadete vahel</translation>
+<translation id="2391805183137601570">Ava Steam</translation>
 <translation id="2392659840443812875">Ühtegi kuumkohta pole saadaval. Veenduge, et teie seade oleks läheduses ja Bluetooth oleks sisse lülitatud.</translation>
 <translation id="2397416548179033562">Kuva Chrome'i menüü</translation>
 <translation id="240006516586367791">Meedia juhtnupud</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Eile avatud</translation>
 <translation id="2440978926514840421">GIF-i salvestis on tehtud</translation>
 <translation id="2441427462554639370">Salvestamine lõppes liiga vähese salvestusruumi tõttu</translation>
+<translation id="2447587550790814052">Nüüd saate kasutada teenust Steam Chromebookile (beeta)</translation>
 <translation id="2449089818483227734">Akutase on madal</translation>
 <translation id="2450205753526923158">Ekraanipildirežiim</translation>
 <translation id="2453860139492968684">Valmis</translation>
 <translation id="2455994958736234930">Lühendite www. ja .com lisamine aadressiribale ja veebisaidi avamine</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Süvitsiminek</translation>
+<translation id="2462332841984057083">Steami juba seadistatakse. Oodake, kuni seadistus jõuab lõpule.</translation>
 <translation id="2465145153332031561">Aku seisukord: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, tsüklite arv: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Kinnitage eraldusvõime</translation>
 <translation id="2475783092753560388">sisesta <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Töölaua <ph name="DESK_NAME" /> eelvaade. Aktiivne töölaud.</translation>
 <translation id="2486405091093637109">Seadme „<ph name="DISPLAY_NAME" />” puhul muudeti eraldusvõimeks <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ilma kinnitamiseta taastatakse eelmised seaded pärast <ph name="TIMEOUT_SECONDS" /> sekundi möödumist.</translation>
 <translation id="2487915095798731898">Liitu</translation>
+<translation id="2494555621641843783">Steami ei saa installida</translation>
 <translation id="2496180316473517155">Sirvimise ajalugu</translation>
 <translation id="2499445554382787206">Töölauaprofiili menüü. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Nakkeklahvid</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Vasta</translation>
 <translation id="2727744317940422214">Kahjuks läks midagi valesti. Tagasiside esitamiseks lisage kirjeldusse teemaviide #bruschetta. Veakood on <ph name="ERROR" />. Kustutamine ebaõnnestus, peate seda võib-olla käsitsi tegema.</translation>
 <translation id="2727977024730340865">Ühendatud väikese energiakuluga laadijaga. Aku laadimine võib olla ebastabiilne.</translation>
+<translation id="2737538893171115082">Teie administraator on teenuse Steam Chromebookile (beeta) blokeerinud. Teie administraator peab sisse lülitama järgmised reeglid:</translation>
 <translation id="2743301740238894839">Alusta</translation>
 <translation id="2743387203779672305">Kopeeri lõikelauale</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3033912566804961911">Ühita töölauaga <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Elektronpliiatsi aku laetuse tase on <ph name="PERCENTAGE" />%.</translation>
 <translation id="304097922505898963">Avage rakendus Klaviatuuri otseteed</translation>
+<translation id="3040982432432547149">Aidake meil Steami Chromebookile täiustada</translation>
 <translation id="304417730895741346">Teie kinnitatud ja avatud rakendused on riiulil. Rakenduse riiulile kinnitamiseks paremklõpsake sellel või puudutage kahe sõrmega puuteplaati.</translation>
 <translation id="3045670165536837541">Valitud ülemine parempoolne käepide, teisaldamiseks kasutage nooleklahve</translation>
 <translation id="3047761520276763270">Püüdke öelda:</translation>
@@ -656,6 +664,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3181441307743005334">Taaskäivitamine võib pisut aega võtta</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Ühendatud ühe seadmega}other{Ühendatud # seadmega}}</translation>
 <translation id="3203405173652969239">Lülitiga juurdepääs on lubatud</translation>
+<translation id="3204648577100496185">Selle rakendusega seotud andmed võidakse seadmest eemaldada</translation>
 <translation id="3206735939915734551">Suurtäheluku sisse- ja väljalülitamine</translation>
 <translation id="3207953481422525583">Kasutaja seaded</translation>
 <translation id="3208321278970793882">Rakendus</translation>
@@ -677,6 +686,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3271554781793662131">Sisestamiseks otsige</translation>
 <translation id="3274634049061007184">Teie telefoni rakenduste kuvamine</translation>
 <translation id="3279230909244266691">Protsess võib võtta mõne minuti. Virtuaalset masinat käivitatakse.</translation>
+<translation id="3285465040399788513">Seadistuse lõpuleviimiseks ei ole seadmes piisavalt salvestusruumi. Vabastage salvestusruumi ja proovige uuesti.</translation>
 <translation id="3289364673986435196">Toitemenüü</translation>
 <translation id="3289544412142055976">Linuxi rakendusi praegu ei toetata</translation>
 <translation id="3289674678944039601">Laadimine adapteri kaudu</translation>
@@ -702,6 +712,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3368922792935385530">Ühendatud</translation>
 <translation id="3369111525500416043">Tähtaeg on peagi</translation>
 <translation id="3371140690572404006">C-tüüpi USB-seade (eesmine parempoolne port)</translation>
+<translation id="3373196968211632036">Steam Chromebookile (beeta) ei ole saadaval laste Google'i kontode jaoks</translation>
 <translation id="3375634426936648815">Ühendatud</translation>
 <translation id="3386978599540877378">täisekraani luup</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3477079411857374384">Ctrl + Tõstuklahv + Tühik</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Riiul on automaatselt peidetud</translation>
+<translation id="3496797737329654668">Hakkame mängima</translation>
 <translation id="3505066820268455558">Akut laetakse</translation>
 <translation id="3509391053705095206">Teie telefoni ei õnnestu leida. Veenduge, et telefonis oleks Bluetooth sisse lülitatud.</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
@@ -800,6 +812,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3633851487917460983">Lõikelaua avamine</translation>
 <translation id="363473492175527493">Keskendumise ülesanne: <ph name="TASK_NAME" />. Ülesande muutmiseks vajutage sisestusklahvi.</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steami Chromebookile (beeta) tuleb värskendada. Taaskäivitage Chromebook ja proovige uuesti.</translation>
 <translation id="3649256019230929621">Minimeeri aken</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="3702809606464356667">Kuvatud on praeguse töölaua aknad. Kõigi töölaudade akende kuvamiseks vajutage ülesnooleklahvi.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Meelelahutus</translation>
+<translation id="370665806235115550">Laadimine...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ja <ph name="UNAVAILABLE_DLC_TWO" /> pole saadaval.</translation>
 <translation id="3708186454126126312">Varem ühendatud</translation>
 <translation id="3712143870407382523">Valige selle külje jaoks aken</translation>
@@ -861,6 +875,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3831226344927851293">Õpetuse vaatest väljumine</translation>
 <translation id="383629559565718788">Kuvab klaviatuuriseaded</translation>
 <translation id="384082539148746321">Kas kustutada mall?</translation>
+<translation id="3841282988425489367">Teenust Steam Chromebookile (beeta) ei saa seadistada</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, seejärel <ph name="KEY_ONE" /> või <ph name="KEY_TWO" /> või <ph name="KEY_THREE" /> või <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Võrguteave ei ole saadaval</translation>
 <translation id="3848526302597027234">Pääseda juurde järgmistele lubadele.</translation>
@@ -952,6 +967,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4146671046252289537">Järgmise sõna lõppu teisaldamine</translation>
 <translation id="4150201353443180367">Kuva</translation>
 <translation id="4151054805501931758">Portree viimistlus</translation>
+<translation id="4151449637210235443">Rääkige meile oma hiljutisest mängu mängimisest</translation>
 <translation id="4156293514828496577">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />).
 Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4158003972857765638">Uuel töölaual korraldamine</translation>
@@ -969,6 +985,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4192112279662688596">Või</translation>
 <translation id="4193857202545160520">Kuva klikid ja klahvid</translation>
 <translation id="4193969623755915875">Avage abijaotis rakenduses Avastamine uue otseteega „<ph name="NEW_SHORTCUT" />“.</translation>
+<translation id="4195001808989442226">Steami Chromebookile (beeta) ei saa avada</translation>
 <translation id="4195579532193195633">Praegune versioon <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
 <translation id="4195877955194704651">Nupp Automaatsed klikid</translation>
@@ -984,6 +1001,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installitud rakendus, ajutiselt peatatud</translation>
 <translation id="4228078597006700451">Juhtelemente pole seadistatud</translation>
 <translation id="4230560241506423345">Uus</translation>
+<translation id="4231231258999726714">Teenuse Steam Chromebookile seadistamine</translation>
 <translation id="4236726631849783264">Meeldetuletus soovitatud toimingute kohta</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Ülevaaterežiim</translation>
@@ -1068,6 +1086,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Värskendage seadet kohe}=1{Värskendage seadet 1 sekundi jooksul}other{Värskendage seadet # sekundi jooksul}}</translation>
 <translation id="4472575034687746823">Alustage</translation>
 <translation id="4473489370276014885">Google’i kontaktid</translation>
+<translation id="4473996011558324141">aja prognoosimine</translation>
 <translation id="4477350412780666475">Järgmine lugu</translation>
 <translation id="4477751544736611934">See võib põhjustada andmesidekulusid.
 1 seade on ühendatud.</translation>
@@ -1109,6 +1128,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4585337515783392668">Katkesta ülekandmine tundmatus vastuvõtjas</translation>
 <translation id="4596144739579517758">Tume teema on väljas</translation>
 <translation id="4596442969149038771">Kasutaja <ph name="USER" /> poolt jagatud</translation>
+<translation id="4598556348158889687">Salvestusruumi haldus</translation>
 <translation id="4610493115106525653">Hea tootlus</translation>
 <translation id="4611292653554630842">Logi sisse</translation>
 <translation id="462160925400706389"><ph name="NAME" /> on ühendatud</translation>
@@ -1118,6 +1138,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4633636853437260449">Kustutamiseks vajutage klahve Ctrl + W</translation>
 <translation id="4635501805800894201">{0,plural, =0{Viige nüüd seade tagasi eelmisele versioonile}=1{Viige seade tagasi eelmisele versioonile ühe sekundi jooksul}other{Viige seade tagasi eelmisele versioonile # sekundi jooksul}}</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
+<translation id="4642587497923912728">Steam Chromebookile (beeta) on saadaval ainult konto jaoks, millega selles Chromebookis esimesena sisse logiti.</translation>
 <translation id="4644727592819780893">Ala on kaamera mahutamiseks liiga väike</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rakenduse soovitus</translation>
 <translation id="4649019912155580914">Teie muutsite</translation>
@@ -1351,6 +1372,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5352250171825660495">Tume teema on sees</translation>
 <translation id="5354804064646502504">See võib põhjustada andmesidekulusid.
 Ükski seade pole ühendatud.</translation>
+<translation id="5355498626146154079">Peate lipu „Borealis Enabled” sisse lülitama</translation>
 <translation id="5356963482258194581">Vahetage tumeda ja heleda teema vahel. Tehke töölaual paremklikk ning valik Taustapilt ja stiil.</translation>
 <translation id="536019650977002321">Teie administraator ei luba heli jäädvustada. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> keele kõnefailid on osaliselt alla laaditud</translation>
@@ -1361,6 +1383,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5377367976106153749">Kas lülitada juurdepääs kaamerale sisse?</translation>
 <translation id="5378450298115733949">Rohkem</translation>
 <translation id="5379115545237091094">Liiga palju katseid</translation>
+<translation id="5380526436444479273">Oodake mõni minut ja proovige uuesti</translation>
 <translation id="5383434787520761436">Google Drive'i failid puuduvad</translation>
 <translation id="5391307769715781764">Kas asendada salvestatud töölaud?</translation>
 <translation id="5392327145184648521">Aku % arvutamine …</translation>
@@ -1372,6 +1395,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5409208741270395213">Märgi ülesanne lõpetatuks</translation>
 <translation id="5413656666631274079">Leht Seaded</translation>
 <translation id="5414198321558177633">Profiililoendit värskendatakse. See võib võtta mõne minuti.</translation>
+<translation id="5415328625985164836">See on beetaprogramm. Nüüd saate Steami abil Chromebookis teatud mänge mängida.</translation>
 <translation id="5426063383988017631">Seadete menüü on suletud</translation>
 <translation id="5428899915242071344">Alustage valimist</translation>
 <translation id="5429993543155113935">Inkognito aknaid praegu ei toetata</translation>
@@ -1467,6 +1491,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5712132663381964774">Rakendused aitavad teha <ph name="PRODUCT_NAME" />is kõike vajalikku. Rakendused leiate käivitajast.</translation>
 <translation id="571295407079589142">Mobiilne andmeside on välja lülitatud</translation>
 <translation id="5727460725221669831">Kui unustasite parooli või muutsite hiljuti oma Google'i konto parooli, proovige konto taastada.</translation>
+<translation id="572914206753951782">Veenduge et teil oleks Chromebooki uusim versioon. Seejärel taaskäivitage Chromebook ja proovige uuesti.</translation>
 <translation id="5733630091161562207">Tervitusmärguanne</translation>
 <translation id="573413375004481890">See seade ei saanud kõiki teie ekraane toetada, seetõttu ühe ühendus katkestati</translation>
 <translation id="574392208103952083">Keskmine</translation>
@@ -1714,6 +1739,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6507042703812908515">Kasutage rakenduse Klaviatuuri otseteed avamiseks otseteed <ph name="NEW_SHORTCUT" /></translation>
 <translation id="6507618042428827377">Lülitu järgmisele saadaoleva sisestusmeetodile</translation>
 <translation id="6508923215158854599">Veenduge, et teie Chromebook oleks teie Chromecasti seadmega samas WiFi-võrgus.</translation>
+<translation id="6511607461419653612">Taaskäivitage Chromebook ja proovige uuesti</translation>
 <translation id="6515727200518652613">Kaamera ühendus katkes, proovitakse uuesti ühendada.</translation>
 <translation id="651753338596587143">Kahjuks läks midagi DLC sõltuvuste installimisel valesti. Proovige taaskäivitada ning probleemi püsimisel esitage tagasiside, lisades kirjeldusse teemaviite #bruschetta. Veakood on <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Valige jäädvustatav aken</translation>
@@ -1739,6 +1765,7 @@ Uus installimine</translation>
 <translation id="6574587113394758819">Rakenduse <ph name="APP_TITLE" /> märguanne on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="6574622320167699133">Teie telefoni kaudu avatud. Sisenemiseks puudutage või klõpsake.</translation>
 <translation id="6578407462441924264">Nimetu</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% on lõpetatud</translation>
 <translation id="6582012689384648647">Keskendumist toetavate isikupärastatud esitusloendite kuulamiseks lubage juurdepääs YouTube Musicule</translation>
 <translation id="6582034443359256692">Aku laetuse taseme arvutamine.</translation>
 <translation id="6585808820553845416">Seansi lõpuni on jäänud <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1788,6 +1815,7 @@ Uus installimine</translation>
 <translation id="6723839937902243910">Toide</translation>
 <translation id="672609503628871915">Vaadake, mis on uut</translation>
 <translation id="6727969043791803658">Ühendatud, <ph name="BATTERY_PERCENTAGE" />% akut</translation>
+<translation id="6731320427842222405">Selleks võib kuluda mitu minutit</translation>
 <translation id="6732087373923685049">kaamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kaamera ja mikrofon on kasutuses</translation>
@@ -1859,6 +1887,7 @@ Uus installimine</translation>
 <translation id="6961840794482373852">Klaviatuuri otseteed Alt + ülesnool on muudetud. Lehe võrra üles klahvi kasutamiseks vajutage klahvi <ph name="LAUNCHER_KEY_NAME" /> + ülesnoolt.</translation>
 <translation id="696267987219125751">Kaamera kadreerimine on välja lülitatud.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Kõik teenuse Steam Chromebookile (beeta) abil installitud rakendused ja mängud eemaldatakse sellest seadmest. Samuti eemaldatakse nende rakenduste ja mängudega seotud andmed. Enne desinstallimist varundage kindlasti salvestatud rakendused ja mängud.</translation>
 <translation id="6972629891077993081">HID-seadmed</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">sisesta</translation>
@@ -1890,6 +1919,7 @@ Uus installimine</translation>
 <translation id="7067196344162293536">Automaatne pööramine</translation>
 <translation id="7076293881109082629">Sisselogimine</translation>
 <translation id="7076878155205969899">Vaigistab heli</translation>
+<translation id="7083774521940805477">Steam Chromebookile (beeta) ei ole teie Chromebookis saadaval.</translation>
 <translation id="7083848064787091821">Keskendumise režiim</translation>
 <translation id="7084678090004350185">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, <ph name="DEVICECOUNT" /> seadet on ühendatud.</translation>
 <translation id="7086931198345821656">Selle värskenduse jaoks on vaja seademes <ph name="DEVICE_TYPE" /> kasutada funktsiooni Powerwash. Kõik andmed kustutatakse. Vaadake lisateavet operatsioonisüsteemi <ph name="SYSTEM_APP_NAME" /> uusima värskenduse kohta.</translation>
@@ -1907,12 +1937,14 @@ Uus installimine</translation>
 <translation id="7130207228079676353">KÕIGE TÕENÄOLISEMAD</translation>
 <translation id="7131634465328662194">Teid logitakse automaatselt välja.</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
+<translation id="7143409552554575716">ChromeOS-i lipud</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
 <translation id="7144942256906679589">Aku olek</translation>
 <translation id="7145639536026937076">Aku laetuse tase on <ph name="PERCENTAGE" />% ja seda laetakse. Akusäästja on sisse lülitatud.</translation>
 <translation id="7147587499155271409">Sirvimisajalugu puudub</translation>
 <translation id="7147657298465433425">F-klahvidele juurdepääsuks vajutage klahvi fn + ülemise rea klahve</translation>
 <translation id="7149149900052329230">Hallake oma kõiki oma kohalikke faile ja Google Drive'i faile rakenduses Failid.</translation>
+<translation id="7154020516215182599">Jagage tagasisidet või kirjeldage oma probleem. Võimaluse korral lisage juhised probleemi uuesti esile kutsumiseks.</translation>
 <translation id="7165278925115064263">Alt + Tõstuklahv + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7726391492136714301">Teie telefoni märguannete ja rakenduste vaatamine</translation>
 <translation id="7727952505535211425">Veebisaidi avamine uue vahelehe aadressiribal</translation>
 <translation id="7728657226117099693">Suurtäheluku väljalülitamine</translation>
+<translation id="7732702411411810416">Veenduge, et teil oleks internetiühendus, ja proovige uuesti</translation>
 <translation id="7742327441377685481">Märguandeid pole</translation>
 <translation id="7748275671948949022">Riiulil Käivitaja nupu esile tõstmine</translation>
 <translation id="7749443890790263709">Töölaudade maksimaalne arv on täis.</translation>
@@ -2122,6 +2155,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7866482334467279021">sisse</translation>
 <translation id="7870790288828963061">Ühtegi uuema versiooniga kioski rakendust ei leitud. Midagi pole värskendada. Eemaldage USB-mälupulk.</translation>
 <translation id="7872786842639831132">Väljas</translation>
+<translation id="7873386145597434863">Steam Chromebookile</translation>
 <translation id="7875575368831396199">Näib, et Bluetooth on teie seadmes <ph name="DEVICE_TYPE" /> välja lülitatud. Lülitage Bluetooth Phone Hubi kasutamiseks sisse.</translation>
 <translation id="7884446017008693258">Kuumkoha seaded</translation>
 <translation id="7884902759927478774">Vahelehe lohistamise tühistamine</translation>
@@ -2471,6 +2505,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8980862970816311842">Rakenduse ikooni teisaldamine rakenduste ruudustiku kausta / kaustast välja</translation>
 <translation id="8982906748181120328">Nähtavus läheduses</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Tere tulemast Chromebookile mõeldud Steami!</translation>
 <translation id="8990809378771970590">Kasutusel: <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Tühistamiseks vajutage funktsiooniklahvi ja kiirsisestuse klahvi või tõstuklahvi.</translation>
 <translation id="899350903320462459">Märguandetoimingu tegemiseks avage seade kontoga <ph name="LOGIN_ID" /></translation>
@@ -2487,6 +2522,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
 <translation id="9050012935252397793">Bluetooth pole saadaval</translation>
 <translation id="9050999376345823055">Vabastamiseks vajutage punkti (.)</translation>
+<translation id="9061694916020926968">Teenuse Steam Chromebookile (beeta) kasutamiseks peate olema Google'i kontole sisse logitud. Logige sisse ja proovige uuesti.</translation>
 <translation id="906458777597946297">Maksimeeri akent</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9068849894565669697">Värvi valimine</translation>

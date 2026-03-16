@@ -239,6 +239,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="200114059308480249">Használni szeretné a környező szöveget is a Google Kereső használatakor?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, rögzített némított inkognitó lap</translation>
 <translation id="2021896219286479412">Teljes képernyős oldal vezérlői</translation>
+<translation id="2024195579772565064">Keresőmotor törlése</translation>
 <translation id="2029669011553795746">A tippekre vonatkozó értesítésekre való feliratkozás félmagasságban van megnyitva</translation>
 <translation id="2038563949887743358">Kapcsolja be az Asztali webhely kérése funkciót</translation>
 <translation id="204321170514947529">A(z) <ph name="APP_NAME" /> a Chrome-ban is rendelkezik adatokkal</translation>
@@ -556,6 +557,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3384347053049321195">Kép megosztása</translation>
 <translation id="3387650086002190359">A következő fájl letöltése a fájlrendszer hibái miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
 <translation id="3414952576877147120">Méret:</translation>
+<translation id="3417835166382867856">Lapok keresése</translation>
 <translation id="3430670036890315772">A profilzárolás kikapcsolásával törlődnek a mentett adatai</translation>
 <translation id="3435465986463792564">Több ablak is meg van nyitva Önnél? Itt kezelheti őket.</translation>
 <translation id="3435575784518354875">Ha továbbra is hozzá szeretne férni jelszavaihoz, exportálja őket haladéktalanul, majd frissítse a Google Play-szolgáltatásokat, és importálja őket vissza a Google Jelszókezelőbe. <ph name="BEGIN_LINK" />Részletes utasítások<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6898797562238201317">Saját összetett jelszó használata a Google-fiókjában tárolt Chrome-adatok mindegyikének titkosításához</translation>
 <translation id="6900532703269623216">Speciális védelem</translation>
+<translation id="6900654715912436255">Biztosan törölni szeretné ezt a keresőmotort?</translation>
 <translation id="6903907808598579934">Szinkronizálás bekapcsolása</translation>
 <translation id="6906448540340261898">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő jelszavakat</translation>
 <translation id="6908230663105268638">Értesítések engedélyezve a következőhöz: <ph name="SITE_NAME" /></translation>

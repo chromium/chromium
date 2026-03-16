@@ -240,6 +240,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="200114059308480249">Vil du medtage omgivende tekst i Google-søgninger?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, fastgjort inkognitofane med lyden slået fra</translation>
 <translation id="2021896219286479412">Kontrolelementer på website i fuld skærm</translation>
+<translation id="2024195579772565064">Slet søgemaskine</translation>
 <translation id="2029669011553795746">Tilvalg af notifikationer med tips er åbnet i halv højde</translation>
 <translation id="2038563949887743358">Slå computerversionen af websitet til</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> har også data i Chrome</translation>
@@ -557,6 +558,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3384347053049321195">Del billede</translation>
 <translation id="3387650086002190359">Download af <ph name="FILE_NAME" /> mislykkedes på grund af fejl i filsystemet.</translation>
 <translation id="3414952576877147120">Størrelse:</translation>
+<translation id="3417835166382867856">Søg i faner</translation>
 <translation id="3430670036890315772">Hvis du deaktiverer din profillås, fjernes dine gemte oplysninger</translation>
 <translation id="3435465986463792564">Har du mange åbne vinduer? Du kan administrere dem herfra</translation>
 <translation id="3435575784518354875">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu, opdatere Google Play-tjenester og derefter importere dem til Google Adgangskodeadministrator igen. <ph name="BEGIN_LINK" />Se hele vejledningen<ph name="END_LINK" />.</translation>
@@ -1442,6 +1444,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6898797562238201317">Brug din egen adgangssætning til at kryptere alle Chrome-data på din Google-konto</translation>
 <translation id="6900532703269623216">Forbedret beskyttelse</translation>
+<translation id="6900654715912436255">Er du sikker på, at du vil slette denne søgemaskine?</translation>
 <translation id="6903907808598579934">Aktivér synkronisering</translation>
 <translation id="6906448540340261898">Sørg for, at du altid kan bruge adgangskoderne på din Google-konto</translation>
 <translation id="6908230663105268638">Notifikationer er tilladt for <ph name="SITE_NAME" /></translation>

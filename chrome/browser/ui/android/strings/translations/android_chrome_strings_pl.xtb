@@ -240,6 +240,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="200114059308480249">Uwzględniać tekst otaczający słowa, które wyszukujesz w Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, przypięta wyciszona karta incognito</translation>
 <translation id="2021896219286479412">Elementy sterowania stroną na pełnym ekranie</translation>
+<translation id="2024195579772565064">Usuń wyszukiwarkę</translation>
 <translation id="2029669011553795746">Opcja wyrażenia zgody na powiadomienia o wskazówkach otwarta do połowy wysokości</translation>
 <translation id="2038563949887743358">Włącz opcję „Wersja na komputer”</translation>
 <translation id="204321170514947529">Dane aplikacji <ph name="APP_NAME" /> znajdują się też w Chrome</translation>
@@ -557,6 +558,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="3384347053049321195">Udostępnij zdjęcie</translation>
 <translation id="3387650086002190359">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu błędów systemu plików.</translation>
 <translation id="3414952576877147120">Rozmiar:</translation>
+<translation id="3417835166382867856">Wyszukaj karty</translation>
 <translation id="3430670036890315772">Jeśli wyłączysz blokadę profilu, zostaną usunięte zapisane informacje</translation>
 <translation id="3435465986463792564">Masz sporo okien? Tutaj możesz nimi zarządzać</translation>
 <translation id="3435575784518354875">Aby zachować dostęp do haseł, wyeksportuj je teraz, zaktualizuj Usługi Google Play, a potem zaimportuj je z powrotem do Menedżera haseł Google. <ph name="BEGIN_LINK" />Zobacz pełne instrukcje<ph name="END_LINK" /></translation>
@@ -1442,6 +1444,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6896758677409633944">Kopiuj</translation>
 <translation id="6898797562238201317">Używaj własnego hasła do szyfrowania wszystkich danych Chrome na koncie Google</translation>
 <translation id="6900532703269623216">Silniejsza ochrona</translation>
+<translation id="6900654715912436255">Czy na pewno chcesz usunąć tę wyszukiwarkę?</translation>
 <translation id="6903907808598579934">Włącz synchronizację</translation>
 <translation id="6906448540340261898">Upewnij się, że zawsze możesz używać haseł na swoim koncie Google</translation>
 <translation id="6908230663105268638">Witryna <ph name="SITE_NAME" /> może wysyłać powiadomienia</translation>

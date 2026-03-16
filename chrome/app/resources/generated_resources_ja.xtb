@@ -841,7 +841,6 @@
 <translation id="156793199942386351">「<ph name="CURRENTKEY" />」キーはすでに「<ph name="ACTION" />」に割り当てられています。<ph name="RESPONSE" />には、いずれかのキーを押してください。</translation>
 <translation id="1567993339577891801">JavaScript コンソール</translation>
 <translation id="1569466257325986920">次回 Google アカウントのパスワードを変更したときに、Google アカウントにログインした後でローカルデータが自動的に復元されます</translation>
-<translation id="1570235441606255261">Steam インストーラ</translation>
 <translation id="1570604804919108255">通知のミュートを解除する</translation>
 <translation id="1570990174567554976">ブックマーク フォルダ「<ph name="BOOKMARK_TITLE" />」が作成されました。</translation>
 <translation id="1571041387761170095">脆弱なパスワードや使い回されているパスワードはありません</translation>
@@ -965,7 +964,6 @@
 <translation id="1642299742557467312">このファイルはデバイスに危害を及ぼす可能性があります</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> および <ph name="NUMBER_OF_DEVICES" /> 個の他の Bluetooth デバイスに接続しました</translation>
 <translation id="1642494467033190216">他のデバッグ機能を有効にするには、その前に rootfs の保護を削除して再起動する必要があります。</translation>
-<translation id="1642895994345928121">デバイスのストレージが不足しているため、このアプリを起動できません。空き容量を増やしてからもう一度お試しください。</translation>
 <translation id="1643072738649235303">X9.62 ECDSA 署名（SHA-1）</translation>
 <translation id="1643921258693943800">ニアバイシェアを使用するには、Bluetooth と Wi-Fi をオンにしてください</translation>
 <translation id="1644574205037202324">履歴</translation>
@@ -2063,7 +2061,6 @@
 <translation id="2390347491606624519">プロキシに接続できません。もう一度ログインしてください</translation>
 <translation id="2390782873446084770">Wi-Fi 同期</translation>
 <translation id="2391419135980381625">標準フォント</translation>
-<translation id="2391805183137601570">Steam を開く</translation>
 <translation id="239185270194776190">Gemini との会話は別のウィンドウに表示されます。このサイドパネルの任意の場所をクリックすると、チャットをここに移動します。</translation>
 <translation id="2392369802118427583">有効にする</translation>
 <translation id="2393136602862631930">Chromebook で <ph name="APP_NAME" /> を設定</translation>
@@ -2145,7 +2142,6 @@
 <translation id="2445484935443597917">新しいプロファイルを作成</translation>
 <translation id="2445726032315793326">部分拡大鏡</translation>
 <translation id="244641233057214044">検索に関連</translation>
-<translation id="2447587550790814052">Steam for Chromebook（ベータ版）をご利用いただけるようになりました</translation>
 <translation id="2448312741937722512">種類</translation>
 <translation id="2448810255793562605">スイッチ アクセスの自動スキャン</translation>
 <translation id="2450021089947420533">ジャーニー</translation>
@@ -2172,7 +2168,6 @@
 <translation id="2460826998961521840">Google アカウントに保存されているパスキーを使用するには</translation>
 <translation id="2461550163693930491">共有タブのスクロールとズームをサイトに許可しない</translation>
 <translation id="2461593638794842577">この設定をオフにすると、パスワードをこのデバイスにのみ保存できます</translation>
-<translation id="2462332841984057083">Steam はすでに設定中です。セットアップが完了するまでお待ちください。</translation>
 <translation id="2462724976360937186">認証局キー ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> を追加しました</translation>
 <translation id="2464075479326723132">Microsoft SharePoint と OneDrive の最近のアクティビティに簡単にアクセスできるよう、ファイル候補が表示されています。
@@ -2227,7 +2222,6 @@
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> の音声をプレビュー</translation>
 <translation id="2492461744635776704">証明書の署名のリクエストを準備しています</translation>
 <translation id="249330843868392562">テキスト読み上げの設定を開く</translation>
-<translation id="2494555621641843783">Steam をインストールできません</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2496616243169085015">写真</translation>
 <translation id="2497229222757901769">マウスの速度</translation>
@@ -2582,7 +2576,6 @@
 <translation id="27349076983469322">明るい背景</translation>
 <translation id="2735712963799620190">スケジュール</translation>
 <translation id="2737363922397526254">折りたたむ...</translation>
-<translation id="2737538893171115082">Steam for Chromebook（ベータ版）は管理者によってブロックされています。管理者が次のポリシーを有効にする必要があります。</translation>
 <translation id="2737719817922589807">ブックマークとリスト(&amp;B)</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> が <ph name="TARGET_NAME" /> との画面コンテンツの共有をリクエストしています。</translation>
 <translation id="2738030019664645674">デバイスにインストールされたフォントの使用をサイトに許可しない</translation>
@@ -3046,7 +3039,6 @@
 <translation id="3039491566278747710">オフライン ポリシーをデバイスにインストールできませんでした。</translation>
 <translation id="303955801043931176">タブを閉じました</translation>
 <translation id="3040435070100611531">Google ウォレットのパス</translation>
-<translation id="3040982432432547149">Chromebook の Steam の改善にご協力ください</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> さんのタブグループに参加</translation>
 <translation id="3042097545107738107">充電の最適化戦略を変更します。</translation>
 <translation id="3043016484125065343">ブックマークを表示するにはログインしてください</translation>
@@ -3255,7 +3247,6 @@
 <translation id="3201422919974259695">使用可能な USB デバイスがここに表示されます。</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> への画面のキャストを一時停止する</translation>
 <translation id="3202578601642193415">新しい順</translation>
-<translation id="3204648577100496185">このアプリに関連付けられているデータがこのデバイスから削除される可能性があります</translation>
 <translation id="3206289903841621620">ユーザー辞書 <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">最近のアクティビティに基づいて、興味のありそうな検索候補とショッピングの割引が表示されています。
         <ph name="BREAK" />
@@ -3363,7 +3354,6 @@
 <translation id="3283148363895519428">スマートフォンの指示に沿って設定を続けます。スマートフォンが近くにあり、Bluetooth がオンになっていることをご確認ください。</translation>
 <translation id="3284050785966252943">自動入力メタデータのプレビュー</translation>
 <translation id="3285322247471302225">新しいタブ(&amp;T)</translation>
-<translation id="3285465040399788513">デバイスのストレージが不足しているため、設定を完了できません。空き容量を増やしてから、もう一度お試しください。</translation>
 <translation id="3285500645985761267">関連サイトにグループ内のアクティビティの確認を許可する</translation>
 <translation id="328571385944182268">パスワードを保存しますか？</translation>
 <translation id="3289668031376215426">自動大文字変換</translation>
@@ -3486,7 +3476,6 @@
 <translation id="3372602033006349389">その他のデバイス</translation>
 <translation id="337286756654493126">アプリケーションで開いたフォルダに書き込む</translation>
 <translation id="3373059063088819384">リーディング モードで開く</translation>
-<translation id="3373196968211632036">Steam for Chromebook（ベータ版）は、お子様の Google アカウントではご利用いただけません</translation>
 <translation id="3373701465337594448">この設定が有効な場合、閲覧履歴に基づいたウェブサイトのリストがここに表示されます。</translation>
 <translation id="3374294321938930390">「<ph name="BOOKMARK_TITLE" />」を「<ph name="NEW_FOLDER_TITLE" />」に移動しました。</translation>
 <translation id="3376035595160918049">アプリの更新を確認</translation>
@@ -3669,7 +3658,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" />（未選択）</translation>
 <translation id="3496689104192986836">電池残量 <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">収集するデータソース</translation>
-<translation id="3496797737329654668">ゲームを始めましょう</translation>
 <translation id="3496995426334945408">インタラクティブなビデオゲームやウェブフォームなどを表示するために、サイトが JavaScript を使用する場合があります。</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> 製 USB デバイス（製品 <ph name="PRODUCT_ID" />）</translation>
 <translation id="3497560059572256875">Doodle を共有</translation>
@@ -3881,7 +3869,6 @@
 <translation id="3637203148990213388">追加のアカウント</translation>
 <translation id="3640347231390550691">フィッシングからパスワードを保護します</translation>
 <translation id="364100968401221170">同期しているすべてのデバイスと Google アカウントから閲覧履歴データを削除するには、<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください。</translation>
-<translation id="3641070112313110357">Chromebook 向け Steam（ベータ版）を更新する必要があります。Chromebook を再起動してもう一度お試しください。</translation>
 <translation id="3641299252000913351">モデムのファームウェアの更新が進行中です。デバイスの電源を切らないでください。</translation>
 <translation id="3641456520301071208">サイトが位置情報を要求できるようにする</translation>
 <translation id="3642064270296434810">Google レンズを使用して、画面上のあらゆるコンテンツを検索できるようになりました</translation>
@@ -4218,7 +4205,6 @@
 <translation id="383891835335927981">拡大縮小値を設定したサイトはありません</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> によるクリップボードへのアクセスを常にブロックする</translation>
 <translation id="3840096463915153852">会話の履歴</translation>
-<translation id="3841282988425489367">Steam for Chromebook（ベータ版）を設定できません</translation>
 <translation id="3841319830220785495">デフォルトの自然な音声</translation>
 <translation id="3841356782900714251">スマートカード リーダー</translation>
 <translation id="3841964634449506551">パスワードが無効です</translation>
@@ -4666,7 +4652,6 @@
 <translation id="4148195018520464922">ログインを特定のユーザーに制限できます。制限すると、ログイン画面から [ユーザーを追加] オプションが削除されます。現在のユーザーを削除することもできます。</translation>
 <translation id="4148957013307229264">インストール中...</translation>
 <translation id="4150201353443180367">ディスプレイ</translation>
-<translation id="4151449637210235443">最近のゲームプレイについてお聞かせください</translation>
 <translation id="4151503145138736576">クリーンアップの必要なオフライン ストレージはありません</translation>
 <translation id="4152011295694446843">ブックマークはここに表示されます</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
@@ -4716,7 +4701,6 @@
 <translation id="4193251682249731404">信頼できる CA</translation>
 <translation id="4193575319002689239">カードを表示</translation>
 <translation id="419427585139779713">音節単位で入力</translation>
-<translation id="4195001808989442226">Steam for Chromebook（ベータ版）を開けません</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
@@ -4762,7 +4746,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{この拡張機能は許可されていません}other{一部の拡張機能は許可されていません}}</translation>
 <translation id="4231053948789591973">キャストは現在一時停止しています。いつでも画面のキャストを再開または停止できます。</translation>
 <translation id="4231095370974836764">Google Play のアプリとゲームを <ph name="DEVICE_TYPE" /> にインストールします。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Steam for Chromebook を設定しています</translation>
 <translation id="4232375817808480934">Kerberos の設定</translation>
 <translation id="4232376164796433044">パスワードと自動入力</translation>
 <translation id="4232484478444192782">Android スマートフォンがあなたをサポートします。Wi-Fi とパスワードを転送中です。</translation>
@@ -5120,7 +5103,6 @@
 <translation id="4472533928615930332">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">始める</translation>
 <translation id="4473559657152613417">タブを右クリックして、[タブを新しいグループに追加] を選択します</translation>
-<translation id="4473996011558324141">所要時間の目安</translation>
 <translation id="4474155171896946103">すべてのタブをブックマークに追加...</translation>
 <translation id="4476198534886170024">許可。<ph name="LINK_BEGIN" />システムのカメラへのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="4476590490540813026">競技選手</translation>
@@ -5356,7 +5338,6 @@
 <translation id="4638930039313743000">ADB デバッグを有効にする</translation>
 <translation id="4639390152280993480">このページを簡易表示するには、[その他のツール] &gt; [リーディング モード] に移動します</translation>
 <translation id="4641539339823703554">Chrome はシステムの時刻を設定できませんでした。以下で時刻を確認し、必要に応じて修正してください。</translation>
-<translation id="4642587497923912728">Steam for Chromebook（ベータ版）は、この Chromebook で最初にログインしたアカウントでのみご利用いただけます。</translation>
 <translation id="4643612240819915418">動画を新しいタブで開く(&amp;O)</translation>
 <translation id="4643833688073835173">Chromebook では、内蔵センサーを使用してデバイスの前にいる人を検出します。すべてのデータがデバイス上ですぐに処理され、その後に削除されます。センサーデータは Google には一切送信されません。</translation>
 <translation id="4644205769234414680">シークレット モードでの実行を許可する</translation>
@@ -6357,7 +6338,6 @@
 <translation id="5353769147530541973"><ph name="SITE_NAME" /> をタブのリストから削除して無効にします</translation>
 <translation id="5355099869024327351">アシスタントによる通知の表示を許可する</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
-<translation id="5355498626146154079">「Borealis Enabled」フラグをオンにする必要があります</translation>
 <translation id="5355501370336370394">企業のデバイスを登録</translation>
 <translation id="5357010010552553606">全画面表示への自動切り替えを許可しないサイト</translation>
 <translation id="5359910752122114278">検索結果 1 件</translation>
@@ -6387,7 +6367,6 @@
 <translation id="5376931455988532197">ファイル サイズが大きすぎます</translation>
 <translation id="5377367976106153749">カメラへのアクセスをオンにしますか？</translation>
 <translation id="5379140238605961210">マイクへのアクセスを引き続きブロックする</translation>
-<translation id="5380526436444479273">数分待ってから、もう一度お試しください</translation>
 <translation id="5382591305415226340">サポートされているリンクを管理</translation>
 <translation id="5384401776498845256">共有を許可する対象</translation>
 <translation id="5385628342687007304">このパスワードは、このデバイスのみに保存されます。他のデバイスで使用するには、Google アカウントに保存してください。</translation>
@@ -6441,7 +6420,6 @@
 <translation id="5414198321558177633">プロファイル リストを更新しています。この処理には数分かかることがあります。</translation>
 <translation id="5414566801737831689">アクセスしたウェブサイトのアイコンの読み取り</translation>
 <translation id="5414836363063783498">確認しています…</translation>
-<translation id="5415328625985164836">これはベータ版プログラムです。Chromebook で Steam を使用して、一部のゲームをプレイできるようになりました。</translation>
 <translation id="5415497281076257439">語句</translation>
 <translation id="5415871492522952905">すべてのデバイスで履歴とタブにアクセスできるため、デバイスが替わっても作業を続けられます</translation>
 <translation id="5417293056300086453">このサイトでは、識別子の使用と保護されたコンテンツの再生が許可されています。</translation>
@@ -6883,7 +6861,6 @@
 <translation id="5727728807527375859">拡張機能、アプリ、テーマはパソコンに悪影響を与える可能性があります。処理を続けてもよろしいですか？</translation>
 <translation id="5728072125198221967">リンクされている Google サービス</translation>
 <translation id="5728450728039149624">Smart Lock の画面ロックの方法</translation>
-<translation id="572914206753951782">Chromebook が最新バージョンであることを確認します。その後、Chromebook を再起動してもう一度お試しください。</translation>
 <translation id="5729712731028706266">表示(&amp;V)</translation>
 <translation id="5731247495086897348">貼り付けて実行(&amp;S)</translation>
 <translation id="5733109311583381874">よく使う単語を単語リストに登録して、変換候補をカスタマイズします</translation>
@@ -7304,6 +7281,7 @@
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011308810877101166">検索候補の関連性を高める</translation>
 <translation id="6011908034087870826">リンクを <ph name="DEVICE_NAME" /> に送信しています</translation>
+<translation id="6013003831291591200">タスクが完了しました</translation>
 <translation id="6013027779243312217">音声と動画の字幕を生成します</translation>
 <translation id="6014293228235665243">未読</translation>
 <translation id="6015776718598175635">星</translation>
@@ -7999,7 +7977,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{「<ph name="APP_NAME" />」がこのデバイスに次のアプリをインストールしようとしています。}other{「<ph name="APP_NAME" />」がこのデバイスに次のアプリをインストールしようとしています。}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> に関連しています</translation>
 <translation id="6508261954199872201">アプリ: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Chromebook を再起動してから、もう一度お試しください</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにすることを検討してください</translation>
 <translation id="6512759338201777379">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、ムード: <ph name="MOOD" />。</translation>
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
@@ -8107,7 +8084,6 @@
 <translation id="657866106756413002">ネットワーク健全性のスナップショット</translation>
 <translation id="6579369886355986318">すべてのコントロールを表示(&amp;C)</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - パソコンのコンテンツが共有されています</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% 完了しました</translation>
 <translation id="6580203076670148210">スキャンの速度</translation>
 <translation id="6580676117087365538">すべてのパソコンでこの拡張機能を使用するには、本人確認を行ってください</translation>
 <translation id="6581356304040102696">パスワードをインポートできません。ファイルサイズを 1 MB より小さくしてください。</translation>
@@ -8327,7 +8303,6 @@
 <translation id="6729280095610283088">森の上空を流れるように輝くオーロラ。</translation>
 <translation id="6729493062119577923">共有タブグループのアクティビティ</translation>
 <translation id="6730744976532805323">タブを切り替えても、現在のタブを Gemini と共有します</translation>
-<translation id="6731320427842222405">数分かかることがあります</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" />（ID: <ph name="EXTENSION_OR_APP_ID" />）</translation>
 <translation id="6736243959894955139">アドレス</translation>
 <translation id="6737663862851963468">Kerberos チケットの削除</translation>
@@ -8676,7 +8651,6 @@
 <translation id="6965648386495488594">ポート</translation>
 <translation id="6965978654500191972">デバイス</translation>
 <translation id="6966831944134814478">オフにする</translation>
-<translation id="6967112302799758487">Steam for Chromebook（ベータ版）を使用してインストールしたアプリやゲームは、このデバイスから削除されます。これらのアプリやゲームに関連付けられているデータも削除されます。アンインストールする前に、保存したアプリやゲームを必ずバックアップしてください。</translation>
 <translation id="6967430741871315905">デバイスが許可されているかどうか確認できません</translation>
 <translation id="6968288415730398122">画面ロックを設定するにはパスワードを入力します</translation>
 <translation id="6969047215179982698">ニアバイシェアをオフにする</translation>
@@ -8848,7 +8822,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> は管理者によって管理されています</translation>
 <translation id="7082850163410901674">Mac のシステム設定で通知がオフになっています</translation>
 <translation id="7083729794572207131">サイトは、ユーザーの利便性を向上させるためウェブアプリのインストールを要求することがあります</translation>
-<translation id="7083774521940805477">Steam for Chromebook（ベータ版）は、この Chromebook ではご利用いただけません。</translation>
 <translation id="7084095352418993433">このページについて Google に質問する: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">（設定されていません）</translation>
 <translation id="7086377898680121060">明るさを上げる</translation>
@@ -8927,7 +8900,6 @@
 <translation id="7141844554192012199">Checkup</translation>
 <translation id="714301620504747562">ブラウジングと検索が標準のプリロードよりも高速になります</translation>
 <translation id="7143207342074048698">接続中</translation>
-<translation id="7143409552554575716">ChromeOS フラグ</translation>
 <translation id="7144363643182336710">画面に通知は表示されません。画面の右下にあるサイレント モード アイコンをクリックすると、通知を確認できます。</translation>
 <translation id="7144856456372460176"><ph name="APP" /> をインストール(&amp;I)...</translation>
 <translation id="7144878232160441200">再読み込み</translation>
@@ -8938,7 +8910,6 @@
 <translation id="7152478047064750137">この拡張機能に特別な権限は必要ありません</translation>
 <translation id="7153101072880472645">高コントラストのオン / オフ</translation>
 <translation id="715396040729904728">ランチャー+Shift+<ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">フィードバックまたは問題の内容を記入します。可能な場合は、問題の再現手順もお知らせください。</translation>
 <translation id="7154130902455071009">スタート ページを次に変更します: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">動画の品質を向上させ、バッテリー消費を抑えます。動画はキャスト対応のスクリーンでのみ再生されます。</translation>
 <translation id="7159695867335480590">再生または一時停止します</translation>
@@ -9791,7 +9762,6 @@
 <translation id="7728668285692163452">チャンネルの変更は後で適用されます</translation>
 <translation id="7730449930968088409">画面のコンテンツをキャプチャする</translation>
 <translation id="7730683939467795481">このページは「<ph name="EXTENSION_NAME" />」拡張機能によって変更されました</translation>
-<translation id="7732702411411810416">インターネットに接続していることを確認してから、もう一度お試しください</translation>
 <translation id="773511996612364297">アクセント記号</translation>
 <translation id="7735558909644181051">中間証明書</translation>
 <translation id="7736119438443237821">このデバイスのパスキーへのアクセス権を削除しようとしています</translation>
@@ -9989,7 +9959,6 @@
 <translation id="7871691770940645922">仮想点字ディスプレイ</translation>
 <translation id="787268756490971083">オフ</translation>
 <translation id="7872758299142009420">ネストされたグループの数が多すぎます: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">ショートカットの編集はできません</translation>
 <translation id="7876243839304621966">すべて削除</translation>
 <translation id="7877126887274043657">同期の問題を修正(&amp;S)</translation>
@@ -11646,7 +11615,6 @@
 <translation id="8983018820925880511">この新しいプロフィールは <ph name="DOMAIN" /> によって管理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> は「<ph name="FILENAME" />」を編集できます</translation>
 <translation id="8984694057134206124">あなたのデバイスは誰でも <ph name="MINUTES" /> 分間検出できるようになります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook 向け Steam へようこそ</translation>
 <translation id="8985264973231822211">最終同期: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> 日前</translation>
 <translation id="8985561265504464578">検出しきい値</translation>
 <translation id="8985661493893822002">お使いの <ph name="DEVICE_TYPE" /> にログインするにはインターネットに接続してください。</translation>
@@ -11778,7 +11746,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{1 日あたり約 1 件の通知}other{1 日あたり約 {NUM_NOTIFICATION} 件の通知}}</translation>
 <translation id="9058760336383947367">プリンタの PPD を表示</translation>
 <translation id="9061521313218438086">一般に報告されているデータ侵害でパスワードが検出された場合、Google パスワード マネージャーによってログイン時にパスワードの変更を促すメッセージが表示されます。</translation>
-<translation id="9061694916020926968">Steam for Chromebook（ベータ版）を使用するには、Google アカウントにログインする必要があります。ログインしてから、もう一度お試しください。</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9062873887761404531">ナビゲーション ショートカットを消去</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>

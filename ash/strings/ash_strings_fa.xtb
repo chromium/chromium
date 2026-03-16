@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">آبی</translation>
 <translation id="1557622599341396706">نمایش نام میز کار</translation>
 <translation id="1569384531973824928">با این کار، دسترسی برای همه برنامه‌ها و وب‌سایت‌های دارای اجازه دوربین و میکروفون مجاز می‌شود. ممکن است لازم باشد صفحه وب را بازآوری کنید یا برنامه را دوباره راه‌اندازی کنید.</translation>
+<translation id="1570235441606255261">‏نصب‌کننده Steam</translation>
 <translation id="1571697193564730395">روشن/خاموش کردن «مزاحم نشوید». <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">دستگیره لبه سمت چپ انتخاب شده است، از کلیدهای جهت‌نما برای حرکت کردن استفاده کنید</translation>
 <translation id="1576623706766186887">زوم‌پس کردن هنگام روشن بودن ذره‌بین</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> دستگاه</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
+<translation id="1642895994345928121">فضای ذخیره‌سازی دستگاه برای باز کردن این برنامه کافی نیست. مقداری فضا آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="1647986356840967552">صفحه قبلی</translation>
 <translation id="1651914502370159744">باز کردن صفحه سابقه</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">گروه‌های زبانه و برنامه</translation>
 <translation id="2386292613071805067">انتخاب همه‌چیز در صفحه</translation>
 <translation id="2389423187722941333">‏روشن/خاموش کردن Gemini</translation>
+<translation id="2391805183137601570">‏باز کردن Steam</translation>
 <translation id="2392659840443812875">نقطه اتصالی دردسترس نیست. دستگاهتان باید همین اطراف باشد و بلوتوث آن روشن باشد.</translation>
 <translation id="2397416548179033562">‏نمایش منوی Chrome</translation>
 <translation id="240006516586367791">کنترل‌های رسانه</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">دیروز باز شده است</translation>
 <translation id="2440978926514840421">‏ضبط GIF انجام شد</translation>
 <translation id="2441427462554639370">به‌دلیل فضای ذخیره‌سازی بسیار کم، ضبط به‌پایان رسید</translation>
+<translation id="2447587550790814052">‏اکنون می‌توانید از «Steam ویژه Chromebook» (بتا) استفاده کنید</translation>
 <translation id="2449089818483227734">باتری ضعیف است</translation>
 <translation id="2450205753526923158">حالت نماگرفت</translation>
 <translation id="2453860139492968684">پایان</translation>
 <translation id="2455994958736234930">‏افزودن www.‎ و ‎.com به نوار نشانی و سپس باز کردن وب‌سایت</translation>
 <translation id="2456008742792828469">تقویم، <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">کاوش بیشتر</translation>
+<translation id="2462332841984057083">‏Steam اکنون درحال راه‌اندازی است. منتظر بمانید تا راه‌اندازی تکمیل شود.</translation>
 <translation id="2465145153332031561">سلامت باتری <ph name="BATTERY_HEALTH_PERCENTAGE" />٪، تعداد چرخه <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">تأیید وضوح</translation>
 <translation id="2475783092753560388">درج <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">پیش‌نمایش <ph name="DESK_NAME" />. میز کار فعال.</translation>
 <translation id="2486405091093637109">‫«<ph name="DISPLAY_NAME" />» به وضوح <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> هرتز) تغییر کرد. بدون تأیید کردن، تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="2487915095798731898">پیوستن</translation>
+<translation id="2494555621641843783">‏Steam نصب نشد</translation>
 <translation id="2496180316473517155">سابقه مرور</translation>
 <translation id="2499445554382787206">منو نمایه میز کار. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">کلیدهای چسبان</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">پاسخ دادن</translation>
 <translation id="2727744317940422214">‏متأسفیم، مشکلی پیش آمد. لطفاً بازخوردتان را با هشتگ ‎#bruschetta در توضیحات ارسال کنید. کد خطا <ph name="ERROR" /> است. پاک‌سازی انجام نشد، شاید لازم باشد این کار را به‌صورت دستی انجام دهید.</translation>
 <translation id="2727977024730340865">باتری به شارژر برق ضعیف متصل است. شارژ باتری ممکن است قابل اطمینان نباشد.</translation>
+<translation id="2737538893171115082">‏سرپرست شما «Steam ویژه Chromebook» (بتا) را مسدود کرده است. سرپرست شما باید این خط‌مشی‌ها را روشن کند:</translation>
 <translation id="2743301740238894839">شروع</translation>
 <translation id="2743387203779672305">کپی در بریده‌دان</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911">ترکیب با <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">شارژ باتری قلم <ph name="PERCENTAGE" /> درصد است.</translation>
 <translation id="304097922505898963">باز کردن برنامه «میان‌برهای مهم»</translation>
+<translation id="3040982432432547149">‏به ما کمک کنید Steam را برای Chromebook بهبود ببخشیم</translation>
 <translation id="304417730895741346">برنامه‌های سنجاق‌شده و باز در قفسه قرار دارد. برای سنجاق کردن برنامه به قفسه، روی برنامه کلیک راست کنید یا با دو انگشت روی صفحه لمسی تک‌ضرب بزنید.</translation>
 <translation id="3045670165536837541">دستگیره بالا سمت راست انتخاب شده است، از کلیدهای جهت‌نما برای حرکت کردن استفاده کنید</translation>
 <translation id="3047761520276763270">بگویید:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">بازراه‌اندازی ممکن است مدتی طول بکشد</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{متصل به یک دستگاه.}one{متصل به # دستگاه}other{متصل به # دستگاه}}</translation>
 <translation id="3203405173652969239">«دسترسی کلیدی» فعال شده است</translation>
+<translation id="3204648577100496185">داده‌های مرتبط با این برنامه ممکن است از این دستگاه برداشته شود.</translation>
 <translation id="3206735939915734551">روشن/ خاموش کردن «قفل تبدیل»</translation>
 <translation id="3207953481422525583">«تنظیمات کاربر»</translation>
 <translation id="3208321278970793882">برنامه</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">جستجو برای وارد کردن</translation>
 <translation id="3274634049061007184">مشاهده برنامه‌های تلفن</translation>
 <translation id="3279230909244266691">این فرایند ممکن است چند دقیقه طول بکشد. درحال شروع دستگاه مجازی.</translation>
+<translation id="3285465040399788513">فضای ذخیره‌سازی دستگاه برای تمام کردن راه‌اندازی کافی نیست. مقداری فضا آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="3289364673986435196">منو روشن/خاموش</translation>
 <translation id="3289544412142055976">‏درحال‌حاضر از برنامه‌های Linux پشتیبانی نمی‌شود</translation>
 <translation id="3289674678944039601">درحال شارژ ازطریق آداپتور</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">متصل‌شده</translation>
 <translation id="3369111525500416043">سررسید به‌زودی فرا می‌رسد</translation>
 <translation id="3371140690572404006">‏دستگاه USB-C (درگاه جلوی سمت راست)</translation>
+<translation id="3373196968211632036">‏«Steam ویژه Chromebook» (بتا) برای «حساب‌های Google» کودکان دردسترس نیست</translation>
 <translation id="3375634426936648815">متصل است</translation>
 <translation id="3386978599540877378">ذره‌بین تمام‌صفحه</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">پنهان شدن خودکار قفسه</translation>
+<translation id="3496797737329654668">بیایید بازی کنیم</translation>
 <translation id="3505066820268455558">درحال شارژ باتری</translation>
 <translation id="3509391053705095206">تلفنتان پیدا نشد. مطمئن شوید بلوتوث تلفن روشن باشد.</translation>
 <translation id="3510164367642747937">برجسته کردن نشانگر موشواره</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">باز کردن بریده‌دان</translation>
 <translation id="363473492175527493">‏تکلیف روی تمرکز روشن تنظیم شد: <ph name="TASK_NAME" />. برای ویرایش تکلیف، کلید Enter را فشار دهید.</translation>
 <translation id="3638400994746983214">روشن/خاموش کردن صفحه حریم خصوصی. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">‏«Steam ویژه Chromebook» (بتا) باید به‌روزرسانی شود. ‫Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید.</translation>
 <translation id="3649256019230929621">بازکردن پنجره در حداقل اندازه</translation>
 <translation id="3653999174677652346">‏<ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />،
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">درحال نمایش پنجره‌های میز کار کنونی، برای نمایش پنجره‌های همه میز کارها، کلید «جهت‌نمای بالا» را فشار دهید</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">سرگرمی</translation>
+<translation id="370665806235115550">در حال بارکردن…</translation>
 <translation id="3707093869106077605">‫<ph name="UNAVAILABLE_DLC_ONE" /> و <ph name="UNAVAILABLE_DLC_TWO" /> دردسترس نیستند</translation>
 <translation id="3708186454126126312">قبلاً متصل‌شده</translation>
 <translation id="3712143870407382523">پنجره‌ای برای این سمت انتخاب کنید</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">خروج از نمای آموزش گام‌به‌گام</translation>
 <translation id="383629559565718788">نمایش تنظیمات صفحه‌کلید</translation>
 <translation id="384082539148746321">الگو حذف شود؟</translation>
+<translation id="3841282988425489367">‏Steam ویژه Chromebook (بتا) نصب نشد</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> سپس <ph name="KEY_ONE" /> یا <ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /> یا <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">اطلاعات شبکه در دسترس نیست</translation>
 <translation id="3848526302597027234">دسترسی به اجازه‌های زیر:</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">انتقال به انتهای کلمه بعدی</translation>
 <translation id="4150201353443180367">صفحه‌نمایش</translation>
 <translation id="4151054805501931758">رتوش چهره</translation>
+<translation id="4151449637210235443">درباره تجربه بازی اخیرتان به ما بگویید</translation>
 <translation id="4156293514828496577">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است (حدود <ph name="TIME_LEFT" />).
 برخی‌از ویژگی‌ها برای افزایش عمر باتری محدود شده‌اند.</translation>
 <translation id="4158003972857765638">سازمان‌دهی در میزکار جدید</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">یا</translation>
 <translation id="4193857202545160520">نمایش کلیک‌ها و کلیدها</translation>
 <translation id="4193969623755915875">«راهنما» را بااستفاده از «<ph name="NEW_SHORTCUT" />» در برنامه «کاوش» باز کنید</translation>
+<translation id="4195001808989442226">‏Steam ویژه Chromebook (بتا) باز نشد</translation>
 <translation id="4195579532193195633">نسخه کنونی <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
 <translation id="4195877955194704651">دکمه کلیک خودکار</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />، برنامه نصب‌شده، موقتاً متوقف‌شده</translation>
 <translation id="4228078597006700451">کنترل‌ها راه‌اندازی نشده است</translation>
 <translation id="4230560241506423345">جدید</translation>
+<translation id="4231231258999726714">‏درحال راه‌اندازی «Steam ویژه Chromebook»</translation>
 <translation id="4236726631849783264">یادآور درباره کنش‌های پیشنهادی</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">حالت نمای کلی</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{همین حالا دستگاه را به‌روزرسانی کنید}=1{دستگاه را تا یک ثانیه دیگر به‌روزرسانی کنید}one{دستگاه را تا # ثانیه دیگر به‌روزرسانی کنید}other{دستگاه را تا # ثانیه دیگر به‌روزرسانی کنید}}</translation>
 <translation id="4472575034687746823">شروع کنید</translation>
 <translation id="4473489370276014885">‏مخاطبین Google</translation>
+<translation id="4473996011558324141">زمان تخمینی</translation>
 <translation id="4477350412780666475">آهنگ بعدی</translation>
 <translation id="4477751544736611934">ممکن است هزینه داده دربر داشته باشد.
 ‫۱ دستگاه متصل است.</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">توقف پخش محتوا به گیرنده ناشناس</translation>
 <translation id="4596144739579517758">زمینه تاریک خاموش است</translation>
 <translation id="4596442969149038771"><ph name="USER" /> هم‌رسانی کرد</translation>
+<translation id="4598556348158889687">مدیریت فضای ذخیره‌سازی</translation>
 <translation id="4610493115106525653">برونداد خوب</translation>
 <translation id="4611292653554630842">ورود به سیستم</translation>
 <translation id="462160925400706389"><ph name="NAME" /> متصل شد</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">‏برای حذف، Ctrl+W را فشار دهید</translation>
 <translation id="4635501805800894201">{0,plural, =0{اکنون دستگاه را به نسخه قبلی به‌روزرسانی کنید}=1{تا ۱ ثانیه دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}one{تا # ثانیه دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}other{تا # ثانیه دیگر دستگاه را به نسخه قبلی به‌روزرسانی کنید}}</translation>
 <translation id="4642092649622328492">گرفتن عکس از قسمتی از صفحه‌نمایش</translation>
+<translation id="4642587497923912728">‏«Steam ویژه Chromebook» (بتا) فقط برای اولین حسابی که در این Chromebook به سیستم وارد شده است دردسترس است.</translation>
 <translation id="4644727592819780893">ناحیه بسیار کوچک است و نمی‌توان آن را در پیش‌نمای دوربین نشان داد</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، توصیه برنامه</translation>
 <translation id="4649019912155580914">ویرایش کردید</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">زمینه تاریک روشن است</translation>
 <translation id="5354804064646502504">ممکن است هزینه داده دربر داشته باشد.
 هیچ دستگاهی متصل نیست.</translation>
+<translation id="5355498626146154079">‏باید پرچم «Borealis Enabled» را روشن کنید</translation>
 <translation id="5356963482258194581">بین زمینه تاریک و روشن جابه‌جا شوید. روی میز کار کلیک راست کنید و «کاغذدیواری و سبک» را انتخاب کنید.</translation>
 <translation id="536019650977002321">سرپرستتان ضبط صدا را غیرمجاز کرده است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5361524080961918551">فایل‌های گفتار <ph name="LANGUAGE" /> کامل بارگیری نشده‌اند</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">دسترسی به دوربین روشن شود؟</translation>
 <translation id="5378450298115733949">موارد بیشتر</translation>
 <translation id="5379115545237091094">تلاش‌های ناموفق زیادی انجام شده است</translation>
+<translation id="5380526436444479273">چند دقیقه صبر کنید و دوباره امتحان کنید</translation>
 <translation id="5383434787520761436">‏فایلی در Google Drive نیست</translation>
 <translation id="5391307769715781764">میز کار ذخیره‌شده جایگزین شود؟</translation>
 <translation id="5392327145184648521">درحال محاسبه درصد شارژ باتری…</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">علامت‌گذاری تکلیف به‌عنوان تکمیل‌شده</translation>
 <translation id="5413656666631274079">صفحه تنظیمات</translation>
 <translation id="5414198321558177633">درحال بازآوری فهرست نمایه. ممکن است چند دقیقه طول بکشد.</translation>
+<translation id="5415328625985164836">‏این یک برنامه نسخه بتا است. اکنون می‌توانید از Steam برای اجرای برخی‌از بازی‌ها در Chromebook استفاده کنید.</translation>
 <translation id="5426063383988017631">منوی تنظیمات بسته شد</translation>
 <translation id="5428899915242071344">شروع کردن انتخاب</translation>
 <translation id="5429993543155113935">درحال‌حاضر از پنجره‌های «ناشناس» پشتیبانی نمی‌شود</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774">بااستفاده از برنامه‌ها، کارهای موردنیازتان را در <ph name="PRODUCT_NAME" /> انجام دهید. می‌توانید برنامه‌ها را در «راه‌انداز» پیدا کنید.</translation>
 <translation id="571295407079589142">داده تلفن همراه خاموش است</translation>
 <translation id="5727460725221669831">‏اگر گذرواژه‌تان را فراموش کرده‌اید یا گذرواژه «حساب Google» خود را اخیراً تغییر داده‌اید، بازیابی این کاربر را امتحان کنید.</translation>
+<translation id="572914206753951782">‏مطمئن شوید که Chromebook از آخرین نسخه استفاده می‌کند. سپس، Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید.</translation>
 <translation id="5733630091161562207">اعلان خوشامدگویی</translation>
 <translation id="573413375004481890">این دستگاه از همه نمایشگرهایتان پشتیبانی نمی‌کند، بنابراین ارتباط یک نمایشگر قطع شده است</translation>
 <translation id="574392208103952083">متوسط</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">برنامه «میان‌برهای مهم» را با «<ph name="NEW_SHORTCUT" />» باز کنید.</translation>
 <translation id="6507618042428827377">رفتن به روش ورودی بعدی دردسترس</translation>
 <translation id="6508923215158854599">‏مطمئن شوید Chromebook روشن و به همان شبکه Wi-Fi متصل باشد که دستگاه Chromecast شما متصل است.</translation>
+<translation id="6511607461419653612">‏Chromebook را بازراه‌اندازی کنید و دوباره امتحان کنید</translation>
 <translation id="6515727200518652613">دوربین قطع شد، درحال اتصال مجدد.</translation>
 <translation id="651753338596587143">‏متأسفیم، هنگام نصب وابستگی‌های قابل‌بارگیری مشکلی پیش آمد. لطفاً دستگاه را بازراه‌اندازی کنید و اگر مشکل ادامه داشت، بازخوردی با هشتگ ‎#bruschetta در توضیحات ارسال کنید. کد خطا <ph name="ERROR" /> است.</translation>
 <translation id="6520517963145875092">پنجره‌ای را برای گرفتن عکس انتخاب کنید</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819">اعلان <ph name="APP_TITLE" /> پنهان شده است زیرا «محافظت دربرابر مشاهده» روشن است</translation>
 <translation id="6574622320167699133">قفل با تلفنتان باز شد. برای ورود، تک‌ضرب بزنید یا کلیک کنید.</translation>
 <translation id="6578407462441924264">بدون نام</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> درصد تکمیل شده است</translation>
 <translation id="6582012689384648647">‏برای فهرست‌های پخش تمرکز که برای شما شخصی‌سازی شده است، دسترسی به YouTube Music را مجاز کنید</translation>
 <translation id="6582034443359256692">درحال محاسبه سطح باتری.</translation>
 <translation id="6585808820553845416">جلسه در <ph name="SESSION_TIME_REMAINING" /> به پایان می‌رسد.</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">نیرو</translation>
 <translation id="672609503628871915">مشاهده تازه‌ها</translation>
 <translation id="6727969043791803658">متصل، <ph name="BATTERY_PERCENTAGE" />٪ باتری</translation>
+<translation id="6731320427842222405">این مرحله ممکن است چند دقیقه طول بکشد</translation>
 <translation id="6732087373923685049">دوربین</translation>
 <translation id="6732800389263199929">بیش‌از <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">دوربین و میکروفون درحال استفاده هستند</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">میان‌بر صفحه‌کلید «دگرساز + جهت‌نمای بالا» تغییر کرده است. برای استفاده از کلید «صفحه قبلی»، کلید «<ph name="LAUNCHER_KEY_NAME" /> + جهت‌نمای بالا» را فشار دهید.</translation>
 <translation id="696267987219125751">قاب‌بندی دوربین خاموش است.</translation>
 <translation id="6965382102122355670">تأیید</translation>
+<translation id="6967112302799758487">‏همه برنامه‌ها و بازی‌هایی که بااستفاده از «Steam ویژه Chromebook» (بتا) نصب شده‌اند از این دستگاه برداشته خواهند شد. داده‌های مرتبط با این برنامه‌ها و بازی‌ها نیز برداشته خواهند شد. قبل‌از حذف نصب، حتماً از برنامه‌ها و بازی‌های ذخیره‌شده پشتیبان‌گیری کنید.</translation>
 <translation id="6972629891077993081">‏دستگاه‌های HID</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">درج</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">چرخش خودکار</translation>
 <translation id="7076293881109082629">در حال ورود به سیستم</translation>
 <translation id="7076878155205969899">صامت کردن</translation>
+<translation id="7083774521940805477">‏«Steam ویژه Chromebook» (بتا) در Chromebook شما دردسترس نیست.</translation>
 <translation id="7083848064787091821">تمرکز</translation>
 <translation id="7084678090004350185">روشن/ خاموش کردن نقطه اتصال. نقطه اتصال روشن است، <ph name="DEVICECOUNT" /> دستگاه متصل است.</translation>
 <translation id="7086931198345821656">‏برای این به‌روزرسانی، باید روی <ph name="DEVICE_TYPE" /> شما Powerwash اعمال شود. همه داده‌ها حذف خواهد شد. درباره جدیدترین به‌روزرسانی <ph name="SYSTEM_APP_NAME" /> بیشتر بدانید.</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">به احتمال خیلی زیاد</translation>
 <translation id="7131634465328662194">به‌طور خودکار از سیستم خارج خواهید شد.</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
+<translation id="7143409552554575716">‏پرچم‌های ChromeOS</translation>
 <translation id="7144878232160441200">امتحان مجدد</translation>
 <translation id="7144942256906679589">وضعیت باتری</translation>
 <translation id="7145639536026937076">شارژ باتری <ph name="PERCENTAGE" />٪ است و باتری درحال شارژ است. «بهینه‌سازی باتری» روشن است.</translation>
 <translation id="7147587499155271409">سابقه مروری وجود ندارد</translation>
 <translation id="7147657298465433425">‏برای دسترسی به کلیدهای F، کلید fn را با کلیدهای ردیف بالا فشار دهید</translation>
 <translation id="7149149900052329230">‏فایل‌های محلی و فایل‌های Google Drive را در برنامه Files مدیریت کنید.</translation>
+<translation id="7154020516215182599">بازخوردتان را با ما درمیان بگذارید یا مشکلتان را شرح دهید. درصورت امکان، مراحل لازم برای بازسازی مشکل را اضافه کنید.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />،
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@
 <translation id="7726391492136714301">مشاهده کردن اعلان‌ها و برنامه‌های تلفن شما</translation>
 <translation id="7727952505535211425">باز کردن وب‌سایت در نوار نشانی در زبانه جدید</translation>
 <translation id="7728657226117099693">خاموش کردن «قفل تبدیل»</translation>
+<translation id="7732702411411810416">از اتصال به اینترنت مطمئن شوید و دوباره امتحان کنید</translation>
 <translation id="7742327441377685481">اعلانی ندارید</translation>
 <translation id="7748275671948949022">برجسته کردن دکمه «راه‌انداز» در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
@@ -2121,6 +2154,7 @@
 <translation id="7866482334467279021">روشن</translation>
 <translation id="7870790288828963061">‏برنامه «کیوسک» با نسخه جدیدتر پیدا نشد. چیزی برای به‌روزرسانی وجود ندارد. لطفاً فلش USB را خارج کنید.</translation>
 <translation id="7872786842639831132">خاموش</translation>
+<translation id="7873386145597434863">‏Steam ویژه Chromebook</translation>
 <translation id="7875575368831396199">ظاهراً بلوتوث در <ph name="DEVICE_TYPE" /> شما خاموش است. لطفاً برای استفاده از «مرکز کنترل تلفن»، بلوتوث را روشن کنید.</translation>
 <translation id="7884446017008693258">تنظیمات نقطه اتصال</translation>
 <translation id="7884902759927478774">لغو کشیدن زبانه</translation>
@@ -2469,6 +2503,7 @@
 <translation id="8980862970816311842">انتقال نماد برنامه به داخل/ خارج پوشه در جدول برنامه</translation>
 <translation id="8982906748181120328">نمایان برای اطراف</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">‏به Steam ویژه Chromebook خوش آمدید</translation>
 <translation id="8990809378771970590">درحال استفاده از <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">‏برای لغو کردن، کلیدهای fn‏ + Quick Insert (درج سریع) یا Shift را فشار دهید.</translation>
 <translation id="899350903320462459">به‌عنوان <ph name="LOGIN_ID" />، قفل دستگاه را باز کنید تا کنش اعلان اجرا شود</translation>
@@ -2485,6 +2520,7 @@
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">بلوتوث دردسترس نیست</translation>
 <translation id="9050999376345823055">برای رهاسازی، «.» را فشار دهید</translation>
+<translation id="9061694916020926968">‏برای استفاده از «Steam ویژه Chromebook» (بتا) باید به سیستم «حساب Google» وارد شوید. به سیستم وارد شوید و دوباره امتحان کنید.</translation>
 <translation id="906458777597946297">بازکردن پنجره در حداکثر اندازه</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9068849894565669697">انتخاب رنگ</translation>

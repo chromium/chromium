@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="1557622599341396706">ಡೆಸ್ಕ್ ಹೆಸರನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1569384531973824928">ಇದು ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಗಳನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ನೀಡುತ್ತದೆ. ನೀವು ವೆಬ್ ಪುಟವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಬೇಕಾಗಬಹುದು ಅಥವಾ ಆ್ಯಪ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಬೇಕಾಗಬಹುದು.</translation>
+<translation id="1570235441606255261">Steam ಇನ್‌ಸ್ಟಾಲರ್</translation>
 <translation id="1571697193564730395">ಅಡಚಣೆ ಮಾಡಬೇಡಿ ಸ್ಥಿತಿಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">ಎಡ ಅಂಚಿನ ಹ್ಯಾಂಡಲ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ, ಸರಿಸಲು ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="1576623706766186887">ಮ್ಯಾಗ್ನಿಫೈಯರ್ ಆನ್ ಆಗಿರುವಾಗ ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">ಆ್ಯಕ್ಸೆಸ್ ಬದಲಾಯಿಸಿ ಅನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿಯಲ್ಲಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ಸಾಧನಗಳು</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
+<translation id="1642895994345928121">ಈ ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯಲು ಸಾಕಷ್ಟು ಸಾಧನದ ಸ್ಟೋರೇಜ್ ಲಭ್ಯವಿಲ್ಲ. ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1647986356840967552">ಹಿಂದಿನ ಪುಟ</translation>
 <translation id="1651914502370159744">ಇತಿಹಾಸ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">ಆ್ಯಪ್ ಮತ್ತು ಟ್ಯಾಬ್ ಗುಂಪುಗಳು</translation>
 <translation id="2386292613071805067">ಪುಟದಲ್ಲಿರುವ ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2389423187722941333">Gemini ಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
+<translation id="2391805183137601570">Steam ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2392659840443812875">ಯಾವುದೇ ಹಾಟ್‌ಸ್ಪಾಟ್ ಲಭ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಸಾಧನ ಹತ್ತಿರದಲ್ಲಿದೆ ಮತ್ತು ಬ್ಲೂಟೂತ್ ಆನ್ ಆಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="2397416548179033562">Chrome ಮೆನು ತೋರಿಸು</translation>
 <translation id="240006516586367791">ಮೀಡಿಯಾ ನಿಯಂತ್ರಣಗಳು</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">ನಿನ್ನೆ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="2440978926514840421">GIF ರೆಕಾರ್ಡಿಂಗ್ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="2441427462554639370">ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳ ತೀರಾ ಕಡಿಮೆ ಇರುವ ಕಾರಣ ರೆಕಾರ್ಡಿಂಗ್ ಕೊನೆಗೊಂಡಿದೆ</translation>
+<translation id="2447587550790814052">ನೀವು ಈಗ Steam for Chromebook (ಬೀಟಾ) ಅನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="2449089818483227734">ಬ್ಯಾಟರಿ ಕಡಿಮೆಯಿದೆ</translation>
 <translation id="2450205753526923158">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮೋಡ್</translation>
 <translation id="2453860139492968684">ಪೂರ್ಣಗೊಳಿಸು</translation>
 <translation id="2455994958736234930">www. ಮತ್ತು .com ಅನ್ನು ವಿಳಾಸ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ, ನಂತರ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2456008742792828469">ಕ್ಯಾಲೆಂಡರ್, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">ಡ್ರಿಲ್ ಡೌನ್</translation>
+<translation id="2462332841984057083">Steam ಅನ್ನು ಈಗಾಗಲೇ ಸೆಟಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಸೆಟಪ್ ಪೂರ್ಣಗೊಳ್ಳಲು ನಿರೀಕ್ಷಿಸಿ.</translation>
 <translation id="2465145153332031561">ಬ್ಯಾಟರಿ ಹೆಲ್ತ್<ph name="BATTERY_HEALTH_PERCENTAGE" />%,| ಸೈಕಲ್ ಸಂಖ್ಯೆ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ರೆಸಲ್ಯೂಷನ್ ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ಅನ್ನು ಸೇರಿಸಿ</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ಪೂರ್ವವೀಕ್ಷಣೆ. ಸಕ್ರಿಯ ಡೆಸ್ಕ್.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ಅನ್ನು <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ರೆಸಲ್ಯೂಷನ್‌ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ. ಖಚಿತಪಡಿಸದೆಯೇ, ಈ ಹಿಂದಿನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು <ph name="TIMEOUT_SECONDS" /> ನಲ್ಲಿ ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2487915095798731898">ಸೇರ್ಪಡೆಗೊಳ್ಳು</translation>
+<translation id="2494555621641843783">Steam ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="2496180316473517155">ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ</translation>
 <translation id="2499445554382787206">ಡೆಸ್ಕ್ ಪ್ರೊಫೈಲ್ ಮೆನು. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ಸ್ಟಿಕಿ ಕೀಗಳು</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">ಪ್ರತ್ಯುತ್ತರಿಸಿ</translation>
 <translation id="2727744317940422214">ಕ್ಷಮಿಸಿ, ಏನೋ ತಪ್ಪಾಗಿದೆ. ವಿವರಣೆಯಲ್ಲಿ #bruschetta ಎಂಬುದರ ಜೊತೆಗೆ ಪ್ರತಿಕ್ರಿಯೆ ಸಲ್ಲಿಸಿ. ದೋಷದ ಕೋಡ್ <ph name="ERROR" /> ಆಗಿದೆ. ತೆರವುಗೊಳಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ, ನೀವು ಇದನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ಮಾಡಬೇಕಾಗಬಹುದು.</translation>
 <translation id="2727977024730340865">ಕಡಿಮೆ ವಿದ್ಯುತ್ ಚಾರ್ಜರ್‌ಗೆ ಪ್ಲಗ್ ಮಾಡಲಾಗಿದೆ. ಬ್ಯಾಟರಿ ಚಾರ್ಜಿಂಗ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿಲ್ಲದಿರಬಹುದು.</translation>
+<translation id="2737538893171115082">Steam for Chromebook (ಬೀಟಾ) ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ. ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ನೀತಿಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬೇಕಾಗಿದೆ:</translation>
 <translation id="2743301740238894839">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2743387203779672305">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" /> ಜೊತೆ ಸಂಯೋಜಿಸಿ</translation>
 <translation id="3039939407102840004">ಸ್ಟೈಲಸ್ ಬ್ಯಾಟರಿಯು ಶೇಕಡಾ <ph name="PERCENTAGE" /> ನಷ್ಟು ಇದೆ.</translation>
 <translation id="304097922505898963">Key Shortcuts ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="3040982432432547149">Chromebook ನ Steam ಅನ್ನು ಸುಧಾರಿಸಲು ನಮಗೆ ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="304417730895741346">ನಿಮ್ಮ ಪಿನ್ ಮಾಡಿದ ಮತ್ತು ತೆರೆದ ಆ್ಯಪ್‌ಗಳು ಶೆಲ್ಫ್‌ನಲ್ಲಿವೆ. ಆ್ಯಪ್ ಅನ್ನು ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್ ಮಾಡಲು, ಆ್ಯಪ್ ಅನ್ನು ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಅಥವಾ ನಿಮ್ಮ ಟಚ್‌ಪ್ಯಾಡ್ ಅನ್ನು ಎರಡು ಬೆರಳುಗಳಿಂದ ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="3045670165536837541">ಮೇಲಿನ ಬಲ ಹ್ಯಾಂಡಲ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ, ಸರಿಸಲು ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="3047761520276763270">ಹೀಗೆ ಹೇಳಿ ನೋಡಿ:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">ಮರುಪ್ರಾರಂಭಗೊಳ್ಳಲು ಸ್ವಲ್ಪ ಸಮಯ ಬೇಕಾಗಬಹುದು</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ಒಂದು ಸಾಧನಕ್ಕೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ}one{# ಸಾಧನಗಳಿಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ}other{# ಸಾಧನಗಳಿಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3203405173652969239">ಆ್ಯಕ್ಸೆಸ್ ಬದಲಾಯಿಸುವಿಕೆ ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
+<translation id="3204648577100496185">ಈ ಆ್ಯಪ್ ಜೊತೆಗೆ ಸಂಯೋಜಿತವಾಗಿರುವ ಡೇಟಾವನ್ನು ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="3206735939915734551">caps lock ಕೀಯನ್ನು ಆನ್/ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3207953481422525583">ಬಳಕೆದಾರರ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="3208321278970793882">ಆ್ಯಪ್</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ಸೇರಿಸುವುದಕ್ಕಾಗಿ ಹುಡುಕಿ</translation>
 <translation id="3274634049061007184">ನಿಮ್ಮ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="3279230909244266691">ಈ ಪ್ರಕ್ರಿಯೆಯು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ವರ್ಚುವಲ್ ಯಂತ್ರವನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ.</translation>
+<translation id="3285465040399788513">ಸೆಟಪ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಸಾಕಷ್ಟು ಸಾಧನದ ಸಂಗ್ರಹಣಾ ಸ್ಥಳ ಲಭ್ಯವಿಲ್ಲ. ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಿ, ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3289364673986435196">ಪವರ್ ಮೆನು</translation>
 <translation id="3289544412142055976">Linux ಆ್ಯಪ್‌ಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="3289674678944039601">ಅಡಾಪ್ಟರ್ ಮೂಲಕ ಚಾರ್ಜ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369111525500416043">ಮುಕ್ತಾಯ ದಿನಾಂಕ ಸಮೀಪಿಸುತ್ತಿದೆ</translation>
 <translation id="3371140690572404006">USB-C ಸಾಧನ (ಬಲ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
+<translation id="3373196968211632036">ಮಕ್ಕಳ Google ಖಾತೆಗಳಿಗಾಗಿ Steam for Chromebook (ಬೀಟಾ) ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3375634426936648815">ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3386978599540877378">ಪೂರ್ಣ ಪರದೆಯ ವರ್ಧಕ</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ಶೆಲ್ಫ್ ಸ್ವಯಂ ಮರೆಯಾಗಿದೆ</translation>
+<translation id="3496797737329654668">ಗೇಮ್ ಆಡೋಣ</translation>
 <translation id="3505066820268455558">ಬ್ಯಾಟರಿ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="3509391053705095206">ನಿಮ್ಮ ಫೋನ್ ಹುಡುಕಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್‌ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3510164367642747937">ಮೌಸ್ ಕರ್ಸರ್ ಎದ್ದುಗಾಣಿಸಿ</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ತೆರೆಯಿರಿ</translation>
 <translation id="363473492175527493">ಇದರ ಮೇಲೆ ಫೋಕಸ್ ಮಾಡಲು ಕಾರ್ಯವನ್ನು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ: <ph name="TASK_NAME" />. ಕಾರ್ಯವನ್ನು ಎಡಿಟ್ ಮಾಡಲು enter ಒತ್ತಿರಿ.</translation>
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Chromebook ಗಾಗಿ ಸ್ಟೀಮ್ (ಬೀಟಾ) ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕಿದೆ. ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3649256019230929621">ವಿಂಡೋ ಕಿರಿದಾಗಿಸಿ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್‌ನಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ, ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">ಮನರಂಜನೆ</translation>
+<translation id="370665806235115550">ಲೋಡ್ ಆಗುತ್ತಿದೆ...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ಮತ್ತು <ph name="UNAVAILABLE_DLC_TWO" /> ಫೀಚರ್ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="3708186454126126312">ಮುಂಚೆ ಕನೆಕ್ಟ್ ಮಾಡಿದವು</translation>
 <translation id="3712143870407382523">ಈ ಬದಿಗಾಗಿ ವಿಂಡೋ ಒಂದನ್ನು ಆರಿಸಿ</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">ಟ್ಯುಟೋರಿಯಲ್ ವೀಕ್ಷಣೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="383629559565718788">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="384082539148746321">ಟೆಂಪ್ಲೇಟ್ ಅಳಿಸಬೇಕೆ?</translation>
+<translation id="3841282988425489367">Steam for Chromebook (ಬೀಟಾ) ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> ನಂತರ <ph name="KEY_ONE" /> ಅಥವಾ <ph name="KEY_TWO" /> ಅಥವಾ <ph name="KEY_THREE" /> ಅಥವಾ <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3848526302597027234">ಈ ಕೆಳಗಿನ ಅನುಮತಿಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು:</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">ಮುಂದಿನ ಪದದ ಅಂತ್ಯದವರೆಗೂ ಸರಿಸಿ</translation>
 <translation id="4150201353443180367">ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="4151054805501931758">ಪೋರ್ಟ್ರೇಟ್ ಟಚ್‌-ಅಪ್</translation>
+<translation id="4151449637210235443">ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಗೇಮ್‌ಪ್ಲೇ ಕುರಿತು ನಮಗೆ ತಿಳಿಸಿ</translation>
 <translation id="4156293514828496577">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />% ರಷ್ಟಿದೆ (ಸುಮಾರು <ph name="TIME_LEFT" /> ಬಾಳಿಕೆ ಬರಬಹುದು).
 ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುವುದಕ್ಕಾಗಿ ಕೆಲವು ಫೀಚರ್‌ಗಳನ್ನು ಸೀಮಿತಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="4158003972857765638">ಹೊಸ ಡೆಸ್ಕ್ ಅನ್ನು ವ್ಯವಸ್ಥಿತಗೊಳಿಸಿ</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">ಅಥವಾ</translation>
 <translation id="4193857202545160520">ಕ್ಲಿಕ್‌ಗಳು ಮತ್ತು ಕೀಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />" ಮೂಲಕ ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಆ್ಯಪ್‌ನಲ್ಲಿ "ಸಹಾಯ" ಅನ್ನು ತೆರೆಯಿರಿ.</translation>
+<translation id="4195001808989442226">Chromebook (ಬೀಟಾ) ಗಾಗಿ Steam ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4195579532193195633">ಪ್ರಸ್ತುತ ಆವೃತ್ತಿ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ಎಲ್ಲಿ ಬಿಡಲಾಗಿದೆಯೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರೆಯಿರಿ</translation>
 <translation id="4195877955194704651">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳ ಬಟನ್</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್, ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4228078597006700451">ಕಂಟ್ರೋಲ್‌ಗಳನ್ನು ಸೆಟಪ್‌ ಮಾಡಿಲ್ಲ</translation>
 <translation id="4230560241506423345">ಹೊಸತು</translation>
+<translation id="4231231258999726714">Steam for Chromebook ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4236726631849783264">ಶಿಫಾರಸು ಮಾಡಿದ ಕ್ರಮಗಳ ಕುರಿತ ರಿಮೈಂಡರ್</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ಅವಲೋಕನ ಮೋಡ್‌</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{ಈಗಲೇ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}=1{1 ಸೆಕೆಂಡ್ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ಸೆಕೆಂಡ್‌ಗಳ ಒಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
 <translation id="4472575034687746823">ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">ಸಮಯವನ್ನು ಅಂದಾಜು ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4477350412780666475">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="4477751544736611934">ಇದರಿಂದ ಡೇಟಾ ವೆಚ್ಚವನ್ನು ತೆರಬೇಕಾಗಬಹುದು.
 1 ಸಾಧನ ಕನೆಕ್ಟ್ ಆಗಿದೆ.</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">"ಅಪರಿಚಿತ ಸ್ವೀಕರಿಸುವವರು" ನಲ್ಲಿ ಬಿತ್ತರಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="4596144739579517758">ಡಾರ್ಕ್ ಥೀಮ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ಅವರು ಹಂಚಿಕೊಂಡಿದ್ದಾರೆ</translation>
+<translation id="4598556348158889687">ಸಂಗ್ರಹಣೆ ನಿರ್ವಹಣೆ</translation>
 <translation id="4610493115106525653">ಉತ್ತಮ ಔಟ್‌‌ಪುಟ್</translation>
 <translation id="4611292653554630842">ಲಾಗ್ ಇನ್</translation>
 <translation id="462160925400706389"><ph name="NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">ಅಳಿಸಲು Ctrl+W ಒತ್ತಿರಿ</translation>
 <translation id="4635501805800894201">{0,plural, =0{ಈಗ ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}=1{1 ಸೆಕೆಂಡ್‌ನಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}one{# ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}other{# ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಸಾಧನವನ್ನು ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="4642092649622328492">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
+<translation id="4642587497923912728">ಈ Chromebook ನಲ್ಲಿ ಮೊದಲು ಸೈನ್ ಇನ್ ಮಾಡಿದ ಖಾತೆಗೆ ಮಾತ್ರ Steam for Chromebook (ಬೀಟಾ) ಲಭ್ಯವಿದೆ.</translation>
 <translation id="4644727592819780893">ಕ್ಯಾಮರಾಗೆ ಫಿಟ್ ಆಗಲು ಪ್ರದೇಶವು ತುಂಬಾ ಚಿಕ್ಕದಾಗಿದೆ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ಆ್ಯಪ್ ಶಿಫಾರಸು</translation>
 <translation id="4649019912155580914">ನೀವು ಎಡಿಟ್ ಮಾಡಿದ್ದೀರಿ</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">ಡಾರ್ಕ್‌ ಥೀಮ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5354804064646502504">ಇದರಿಂದ ಡೇಟಾ ವೆಚ್ಚವನ್ನು ತೆರಬೇಕಾಗಬಹುದು.
 ಯಾವುದೇ ಸಾಧನಗಳು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ.</translation>
+<translation id="5355498626146154079">ನೀವು "Borealis Enabled" ಫ್ಲ್ಯಾಗ್ ಅನ್ನು ಆನ್ ಮಾಡಬೇಕು</translation>
 <translation id="5356963482258194581">ಡಾರ್ಕ್ ಮತ್ತು ಲೈಟ್ ಥೀಮ್‌ಗಳ ನಡುವೆ ಬದಲಿಸಿ. ಡೆಸ್ಕ್‌ಟಾಪ್ ಮೇಲೆ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು ವಾಲ್‌ಪೇಪರ್ &amp; ಸ್ಟೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="536019650977002321">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಆಡಿಯೋ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಅನುಮತಿಸುವುದಿಲ್ಲ. ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಭಾಗಶಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5378450298115733949">ಇನ್ನಷ್ಟು</translation>
 <translation id="5379115545237091094">ಹಲವು ಬಾರಿ ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ</translation>
+<translation id="5380526436444479273">ಸ್ವಲ್ಪ ಸಮಯ ನಿರೀಕ್ಷಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="5383434787520761436">ಯಾವುದೇ Google Drive ಫೈಲ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5391307769715781764">ಸೇವ್ ಮಾಡಿದ ಡೆಸ್ಕ್ ಅನ್ನು ಬದಲಿಸಬೇಕೇ?</translation>
 <translation id="5392327145184648521">ಬ್ಯಾಟರಿ % ಅನ್ನು ಲೆಕ್ಕ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">ಕಾರ್ಯ ಪೂರ್ಣಗೊಂಡಿದೆ ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="5413656666631274079">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಪುಟ</translation>
 <translation id="5414198321558177633">ಪ್ರೊಫೈಲ್ ಪಟ್ಟಿಯನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
+<translation id="5415328625985164836">ಇದು ಬೀಟಾ ಪ್ರೋಗ್ರಾಂ ಆಗಿದೆ. ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ಕೆಲವು ಗೇಮ್‌ಗಳನ್ನು ಆಡಲು ನೀವು Steam ಅನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="5426063383988017631">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="5428899915242071344">ಆಯ್ಕೆಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5429993543155113935">ಅಜ್ಞಾತ ವಿಂಡೋಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774">ನಿಮ್ಮ <ph name="PRODUCT_NAME" /> ನಲ್ಲಿ ನಿಮಗೆ ಅಗತ್ಯವಿರುವ ಎಲ್ಲವನ್ನೂ ಮಾಡಲು ಆ್ಯಪ್‌ಗಳನ್ನು ಬಳಸಿ. ಲಾಂಚರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ನೀವು ಕಾಣಬಹುದು.</translation>
 <translation id="571295407079589142">ಮೊಬೈಲ್ ಡೇಟಾ ಆಫ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5727460725221669831">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಮರೆತಿದ್ದರೆ ಅಥವಾ ಇತ್ತೀಚೆಗೆ ನಿಮ್ಮ Google ಖಾತೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದರೆ ಈ ಬಳಕೆದಾರರನ್ನು ಮರುಪಡೆಯಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="572914206753951782">ನಿಮ್ಮ Chromebook ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. ನಂತರ, ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="5733630091161562207">ಸುಸ್ವಾಗತ ನೋಟಿಫಿಕೇಶನ್</translation>
 <translation id="573413375004481890">ಈ ಸಾಧನವು ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್‌ಪ್ಲೇಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ, ಆದ್ದರಿಂದ ಒಂದರ ಕನೆಕ್ಷನ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="574392208103952083">ಮಧ್ಯಮ</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" ಮೂಲಕ ಕೀ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="6507618042428827377">ಮುಂದಿನ ಲಭ್ಯವಿರುವ ಇನ್‌ಪುಟ್ ವಿಧಾನಕ್ಕೆ ಬದಲಿಸಿ</translation>
 <translation id="6508923215158854599">ನಿಮ್ಮ Chromebook ನಿಮ್ಮ Chromecast ಸಾಧನದಂತೆಯೇ ಅದೇ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
+<translation id="6511607461419653612">ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="6515727200518652613">ಕ್ಯಾಮರಾ ಕಳೆದುಹೋಗಿದೆ, ಮರುಕನೆಕ್ಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="651753338596587143">ಕ್ಷಮಿಸಿ, DLC ಅವಲಂಬನೆಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಾಗ ಏನೋ ತಪ್ಪಾಗಿದೆ. ರೀಬೂಟ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ ಮತ್ತು ಸಮಸ್ಯೆ ಮುಂದುವರಿದರೆ ವಿವರಣೆಯಲ್ಲಿ #bruschetta ನೊಂದಿಗೆ ಫೀಡ್‌ಬ್ಯಾಕ್ ಸಲ್ಲಿಸಿ. ದೋಷ ಕೋಡ್ <ph name="ERROR" /> ಆಗಿದೆ.</translation>
 <translation id="6520517963145875092">ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ವಿಂಡೋ ಒಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819">ವೀಕ್ಷಣೆ ರಕ್ಷಣೆ ಆನ್ ಆಗಿರುವ ಕಾರಣ <ph name="APP_TITLE" /> ಅಧಿಸೂಚನೆಯನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6574622320167699133">ನಿಮ್ಮ ಫೋನ್‌ನಿಂದ ಅನ್‌ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಪ್ರವೇಶಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ ಅಥವಾ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="6578407462441924264">ಹೆಸರಿಸದಿರುವುದು</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="6582012689384648647">ವೈಯಕ್ತೀಕರಿಸಿದ ಫೋಕಸ್ ಪ್ಲೇಪಟ್ಟಿಗಳಿಗಾಗಿ, YouTube Music ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="6582034443359256692">ಬ್ಯಾಟರಿ ಚಾರ್ಜ್ ಮಟ್ಟವನ್ನು ಲೆಕ್ಕ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="6585808820553845416">ಸೆಷನ್ <ph name="SESSION_TIME_REMAINING" /> ರಲ್ಲಿ ಕೊನೆಗೊಳ್ಳಲಿದೆ.</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">ಪವರ್‌</translation>
 <translation id="672609503628871915">ಹೊಸದೇನಿದೆ ನೋಡಿ</translation>
 <translation id="6727969043791803658">ಸಂಪರ್ಕಗೊಂಡಿದೆ, <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿ ಲಭ್ಯವಿದೆ</translation>
+<translation id="6731320427842222405">ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು</translation>
 <translation id="6732087373923685049">ಕ್ಯಾಮರಾ</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್‌ ಬಳಕೆಯಲ್ಲಿದೆ</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">Alt + ಅಪ್ ಆ್ಯರೋ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಿಸಲಾಗಿದೆ. Page Up ಕೀ ಬಳಸಲು, <ph name="LAUNCHER_KEY_NAME" /> ಕೀ + ಅಪ್ ಆ್ಯರೋ ಒತ್ತಿ.</translation>
 <translation id="696267987219125751">ಕ್ಯಾಮರಾ ಫ್ರೇಮಿಂಗ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
+<translation id="6967112302799758487">Steam for Chromebook (ಬೀಟಾ) ಬಳಸಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಯಾವುದೇ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಈ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳಿಗೆ ಸಂಬಂಧಿಸಿದ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸಲಾಗುತ್ತದೆ. ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವ ಮೊದಲು ಸೇವ್ ಮಾಡಿದ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿರುವುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="6972629891077993081">HID ಸಾಧನಗಳು</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">ಸೇರಿಸಿ</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">ಸ್ವಯಂ ತಿರುಗಿಸು</translation>
 <translation id="7076293881109082629">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7076878155205969899">ಧ್ವನಿಯನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
+<translation id="7083774521940805477">Steam for Chromebook (ಬೀಟಾ) ನಿಮ್ಮ Chromebook ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="7083848064787091821">ಫೋಕಸ್</translation>
 <translation id="7084678090004350185">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ, <ph name="DEVICECOUNT" /> ಸಾಧನಗಳನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="7086931198345821656">ಈ ಅಪ್‌ಡೇಟ್‌ಗೆ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಪವರ್‌ವಾಷ್‌‌ ಮಾಡುವ ಅಗತ್ಯವಿದೆ. ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಇತ್ತೀಚಿನ <ph name="SYSTEM_APP_NAME" /> ಅಪ್‌ಡೇಟ್ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">ಹೆಚ್ಚಿನ ಸಾಧ್ಯತೆ ಇದೆ</translation>
 <translation id="7131634465328662194">ನೀವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್‌ಔಟ್‌ ಆಗುತ್ತೀರಿ.</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
+<translation id="7143409552554575716">ChromeOS ಫ್ಲ್ಯಾಗ್‌ಗಳು</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7144942256906679589">ಬ್ಯಾಟರಿ ಸ್ಟೇಟಸ್</translation>
 <translation id="7145639536026937076">ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />% ರಷ್ಟಿದೆ ಹಾಗೂ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ. ಬ್ಯಾಟರಿ ಸೇವರ್ ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="7147587499155271409">ಯಾವುದೇ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವಿಲ್ಲ</translation>
 <translation id="7147657298465433425">F ಕೀಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್‌ ಮಾಡಲು, fn ಕೀ + ಮೇಲಿನ ಸಾಲು ಕೀಗಳನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="7149149900052329230">ನಿಮ್ಮ ಸ್ಥಳೀಯ ಫೈಲ್‌ಗಳು ಹಾಗೂ ನಿಮ್ಮ Google Drive ಫೈಲ್‌ಗಳೆಲ್ಲವನ್ನೂ Files ಆ್ಯಪ್‌ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ.</translation>
+<translation id="7154020516215182599">ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ. ಸಾಧ್ಯವಾದರೆ, ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ಮರು ರಚಿಸಲು ಹಂತಗಳನ್ನು ಸೇರಿಸಿ.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@
 <translation id="7726391492136714301">ನಿಮ್ಮ ಫೋನ್‌ನ ಅಧಿಸೂಚನೆಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7727952505535211425">ಹೊಸ ಟ್ಯಾಬ್‌ ಒಂದರಲ್ಲಿನ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ವೆಬ್‌ಸೈಟ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7728657226117099693">Caps Lock ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
+<translation id="7732702411411810416">ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿದ್ದೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7742327441377685481">ಯಾವುದೇ ಅಧಿಸೂಚನೆಗಳಿಲ್ಲ</translation>
 <translation id="7748275671948949022">ಶೆಲ್ಫ್‌ನಲ್ಲಿ ಲಾಂಚರ್ ಬಟನ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="7749443890790263709">ಗರಿಷ್ಠ ಸಂಖ್ಯೆಯ ಡೆಸ್ಕ್‌ಗಳನ್ನು ತಲುಪಲಾಗಿದೆ.</translation>
@@ -2121,6 +2154,7 @@
 <translation id="7866482334467279021">ಆನ್‌</translation>
 <translation id="7870790288828963061">ಹೊಸ ಆವೃತ್ತಿಯೊಂದಿಗೆ ಯಾವುದೇ ಕಿಯೋಸ್ಕ್ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ. ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಏನೂ ಇಲ್ಲ. ದಯವಿಟ್ಟು USB ಸ್ಟಿಕ್ ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="7872786842639831132">ಆಫ್</translation>
+<translation id="7873386145597434863">Chromebook ಗಾಗಿ Steam</translation>
 <translation id="7875575368831396199">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಆಫ್ ಆಗಿರುವಂತೆ ತೋರುತ್ತಿದೆ. ಫೋನ್ ಹಬ್ ಅನ್ನು ಬಳಸಲು ಬ್ಲೂಟೂತ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="7884446017008693258">ಹಾಟ್‌ಸ್ಪಾಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="7884902759927478774">ಟ್ಯಾಬ್ ಡ್ರ್ಯಾಗ್ ಮಾಡುವುದನ್ನು ರದ್ದುಮಾಡಿ</translation>
@@ -2470,6 +2504,7 @@
 <translation id="8980862970816311842">ಆ್ಯಪ್ ಐಕಾನ್ ಅನ್ನು, ಆ್ಯಪ್ ಗ್ರಿಡ್‌ನಲ್ಲಿನ ಫೋಲ್ಡರ್‌ನಿಂದ ಒಳಗೆ/ಹೊರಗೆ ಸರಿಸಿ</translation>
 <translation id="8982906748181120328">ಸಮೀಪದ ಗೋಚರತೆ</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebook ನ Steam ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8991648557324317894">ರದ್ದುಗೊಳಿಸಲು fn + ಕ್ವಿಕ್ ಇನ್‌ಸರ್ಟ್ ಅಥವಾ Shift ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="899350903320462459">ನೋಟಿಫಿಕೇಶನ್ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು <ph name="LOGIN_ID" /> ನಂತೆ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
@@ -2486,6 +2521,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="9050012935252397793">ಬ್ಲೂಟೂತ್ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="9050999376345823055">ಬಿಡುಗಡೆ ಮಾಡಲು "." ಒತ್ತಿರಿ</translation>
+<translation id="9061694916020926968">Steam for Chromebook (ಬೀಟಾ) ಅನ್ನು ಬಳಸಲು, ನೀವು Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿರಬೇಕಾಗುತ್ತದೆ. ಸೈನ್ ಇನ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="906458777597946297">ವಿಂಡೋ ಹಿರಿದಾಗಿಸಿ</translation>
 <translation id="9065203028668620118">ಎಡಿಟ್</translation>
 <translation id="9068849894565669697">ಬಣ್ಣವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>

@@ -240,6 +240,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="200114059308480249">Isama ang katabing text sa mga paghahanap sa Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Naka-pin at Naka-mute na Tab na Incognito</translation>
 <translation id="2021896219286479412">Control ng full screen sa site</translation>
+<translation id="2024195579772565064">I-delete ang search engine</translation>
 <translation id="2029669011553795746">Binuksan nang kalahati ang pag-opt in sa mga notification sa Mga Tip</translation>
 <translation id="2038563949887743358">I-on ang Hilingin ang site sa desktop</translation>
 <translation id="204321170514947529">May data rin ang <ph name="APP_NAME" /> sa Chrome</translation>
@@ -559,6 +560,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3384347053049321195">Magbahagi ng larawan</translation>
 <translation id="3387650086002190359">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga error sa file system.</translation>
 <translation id="3414952576877147120">Laki:</translation>
+<translation id="3417835166382867856">Maghanap sa mga tab</translation>
 <translation id="3430670036890315772">Kapag in-off ang iyong lock ng profile, maaalis ang naka-save na impormasyon mo</translation>
 <translation id="3435465986463792564">Maraming window? Puwede mong pamahalaan ang mga ito mula rito</translation>
 <translation id="3435575784518354875">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito, i-update ang Mga Serbisyo ng Google Play, at pagkatapos ay i-import ulit ang mga ito sa Google Password Manager. <ph name="BEGIN_LINK" />Tingnan ang mga kumpletong tagubilin<ph name="END_LINK" />.</translation>
@@ -1445,6 +1447,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6898797562238201317">Gamitin ang iyong sariling passphrase para i-encrypt ang lahat ng data sa Chrome sa Google Account mo</translation>
 <translation id="6900532703269623216">Enhanced protection</translation>
+<translation id="6900654715912436255">Sigurado ka bang gusto mong i-delete ang search engine na ito?</translation>
 <translation id="6903907808598579934">I-on ang pag-sync</translation>
 <translation id="6906448540340261898">Tiyaking magagamit mo sa anumang oras ang mga password sa iyong Google Account</translation>
 <translation id="6908230663105268638">Pinapayagan ang mga notification para sa <ph name="SITE_NAME" /></translation>

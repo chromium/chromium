@@ -239,6 +239,7 @@
 <translation id="200114059308480249">Chcete zahŕňať okolitý text vo vyhľadávaniach na Googli?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pripnutá karta inkognito s vypnutým zvukom</translation>
 <translation id="2021896219286479412">Ovládanie webu na celú obrazovku</translation>
+<translation id="2024195579772565064">Odstránenie vyhľadávača</translation>
 <translation id="2029669011553795746">Prihlásenie na odber upozornení na tipy je otvorené na polovičnú výšku</translation>
 <translation id="2038563949887743358">Zapnutie žiadosti o verziu stránok pre počítače</translation>
 <translation id="204321170514947529">V Chrome má údaje aj aplikácia <ph name="APP_NAME" />.</translation>
@@ -556,6 +557,7 @@
 <translation id="3384347053049321195">Zdieľať obrázok</translation>
 <translation id="3387650086002190359">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu chýb systému súborov.</translation>
 <translation id="3414952576877147120">Veľkosť:</translation>
+<translation id="3417835166382867856">Vyhľadávanie kariet</translation>
 <translation id="3430670036890315772">Vypnutím zámky profilu odstránite uložené informácie</translation>
 <translation id="3435465986463792564">Máte veľa okien? Tu ich môžete spravovať.</translation>
 <translation id="3435575784518354875">Ak si chcete zachovať prístup k svojim heslám, exportujte ich, aktualizujte Služby Google Play a potom ich importujte späť do Správcu hesiel Google. <ph name="BEGIN_LINK" />Zobraziť úplné pokyny<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6896758677409633944">Kopírovať</translation>
 <translation id="6898797562238201317">Šifrovať všetky údaje Chromu vo vašom účte Google pomocou vlastnej prístupovej frázy</translation>
 <translation id="6900532703269623216">Rozšírená ochrana</translation>
+<translation id="6900654715912436255">Naozaj chcete odstrániť tento vyhľadávač?</translation>
 <translation id="6903907808598579934">Zapnúť synchronizáciu</translation>
 <translation id="6906448540340261898">Uistite sa, že vo svojom účte Google môžete kedykoľvek použiť heslá</translation>
 <translation id="6908230663105268638">Web <ph name="SITE_NAME" /> má povolené upozornenia</translation>

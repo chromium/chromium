@@ -837,7 +837,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="156793199942386351">Ya se asignó la tecla "<ph name="CURRENTKEY" />" a la acción "<ph name="ACTION" />". Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1569466257325986920">La próxima vez que se cambie la contraseña de tu Cuenta de Google, tus datos locales se recuperarán automáticamente después de que accedas a tu cuenta.</translation>
-<translation id="1570235441606255261">Instalador de Steam</translation>
 <translation id="1570604804919108255">Dejar de silenciar notificaciones</translation>
 <translation id="1570990174567554976">Se creó la carpeta de favoritos "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">No tienes contraseñas poco seguras o reutilizadas</translation>
@@ -962,7 +961,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1642299742557467312">Este archivo podría dañar tu dispositivo</translation>
 <translation id="1642492862748815878">Se estableció conexión con <ph name="DEVICE" /> y <ph name="NUMBER_OF_DEVICES" /> dispositivos Bluetooth más</translation>
 <translation id="1642494467033190216">Se requiere una eliminación de la protección de rootfs y el reinicio antes de habilitar otras funciones de depuración.</translation>
-<translation id="1642895994345928121">No hay suficiente espacio de almacenamiento en el dispositivo para abrir esta app. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="1643072738649235303">Firma X9.62 ECDSA con SHA-1</translation>
 <translation id="1643921258693943800">Para usar Compartir con Nearby, activa las conexiones Bluetooth y Wi-Fi.</translation>
 <translation id="1644574205037202324">Historial</translation>
@@ -2062,7 +2060,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2390347491606624519">No se puede establecer conexión con el proxy; vuelve a intentarlo</translation>
 <translation id="2390782873446084770">Sincronización Wi-Fi</translation>
 <translation id="2391419135980381625">Fuente estándar</translation>
-<translation id="2391805183137601570">Abrir Steam</translation>
 <translation id="239185270194776190">Tu conversación de Gemini está en otra ventana. Haz clic en cualquier parte de este panel lateral para moverla aquí.</translation>
 <translation id="2392369802118427583">Activar</translation>
 <translation id="2393136602862631930">Configura <ph name="APP_NAME" /> en tu Chromebook</translation>
@@ -2144,7 +2141,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2445484935443597917">Crear un perfil nuevo</translation>
 <translation id="2445726032315793326">Lupa parcial</translation>
 <translation id="244641233057214044">Relacionados con tu búsqueda</translation>
-<translation id="2447587550790814052">Ahora puedes usar Steam for Chromebook (beta).</translation>
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2448810255793562605">Interpretación automática del teclado en el modo Accesibilidad con interruptores</translation>
 <translation id="2450021089947420533">Exploraciones</translation>
@@ -2171,7 +2167,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2460826998961521840">Para usar las llaves de acceso guardadas en tu Cuenta de Google</translation>
 <translation id="2461550163693930491">No permitir que los sitios se desplacen ni hagan zoom en las pestañas compartidas</translation>
 <translation id="2461593638794842577">Puedes desactivar este parámetro de configuración para guardar tus contraseñas solo en este dispositivo</translation>
-<translation id="2462332841984057083">Ya se está configurando Steam. Espera a que se complete la configuración.</translation>
 <translation id="2462724976360937186">ID de clave de la Entidad de certificación</translation>
 <translation id="2462752602710430187">Se agregó <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Microsoft SharePoint y OneDrive.
@@ -2226,7 +2221,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2491587035099903063">obtener vista previa de la voz de <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Preparando la solicitud de firma del certificado</translation>
 <translation id="249330843868392562">Abrir la configuración de texto a voz</translation>
-<translation id="2494555621641843783">No se puede instalar Steam</translation>
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="2496616243169085015">Fotografía</translation>
 <translation id="2497229222757901769">Velocidad del mouse</translation>
@@ -2582,7 +2576,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="27349076983469322">Fondo claro</translation>
 <translation id="2735712963799620190">Programar</translation>
 <translation id="2737363922397526254">Contraer...</translation>
-<translation id="2737538893171115082">Tu administrador bloqueó Steam for Chromebook (beta). Debe activar estas políticas:</translation>
 <translation id="2737719817922589807">&amp;Favoritos y listas</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> desea compartir el contenido de tu pantalla con <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">No permitir que los sitios usen las fuentes instaladas en el dispositivo</translation>
@@ -3045,7 +3038,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3039491566278747710">No se pudo instalar la política sin conexión en el dispositivo.</translation>
 <translation id="303955801043931176">Pestaña cerrada</translation>
 <translation id="3040435070100611531">Los pases de tu Billetera de Google</translation>
-<translation id="3040982432432547149">Ayúdanos a mejorar Steam para Chromebook</translation>
 <translation id="304169924727249890">Únete al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Cambiar la estrategia de carga optimizada.</translation>
 <translation id="3043016484125065343">Accede para ver tus favoritos</translation>
@@ -3256,7 +3248,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3201422919974259695">Los dispositivos USB disponibles aparecerán aquí.</translation>
 <translation id="3202499879214571401">Pausar la transmisión de la pantalla a <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Más reciente</translation>
-<translation id="3204648577100496185">Es posible que los datos asociados a esta app se quiten de este dispositivo</translation>
 <translation id="3206289903841621620">Diccionario del usuario <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Te mostramos búsquedas sugeridas y descuentos para compras que podrían interesarte en función de tu actividad reciente.
         <ph name="BREAK" />
@@ -3364,7 +3355,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3283148363895519428">Sigue las instrucciones que se muestran en tu teléfono para continuar con la configuración. Asegúrate de que el teléfono esté cerca y tenga la conexión Bluetooth activada.</translation>
 <translation id="3284050785966252943">Autocompletar vista previa de metadatos</translation>
 <translation id="3285322247471302225">Nueva pes&amp;taña</translation>
-<translation id="3285465040399788513">No hay suficiente espacio de almacenamiento en el dispositivo para completar la configuración. Libera espacio y vuelve a intentarlo.</translation>
 <translation id="3285500645985761267">Permitir que los sitios relacionados vean tu actividad en el grupo</translation>
 <translation id="328571385944182268">¿Quieres guardar tus contraseñas?</translation>
 <translation id="3289668031376215426">Mayúsculas automáticas</translation>
@@ -3487,7 +3477,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3372602033006349389">En otros dispositivos</translation>
 <translation id="337286756654493126">Leer carpetas que abras en la aplicación</translation>
 <translation id="3373059063088819384">Abrir en modo de lectura</translation>
-<translation id="3373196968211632036">Steam for Chromebook (beta) no está disponible para Cuentas de Google secundarias.</translation>
 <translation id="3373701465337594448">Cuando esta configuración está activada, se muestra una lista de los sitios que visitas y que descubren tus intereses</translation>
 <translation id="3374294321938930390">Se movió "<ph name="BOOKMARK_TITLE" />" a "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3376035595160918049">Revisar actualización de la app</translation>
@@ -3670,7 +3659,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (no seleccionado)</translation>
 <translation id="3496689104192986836">Nivel de batería: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Fuentes de datos para recopilar</translation>
-<translation id="3496797737329654668">Comienza a jugar</translation>
 <translation id="3496995426334945408">Por lo general los sitios utilizan JavaScript para mostrar funciones interactivas, como videojuegos o formularios web.</translation>
 <translation id="3497501929010263034">Dispositivo USB de <ph name="VENDOR_NAME" /> (producto <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Compartir doodle</translation>
@@ -3883,7 +3871,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3637203148990213388">Cuentas adicionales</translation>
 <translation id="3640347231390550691">Protege tus contraseñas contra los ataques de phishing.</translation>
 <translation id="364100968401221170">Para borrar los datos de navegación de todos tus dispositivos sincronizados y de tu Cuenta de Google, <ph name="BEGIN_LINK" />accede a la cuenta<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Debes actualizar Steam para Chromebook (beta). Reinicia la Chromebook y vuelve a intentarlo.</translation>
 <translation id="3641299252000913351">Se está actualizando el firmware del módem. No apagues el dispositivo.</translation>
 <translation id="3641456520301071208">Los sitios pueden solicitar tu ubicación</translation>
 <translation id="3642064270296434810">Ahora puedes usar Google Lens para buscar lo que ves en la pantalla</translation>
@@ -4220,7 +4207,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="383891835335927981">No se configuró el zoom para ningún sitio</translation>
 <translation id="3839516600093027468">Nunca permitir que <ph name="HOST" /> vea el portapapeles</translation>
 <translation id="3840096463915153852">Historial de conversaciones</translation>
-<translation id="3841282988425489367">No se puede configurar Steam for Chromebook (beta)</translation>
 <translation id="3841319830220785495">Voz natural predeterminada</translation>
 <translation id="3841356782900714251">Lectores de tarjetas inteligentes</translation>
 <translation id="3841964634449506551">La contraseña no es válida</translation>
@@ -4668,7 +4654,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4148195018520464922">Puedes limitar el acceso a ciertos usuarios. Esto quitará la opción "Agregar a una persona" de la pantalla de acceso. También puedes quitar a los usuarios actuales.</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="4150201353443180367">Pantalla</translation>
-<translation id="4151449637210235443">Cuéntanos acerca de tu experiencia de juego más reciente.</translation>
 <translation id="4151503145138736576">No hay espacio de almacenamiento sin conexión para liberar</translation>
 <translation id="4152011295694446843">Aquí encontrarás tus favoritos</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 pestaña}other{# pestañas}}</translation>
@@ -4719,7 +4704,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4193251682249731404">CA de confianza</translation>
 <translation id="4193575319002689239">Mostrar tarjetas</translation>
 <translation id="419427585139779713">Ingresar una sola sílaba por vez</translation>
-<translation id="4195001808989442226">No se puede abrir Steam for Chromebook (beta)</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4195814663415092787">Continuar la sesión desde donde la dejaste</translation>
 <translation id="4198268995694216131">Sitios adicionales</translation>
@@ -4765,7 +4749,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{No se permite esta extensión}other{No se permiten algunas extensiones}}</translation>
 <translation id="4231053948789591973">La transmisión está en pausa. Puedes reanudar o detener la transmisión de la pantalla en cualquier momento.</translation>
 <translation id="4231095370974836764">Instala apps y juegos de Google Play en tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Configurando Steam for Chromebook</translation>
 <translation id="4232375817808480934">Configurar Kerberos</translation>
 <translation id="4232376164796433044">Contraseñas y Autocompletar</translation>
 <translation id="4232484478444192782">Tu teléfono Android te protege. Se están transfiriendo tu red Wi-Fi y tu contraseña.</translation>
@@ -5124,7 +5107,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4472533928615930332">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, en el estilo <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Comenzar</translation>
 <translation id="4473559657152613417">Haz clic con el botón derecho en una pestaña y selecciona "Agregar pestaña a un nuevo grupo"</translation>
-<translation id="4473996011558324141">calculando el tiempo</translation>
 <translation id="4474155171896946103">Agregar a favoritos todas las pestañas...</translation>
 <translation id="4476198534886170024">Permiso habilitado. Activa el <ph name="LINK_BEGIN" />acceso a la cámara del sistema<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Atleta</translation>
@@ -5359,7 +5341,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4638930039313743000">Habilitar depuración mediante ADB</translation>
 <translation id="4639390152280993480">Para acceder a una vista simplificada de esta página, ve a Más herramientas &gt; Modo de lectura</translation>
 <translation id="4641539339823703554">Chrome no pudo establecer la hora del sistema. Comprueba la hora más abajo y corrígela si es necesario.</translation>
-<translation id="4642587497923912728">Steam for Chromebook (beta) solo está disponible para la primera cuenta a la que accediste en esta Chromebook.</translation>
 <translation id="4643612240819915418">Abrir vide&amp;o en una nueva pestaña</translation>
 <translation id="4643833688073835173">Tu Chromebook utiliza un sensor integrado para detectar personas que estén frente a tu dispositivo. Toda la información se procesa inmediatamente en tu dispositivo y, luego, se borra. Los datos de sensores nunca se envían a Google.</translation>
 <translation id="4644205769234414680">Permitir en modo Incógnito</translation>
@@ -6364,7 +6345,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5353769147530541973">Quitar <ph name="SITE_NAME" /> de la lista de pestañas para desactivar</translation>
 <translation id="5355099869024327351">Permite que el Asistente te muestre notificaciones</translation>
 <translation id="5355191726083956201">Se activó la protección mejorada</translation>
-<translation id="5355498626146154079">Debes activar la función experimental "Borealis Enabled".</translation>
 <translation id="5355501370336370394">Inscribir dispositivo empresarial</translation>
 <translation id="5357010010552553606">No pueden entrar en el modo de pantalla completa automáticamente</translation>
 <translation id="5359910752122114278">1 resultado</translation>
@@ -6394,7 +6374,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5376931455988532197">Archivo demasiado grande</translation>
 <translation id="5377367976106153749">¿Deseas activar el acceso a la cámara?</translation>
 <translation id="5379140238605961210">Seguir bloqueando el acceso al micrófono</translation>
-<translation id="5380526436444479273">Espera unos minutos y vuelve a intentarlo.</translation>
 <translation id="5382591305415226340">Administrar los vínculos compatibles</translation>
 <translation id="5384401776498845256">Quién puede compartir contenido contigo</translation>
 <translation id="5385628342687007304">Esta contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google.</translation>
@@ -6449,7 +6428,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5414198321558177633">Se está actualizando la lista de perfiles. Es posible que este proceso demore unos minutos.</translation>
 <translation id="5414566801737831689">Leer los íconos de los sitios web que visites</translation>
 <translation id="5414836363063783498">Verificando…</translation>
-<translation id="5415328625985164836">Este es un programa de versión beta. Ahora puedes usar Steam para jugar en tu Chromebook.</translation>
 <translation id="5415497281076257439">Frase</translation>
 <translation id="5415871492522952905">Verás tu historial y tus pestañas en todos los dispositivos para que puedas retomar la navegación</translation>
 <translation id="5417293056300086453">Este sitio puede usar identificadores para reproducir contenido protegido.</translation>
@@ -6890,7 +6868,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5727728807527375859">Las extensiones, las aplicaciones y los temas pueden dañar tu computadora. ¿Estás seguro de que deseas continuar?</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
 <translation id="5728450728039149624">Opciones del bloqueo de pantalla con Smart Lock</translation>
-<translation id="572914206753951782">Asegúrate de que la Chromebook tenga la versión más reciente. Luego, reiníciala y vuelve a intentarlo.</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pe&amp;gar y acceder</translation>
 <translation id="5733109311583381874">Agrega tus propias palabras a los diccionarios del usuario para personalizar los candidatos de conversión.</translation>
@@ -8005,7 +7982,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" quiere instalar la siguiente app en este dispositivo:}other{"<ph name="APP_NAME" />" quiere instalar las siguientes apps en este dispositivo:}}</translation>
 <translation id="6508248480704296122">Relacionada con <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicación: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Reinicia la Chromebook y vuelve a intentarlo.</translation>
 <translation id="6511827214781912955">Considera borrar <ph name="FILENAME" /> para que las otras personas que usan este dispositivo no puedan ver tus contraseñas</translation>
 <translation id="6512759338201777379">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome utilizará los datos para celulares si no te conectas a otra red.</translation>
@@ -8114,7 +8090,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="657866106756413002">Resumen del estado de la red</translation>
 <translation id="6579369886355986318">Mostrar todos los &amp;controles</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" />: Se comparte el contenido del escritorio</translation>
-<translation id="6580060371127789208">Se completó el <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Velocidad de análisis</translation>
 <translation id="6580676117087365538">Para obtener esta extensión en todas tus computadoras, verifica tu identidad</translation>
 <translation id="6581356304040102696">No se pudieron importar las contraseñas. El tamaño del archivo debe ser inferior a 1 MB.</translation>
@@ -8333,7 +8308,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6729280095610283088">Corrientes brillantes de la aurora boreal sobre un bosque.</translation>
 <translation id="6729493062119577923">Actividad del grupo de pestañas compartido</translation>
 <translation id="6730744976532805323">Comparte la pestaña actual con Gemini, incluso cuando cambias de pestaña.</translation>
-<translation id="6731320427842222405">Esto puede demorar unos minutos</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Dirección</translation>
 <translation id="6737663862851963468">Quitar el ticket de Kerberos</translation>
@@ -8683,7 +8657,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6965648386495488594">Puerto</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
 <translation id="6966831944134814478">Desactivar</translation>
-<translation id="6967112302799758487">Se quitarán de este dispositivo todas las apps y los juegos que se hayan instalado con la app de Steam for Chromebook (beta). También se quitarán los datos asociados con estos juegos y apps. Asegúrate de crear una copia de seguridad de las apps y los juegos guardados antes de desinstalar la app.</translation>
 <translation id="6967430741871315905">No se pudo comprobar si el dispositivo está habilitado</translation>
 <translation id="6968288415730398122">Ingresa tu contraseña para configurar el bloqueo de pantalla</translation>
 <translation id="6969047215179982698">Desactivar Compartir con Nearby</translation>
@@ -8855,7 +8828,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7082568314107259011">Tu administrador gestiona la red <ph name="NETWORK_NAME" /></translation>
 <translation id="7082850163410901674">Las notificaciones están desactivadas en la Configuración del Sistema de Mac</translation>
 <translation id="7083729794572207131">Por lo general, los sitios solicitan instalar apps web para mejorar tu experiencia en el sitio</translation>
-<translation id="7083774521940805477">Steam for Chromebook (beta) no está disponible en tu Chromebook.</translation>
 <translation id="7084095352418993433">Preguntar a Google acerca de esta página: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(no está configurada)</translation>
 <translation id="7086377898680121060">Aumentar brillo</translation>
@@ -8934,7 +8906,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7141844554192012199">Revisión</translation>
 <translation id="714301620504747562">La navegación y la búsqueda son más rápidas que la precarga estándar</translation>
 <translation id="7143207342074048698">Conectando</translation>
-<translation id="7143409552554575716">Funciones experimentales de ChromeOS</translation>
 <translation id="7144363643182336710">Las notificaciones no aparecerán en la pantalla. Para seguir viendo las notificaciones, haz clic en el ícono de No interrumpir que aparece en la parte inferior derecha de la pantalla.</translation>
 <translation id="7144856456372460176">Instalar <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
@@ -8945,7 +8916,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7152478047064750137">Esta extensión no requiere permisos especiales</translation>
 <translation id="7153101072880472645">Contraste alto activado/desactivado</translation>
 <translation id="715396040729904728">Selector + Mayúsculas + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Comparte tus comentarios o describe el problema. Si es posible, incluye pasos para reproducir el problema.</translation>
 <translation id="7154130902455071009">Cambiar la página de inicio por <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Obtén videos de mejor calidad y extiende la duración de la batería. El video solo se reproducirá en tu pantalla compatible con Cast.</translation>
 <translation id="7159695867335480590">Reproducir/pausar</translation>
@@ -9797,7 +9767,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="7728668285692163452">El cambio del canal se aplicará más tarde</translation>
 <translation id="7730449930968088409">Capturar contenido de la pantalla</translation>
 <translation id="7730683939467795481">La extensión "<ph name="EXTENSION_NAME" />" modificó esta página</translation>
-<translation id="7732702411411810416">Asegúrate de tener conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="773511996612364297">Tildes</translation>
 <translation id="7735558909644181051">Certificados intermedios</translation>
 <translation id="7736119438443237821">Estás a punto de quitar el acceso a tus llaves de acceso en este dispositivo</translation>
@@ -9995,7 +9964,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7871691770940645922">Pantalla braille virtual</translation>
 <translation id="787268756490971083">No</translation>
 <translation id="7872758299142009420">Hay demasiados grupos anidados: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">No se puede editar el acceso directo.</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7877126887274043657">Solucionar un problema de &amp;sincronización</translation>
@@ -11652,7 +11620,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8983018820925880511"><ph name="DOMAIN" /> administrará este nuevo perfil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> puede editar <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Estarás visible para todas las personas durante <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Te damos la bienvenida a Steam para Chromebook</translation>
 <translation id="8985264973231822211">Activo hace <ph name="DEVICE_LAST_ACTIVATED_TIME" /> día</translation>
 <translation id="8985561265504464578">Umbral de detección</translation>
 <translation id="8985661493893822002">Conéctate a Internet para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
@@ -11784,7 +11751,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Aproximadamente 1 notificación por día}other{Aproximadamente {NUM_NOTIFICATION} notificaciones por día}}</translation>
 <translation id="9058760336383947367">Ver el PPD de la impresora</translation>
 <translation id="9061521313218438086">Si Chrome encuentra una de tus contraseñas en una violación de la seguridad de los datos pública, el Administrador de contraseñas de Google puede ofrecerte cambiarla por ti si accediste.</translation>
-<translation id="9061694916020926968">Para usar Steam for Chromebook (beta), debes acceder a una Cuenta de Google. Accede y vuelve a intentarlo.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Borrar la combinación de teclas de navegación</translation>
 <translation id="9063208415146866933">Se produjo un error de la línea <ph name="ERROR_LINE_START" /> a la <ph name="ERROR_LINE_END" /></translation>

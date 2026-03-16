@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">切換至流動網站</translation>
 <translation id="2362083820973145409">已使用<ph name="USER_NAME" />的身分登入。<ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="2371084566192454134">分頁和分頁群組</translation>
+<translation id="2371303771137626249">新</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2384692388811649784">隱藏無痕式分頁</translation>
 <translation id="2386793615875593361">已選取 1 個</translation>
@@ -636,6 +637,7 @@
 <translation id="3324193307694657476">地址行 2</translation>
 <translation id="3328801116991980348">網站資料</translation>
 <translation id="333229797575847124">如何啟用此功能</translation>
+<translation id="334004756946755423">為我說明：</translation>
 <translation id="3344233834747405775">持卡人姓名無效</translation>
 <translation id="3344485292736684439">{count,plural, =1{書籤已儲存至您帳戶 ({email}) 中的「{title}」}other{書籤已儲存至您帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="334690320928261823">最近開啟的分頁</translation>
@@ -689,6 +691,7 @@
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
 <translation id="3530767473765895035">管理此裝置上的帳戶…</translation>
 <translation id="3533436815740441613">新分頁</translation>
+<translation id="3534738261102690620">問 Gemini</translation>
 <translation id="3540141921715814660">加入書籤</translation>
 <translation id="3546122170015471515">Google.com「地圖預覽」</translation>
 <translation id="3547356470684043247">閱讀客戶的產品、服務評價或體驗，再根據評論作出決定</translation>
@@ -1087,6 +1090,7 @@
 <translation id="4944543191714094452">從網頁中尋找…</translation>
 <translation id="4945756290001680296">存取密碼設定</translation>
 <translation id="4949302115427722371">管理設定…</translation>
+<translation id="4952050521954075618">「相機膠卷」中的相片不會在裝置之間同步</translation>
 <translation id="4958444002117714549">展開清單</translation>
 <translation id="496392417432935267">已在其他視窗開啟</translation>
 <translation id="4970724460420203313">以受管帳戶使用 Chrome，就能將機構相關的瀏覽資料 (包括分頁、記錄和密碼) 與其他瀏覽資料分開</translation>
@@ -1286,6 +1290,7 @@
 <translation id="5647702255748985085">要離開群組嗎？</translation>
 <translation id="5648166631817621825">最近 7 天</translation>
 <translation id="5652623411397330904">您追蹤的產品會在此顯示。</translation>
+<translation id="5653100054596780862">所有分頁</translation>
 <translation id="5656431592348714536">強化日曆</translation>
 <translation id="5659593005791499971">電郵</translation>
 <translation id="5665739277590037307">受《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》約束。Gemini 可能會出錯，請加以複查。</translation>
@@ -1751,6 +1756,7 @@
 <translation id="7300448350764260141">為對抗網上威脅增添多一重安全保障。</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
+<translation id="7322186060879266048">{count,plural, =1{{count} 個自動填入選項顯示喺鍵盤上方。}other{{count} 個自動填入選項顯示喺鍵盤上方。}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">下載咗百分之 <ph name="PERCENT" /></translation>
 <translation id="7345061034321640811">不允許匯入</translation>

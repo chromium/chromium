@@ -841,7 +841,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="156793199942386351">Tasta <ph name="CURRENTKEY" /> a fost deja asociată acțiunii „<ph name="ACTION" />”. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Consolă JavaScript</translation>
 <translation id="1569466257325986920">Data viitoare când parola Contului Google se schimbă, datele locale se vor recupera automat după ce te conectezi la Contul Google</translation>
-<translation id="1570235441606255261">Program de instalare Steam</translation>
 <translation id="1570604804919108255">Activează sunetul notificărilor</translation>
 <translation id="1570990174567554976">S-a creat dosarul de marcaje <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="1571041387761170095">Nu există parole slabe sau refolosite</translation>
@@ -966,7 +965,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1642299742557467312">Acest fișier poate fi periculos pentru dispozitivul tău</translation>
 <translation id="1642492862748815878">Conectat la <ph name="DEVICE" /> și încă <ph name="NUMBER_OF_DEVICES" /> dispozitive Bluetooth</translation>
 <translation id="1642494467033190216">Înainte de activarea altor funcții de remediere a erorilor, trebuie să elimini protecția sistemului rootfs și să repornești.</translation>
-<translation id="1642895994345928121">Nu există suficient spațiu de stocare al dispozitivului pentru a deschide aplicația. Eliberează spațiu și încearcă din nou.</translation>
 <translation id="1643072738649235303">Semnătură X9.62 ECDSA cu SHA-1</translation>
 <translation id="1643921258693943800">Pentru a folosi Trimiterea în apropiere, activează Bluetooth și Wi-Fi</translation>
 <translation id="1644574205037202324">Istoric</translation>
@@ -2066,7 +2064,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2390347491606624519">Nu se poate conecta la proxy. Conectează-te din nou.</translation>
 <translation id="2390782873446084770">Sincronizare Wi-Fi</translation>
 <translation id="2391419135980381625">Font standard</translation>
-<translation id="2391805183137601570">Deschide Steam</translation>
 <translation id="239185270194776190">Conversația cu Gemini este într-o altă fereastră. Dă clic oriunde în acest panou lateral pentru a o muta aici.</translation>
 <translation id="2392369802118427583">Activează</translation>
 <translation id="2393136602862631930">Instalează <ph name="APP_NAME" /> pe Chromebook</translation>
@@ -2148,7 +2145,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2445484935443597917">Creează un profil nou</translation>
 <translation id="2445726032315793326">Lupă parțială</translation>
 <translation id="244641233057214044">Similar cu căutarea ta</translation>
-<translation id="2447587550790814052">Acum poți folosi Steam pentru Chromebook (beta)</translation>
 <translation id="2448312741937722512">Tipul</translation>
 <translation id="2448810255793562605">Căutarea automată a accesului prin comutare</translation>
 <translation id="2450021089947420533">Parcursuri</translation>
@@ -2175,7 +2171,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2460826998961521840">Pentru a folosi cheile de acces salvate în Contul Google</translation>
 <translation id="2461550163693930491">Nu permite site-urilor să deruleze și să facă zoom în filele la care s-a permis accesul</translation>
 <translation id="2461593638794842577">Poți dezactiva această setare pentru a salva parolele numai pe acest dispozitiv</translation>
-<translation id="2462332841984057083">Steam se configurează deja. Așteaptă să se finalizeze configurarea.</translation>
 <translation id="2462724976360937186">ID-ul cheii autorității de certificare</translation>
 <translation id="2462752602710430187">S-a adăugat <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Vezi fișierele sugerate pentru a reveni ușor la cea mai recentă activitate din Microsoft SharePoint și OneDrive.
@@ -2230,7 +2225,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2491587035099903063">previzualizare a vocii pentru <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Se pregătește solicitarea de semnare a certificatului</translation>
 <translation id="249330843868392562">Deschide setările redării vocale a textului</translation>
-<translation id="2494555621641843783">Nu se poate instala Steam</translation>
 <translation id="2496180316473517155">Istoricul de navigare</translation>
 <translation id="2496616243169085015">Fotografie</translation>
 <translation id="2497229222757901769">Viteza mouse-ului</translation>
@@ -2586,7 +2580,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="27349076983469322">Fundal deschis</translation>
 <translation id="2735712963799620190">Program</translation>
 <translation id="2737363922397526254">Restrânge...</translation>
-<translation id="2737538893171115082">Steam pentru Chromebook (beta) este blocat de administrator. Administratorul trebuie să activeze aceste politici:</translation>
 <translation id="2737719817922589807">&amp;Marcaje și liste</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> solicită permisiunea de a trimite conținut de pe ecran la <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Nu permite site-urilor să folosească fonturile instalate pe dispozitiv</translation>
@@ -3049,7 +3042,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3039491566278747710">Nu a putut fi instalată politica offline pe dispozitiv.</translation>
 <translation id="303955801043931176">Fila a fost închisă</translation>
 <translation id="3040435070100611531">Permisele tale din Portofelul Google</translation>
-<translation id="3040982432432547149">Ajută-ne să îmbunătățim Steam pentru Chromebook</translation>
 <translation id="304169924727249890">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Schimbă strategia de încărcare optimizată.</translation>
 <translation id="3043016484125065343">Conectează-te pentru a vedea marcajele</translation>
@@ -3259,7 +3251,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3201422919974259695">Dispozitivele USB disponibile vor apărea aici.</translation>
 <translation id="3202499879214571401">Întrerupe proiectarea ecranului pe <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Cele mai noi</translation>
-<translation id="3204648577100496185">Datele asociate acestei aplicații pot fi eliminate de pe dispozitiv</translation>
 <translation id="3206289903841621620">Dicționarul utilizatorului <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Vezi căutări sugerate și reduceri pentru cumpărături care te-ar putea interesa pe baza activității tale recente.
         <ph name="BREAK" />
@@ -3367,7 +3358,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3283148363895519428">Urmează instrucțiunile de pe telefon pentru a continua configurarea. Asigură-te că telefonul este în apropiere și că funcția Bluetooth este activată.</translation>
 <translation id="3284050785966252943">Previzualizare a metadatelor cu completare automată</translation>
 <translation id="3285322247471302225">Filă &amp;nouă</translation>
-<translation id="3285465040399788513">Nu există suficient spațiu pe dispozitiv pentru a finaliza configurarea. Eliberează spațiu și încearcă din nou.</translation>
 <translation id="3285500645985761267">Permite site-urilor conexe să-ți vadă activitatea în grup</translation>
 <translation id="328571385944182268">Salvezi parolele?</translation>
 <translation id="3289668031376215426">Scriere automată cu majuscule</translation>
@@ -3490,7 +3480,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3372602033006349389">De pe alte dispozitive</translation>
 <translation id="337286756654493126">Citește dosarele pe care le deschideți în aplicație</translation>
 <translation id="3373059063088819384">Deschide în modul de citire</translation>
-<translation id="3373196968211632036">Opțiunea Steam pentru Chromebook (beta) nu este disponibilă pentru Conturile Google de copii</translation>
 <translation id="3373701465337594448">Când opțiunea este activată, aici apare o listă a site-urilor pe care le accesezi care estimează lucrurile care te interesează</translation>
 <translation id="3374294321938930390">„<ph name="BOOKMARK_TITLE" />” a fost mutat în „<ph name="NEW_FOLDER_TITLE" />”.</translation>
 <translation id="3376035595160918049">Examinează actualizarea aplicației</translation>
@@ -3673,7 +3662,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (neselectată)</translation>
 <translation id="3496689104192986836">Nivelul bateriei: <ph name="PERCENTAGE" /> %</translation>
 <translation id="3496692428582464972">Surse de date de colectat</translation>
-<translation id="3496797737329654668">Să începem jocul</translation>
 <translation id="3496995426334945408">Site-urile folosesc de obicei JavaScript pentru a afișa funcții interactive, cum ar fi jocurile video sau formularele web</translation>
 <translation id="3497501929010263034">Dispozitiv USB de la <ph name="VENDOR_NAME" /> (produsul <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Trimite doodle-ul</translation>
@@ -3886,7 +3874,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3637203148990213388">Conturi suplimentare</translation>
 <translation id="3640347231390550691">Protejează-ți parolele împotriva phishingului</translation>
 <translation id="364100968401221170">Pentru a șterge datele de navigare de pe toate dispozitivele sincronizate și din Contul Google, <ph name="BEGIN_LINK" />conectează-te<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Aplicația Steam pentru Chromebook (Beta) trebuie actualizată. Repornește Chromebookul și încearcă din nou.</translation>
 <translation id="3641299252000913351">Se actualizează firmware-ul modemului. Nu închide dispozitivul.</translation>
 <translation id="3641456520301071208">Site-urile pot solicita permisiunea de a accesa locația</translation>
 <translation id="3642064270296434810">Acum poți folosi Google Lens pentru a căuta tot ce vezi pe ecran</translation>
@@ -4223,7 +4210,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="383891835335927981">Nu s-a mărit sau micșorat niciun site</translation>
 <translation id="3839516600093027468">Blochează întotdeauna accesul <ph name="HOST" /> la clipboard</translation>
 <translation id="3840096463915153852">Istoricul conversației</translation>
-<translation id="3841282988425489367">Nu se poate configura Steam pentru Chromebook (beta)</translation>
 <translation id="3841319830220785495">Voce naturală prestabilită</translation>
 <translation id="3841356782900714251">Cititoare de carduri inteligente</translation>
 <translation id="3841964634449506551">Parolă nevalidă</translation>
@@ -4671,7 +4657,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4148195018520464922">Poți restricționa conectarea la anumiți utilizatori. Astfel, va fi eliminată opțiunea Adaugă o persoană din ecranul de conectare. Poți să excluzi și utilizatori actuali.</translation>
 <translation id="4148957013307229264">Se instalează...</translation>
 <translation id="4150201353443180367">Ecran</translation>
-<translation id="4151449637210235443">Spune-ne despre acțiunea jocului recentă</translation>
 <translation id="4151503145138736576">Nu există spațiu de stocare offline de eliberat</translation>
 <translation id="4152011295694446843">Aici vei vedea marcajele</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{O filă}few{# file}other{# de file}}</translation>
@@ -4722,7 +4707,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4193251682249731404">CA de încredere</translation>
 <translation id="4193575319002689239">Afișează cardurile</translation>
 <translation id="419427585139779713">Introdu câte o silabă odată</translation>
-<translation id="4195001808989442226">Nu se poate deschide Steam pentru Chromebook (beta)</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
 <translation id="4195814663415092787">Continuați de unde ați rămas</translation>
 <translation id="4198268995694216131">Site-uri suplimentare</translation>
@@ -4768,7 +4752,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Extensia nu este permisă}few{Unele extensii nu sunt permise}other{Unele extensii nu sunt permise}}</translation>
 <translation id="4231053948789591973">Proiectarea este întreruptă. Poți să reiei proiectarea sau să oprești oricând proiectarea ecranului.</translation>
 <translation id="4231095370974836764">Instalează aplicații și jocuri din Google Play pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Se configurează Steam pentru Chromebook</translation>
 <translation id="4232375817808480934">Configurează Kerberos</translation>
 <translation id="4232376164796433044">Parole și completare automată</translation>
 <translation id="4232484478444192782">Telefonul tău Android îți stă la dispoziție. Se transferă rețeaua Wi-Fi și parola.</translation>
@@ -5127,7 +5110,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4472533928615930332">Imaginea generată <ph name="INDEX" /> din <ph name="SUBJECT" />, în stilul <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Începeți</translation>
 <translation id="4473559657152613417">Dă clic dreapta pe o filă și selectează „Adaugă fila într-un grup nou”</translation>
-<translation id="4473996011558324141">durata estimată</translation>
 <translation id="4474155171896946103">Marchează toate filele...</translation>
 <translation id="4476198534886170024">Se permite. Activează <ph name="LINK_BEGIN" />accesul la camera foto a sistemului<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Atletă</translation>
@@ -5362,7 +5344,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4638930039313743000">Activează remedierea erorilor prin ADB</translation>
 <translation id="4639390152280993480">Pentru a afișa o vizualizare simplificată a acestei pagini, accesează Mai multe instrumente &gt; Modul de lectură</translation>
 <translation id="4641539339823703554">Chrome nu a reușit să seteze ora sistemului. Verificați ora de mai jos și corectați-o dacă este necesar.</translation>
-<translation id="4642587497923912728">Steam pentru Chromebook (beta) este disponibil numai pentru contul care s-a conectat primul pe acest Chromebook.</translation>
 <translation id="4643612240819915418">&amp;Deschide videoclipul într-o filă nouă</translation>
 <translation id="4643833688073835173">Chromebookul folosește un senzor încorporat pentru a detecta persoanele din fața dispozitivului. Toate datele sunt prelucrate imediat pe dispozitiv, apoi sunt șterse. Datele de la senzor nu sunt trimise niciodată la Google.</translation>
 <translation id="4644205769234414680">Permite în incognito</translation>
@@ -6365,7 +6346,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5353769147530541973">Elimină <ph name="SITE_NAME" /> din lista de file de dezactivat</translation>
 <translation id="5355099869024327351">Permite Asistentului să afișeze notificări</translation>
 <translation id="5355191726083956201">Protecția îmbunătățită este activată</translation>
-<translation id="5355498626146154079">Trebuie să activezi funcția experimentală Borealis Enabled</translation>
 <translation id="5355501370336370394">Înregistrează un dispozitiv de întreprindere</translation>
 <translation id="5357010010552553606">Nu au permisiunea de a intra automat în modul ecran complet</translation>
 <translation id="5359910752122114278">Un rezultat</translation>
@@ -6395,7 +6375,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5376931455988532197">Fișierul este prea mare</translation>
 <translation id="5377367976106153749">Activezi accesul la camera foto?</translation>
 <translation id="5379140238605961210">Blocați în continuare accesul la microfon</translation>
-<translation id="5380526436444479273">Așteaptă câteva minute și încearcă din nou</translation>
 <translation id="5382591305415226340">Gestionează linkurile acceptate</translation>
 <translation id="5384401776498845256">Cine îți poate trimite fișiere</translation>
 <translation id="5385628342687007304">Parola se salvează numai pe acest dispozitiv. Pentru a o folosi pe celelalte dispozitive, salveaz-o în Contul tău Google.</translation>
@@ -6450,7 +6429,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5414198321558177633">Se actualizează lista de profiluri. Poate dura câteva minute.</translation>
 <translation id="5414566801737831689">Citește pictogramele site-urilor pe care le accesezi</translation>
 <translation id="5414836363063783498">Se verifică...</translation>
-<translation id="5415328625985164836">Acesta este un program beta. Acum poți folosi Steam pentru a juca anumite jocuri pe Chromebook.</translation>
 <translation id="5415497281076257439">Expresie</translation>
 <translation id="5415871492522952905">Vei avea istoricul și filele pe toate dispozitivele, ca să-ți poți continua activitatea</translation>
 <translation id="5417293056300086453">Acest site poate folosi identificatori pentru a reda conținut protejat.</translation>
@@ -6891,7 +6869,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5727728807527375859">Extensiile, aplicațiile și temele pot dăuna computerului. Sigur vrei să continui?</translation>
 <translation id="5728072125198221967">Servicii Google conectate</translation>
 <translation id="5728450728039149624">Opțiuni pentru blocarea ecranului Smart Lock</translation>
-<translation id="572914206753951782">Verifică dacă Chromebookul folosește cea mai recentă versiune. Apoi repornește Chromebookul și încearcă din nou.</translation>
 <translation id="5729712731028706266">&amp;Afișează</translation>
 <translation id="5731247495086897348">In&amp;serează și accesează</translation>
 <translation id="5733109311583381874">Pentru a personaliza sugestiile de conversie, adaugă propriile cuvinte în dicționarele utilizatorului.</translation>
@@ -8006,7 +7983,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> solicită permisiunea să instaleze următoarea aplicație pe acest dispozitiv:}few{<ph name="APP_NAME" /> solicită permisiunea să instaleze următoarele aplicații pe acest dispozitiv:}other{<ph name="APP_NAME" /> solicită permisiunea să instaleze următoarele aplicații pe acest dispozitiv:}}</translation>
 <translation id="6508248480704296122">Conținut similar cu <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicație: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Repornește Chromebookul și încearcă din nou</translation>
 <translation id="6511827214781912955">Îți recomandăm să ștergi <ph name="FILENAME" />, pentru ca persoanele care folosesc acest dispozitiv să nu îți poată vedea parolele</translation>
 <translation id="6512759338201777379">Imaginea generată <ph name="INDEX" /> din <ph name="SUBJECT" />, cu starea de spirit <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome va utiliza date mobile dacă nu ești conectat(ă) la altă rețea.</translation>
@@ -8115,7 +8091,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="657866106756413002">Captură de ecran pentru starea rețelei</translation>
 <translation id="6579369886355986318">Afișează toate &amp;comenzile</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Conținut de pe desktop la care s-a permis accesul</translation>
-<translation id="6580060371127789208">S-a finalizat <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Viteza de scanare</translation>
 <translation id="6580676117087365538">Pentru a accesa această extensie pe toate computerele, confirmă-ți identitatea</translation>
 <translation id="6581356304040102696">Nu se pot importa parolele. Dimensiunea fișierului trebuie să fie de maximum 1 MB.</translation>
@@ -8336,7 +8311,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6729280095610283088">Raze luminoase din Aurora boreală deasupra unei păduri.</translation>
 <translation id="6729493062119577923">Activitatea din grupul de file comun</translation>
 <translation id="6730744976532805323">Permite accesul serviciului Gemini la fila actuală, chiar dacă schimbi filele</translation>
-<translation id="6731320427842222405">Aceasta poate dura câteva minute</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adresă</translation>
 <translation id="6737663862851963468">Elimină un tichet Kerberos</translation>
@@ -8686,7 +8660,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Dispozitiv</translation>
 <translation id="6966831944134814478">Dezactivează</translation>
-<translation id="6967112302799758487">Toate aplicațiile și jocurile instalate folosind Steam pentru Chromebook (beta) se vor elimina de pe acest dispozitiv. Se vor elimina și datele asociate cu aceste aplicații și jocuri. Nu uita să faci backup aplicațiilor și jocurilor salvate înainte de a le dezinstala.</translation>
 <translation id="6967430741871315905">Nu se poate verifica dacă dispozitivul este permis</translation>
 <translation id="6968288415730398122">Introdu parola pentru a configura blocarea ecranului</translation>
 <translation id="6969047215179982698">Dezactivează Trimiterea în apropiere</translation>
@@ -8858,7 +8831,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> este gestionată de administrator</translation>
 <translation id="7082850163410901674">Notificările sunt dezactivate în setările de sistem din Mac</translation>
 <translation id="7083729794572207131">Site-urile solicită de obicei instalarea aplicațiilor web pentru a-ți îmbunătăți experiența pe site</translation>
-<translation id="7083774521940805477">Aplicația Steam pentru Chromebook (beta) nu este disponibilă pe Chromebookul tău.</translation>
 <translation id="7084095352418993433">Întreabă Google despre această pagină: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(nu este configurată)</translation>
 <translation id="7086377898680121060">mărește luminozitatea</translation>
@@ -8937,7 +8909,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7141844554192012199">Verificare</translation>
 <translation id="714301620504747562">Navigarea și căutarea sunt mai rapide decât preîncărcarea standard</translation>
 <translation id="7143207342074048698">Se conectează</translation>
-<translation id="7143409552554575716">Funcții experimentale pentru ChromeOS</translation>
 <translation id="7144363643182336710">Notificările nu se vor afișa pe ecran. Poți să vezi în continuare notificările dacă dai clic pe pictograma Nu deranja din partea dreaptă jos a ecranului.</translation>
 <translation id="7144856456372460176">&amp;Instalează <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
@@ -8948,7 +8919,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7152478047064750137">Această extensie nu necesită permisiuni speciale</translation>
 <translation id="7153101072880472645">Contrast ridicat activat / dezactivat</translation>
 <translation id="715396040729904728">lansator + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Trimite feedback sau descrie problema. Dacă este posibil, include pașii pentru reproducerea problemei.</translation>
 <translation id="7154130902455071009">Schimbați pagina de start la: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Obține videoclipuri de o calitate mai bună și mărește autonomia bateriei. Videoclipul va fi redat numai pe un ecran compatibil cu Cast.</translation>
 <translation id="7159695867335480590">Redă / întrerupe</translation>
@@ -9800,7 +9770,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7728668285692163452">Modificarea canalului va fi aplicată mai târziu</translation>
 <translation id="7730449930968088409">Capturează conținutul ecranului</translation>
 <translation id="7730683939467795481">Această pagină a fost modificată de extensia „<ph name="EXTENSION_NAME" />”</translation>
-<translation id="7732702411411810416">Verifică dacă te-ai conectat la internet și încearcă din nou</translation>
 <translation id="773511996612364297">Accente</translation>
 <translation id="7735558909644181051">Certificate intermediare</translation>
 <translation id="7736119438443237821">Urmează să elimini accesul la cheile de acces pe acest dispozitiv</translation>
@@ -9998,7 +9967,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7871691770940645922">Afișaj Braille virtual</translation>
 <translation id="787268756490971083">Dezactivat</translation>
 <translation id="7872758299142009420">Prea multe grupuri imbricate: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam pentru Chromebook</translation>
 <translation id="7876027585589532670">Nu se poate modifica această comandă rapidă</translation>
 <translation id="7876243839304621966">Elimină tot</translation>
 <translation id="7877126887274043657">Remediază problema de &amp;sincronizare</translation>
@@ -11656,7 +11624,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8983018820925880511">Acest profil nou va fi gestionat de <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> poate edita <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Dispozitivul tău va fi vizibil pentru toți timp de <ph name="MINUTES" /> minute. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Bun venit la Steam pentru Chromebook</translation>
 <translation id="8985264973231822211">Activ acum <ph name="DEVICE_LAST_ACTIVATED_TIME" /> zi</translation>
 <translation id="8985561265504464578">Pragul de detectare</translation>
 <translation id="8985661493893822002">Accesează internetul pentru a te conecta pe <ph name="DEVICE_TYPE" />.</translation>
@@ -11788,7 +11755,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Aproximativ o notificare pe zi}few{Aproximativ {NUM_NOTIFICATION} notificări pe zi}other{Aproximativ {NUM_NOTIFICATION} de notificări pe zi}}</translation>
 <translation id="9058760336383947367">Vezi PPD-ul pentru imprimantă</translation>
 <translation id="9061521313218438086">Dacă Chrome găsește una dintre parolele tale într-o încălcare a securității datelor publice, Managerul de parole Google se poate oferi să-ți schimbe parola dacă te-ai conectat.</translation>
-<translation id="9061694916020926968">Ca să folosești Steam pentru Chromebook (beta) trebuie să te conectezi la un Cont Google. Conectează-te și încearcă din nou.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Șterge comanda rapidă de navigare</translation>
 <translation id="9063208415146866933">Eroare de la linia <ph name="ERROR_LINE_START" /> la linia <ph name="ERROR_LINE_END" /></translation>

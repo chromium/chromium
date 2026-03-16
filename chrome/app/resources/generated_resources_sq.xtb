@@ -838,7 +838,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" i është caktuar tashmë veprimit "<ph name="ACTION" />". Shtyp një tast çfarëdo për të <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Paneli i JavaScript</translation>
 <translation id="1569466257325986920">Herën tjetër që do të ndryshohet fjalëkalimi i "Llogarisë sate të Google", të dhënat e tua lokale do të rikuperohen automatikisht pasi të identifikohesh në "Llogarinë tënde të Google"</translation>
-<translation id="1570235441606255261">Instaluesi i Steam</translation>
 <translation id="1570604804919108255">Aktivizo njoftimet</translation>
 <translation id="1570990174567554976">Dosja e faqeshënuesve "<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
 <translation id="1571041387761170095">Nuk ka fjalëkalime të dobëta ose të ripërdorura</translation>
@@ -963,7 +962,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1642299742557467312">Ky skedar mund ta dëmtojë pajisjen tënde</translation>
 <translation id="1642492862748815878">Lidhur me <ph name="DEVICE" /> dhe <ph name="NUMBER_OF_DEVICES" /> pajisje të tjera me Bluetooth</translation>
 <translation id="1642494467033190216">Kërkohet heqja e mbrojtjes së rrënjës dhe rifillimi para aktivizimit të funksioneve të tjera të korrigjimit të gabimeve.</translation>
-<translation id="1642895994345928121">Nuk ka hapësirë ruajtëse të mjaftueshme në pajisje për të hapur këtë aplikacion. Liro hapësirë dhe provo përsëri.</translation>
 <translation id="1643072738649235303">Nënshkrimi X9.62 ECDSA me SHA-1</translation>
 <translation id="1643921258693943800">Për të përdorur "Ndarjen në afërsi", aktivizo Bluetooth-in dhe Wi-Fi</translation>
 <translation id="1644574205037202324">Historiku</translation>
@@ -2066,7 +2064,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2390347491606624519">Nuk mund të lidhet me përfaqësuesin. Identifikohu përsëri</translation>
 <translation id="2390782873446084770">Sinkronizimi i Wi-Fi</translation>
 <translation id="2391419135980381625">Stili standard i shkrimit</translation>
-<translation id="2391805183137601570">Hap Steam</translation>
 <translation id="239185270194776190">Biseda jote me Gemini është në një dritare tjetër. Kliko kudo në këtë panel anësor për ta zhvendosur këtu.</translation>
 <translation id="2392369802118427583">Aktivizoje</translation>
 <translation id="2393136602862631930">Konfiguro <ph name="APP_NAME" /> në pajisjen tënde Chromebook</translation>
@@ -2148,7 +2145,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2445484935443597917">Krijo një profil të ri</translation>
 <translation id="2445726032315793326">Zmadhuesi i pjesshëm</translation>
 <translation id="244641233057214044">Lidhet me kërkimin tënd</translation>
-<translation id="2447587550790814052">Tani mund të përdorësh Steam për Chromebook (Beta)</translation>
 <translation id="2448312741937722512">Shkruaj</translation>
 <translation id="2448810255793562605">Skanimi automatik për qasjen me çelës</translation>
 <translation id="2450021089947420533">Udhëtimet</translation>
@@ -2175,7 +2171,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2460826998961521840">Për të përdorur çelësat e kalimit nga "Llogaria e Google"</translation>
 <translation id="2461550163693930491">Mos lejo sajtet të lëvizin dhe zmadhojnë skedat e ndara</translation>
 <translation id="2461593638794842577">Mund ta çaktivizosh këtë cilësim për t'i ruajtur fjalëkalimet vetëm në këtë pajisje</translation>
-<translation id="2462332841984057083">Steam po konfigurohet tashmë. Prit që të përfundojë konfigurimi.</translation>
 <translation id="2462724976360937186">ID-ja e çelësit të Autoritetit të Certifikimit</translation>
 <translation id="2462752602710430187">U shtua <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Po shikon skedarët e sugjeruar për të të ndihmuar të kthehesh me lehtësi në aktivitetet e tua të fundit në Microsoft SharePoint dhe OneDrive.
@@ -2230,7 +2225,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2491587035099903063">dëgjo paraprakisht zërin për gjuhën <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Kërkesa e identifikimit të certifikatës po përgatitet</translation>
 <translation id="249330843868392562">Hap cilësimet e tekstit në ligjërim</translation>
-<translation id="2494555621641843783">Nuk mund të instalohet Steam</translation>
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="2496616243169085015">Fotografi</translation>
 <translation id="2497229222757901769">Shpejtësia e miut</translation>
@@ -2587,7 +2581,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="27349076983469322">Sfondi i ndriçuar</translation>
 <translation id="2735712963799620190">Planifikimi</translation>
 <translation id="2737363922397526254">Palos...</translation>
-<translation id="2737538893171115082">Steam për Chromebook (Beta) është bllokuar nga administratori yt. Administratori yt duhet të aktivizojë këto politika:</translation>
 <translation id="2737719817922589807">&amp;Faqeshënuesit dhe listat</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> dëshiron të ndajë përmbajtjen e ekranit tënd me <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Mos i lejo sajtet të përdorin fontet e instaluara në pajisjen tënde</translation>
@@ -3051,7 +3044,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3039491566278747710">Instalimi i politikës offline në pajisje dështoi.</translation>
 <translation id="303955801043931176">Skeda u mbyll</translation>
 <translation id="3040435070100611531">Dokumentet dixhitale të "Portofolit të Google"</translation>
-<translation id="3040982432432547149">Na ndihmo të përmirësojmë Steam për Chromebook</translation>
 <translation id="304169924727249890">Bashkohu në grupin e skedave me <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Ndrysho strategjinë e karikimit të optimizuar.</translation>
 <translation id="3043016484125065343">Identifikohu për të parë faqeshënuesit e tu</translation>
@@ -3262,7 +3254,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3201422919974259695">Pajisjet USB të ofruara do të shfaqen këtu.</translation>
 <translation id="3202499879214571401">Vendos në pauzë transmetimin e ekranit te <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Më të rejat</translation>
-<translation id="3204648577100496185">Të dhënat e lidhura me këtë aplikacion mund të hiqen nga kjo pajisje</translation>
 <translation id="3206289903841621620">Fjalori i përdoruesit <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Po shikon kërkime të sugjeruara dhe zbritje çmimi për blerjet që mund të të interesojnë bazuar në aktivitetin tënd së fundi.
         <ph name="BREAK" />
@@ -3370,7 +3361,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3283148363895519428">Ndiq udhëzimet në telefon për të vazhduar konfigurimin. Sigurohu që telefoni të jetë në afërsi dhe Bluetooth-i të jetë i aktivizuar.</translation>
 <translation id="3284050785966252943">Pamja paraprake e metadatave për plotësimin automatik</translation>
 <translation id="3285322247471302225">&amp;Skedë e re</translation>
-<translation id="3285465040399788513">Nuk ka hapësirë ruajtëse të mjaftueshme në pajisje për të përfunduar konfigurimin. Liro hapësirë dhe provo përsëri.</translation>
 <translation id="3285500645985761267">Lejo që sajtet e lidhura të shikojnë aktivitetin tënd te grupi</translation>
 <translation id="328571385944182268">Ruaj fjalëkalimet e tua</translation>
 <translation id="3289668031376215426">Kapitalizim automatik</translation>
@@ -3493,7 +3483,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3372602033006349389">Në pajisjet e tjera</translation>
 <translation id="337286756654493126">Lexo dosjet që hap në aplikacion.</translation>
 <translation id="3373059063088819384">Hape në "Modalitetin e leximit"</translation>
-<translation id="3373196968211632036">Steam për Chromebook (Beta) nuk është i disponueshëm për "Llogaritë e Google" për fëmijët</translation>
 <translation id="3373701465337594448">Kur ky cilësim është aktiv, këtu shfaqet një listë e sajteve që viziton që hamendësojnë interesat e tu</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" u zhvendos te "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3376035595160918049">Rishiko përditësimin e aplikacionit</translation>
@@ -3676,7 +3665,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (nuk është zgjedhur)</translation>
 <translation id="3496689104192986836">Niveli i baterisë: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Burimet e të dhënave për t'u mbledhur</translation>
-<translation id="3496797737329654668">Le të luajmë</translation>
 <translation id="3496995426334945408">Sajtet përdorin zakonisht JavaScript për të shfaqur veçoritë ndërvepruese, si p.sh. videolojëra ose formularë uebi</translation>
 <translation id="3497501929010263034">Pajisja USB nga <ph name="VENDOR_NAME" /> (produkti <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Ndaje vizatimin Doodle</translation>
@@ -3889,7 +3877,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3637203148990213388">Llogaritë shtesë</translation>
 <translation id="3640347231390550691">Mbro fjalëkalimet e tua nga mashtrimet</translation>
 <translation id="364100968401221170">Për të fshirë të dhënat e shfletimit nga të gjitha pajisjet e tua të sinkronizuara dhe nga "Llogaria e Google", <ph name="BEGIN_LINK" />identifikohu<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">"Steam për Chromebook" (beta) duhet të përditësohet. Rinis pajisjen tënde Chromebook dhe provo përsëri.</translation>
 <translation id="3641299252000913351">Përditësimi i firmuerit të modemit është në vazhdim. Mos e fik pajisjen.</translation>
 <translation id="3641456520301071208">Sajtet mund të pyesin për vendndodhjen tënde</translation>
 <translation id="3642064270296434810">Tani mund të përdorësh "Lenten e Google" për të kërkuar për çdo gjë që shikon në ekranin tënd</translation>
@@ -4226,7 +4213,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="383891835335927981">Asnjë sajt nuk është zmadhuar apo zvogëluar</translation>
 <translation id="3839516600093027468">Blloko gjithmonë <ph name="HOST" /> që të mos shikojë kujtesën e fragmenteve</translation>
 <translation id="3840096463915153852">Historiku i bisedave</translation>
-<translation id="3841282988425489367">Nuk mund të konfigurohet Steam për Chromebook (Beta)</translation>
 <translation id="3841319830220785495">Zëri i parazgjedhur natyral</translation>
 <translation id="3841356782900714251">Lexuesit e kartave inteligjente</translation>
 <translation id="3841964634449506551">Fjalëkalimi është i pavlefshëm</translation>
@@ -4675,7 +4661,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4148195018520464922">Mund ta kufizosh identifikimin për përdorues të caktuar. Kjo heq opsionin "Shto person" në ekranin e identifikimit. Gjithashtu, mund të heqësh të gjithë përdoruesit aktualë.</translation>
 <translation id="4148957013307229264">Po instalohet...</translation>
 <translation id="4150201353443180367">Ekrani</translation>
-<translation id="4151449637210235443">Na trego për lojën tënde të fundit</translation>
 <translation id="4151503145138736576">Nuk ka hapësirë ruajtëse offline për të pastruar</translation>
 <translation id="4152011295694446843">Këtu do të gjesh faqeshënuesit e tu</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 skedë}other{# skeda}}</translation>
@@ -4726,7 +4711,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4193251682249731404">Certifikatë e besuar CA</translation>
 <translation id="4193575319002689239">Shfaq kartat</translation>
 <translation id="419427585139779713">Fut rrokjet një nga një</translation>
-<translation id="4195001808989442226">Nuk mund të hapet Steam për Chromebook (Beta)</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4195814663415092787">Vazhdo ku e ke lënë</translation>
 <translation id="4198268995694216131">Sajte të tjera</translation>
@@ -4772,7 +4756,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Kjo shtesë nuk lejohet}other{Disa shtesa nuk lejohen}}</translation>
 <translation id="4231053948789591973">Transmetimi është vendosur aktualisht në pauzë. Mund ta vazhdosh ose ta ndalosh transmetimin e ekranit tënd në çdo kohë.</translation>
 <translation id="4231095370974836764">Instalo aplikacione dhe lojëra nga Google Play në <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Steam për Chromebook po konfigurohet</translation>
 <translation id="4232375817808480934">Konfiguro Kerberos</translation>
 <translation id="4232376164796433044">Fjalëkalimet dhe plotësimi automatik</translation>
 <translation id="4232484478444192782">Telefoni yt Android është kujdesur për të gjitha. WiFi dhe fjalëkalimi po transferohen.</translation>
@@ -5131,7 +5114,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4472533928615930332">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />"</translation>
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4473559657152613417">Kliko me butonin djathtas në një skedë dhe zgjidh "Shto skedën në grup të ri"</translation>
-<translation id="4473996011558324141">po përllogaritet koha</translation>
 <translation id="4474155171896946103">Regjistroji të gjithë skedat në faqeshënues...</translation>
 <translation id="4476198534886170024">Lejohet. Aktivizo <ph name="LINK_BEGIN" />qasjen te kamera e sistemit<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Atlete</translation>
@@ -5367,7 +5349,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4638930039313743000">Aktivizo korrigjimin e ADB-së</translation>
 <translation id="4639390152280993480">Për të parë një pamje të thjeshtuar të kësaj faqeje, shko te "Vegla të tjera" &gt; "Modaliteti i leximit"</translation>
 <translation id="4641539339823703554">Chrome nuk mund të caktonte kohën e sistemit. Kontrollo kohën më poshtë dhe korrigjoje nëse duhet.</translation>
-<translation id="4642587497923912728">Steam për Chromebook (Beta) është i disponueshëm vetëm për llogarinë që është identifikuar e para në këtë Chromebook.</translation>
 <translation id="4643612240819915418">&amp;Hap videon në skedë të re</translation>
 <translation id="4643833688073835173">Chromebook-u yt përdor një sensor të integruar për të zbuluar personat përpara pajisjes sate. Të gjitha të dhënat përpunohen në pajisjen tënde menjëherë dhe më pas fshihen. Të dhënat e sensorit nuk i dërgohen asnjëherë Google.</translation>
 <translation id="4644205769234414680">Lejo në modalitetin "e fshehtë"</translation>
@@ -6370,7 +6351,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5353769147530541973">Hiq <ph name="SITE_NAME" /> nga lista e skedave për ta bërë joaktive</translation>
 <translation id="5355099869024327351">Lejo që "Asistenti" të të shfaqë njoftime</translation>
 <translation id="5355191726083956201">"Mbrojtja e përmirësuar" është aktive</translation>
-<translation id="5355498626146154079">Duhet të aktivizosh flamurin “Borealis Enabled”</translation>
 <translation id="5355501370336370394">Regjistro pajisjen e ndërmarrjes</translation>
 <translation id="5357010010552553606">Nuk lejohet që të kalosh automatikisht në ekran të plotë</translation>
 <translation id="5359910752122114278">1 rezultat</translation>
@@ -6400,7 +6380,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5376931455988532197">Skedari është tepër i madh</translation>
 <translation id="5377367976106153749">Të aktivizohet qasja te kamera?</translation>
 <translation id="5379140238605961210">Vazhdo bllokimin e qasjes te mikrofoni</translation>
-<translation id="5380526436444479273">Prit disa minuta dhe provo përsëri</translation>
 <translation id="5382591305415226340">Menaxho lidhjet e mbështetura</translation>
 <translation id="5384401776498845256">Kush mund të ndajë me ty</translation>
 <translation id="5385628342687007304">Ky fjalëkalim ruhet vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google".</translation>
@@ -6455,7 +6434,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5414198321558177633">Lista e profilit po rifreskohet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="5414566801737831689">Lexo ikonat e sajteve të uebit që viziton</translation>
 <translation id="5414836363063783498">Po verifikon…</translation>
-<translation id="5415328625985164836">Ky është një program beta. Tani mund të përdorësh Steam për të luajtur disa lojëra në Chromebook.</translation>
 <translation id="5415497281076257439">Frazë</translation>
 <translation id="5415871492522952905">Do të kesh të gjitha skedat dhe historikun tënd në të gjitha pajisjet e tua, në mënyrë që të mund të vazhdosh atë që po bëje</translation>
 <translation id="5417293056300086453">Ky sajt mund të përdorë identifikuesit për të luajtur përmbajtjet e mbrojtura.</translation>
@@ -6897,7 +6875,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5727728807527375859">Shtesat, aplikacionet dhe temat mund ta dëmtojnë kompjuterin tënd. Je i sigurt se dëshiron të vazhdosh?</translation>
 <translation id="5728072125198221967">Shërbimet e lidhura të Google</translation>
 <translation id="5728450728039149624">Opsionet e kyçjes së ekranit të Smart Lock</translation>
-<translation id="572914206753951782">Sigurohu që pajisja jote Chromebook ka versionin më të fundit. Më pas rinis pajisjen tënde Chromebook dhe provo përsëri</translation>
 <translation id="5729712731028706266">&amp;Shiko</translation>
 <translation id="5731247495086897348">Ngj&amp;it dhe vazhdo</translation>
 <translation id="5733109311583381874">Shto fjalët e tua te fjalorët e përdoruesit për të personalizuar kandidatët për konvertimin.</translation>
@@ -7318,6 +7295,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6011193465932186973">Gjurma e gishtit</translation>
 <translation id="6011308810877101166">Përmirëso sugjerimet për kërkimin</translation>
 <translation id="6011908034087870826">Lidhja po dërgohet te <ph name="DEVICE_NAME" /></translation>
+<translation id="6013003831291591200">Detyra u përfundua</translation>
 <translation id="6013027779243312217">Merr titrat për audion dhe videon tënde</translation>
 <translation id="6014293228235665243">Të palexuara</translation>
 <translation id="6015776718598175635">Yje</translation>
@@ -8013,7 +7991,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" dëshiron të instalojë aplikacionin e mëposhtëm në këtë pajisje:}other{"<ph name="APP_NAME" />" dëshiron të instalojë aplikacionet e mëposhtme në këtë pajisje:}}</translation>
 <translation id="6508248480704296122">Të lidhura me <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplikacioni: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Rinis pajisjen tënde Chromebook dhe provo përsëri</translation>
 <translation id="6511827214781912955">Ki parasysh që ta fshish <ph name="FILENAME" />, në mënyrë që të tjerët që e përdorin këtë pajisje të mos arrijnë t'i shikojnë fjalëkalimet e tua</translation>
 <translation id="6512759338201777379">Imazhi i gjeneruar <ph name="INDEX" /> nga "<ph name="SUBJECT" />", me atmosferë "<ph name="MOOD" />".</translation>
 <translation id="6513247462497316522">Google Chrome do të përdorë të dhënat celulare nëse nuk je i lidhur me një rrjet tjetër.</translation>
@@ -8122,7 +8099,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="657866106756413002">Pamje e çastit e fuqisë së rrjetit</translation>
 <translation id="6579369886355986318">Shfaq të gjitha &amp;kontrollet</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Përmbajtja e desktopit është ndarë</translation>
-<translation id="6580060371127789208">Përfunduar <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Shpejtësia e skanimit</translation>
 <translation id="6580676117087365538">Verifiko që je ti për ta marrë këtë shtesë në të gjithë kompjuterët e tu</translation>
 <translation id="6581356304040102696">Fjalëkalimet nuk mund të importohen. Madhësia e skedarit duhet të jetë më e vogël se 1 MB.</translation>
@@ -8342,7 +8318,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6729280095610283088">Rreze të ndritshme të Aurorës polare mbi një pyll.</translation>
 <translation id="6729493062119577923">Aktiviteti i grupit të ndarë të skedave</translation>
 <translation id="6730744976532805323">Ndan skedën aktuale me Gemini, edhe ndërsa ti i ndërron skedat</translation>
-<translation id="6731320427842222405">Kjo mund të zgjasë disa minuta</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adresa</translation>
 <translation id="6737663862851963468">Hiq biletën e Kerberos</translation>
@@ -8692,7 +8667,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6965648386495488594">Porta</translation>
 <translation id="6965978654500191972">Pajisja</translation>
 <translation id="6966831944134814478">Çaktivizo</translation>
-<translation id="6967112302799758487">Të gjitha aplikacionet dhe lojërat e instaluara duke përdorur Steam për Chromebook (Beta) do të hiqen nga kjo pajisje. Të dhënat e lidhura me këto aplikacione dhe lojëra do të hiqen po ashtu. Sigurohu që të rezervosh aplikacionet dhe lojërat e ruajtura para se t'i çinstalosh.</translation>
 <translation id="6967430741871315905">Nuk mund të kontrollohet nëse pajisja lejohet</translation>
 <translation id="6968288415730398122">Fut fjalëkalimin për të konfiguruar kyçjen e ekranit</translation>
 <translation id="6969047215179982698">Çaktivizo "Ndarjen në afërsi"</translation>
@@ -8863,7 +8837,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> menaxhohet nga administratori yt</translation>
 <translation id="7082850163410901674">Njoftimet janë çaktivizuar në cilësimet e sistemit Mac</translation>
 <translation id="7083729794572207131">Sajtet zakonisht kërkojnë që të instalojnë aplikacione uebi që të përmirësojnë përvojën tënde në sajt</translation>
-<translation id="7083774521940805477">Steam për Chromebook (Beta) nuk është i disponueshëm në pajisjen tënde Chromebook.</translation>
 <translation id="7084095352418993433">Pyet Google rreth kësaj faqeje: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(e pakonfiguruar)</translation>
 <translation id="7086377898680121060">Rrit ndriçimin</translation>
@@ -8942,7 +8915,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7141844554192012199">Përfundimi i blerjes</translation>
 <translation id="714301620504747562">Shfletimi dhe kërkimi është më i shpejtë se ngarkimi paraprak standard</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
-<translation id="7143409552554575716">Flamurët e ChromeOS</translation>
 <translation id="7144363643182336710">Njoftimet nuk do të shfaqen në ekran. Mund t'i shikosh përsëri njoftimet duke klikuar tek ikona "Mos shqetëso" në pjesën e poshtme djathtas në ekran.</translation>
 <translation id="7144856456372460176">&amp;Instalo <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -8953,7 +8925,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7152478047064750137">Kjo shtesë nuk kërkon leje të veçanta</translation>
 <translation id="7153101072880472645">Kontrasti i lartë aktiv/joaktiv</translation>
 <translation id="715396040729904728">nisësi + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Ndaj komentet e tua ose përshkruaj problemin tënd. Nëse është e mundur, përfshi hapat për rikrijimin e problemit tënd.</translation>
 <translation id="7154130902455071009">Ndrysho faqen tënde të nisjes te: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Merr video me cilësi më të mirë dhe kurse kohëzgjatjen e baterisë. Videoja do të luhet vetëm në ekranin që mbështet transmetimin.</translation>
 <translation id="7159695867335480590">Luaj/vendos në pauzë</translation>
@@ -9806,7 +9777,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="7728668285692163452">Ndryshimi i kanalit do të zbatohet më vonë</translation>
 <translation id="7730449930968088409">Regjistro përmbajtjen e ekranit tënd</translation>
 <translation id="7730683939467795481">Kjo faqe është ndryshuar nga shtesa "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="7732702411411810416">Sigurohu që të jesh lidhur me internetin dhe provo përsëri</translation>
 <translation id="773511996612364297">Shenjat e theksit</translation>
 <translation id="7735558909644181051">Certifikatat e ndërmjetme</translation>
 <translation id="7736119438443237821">Po heq qasjen te çelësat e tu të kalimit në këtë pajisje</translation>
@@ -10008,7 +9978,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7871691770940645922">Ekrani virtual Braille</translation>
 <translation id="787268756490971083">Joaktiv</translation>
 <translation id="7872758299142009420">Shumë grupe të ndërfutura: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam për Chromebook</translation>
 <translation id="7876027585589532670">Shkurtorja nuk mund të modifikohet</translation>
 <translation id="7876243839304621966">Hiqi të gjitha</translation>
 <translation id="7877126887274043657">Rregullo &amp;problemin e sinkronizimit</translation>
@@ -11666,7 +11635,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8983018820925880511">Ky profil i ri do të menaxhohet nga <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> mund të modifikojë <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Do të jesh i dukshëm për të gjithë për <ph name="MINUTES" /> minuta. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Mirë se vjen në Steam për Chromebook</translation>
 <translation id="8985264973231822211">Aktiv <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ditë më parë</translation>
 <translation id="8985561265504464578">Pragu i zbulimit</translation>
 <translation id="8985661493893822002">Lidhu me internetin për t'u identifikuar në pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
@@ -11798,7 +11766,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Rreth 1 njoftim në ditë}other{Rreth {NUM_NOTIFICATION} njoftime në ditë}}</translation>
 <translation id="9058760336383947367">Shiko skedarin PPD të printerit</translation>
 <translation id="9061521313218438086">Nëse Chrome gjen një nga fjalëkalimet e tua në një nxjerrje të paautorizuar të të dhënave publike, "Menaxheri i fjalëkalimeve i Google" mund të ofrojë ta ndryshojë fjalëkalimin tënd për ty kur të jesh i identifikuar.</translation>
-<translation id="9061694916020926968">Duhet të jesh identifikuar në një "Llogari të Google" për të përdorur Steam për Chromebook (Beta). Identifikohu dhe provo përsëri.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Pastro shkurtoren e navigimit</translation>
 <translation id="9063208415146866933">Gabim nga rreshti <ph name="ERROR_LINE_START" /> deri në <ph name="ERROR_LINE_END" /></translation>

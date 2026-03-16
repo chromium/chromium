@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="1557622599341396706">ডেস্কৰ নাম দেখুৱাওক</translation>
 <translation id="1569384531973824928">এইটোৱে কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে এক্সেছৰ অনুমতি দিয়ে। আপুনি ৱেবপৃষ্ঠাখন ৰিফ্ৰেশ্ব কৰিব লাগিব পাৰে বা এপ্‌টো পুনৰাৰম্ভ কৰিব লাগিব পাৰে।</translation>
+<translation id="1570235441606255261">ষ্ট্ৰীম ইনষ্টলাৰ</translation>
 <translation id="1571697193564730395">অসুবিধা নিদিব ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">বাছনি কৰা বাওঁফালৰ কাষৰ হেণ্ডেল, স্থানান্তৰ কৰিবলৈ এৰ’ কী ব্যৱহাৰ কৰক</translation>
 <translation id="1576623706766186887">বিৱৰ্ধক অন কৰা থাকিলে জুম আউট কৰক</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">ছুইচৰ দ্বাৰা এক্সেছ ছেটিংসমূহ ইয়াত অক্ষম কৰিব পৰা যায় &gt; সাধ্য সুবিধা।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> টা ডিভাইচ</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
+<translation id="1642895994345928121">এই এপ্‌টো খুলিবলৈ পৰ্যাপ্ত ডিভাইচৰ ষ্ট’ৰেজ নাই। ঠাই খালী কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1647986356840967552">পূৰ্বৱৰ্তী পৃষ্ঠা</translation>
 <translation id="1651914502370159744">ইতিহাসৰ পৃষ্ঠাটো খোলক</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">এপ্‌ আৰু টেবৰ গোট</translation>
 <translation id="2386292613071805067">পৃষ্ঠাটোত থকা আটাইবোৰ সমল বাছনি কৰক</translation>
 <translation id="2389423187722941333">Gemini ট’গল কৰক</translation>
+<translation id="2391805183137601570">Steam খোলক</translation>
 <translation id="2392659840443812875">উপলব্ধ হটস্পট নাই। আপোনাৰ ডিভাইচটো ওচৰত থকাটো আৰু ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="2397416548179033562">Chromeৰ মেনু দেখুৱাওক</translation>
 <translation id="240006516586367791">মিডিয়াৰ নিয়ন্ত্ৰণ</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">কালি খুলিছিল</translation>
 <translation id="2440978926514840421">GIF ৰেকৰ্ড কৰা হ’ল</translation>
 <translation id="2441427462554639370">ষ্ট’ৰেজৰ ঠাই একেবাৰে কমি যোৱাৰ কাৰণে ৰেকৰ্ডিং সমাপ্ত হৈছে</translation>
+<translation id="2447587550790814052">আপুনি এতিয়া Chromebook (বিটা)ৰ বাবে Steam ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="2449089818483227734">বেটাৰী কম আছে</translation>
 <translation id="2450205753526923158">স্ক্ৰীনশ্বট ম'ড</translation>
 <translation id="2453860139492968684">সম্পূর্ণ হ’ল</translation>
 <translation id="2455994958736234930">ঠিকনাৰ বাৰত www. আৰু .com যোগ দিয়ক, তাৰ পাছত ৱেবছাইট খোলক</translation>
 <translation id="2456008742792828469">কেলেণ্ডাৰ, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">গভীৰলৈ যাওক</translation>
+<translation id="2462332841984057083">ইতিমধ্যে Steamৰ ছেট আপ কৰি থকা হৈছে। ছেটআপ সম্পূৰ্ণ হোৱালৈকে অপেক্ষা কৰক।</translation>
 <translation id="2465145153332031561">বেটাৰীৰ স্বাস্থ্য <ph name="BATTERY_HEALTH_PERCENTAGE" />%, চক্ৰৰ গণনা <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ৰিজ’লিউশ্বন নিশ্চিত কৰক</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ভৰাওক</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" />ৰ পূৰ্বদৰ্শন। সক্ৰিয় ডেস্ক।</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />"ক <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> হাৰ্টজ) ৰিজ’লিউছনলৈ সলনি কৰা হৈছে। নিশ্চিত নকৰাকৈ, পূৰ্বৱৰ্তী ছেটিংটো <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="2487915095798731898">যোগদান কৰক</translation>
+<translation id="2494555621641843783">Steam ইনষ্টল কৰিব নোৱাৰি</translation>
 <translation id="2496180316473517155">ব্ৰাউজিঙৰ ইতিহাস</translation>
 <translation id="2499445554382787206">ডেস্কৰ প্ৰ’ফাইল মেনু। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ষ্টিকি কী</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">প্ৰত্যুত্তৰ দিয়ক</translation>
 <translation id="2727744317940422214">দুঃখিত, কিবা ভুল হ’ল। অনুগ্ৰহ কৰি বিৱৰণত #bruschettaৰ জৰিয়তে মতামত দাখিল কৰক। আসোঁৱাহ ক’ড হৈছে <ph name="ERROR" />। পৰিষ্কাৰ কৰিব পৰা নগ’ল, আপুনি হয়তো সেইটো মেনুৱেলী কৰিব লাগিব।</translation>
 <translation id="2727977024730340865">কম পাৱাৰৰ এটা চাৰ্জাৰত প্লাগ ইন কৰা হৈছে। বেটাৰীৰ চাৰ্জিং বিশ্বাসযোগ্য নহ'বও পাৰে।</translation>
+<translation id="2737538893171115082">Chromebook (বিটা)ৰ বাবে Steamক আপোনাৰ প্ৰশাসকে অৱৰোধ কৰিছে। আপোনাৰ প্ৰশাসকে এই নীতিসমূহ অন কৰিব লাগিব:</translation>
 <translation id="2743301740238894839">আৰম্ভ কৰক</translation>
 <translation id="2743387203779672305">ক্লিপব'ৰ্ডত প্ৰতিলিপি কৰক</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" />ৰ সৈতে একত্ৰিত কৰক</translation>
 <translation id="3039939407102840004">ষ্টাইলাছৰ বেটাৰী <ph name="PERCENTAGE" /> শতাংশ আছে।</translation>
 <translation id="304097922505898963">Key Shortcuts এপ্‌টো খোলক</translation>
+<translation id="3040982432432547149">Chromebooksৰ বাবে ষ্ট্ৰীম উন্নত কৰাত আমাক সহায় কৰক</translation>
 <translation id="304417730895741346">আপোনাৰ পিন কৰি থোৱা আৰু খোলা এপ্‌সমূহ শ্বেল্ফটোত আছে। শ্বেল্ফটোত কোনো এপ্‌ পিন কৰিবলৈ, এটা এপত সোঁফালে ক্লিক কৰক বা দুটা আঙুলিৰে আপোনাৰ টাচ্চপেডত টিপক।</translation>
 <translation id="3045670165536837541">বাছনি কৰা ওপৰৰ সোঁফালৰ হেণ্ডেল, স্থানান্তৰ কৰিবলৈ এৰ’ কী ব্যৱহাৰ কৰক</translation>
 <translation id="3047761520276763270">এইবুলি কৈ চাওক:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">ৰিষ্টাৰ্ট হ’বলৈ কিছু সময় লাগিব পাৰে</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{এটা ডিভাইচৰ সৈতে সংযোগ হৈ আছে}one{#টা ডিভাইচৰ সৈতে সংযোগ হৈ আছে}other{#টা ডিভাইচৰ সৈতে সংযোগ হৈ আছে}}</translation>
 <translation id="3203405173652969239">ছুইচৰ দ্বাৰা এক্সেছ সক্ষম কৰা হৈছে</translation>
+<translation id="3204648577100496185">এই এপ্‌টোৰ সৈতে জড়িত ডেটা এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব পাৰে</translation>
 <translation id="3206735939915734551">কেপ্‌ছ লক অন/অফ কৰক</translation>
 <translation id="3207953481422525583">ব্যৱহাৰকাৰীৰ ছেটিংসমূহ</translation>
 <translation id="3208321278970793882">এপ্‌</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ভৰাবলৈ সন্ধান কৰক</translation>
 <translation id="3274634049061007184">আপোনাৰ ফ’নৰ এপ্‌সমূহ চাওক</translation>
 <translation id="3279230909244266691">এই প্ৰক্ৰিয়াৰ বাবে কিছু সময়ৰ প্ৰয়োজন হ’ব। কোনো ভাৰ্চুৱেল মেচিন আৰম্ভ কৰি থকা হৈছে।</translation>
+<translation id="3285465040399788513">ছেটআপ সম্পূৰ্ণ কৰিবলৈ পৰ্যাপ্ত পৰিমাণৰ ডিভাইচ ষ্ট’ৰেজ নাই। খালী ঠাই উলিয়াই পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3289364673986435196">পাৱাৰ মেনু</translation>
 <translation id="3289544412142055976">বৰ্তমান Linux এপ্‌সমূহ সমৰ্থিত নহয়</translation>
 <translation id="3289674678944039601">এডাপ্টৰেৰে চাৰ্জ হৈ আছে</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">সংযোগ কৰা হ’ল</translation>
 <translation id="3369111525500416043">কাৰ্য সমাপ্তিৰ অন্তিম সময় সমাগত</translation>
 <translation id="3371140690572404006">USB-C ডিভাইচ। (সোঁফালৰ সন্মুখৰ প’ৰ্ট)</translation>
+<translation id="3373196968211632036">Chromebook (বিটা)ৰ বাবে Steam শিশুৰ Google একাউণ্টৰ বাবে উপলব্ধ নহয়</translation>
 <translation id="3375634426936648815">সংযোগ কৰা হ’ল</translation>
 <translation id="3386978599540877378">সম্পূর্ণ স্ক্ৰীনৰ বিৱৰ্ধকটো</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">শ্বেল্ফ স্বয়ংক্রিয়ভাৱে লুকুওৱা হয়</translation>
+<translation id="3496797737329654668">আহক গে’মিং আৰম্ভ কৰোঁ</translation>
 <translation id="3505066820268455558">বেটাৰী চাৰ্জ হৈ আছে</translation>
 <translation id="3509391053705095206">আপোনাৰ ফ’নটো বিচাৰি পোৱা নাই। আপোনাৰ ফ’নৰ ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="3510164367642747937">মাউছৰ কাৰ্ছৰ হাইলাইট কৰক</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">ক্লিপব’ৰ্ড খোলক</translation>
 <translation id="363473492175527493">এই কাৰ্যটো ফ’কাছ অন কৰিবলৈ ছেট কৰা হৈছে: <ph name="TASK_NAME" />। কাৰ্যটো সম্পাদনা কৰিবলৈ এণ্টাৰ টিপক।</translation>
 <translation id="3638400994746983214">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰক। <ph name="STATE_TEXT" />।</translation>
+<translation id="3641070112313110357">Chromebookৰ বাবে Steam (বিটা) আপডে’ট কৰাৰ আৱশ্যক। আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3649256019230929621">ৱিণ্ড’ মিনিমাইজ কৰক</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">বর্তমানৰ ডেস্কখনৰ পৰা ৱিণ্ড’সমূহ দেখুৱাই থকা হৈছে, আটাইবোৰ ডেস্কৰ পৰা ৱিণ্ড' দেখুৱাবলৈ আপ এৰ' কীটো টিপক</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">মনোৰঞ্জন</translation>
+<translation id="370665806235115550">ল'ড হৈ আছে...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> আৰু <ph name="UNAVAILABLE_DLC_TWO" /> উপলব্ধ নহয়।</translation>
 <translation id="3708186454126126312">আগতে সংযোগ কৰা</translation>
 <translation id="3712143870407382523">এই ফালটোৰ বাবে এখন ৱিণ্ড’ বাছনি কৰক</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">টিউট’ৰিয়েল ভিউৰ পৰা বাহিৰ হওক</translation>
 <translation id="383629559565718788">কীব’ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="384082539148746321">টেমপ্লে’ট মচিবনে?</translation>
+<translation id="3841282988425489367">Chromebook (বিটা)ৰ বাবে Steam ছেট আপ কৰিব পৰা নগ’ল</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> তাৰ পাছত <ph name="KEY_ONE" /> অথবা <ph name="KEY_TWO" /> অথবা <ph name="KEY_THREE" /> অথবা <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">নেটৱৰ্কৰ বিষয়ে কোনো তথ্য নাই</translation>
 <translation id="3848526302597027234">তলত দিয়া অনুমতিসমূহ এক্সেছ কৰক:</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">পৰৱৰ্তী শব্দটোৰ শেষলৈ যাওক</translation>
 <translation id="4150201353443180367">ডিছপ্লে’</translation>
 <translation id="4151054805501931758">প’ৰ্ট্ৰেইট সম্পাদনা কৰা</translation>
+<translation id="4151449637210235443">আপোনাৰ শেহতীয়া গে’মপ্লে’ৰ বিষয়ে আমাক জনাওক</translation>
 <translation id="4156293514828496577">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% বাকী আছে (প্ৰায় <ph name="TIME_LEFT" /> বাকী আছে)।
 বেটাৰীৰ জীৱনকাল বৃদ্ধি কৰিবলৈ কিছুমান সুবিধা সীমিত কৰা হৈছে।</translation>
 <translation id="4158003972857765638">নতুন ডেস্ক এখনত শৃংখলাবদ্ধ কৰক</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">অথবা</translation>
 <translation id="4193857202545160520">ক্লিক আৰু কীসমূহ দেখুৱাওক</translation>
 <translation id="4193969623755915875">Explore এপত "<ph name="NEW_SHORTCUT" />"ৰ জৰিয়তে "সহায়" খোলক।</translation>
+<translation id="4195001808989442226">Chromebook (বিটা)ৰ বাবে Steam খুলিব পৰা নগ'ল</translation>
 <translation id="4195579532193195633">সাম্প্ৰতিক সংস্কৰণ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">আপুনি পূর্বতে এৰাৰ পৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="4195877955194704651">স্বয়ংক্ৰিয়ভাৱে ক্লিকৰ বুটাম</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ইনষ্টল কৰা এপ্‌, পজ কৰি থোৱা</translation>
 <translation id="4228078597006700451">নিয়ন্ত্ৰণসমূহ ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="4230560241506423345">নতুন</translation>
+<translation id="4231231258999726714">Chromebookৰ বাবে Steam ছেট আপ কৰি থকা হৈছে</translation>
 <translation id="4236726631849783264">পৰামৰ্শিত কাৰ্যৰ বিষয়ে এটা ৰিমাইণ্ডাৰ</translation>
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
 <translation id="4240486403425279990">অৱলোকন ম’ড</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{এতিয়াই ডিভাইচটো আপডে’ট কৰক}=1{১ ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="4472575034687746823">আৰম্ভ কৰক</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">লাগিব পৰা সময় গণনা কৰি থকা হৈছে</translation>
 <translation id="4477350412780666475">পৰৱৰ্তী ট্ৰেক</translation>
 <translation id="4477751544736611934">এইটোৱে ডেটাৰ মাচুল প্ৰযোজ্য কৰিব পাৰে।
 ১ টা ডিভাইচ সংযুক্ত হৈ আছে।</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">কোনো অজ্ঞাত প্ৰাপকলৈ কাষ্ট কৰাটো বন্ধ কৰক</translation>
 <translation id="4596144739579517758">গাঢ় ৰঙৰ ম’ড অফ আছে</translation>
 <translation id="4596442969149038771"><ph name="USER" />এ শ্বেয়াৰ কৰা</translation>
+<translation id="4598556348158889687">ষ্ট’ৰেজ মেনেজমেণ্ট</translation>
 <translation id="4610493115106525653">ভাল ফলাফল</translation>
 <translation id="4611292653554630842">লগ ইন কৰক</translation>
 <translation id="462160925400706389"><ph name="NAME" /> সংযোগ কৰা হৈছে</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">মচিবলৈ Ctrl+W টিপক</translation>
 <translation id="4635501805800894201">{0,plural, =0{এতিয়াই ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ আপডে’ট কৰক}=1{১ ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ আপডে’ট কৰক}one{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ আপডে’ট কৰক}other{# ছেকেণ্ডৰ ভিতৰত ডিভাইচটো পূৰ্বৱৰ্তী সংস্কৰণলৈ আপডে’ট কৰক}}</translation>
 <translation id="4642092649622328492">আংশিক স্ক্ৰীনশ্বট লওক</translation>
+<translation id="4642587497923912728">Chromebook (বিটা)ৰ বাবে Steam এইটো Chromebookত প্ৰথমে ছাইন ইন কৰা একাউণ্টটোৰ বাবেহে উপলব্ধ হয়।</translation>
 <translation id="4644727592819780893">কেমেৰাত খাপ খাবলৈ অঞ্চলটোৰ আকাৰ অতি সৰু</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, এপৰ চুপাৰিছ</translation>
 <translation id="4649019912155580914">আপুনি সম্পাদনা কৰিছে</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">গাঢ় ৰঙৰ থীম অন হৈ আছে</translation>
 <translation id="5354804064646502504">এইটোৱে ডেটাৰ মাচুল প্ৰযোজ্য কৰিব পাৰে।
 কোনো ডিভাইচ সংযোগ কৰা হোৱা নাই।</translation>
+<translation id="5355498626146154079">আপুনি “Borealis Enabled” ফ্লেগ অন কৰিব লাগিব</translation>
 <translation id="5356963482258194581">গাঢ় ৰঙৰ থীম আৰু পাতল ৰঙৰ থীমৰ মাজত সলনাসলনি কৰক। ডেস্কটপত ৰাইট-ক্লিক কৰক আৰু ৱালপেপাৰ আৰু ষ্টাইল বাছনি কৰক।</translation>
 <translation id="536019650977002321">আপোনাৰ প্ৰশাসকে অডিঅ’ কেপচাৰ কৰিবলৈ অনুমতি নিদিয়ে। অধিক তথ্যৰ বাবে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> কথন ফাইলসমূহ আংশিকভাৱে ডাউনল’ড কৰা হৈছে</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">কেমেৰাৰ এক্সেছ অন কৰিবনে?</translation>
 <translation id="5378450298115733949">অধিক</translation>
 <translation id="5379115545237091094">অতি বেছি প্ৰয়াস</translation>
+<translation id="5380526436444479273">কেইমিনিটমান অপেক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="5383434787520761436">কোনো Google Drive ফাইল নাই</translation>
 <translation id="5391307769715781764">ছেভ কৰি থোৱা ডেস্ক সলনি কৰিবনে?</translation>
 <translation id="5392327145184648521">বেটাৰী % গণনা কৰি থকা হৈছে...</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">কাৰ্যটো সম্পূৰ্ণ হিচাপে চিহ্নিত কৰক</translation>
 <translation id="5413656666631274079">ছেটিঙৰ পৃষ্ঠা</translation>
 <translation id="5414198321558177633">প্ৰ’ফাইলৰ সূচী ৰিফ্ৰেশ্ব কৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
+<translation id="5415328625985164836">এইটো এটা বিটা প্ৰ’গ্ৰাম। এতিয়া আপুনি নিজৰ Chromebookত কিছুমান গে’ম খেলিবলৈ Steam ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="5426063383988017631">ছেটিঙৰ মেনু বন্ধ আছে</translation>
 <translation id="5428899915242071344">বাছনি কৰা আৰম্ভ কৰক</translation>
 <translation id="5429993543155113935">বর্তমান ইনক'গনিট' ৱিণ্ড'সমূহ সমর্থন নকৰে</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774">আপোনাৰ <ph name="PRODUCT_NAME" />ত আপুনি বিচৰা আটাইবোৰ কাম কৰিবলৈ এপ্‌সমূহ ব্যৱহাৰ কৰক। লঞ্চাৰটোত আপুনি নিজৰ এপ্‌সমূহ বিচাৰি পাব পাৰে।</translation>
 <translation id="571295407079589142">ম’বাইল ডেটা অফ কৰা হ'ল</translation>
 <translation id="5727460725221669831">যদি আপুনি আপোনাৰ পাছৱৰ্ড পাহৰিছে অথবা শেহতীয়াকৈ আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ড সলনি কৰিছে, তেন্তে এই ব্যৱহাৰকাৰীক পুনৰুদ্ধাৰ কৰিবলৈ চেষ্টা কৰক।</translation>
+<translation id="572914206753951782">আপোনাৰ Chromebookত শেহতীয়া সংস্কৰণটো ব্যৱহাৰ হৈ থকাটো নিশ্চিত কৰক। তাৰ পাছত, আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="5733630091161562207">স্বাগতমৰ জাননী</translation>
 <translation id="573413375004481890">আপোনাৰ সকলো ডিছপ্লে’ এই ডিভাইচটোৱে সমৰ্থন কৰিব নোৱাৰিলে, সেয়েহে এটাৰ সংযোগ বিচ্ছিন্ন কৰা হৈছে</translation>
 <translation id="574392208103952083">মধ্যমীয়া</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />"ৰ জৰিয়তে Key Shortcuts এপ্‌টো খোলক।</translation>
 <translation id="6507618042428827377">পৰৱৰ্তী উপলব্ধ ইনপুট পদ্ধতিলৈ সলনি কৰক</translation>
 <translation id="6508923215158854599">আপোনাৰ Chromebook আপোনাৰ Chromecast ডিভাইচটো থকা ৱাই-ফাই নেটৱৰ্কটোতে থকাটো নিশ্চিত কৰক।</translation>
+<translation id="6511607461419653612">আপোনাৰ Chromebook ৰিষ্টাৰ্ট কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="6515727200518652613">কেমেৰাৰ সংযোগ বিচ্ছিন্ন হৈছে, পুনৰ সংযোগ কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="651753338596587143">দুঃখিত, DLCৰ ডিপেণ্ডেন্সী ইনষ্টল কৰাত কিবা ভুল হৈছে। অনুগ্ৰহ কৰি ৰিবুট কৰি চাওক আৰু যদি সমস্যাটো তেতিয়াও থাকে বিৱৰণত #bruschettaত মতামত জনাওক। আসোঁৱাহ ক’ডটো হৈছে <ph name="ERROR" />।</translation>
 <translation id="6520517963145875092">কেপচাৰ কৰিবলৈ এখন ৱিণ্ড’ বাছনি কৰক</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819">চোৱাৰ সুৰক্ষাটো অন হৈ থকাৰ বাবে <ph name="APP_TITLE" />ৰ জাননী লুকুওৱা হৈছে</translation>
 <translation id="6574622320167699133">আপোনাৰ ফ’নৰ দ্বাৰা আনলক কৰা হৈছে। ভিতৰত সোমাবলৈ টিপক অথবা ক্লিক কৰক।</translation>
 <translation id="6578407462441924264">নামবিহীন</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% সম্পূৰ্ণ হৈছে</translation>
 <translation id="6582012689384648647">ব্যক্তিগতকৃতভাৱে ফ’কাছ কৰা প্লে’লিষ্টৰ বাবে, YouTube Musicলৈ এক্সেছৰ অনুমতি দিয়ক</translation>
 <translation id="6582034443359256692">বেটাৰীৰ চাৰ্জৰ স্তৰ গণনা কৰি থকা হৈছে।</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />ত ছেশ্বন অন্ত পৰিব।</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">পাৱাৰ</translation>
 <translation id="672609503628871915">নতুন কি আছে চাওক</translation>
 <translation id="6727969043791803658">সংযোগ কৰা আছে, <ph name="BATTERY_PERCENTAGE" />% বেটাৰী</translation>
+<translation id="6731320427842222405">এই কামটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে</translation>
 <translation id="6732087373923685049">কেমেৰা</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /> টা</translation>
 <translation id="6737983188036277605">কেমেৰা আৰু মাইক্ৰ’ফ’ন ব্যৱহাৰ হৈ আছে</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + আপ এৰ'টো সলনি হৈছে। পেজ আপ কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + আপ এৰ' টিপক।</translation>
 <translation id="696267987219125751">কেমেৰা ফ্ৰে’মিং অফ হৈ আছে।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
+<translation id="6967112302799758487">এইটো ডিভাইচৰ পৰা Chromebook (বিটা)ৰ বাবে Steam ব্যৱহাৰ কৰি ইনষ্টল কৰা যিকোনো এপ্‌ আৰু গে’ম আঁতৰোৱা হ’ব। এইবোৰ এপ্‌ আৰু গে’মৰ সৈতে জড়িত ডেটাও আঁতৰোৱা হ’ব। আনইনষ্টল কৰাৰ আগতে ছেভ কৰা এপ্‌ আৰু গে’মসমূহৰ বেকআপ লোৱাটো নিশ্চিত কৰক।</translation>
 <translation id="6972629891077993081">HID ডিভাইচসমূহ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">ইনছাৰ্ট</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">স্বয়ং-ঘূৰ্ণন</translation>
 <translation id="7076293881109082629">ছাইন ইন কৰি থকা হৈছে</translation>
 <translation id="7076878155205969899">ধ্বনি মিউট কৰক</translation>
+<translation id="7083774521940805477">আপোনাৰ Chromebookত Chromebook (বিটা)ৰ বাবে Steam উপলব্ধ নহয়।</translation>
 <translation id="7083848064787091821">ফ’কাছ</translation>
 <translation id="7084678090004350185">হ’টস্প’ট ট’গল কৰক। হ’টস্প’ট অন হৈ আছে, <ph name="DEVICECOUNT" /> টা ডিভাইচ সংযুক্ত হৈ আছে।</translation>
 <translation id="7086931198345821656">এই আপডে’টটোৰ বাবে আপোনাৰ <ph name="DEVICE_TYPE" />টো পাৱাৰৱাশ্ব কৰাৰ আৱশ্যক। আটাইবোৰ ডেটা মচা হ’ব। শেহতীয়া <ph name="SYSTEM_APP_NAME" /> আপডে’ট সম্পৰ্কে অধিক জানক।</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">আটাইতকৈ বেছি পচন্দৰ</translation>
 <translation id="7131634465328662194">আপোনাক স্বয়ংক্ৰিয়ভাৱে ছাইন আউট কৰোৱা হ'ব।</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
+<translation id="7143409552554575716">ChromeOS ফ্লেগ</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7144942256906679589">বেটাৰীৰ স্থিতি</translation>
 <translation id="7145639536026937076">বেটাৰীৰ চাৰ্জ <ph name="PERCENTAGE" />% আছে আৰু চাৰ্জ হৈ আছে। বেটাৰী সঞ্চয়কাৰী অন আছে।</translation>
 <translation id="7147587499155271409">কোনো ব্ৰাউজিঙৰ ইতিহাস নাই</translation>
 <translation id="7147657298465433425">F কীটো এক্সেছ কৰিবলৈ, fn কী + প্ৰথম শাৰীৰ কীত টিপক</translation>
 <translation id="7149149900052329230">আপোনাৰ স্থানীয় ফাইল আৰু Google Driveৰ ফাইল পৰিচালনা কৰা - আটাইবোৰ কাম Files এপত কৰক।</translation>
+<translation id="7154020516215182599">আপোনাৰ মতামত পঠিয়াওক অথবা আপোনাৰ সমস্যাটো বৰ্ণনা কৰক। যদি সম্ভৱ, আপোনাৰ সমস্যাটোৰ পুনৰ সৃষ্টি কৰাৰ বাবে ল’বলগীয়া পদক্ষেপসমূহ বৰ্ণনা কৰক।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@
 <translation id="7726391492136714301">আপোনাৰ ফ’নৰ জাননী আৰু এপ্‌সমূহ চাওক</translation>
 <translation id="7727952505535211425">এটা নতুন টেবত ঠিকনাৰ বাৰত ৱেবছাইটটো খোলক</translation>
 <translation id="7728657226117099693">কেপ্‌ছ লক অফ কৰক</translation>
+<translation id="7732702411411810416">আপুনি ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ থকাটো নিশ্চিত কৰক আৰু পুনৰ চেষ্টা কৰক</translation>
 <translation id="7742327441377685481">কোনো জাননী নাই</translation>
 <translation id="7748275671948949022">শ্বেল্ফত থকা লঞ্চাৰ বুটামটো হাইলাইট কৰক</translation>
 <translation id="7749443890790263709">ডেস্কৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে।</translation>
@@ -2121,6 +2154,7 @@
 <translation id="7866482334467279021">অন আছে</translation>
 <translation id="7870790288828963061">কিঅ'স্ক এপৰ কোনো নতুন সংস্কৰণ পোৱা নাই। আপডে'ট কৰিবলৈ একো নাই। অনুগ্ৰহ কৰি USB ষ্টিক আঁতৰাওক।</translation>
 <translation id="7872786842639831132">অফ আছে</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199">আপোনাৰ <ph name="DEVICE_TYPE" />ত ব্লুটুথ অফ কৰি থোৱা আছে যেন লাগিছে। ফ’ন হাব ব্যৱহাৰ কৰিবলৈ অনুগ্ৰহ কৰি ব্লুটুথ অন কৰক।</translation>
 <translation id="7884446017008693258">হটস্পটৰ ছেটিং</translation>
 <translation id="7884902759927478774">টেব টানি অনাটো বাতিল কৰক</translation>
@@ -2470,6 +2504,7 @@
 <translation id="8980862970816311842">এপৰ গ্ৰিডত থকা এটা ফ’ল্ডাৰৰ ভিতৰলৈ/বাহিৰলৈ এটা এপৰ চিহ্ন স্থানান্তৰ কৰক</translation>
 <translation id="8982906748181120328">নীয়েৰবাই দৃশ্যমানতা</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebookৰ বাবে Steamলৈ স্বাগতম</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ব্যৱহাৰ কৰি</translation>
 <translation id="8991648557324317894">বাতিল কৰিবলৈ fn + দ্ৰুত অন্তৰ্ভুক্তি বা শ্বিফ্ট টিপক।</translation>
 <translation id="899350903320462459">জাননী সম্পর্কীয় কার্যসমূহ কৰিবলৈ <ph name="LOGIN_ID" /> হিচাপে ডিভাইচটো আনলক কৰক</translation>
@@ -2486,6 +2521,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />ৰ বাবে ছেটিংসমূহ খোলক</translation>
 <translation id="9050012935252397793">ব্লুটুথ উপলব্ধ নহয়</translation>
 <translation id="9050999376345823055">ৰিলীজ কৰিবলৈ "." টিপক</translation>
+<translation id="9061694916020926968">Chromebook (বিটা)ৰ বাবে Steam ব্যৱহাৰ কৰিবলৈ আপুনি এটা Google একাউণ্টত ছাইন ইন কৰিব লাগিব। ছাইন ইন কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="906458777597946297">ৱিণ্ড’ৰ আকাৰ সৰ্বাধিক মাত্ৰালৈ বঢ়াওক</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9068849894565669697">ৰং বাছনি কৰক</translation>

@@ -239,6 +239,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="200114059308480249">Sertakan teks di sekitar dalam penelusuran Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Tab Samaran yang Disematkan dan Dibisukan</translation>
 <translation id="2021896219286479412">Kontrol situs layar penuh</translation>
+<translation id="2024195579772565064">Hapus mesin telusur</translation>
 <translation id="2029669011553795746">Pilihan untuk mengaktifkan notifikasi tips dibuka setengah</translation>
 <translation id="2038563949887743358">Aktifkan Ubah situs desktop</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> juga memiliki data di Chrome</translation>
@@ -556,6 +557,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3384347053049321195">Bagikan gambar</translation>
 <translation id="3387650086002190359">Download <ph name="FILE_NAME" /> gagal karena kesalahan sistem file.</translation>
 <translation id="3414952576877147120">Ukuran:</translation>
+<translation id="3417835166382867856">Telusuri tab</translation>
 <translation id="3430670036890315772">Menonaktifkan kunci profil akan menghapus info yang Anda simpan</translation>
 <translation id="3435465986463792564">Membuka banyak jendela Chrome? Anda dapat mengelolanya dari sini</translation>
 <translation id="3435575784518354875">Untuk mempertahankan akses ke sandi Anda, ekspor sandi sekarang, update Layanan Google Play, lalu impor sandi tersebut kembali ke Pengelola Sandi Google. <ph name="BEGIN_LINK" />Lihat petunjuk lengkap<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6898797562238201317">Gunakan frasa sandi Anda sendiri untuk mengenkripsi semua data Chrome di Akun Google Anda</translation>
 <translation id="6900532703269623216">Perlindungan yang ditingkatkan</translation>
+<translation id="6900654715912436255">Yakin ingin menghapus mesin telusur ini?</translation>
 <translation id="6903907808598579934">Aktifkan sinkronisasi</translation>
 <translation id="6906448540340261898">Pastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda</translation>
 <translation id="6908230663105268638">Notifikasi diizinkan untuk <ph name="SITE_NAME" /></translation>

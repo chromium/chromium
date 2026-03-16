@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Urdina</translation>
 <translation id="1557622599341396706">Erakutsi lan-eremuaren izena</translation>
 <translation id="1569384531973824928">Kamera/Mikrofonoa erabiltzeko baimena duten aplikazio eta webgune guztiek atzitu ahal izango dute. Agian web-orria freskatu beharko duzu, edo aplikazioa berrabiarazi.</translation>
+<translation id="1570235441606255261">Steam-en instalatzailea</translation>
 <translation id="1571697193564730395">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Ezkerreko ertzeko kontrol-puntua hautatu da, erabili teklak mugitzeko</translation>
 <translation id="1576623706766186887">Txikitu lupa aktibatuta dagoenean</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> gailu</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
+<translation id="1642895994345928121">Ez dago behar adina toki gailuan aplikazioa irekitzeko. Egin tokia eta saiatu berriro.</translation>
 <translation id="1647986356840967552">Aurreko orria</translation>
 <translation id="1651914502370159744">Ireki Historia orria</translation>
 <translation id="1668469839109562275">VPN integratua</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Aplikazio eta fitxa taldeak</translation>
 <translation id="2386292613071805067">Hautatu orriko eduki guztia</translation>
 <translation id="2389423187722941333">Aktibatu/Desaktibatu Gemini</translation>
+<translation id="2391805183137601570">Ireki Steam</translation>
 <translation id="2392659840443812875">Ez dago wifi-gunerik erabilgarri. Ziurtatu gailua inguruan dagoela eta Bluetootha aktibatuta daukala.</translation>
 <translation id="2397416548179033562">Erakutsi Chrome-ko menua</translation>
 <translation id="240006516586367791">Multimedia-edukia kontrolatzeko aukerak</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Atzo ireki zen</translation>
 <translation id="2440978926514840421">Grabatu da GIFa</translation>
 <translation id="2441427462554639370">Utzi egin zaio grabatzeari biltegiratzeko oso toki gutxi dagoelako</translation>
+<translation id="2447587550790814052">Orain, Chromebook-erako Steam (beta-bertsioa) erabil dezakezu</translation>
 <translation id="2449089818483227734">Bateria gutxi</translation>
 <translation id="2450205753526923158">Pantaila-argazkiak ateratzeko modua</translation>
 <translation id="2453860139492968684">Amaitu</translation>
 <translation id="2455994958736234930">Gehitu www. eta .com helbide-barran eta, gero, ireki webgunea</translation>
 <translation id="2456008742792828469">Egutegia, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Ikusi xehetasun gehiago</translation>
+<translation id="2462332841984057083">Steam konfiguratzen ari da jada. Itxaron amaitu arte.</translation>
 <translation id="2465145153332031561">Bateriaren egoera: % <ph name="BATTERY_HEALTH_PERCENTAGE" />. Ziklo kopurua: <ph name="CYCLE_COUNT" />.</translation>
 <translation id="2473177541599297363">Berretsi bereizmena</translation>
 <translation id="2475783092753560388">Txertatu <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> lan-eremuaren aurrebista. Lan-eremu aktiboa.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" pantailari <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) bereizmena ezarri zaio. Berresten ez baduzu, <ph name="TIMEOUT_SECONDS" /> barru leheneratuko da aurreko ezarpena.</translation>
 <translation id="2487915095798731898">Sartu</translation>
+<translation id="2494555621641843783">Ezin da instalatu Steam</translation>
 <translation id="2496180316473517155">Arakatze-historia</translation>
 <translation id="2499445554382787206">Lan-eremuaren profilaren menua. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tekla itsaskorrak</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Erantzun</translation>
 <translation id="2727744317940422214">Arazoren bat izan da. Bidali oharrak azalpenean #bruschetta idatzita. Errore-kodea <ph name="ERROR" /> da. Garbiketak huts egin du. Eskuz egin beharko duzu agian.</translation>
 <translation id="2727977024730340865">Potentzia txikiko kargagailu bat entxufatu duzu. Agian bateria kargatzeko prozesua ez da fidagarria izango.</translation>
+<translation id="2737538893171115082">Administratzaileak Chromebook-erako Steam (beta-bertsioa) blokeatu du. Administratzaileak gidalerro hauek aktibatu behar ditu:</translation>
 <translation id="2743301740238894839">Hasi</translation>
 <translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" /> (<ph name="PRICE" />)</translation>
@@ -607,6 +614,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3033912566804961911">Konbinatu <ph name="DESK_NAME" /> lan-eremuarekin</translation>
 <translation id="3039939407102840004">Arkatzaren bateriari <ph name="PERCENTAGE" /> gelditzen zaio.</translation>
 <translation id="304097922505898963">Ireki Lasterbideak aplikazioa</translation>
+<translation id="3040982432432547149">Lagun iezaguzu Chromebook-erako Steam hobetzen</translation>
 <translation id="304417730895741346">Aplikazio ainguratuak eta irekiak apalean daude. Aplikazio bat apalean ainguratzeko, egin klik bertan eskuineko botoiarekin edo sakatu ukipen-panela bi hatzekin.</translation>
 <translation id="3045670165536837541">Goiko eskuineko kontrol-puntua hautatu da, erabili teklak mugitzeko</translation>
 <translation id="3047761520276763270">Saiatu hau esaten:</translation>
@@ -656,6 +664,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3181441307743005334">Baliteke berrabiarazteko prozesua zertxobait luzatzea</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Gailu batera konektatuta}other{# gailutara konektatuta}}</translation>
 <translation id="3203405173652969239">Erabilerraztasun-osagarria gaitu da</translation>
+<translation id="3204648577100496185">Aplikazio honekin erlazionatutako datu guztiak kenduko dira gailu honetatik</translation>
 <translation id="3206735939915734551">Aktibatu/Desaktibatu maiuskulen blokeoa</translation>
 <translation id="3207953481422525583">Erabiltzaile-ezarpenak</translation>
 <translation id="3208321278970793882">Aplikazioa</translation>
@@ -677,6 +686,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3271554781793662131">Bilatu txertatzeko</translation>
 <translation id="3274634049061007184">Ikusi telefonoko aplikazioak</translation>
 <translation id="3279230909244266691">Baliteke prozesuak minutu batzuk behar izatea. Makina birtuala abiarazten.</translation>
+<translation id="3285465040399788513">Ez dago behar adina toki gailuan konfiguratzen amaitzeko. Egin tokia eta saiatu berriro.</translation>
 <translation id="3289364673986435196">Itzaltzeko menua</translation>
 <translation id="3289544412142055976">Une honetan Linux-eko aplikazioak ez dira bateragarriak</translation>
 <translation id="3289674678944039601">Egokigailu bidez kargatzen</translation>
@@ -702,6 +712,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3368922792935385530">Konektatuta</translation>
 <translation id="3369111525500416043">Laster entregatu beharrekoak</translation>
 <translation id="3371140690572404006">USB-C gailua (eskuinaldeko aurreko ataka)</translation>
+<translation id="3373196968211632036">Chromebook-erako Steam (beta-bertsioa) ez dago erabilgarri haurren Google-ko kontuetan</translation>
 <translation id="3375634426936648815">Konektatuta</translation>
 <translation id="3386978599540877378">pantaila osoko lupa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3477079411857374384">Kontrol + Maius + zuriunea</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />.</translation>
 <translation id="348799646910989694">Apala automatikoki ezkutatuko da</translation>
+<translation id="3496797737329654668">Has gaitezen jokatzen</translation>
 <translation id="3505066820268455558">Bateria kargatzen</translation>
 <translation id="3509391053705095206">Ezin da aurkitu telefonoa. Ziurtatu telefonoaren Bluetootha aktibatuta dagoela.</translation>
 <translation id="3510164367642747937">Nabarmendu saguaren kurtsorea</translation>
@@ -800,6 +812,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="3633851487917460983">Ireki arbela</translation>
 <translation id="363473492175527493">Kontzentratzeko ezarritako zeregina: <ph name="TASK_NAME" />. Zeregina editatzeko, sakatu Sartu.</translation>
 <translation id="3638400994746983214">Aktibatu/Desaktibatu pribatutasun-pantaila. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Chromebook-etarako Steam (beta-bertsioa) eguneratu egin behar da. Berrabiarazi Chromebook-a eta saiatu berriro.</translation>
 <translation id="3649256019230929621">Minimizatu leihoa</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Konektatu gailua korrontera.</translation>
 <translation id="3702809606464356667">Une honetako lan-eremuko leihoak daude ikusgai. Lan-eremu guztietako leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Aisia</translation>
+<translation id="370665806235115550">Kargatzen…</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> eta <ph name="UNAVAILABLE_DLC_TWO" /> ez daude erabilgarri.</translation>
 <translation id="3708186454126126312">Aurretik konektatutakoak</translation>
 <translation id="3712143870407382523">Aukeratu alde honetarako leiho bat</translation>
@@ -861,6 +875,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="3831226344927851293">Irten tutorialaren ikuspegitik</translation>
 <translation id="383629559565718788">Erakutsi teklatuaren ezarpenak</translation>
 <translation id="384082539148746321">Txantiloia ezabatu nahi duzu?</translation>
+<translation id="3841282988425489367">Ezin izan da konfiguratu Chromebook-erako Steam (beta-bertsioa)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />; ondoren, <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> edo <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Ez dago sare-informazio erabilgarririk</translation>
 <translation id="3848526302597027234">Hauek erabiltzeko baimena eduki:</translation>
@@ -952,6 +967,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="4146671046252289537">Joan hurrengo hitzaren amaierara</translation>
 <translation id="4150201353443180367">Bistaratzea</translation>
 <translation id="4151054805501931758">Erretratu-ukituak</translation>
+<translation id="4151449637210235443">Esan iezaguzu nola funtzionatu duten jokoek azkenaldian</translation>
 <translation id="4156293514828496577">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio (<ph name="TIME_LEFT" /> inguru).
 Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4158003972857765638">Antolatu lan-eremu berri batean</translation>
@@ -969,6 +985,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4192112279662688596">Edo</translation>
 <translation id="4193857202545160520">Erakutsi klikak eta sakatutako teklak</translation>
 <translation id="4193969623755915875">"Arakatu" aplikazioan, erabili "<ph name="NEW_SHORTCUT" />" Laguntza irekitzeko.</translation>
+<translation id="4195001808989442226">Ezin da ireki Chromebook-erako Steam (beta-bertsioa)</translation>
 <translation id="4195579532193195633">Oraingo bertsioa: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Jarraitu utzi zenuen tokitik</translation>
 <translation id="4195877955194704651">Klik automatikoen botoia</translation>
@@ -984,6 +1001,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalatutako aplikazioa, pausatuta</translation>
 <translation id="4228078597006700451">Kontrolatzeko aukerak ez dira konfiguratu</translation>
 <translation id="4230560241506423345">Berria</translation>
+<translation id="4231231258999726714">Chromebook-erako Steam konfiguratzen</translation>
 <translation id="4236726631849783264">Ekintza iradokiei buruzko gomendio bat</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Ikuspegi orokorreko modua</translation>
@@ -1068,6 +1086,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Eguneratu gailua orain}=1{Eguneratu gailua segundo bat barru}other{Eguneratu gailua # segundo barru}}</translation>
 <translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4473489370276014885">Google Kontaktuak</translation>
+<translation id="4473996011558324141">denbora kalkulatzen</translation>
 <translation id="4477350412780666475">Hurrengo pista</translation>
 <translation id="4477751544736611934">Baliteke datu-konexioari dagozkion kostuak ordaindu behar izatea.
 Gailu bat dago konektatuta.</translation>
@@ -1109,6 +1128,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4585337515783392668">Utzi hargailu ezezagun batera igortzeari</translation>
 <translation id="4596144739579517758">Desaktibatuta dago gai iluna.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> erabiltzaileak partekatua</translation>
+<translation id="4598556348158889687">Memoriaren kudeaketa</translation>
 <translation id="4610493115106525653">Emaitza ona</translation>
 <translation id="4611292653554630842">Hasi saioa</translation>
 <translation id="462160925400706389"><ph name="NAME" /> konektatuta</translation>
@@ -1118,6 +1138,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4633636853437260449">Sakatu Ktrl+W ezabatzeko</translation>
 <translation id="4635501805800894201">{0,plural, =0{Itzuli gailuaren aurreko bertsiora orain}=1{Itzuli gailuaren aurreko bertsiora segundo bat barru}other{Itzuli gailuaren aurreko bertsiora # segundo barru}}</translation>
 <translation id="4642092649622328492">Atera eremu baten pantaila-argazkia</translation>
+<translation id="4642587497923912728">Chromebook honetan saioa hasi duen lehenengo kontuan soilik dago erabilgarri Chromebook-erako Steam (beta-bertsioa).</translation>
 <translation id="4644727592819780893">Eremua txikiegia da kameraren aurrebistan erakusteko</translation>
 <translation id="4648249871170053485">Gomendatutako aplikazioa (<ph name="APP_NAME" />)</translation>
 <translation id="4649019912155580914">Zuk editatu duzu</translation>
@@ -1351,6 +1372,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="5352250171825660495">Aktibatuta dago gai iluna.</translation>
 <translation id="5354804064646502504">Baliteke datu-konexioari dagozkion kostuak ordaindu behar izatea.
 Ez dago gailurik konektatuta.</translation>
+<translation id="5355498626146154079">Borealis Enabled eginbide esperimentala aktibatu behar duzu</translation>
 <translation id="5356963482258194581">Aldatu gai ilunetik gai argira, eta alderantziz. Egin klik eskuineko botoiarekin mahaigainean eta hautatu Horma-papera eta estiloa.</translation>
 <translation id="536019650977002321">Administratzaileak ez du ematen audioa kapturatzeko baimenik. Informazio gehiago lortzeko, jarri harekin harremanetan.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> hizkuntzako hizketa-fitxategiak erdi deskargatuta daude</translation>
@@ -1361,6 +1383,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5377367976106153749">Kamera erabiltzeko baimena aktibatu nahi duzu?</translation>
 <translation id="5378450298115733949">Gehiago</translation>
 <translation id="5379115545237091094">Saiakera gehiegi egin dira</translation>
+<translation id="5380526436444479273">Itxaron minutu batzuk eta saiatu berriro</translation>
 <translation id="5383434787520761436">Ez dago Google Drive-ko fitxategirik</translation>
 <translation id="5391307769715781764">Gordetako lan-eremua ordeztu?</translation>
 <translation id="5392327145184648521">Bateriaren ehunekoa kalkulatzen…</translation>
@@ -1372,6 +1395,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5409208741270395213">Markatu zeregina osatutako gisa</translation>
 <translation id="5413656666631274079">Ezarpenen orria</translation>
 <translation id="5414198321558177633">Profilen zerrenda freskatzen. Agian minutu batzuk beharko dira.</translation>
+<translation id="5415328625985164836">Beta-programa bat da hau. Orain, Steam erabil dezakezu Chromebook-ean jokatzeko.</translation>
 <translation id="5426063383988017631">Ezarpenen menua itxi da</translation>
 <translation id="5428899915242071344">Hasi hautatzen</translation>
 <translation id="5429993543155113935">Une honetan ez dira onartzen ezkutuko moduko leihoak</translation>
@@ -1467,6 +1491,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="5712132663381964774">Erabili aplikazioak behar duzun guztia <ph name="PRODUCT_NAME" /> gailuan egiteko. Exekutatzeko tresnan aurkituko dituzu aplikazioak.</translation>
 <translation id="571295407079589142">Desaktibatuta dago datu-konexioa</translation>
 <translation id="5727460725221669831">Pasahitza ahaztu bazaizu edo duela gutxi Google-ko kontuko pasahitza aldatu baduzu, berreskuratu erabiltzaile hau.</translation>
+<translation id="572914206753951782">Ziurtatu Chromebook-ak azken bertsioa daukala. Gero, berrabiarazi Chromebook-a eta saiatu berriro.</translation>
 <translation id="5733630091161562207">Ongietorri-jakinarazpena</translation>
 <translation id="573413375004481890">Ezin dira zure pantaila guztiak konektatu gailu honetara; beraz, haietako bat deskonektatu da</translation>
 <translation id="574392208103952083">Ertaina</translation>
@@ -1714,6 +1739,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6507042703812908515">Ireki Lasterbideak aplikazioa "<ph name="NEW_SHORTCUT" />" lasterbidearekin.</translation>
 <translation id="6507618042428827377">Aldatu erabilgarri dagoen hurrengo idazketa-metodora</translation>
 <translation id="6508923215158854599">Ziurtatu Chromebook-a eta Chromecast gailua wifi-sare berera konektatuta daudela.</translation>
+<translation id="6511607461419653612">Berrabiarazi Chromebook-a eta saiatu berriro</translation>
 <translation id="6515727200518652613">Galdu egin da kameraren seinalea. Berriro konektatzen saiatzen.</translation>
 <translation id="651753338596587143">Arazoren bat izan da deskarga daitezkeen edukien menpekotasunak instalatzean. Berrabiarazi. Arazoak badirau, bidali oharrak azalpenean #bruschetta idatzita. Errore-kodea <ph name="ERROR" /> da.</translation>
 <translation id="6520517963145875092">Hautatu argazkian agertzea nahi duzun leihoa</translation>
@@ -1739,6 +1765,7 @@ Berriki instalatu da</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" />-en jakinarazpena ezkutatuta dago ikusteko babesa aktibatuta dagoelako</translation>
 <translation id="6574622320167699133">Telefonoak desblokeatu du. Sartzeko, sakatu hau.</translation>
 <translation id="6578407462441924264">Izengabea</translation>
+<translation id="6580060371127789208">% <ph name="PERCENTAGE_COMPLETE" /> osatuta</translation>
 <translation id="6582012689384648647">Kontzentratzeko erreprodukzio-zerrenda pertsonalizatuak lortzeko, eman YouTube Music erabiltzeko baimena</translation>
 <translation id="6582034443359256692">Bateriaren karga-maila kalkulatzen.</translation>
 <translation id="6585808820553845416">Saioa <ph name="SESSION_TIME_REMAINING" /> barru amaituko da.</translation>
@@ -1788,6 +1815,7 @@ Berriki instalatu da</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="672609503628871915">Ikusi azken berrikuntzak</translation>
 <translation id="6727969043791803658">Konektatuta; bateria: % <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="6731320427842222405">Minutu batzuk har ditzake</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">Beste <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera eta mikrofonoa abian dira</translation>
@@ -1859,6 +1887,7 @@ Berriki instalatu da</translation>
 <translation id="6961840794482373852">Alt + gora egiteko gezi-tekla lasterbidea aldatu egin da. Orrian gora egiteko tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + gora egiteko gezi-tekla.</translation>
 <translation id="696267987219125751">Kamerako markoa desaktibatuta dago.</translation>
 <translation id="6965382102122355670">Ados</translation>
+<translation id="6967112302799758487">Chromebook-erako Steam (beta-bertsioa) zerbitzuaren bidez instalatutako aplikazio eta joko guztiak gailutik kenduko dira. Aplikazio eta joko horiekin loturiko datuak ere kenduko dira. Desinstalatu aurretik, ziurtatu gordetako aplikazio eta jokoen babeskopiak egiten dituzula.</translation>
 <translation id="6972629891077993081">HID gailuak</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">"txertatu" tekla</translation>
@@ -1890,6 +1919,7 @@ Berriki instalatu da</translation>
 <translation id="7067196344162293536">Biratu automatikoki</translation>
 <translation id="7076293881109082629">Saioa hasten</translation>
 <translation id="7076878155205969899">Desaktibatu audioa</translation>
+<translation id="7083774521940805477">Chromebook-erako Steam (beta-bertsioa) ez dago erabilgarri zure Chromebook-ean.</translation>
 <translation id="7083848064787091821">Kontzentratzeko modua</translation>
 <translation id="7084678090004350185">Aktibatu/Desaktibatu wifi-gunea. Wifi-gunea aktibatuta dago (<ph name="DEVICECOUNT" /> gailu konektatuta).</translation>
 <translation id="7086931198345821656"><ph name="DEVICE_TYPE" /> gailuan Powerwash erabili behar da sistema eguneratzeko. Datu guztiak ezabatuko dira. Lortu informazio gehiago <ph name="SYSTEM_APP_NAME" /> aplikazioaren azken eguneratzeari buruz.</translation>
@@ -1907,12 +1937,14 @@ Berriki instalatu da</translation>
 <translation id="7130207228079676353">ZIURRENIK ERABILIKO DIREN APLIKAZIOAK</translation>
 <translation id="7131634465328662194">Automatikoki amaituko da saioa.</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
+<translation id="7143409552554575716">ChromeOS-eko eginbide esperimentalak</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
 <translation id="7144942256906679589">Bateriaren egoera</translation>
 <translation id="7145639536026937076">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio, eta kargatzen ari da. Bateria-aurreztailea aktibatuta dago.</translation>
 <translation id="7147587499155271409">Ez dago arakatze-historiarik</translation>
 <translation id="7147657298465433425">F teklak erabiltzeko, sakatu fn tekla + goiko errenkadako teklak</translation>
 <translation id="7149149900052329230">Kudeatu gailuko eta Google Drive-ko fitxategi guztiak Fitxategiak aplikazioan.</translation>
+<translation id="7154020516215182599">Partekatu iritzia edo azaldu zer arazo duzun. Ahal izanez gero, adierazi zer urrats eginda azaltzen zaizun arazoa.</translation>
 <translation id="7165278925115064263">Alt + Maius + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7726391492136714301">Ikusi telefonoko jakinarazpenak eta aplikazioak</translation>
 <translation id="7727952505535211425">Ireki helbide-barrako webgunea beste fitxa batean</translation>
 <translation id="7728657226117099693">Desaktibatu Blok Maius</translation>
+<translation id="7732702411411810416">Ziurtatu Internetera konektatuta zaudela eta saiatu berriro</translation>
 <translation id="7742327441377685481">Ez dago jakinarazpenik</translation>
 <translation id="7748275671948949022">Nabarmendu Exekutatzeko tresnaren botoia apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
@@ -2122,6 +2155,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="7866482334467279021">aktibatuta</translation>
 <translation id="7870790288828963061">Ez da aurkitu kiosko-aplikazio berriagorik. Ez dago ezer eguneratzeko. Kendu USB memoria.</translation>
 <translation id="7872786842639831132">Desaktibatuta</translation>
+<translation id="7873386145597434863">Chromebook-erako Steam</translation>
 <translation id="7875575368831396199">Bluetootha desaktibatuta dago <ph name="DEVICE_TYPE" /> gailuan. Aktiba ezazu Phone Hub erabiltzeko.</translation>
 <translation id="7884446017008693258">Wifi-gunearen ezarpenak</translation>
 <translation id="7884902759927478774">Utzi fitxa arrastatzeari</translation>
@@ -2471,6 +2505,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8980862970816311842">Mugitu aplikazioaren ikonoa aplikazioen saretako karpeta batean sartzeko edo handik ateratzeko</translation>
 <translation id="8982906748181120328">Nearby-ren ikusgaitasuna</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Ongi etorri Chromebook-erako Steam-era</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> erabiltzen</translation>
 <translation id="8991648557324317894">Bertan behera uzteko, sakatu fn + "Txertatu bizkor" edo Maius.</translation>
 <translation id="899350903320462459">Desblokeatu gailua <ph name="LOGIN_ID" /> gisa jakinarazpen-ekintza gauzatzeko</translation>
@@ -2487,6 +2522,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="9047624247355796468">Ireki <ph name="NETWORK_NAME" /> sarearen ezarpenak</translation>
 <translation id="9050012935252397793">Bluetootha ez dago erabilgarri</translation>
 <translation id="9050999376345823055">Askatzeko, sakatu "."</translation>
+<translation id="9061694916020926968">Chromebook-erako Steam (beta-bertsioa) erabiltzeko, Google-ko kontuan saioa hasi behar duzu. Hasi saioa eta saiatu berriro.</translation>
 <translation id="906458777597946297">Maximizatu leihoa</translation>
 <translation id="9065203028668620118">Editatu</translation>
 <translation id="9068849894565669697">Hautatu kolorea</translation>

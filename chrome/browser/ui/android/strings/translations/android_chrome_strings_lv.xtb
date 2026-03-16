@@ -239,6 +239,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="200114059308480249">Vai iekļaut apkārtējo tekstu Google meklēšanā?</translation>
 <translation id="2004096469149679223">Piesprausta inkognito cilne <ph name="TAB_TITLE" />, kuras skaņa ir izslēgta</translation>
 <translation id="2021896219286479412">Pilnekrāna vietnes vadīklas</translation>
+<translation id="2024195579772565064">Dzēst meklētājprogrammu</translation>
 <translation id="2029669011553795746">Padomu paziņojumu izvēles ekrāns ir atvērts pusekrāna augstumā</translation>
 <translation id="2038563949887743358">Ieslēgt iestatījumu “Pieprasīt datora vietni”</translation>
 <translation id="204321170514947529">Pārlūkā Chrome ir arī “<ph name="APP_NAME" />” dati</translation>
@@ -556,6 +557,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3384347053049321195">Kopīgot attēlu</translation>
 <translation id="3387650086002190359">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās failu sistēmas kļūdas.</translation>
 <translation id="3414952576877147120">Lielums:</translation>
+<translation id="3417835166382867856">Meklēt cilnēs</translation>
 <translation id="3430670036890315772">Izslēdzot profila bloķēšanu, tiks noņemta jūsu saglabātā informācija.</translation>
 <translation id="3435465986463792564">Vai esat atvēris daudz logu? Šeit varat tos pārvaldīt.</translation>
 <translation id="3435575784518354875">Lai saglabātu piekļuvi savām parolēm, eksportējiet tās tūlīt, atjauniniet Google Play pakalpojumus un pēc tam atkal importējiet paroles Google paroļu pārvaldniekā. <ph name="BEGIN_LINK" />Skatiet visus norādījumus<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6896758677409633944">Kopēt</translation>
 <translation id="6898797562238201317">Izmantot jūsu ieejas frāzi visu Chrome datu šifrēšanai jūsu Google kontā</translation>
 <translation id="6900532703269623216">Uzlabota aizsardzība</translation>
+<translation id="6900654715912436255">Vai tiešām vēlaties dzēst šo meklētājprogrammu?</translation>
 <translation id="6903907808598579934">Ieslēgt sinhronizāciju</translation>
 <translation id="6906448540340261898">Parūpējieties, lai vienmēr varētu izmantot Google kontā saglabātās paroles</translation>
 <translation id="6908230663105268638">Vietnei <ph name="SITE_NAME" /> ir atļauts rādīt paziņojumus.</translation>

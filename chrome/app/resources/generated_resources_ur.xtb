@@ -840,7 +840,6 @@
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' پہلے سے ہی '<ph name="ACTION" />' کارروائی کو تفویض کردہ ہے۔ <ph name="RESPONSE" /> کے لیے کوئی بھی کلید دبائیں۔</translation>
 <translation id="1567993339577891801">‏JavaScript کونسول</translation>
 <translation id="1569466257325986920">‏اگلی بار جب آپ کے Google اکاؤنٹ کا پاس ورڈ تبدیل ہوتا ہے تو آپ کے Google اکاؤنٹ میں سائن ان کرنے کے بعد آپ کا مقامی ڈیٹا خودکار طور پر بازیافت ہو جائے گا</translation>
-<translation id="1570235441606255261">‏Steam انسٹالر</translation>
 <translation id="1570604804919108255">اطلاعات کو غیر خاموش کریں</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' بُک مارک فولڈر بنایا گیا۔</translation>
 <translation id="1571041387761170095">کوئی کمزور یا دوبارہ استعمال کردہ پاس ورڈز نہیں</translation>
@@ -965,7 +964,6 @@
 <translation id="1642299742557467312">یہ فائل آپ کے آلے کو نقصان پہنچا سکتی ہے</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> اور <ph name="NUMBER_OF_DEVICES" /> دیگر بلوٹوتھ آلات سے منسلک کیا گیا</translation>
 <translation id="1642494467033190216">‏ڈیبگ کی دیگر خصوصیات فعال کرنے سے پہلے rootfs کا تحفظ ہٹائے جانے اور دوبارہ شروع کرنے کی ضرورت ہے۔</translation>
-<translation id="1642895994345928121">اس ایپ کو کھولنے کے لیے آلہ کے اندر موجود اسٹوریج کافی نہیں ہے۔ جگہ خالی کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1643072738649235303">‏X9.62 ECDSA SHA-1 والا دستخط</translation>
 <translation id="1643921258693943800">‏قریبی آلات کے ساتھ اشتراک کا استعمال کرنے کیلئے بلوٹوتھ اور Wi-Fi آن کریں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
@@ -2067,7 +2065,6 @@
 <translation id="2390347491606624519">پراکسی سے منسلک نہیں ہو سکتے، براہ کرم دوبارہ سائن ان کریں</translation>
 <translation id="2390782873446084770">‏Wi-Fi سِنک</translation>
 <translation id="2391419135980381625">معیاری فونٹ</translation>
-<translation id="2391805183137601570">‏Steam کھولیں</translation>
 <translation id="239185270194776190">‏آپ کی Gemini گفتگو دوسری ونڈو میں ہے۔ اس سائیڈ پینل کو یہاں منتقل کرنے کے لیے اس پر کہیں بھی کلک کریں۔</translation>
 <translation id="2392369802118427583">فعال کریں</translation>
 <translation id="2393136602862631930">‏اپنے Chromebook پر <ph name="APP_NAME" /> سیٹ اپ کریں</translation>
@@ -2149,7 +2146,6 @@
 <translation id="2445484935443597917">'نیا پروفائل' بنائیں</translation>
 <translation id="2445726032315793326">جزوی میگنیفائر</translation>
 <translation id="244641233057214044">آپ کی تلاش سے متعلق</translation>
-<translation id="2447587550790814052">‏اب آپ Steam برائے Chromebook (بی ٹا) استعمال کر سکتے ہیں</translation>
 <translation id="2448312741937722512">قسم</translation>
 <translation id="2448810255793562605">سوئچ رسائی خودکار اسکین</translation>
 <translation id="2450021089947420533">صارف کے تجربے</translation>
@@ -2176,7 +2172,6 @@
 <translation id="2460826998961521840">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس کیز استعمال کرنے کے لیے</translation>
 <translation id="2461550163693930491">سائٹس کو مشترکہ ٹیبز کو اسکرول اور زوم کرنے کی اجازت نہ دیں</translation>
 <translation id="2461593638794842577">آپ صرف اس آلے پر اپنے پاس ورڈز کو محفوظ کرنے کے لیے اس ترتیب کو بند کر سکتے ہیں</translation>
-<translation id="2462332841984057083">‏Steam کو پہلے سے ہی سیٹ اپ کیا جا رہا ہے۔ سیٹ اپ مکمل ہونے کا انتظار کریں۔</translation>
 <translation id="2462724976360937186">‏سرٹیفکیشن اتھارٹی کلید URL</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> کو شامل کر دیا گیا</translation>
 <translation id="2464075479326723132">‏‫SharePoint اور OneDrive میں اپنی حالیہ ترین سرگرمی پر آسانی سے واپس جانے میں آپ کی مدد کرنے کیلئے، آپ تجویز کردہ فائلز دیکھ رہے ہیں۔
@@ -2231,7 +2226,6 @@
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> زبان کی آواز کا پیش منظر</translation>
 <translation id="2492461744635776704">سرٹیفیکیٹ پر دستخط کرنے کی درخواست تیار ہو رہی ہے</translation>
 <translation id="249330843868392562">ٹیکسٹ ٹو اسپیچ ترتیبات کھولیں</translation>
-<translation id="2494555621641843783">‏Steam انسٹال نہیں کر سکتے</translation>
 <translation id="2496180316473517155">براؤزنگ سرگزشت</translation>
 <translation id="2496616243169085015">فوٹوگرافی</translation>
 <translation id="2497229222757901769">ماؤس کی رفتار</translation>
@@ -2587,7 +2581,6 @@
 <translation id="27349076983469322">ہلکا پس منظر</translation>
 <translation id="2735712963799620190">شیڈول</translation>
 <translation id="2737363922397526254">سکیڑیں…</translation>
-<translation id="2737538893171115082">‏Steam برائے Chromebook (بی ٹا) کو آپ کے منتظم نے مسدود کر دیا ہے۔ آپ کے منتظم کو ان پالیسیوں کو آن کرنا ہوگا:</translation>
 <translation id="2737719817922589807">&amp;بُک مارکس اور فہرستیں</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> آپ کی اسکرین کے مواد کا <ph name="TARGET_NAME" /> کے ساتھ اشتراک کرنا چاہتی ہے۔</translation>
 <translation id="2738030019664645674">سائٹس کو اپنے آلے پر انسٹال کردہ فونٹس کا استعمال کرنے کی اجازت نہ دیں</translation>
@@ -3050,7 +3043,6 @@
 <translation id="3039491566278747710">آلہ پر آف لائن پالیسی انسٹال نہیں ہو سکی۔</translation>
 <translation id="303955801043931176">ٹیب بند ہو گیا</translation>
 <translation id="3040435070100611531">‏آپ کے Google والٹ پاسز</translation>
-<translation id="3040982432432547149">‏Chromebook کے لیے Steam کو بہتر بنانے میں ہماری مدد کریں</translation>
 <translation id="304169924727249890">‫<ph name="OWNER_FIRST_NAME" /> کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
 <translation id="3042097545107738107">بہتر چارجنگ کی حکمت عملی کو تبدیل کریں۔</translation>
 <translation id="3043016484125065343">اپنے بُک مارکس دیکھنے کے لیے سائن ان کریں</translation>
@@ -3259,7 +3251,6 @@
 <translation id="3201422919974259695">‏دستیاب USB آلات یہاں ظاہر ہوں گے۔</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> پر اسکرین کو کاسٹ کرنا شروع کریں</translation>
 <translation id="3202578601642193415">جدید ترین</translation>
-<translation id="3204648577100496185">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹایا جا سکتا ہے۔</translation>
 <translation id="3206289903841621620">صارف کی لغت <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">‏آپ تجویز کردہ تلاشیں اور خریداری کی رعایتیں دیکھ رہے ہیں جو آپ کی حالیہ سرگرمی کی بنیاد پر آپ کی دلچسپی کا باعث بن سکتی ہیں۔
         <ph name="BREAK" />
@@ -3367,7 +3358,6 @@
 <translation id="3283148363895519428">سیٹ اپ جاری رکھنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ یہ یقینی بنائیں کہ آپ کا فون آس پاس ہے اور بلوٹوتھ آن ہے۔</translation>
 <translation id="3284050785966252943">آٹو فل میٹا ڈیٹا کا پیش منظر</translation>
 <translation id="3285322247471302225">نیا &amp;ٹیب</translation>
-<translation id="3285465040399788513">سیٹ اپ مکمل کرنے کے لیے آلہ کا اسٹوریج کافی نہیں ہے۔ جگہ خالی کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3285500645985761267">متعلقہ سائٹس کو گروپ میں آپ کی سرگرمی دیکھنے کی اجازت دیں</translation>
 <translation id="328571385944182268">آپ کے پاس ورڈز محفوظ کریں؟</translation>
 <translation id="3289668031376215426">خود بڑے حروف میں لکھنا</translation>
@@ -3490,7 +3480,6 @@
 <translation id="3372602033006349389">دیگر آلات پر</translation>
 <translation id="337286756654493126">جو فولڈرز آپ ایپلیکیشنز میں کھولتے ہیں انہیں پڑھیں</translation>
 <translation id="3373059063088819384">‏Reading Mode میں کھولیں</translation>
-<translation id="3373196968211632036">‏Steam برائے Chromebook (بی ٹا) بچوں کے Google اکاؤنٹس کے لیے دستیاب نہیں ہے</translation>
 <translation id="3373701465337594448">آن ہونے پر، آپ کی ملاحظہ کردہ سائٹس کی فہرست یہاں دکھائی دینے والی دلچسپیوں کا اندازہ لگا سکتی ہے</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' کو '<ph name="NEW_FOLDER_TITLE" />' میں منتقل کر دیا گیا۔</translation>
 <translation id="3376035595160918049">ایپ کی اپ ڈیٹ کا جائزہ لیں</translation>
@@ -3673,7 +3662,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (منتخب نہیں کیا گیا)</translation>
 <translation id="3496689104192986836">بیٹری لیول <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">جمع کرنے کے لیے ڈیٹا کے ماخذات</translation>
-<translation id="3496797737329654668">آئیے گیمنگ شروع کریں</translation>
 <translation id="3496995426334945408">‏سائٹس عام طور پر ویڈیو گیمز یا ویب فارمز جیسی متعامل خصوصیات دکھانے کے لیے JavaScript کا استعمال کرتی ہیں</translation>
 <translation id="3497501929010263034">‏<ph name="VENDOR_NAME" /> سے USB آلہ (پروڈکٹ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">‏Doodle کا اشتراک کریں</translation>
@@ -3886,7 +3874,6 @@
 <translation id="3637203148990213388">اضافی اکاؤنٹس</translation>
 <translation id="3640347231390550691">فریب دہی سے اپنے پاس ورڈز کی حفاظت کریں</translation>
 <translation id="364100968401221170">‏اپنے سبھی مطابقت پذیر آلات اور اپنے Google اکاؤنٹ سے براؤزنگ ڈیٹا حذف کرنے کیلئے، <ph name="BEGIN_LINK" />سائن ان کریں<ph name="END_LINK" />۔</translation>
-<translation id="3641070112313110357">‏Chromebook کیلئے Steam (بی ٹا) کو اپ ڈیٹ کرنے کی ضرورت ہے۔ اپنا Chromebook ری سٹارٹ کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="3641299252000913351">موڈیم فرم ویئر اپ ڈیٹ پیش رفت میں ہے۔ اپنا آلہ آف نہ کریں۔</translation>
 <translation id="3641456520301071208">سائٹس آپ کے مقام کیلئے پوچھ سکتی ہیں</translation>
 <translation id="3642064270296434810">‏اب آپ اپنی اسکرین پر نظر آنے والی کسی بھی چیز کو تلاش کرنے کے لیے Google لینز کا استعمال کر سکتے ہیں</translation>
@@ -4223,7 +4210,6 @@
 <translation id="383891835335927981">کسی بھی سائٹ کو زوم ان یا زوم آؤٹ نہیں کیا گیا ہے</translation>
 <translation id="3839516600093027468">کلپ بورڈ کو دیکھنے سے <ph name="HOST" /> کو ہمیشہ مسدود کریں</translation>
 <translation id="3840096463915153852">گفتگو کی سرگزشت</translation>
-<translation id="3841282988425489367">‏Chromebook (بی ٹا) کے لیے Steam سیٹ اپ نہیں کیا جا سکتا</translation>
 <translation id="3841319830220785495">ڈیفالٹ قدرتی آواز</translation>
 <translation id="3841356782900714251">اسمارٹ کارڈ ریڈرز</translation>
 <translation id="3841964634449506551">پاس ورڈ غلط ہے</translation>
@@ -4671,7 +4657,6 @@
 <translation id="4148195018520464922">آپ سائن ان کو بعض مخصوص صارفین تک محدود کر سکتے ہیں۔ اس سے سائن ان اسکرین پر "شخص کو شامل کریں" اختیار ہٹ جاتا ہے۔ آپ موجودہ صارفین کو بھی ہٹا سکتے ہیں۔</translation>
 <translation id="4148957013307229264">انسٹال جاری…</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
-<translation id="4151449637210235443">ہمیں اپنے حالیہ گیم پلے کے بارے میں بتائیں</translation>
 <translation id="4151503145138736576">صاف کرنے کے لیے کوئی آف لائن اسٹوریج نہیں ہے</translation>
 <translation id="4152011295694446843">آپ اپنے بُک مارکس یہاں پائیں گے</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
@@ -4722,7 +4707,6 @@
 <translation id="4193251682249731404">‏معتبر CA</translation>
 <translation id="4193575319002689239">کارڈز دکھائیں</translation>
 <translation id="419427585139779713">ایک بار میں ایک حرف درج کریں</translation>
-<translation id="4195001808989442226">‏Steam برائے Chromebook (بی ٹا) نہیں کھول سکتے</translation>
 <translation id="4195643157523330669">نئے ٹیب میں کھولیں</translation>
 <translation id="4195814663415092787">آپ نے جہاں چھوڑا تھا وہیں سے جاری رکھیں</translation>
 <translation id="4198268995694216131">اضافی سائٹس</translation>
@@ -4768,7 +4752,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{اس ایکسٹینشن کی اجازت نہیں ہے}other{کچھ ایکسٹینشنز کی اجازت نہیں ہے}}</translation>
 <translation id="4231053948789591973">فی الحال کاسٹنگ موقوف ہے۔ آپ کسی بھی وقت اپنی اسکرین کو دوبارہ کاسٹ کرنا شروع کر سکتے یا اسے کاسٹ کرنا بند کر سکتے ہیں۔</translation>
 <translation id="4231095370974836764">‏اپنے <ph name="DEVICE_TYPE" /> پر Google Play سے ایپس اور گیمز انسٹال کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">‏Steam برائے Chromebook کو سیٹ اپ کیا جا رہا ہے</translation>
 <translation id="4232375817808480934">‏Kerberos کنفیگر کریں</translation>
 <translation id="4232376164796433044">پاس ورڈز اور آٹو فل</translation>
 <translation id="4232484478444192782">‏آپ کا Android فون آپ کی مدد کر سکتا ہے۔ آپ کے WiFi اور پاس ورڈ کو منتقل کیا جا رہا ہے۔</translation>
@@ -5127,7 +5110,6 @@
 <translation id="4472533928615930332"><ph name="STYLE" /> اسٹائل میں <ph name="SUBJECT" /> کی تخلیق کردہ تصویر <ph name="INDEX" /></translation>
 <translation id="4472575034687746823">شروع کریں</translation>
 <translation id="4473559657152613417">ٹیب پر دایاں کلک کریں اور "نئے گروپ میں ٹیب شامل کریں" کو منتخب کریں</translation>
-<translation id="4473996011558324141">وقت کا اندازہ لگا یا جا رہا ہے</translation>
 <translation id="4474155171896946103">سبھی ٹیبز کو بُک مارک کریں…</translation>
 <translation id="4476198534886170024">اجازت دی گئی۔ <ph name="LINK_BEGIN" />سسٹم کیمرا کی رسائی<ph name="LINK_END" /> آن کریں۔</translation>
 <translation id="4476590490540813026">کھلاڑی</translation>
@@ -5362,7 +5344,6 @@
 <translation id="4638930039313743000">‏ADB ڈیبگنگ فعال کریں</translation>
 <translation id="4639390152280993480">اس صفحہ کا سادہ منظر دیکھنے کے لیے مزید ٹولز &gt; ریڈنگ موڈ پر جائیں</translation>
 <translation id="4641539339823703554">‏Chrome سسٹم کا وقت سیٹ کرنے سے قاصر تھا۔ براہ کرم ذيل میں وقت کو چیک کریں اور ضرورت پڑنے پر اسے درست کریں۔</translation>
-<translation id="4642587497923912728">‏Steam برائے Chromebook (بی ٹا) صرف اس اکاؤنٹ کے لیے دستیاب ہے جس نے اس Chromebook پر پہلے سائن ان کیا تھا۔</translation>
 <translation id="4643612240819915418">&amp;ویڈیو نئے ٹیب میں کھولیں</translation>
 <translation id="4643833688073835173">‏آپ کے آلے کے سامنے موجود لوگوں کا پتہ لگانے کے لیے آپ کا Chromebook پہلے سے موجود سینسر کا استعمال کرتا ہے۔ آپ کے آلے پر تمام ڈیٹا پر فوری طور پر کاروائی کی جاتی ہے اور پھر حذف کر دی جاتی ہے۔ سینسر ڈیٹا Google کو کبھی بھی نہیں بھیجا جاتا ہے۔</translation>
 <translation id="4644205769234414680">پوشیدگی میں اجازت دیں</translation>
@@ -6365,7 +6346,6 @@
 <translation id="5353769147530541973">غیر فعال کرنے کے لیے ٹیبز کی فہرست سے <ph name="SITE_NAME" /> کو ہٹائیں</translation>
 <translation id="5355099869024327351">'اسسٹنٹ' کو اطلاعات دکھانے کی اجازت دیں</translation>
 <translation id="5355191726083956201">بہتر کردہ تحفظ آن ہے</translation>
-<translation id="5355498626146154079">‏آپ کو "Borealis Enabled" کا پرچم آن کرنے کی ضرورت ہے</translation>
 <translation id="5355501370336370394">انٹرپرائز آلے کا اندراج کریں</translation>
 <translation id="5357010010552553606">خودکار طور پر مکمل اسکرین میں داخل ہونے کی اجازت نہیں ہے</translation>
 <translation id="5359910752122114278">1 نتیجہ</translation>
@@ -6395,7 +6375,6 @@
 <translation id="5376931455988532197">فائل بہت بڑی ہے</translation>
 <translation id="5377367976106153749">کیمرا تک رسائی آن کریں؟</translation>
 <translation id="5379140238605961210">مائیکروفون تک رسائی کو مسدود کرنا جاری رکھیں</translation>
-<translation id="5380526436444479273">کچھ دیر انتظار کر کے دوبارہ کوشش کریں</translation>
 <translation id="5382591305415226340">تعاون یافتہ لنکس کا نظم کریں</translation>
 <translation id="5384401776498845256">کون آپ کے ساتھ اشتراک کر سکتا ہے</translation>
 <translation id="5385628342687007304">‏یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔</translation>
@@ -6449,7 +6428,6 @@
 <translation id="5414198321558177633">پروفائل کی فہرست ریفریش ہو رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5414566801737831689">اپنی ملاحظہ کردہ سائٹس کے آئیکنز کو پڑھیں</translation>
 <translation id="5414836363063783498">توثیق ہو رہی ہے…</translation>
-<translation id="5415328625985164836">‏یہ ایک بی ٹا پروگرام ہے۔ اب آپ اپنے Chromebook پر کچھ گیمز کھیلنے کے لیے Steam کا استعمال کر سکتے ہیں۔</translation>
 <translation id="5415497281076257439">فقرہ</translation>
 <translation id="5415871492522952905">آپ کے تمام آلات پر آپ کی سرگزشت اور ٹیبز موجود ہوں گے تاکہ آپ جو کچھ کر رہے تھے اسے جاری رکھ سکیں</translation>
 <translation id="5417293056300086453">یہ سائٹ تحفظ یافتہ مواد چلانے کے لیے شناخت کنندگان کا استعمال کر سکتی ہے۔</translation>
@@ -6890,7 +6868,6 @@
 <translation id="5727728807527375859">ایکسٹینشز، ایپس اور تھیمز آپ کے کمپیوٹر کو نقصان پہنچا سکتی ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="5728072125198221967">‏لنک کردہ Google سروسز</translation>
 <translation id="5728450728039149624">اسمارٹ لاک اسکرین لاک کے اختیارات</translation>
-<translation id="572914206753951782">‏یقینی بنائیں کہ آپ کا Chromebook تازہ ترین ورژن پر ہے۔ پھر، اپنا Chromebook دوبارہ شروع کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="5729712731028706266">&amp;منظر</translation>
 <translation id="5731247495086897348">پی&amp;سٹ کریں اور جائیں</translation>
 <translation id="5733109311583381874">تبدیلی کے امیدواروں کو حسب ضرورت بنانے کیلئے صارف کی لغات میں خود اپنے الفاظ شامل کریں۔</translation>
@@ -8005,7 +7982,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" اس آلے پر درج ذیل ایپ کو انسٹال کرنا چاہیں گی:}other{"<ph name="APP_NAME" />" اس آلے پر درج ذیل ایپس کو انسٹال کرنا چاہیں گی:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> سے متعلق</translation>
 <translation id="6508261954199872201">ایپ: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">‏اپنا Chromebook دوبارہ شروع کریں اور دوبارہ کوشش کریں</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> کو حذف کرنے پر غور کریں، تاکہ اس آلے کو استعمال کرنے والے دوسرے لوگ آپ کے پاس ورڈز نہ دیکھ سکیں</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> مُوڈ کے ساتھ <ph name="SUBJECT" /> کی تخلیق کردہ تصویر <ph name="INDEX" /></translation>
 <translation id="6513247462497316522">‏اگر آپ کسی دوسرے نیٹ ورک سے منسلک نہیں ہیں تو Google Chrome موبائل ڈیٹا کا استعمال کرے گا۔</translation>
@@ -8114,7 +8090,6 @@
 <translation id="657866106756413002">نیٹ ورک ہیلتھ اسنیپ شاٹ</translation>
 <translation id="6579369886355986318">سبھی کنٹرولز کمانڈ دکھائیں</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ڈیسک ٹاپ کے مواد کا اشتراک کیا گیا</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% مکمل</translation>
 <translation id="6580203076670148210">اسکین کرنے کی رفتار</translation>
 <translation id="6580676117087365538">اپنے تمام کمپیوٹرز پر یہ ایکسٹینشن حاصل کرنے کے لیے، توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="6581356304040102696">‏پاس ورڈز درآمد نہیں کر سکتے۔ فائل کا سائز 1 MB سے کم ہونا چاہیے۔</translation>
@@ -8333,7 +8308,6 @@
 <translation id="6729280095610283088">آرورا بوریالِس کی جنگل میں چمکدار ندیاں۔</translation>
 <translation id="6729493062119577923">اشتراک کردہ ٹیب گروپ کی سرگرمی</translation>
 <translation id="6730744976532805323">‏‫آپ کے دوسرے ٹیبز پر چلے جانے کے باوجود ⁢Gemini کے ساتھ موجودہ ٹیب کا اشتراک کرتا ہے</translation>
-<translation id="6731320427842222405">اس میں چند منٹ لگ سکتے ہیں</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">پتہ</translation>
 <translation id="6737663862851963468">‏Kerberos ٹکٹ ہٹائیں</translation>
@@ -8683,7 +8657,6 @@
 <translation id="6965648386495488594">پورٹ</translation>
 <translation id="6965978654500191972">آلہ</translation>
 <translation id="6966831944134814478">آف کریں</translation>
-<translation id="6967112302799758487">‏Steam برائے Chromebook (بی ٹا) کا استعمال کرتے ہوئے انسٹال کردہ کوئی بھی ایپس اور گیمز اس آلہ سے ہٹا دی جائیں گی۔ ان ایپس اور گیمز سے وابستہ ڈیٹا بھی ہٹا دیا جائے گا۔ ان انسٹال کرنے سے پہلے محفوظ کردہ ایپس اور گیمز کا بیک اپ لینا یقینی بنائیں۔</translation>
 <translation id="6967430741871315905">‏یہ چیک کرنے سے قاصر ہے کہ آیا آلہ پر VM چلانے کی اجازت ہے</translation>
 <translation id="6968288415730398122">اسکرین لاک کنفیگر کرنے کیلئے اپنا پاس ورڈ درج کریں</translation>
 <translation id="6969047215179982698">قریبی آلات کے ساتھ اشتراک آف کریں</translation>
@@ -8854,7 +8827,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="7082850163410901674">‏Mac سسٹم کی ترتیبات میں اطلاعات آف ہے</translation>
 <translation id="7083729794572207131">سائٹس عام طور پر سائٹ پر آپ کے تجربے کو بہتر بنانے کے لیے ویب ایپس انسٹال کرنے کو کہتی ہیں</translation>
-<translation id="7083774521940805477">‏Steam برائے Chromebook (بی ٹا) آپ کے Chromebook پر دستیاب نہیں ہے۔</translation>
 <translation id="7084095352418993433">‏اس صفحے کے بارے میں Google سے پوچھیں: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(کنفیگر نہیں ہے)</translation>
 <translation id="7086377898680121060">چمک بڑھائیں</translation>
@@ -8933,7 +8905,6 @@
 <translation id="7141844554192012199">چیک اپ</translation>
 <translation id="714301620504747562">براؤز کرنا اور تلاش کرنا معیاری پیشگی لوڈنگ سے زیادہ تیز ہے</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
-<translation id="7143409552554575716">‏ChromeOS کے پرچم</translation>
 <translation id="7144363643182336710">اطلاعات اسکرین پر پوپ اپ نہیں ہوں گی۔ آپ اب بھی اپنی اسکرین کے نیچے دائیں جانب ڈسٹرب نہ کریں آئیکن پر کلک کر کے اطلاعات دیکھ سکتے ہیں۔</translation>
 <translation id="7144856456372460176"><ph name="APP" /> انسٹال کریں...</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
@@ -8944,7 +8915,6 @@
 <translation id="7152478047064750137">اس ایکسٹینشن کو کوئی خاص اجازتیں درکار نہیں ہیں</translation>
 <translation id="7153101072880472645">زیادہ تضاد آن یا آف کریں</translation>
 <translation id="715396040729904728">launcher + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">اپنے تاثرات کا اشتراک کریں یا اپنے مسئلہ کی وضاحت کریں۔ اگر ممکن ہو تو اپنے مسئلے کو دوبارہ پیش کرنے کے لیے اقدامات شامل کریں۔</translation>
 <translation id="7154130902455071009">اپنے شروعاتی صفحہ کو اس پر تبدیل کریں: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">‏بہتر معیار کی ویڈیو حاصل کریں اور بیٹری لائف کی بچت کریں۔ ویڈیو صرف آپ کی Cast کیلئے فعال اسکرین پر ہی چلے گی۔</translation>
 <translation id="7159695867335480590">چلائیں/موقوف کریں</translation>
@@ -9796,7 +9766,6 @@
 <translation id="7728668285692163452">چینل میں تبدیلی بعد میں لاگو کی جائے گی</translation>
 <translation id="7730449930968088409">اپنی سکرین کا مواد کیپچر کریں</translation>
 <translation id="7730683939467795481">یہ صفحہ "<ph name="EXTENSION_NAME" />" ایکسٹینشن کے ذریعے تبدیل کیا گیا</translation>
-<translation id="7732702411411810416">یقینی بنائیں کہ آپ انٹرنیٹ سے منسلک ہیں اور دوبارہ کوشش کریں</translation>
 <translation id="773511996612364297">تلفظ کے نشانات</translation>
 <translation id="7735558909644181051">انٹرمیڈیٹ سرٹیفکیٹس</translation>
 <translation id="7736119438443237821">آپ اس آلے پر اپنی پاس کیز تک رسائی کو ہٹانے والے ہیں</translation>
@@ -9994,7 +9963,6 @@
 <translation id="7871691770940645922">ورچوئل بریل ڈسپلے</translation>
 <translation id="787268756490971083">آف</translation>
 <translation id="7872758299142009420">بہت سارے نیسٹ کردہ گروپس: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">‏Steam برائے Chromebook</translation>
 <translation id="7876027585589532670">شارٹ کٹ میں ترمیم نہیں ہو سکتی</translation>
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
 <translation id="7877126887274043657">&amp;مطابقت پذیری کا مسئلہ حل کریں</translation>
@@ -11651,7 +11619,6 @@
 <translation id="8983018820925880511">یہ نئی پروفائل <ph name="DOMAIN" /> کے زیر انتطام ہو گی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکتا ہے</translation>
 <translation id="8984694057134206124">آپ ہر ایک کو <ph name="MINUTES" /> منٹ کیلئے مرئی ہوں گے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">‏Steam برائے Chromebook میں خوش آمدید</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> دن پہلے فعال کیا گیا</translation>
 <translation id="8985561265504464578">حد کا پتہ لگائیں</translation>
 <translation id="8985661493893822002">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کے لیے انٹرنیٹ سے منسلک ہوں۔</translation>
@@ -11783,7 +11750,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{تقریباً 1 اطلاع ایک دن میں}other{تقریباً {NUM_NOTIFICATION} اطلاعات ایک دن میں}}</translation>
 <translation id="9058760336383947367">‏پرنٹر PPD دیکھیں</translation>
 <translation id="9061521313218438086">‏اگر Chrome کو عوامی ڈیٹا کی خلاف ورزی میں آپ کے پاس ورڈز میں سے کوئی ایک مل جاتا ہے تو آپ کے سائن ان ہونے پر Google پاس ورڈ مینیجر آپ کے لیے آپ کا پاس ورڈ تبدیل کرنے کی پیشکش کر سکتا ہے۔</translation>
-<translation id="9061694916020926968">‏Steam برائے Chromebook (بی ٹا) استعمال کرنے کے لیے آپ کو Google اکاؤنٹ میں سائن ان ہونے کی ضرورت ہے۔ سائن ان کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">نیویگیشن شارٹ کٹ صاف کریں</translation>
 <translation id="9063208415146866933">لائن <ph name="ERROR_LINE_START" /> سے <ph name="ERROR_LINE_END" /> تک خرابی</translation>

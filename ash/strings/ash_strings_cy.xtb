@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Glas</translation>
 <translation id="1557622599341396706">Dangos enw desg</translation>
 <translation id="1569384531973824928">Mae hyn yn caniatáu mynediad ar gyfer pob ap a gwefan sydd â'r caniatadau camera a meicroffon. Mae'n bosib y bydd angen i chi ail-lwytho'r dudalen gwe neu ailddechrau'r ap.</translation>
+<translation id="1570235441606255261">Gosodwr Steam</translation>
 <translation id="1571697193564730395">Toglo Peidiwch ag Aflonyddu. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Handlen ymyl chwith wedi'i dewis, defnyddiwch y bysellau saeth i symud</translation>
 <translation id="1576623706766186887">Pellhau pan fydd chwyddwydr ymlaen</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Gellir analluogi Switsh Mynediad yn y Gosodiadau &gt; Hygyrchedd.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> o ddyfeisiau</translation>
 <translation id="1639239467298939599">Wrthi'n llwytho</translation>
+<translation id="1642895994345928121">Nid oes digon o storfa ddyfais i agor yr ap hwn. Gwnewch ychydig o le a rhowch gynnig arall arni.</translation>
 <translation id="1647986356840967552">Tudalen flaenorol</translation>
 <translation id="1651914502370159744">Agor y dudalen Hanes</translation>
 <translation id="1668469839109562275">VPN integredig</translation>
@@ -401,6 +403,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2383521554963939360">Grwpiau ap a thabiau</translation>
 <translation id="2386292613071805067">Dewis popeth ar y dudalen</translation>
 <translation id="2389423187722941333">Toglo Gemini</translation>
+<translation id="2391805183137601570">Agor Steam</translation>
 <translation id="2392659840443812875">Dim poethfan ar gael. Sicrhewch fod eich dyfais gerllaw a bod Bluetooth wedi'i droi ymlaen.</translation>
 <translation id="2397416548179033562">Dangos dewislen Chrome</translation>
 <translation id="240006516586367791">Rheolaethau cyfryngau</translation>
@@ -422,12 +425,14 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="243878895369688216">Agorwyd ddoe</translation>
 <translation id="2440978926514840421">Wedi recordio GIF</translation>
 <translation id="2441427462554639370">Daeth y recordiad i ben oherwydd lle storio hynod o isel</translation>
+<translation id="2447587550790814052">Gallwch bellach ddefnyddio Steam ar gyfer Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Lefel batri isel</translation>
 <translation id="2450205753526923158">Modd tynnu sgrinlun</translation>
 <translation id="2453860139492968684">Gorffen</translation>
 <translation id="2455994958736234930">Ychwanegu www. a .com i'r bar cyfeiriad, yna agor y wefan</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Drilio i lawr</translation>
+<translation id="2462332841984057083">Mae Steam eisoes yn cael ei osod. Arhoswch i'r gosodiad gael ei gwblhau.</translation>
 <translation id="2465145153332031561">Iechyd batri <ph name="BATTERY_HEALTH_PERCENTAGE" />% | cyfrif seiclo <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Cadarnhewch y Cydraniad</translation>
 <translation id="2475783092753560388">Mewnbynnu <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2486214324139475545">Rhagolwg <ph name="DESK_NAME" />. Desg weithredol.</translation>
 <translation id="2486405091093637109">Cafodd '<ph name="DISPLAY_NAME" />' ei newid i eglurdeb <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Heb gadarnhau, bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Ymuno</translation>
+<translation id="2494555621641843783">Methu â gosod Steam</translation>
 <translation id="2496180316473517155">Hanes pori</translation>
 <translation id="2499445554382787206">Dewislen proffil desg. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Bysellau gludiog</translation>
@@ -512,6 +518,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2727175239389218057">Ateb</translation>
 <translation id="2727744317940422214">Mae'n ddrwg gennym, aeth rhywbeth o'i le. Ffeiliwch adborth gyda #bruschetta yn y disgrifiad. Y cod gwall yw <ph name="ERROR" />. Wedi methu â glanhau. Mae'n bosib y bydd angen i chi wneud hynny eich hun.</translation>
 <translation id="2727977024730340865">Wedi'i blygio i mewn i wefrydd pŵer isel. Mae'n bosib na fydd gwefru'r batri yn ddibynadwy.</translation>
+<translation id="2737538893171115082">Mae Steam ar gyfer Chromebook (Beta) yn cael ei rwystro gan eich gweinyddwr. Mae angen i'ch gweinyddwr droi'r polisïau hyn ymlaen:</translation>
 <translation id="2743301740238894839">Dechrau</translation>
 <translation id="2743387203779672305">Copïo i'r clipfwrdd</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="3033912566804961911">Cyfuno gyda <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Mae batri'r pwyntil ar <ph name="PERCENTAGE" /> y cant.</translation>
 <translation id="304097922505898963">Agor yr ap Llwybrau Byr Bysellau</translation>
+<translation id="3040982432432547149">Helpwch ni i wella Steam ar gyfer Chromebook</translation>
 <translation id="304417730895741346">Mae eich apiau sydd ar agor ac sydd wedi'u pinio yn ymddangos ar y silff. I binio ap i'r silff, de-gliciwch ap nau tapiwch eich pad cyffwrdd gyda dau fys.</translation>
 <translation id="3045670165536837541">Handlen dde uchaf wedi'i dewis, defnyddiwch y bysellau saeth i symud</translation>
 <translation id="3047761520276763270">Rhowch gynnig ar ddweud:</translation>
@@ -656,6 +664,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="3181441307743005334">Mae'n bosib y bydd ailgychwyn yn cymryd peth amser</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Wedi'i gysylltu â dyfais}zero{Wedi'i gysylltu â # dyfais}two{Wedi'i gysylltu â # ddyfais}few{Wedi'i gysylltu â # dyfais}many{Wedi'i gysylltu â # dyfais}other{Wedi'i gysylltu â # dyfais}}</translation>
 <translation id="3203405173652969239">Mae Newid Mynediad wedi'i alluogi</translation>
+<translation id="3204648577100496185">Mae'n bosib y bydd data sy'n gysylltiedig â'r ap hwn yn cael eu tynnu o'r ddyfais hon</translation>
 <translation id="3206735939915734551">Troi Caps Lock ymlaen/ei ddiffodd</translation>
 <translation id="3207953481422525583">Gosodiadau Defnyddiwr</translation>
 <translation id="3208321278970793882">Ap</translation>
@@ -677,6 +686,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="3271554781793662131">Chwilio i fewnosod</translation>
 <translation id="3274634049061007184">Gweld apiau eich ffôn</translation>
 <translation id="3279230909244266691">Mae'n bosib y bydd y broses hon yn cymryd ychydig funudau. Wrthi'n cychwyn y peiriant rhithwir.</translation>
+<translation id="3285465040399788513">Nid oes digon o storfa ddyfais i gwblhau'r gosodiad. Crëwch ragor o le a rhowch gynnig arall arni.</translation>
 <translation id="3289364673986435196">Dewislen pŵer</translation>
 <translation id="3289544412142055976">Ni chefnogir apiau Linux ar hyn o bryd</translation>
 <translation id="3289674678944039601">Wrthi'n gwefru drwy addasydd</translation>
@@ -702,6 +712,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="3368922792935385530">Wedi cysylltu</translation>
 <translation id="3369111525500416043">Yn ddyledus yn fuan</translation>
 <translation id="3371140690572404006">Dyfais USB-C (porth de ar y blaen)</translation>
+<translation id="3373196968211632036">Nid yw Steam ar gyfer Chromebook (Beta) ar gael ar gyfer Cyfrifon Google i blant</translation>
 <translation id="3375634426936648815">Wedi cysylltu</translation>
 <translation id="3386978599540877378">y chwyddwydr sgrîn lawn</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Mae'r silff wedi'i awtoguddio</translation>
+<translation id="3496797737329654668">Gadewch i ni ddechrau chwarae gemau</translation>
 <translation id="3505066820268455558">Mae'r Batri yn Gwefru</translation>
 <translation id="3509391053705095206">Methu â dod o hyd i'ch ffôn. Gwnewch yn siŵr bod Bluetooth eich ffôn wedi'i droi ymlaen.</translation>
 <translation id="3510164367642747937">Amlygu'r cyrchwr llygoden</translation>
@@ -800,6 +812,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="3633851487917460983">Agor y Clipfwrdd</translation>
 <translation id="363473492175527493">Tasg a osodwyd i ganolbwyntio arni: <ph name="TASK_NAME" />. Pwyswch Enter i olygu'r dasg.</translation>
 <translation id="3638400994746983214">Toglo'r sgrîn preifatrwydd. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Mae angen diweddaru Steam ar gyfer Chromebook (Beta). Ailgychwynnwch eich Chromebook a rhowch gynnig arall arni.</translation>
 <translation id="3649256019230929621">Lleihau'r ffenestr</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3702809606464356667">Wrthi'n dangos ffenestri o'r ddesg bresennol, pwyswch y fysell Saeth i fyny i ddangos ffenestri o bob desg</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Adloniant</translation>
+<translation id="370665806235115550">Wrthi'n llwytho...</translation>
 <translation id="3707093869106077605">Nid yw <ph name="UNAVAILABLE_DLC_ONE" />, na <ph name="UNAVAILABLE_DLC_TWO" /> ar gael.</translation>
 <translation id="3708186454126126312">Wedi cysylltu'n flaenorol</translation>
 <translation id="3712143870407382523">Dewiswch ffenestr ar gyfer yr ochr hon</translation>
@@ -860,6 +874,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3831226344927851293">Gadael y wedd tiwtorial</translation>
 <translation id="383629559565718788">Dangos y gosodiadau bysellfwrdd</translation>
 <translation id="384082539148746321">Dileu'r templed?</translation>
+<translation id="3841282988425489367">Methu gosod Steam ar gyfer Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" />, yna <ph name="MODIFIER_TWO" /> neu <ph name="KEY_ONE" /> neu <ph name="KEY_TWO" /> neu <ph name="KEY_THREE" /> neu <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Nid oes unrhyw wybodaeth rhwydwaith ar gael</translation>
 <translation id="3848526302597027234">Cael mynediad at y caniatadau canlynol:</translation>
@@ -951,6 +966,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4146671046252289537">Symud i ddiwedd y gair nesaf</translation>
 <translation id="4150201353443180367">Sgrîn</translation>
 <translation id="4151054805501931758">Harddu eich portread</translation>
+<translation id="4151449637210235443">Dywedwch wrthym am eich profiad chwarae gemau diweddar</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% o fatri ar ôl (tua <ph name="TIME_LEFT" />).
 Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4158003972857765638">Trefnu mewn desg newydd</translation>
@@ -968,6 +984,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4192112279662688596">Neu</translation>
 <translation id="4193857202545160520">Dangos cliciau a bysellau</translation>
 <translation id="4193969623755915875">Agor 'Help' yn yr ap Explore gyda '<ph name="NEW_SHORTCUT" />'.</translation>
+<translation id="4195001808989442226">Methu ag agor Steam ar gyfer Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Fersiwn bresennol <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Parhau lle y gwnaethoch adael</translation>
 <translation id="4195877955194704651">Botwm cliciau awtomatig</translation>
@@ -983,6 +1000,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Gosodwyd Ap, Seibiwyd</translation>
 <translation id="4228078597006700451">Rheolyddion heb eu gosod</translation>
 <translation id="4230560241506423345">Newydd</translation>
+<translation id="4231231258999726714">Gosod Steam ar gyfer Chromebook</translation>
 <translation id="4236726631849783264">Atgoffwr am y camau gweithredu a awgrymir</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modd trosolwg</translation>
@@ -1067,6 +1085,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Diweddarwch y ddyfais nawr}=1{Diweddarwch y ddyfais o fewn 1 eiliad}two{Diweddarwch y ddyfais o fewn # eiliad}few{Diweddarwch y ddyfais o fewn # eiliad}many{Diweddarwch y ddyfais o fewn # eiliad}other{Diweddarwch y ddyfais o fewn # eiliad}}</translation>
 <translation id="4472575034687746823">Cychwyn arni</translation>
 <translation id="4473489370276014885">Cysylltiadau Google</translation>
+<translation id="4473996011558324141">wrthi'n amcangyfrif yr amser</translation>
 <translation id="4477350412780666475">Trac Nesaf</translation>
 <translation id="4477751544736611934">Gall hyn arwain at gost data.
 Mae 1 ddyfais yn gysylltiedig.</translation>
@@ -1108,6 +1127,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4585337515783392668">Stopio castio ar dderbynnydd anhysbys</translation>
 <translation id="4596144739579517758">Mae'r thema dywyll wedi'i diffodd</translation>
 <translation id="4596442969149038771">Mae <ph name="USER" /> wedi rhannu</translation>
+<translation id="4598556348158889687">Rheoli'r storfa</translation>
 <translation id="4610493115106525653">Allbwn da</translation>
 <translation id="4611292653554630842">Mewngofnodi</translation>
 <translation id="462160925400706389">Mae <ph name="NAME" /> wedi'i chysylltu</translation>
@@ -1117,6 +1137,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4633636853437260449">Pwyswch Ctrl+W i ddileu</translation>
 <translation id="4635501805800894201">{0,plural, =0{Diweddaru dyfais i fersiwn flaenorol nawr}=1{Diweddaru dyfais i'r fersiwn flaenorol o fewn 1 eiliad}two{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}few{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}many{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}other{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}}</translation>
 <translation id="4642092649622328492">Tynnu sgrinlun rhannol</translation>
+<translation id="4642587497923912728">Mae Steam ar gyfer Chromebook (Beta) ond ar gael ar gyfer y cyfrif a wnaeth fewngofnodi gyntaf ar y Chromebook hwn.</translation>
 <translation id="4644727592819780893">Rhanbarth yn rhy fach i ffitio camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Argymhelliad ap</translation>
 <translation id="4649019912155580914">Gwnaethoch olygu</translation>
@@ -1350,6 +1371,7 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="5352250171825660495">Mae'r thema dywyll ymlaen</translation>
 <translation id="5354804064646502504">Gall hyn arwain at gost data.
 Dim dyfeisiau yn gysylltiedig.</translation>
+<translation id="5355498626146154079">Mae angen i chi droi baner 'Wedi Galluogi Borealis' ymlaen</translation>
 <translation id="5356963482258194581">Newidiwch rhwng thema dywyll a thema olau. De-gliciwch ar y bwrdd gwaith a dewiswch Papur wal ac arddull.</translation>
 <translation id="536019650977002321">Nid yw eich gweinyddwr yn caniatáu cipio sain. Cysylltwch â'ch gweinyddwr am ragor o wybodaeth.</translation>
 <translation id="5361524080961918551">Cafodd y ffeiliau lleferydd <ph name="LANGUAGE" /> eu lawrlwytho'n rhannol</translation>
@@ -1360,6 +1382,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5377367976106153749">Troi mynediad at y camera ymlaen?</translation>
 <translation id="5378450298115733949">Rhagor</translation>
 <translation id="5379115545237091094">Gormod o ymgeisiau</translation>
+<translation id="5380526436444479273">Arhoswch ychydig o funudau a rhowch gynnig arall arni</translation>
 <translation id="5383434787520761436">Dim ffeiliau Google Drive</translation>
 <translation id="5391307769715781764">Disodli'r ddesg sydd wedi'i chadw?</translation>
 <translation id="5392327145184648521">Wrthi'n cyfrifo % batri...</translation>
@@ -1371,6 +1394,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5409208741270395213">Marcio bod y dasg wedi'i chwblhau</translation>
 <translation id="5413656666631274079">Tudalen gosodiadau</translation>
 <translation id="5414198321558177633">Wrthi'n ail-lwytho'r rhestr proffiliau. Gallai hyn gymryd ychydig funudau.</translation>
+<translation id="5415328625985164836">Rhaglen beta yw hon. Gallwch nawr ddefnyddio Steam i chwarae rhai gemau ar eich Chromebook.</translation>
 <translation id="5426063383988017631">Cafodd y ddewislen gosodiadau ei chau</translation>
 <translation id="5428899915242071344">Dechrau dewis</translation>
 <translation id="5429993543155113935">Ni chefnogir ffenestri anhysbys ar hyn o bryd</translation>
@@ -1466,6 +1490,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5712132663381964774">Defnyddiwch apiau i wneud popeth sydd ei angen arnoch ar eich <ph name="PRODUCT_NAME" />. Gallwch ddod o hyd i'ch apiau yn y Lansiwr.</translation>
 <translation id="571295407079589142">Mae data symudol wedi'u diffodd</translation>
 <translation id="5727460725221669831">Os wnaethoch anghofio'ch cyfrinair neu newid cyfrinair eich Cyfrif Google yn ddiweddar, rhowch gynnig ar adfer y defnyddiwr hwn.</translation>
+<translation id="572914206753951782">Sicrhewch fod eich Chromebook ar y fersiwn diweddaraf. Yna, ailgychwynnwch eich Chromebook a rhowch gynnig arall arni.</translation>
 <translation id="5733630091161562207">Hysbysiad croeso</translation>
 <translation id="573413375004481890">Ni allai'r ddyfais hon gefnogi'ch holl sgriniau, felly mae un wedi'i datgysylltu</translation>
 <translation id="574392208103952083">Canolig</translation>
@@ -1713,6 +1738,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6507042703812908515">Agorwch ap Llwybrau Byr Allweddi gyda "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Newid i'r dull mewnbwn nesaf sydd ar gael</translation>
 <translation id="6508923215158854599">Sicrhewch fod eich Chromebook ar yr un rhwydwaith Wi-Fi â'ch dyfais Chromecast.</translation>
+<translation id="6511607461419653612">Ailgychwynnwch eich Chromebook a rhowch gynnig arall arni</translation>
 <translation id="6515727200518652613">Mae'r camera wedi'i golli, wrthi'n ceisio ailgysylltu.</translation>
 <translation id="651753338596587143">Mae'n ddrwg gennym, aeth rhywbeth o'i le wrth osod dibyniaethau DLC. Rhowch gynnig ar ailgychwyn ac os yw'r broblem yn parhau ffeiliwch adborth gyda #bruschetta yn y disgrifiad. Y cod gwall yw <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Dewiswch ffenestr i'w chipio</translation>
@@ -1738,6 +1764,7 @@ Gosodiad newydd</translation>
 <translation id="6574587113394758819">Mae hysbysiad <ph name="APP_TITLE" /> wedi'i guddio oherwydd bod amddiffyniad gwylio ymlaen</translation>
 <translation id="6574622320167699133">Wedi'i ddatgloi gan eich ffôn. Tapiwch neu cliciwch i gael mynediad.</translation>
 <translation id="6578407462441924264">Dienw</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% wedi'i gwblhau</translation>
 <translation id="6582012689384648647">Ar gyfer rhestrau chwarae canolbwyntio personol, caniatewch fynediad i YouTube Music</translation>
 <translation id="6582034443359256692">Wrthi'n cyfrifo lefel gwefr batri.</translation>
 <translation id="6585808820553845416">Mae'r sesiwn yn dod i ben mewn <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Gosodiad newydd</translation>
 <translation id="6723839937902243910">Pŵer</translation>
 <translation id="672609503628871915">Gweld beth sy'n newydd</translation>
 <translation id="6727969043791803658">Wedi'i gysylltu, <ph name="BATTERY_PERCENTAGE" />% batri</translation>
+<translation id="6731320427842222405">Gallai hyn gymryd ychydig funudau</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Mae'r camera a'r meicroffon yn cael eu defnyddio</translation>
@@ -1858,6 +1886,7 @@ Gosodiad newydd</translation>
 <translation id="6961840794482373852">Mae'r llwybr byr bysellfwrdd Alt + Saeth i fyny wedi newid. I ddefnyddio'r fysell Page Up, pwyswch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth i fyny.</translation>
 <translation id="696267987219125751">Mae fframio'r camera wedi'i ddiffodd.</translation>
 <translation id="6965382102122355670">Iawn</translation>
+<translation id="6967112302799758487">Bydd unrhyw apiau a gemau a osodir gan ddefnyddio Steam ar gyfer Chromebook (Beta) yn cael eu tynnu o'r ddyfais hon. Bydd data sy'n gysylltiedig â'r apiau a'r gemau hyn yn cael eu tynnu hefyd. Gwnewch yn siŵr eich bod yn gwneud copi wrth gefn o apiau a gemau sydd wedi'u cadw cyn dadosod.</translation>
 <translation id="6972629891077993081">Dyfeisiau HID</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">mewnbynnu</translation>
@@ -1889,6 +1918,7 @@ Gosodiad newydd</translation>
 <translation id="7067196344162293536">Awtogylchdroi</translation>
 <translation id="7076293881109082629">Wrthi'n mewngofnodi</translation>
 <translation id="7076878155205969899">Distewi sain</translation>
+<translation id="7083774521940805477">Nid yw Steam ar gyfer Chromebook (beta) ar gael ar eich Chromebook.</translation>
 <translation id="7083848064787091821">Ffocysu</translation>
 <translation id="7084678090004350185">Toglo'r boethfan. Mae'r boethfan ymlaen, mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu.</translation>
 <translation id="7086931198345821656">Rhaid i chi ddefnyddio Powerwash ar eich <ph name="DEVICE_TYPE" /> er mwyn cynnal y diweddariad hwn. Bydd y data i gyd yn cael eu dileu. Dysgu rhagor am y diweddariad <ph name="SYSTEM_APP_NAME" /> diweddaraf.</translation>
@@ -1906,12 +1936,14 @@ Gosodiad newydd</translation>
 <translation id="7130207228079676353">MWYAF TEBYGOL</translation>
 <translation id="7131634465328662194">Byddwch yn cael eich allgofnodi'n awtomatig.</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
+<translation id="7143409552554575716">Baneri ChromeOS</translation>
 <translation id="7144878232160441200">Ceisio eto</translation>
 <translation id="7144942256906679589">Statws y batri</translation>
 <translation id="7145639536026937076">Mae'r batri ar <ph name="PERCENTAGE" />% ac yn gwefru. Mae'r modd Arbed Batri wedi'i droi ymlaen.</translation>
 <translation id="7147587499155271409">Dim hanes pori</translation>
 <translation id="7147657298465433425">I gael mynediad at fysellau F, pwyswch fysell fn + bysellau rhes uchaf</translation>
 <translation id="7149149900052329230">Rheoli'ch ffeiliau lleol a'ch ffeiliau Google Drive, i gyd yn yr ap Files.</translation>
+<translation id="7154020516215182599">Rhannwch eich adborth neu disgrifiwch eich problem. Os yn bosib, cynhwyswch gamau i atgynhyrchu'ch problem.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7726391492136714301">Gweld hysbysiadau ac apiau eich ffôn</translation>
 <translation id="7727952505535211425">Agor y wefan yn y bar cyfeiriad mewn tab newydd</translation>
 <translation id="7728657226117099693">Diffodd clo CAPS</translation>
+<translation id="7732702411411810416">Gwnewch yn siŵr eich bod wedi cysylltu â'r rhyngrwyd a rhowch gynnig arall arni</translation>
 <translation id="7742327441377685481">Dim hysbysiadau</translation>
 <translation id="7748275671948949022">Amlygu'r botwm Lansiwr ar y silff</translation>
 <translation id="7749443890790263709">Wedi cyrraedd y nifer uchaf o ddesgiau.</translation>
@@ -2121,6 +2154,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7866482334467279021">ymlaen</translation>
 <translation id="7870790288828963061">Ni chafwyd unrhyw apiau Kiosk gyda fersiwn mwy diweddar. Dim byd i'w ddiweddaru. Tynnwch y ffon USB.</translation>
 <translation id="7872786842639831132">Diffodd</translation>
+<translation id="7873386145597434863">Steam ar gyfer Chromebook</translation>
 <translation id="7875575368831396199">Mae'n ymddangos bod Bluetooth wedi'i ddiffodd ar eich <ph name="DEVICE_TYPE" />. Trowch Bluetooth ymlaen i ddefnyddio Phone Hub.</translation>
 <translation id="7884446017008693258">Gosodiadau Poethfan</translation>
 <translation id="7884902759927478774">Canslo llusgo tab</translation>
@@ -2470,6 +2504,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8980862970816311842">Symud eicon ap i mewn/allan o ffolder yn y grid apiau</translation>
 <translation id="8982906748181120328">Gwelededd gerllaw</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Croeso i Steam ar gyfer Chromebook</translation>
 <translation id="8990809378771970590">Yn defnyddio <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Pwyswch fn + Mewnosod Cyflym neu Shift i ganslo.</translation>
 <translation id="899350903320462459">Datglowch y ddyfais fel <ph name="LOGIN_ID" /> i gyflawni'r weithred hysbysu</translation>
@@ -2486,6 +2521,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9047624247355796468">Agor gosodiadau ar gyfer <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Nid yw Bluetooth ar gael</translation>
 <translation id="9050999376345823055">Pwyswch "." i ryddhau</translation>
+<translation id="9061694916020926968">Mae angen i chi fod wedi mewngofnodi i Gyfrif Google i ddefnyddio Steam ar gyfer Chromebook (Beta). Mewngofnodwch a rhowch gynnig arall arni.</translation>
 <translation id="906458777597946297">Mwyhau'r ffenestr</translation>
 <translation id="9065203028668620118">Golygu</translation>
 <translation id="9068849894565669697">Dewis lliw</translation>

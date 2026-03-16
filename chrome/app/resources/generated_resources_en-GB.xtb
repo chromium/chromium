@@ -841,7 +841,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="156793199942386351">'<ph name="CURRENTKEY" />' is already assigned to the '<ph name="ACTION" />' action. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1569466257325986920">The next time that your Google Account password changes, your local data will be recovered automatically after you sign in to your Google Account</translation>
-<translation id="1570235441606255261">Steam installer</translation>
 <translation id="1570604804919108255">Unmute notifications</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' bookmark folder created.</translation>
 <translation id="1571041387761170095">No weak or reused passwords</translation>
@@ -966,7 +965,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1642299742557467312">This file could harm your device</translation>
 <translation id="1642492862748815878">Connected to <ph name="DEVICE" /> and <ph name="NUMBER_OF_DEVICES" /> other Bluetooth devices</translation>
 <translation id="1642494467033190216">A removal of rootfs protection and restart is required before enabling other debugging features.</translation>
-<translation id="1642895994345928121">There is not enough device storage to open this app. Free up space and try again.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA Signature with SHA-1</translation>
 <translation id="1643921258693943800">To use Nearby Share, turn on Bluetooth and Wi-Fi</translation>
 <translation id="1644574205037202324">History</translation>
@@ -2078,7 +2076,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2390347491606624519">Can’t connect to proxy; please sign in again</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Standard font</translation>
-<translation id="2391805183137601570">Open Steam</translation>
 <translation id="239185270194776190">Your Gemini conversation is in another window. Click anywhere on this side panel to move it here.</translation>
 <translation id="2392369802118427583">Activate</translation>
 <translation id="2393136602862631930">Set up <ph name="APP_NAME" /> on your Chromebook</translation>
@@ -2160,7 +2157,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2445484935443597917">Create a new profile</translation>
 <translation id="2445726032315793326">Partial magnifier</translation>
 <translation id="244641233057214044">Related to your search</translation>
-<translation id="2447587550790814052">You can now use Steam for Chromebook (Beta)</translation>
 <translation id="2448312741937722512">Type</translation>
 <translation id="2448810255793562605">Switch Access auto-scan</translation>
 <translation id="2450021089947420533">Journeys</translation>
@@ -2187,7 +2183,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2460826998961521840">To use passkeys saved in your Google Account</translation>
 <translation id="2461550163693930491">Don't allow sites to scroll and zoom shared tabs</translation>
 <translation id="2461593638794842577">You can turn off this setting to save your passwords only on this device</translation>
-<translation id="2462332841984057083">Steam is already being set up. Wait for setup to complete.</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187">Added <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">You're seeing suggested files to help you easily get back to your most recent activity in Microsoft SharePoint and OneDrive.
@@ -2242,7 +2237,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2491587035099903063">preview voice for <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Preparing certificate signing request</translation>
 <translation id="249330843868392562">Open text-to-speech settings</translation>
-<translation id="2494555621641843783">Can't install Steam</translation>
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2496616243169085015">Photography</translation>
 <translation id="2497229222757901769">Mouse speed</translation>
@@ -2598,7 +2592,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="27349076983469322">Light background</translation>
 <translation id="2735712963799620190">Schedule</translation>
 <translation id="2737363922397526254">Collapse...</translation>
-<translation id="2737538893171115082">Steam for Chromebook (Beta) is blocked by your administrator. Your administrator needs to turn on these policies:</translation>
 <translation id="2737719817922589807">Bookmarks and lists</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> wants to share the contents of your screen with <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Don't allow sites to use fonts installed on your device</translation>
@@ -3061,7 +3054,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3039491566278747710">Failed to install offline policy on the device.</translation>
 <translation id="303955801043931176">Tab closed</translation>
 <translation id="3040435070100611531">Your Google Wallet passes</translation>
-<translation id="3040982432432547149">Help us improve Steam for Chromebook</translation>
 <translation id="304169924727249890">Join tab group with <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Change the optimised charging strategy.</translation>
 <translation id="3043016484125065343">Sign in to see your bookmarks</translation>
@@ -3272,7 +3264,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3201422919974259695">Available USB devices will appear here.</translation>
 <translation id="3202499879214571401">Pause casting screen to <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Newest</translation>
-<translation id="3204648577100496185">Data associated with this app may be removed from this device</translation>
 <translation id="3206289903841621620">User dictionary <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">You’re seeing suggested searches and shopping discounts that might interest you based on your recent activity.
         <ph name="BREAK" />
@@ -3380,7 +3371,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3283148363895519428">Follow the instructions on your phone to continue setup. Make sure your phone is nearby and Bluetooth is turned on</translation>
 <translation id="3284050785966252943">Auto-fill metadata preview</translation>
 <translation id="3285322247471302225">New &amp;Tab</translation>
-<translation id="3285465040399788513">There is not enough available storage to complete setup. Free up space and try again.</translation>
 <translation id="3285500645985761267">Allow related sites to see your activity in the group</translation>
 <translation id="328571385944182268">Save your passwords?</translation>
 <translation id="3289668031376215426">Auto-capitalisation</translation>
@@ -3503,7 +3493,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3372602033006349389">On other devices</translation>
 <translation id="337286756654493126">Read folders that you open in the application</translation>
 <translation id="3373059063088819384">Open in reading mode</translation>
-<translation id="3373196968211632036">Steam for Chromebook (Beta) is not available for child Google Accounts</translation>
 <translation id="3373701465337594448">When on, a list of sites that you visit that guess your interests appears here</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' moved into '<ph name="NEW_FOLDER_TITLE" />'.</translation>
 <translation id="3376035595160918049">Review app update</translation>
@@ -3686,7 +3675,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (not selected)</translation>
 <translation id="3496689104192986836">Battery level <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Data sources to collect</translation>
-<translation id="3496797737329654668">Let’s get gaming</translation>
 <translation id="3496995426334945408">Sites usually use JavaScript to display interactive features, like video games or web forms</translation>
 <translation id="3497501929010263034">USB device from <ph name="VENDOR_NAME" /> (product <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Share Doodle</translation>
@@ -3899,7 +3887,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3637203148990213388">Additional accounts</translation>
 <translation id="3640347231390550691">Protect your passwords against phishing</translation>
 <translation id="364100968401221170">To delete browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />sign in<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steam for Chromebook (beta) needs to be updated. Restart your Chromebook and try again.</translation>
 <translation id="3641299252000913351">Modem firmware update in progress. Don't turn off your device.</translation>
 <translation id="3641456520301071208">Sites can ask for your location</translation>
 <translation id="3642064270296434810">You can now use Google Lens to search anything that you see on your screen</translation>
@@ -4236,7 +4223,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="383891835335927981">No sites have been zoomed in or out</translation>
 <translation id="3839516600093027468">Always block <ph name="HOST" /> from seeing the clipboard</translation>
 <translation id="3840096463915153852">Conversation history</translation>
-<translation id="3841282988425489367">Can’t set up Steam for Chromebook (Beta)</translation>
 <translation id="3841319830220785495">Default natural voice</translation>
 <translation id="3841356782900714251">Smart card readers</translation>
 <translation id="3841964634449506551">Password invalid</translation>
@@ -4684,7 +4670,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4148195018520464922">You can limit sign-in to certain users. This removes the 'Add person' option on the sign-in screen. You can also remove current users.</translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="4150201353443180367">Display</translation>
-<translation id="4151449637210235443">Tell us about your recent gameplay</translation>
 <translation id="4151503145138736576">No offline storage to clean up</translation>
 <translation id="4152011295694446843">You'll find your bookmarks here</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
@@ -4735,7 +4720,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4193251682249731404">Trusted CA</translation>
 <translation id="4193575319002689239">Show cards</translation>
 <translation id="419427585139779713">Input a syllable at a time</translation>
-<translation id="4195001808989442226">Can’t open Steam for Chromebook (Beta)</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4195814663415092787">Continue where you left off</translation>
 <translation id="4198268995694216131">Additional sites</translation>
@@ -4781,7 +4765,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{This extension is not allowed}other{Some extensions are not allowed}}</translation>
 <translation id="4231053948789591973">Casting is currently paused. You can resume casting or stop casting your screen at any time.</translation>
 <translation id="4231095370974836764">Install apps and games from Google Play on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Setting up Steam for Chromebook</translation>
 <translation id="4232375817808480934">Configure Kerberos</translation>
 <translation id="4232376164796433044">Passwords and autofill</translation>
 <translation id="4232484478444192782">Your Android phone has you covered. Your Wi-Fi and password are being transferred over.</translation>
@@ -5140,7 +5123,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4472533928615930332">Generated image <ph name="INDEX" /> of <ph name="SUBJECT" />, in <ph name="STYLE" /> style</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4473559657152613417">Right-click on a tab and select 'Add tab to new group'</translation>
-<translation id="4473996011558324141">estimating time</translation>
 <translation id="4474155171896946103">Bookmark all tabs...</translation>
 <translation id="4476198534886170024">Allowed. Turn on <ph name="LINK_BEGIN" />system camera access<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Athlete</translation>
@@ -5375,7 +5357,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4638930039313743000">Enable ADB debugging</translation>
 <translation id="4639390152280993480">To see a simplified view of this page, go to More Tools &gt; Reading mode</translation>
 <translation id="4641539339823703554">Chrome was unable to set the system time. Please check the time below and correct it if needed.</translation>
-<translation id="4642587497923912728">Steam for Chromebook (Beta) is only available for the account that signed in first on this Chromebook.</translation>
 <translation id="4643612240819915418">&amp;Open video in new tab</translation>
 <translation id="4643833688073835173">Your Chromebook uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google.</translation>
 <translation id="4644205769234414680">Allow in Incognito</translation>
@@ -6380,7 +6361,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5353769147530541973">Remove <ph name="SITE_NAME" /> from list of tabs to make inactive</translation>
 <translation id="5355099869024327351">Allow the Assistant to show you notifications</translation>
 <translation id="5355191726083956201">Enhanced protection is on</translation>
-<translation id="5355498626146154079">You need to turn on the 'Borealis Enabled' flag</translation>
 <translation id="5355501370336370394">Enrol enterprise device</translation>
 <translation id="5357010010552553606">Not allowed to enter full screen automatically</translation>
 <translation id="5359910752122114278">1 result</translation>
@@ -6410,7 +6390,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5376931455988532197">File too large</translation>
 <translation id="5377367976106153749">Turn on camera access?</translation>
 <translation id="5379140238605961210">Continue blocking microphone access</translation>
-<translation id="5380526436444479273">Wait a few minutes and try again</translation>
 <translation id="5382591305415226340">Manage supported links</translation>
 <translation id="5384401776498845256">Who can share with you</translation>
 <translation id="5385628342687007304">This password is saved only to this device. To use it on your other devices, save it in your Google Account.</translation>
@@ -6465,7 +6444,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5414198321558177633">Refreshing profile list. This may take a few minutes.</translation>
 <translation id="5414566801737831689">Read the icons of the websites that you visit</translation>
 <translation id="5414836363063783498">Verifying…</translation>
-<translation id="5415328625985164836">This is a beta program. You can now use Steam to play some games on your Chromebook.</translation>
 <translation id="5415497281076257439">Phrase</translation>
 <translation id="5415871492522952905">You’ll have your history and tabs on all your devices so that you can continue what you were doing</translation>
 <translation id="5417293056300086453">This site can use identifiers to play protected content.</translation>
@@ -6906,7 +6884,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5727728807527375859">Extensions, apps and themes can harm your computer. Are you sure that you want to continue?</translation>
 <translation id="5728072125198221967">Linked Google services</translation>
 <translation id="5728450728039149624">Smart Lock screen lock options</translation>
-<translation id="572914206753951782">Make sure your Chromebook is on the latest version. Then, restart your Chromebook and try again.</translation>
 <translation id="5729712731028706266">&amp;View</translation>
 <translation id="5731247495086897348">Pa&amp;ste and Go</translation>
 <translation id="5733109311583381874">Add your own words to the user dictionaries in order to customise the conversion candidates.</translation>
@@ -8021,7 +7998,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" would like to install the following app on this device:}other{"<ph name="APP_NAME" />" would like to install the following apps on this device:}}</translation>
 <translation id="6508248480704296122">Related to <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Restart your Chromebook and try again</translation>
 <translation id="6511827214781912955">Consider deleting <ph name="FILENAME" />, so that others who use this device can't see your passwords</translation>
 <translation id="6512759338201777379">Generated image <ph name="INDEX" /> of <ph name="SUBJECT" />, with <ph name="MOOD" /> mood.</translation>
 <translation id="6513247462497316522">Google Chrome will use mobile data if you're not connected to another network.</translation>
@@ -8130,7 +8106,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="657866106756413002">Network health snapshot</translation>
 <translation id="6579369886355986318">Show all controls</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Desktop content shared</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% completed</translation>
 <translation id="6580203076670148210">Scanning speed</translation>
 <translation id="6580676117087365538">To get this extension on all your computers, verify that it's you</translation>
 <translation id="6581356304040102696">Can't import passwords. The file size should be less than 1 MB.</translation>
@@ -8349,7 +8324,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6729280095610283088">Bright streams of aurora borealis, over a forest.</translation>
 <translation id="6729493062119577923">Shared tab group activity</translation>
 <translation id="6730744976532805323">Shares the current tab with Gemini, even as you switch tabs</translation>
-<translation id="6731320427842222405">This may take a few minutes</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Address</translation>
 <translation id="6737663862851963468">Remove Kerberos ticket</translation>
@@ -8699,7 +8673,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Device</translation>
 <translation id="6966831944134814478">Turn off</translation>
-<translation id="6967112302799758487">Any apps and games installed using Steam for Chromebook (Beta) will be removed from this device. Data associated with these apps and games will also be removed. Make sure to back up saved apps and games before uninstalling.</translation>
 <translation id="6967430741871315905">Unable to check whether the device is allowed</translation>
 <translation id="6968288415730398122">Enter your password to configure screen lock</translation>
 <translation id="6969047215179982698">Turn off Nearby Share</translation>
@@ -8871,7 +8844,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> is managed by your administrator</translation>
 <translation id="7082850163410901674">Notifications are turned off in Mac System Settings</translation>
 <translation id="7083729794572207131">Sites usually ask to install web apps to enhance your experience on the site</translation>
-<translation id="7083774521940805477">Steam for Chromebook (beta) is not available on your Chromebook.</translation>
 <translation id="7084095352418993433">Ask Google about this page: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(not configured)</translation>
 <translation id="7086377898680121060">Brightness up</translation>
@@ -8950,7 +8922,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7141844554192012199">Checkup</translation>
 <translation id="714301620504747562">Browsing and searching is faster than standard preloading.</translation>
 <translation id="7143207342074048698">Connecting</translation>
-<translation id="7143409552554575716">ChromeOS flags</translation>
 <translation id="7144363643182336710">Notifications won't pop up on the screen. You can still see notifications by clicking the Do Not Disturb icon on the bottom right of your screen.</translation>
 <translation id="7144856456372460176">&amp;Install <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Retry</translation>
@@ -8961,7 +8932,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
 <translation id="7153101072880472645">High contrast on/off</translation>
 <translation id="715396040729904728">launcher + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Share your feedback or describe your issue. If possible, include steps to reproduce your issue.</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Get better quality video and save battery life. Video will play only on your Cast-enabled screen.</translation>
 <translation id="7159695867335480590">Play/pause</translation>
@@ -9813,7 +9783,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="7728668285692163452">Channel change will be applied later</translation>
 <translation id="7730449930968088409">Capture content of your screen</translation>
 <translation id="7730683939467795481">This page was changed by the '<ph name="EXTENSION_NAME" />' extension</translation>
-<translation id="7732702411411810416">Make sure you’re connected to the internet and try again</translation>
 <translation id="773511996612364297">Accent marks</translation>
 <translation id="7735558909644181051">Intermediate certificates</translation>
 <translation id="7736119438443237821">You're about to remove access to your passkeys on this device</translation>
@@ -10011,7 +9980,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7871691770940645922">Virtual Braille Display</translation>
 <translation id="787268756490971083">Off</translation>
 <translation id="7872758299142009420">Too many nested groups: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">Can't edit shortcut</translation>
 <translation id="7876243839304621966">Remove all</translation>
 <translation id="7877126887274043657">Fix &amp;Sync Issue</translation>
@@ -11668,7 +11636,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8983018820925880511">This new profile will be managed by <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> can edit <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">You will be visible to everyone for <ph name="MINUTES" /> minutes. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Welcome to Steam for Chromebook</translation>
 <translation id="8985264973231822211">Active <ph name="DEVICE_LAST_ACTIVATED_TIME" /> day ago</translation>
 <translation id="8985561265504464578">Detection threshold</translation>
 <translation id="8985661493893822002">Please connect to the Internet to sign in to your <ph name="DEVICE_TYPE" />.</translation>
@@ -11800,7 +11767,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{About 1 notification a day}other{About {NUM_NOTIFICATION} notifications a day}}</translation>
 <translation id="9058760336383947367">View printer PPD</translation>
 <translation id="9061521313218438086">If Chrome finds one of your passwords in a public data breach, Google Password Manager can offer to change your password for you if you're signed in.</translation>
-<translation id="9061694916020926968">You need to be signed-in to a Google Account to use Steam for Chromebook (Beta). Sign in and try again.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Clear navigation shortcut</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>

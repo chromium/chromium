@@ -841,7 +841,6 @@
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" "<ph name="ACTION" />" аракети үчүн дайындалган. <ph name="RESPONSE" /> үчүн каалаган баскычты басыңыз.</translation>
 <translation id="1567993339577891801">JavaScript консолу</translation>
 <translation id="1569466257325986920">Кийинки жолу Google аккаунтуңуздун сырсөзү өзгөргөндө, ага киргениңизден кийин жергиликтүү маалыматыңыз автоматтык түрдө калыбына келтирилет</translation>
-<translation id="1570235441606255261">Steam кызматын орноткуч</translation>
 <translation id="1570604804919108255">Билдирмелердин үнүн чыгаруу</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' кыстарма папкасы түзүлдү.</translation>
 <translation id="1571041387761170095">Начар же кайра колдонулган сырсөздөр жок</translation>
@@ -966,7 +965,6 @@
 <translation id="1642299742557467312">Бул файл түзмөгүңүзгө зыян келтириши мүмкүн</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> жана дагы <ph name="NUMBER_OF_DEVICES" /> Bluetooth түзмөгүнө туташты</translation>
 <translation id="1642494467033190216">Башка мүчүлүштүктөрдү оңдоо өзгөчөлүктөрүн иштетүүдөн мурун, тамыр коргоосун алып салып, түзмөктү өчүрүп-күйгүзүшүңүз керек.</translation>
-<translation id="1642895994345928121">Түзмөктүн сактагычында орун жетишсиз болгондуктан, бул колдонмо ачылбай жатат. Орун бошотуп, кайталап көрүңүз.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA Колтамгасы SHA-1 менен</translation>
 <translation id="1643921258693943800">Nearby Share'ны колдонуу үчүн Bluetooth менен Wi-Fi'ды күйгүзүңүз</translation>
 <translation id="1644574205037202324">Таржымал</translation>
@@ -2078,7 +2076,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2390347491606624519">Проксиге туташкан жок. Кайра кирип көрүңүз</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Стандарттуу арип</translation>
-<translation id="2391805183137601570">Steam кызматын ачуу</translation>
 <translation id="239185270194776190">Gemini менен сүйлөшүүңүз башка терезеде ачылып турат. Аны бул жерге жылдыруу үчүн капталдагы тилкенин каалаган жерин басыңыз.</translation>
 <translation id="2392369802118427583">Жандыруу</translation>
 <translation id="2393136602862631930"><ph name="APP_NAME" /> колдонмосун Chromebook'та жөндөңүз</translation>
@@ -2160,7 +2157,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2445484935443597917">Жаңы профиль түзүү</translation>
 <translation id="2445726032315793326">Жарым-жартылай чоңойткуч</translation>
 <translation id="244641233057214044">Сиз издеген нерсеге окшош</translation>
-<translation id="2447587550790814052">Эми Steam for Chromebook'ту (бета) колдоно аласыз</translation>
 <translation id="2448312741937722512">Түрү</translation>
 <translation id="2448810255793562605">Switch access авто-скандоо функциясы</translation>
 <translation id="2450021089947420533">Саякаттар</translation>
@@ -2187,7 +2183,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2460826998961521840">Google аккаунтуңузда сакталган киргизүүчү ачкычтарды колдонуу үчүн</translation>
 <translation id="2461550163693930491">Сайттар бөлүшүлгөн өтмөктөрдү сыдырып жана чоңойтуп/кичирейтпесин</translation>
 <translation id="2461593638794842577">Сырсөздөрдү ушул түзмөктө гана сактагыңыз келсе, бул параметрди өчүрүп койсоңуз болот</translation>
-<translation id="2462332841984057083">Steam туураланып жатат. Орнотулганча күтө туруңуз.</translation>
 <translation id="2462724976360937186">Тастыктама борборунун ачкыч далдаштыргычы</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> принтери кошулду</translation>
 <translation id="2464075479326723132">Cунушталган файлдар Microsoft SharePoint жана OneDrive'да жасаган акыркы аракеттериңизге оңой өтүүгө жардам берет.
@@ -2242,7 +2237,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> тилиндеги үндү угуп көрүү</translation>
 <translation id="2492461744635776704">Тастыктамага кол коюу сурамы даярдалууда</translation>
 <translation id="249330843868392562">Кеп синтезаторунун параметрлерин ачуу</translation>
-<translation id="2494555621641843783">Steam орнотулбай жатат</translation>
 <translation id="2496180316473517155">Серептөө таржымалы</translation>
 <translation id="2496616243169085015">Фотосүрөт</translation>
 <translation id="2497229222757901769">Чычкандын тездиги</translation>
@@ -2598,7 +2592,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="27349076983469322">Ачык фон</translation>
 <translation id="2735712963799620190">Графиги</translation>
 <translation id="2737363922397526254">Жыйнап коюу…</translation>
-<translation id="2737538893171115082">Steam for Chromebook'ту (бета) администраторуңуз бөгөттөп койгон. Администраторуңуз төмөнкү эрежелерди күйгүзүшү керек:</translation>
 <translation id="2737719817922589807">&amp;Кыстармалар жана тизмелер</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> колдонмосу экраныңыздагы мазмундарды <ph name="TARGET_NAME" /> менен бөлүшкүсү келет.</translation>
 <translation id="2738030019664645674">Сайттарга түзмөктө орнотулган ариптерди колдонууга тыюу салуу</translation>
@@ -3061,7 +3054,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3039491566278747710">Оффлайн режимде түзмөккө колдонуу саясаты орнотулбай калды.</translation>
 <translation id="303955801043931176">Кыстырма жабылды</translation>
 <translation id="3040435070100611531">Google Капчыктагы билеттериңиз</translation>
-<translation id="3040982432432547149">Chromebook'тагы Steam кызматын жакшыртууга көмөктөшүңүз</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> бар өтмөктөр тобуна кошулуңуз</translation>
 <translation id="3042097545107738107">Оптималдаштырылган кубаттоо стратегиясын өзгөртүңүз.</translation>
 <translation id="3043016484125065343">Кыстармаларды көрүү үчүн аккаунтка кириңиз</translation>
@@ -3272,7 +3264,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3201422919974259695">Жеткиликтүү USB түзмөктөрү ушул жерде көрүнөт.</translation>
 <translation id="3202499879214571401">Экранды <ph name="DEVICE_NAME" /> түзмөгүнө чыгарууну тындыруу</translation>
 <translation id="3202578601642193415">Эң акыркы</translation>
-<translation id="3204648577100496185">Бул колдонмого байланыштуу маалымат бул түзмөктөн өчүрүлүшү мүмкүн</translation>
 <translation id="3206289903841621620">Колдонуучунун сөздүгү <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Акыркы аракеттериңиздин негизинде сунушталган сизди кызыктырышы мүмкүн болгон нерселерди жана арзандатууларды көрүп жатасыз.
         <ph name="BREAK" />
@@ -3380,7 +3371,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3283148363895519428">Жөндөөнү улантуу үчүн телефонуңуздагы нускамаларды аткарыңыз. Телефонуңуз жаныңызда экенин жана Bluetooth күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="3284050785966252943">Автотолтуруу метадайындарын алдын ала көрүү</translation>
 <translation id="3285322247471302225">Жаңы &amp;өтмөк</translation>
-<translation id="3285465040399788513">Түзмөктүн сактагычында орун жетишсиз болгондуктан, тууралоо аягына чыкпай жатат. Орун бошотуп, кайталап көрүңүз.</translation>
 <translation id="3285500645985761267">Окшош сайттарга топтогу аракеттериңизди көрүүгө уруксат берүү</translation>
 <translation id="328571385944182268">Сырсөздөрүңүз сакталсынбы?</translation>
 <translation id="3289668031376215426">Автоматтык түрдө баш тамгага которуу</translation>
@@ -3503,7 +3493,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3372602033006349389">Башка түзмөктөрдө</translation>
 <translation id="337286756654493126">Колдонмодо ачылган куржундарды окуу</translation>
 <translation id="3373059063088819384">Окуу режиминде ачуу</translation>
-<translation id="3373196968211632036">Steam for Chromebook (бета) баланын Google аккаунттарында иштебейт</translation>
 <translation id="3373701465337594448">Күйгүзүлсө, кызыккан нерселериңизди аныктаган сайттардын тизмеси ушул жерде көрүнөт</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" кыстармасы "<ph name="NEW_FOLDER_TITLE" />" папкасына жылдырылды.</translation>
 <translation id="3376035595160918049">Колдонмонун жаңыртуусун карап чыгуу</translation>
@@ -3686,7 +3675,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (тандалган жок)</translation>
 <translation id="3496689104192986836">Батарея деңгээли: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Маалымат алынуучу булактар</translation>
-<translation id="3496797737329654668">Оюнду баштайлы</translation>
 <translation id="3496995426334945408">Сайттар адатта видео оюндары же веб формалар сыяктуу интерактивдик функцияларды чагылдыруу үчүн, JavaScript'ти колдонот</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> USB түзмөгү (өндүрүм: <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle'ду бөлүшүү</translation>
@@ -3899,7 +3887,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3637203148990213388">Кошумча аккаунттар</translation>
 <translation id="3640347231390550691">Сырсөздөрүңүздү фишинг аракеттеринен коргоңуз</translation>
 <translation id="364100968401221170">Бардык шайкештирилген түзмөктөрүңүздөгү жана Google аккаунтуңуздагы серептөө дайындарын өчүрүү үчүн <ph name="BEGIN_LINK" />аккаунтуңузга кириңиз<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Chromebook үчүн Steam (бета) жаңыртылышы керек. Chromebook'ту өчүрүп күйгүзүп, кайталап көрүңүз.</translation>
 <translation id="3641299252000913351">Модемдин кыстарылган программа жаңыртылууда. Түзмөгүңүздү өчүрбөңүз.</translation>
 <translation id="3641456520301071208">Сайттар жайгашкан жериңизди сиздин уруксатыңыз менен көрө алат</translation>
 <translation id="3642064270296434810">Эми Google Lens аркылуу экрандагы каалаган нерсени издей аласыз</translation>
@@ -4236,7 +4223,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="383891835335927981">Эч кандай сайттар чоңойтуп/кичирейтилген жок</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> башкы түйүнүнө алмашуу буфери эч качан көрүнбөсүн</translation>
 <translation id="3840096463915153852">Сүйлөшүүнүн таржымалы</translation>
-<translation id="3841282988425489367">Steam for Chromebook (бета) орнотулбай жатат</translation>
 <translation id="3841319830220785495">Кадимки адамдын үнү</translation>
 <translation id="3841356782900714251">Акылдуу карта окугучтар</translation>
 <translation id="3841964634449506551">Сырсөз туура эмес</translation>
@@ -4684,7 +4670,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4148195018520464922">Белгилүү колдонуучуларга кирүүнү чектей аласыз. Бул кирүү экранындагы "Адам кошуу" параметрин өчүрөт. Ошондой эле, учурдагы колдонуучуларды өчүрө аласыз.</translation>
 <translation id="4148957013307229264">Орнотулууда…</translation>
 <translation id="4150201353443180367">Көрсөтүү</translation>
-<translation id="4151449637210235443">Акыркы оюн процесси жөнүндө айтып бериңиз</translation>
 <translation id="4151503145138736576">Тазалана турган офлайн сактагыч жок</translation>
 <translation id="4152011295694446843">Кыстармаларыңызды ушул жерден табасыз</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 өтмөк}other{# өтмөк}}</translation>
@@ -4735,7 +4720,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4193251682249731404">Ишенимдүү тастыктама борбору</translation>
 <translation id="4193575319002689239">Карталарды көрсөтүү</translation>
 <translation id="419427585139779713">Муун-муун боюнча киргизиңиз</translation>
-<translation id="4195001808989442226">Steam for Chromebook (бета) ачылбай жатат</translation>
 <translation id="4195643157523330669">Жаңы өтмөктө ачуу</translation>
 <translation id="4195814663415092787">Чыгып кеткен жерден улантыңыз</translation>
 <translation id="4198268995694216131">Кошумча сайттар</translation>
@@ -4781,7 +4765,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Бул кеңейтүүнү колдонууга тыюу салынган}other{Айрым кеңейтүүлөрдү колдонууга тыюу салынган}}</translation>
 <translation id="4231053948789591973">Тышкы экранга чыгаруу учурда тындырылды. Тышкы экранга чыгарууну каалаган убакта улантып же токтотсоңуз болот.</translation>
 <translation id="4231095370974836764">Google Play'ден колдонмолор менен оюндарды <ph name="DEVICE_TYPE" /> түзмөгүңүзгө орнотуп аласыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Steam for Chromebook туураланууда</translation>
 <translation id="4232375817808480934">Kerberos’ту конфигурациялоо</translation>
 <translation id="4232376164796433044">Сырсөздөр жана автотолтуруу</translation>
 <translation id="4232484478444192782">Android телефонуңуздагы WiFi тармагынын аталышы жана сырсөзү өткөрүлүүдө.</translation>
@@ -5140,7 +5123,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4472533928615930332"><ph name="SUBJECT" /> ичинен түзүлгөн сүрөт: <ph name="INDEX" />, стиль: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Баштоо</translation>
 <translation id="4473559657152613417">Өтмөктү чычкандын оң баскычы менен чыкылдатып, "Өтмөктү жаңы топко кошуу" дегенди тандаңыз</translation>
-<translation id="4473996011558324141">болжолдуу убакыт</translation>
 <translation id="4474155171896946103">Бардык өтмөктөрдү кыстарып коюу…</translation>
 <translation id="4476198534886170024">Уруксат берилди. <ph name="LINK_BEGIN" />Системага камераны колдонуу мүмкүнчүлүгүн<ph name="LINK_END" /> бериңиз.</translation>
 <translation id="4476590490540813026">Спортчу айым</translation>
@@ -5375,7 +5357,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4638930039313743000">ADB аркылуу мүчүлүштүктөрдү оңдоону иштетүү</translation>
 <translation id="4639390152280993480">Бул беттин жөнөкөйлөштүрүлгөн көрүнүшүн көрүү үчүн Көбүрөөк куралдар &gt; Окуу режимине өтүңүз</translation>
 <translation id="4641539339823703554">Chrome системанын убакытын коё алган жок. Төмөнкү убакытты текшерип, зарыл болсо, аны тууралаңыз.</translation>
-<translation id="4642587497923912728">Steam for Chromebook (бета) кызматын бул Chromebook'та биринчи жолу кирген аккаунт менен гана пайдаланууга болот.</translation>
 <translation id="4643612240819915418">&amp;Видеону жаңы өтмөктө ачуу</translation>
 <translation id="4643833688073835173">Chromebook түзмөгүңүз алдын ала орнотулган сенсор аркылуу маңдай жагындагы адамдарды аныктап турат. Бардык нерселер түзмөгүңүздө дароо иштетилип, андан соң өчүрүлөт. Сенсордун дайындары эч качан Google'га жөнөтүлбөйт.</translation>
 <translation id="4644205769234414680">Жашыруун режимде уруксат берүү</translation>
@@ -6380,7 +6361,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5353769147530541973">Жигерсиз кылуу үчүн өтмөктөр тизмесинен <ph name="SITE_NAME" /> сайтын өчүрүңүз</translation>
 <translation id="5355099869024327351">Жардамчыга билдирмелерди көрсөтүүгө уруксат берүү</translation>
 <translation id="5355191726083956201">Күчөтүлгөн коргоо күйүк</translation>
-<translation id="5355498626146154079">“Borealis Enabled” белгилөөсүн күйгүзүү керек</translation>
 <translation id="5355501370336370394">Корпоративдик түзмөктү каттоо</translation>
 <translation id="5357010010552553606">Толук экран режимине автоматтык түрдө кирүүгө тыюу салынат</translation>
 <translation id="5359910752122114278">1 нерсе табылды</translation>
@@ -6410,7 +6390,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5376931455988532197">Файл өтө чоң</translation>
 <translation id="5377367976106153749">Камераны колдонууга уруксат бересизби?</translation>
 <translation id="5379140238605961210">Микрофонду колдонуу мүмкүнчүлүгү бөгөттөлө берсин</translation>
-<translation id="5380526436444479273">Бир нече мүнөттөн кийин кайталап көрүңүз</translation>
 <translation id="5382591305415226340">Колдоого алынган шилтемелерди башкаруу</translation>
 <translation id="5384401776498845256">Сиз менен ким бөлүшө алат</translation>
 <translation id="5385628342687007304">Бул сырсөз ушул түзмөктө гана сакталат. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда сактаңыз.</translation>
@@ -6465,7 +6444,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5414198321558177633">Профилдин тизмеси жаңыртылууда. Бир нече мүнөткө созулушу мүмкүн.</translation>
 <translation id="5414566801737831689">Каралган вебсайттардын сүрөтчөлөрүн окуңуз</translation>
 <translation id="5414836363063783498">Текшерилүүдө…</translation>
-<translation id="5415328625985164836">Бул бета сынамык программасы. Эми Steam аркылуу Chromebook түзмөгүңүздө айрым оюндарды ойной аласыз.</translation>
 <translation id="5415497281076257439">Фраза</translation>
 <translation id="5415871492522952905">Таржымал жана өтмөктөр бардык түзмөктөрүңүздө жеткиликтүү болот</translation>
 <translation id="5417293056300086453">Бул сайт корголгон контентти ойнотуу үчүн идентификаторлорду колдоно алат.</translation>
@@ -6906,7 +6884,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5727728807527375859">Кеңейтүүлөр, колдонмолор жана темалар компьютериңизге зыян келтириши мүмкүн. Уланта берелиби?</translation>
 <translation id="5728072125198221967">Байланыштырылган Google кызматтары</translation>
 <translation id="5728450728039149624">Smart Lock'тун экранды кулпулоо параметрлери</translation>
-<translation id="572914206753951782">Chromebook түзмөгүңүз акыркы версияга жаңыртылганын текшериңиз. Андан соң Chromebook'ту өчүрүп күйгүзүп, кайталап көрүңүз.</translation>
 <translation id="5729712731028706266">&amp;Көрүнүш</translation>
 <translation id="5731247495086897348">Ча&amp;птап туруп өтүү</translation>
 <translation id="5733109311583381874">Колдонуучунун сөздүктөрүнө өзүңүздүн сөздөрүңүздү кошуп, транслитерациялоо варианттарын ыңгайлаштырыңыз.</translation>
@@ -8021,7 +7998,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" бул түзмөккө төмөнкү колдонмону орноткону жатат:}other{"<ph name="APP_NAME" />" бул түзмөккө төмөнкү колдонмолорду орноткону жатат:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> аракетине байланыштуу</translation>
 <translation id="6508261954199872201">Колдонмо: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Chromebook'ту өчүрүп күйгүзүп, кайталап көрүңүз</translation>
 <translation id="6511827214781912955">Бул түзмөктү колдонгон башка колдонуучулар сырсөздөрүңүздү көрүп албашы үчүн, <ph name="FILENAME" /> файлын өчүрүү сунушталат</translation>
 <translation id="6512759338201777379"><ph name="SUBJECT" /> ичинен түзүлгөн сүрөт: <ph name="INDEX" />, маанай: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Башка тармакка туташып турбасаңыз, Google Chrome мобилдик дайындарды колдонот.</translation>
@@ -8130,7 +8106,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="657866106756413002">Тармактын абалынын сүрөтү</translation>
 <translation id="6579369886355986318">Бардык &amp;башкаруу элементтерин көрсөтүү</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Иш тактанын мазмуну бөлүшүлүүдө</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% бүттү</translation>
 <translation id="6580203076670148210">Скандоо ылдамдыгы</translation>
 <translation id="6580676117087365538">Бул кеңейтүүнү бардык компьютерлериңизде орнотуу үчүн сиз экениңизди ырастаңыз</translation>
 <translation id="6581356304040102696">Сырсөздөр өткөрүлүп алынган жок. Файлдын өлчөмү 1 Кб чейин болушу керек.</translation>
@@ -8349,7 +8324,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6729280095610283088">Токойдун үстүндөгү түндүк жаркырагынын шоолалары.</translation>
 <translation id="6729493062119577923">Бөлүшүлгөн өтмөктөр тобундагы аракеттер</translation>
 <translation id="6730744976532805323">Өтмөктөрдү которуштурсаңыз да, учурдагы өтмөктү Gemini менен бөлүшөт</translation>
-<translation id="6731320427842222405">Бир нече мүнөт кетиши мүмкүн</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (идентификатор: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Дареги</translation>
 <translation id="6737663862851963468">Kerberos билетин алып салуу</translation>
@@ -8699,7 +8673,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Түзмөк</translation>
 <translation id="6966831944134814478">Өчүрүү</translation>
-<translation id="6967112302799758487">Steam for Chromebook (бета) аркылуу орнотулган бардык колдонмолор менен оюндар бул түзмөктөн өчүрүлөт. Алар менен байланышкан маалымат да өчүрүлөт. Чыгарып салуудан мурун сакталган колдонмолордун жана оюндардын камдык көчүрмөлөрүн сактап коюңуз.</translation>
 <translation id="6967430741871315905">Түзмөккө уруксат берилип же берилбегенин текшерүү мүмкүн эмес</translation>
 <translation id="6968288415730398122">Экранга кулпу коюу үчүн сырсөзүңүздү киргизиңиз</translation>
 <translation id="6969047215179982698">Nearby Share функциясын өчүрүү</translation>
@@ -8870,7 +8843,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> тармагын администраторуңуз башкарат</translation>
 <translation id="7082850163410901674">Билдирмелер Mac'тын Тутум параметрлеринде өчүрүлгөн</translation>
 <translation id="7083729794572207131">Сайттарды пайдаланууңузду жакшыртуу үчүн алар адатта веб колдонмолорун орнотууну суранышат</translation>
-<translation id="7083774521940805477">Steam for Chromebook (бета) Chromebook түзмөгүңүздө жеткиликсиз.</translation>
 <translation id="7084095352418993433">Google'дан бул бет жөнүндө сураңыз: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(конфигурацияланган жок)</translation>
 <translation id="7086377898680121060">Жарыгыраак</translation>
@@ -8949,7 +8921,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7141844554192012199">Текшерүү</translation>
 <translation id="714301620504747562">Карап чыгуу жана издөө кадимки алдын ала жүктөөдөн тезирээк болот</translation>
 <translation id="7143207342074048698">Туташууда</translation>
-<translation id="7143409552554575716">ChromeOS белгилөөлөрү</translation>
 <translation id="7144363643182336710">Билдирмелер экраныңызда көрүнбөйт. Билдирмелерди экрандын ылдыйкы оң жагындагы "Тынчымды алба" сүрөтчөсүн басып, көрсөңүз болот.</translation>
 <translation id="7144856456372460176"><ph name="APP" /> колдонмосун &amp;орнотуу...</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
@@ -8960,7 +8931,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7152478047064750137">Бул кеңейтүү атайын уруксаттарды талап кылбайт</translation>
 <translation id="7153101072880472645">Жогорку контрастты күйгүзүү/өчүрүү</translation>
 <translation id="715396040729904728">жүргүзгүч + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Пикириңизди бөлүшүп, көйгөйдү, эгер мүмкүн болсо, ага себеп болгон кадамдарды сүрөттөп бериңиз.</translation>
 <translation id="7154130902455071009">Баштоо баракчаңызды төмөнкүгө өзгөртүңүз: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Видеонун сапатын жакшыртуу менен бирге түзмөгүңүздүн кубатын үнөмдөңүз. Видео Google Cast иштетилген экранда гана ойнотулат.</translation>
 <translation id="7159695867335480590">Ойнотуу/тындыруу</translation>
@@ -9812,7 +9782,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7728668285692163452">Канал кийинчерээк өзгөртүлөт</translation>
 <translation id="7730449930968088409">Экраныңыздын мазмунун тартып алыңыз</translation>
 <translation id="7730683939467795481">Бул баракты "<ph name="EXTENSION_NAME" />" кеңейтүүсү өзгөрттү</translation>
-<translation id="7732702411411810416">Интернет байланышыңызды текшерип, кайталап көрүңүз</translation>
 <translation id="773511996612364297">Басым белгилери</translation>
 <translation id="7735558909644181051">Ортоңку тастыктамалар</translation>
 <translation id="7736119438443237821">Бул түзмөктө киргизүүчү ачкычтарды колдонууга тыюу салганы жатасыз</translation>
@@ -10010,7 +9979,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7871691770940645922">Виртуалдуу Брайль дисплейи</translation>
 <translation id="787268756490971083">Өчүк</translation>
 <translation id="7872758299142009420">Ортосуна кыстарылган топтор өтө көп: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Chromebook үчүн Steam</translation>
 <translation id="7876027585589532670">Ыкчам баскыч түзөтүлбөй жатат</translation>
 <translation id="7876243839304621966">Баарын алып салуу</translation>
 <translation id="7877126887274043657">&amp;Шайкештирүү көйгөйүн оңдоо</translation>
@@ -11667,7 +11635,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8983018820925880511">Бул жаңы профиль <ph name="DOMAIN" /> тарабынан тескелет. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> түзөтө алат</translation>
 <translation id="8984694057134206124">Түзмөгүңүз бардык адамдарга <ph name="MINUTES" /> мүнөткө чейин көрүнөт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook үчүн Steam колдонмосуна кош келиңиз</translation>
 <translation id="8985264973231822211">Соңку аракеттер: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> күн мурун</translation>
 <translation id="8985561265504464578">Аныктоо босогосунун мааниси</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө кирүү үчүн Интернетке туташыңыз.</translation>
@@ -11799,7 +11766,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Күнүнө 1 билдирме}other{Күнүнө {NUM_NOTIFICATION} билдирме}}</translation>
 <translation id="9058760336383947367">Принтердин PPD файлын көрүү</translation>
 <translation id="9061521313218438086">Эгер Chrome сырсөздөрүңүздүн бирин кимдир бирөө билип алганын аныктаса, Сырсөздөрдү башкаргыч аккаунтуңузга кирген учурда сырсөзүңүздү өзгөртүүнү сунушташы мүмкүн.</translation>
-<translation id="9061694916020926968">Steam for Chromebook'ту (бета) колдонуу үчүн Google аккаунтуңузга киришиңиз керек. Кирип, кайталап көрүңүз.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Өтүү ыкчам баскычын өчүрүү</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" /> сабынан <ph name="ERROR_LINE_END" /> сабына чейин ката бар</translation>

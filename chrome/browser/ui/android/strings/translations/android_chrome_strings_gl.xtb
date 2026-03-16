@@ -239,6 +239,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="200114059308480249">Queres incluír o texto circundante nas buscas de Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pestana do modo de incógnito fixada e silenciada</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
+<translation id="2024195579772565064">Eliminar o motor de busca</translation>
 <translation id="2029669011553795746">Opción de activar as notificacións de consellos aberta a media altura</translation>
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> tamén ten datos en Chrome</translation>
@@ -556,6 +557,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3384347053049321195">Compartir imaxe</translation>
 <translation id="3387650086002190359">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a erros no sistema de ficheiros.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
+<translation id="3417835166382867856">Realizar buscas nas pestanas</translation>
 <translation id="3430670036890315772">Se desactivas o bloqueo do perfil, quitarase a información gardada</translation>
 <translation id="3435465986463792564">Tes varias ventás? Podes xestionalas desde aquí</translation>
 <translation id="3435575784518354875">Para poder acceder aos contrasinais, expórtaos agora, actualiza os servizos de Google Play e despois volve importalos no xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Ver as instrucións completas.<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898797562238201317">Usa a túa propia frase de acceso para encriptar todos os datos de Chrome na túa Conta de Google</translation>
 <translation id="6900532703269623216">Protección mellorada</translation>
+<translation id="6900654715912436255">Seguro que queres eliminar este motor de busca?</translation>
 <translation id="6903907808598579934">Activar sincronización</translation>
 <translation id="6906448540340261898">Asegúrate de poder usar sempre os contrasinais na túa Conta de Google</translation>
 <translation id="6908230663105268638">Permítense as notificacións de <ph name="SITE_NAME" /></translation>

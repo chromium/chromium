@@ -239,6 +239,7 @@
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，固定的無痕分頁，已設為靜音</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
+<translation id="2024195579772565064">刪除搜尋引擎</translation>
 <translation id="2029669011553795746">提示通知啟用畫面顯示在畫面下半部</translation>
 <translation id="2038563949887743358">開啟「要求電腦版網站」</translation>
 <translation id="204321170514947529">「<ph name="APP_NAME" />」在 Chrome 中也有資料</translation>
@@ -556,6 +557,7 @@
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3414952576877147120">空間大小：</translation>
+<translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3430670036890315772">如果關閉設定檔鎖定功能，系統將移除已儲存的資訊</translation>
 <translation id="3435465986463792564">開啟了多個視窗嗎？你可以在這裡進行管理</translation>
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回 Google 密碼管理工具。<ph name="BEGIN_LINK" />查看完整操作說明<ph name="END_LINK" />。</translation>
@@ -1440,6 +1442,7 @@
 <translation id="6896758677409633944">複製</translation>
 <translation id="6898797562238201317">使用通關密語加密 Google 帳戶中的所有 Chrome 資料</translation>
 <translation id="6900532703269623216">強化防護</translation>
+<translation id="6900654715912436255">確定要刪除這個搜尋引擎嗎？</translation>
 <translation id="6903907808598579934">開啟同步功能</translation>
 <translation id="6906448540340261898">確保你隨時可以使用 Google 帳戶中的密碼</translation>
 <translation id="6908230663105268638">你已允許 <ph name="SITE_NAME" /> 傳送通知</translation>

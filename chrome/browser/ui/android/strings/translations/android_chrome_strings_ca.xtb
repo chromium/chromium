@@ -239,6 +239,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="200114059308480249">Vols incloure el text del voltant a les cerques de Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pestanya d'incògnit silenciada fixada</translation>
 <translation id="2021896219286479412">Controls de pantalla completa</translation>
+<translation id="2024195579772565064">Suprimeix el motor de cerca</translation>
 <translation id="2029669011553795746">L'opció d'activar les notificacions de consells està oberta a mitja alçada</translation>
 <translation id="2038563949887743358">Activa Mostra com a ordinador</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> també té dades a Chrome</translation>
@@ -556,6 +557,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3384347053049321195">Comparteix la imatge</translation>
 <translation id="3387650086002190359">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'errors amb el sistema de fitxers.</translation>
 <translation id="3414952576877147120">Mida:</translation>
+<translation id="3417835166382867856">Cerca pestanyes</translation>
 <translation id="3430670036890315772">En desactivar el bloqueig de perfil, se suprimirà la informació desada</translation>
 <translation id="3435465986463792564">Tens moltes finestres obertes? Pots gestionar-les aquí.</translation>
 <translation id="3435575784518354875">Per mantenir l'accés a les contrasenyes, exporta-les ara, actualitza Serveis de Google Play i, a continuació, importa-les al gestor de contrasenyes de Google. <ph name="BEGIN_LINK" />Mostra les instruccions completes<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6898797562238201317">Utilitza la teva frase de contrasenya per encriptar totes les dades de Chrome al teu Compte de Google</translation>
 <translation id="6900532703269623216">Protecció millorada</translation>
+<translation id="6900654715912436255">Confirmes que vols suprimir aquest motor de cerca?</translation>
 <translation id="6903907808598579934">Activa la sincronització</translation>
 <translation id="6906448540340261898">Assegura't de poder utilitzar sempre les contrasenyes al teu Compte de Google</translation>
 <translation id="6908230663105268638">Es permeten les notificacions per a <ph name="SITE_NAME" /></translation>

@@ -841,7 +841,6 @@
 <translation id="156793199942386351">«<ph name="CURRENTKEY" />» ቀደም ብሎ ወደ «<ph name="ACTION" />» እርምጃ ተመድቧል። ለ<ph name="RESPONSE" /> ማንኛውንም ቁልፍ ይጫኑ።</translation>
 <translation id="1567993339577891801">ጃቫስክሪፕት ኮንሶል</translation>
 <translation id="1569466257325986920">በሚቀጥለው ጊዜ የእርስዎ የGoogle መለያ የይለፍ ቃል ሲቀየር፣ ወደ Google መለያዎ ከገቡ በኋላ የእርስዎ አካባቢያዊ ውሂብ በራስ ሰር ተመልሶ ይገኛል</translation>
-<translation id="1570235441606255261">የSteam ጫኝ</translation>
 <translation id="1570604804919108255">የማሳወቂያዎች ድምጸ-ከል አንሳ</translation>
 <translation id="1570990174567554976">«<ph name="BOOKMARK_TITLE" />» የዕልባት አቃፊ ተፈጥሯል።</translation>
 <translation id="1571041387761170095">ምንም ደካማ ወይም ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላት የሉም</translation>
@@ -966,7 +965,6 @@
 <translation id="1642299742557467312">ይህ ፋይል መሣሪያዎን ሊጎዳ ይችላል</translation>
 <translation id="1642492862748815878">ከ<ph name="DEVICE" /> እና <ph name="NUMBER_OF_DEVICES" /> ሌሎች የብሉቱዝ መሣሪያዎች ጋር ተገናኝቷል</translation>
 <translation id="1642494467033190216">ሌሎች የማረሚያ ባህሪያት ከመንቃታቸው በፊት የrootfs ጥበቃ መወገድ እና ዳግም መጀመር ያስፈልጋል።</translation>
-<translation id="1642895994345928121">ይህን መተግበሪያ ለመክፈት በቂ የመሣሪያ ማከማቻ የለም። ቦታ ያስለቅቁ እና እንደገና ይሞክሩ።</translation>
 <translation id="1643072738649235303">የX9.62 ECDSA ፊርማ በSHA-1</translation>
 <translation id="1643921258693943800">በአቅራቢያ አጋራ ለመጠቀም፣ ብሉቱዝን እና Wi-Fiን ያብሩ</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
@@ -2074,7 +2072,6 @@
 <translation id="2390347491606624519">ከተኪ ጋር መገናኘት አልተቻለም፣ እባክዎ እንደገና ይግቡ</translation>
 <translation id="2390782873446084770">Wi-Fi ስምረት</translation>
 <translation id="2391419135980381625">መደበኛ ቅርጸ-ቁምፊ</translation>
-<translation id="2391805183137601570">Steam ክፈት</translation>
 <translation id="239185270194776190">የእርስዎ የGemini ውይይት በሌላ መስኮት ውስጥ ነው። እሱን ወደዚህ ለማንቀሳቀስ በዚህ የጎን ፓነል የትኛውም ቦታ ላይ ጠቅ ያድርጉ።</translation>
 <translation id="2392369802118427583">አግብር</translation>
 <translation id="2393136602862631930">በእርስዎ Chromebook ላይ <ph name="APP_NAME" />ን ያቀናብሩ</translation>
@@ -2156,7 +2153,6 @@
 <translation id="2445484935443597917">አዲስ መገለጫ ፍጠር</translation>
 <translation id="2445726032315793326">ከፊል ማጉያ</translation>
 <translation id="244641233057214044">ከፍለጋዎ ጋር የሚዛመድ</translation>
-<translation id="2447587550790814052">አሁን Steam for Chromebook (ቅድመ ይሁንታ) መጠቀም ይችላሉ</translation>
 <translation id="2448312741937722512">ዓይነት</translation>
 <translation id="2448810255793562605">የመዳረሻ መቀየሪያ ራስ-ሰር ቅኝት</translation>
 <translation id="2450021089947420533">ጉዞዎች</translation>
@@ -2183,7 +2179,6 @@
 <translation id="2460826998961521840">በGoogle መለያዎ ውስጥ የተቀመጡ የይለፍ ቁልፎችን ለመጠቀም</translation>
 <translation id="2461550163693930491">ጣቢያዎች የተጋሩ ትሮችን እንዲያሸበልሉ እና እንዲያጉሉ አይፍቀዱ</translation>
 <translation id="2461593638794842577">የይለፍ ቃላትዎን በዚህ መሣሪያ ላይ ብቻ ለማስቀመጥ ይህን ቅንብር ማጥፋት ይችላሉ።</translation>
-<translation id="2462332841984057083">Steam አስቀድሞ ተዋቅሯል። ማዋቀር እስከሚጠናቀቅ ድረስ ይጠብቁ።</translation>
 <translation id="2462724976360937186">የእውቅና ማረጋገጫ ባለስልጣን ቁልፍ መታወቂያ</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ታክሏል</translation>
 <translation id="2464075479326723132">Microsoft SharePoint እና OneDrive ውስጥ ወዳለዎት በጣም የቅርብ ጊዜ እንቅስቃሴ በቀላሉ መመለስ እንዲችሉ ለማገዝ የተጠቆሙ ፋይሎችን እያዩ ነው።
@@ -2238,7 +2233,6 @@
 <translation id="2491587035099903063">የ<ph name="LANGUAGE" /> ድምጽ ቅድመ እይታ</translation>
 <translation id="2492461744635776704">የዕውቅና ማረጋገጫ ፊርማ ጥያቄን በማዘጋጀት ላይ</translation>
 <translation id="249330843868392562">የጽሑፍ-ወደ-ንግግር ቅንብሮችን ክፈት</translation>
-<translation id="2494555621641843783">Steamን መጫን አልተቻለም</translation>
 <translation id="2496180316473517155">ታሪክ አሰሳ</translation>
 <translation id="2496616243169085015">ፎቶግራፍ</translation>
 <translation id="2497229222757901769">የመዳፊት ፍጥነት</translation>
@@ -2594,7 +2588,6 @@
 <translation id="27349076983469322">ፈዛዝ ያለ ጀርባ</translation>
 <translation id="2735712963799620190">የጊዜ ሰሌዳ</translation>
 <translation id="2737363922397526254">ሰብስብ...</translation>
-<translation id="2737538893171115082">Steam for Chromebook (ቅድመ ይሁንታ) በአስተዳዳሪዎ ታግዷል። አስተዳዳሪዎ እነዚህን መመሪያዎች ማብራት አለበት፦</translation>
 <translation id="2737719817922589807">&amp;እልባቶች እና ዝርዝሮች</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> የማያ ገጽዎን ይዘቶች ለ<ph name="TARGET_NAME" /> ማጋራት ይፈልጋል።</translation>
 <translation id="2738030019664645674">ጣቢያዎች በእርስዎ መሣሪያ ላይ የተጫኑ ቅርጸ-ቁምፊዎችን እንዲጠቀሙ አይፍቀዱ</translation>
@@ -3057,7 +3050,6 @@
 <translation id="3039491566278747710">በመሣሪያው ላይ ከመስመር ውጭ መመሪያን መጫን አልተሳካም።</translation>
 <translation id="303955801043931176">ትር ተዘግቷል</translation>
 <translation id="3040435070100611531">የእርስዎ Google Wallet ይለፎች</translation>
-<translation id="3040982432432547149">Steam ለChromebookን እንድናሻሽል ያግዙን</translation>
 <translation id="304169924727249890">ከ<ph name="OWNER_FIRST_NAME" /> ጋር የትር ቡድን ይቀላቀላሉ</translation>
 <translation id="3042097545107738107">የተባውን የኃይል መሙላት ስልት ይለውጡ።</translation>
 <translation id="3043016484125065343">የእርስዎን እልባቶች ለማየት በመለያ ይግቡ</translation>
@@ -3268,7 +3260,6 @@
 <translation id="3201422919974259695">ሊገኙ የሚችሉ የዩኤስቢ መሣሪያዎች እዚህ ላይ ብቅ ይላሉ።</translation>
 <translation id="3202499879214571401">ትርን ወደ <ph name="DEVICE_NAME" /> cast ማድረግን ባለበት አቁም</translation>
 <translation id="3202578601642193415">በጣም አዲስ</translation>
-<translation id="3204648577100496185">ከዚህ መተግበሪያ ጋር የተጎዳኘ ውሂብ ከዚህ መሣሪያ ላይ ሊወገድ ይችላል</translation>
 <translation id="3206289903841621620">የተጠቃሚ መዝገበ-ቃላት <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">በቅርብ ጊዜ እንቅስቃሴዎ መሠረት ሊያስደስትዎ የሚችሉ የተጠቆሙ ፍለጋዎችን እና የሸመታ ዋጋ ቅናሾችን እየተመለከቱ ነው።
         <ph name="BREAK" />
@@ -3376,7 +3367,6 @@
 <translation id="3283148363895519428">ውቅረትን ለመቀጠል በስልክዎ ላይ ያሉትን መመሪያዎች ይከተሉ። ስልከዎ በአቅራቢያ መሆኑን እና ብሉቱዝ መብራቱን ያረጋግጡ።</translation>
 <translation id="3284050785966252943">የዲበ ውሂብ ቅድመ ዕይታን በራስ-ሙላ</translation>
 <translation id="3285322247471302225">አዲስ &amp;ትር</translation>
-<translation id="3285465040399788513">ውቅረትን ለማጠናቀቅ በቂ የመሣሪያ ማከማቻ የለም። ቦታ ያስለቅቁና እንደገና ይሞክሩ።</translation>
 <translation id="3285500645985761267">ተዛማጅ ጣቢያዎች በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ እንዲመለከቱ ይፍቀዱ</translation>
 <translation id="328571385944182268">የእርስዎን የይለፍ ቃላት ይቀመጡ?</translation>
 <translation id="3289668031376215426">ራስ-ሰር ዓቢይ ሆሄ ማድረጊያ</translation>
@@ -3499,7 +3489,6 @@
 <translation id="3372602033006349389">በሌሎች መሣሪያዎች ላይ</translation>
 <translation id="337286756654493126">በመተግበሪያው ውስጥ የሚከፍቷቸውን አቃፊዎች ያነባል</translation>
 <translation id="3373059063088819384">በንባብ ሁነታ ውስጥ ክፈት</translation>
-<translation id="3373196968211632036">Steam for Chromebook (ቅድመ ይሁንታ) ለልጅ Google መለያዎች አይገኝም</translation>
 <translation id="3373701465337594448">በሚበራበት ጊዜ ፍላጎቶችዎን የሚገምቱ የሚጎበኟቸው ጣቢያዎች ዝርዝር እዚህ ይታያል</translation>
 <translation id="3374294321938930390">‹<ph name="BOOKMARK_TITLE" />› ወደ ‹<ph name="NEW_FOLDER_TITLE" />› ተዛውሯል።</translation>
 <translation id="3376035595160918049">የመተግበሪያ ዝማኔን ይገምግሙ</translation>
@@ -3682,7 +3671,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (ያልተመረጠ)</translation>
 <translation id="3496689104192986836">የባትሪ ደረጃ <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">የሚሰበሰቡ የውሂብ ምንጮች</translation>
-<translation id="3496797737329654668">ጨዋታ እንጫወት</translation>
 <translation id="3496995426334945408">ጣቢያዎች እንደ ቪድዮ ጨዋታዎች ወይም የድር ቅጾች ያሉ ህብረ ገቢር ባህሪያትን ለማሳየት አብዛኛውን ጊዜ ጃቫስክሪፕትን ይጠቀማሉ</translation>
 <translation id="3497501929010263034">የዩኤስቢ መሣሪያ ከ<ph name="VENDOR_NAME" /> (ምርት <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle አጋራ</translation>
@@ -3895,7 +3883,6 @@
 <translation id="3637203148990213388">ተጨማሪ መለያዎች</translation>
 <translation id="3640347231390550691">የይለፍ ቃላትዎን ከማስገር ይጠበቁ</translation>
 <translation id="364100968401221170">ከሁሉም የእርስዎ የተመሳሰሉ መሣሪያዎች እና የእርስዎ የGoogle መለያ ላይ የአሰሳ ውሂብን ለመሰረዝ፣ <ph name="BEGIN_LINK" />በመለያ ይግቡ<ph name="END_LINK" />።</translation>
-<translation id="3641070112313110357">Steam ለChromebook (ቅድመ ይሁንታ) መዘመን አለበት። የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ።</translation>
 <translation id="3641299252000913351">የሞደም የፊርምዌር ማዘመን በሂደት ላይ ነው። መሣሪያውን አያጥፉ።</translation>
 <translation id="3641456520301071208">ጣቢያዎች አካባቢዎን ሊጠይቁ ይችላሉ</translation>
 <translation id="3642064270296434810">አሁን በማያ ገፅዎ ላይ የሚያዩትን ማንኛውንም ነገር ለመፈለግ Google ሌንስን መጠቀም ይችላሉ</translation>
@@ -4232,7 +4219,6 @@
 <translation id="383891835335927981">ምንም ጣቢያዎች አልጎሉም ወይም አላነሱም</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> የቅንጥብ ሰሌዳው እንዳይመለከት አግድ</translation>
 <translation id="3840096463915153852">የውይይት ታሪክ</translation>
-<translation id="3841282988425489367">Steam for Chromebookን (ቅድመ ይሁንታ) ማዋቀር አልተቻለም</translation>
 <translation id="3841319830220785495">ነባሪ የተፈጥሮ ድምፅ</translation>
 <translation id="3841356782900714251">ዘመናዊ ካርድ አንባቢዎች</translation>
 <translation id="3841964634449506551">የይለፍ ቃል ልክ አይደለም</translation>
@@ -4678,7 +4664,6 @@
 <translation id="4148195018520464922">ለተወሰኑ ተጠቃሚዎች ወደ መለያ መግባትን መገደብ ይችላሉ። ይህ ወደ መለያ መግቢያ ማያ ገፅ ላይ «ሰው አክል» አማራጩን ያስወግዳል። እንዲሁም የአሁን ጊዜ ተጠቃሚዎችን ማስወገድ ይችላሉ።</translation>
 <translation id="4148957013307229264">በመጫን ላይ...</translation>
 <translation id="4150201353443180367">ማሳያ</translation>
-<translation id="4151449637210235443">ስለ ቅርብ ጊዜ የጨዋታ ዘዴዎ ይንገሩን</translation>
 <translation id="4151503145138736576">ለማጽዳት ምንም ከመስመር ውጭ የሆነ ማከማቻ የለም</translation>
 <translation id="4152011295694446843">የእርስዎን እልባቶች እዚህ ያገኛሉ</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ትር}one{# ትሮች}other{# ትሮች}}</translation>
@@ -4729,7 +4714,6 @@
 <translation id="4193251682249731404">የታመነ CA</translation>
 <translation id="4193575319002689239">ካርዶችን አሳይ</translation>
 <translation id="419427585139779713">በአንድ ጊዜ አንድ ክፍለ-ቃል ያስገቡ</translation>
-<translation id="4195001808989442226">Steam for Chromebook መክፈት አልተቻለም (ቅድመ ይሁንታ)</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4195814663415092787">ካቆምክበት ቀጥል</translation>
 <translation id="4198268995694216131">ተጨማሪ ጣቢያዎች</translation>
@@ -4775,7 +4759,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ይህ ቅጥያ አይፈቀድም}one{አንዳንድ ቅጥያዎች አይፈቀዱም}other{አንዳንድ ቅጥያዎች አይፈቀዱም}}</translation>
 <translation id="4231053948789591973">cast ማድረግ በአሁኑ ጊዜ ባለበት ቆሟል። የማያ ገጽዎን በማንኛውም ጊዜ cast ማድረግን ባለበት ማቆም ወይም cast ማድረግን ማቆም ይችላሉ።</translation>
 <translation id="4231095370974836764">ከGoogle Play በእርስዎ <ph name="DEVICE_TYPE" /> ላይ መተግበሪያዎችን እና ጨዋታዎችን ይጫኑ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Steam for Chromebook በማዋቀር ላይ</translation>
 <translation id="4232375817808480934">Kerberosን ያዋቅሩ</translation>
 <translation id="4232376164796433044">የይለፍ ቃላት እና ራስ-ሙላ</translation>
 <translation id="4232484478444192782">የAndroid ስልክዎ ሽፋን ሰጥዎታል። የእርስዎ Wi-Fi እና ይለፍ ቃል እየተዘዋወሩ ናቸው።</translation>
@@ -5134,7 +5117,6 @@
 <translation id="4472533928615930332">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" />፣ በ<ph name="STYLE" /> ቅጥ</translation>
 <translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4473559657152613417">ትር ላይ በቀኝ ጠቅ ያድርጉ እና «ትርን ወደ አዲስ ቡድን አክል» የሚለውን ይምረጡ</translation>
-<translation id="4473996011558324141">ጊዜ መገመት</translation>
 <translation id="4474155171896946103">ለሁሉም ትሮች ዕልባት አብጅ...</translation>
 <translation id="4476198534886170024">ተፈቅዷል። <ph name="LINK_BEGIN" />የስርዓት ካሜራ መዳረሻ<ph name="LINK_END" />ን ያብሩ።</translation>
 <translation id="4476590490540813026">አትሌት</translation>
@@ -5369,7 +5351,6 @@
 <translation id="4638930039313743000">የADB ስህተትን ማረሚያ አንቃ</translation>
 <translation id="4639390152280993480">የዚህ ገፅ ቀለል የተደረገውን ዕይታ ለማግኘት ወደ ተጨማሪ መሣሪያዎች &gt; የንባብ ሁነታ ይሂዱ</translation>
 <translation id="4641539339823703554">Chrome የስርዓት ጊዜ ማዘጋጀት አልቻለም። እባክዎ ከዚህ በታች ያለውን ጊዜ ይፈትሹና አስፈላጊ ከሆነ ያስተካክሉ።</translation>
-<translation id="4642587497923912728">Steam for Chromebook (ቅድመ ይሁንታ) የሚገኘው በዚህ Chromebook መጀመሪያ ለገባው መለያ ብቻ ነው።</translation>
 <translation id="4643612240819915418">&amp;ቪዲዮ በአዲስ ትር ክፈት</translation>
 <translation id="4643833688073835173">የእርስዎ Chromebook ከመሣሪያዎ ፊት ለፊት ያሉ ሰዎችን ለማግኘት አብሮገነብ ደሳሽን ይጠቀማል። ሁሉም ውሂብ ወዲያውኑ በመሣሪያዎ ላይ ይሰናዳል እንዲሁም ከዚያ ይሰረዛል። የዳሳሽ ውሂብ ወደ Google በጭራሽ አይላክም።</translation>
 <translation id="4644205769234414680">በማንነትን የማያሳውቅ ውስጥ ይፍቀዱ</translation>
@@ -6374,7 +6355,6 @@
 <translation id="5353769147530541973">ለማቦዘን <ph name="SITE_NAME" /> ትሮች ዝርዝር አስወግድ</translation>
 <translation id="5355099869024327351">ረዳቱ ማሳውቂያዎችን ለእርስዎ እንዲያሳይ ፍቀድ</translation>
 <translation id="5355191726083956201">የተሻሻለ ጥበቃ በርቷል</translation>
-<translation id="5355498626146154079">«Borealis Enabled» የሚለውን ጠቋሚ ማብራት አለብዎ</translation>
 <translation id="5355501370336370394">የድርጅት መሣሪያ ይመዝገቡ</translation>
 <translation id="5357010010552553606">ወደ ሙሉ ገጽ ዕይታ በራስ-ሰር እንዲገባ አይፈቀድም</translation>
 <translation id="5359910752122114278">1 ውጤት</translation>
@@ -6404,7 +6384,6 @@
 <translation id="5376931455988532197">ፋይሉ በጣም ትልቅ ነው</translation>
 <translation id="5377367976106153749">የካሜራ መዳረሻ ይብራ?</translation>
 <translation id="5379140238605961210">የማይክሮፎን መዳረሻ ማገዱን ቀጥል</translation>
-<translation id="5380526436444479273">ጥቂት ደቂቃዎች ይጠብቁ እና እንደገና ይሞክሩ</translation>
 <translation id="5382591305415226340">የሚደገፉ አገናኞችን ያስተዳድሩ</translation>
 <translation id="5384401776498845256">ማን ከእርስዎ ጋር ማጋራት ይችላል</translation>
 <translation id="5385628342687007304">ይህ የይለፍ ቃል የተቀመጠው በዚሀ መሣሪያ ላይ ብቻ ነው። በሌሎች መሣሪያዎቸዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።</translation>
@@ -6459,7 +6438,6 @@
 <translation id="5414198321558177633">የመገለጫ ዝርዝርን በማደስ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="5414566801737831689">የሚጎበኟቸውን የድር ጣቢያዎች አዶዎች ያነብባል</translation>
 <translation id="5414836363063783498">በማረጋገጥ ላይ…</translation>
-<translation id="5415328625985164836">ይህ የቅድመ-ይሁንታ ፕሮግራም ነው። አሁን በእርስዎ Chromebook ላይ አንዳንድ ጨዋታዎችን ለመጫወት Steam መጠቀም ይችላሉ።</translation>
 <translation id="5415497281076257439">ሐረግ</translation>
 <translation id="5415871492522952905">እያደረጉ የነበሩትን ነገር መቀጠል እንዲችሉ ታሪክዎን እና ትሮችዎን በሁሉም መሣሪያዎችዎ ላይ ያገኟቸዋል።</translation>
 <translation id="5417293056300086453">ይህ ጣቢያ ጥበቃ የሚደረግለትን ይዘት ለማጫወት ለዪዎችን መጠቀም ይችላል።</translation>
@@ -6900,7 +6878,6 @@
 <translation id="5727728807527375859">ቅጥያዎች፣ መተግበሪያዎች እና ገፅታዎች ኮምፒውተርዎን ሊጎዱ ይችላሉ። እርግጠኛ ነዎት መቀጠል ይፈልጋሉ?</translation>
 <translation id="5728072125198221967">የተገናኙ የGoogle አገልግሎቶች</translation>
 <translation id="5728450728039149624">የSmart Lock ማያ ገፅ መቆለፊያ አማራጮች</translation>
-<translation id="572914206753951782">የእርስዎ Chromebook በአዲሱ ስሪት ላይ መሆኑን ያረጋግጡ። ከዚያ የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ</translation>
 <translation id="5729712731028706266">&amp;እይታ</translation>
 <translation id="5731247495086897348">ለ&amp;ጥፍና እና ሂድ</translation>
 <translation id="5733109311583381874">የልወጣ እጩዎችን ለማበጀት የራስዎን ቃላት ወደ የተጠቃሚ መዝገበ ቃላት ያክሉ።</translation>
@@ -8015,7 +7992,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{«<ph name="APP_NAME" />» የሚከተለውን መተግበሪያ በዚህ መሣሪያ ላይ መጫን ይፈልጋል፦}one{«<ph name="APP_NAME" />» የሚከተሉትን መተግበሪያዎች በዚህ መሣሪያ ላይ መጫን ይፈልጋሉ፦}other{«<ph name="APP_NAME" />» የሚከተሉትን መተግበሪያዎች በዚህ መሣሪያ ላይ መጫን ይፈልጋሉ፦}}</translation>
 <translation id="6508248480704296122">ከ<ph name="NAME_PH" /> ጋር የሚዛመድ</translation>
 <translation id="6508261954199872201">መተግበሪያ፦ <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">የእርስዎን Chromebook እንደገና ያስጀምሩት እና እንደገና ይሞክሩ</translation>
 <translation id="6511827214781912955">ይህን መሣሪያ የሚጠቀሙ ሌሎች የእርስዎን የይለፍ ቃላት ማየት እንዳይችሉ <ph name="FILENAME" />ን መሰረዝን ያስቡበት</translation>
 <translation id="6512759338201777379">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" />፣ በ<ph name="MOOD" /> ስሜት።</translation>
 <translation id="6513247462497316522">ከሌላ አውታረ መረብ ጋር ካልተገናኙ Google Chrome የተንቀሳቃሽ ውሂብን ይጠቀማል።</translation>
@@ -8124,7 +8100,6 @@
 <translation id="657866106756413002">አውታረ መረብ የጤና ቅጽበተ-ፎቶ</translation>
 <translation id="6579369886355986318">ሁሉንም &amp;መቆጣጠሪያዎች አሳይ</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - የዴስክቶፕ ይዘት ተጋርቷል</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% ተጠናቅቋል</translation>
 <translation id="6580203076670148210">የቅኝት ፍጥነት</translation>
 <translation id="6580676117087365538">ይህን ቅጥያ በሁሉም ኮምፒውተሮችዎ ላይ ለማግኘት እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="6581356304040102696">የይለፍ ቃላትን ማምጣት አልተቻለም። የፋይሉ መጠን ከ1 ሜባ በታች መሆን አለበት።</translation>
@@ -8345,7 +8320,6 @@
 <translation id="6729280095610283088">የአውሮራ ቦሪያሊስ ያላቸው ደማቅ ጅረቶች፣ ከጫካ በላይ።</translation>
 <translation id="6729493062119577923">የተጋራ የትር ቡድን እንቅስቃሴ</translation>
 <translation id="6730744976532805323">ትሮችን ሲቀይሩ እንኳን የአሁኑን ትር ለGemini ያጋራል</translation>
-<translation id="6731320427842222405">ይሄ ጥቂት ደቂቃዎችን ሊወስደ ይችላል</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (መታወቂያ፦ <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">አድራሻ</translation>
 <translation id="6737663862851963468">የKerberos ቲኬትን ያስወግዱ</translation>
@@ -8695,7 +8669,6 @@
 <translation id="6965648386495488594">ወደብ</translation>
 <translation id="6965978654500191972">መሣሪያ</translation>
 <translation id="6966831944134814478">አጥፋ</translation>
-<translation id="6967112302799758487">በSteam for Chromebook (ቅድመ ይሁንታ) የተጫኑ ማናቸውም መተግበሪያዎች እና ጨዋታዎች ከዚህ መሣሪያ ይወገዳሉ። ከእነዚህ መተግበሪያዎች እና ጨዋታዎች ጋር የተገናኘ ውሂብም ይወገዳል። ከማራገፍዎ በፊት የተቀመጡ መተግበሪያዎችን እና ጨዋታዎችን ምትኬ ማስቀመጥዎን ያረጋግጡ።</translation>
 <translation id="6967430741871315905">መሣሪያው ይፈቀድ እንደሆነ ማረጋገጥ አልተቻለም</translation>
 <translation id="6968288415730398122">ማያ ገፅ መቆለፊያን ለማዋቀር የይለፍ ቃልዎን ያስገቡ</translation>
 <translation id="6969047215179982698">የአቅራቢያ አጋራን ያጥፉ</translation>
@@ -8867,7 +8840,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> የሚተዳደረው በእርስዎ አስተዳዳሪ ነው</translation>
 <translation id="7082850163410901674">ማሳወቂያዎች በMac የሥርዓት ቅንብሮች ውስጥ ጠፍተዋል</translation>
 <translation id="7083729794572207131">በጣቢያው ላይ ያለዎትን ተሞክሮ ለማሻሻል ጣቢያዎች በአብዛኛው የድር መተግበሪያዎችን እንዲጭኑ ይጠይቃሉ</translation>
-<translation id="7083774521940805477">Steam for Chromebook (ቅድመ ይሁንታ) በእርስዎ Chromebook ላይ የለም።</translation>
 <translation id="7084095352418993433">ስለዚህ ገጽ Googleን ጠይቅ፦ <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(አልተዋቀረም)</translation>
 <translation id="7086377898680121060">ብሩህነት ጨምር</translation>
@@ -8946,7 +8918,6 @@
 <translation id="7141844554192012199">ፍተሻ</translation>
 <translation id="714301620504747562">አሰሳ እና ፍለጋ ከመደበኛ ቅድሚያ መጫን ይበልጥ ይፈጥናል</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
-<translation id="7143409552554575716">የChromeOS ጠቋሚዎች</translation>
 <translation id="7144363643182336710">ማሳወቂያዎች በማያ ገጹ ላይ ብቅ አይሉም። የማያ ገጽ የታችኛው ቀኝ ላይ አትረብሽ አዶውን ጠቅ በማድረግ ማሳወቂያዎችን አሁንም ማየት ይችላሉ።</translation>
 <translation id="7144856456372460176"><ph name="APP" /> ይጫኑ...</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
@@ -8957,7 +8928,6 @@
 <translation id="7152478047064750137">ይህ ቅጥያ ምንም ልዩ ፈቃዶችን አይፈልግም</translation>
 <translation id="7153101072880472645">ከፍተኛ ንጽጽር አብራ/አጥፋ</translation>
 <translation id="715396040729904728">launcher + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">የእርስዎን ግብረመልስ ያጋሩ ወይም የእርስዎን ችግር ይግለጹ። ከተቻለ የእርስዎን ችግር ዳግም ለመስራት እርምጃዎችን ያካትቱ።</translation>
 <translation id="7154130902455071009">የመጀመሪያ ገጽዎን ወደሚከተለው ይቀይሩ፦ <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">የተሻለ ጥራት ያለውን ቪዲዮ ያግኙ እና የባትሪ ዕድሜ ይቆጥቡ። ቪዲዮ በእርስዎ የCast-የነቃ ማያ ገጽ ላይ ብቻ ይጫወታል።</translation>
 <translation id="7159695867335480590">አጫውት/ባለበት አቁም</translation>
@@ -9809,7 +9779,6 @@
 <translation id="7728668285692163452">የሰርጥ ለውጥ በኋላ ላይ ነው የሚተገበረው</translation>
 <translation id="7730449930968088409">የእርስዎ ማያ ገፅ ይዘት ይቀርጻል</translation>
 <translation id="7730683939467795481">ይህ ገፅ በ «<ph name="EXTENSION_NAME" />» ቅጥያ ነበር የተለወጠዉ</translation>
-<translation id="7732702411411810416">ከበይነመረቡ ጋር መገናኘትዎን ያረጋግጡ እና እንደገና ይሞክሩ</translation>
 <translation id="773511996612364297">የአጽንዖት ምልክቶች</translation>
 <translation id="7735558909644181051">የመካከለኛ ዕውቅና ማረጋገጫ</translation>
 <translation id="7736119438443237821">በዚህ መሣሪያ ላይ ያለውን የይለፍ ቁልፎችዎን መዳረሻ ሊያስወግዱ ነው</translation>
@@ -10007,7 +9976,6 @@
 <translation id="7871691770940645922">ምናባዊ የብሬይል ማሳያ</translation>
 <translation id="787268756490971083">አጥፋ</translation>
 <translation id="7872758299142009420">በጣም ብዙ የታቀፉ ቡድኖች፦ <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">አቋራጭን ማርትዕ አልተቻለም</translation>
 <translation id="7876243839304621966">ሁሉንም አስወግድ</translation>
 <translation id="7877126887274043657">ችግር ያስተካክሉ እና &amp;ያስምሩ</translation>
@@ -11670,7 +11638,6 @@ nil</translation>
 <translation id="8983018820925880511">ይህ አዲስ መገለጫ በ<ph name="DOMAIN" /> የሚተዳደር ይሆናል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" />ን ማርትዕ ይችላል</translation>
 <translation id="8984694057134206124">እርስዎ ለ<ph name="MINUTES" /> ደቂቃዎች የሚታዩ ይሆናሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">እንኳን ወደ የChromebook Steam በደህና መጡ</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> ቀን በፊት ንቁ ነበር</translation>
 <translation id="8985561265504464578">የማወቂያ መባቻ</translation>
 <translation id="8985661493893822002">ወደ የእርስዎ <ph name="DEVICE_TYPE" /> ለመግባት እባክዎ ከበይነመረብ ጋር ይገናኙ።</translation>
@@ -11802,7 +11769,6 @@ nil</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{በቀን 1 ያህል ማሳወቂያ}one{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያ}other{በቀን {NUM_NOTIFICATION} ያህል ማሳወቂያዎች}}</translation>
 <translation id="9058760336383947367">የማተሚያ PPDን ይመልከቱ</translation>
 <translation id="9061521313218438086">Chrome ከእርስዎ የይለፍ ቃላት ላይ አንዱን በይፋዊ ውሂብ ጥሰት ውስጥ ካገኘ፣ Google የይለፍ ቃል አስተዳዳሪ በመለያ ገብተው ከሆነ ለእርስዎ የይለፍ ቃልዎን ለመለወጥ ሊያቀርብ ይችላል።</translation>
-<translation id="9061694916020926968">Steam for Chromebook (ቅድመ ይሁንታ) ለመጠቀም ወደ Google መለያ መግባት አለብዎት። በመለያ ይግቡ እና እንደገና ይሞክሩ።</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">የአሰሳ አቋራጭን ያጽዱ</translation>
 <translation id="9063208415146866933">ከመስመር <ph name="ERROR_LINE_START" /> እስከ <ph name="ERROR_LINE_END" /> ስህተት</translation>

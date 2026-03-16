@@ -239,6 +239,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="200114059308480249">Želite da uvrstite okolni tekst u Google pretrage?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, zakačena kartica bez arhiviranja sa isključenim zvukom</translation>
 <translation id="2021896219286479412">Kontrole sajta na celom ekranu</translation>
+<translation id="2024195579772565064">Izbrišite pretraživač</translation>
 <translation id="2029669011553795746">Opcija za omogućavanje obaveštenja o savetima je otvorena do polovine ekrana</translation>
 <translation id="2038563949887743358">Uključi zahtevanje verzije sajta za računare</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> takođe ima podatke u Chrome-u</translation>
@@ -556,6 +557,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3384347053049321195">Deli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog grešaka sistema datoteka.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
+<translation id="3417835166382867856">Pretražite kartice</translation>
 <translation id="3430670036890315772">Ako isključite zaključavanje profila, uklonićete sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Njima možete da upravljate odavde.</translation>
 <translation id="3435575784518354875">Da biste zadržali pristup lozinkama, izvezite ih odmah, ažurirajte Google Play usluge, pa ih ponovo uvezite u Google menadžer lozinki. <ph name="BEGIN_LINK" />Pogledajte kompletna uputstva<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6898797562238201317">Koristite sopstvenu pristupnu frazu da biste šifrovali sve Chrome podatke na Google nalogu</translation>
 <translation id="6900532703269623216">Napredna zaštita</translation>
+<translation id="6900654715912436255">Želite li stvarno da izbrišete ovaj pretraživač?</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
 <translation id="6906448540340261898">Uverite se da uvek možete da koristite lozinke na Google nalogu</translation>
 <translation id="6908230663105268638">Obaveštenja su omogućena za <ph name="SITE_NAME" /></translation>

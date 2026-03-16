@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Синий</translation>
 <translation id="1557622599341396706">Показать название рабочего стола</translation>
 <translation id="1569384531973824928">Доступ будет предоставлен всем приложениям и сайтам с разрешениями "Камера" и "Микрофон". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
+<translation id="1570235441606255261">Установщик Steam</translation>
 <translation id="1571697193564730395">Включить или отключить режим "Не беспокоить". <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Выбран маркер левого края. Чтобы двигать его, используйте клавиши со стрелками.</translation>
 <translation id="1576623706766186887">Уменьшить, когда включена лупа</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Загрузка…</translation>
+<translation id="1642895994345928121">Недостаточно места в хранилище устройства. Освободите пространство и повторите попытку.</translation>
 <translation id="1647986356840967552">Предыдущая страница</translation>
 <translation id="1651914502370159744">Показать историю</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Группы приложений и вкладок</translation>
 <translation id="2386292613071805067">Выделить все содержимое страницы</translation>
 <translation id="2389423187722941333">Включить или отключить Gemini</translation>
+<translation id="2391805183137601570">Открыть Steam</translation>
 <translation id="2392659840443812875">Точки доступа не найдены. Убедитесь, что устройство находится рядом и Bluetooth включен.</translation>
 <translation id="2397416548179033562">Отображение меню Chrome</translation>
 <translation id="240006516586367791">Управление медиаконтентом</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Открыто вчера</translation>
 <translation id="2440978926514840421">Выполнена запись в формате GIF</translation>
 <translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
+<translation id="2447587550790814052">Теперь вы можете использовать Steam для Chromebook (бета).</translation>
 <translation id="2449089818483227734">Низкий заряд батареи</translation>
 <translation id="2450205753526923158">Режим создания скриншота</translation>
 <translation id="2453860139492968684">Завершить</translation>
 <translation id="2455994958736234930">Добавить "www." и ".com" к тексту в адресной строке и открыть сайт</translation>
 <translation id="2456008742792828469">Календарь, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Подробности</translation>
+<translation id="2462332841984057083">Приложение Steam уже устанавливается. Дождитесь завершения процесса.</translation>
 <translation id="2465145153332031561">Состояние батареи: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Количество циклов: <ph name="CYCLE_COUNT" />.</translation>
 <translation id="2473177541599297363">Разрешение экрана было изменено</translation>
 <translation id="2475783092753560388">Вставить результат "<ph name="SEARCH_RESULT_TEXT" />"</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Предпросмотр активного рабочего стола "<ph name="DESK_NAME" />".</translation>
 <translation id="2486405091093637109">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Если вы не подтвердите изменение, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Присоединиться</translation>
+<translation id="2494555621641843783">Не удается установить Steam</translation>
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2499445554382787206">Меню профиля рабочего стола. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Ответить</translation>
 <translation id="2727744317940422214">Произошла ошибка. Сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />. Удалить данные не получилось, попробуйте сделать это вручную.</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
+<translation id="2737538893171115082">Сервис Steam для Chromebook (бета) заблокирован администратором. Администратор должен включить следующие правила:</translation>
 <translation id="2743301740238894839">Начать</translation>
 <translation id="2743387203779672305">Скопировать в буфер</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911">Объединить с рабочим столом <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Заряд батареи стилуса составляет <ph name="PERCENTAGE" /> процентов.</translation>
 <translation id="304097922505898963">Открыть приложение "Сочетания клавиш"</translation>
+<translation id="3040982432432547149">Помогите нам улучшить Steam для Chromebook</translation>
 <translation id="304417730895741346">Открытые приложения находятся на панели запуска. Там их можно закрепить. Для этого нажмите на приложение правой кнопкой мыши или коснитесь двумя пальцами сенсорной панели.</translation>
 <translation id="3045670165536837541">Выбран маркер правого верхнего угла. Чтобы двигать его, используйте клавиши со стрелками.</translation>
 <translation id="3047761520276763270">Скажите:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">Перезапуск может занять несколько минут</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Подключено одно устройство}one{Подключено # устройство}few{Подключено # устройства}many{Подключено # устройств}other{Подключено # устройства}}</translation>
 <translation id="3203405173652969239">Функция Switch Access включена</translation>
+<translation id="3204648577100496185">Данные, связанные с этим приложением, могут быть удалены с устройства.</translation>
 <translation id="3206735939915734551">Включить или отключить Caps Lock</translation>
 <translation id="3207953481422525583">Пользовательские настройки</translation>
 <translation id="3208321278970793882">Приложение</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">Найдите то, что хотите вставить</translation>
 <translation id="3274634049061007184">Просматривайте приложения с телефона.</translation>
 <translation id="3279230909244266691">Подождите несколько минут. Запуск виртуальной машины…</translation>
+<translation id="3285465040399788513">На устройстве не хватает свободного места для завершения установки. Освободите место и повторите попытку.</translation>
 <translation id="3289364673986435196">Меню кнопки питания</translation>
 <translation id="3289544412142055976">Приложения для Linux пока не поддерживаются</translation>
 <translation id="3289674678944039601">Зарядка с помощью адаптера питания</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369111525500416043">К сдаче</translation>
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
+<translation id="3373196968211632036">Сервис Steam для Chromebook (бета) недоступен для детских аккаунтов Google.</translation>
 <translation id="3375634426936648815">Подключено</translation>
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Ctrl + Shift + Пробел</translation>
 <translation id="3485319357743610354">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Временное хранилище автоматически скрыто</translation>
+<translation id="3496797737329654668">Начните играть</translation>
 <translation id="3505066820268455558">Батарея заряжается</translation>
 <translation id="3509391053705095206">Не удается найти ваш телефон. Убедитесь, что на нем включен Bluetooth.</translation>
 <translation id="3510164367642747937">Выделять указатель мыши</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">Открыть буфер обмена</translation>
 <translation id="363473492175527493">Задача для режима концентрации внимания: <ph name="TASK_NAME" />. Чтобы изменить задачу, нажмите Ввод.</translation>
 <translation id="3638400994746983214">Включить или отключить экран конфиденциальности. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Нужно обновить Steam для Chromebook (бета). Перезапустите устройство и повторите попытку.</translation>
 <translation id="3649256019230929621">Свернуть окно</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">Показаны окна текущего рабочего стола. Чтобы показать окна со всех рабочих столов, нажмите на стрелку вверх.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Развлечения</translation>
+<translation id="370665806235115550">Загрузка...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> и <ph name="UNAVAILABLE_DLC_TWO" /> недоступны.</translation>
 <translation id="3708186454126126312">Ранее подключенные устройства</translation>
 <translation id="3712143870407382523">Выберите окно для этой стороны.</translation>
@@ -860,6 +874,7 @@
 <translation id="3831226344927851293">Выйти из руководства</translation>
 <translation id="383629559565718788">Показать настройки клавиатуры</translation>
 <translation id="384082539148746321">Удалить шаблон?</translation>
+<translation id="3841282988425489367">Не удалось установить Steam для Chromebook (бета)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затем <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Информация о сетях недоступна</translation>
 <translation id="3848526302597027234">Получение доступа к разрешениям ниже</translation>
@@ -951,6 +966,7 @@
 <translation id="4146671046252289537">Переместить в конец следующего слова</translation>
 <translation id="4150201353443180367">Экран</translation>
 <translation id="4151054805501931758">Ретушь лица</translation>
+<translation id="4151449637210235443">Расскажите о недавнем геймплее.</translation>
 <translation id="4156293514828496577">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />.
 Чтобы увеличить это время, использование некоторых функций было ограничено.</translation>
 <translation id="4158003972857765638">Открыть на новом рабочем столе</translation>
@@ -968,6 +984,7 @@
 <translation id="4192112279662688596">или</translation>
 <translation id="4193857202545160520">Показывать щелчки мышью и нажатия клавиш</translation>
 <translation id="4193969623755915875">Чтобы открыть Справку в приложении "Возможности", нажмите <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4195001808989442226">Не удается открыть Steam для Chromebook (бета-версия)</translation>
 <translation id="4195579532193195633">Текущая версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
 <translation id="4195877955194704651">Меню "Автоматическое нажатие"</translation>
@@ -983,6 +1000,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установленное приложение, приостановлено</translation>
 <translation id="4228078597006700451">Элементы управления не настроены</translation>
 <translation id="4230560241506423345">Создать</translation>
+<translation id="4231231258999726714">Установка Steam для Chromebook</translation>
 <translation id="4236726631849783264">Напоминание о рекомендуемых действиях</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим обзора</translation>
@@ -1067,6 +1085,7 @@
 <translation id="4471432286288241507">{0,plural, =0{Перезагрузите устройство прямо сейчас}=1{Перезагрузите устройство в течение 1 секунды}one{Перезагрузите устройство в течение # секунды}few{Перезагрузите устройство в течение # секунд}many{Перезагрузите устройство в течение # секунд}other{Перезагрузите устройство в течение # секунды}}</translation>
 <translation id="4472575034687746823">Начать</translation>
 <translation id="4473489370276014885">Google Контакты</translation>
+<translation id="4473996011558324141">Оценка времени…</translation>
 <translation id="4477350412780666475">Следующий трек</translation>
 <translation id="4477751544736611934">Может взиматься плата за передачу данных.
 Подключено 1 устройство.</translation>
@@ -1108,6 +1127,7 @@
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4596442969149038771">Пользователь <ph name="USER" /> поделился файлом</translation>
+<translation id="4598556348158889687">Управление хранилищем</translation>
 <translation id="4610493115106525653">Хороший результат</translation>
 <translation id="4611292653554630842">Войти</translation>
 <translation id="462160925400706389">Подключено устройство "<ph name="NAME" />"</translation>
@@ -1117,6 +1137,7 @@
 <translation id="4633636853437260449">Чтобы удалить, нажмите Ctrl + W</translation>
 <translation id="4635501805800894201">{0,plural, =0{Вернитесь к предыдущей версии ОС прямо сейчас}=1{Вернитесь к предыдущей версии ОС в течение 1 секунды}one{Вернитесь к предыдущей версии ОС в течение # секунды}few{Вернитесь к предыдущей версии ОС в течение # секунд}many{Вернитесь к предыдущей версии ОС в течение # секунд}other{Вернитесь к предыдущей версии ОС в течение # секунды}}</translation>
 <translation id="4642092649622328492">Сделать скриншот части экрана</translation>
+<translation id="4642587497923912728">Сервис Steam для Chromebook (бета) доступен только для первого аккаунта, в который был выполнен вход на этом Chromebook.</translation>
 <translation id="4644727592819780893">Область для изображения с камеры слишком маленькая.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендуемое приложение</translation>
 <translation id="4649019912155580914">Вы изменили файл</translation>
@@ -1350,6 +1371,7 @@
 <translation id="5352250171825660495">Тёмная тема включена</translation>
 <translation id="5354804064646502504">Может взиматься плата за передачу данных.
 Нет подключенных устройств.</translation>
+<translation id="5355498626146154079">Необходимо включить экспериментальный параметр Borealis Enabled.</translation>
 <translation id="5356963482258194581">Вы можете переключаться с тёмной темы на светлую и обратно. Для этого нажмите правой кнопкой мыши на рабочий стол и выберите "Обои и стиль".</translation>
 <translation id="536019650977002321">Администратор запретил запись аудио. Обратитесь к нему за подробной информацией.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" />: файлы для распознавания речи частично скачаны</translation>
@@ -1360,6 +1382,7 @@
 <translation id="5377367976106153749">Разрешить доступ к камере?</translation>
 <translation id="5378450298115733949">Ещё</translation>
 <translation id="5379115545237091094">Слишком много попыток</translation>
+<translation id="5380526436444479273">Подождите несколько минут и повторите попытку.</translation>
 <translation id="5383434787520761436">Нет результатов из Google Диска.</translation>
 <translation id="5391307769715781764">Заменить сохраненный рабочий стол?</translation>
 <translation id="5392327145184648521">Расчет заряда батареи…</translation>
@@ -1371,6 +1394,7 @@
 <translation id="5409208741270395213">Отметить задачу как выполненную</translation>
 <translation id="5413656666631274079">Страница настроек</translation>
 <translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
+<translation id="5415328625985164836">Это программа бета-тестирования. Теперь вы можете использовать Steam, чтобы играть в игры на Chromebook.</translation>
 <translation id="5426063383988017631">Меню настроек закрыто</translation>
 <translation id="5428899915242071344">Начать выбор текста</translation>
 <translation id="5429993543155113935">Окна в режиме инкогнито пока не поддерживаются</translation>
@@ -1466,6 +1490,7 @@
 <translation id="5712132663381964774">Выполняйте разные задачи на устройстве (<ph name="PRODUCT_NAME" />) с помощью приложений. Чтобы их найти, откройте панель запуска.</translation>
 <translation id="571295407079589142">Передача данных отключена</translation>
 <translation id="5727460725221669831">Если вы забыли или недавно сменили пароль от аккаунта Google, попробуйте восстановить пользователя.</translation>
+<translation id="572914206753951782">Убедитесь, что на Chromebook установлена последняя версия ОС. Затем перезапустите Chromebook и повторите попытку.</translation>
 <translation id="5733630091161562207">Приветственное уведомление</translation>
 <translation id="573413375004481890">Вы подключили к устройству больше дисплеев, чем оно может поддерживать, поэтому один из них пришлось отключить</translation>
 <translation id="574392208103952083">Средний</translation>
@@ -1713,6 +1738,7 @@
 <translation id="6507042703812908515">Чтобы открыть приложение "Сочетания клавиш", нажмите <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Переключиться на следующий доступный способ ввода</translation>
 <translation id="6508923215158854599">Убедитесь, что устройства Chromebook и Chromecast подключены к одной сети Wi-Fi.</translation>
+<translation id="6511607461419653612">Перезапустите Chromebook и повторите попытку.</translation>
 <translation id="6515727200518652613">Попытка переподключения после потери связи с камерой.</translation>
 <translation id="651753338596587143">Не удалось установить зависимости DLC. Перезагрузите устройство. Если это не решит проблему, сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Выберите окно для снимка</translation>
@@ -1738,6 +1764,7 @@
 <translation id="6574587113394758819">Уведомление "<ph name="APP_TITLE" />" скрыто, потому что включен режим безопасного просмотра.</translation>
 <translation id="6574622320167699133">Устройство разблокировано через ваш телефон. Нажмите, чтобы войти в аккаунт.</translation>
 <translation id="6578407462441924264">Без имени</translation>
+<translation id="6580060371127789208">Выполнено: <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6582012689384648647">Чтобы использовать персональные плейлисты с музыкой для концентрации внимания, разрешите доступ к YouTube Music.</translation>
 <translation id="6582034443359256692">Рассчитывается уровень заряда батареи.</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@
 <translation id="6723839937902243910">Питание</translation>
 <translation id="672609503628871915">Узнать, что нового</translation>
 <translation id="6727969043791803658">Подключено, батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6731320427842222405">Это может занять несколько минут</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">ещё <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Используются камера и микрофон</translation>
@@ -1858,6 +1886,7 @@
 <translation id="6961840794482373852">Функция сочетания клавиш Alt + Стрелка вверх изменилась. Чтобы выполнить действие клавиши Page Up, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вверх.</translation>
 <translation id="696267987219125751">Автомасштабирование отключено</translation>
 <translation id="6965382102122355670">ОК</translation>
+<translation id="6967112302799758487">Все приложения и игры, установленные с помощью Steam для Chromebook (бета), будут удалены с этого устройства. Это относится и к данным, связанным с ними. Перед удалением обязательно создайте резервную копию сохраненных приложений и игр.</translation>
 <translation id="6972629891077993081">Устройства HID</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6980402667292348590">Insert</translation>
@@ -1889,6 +1918,7 @@
 <translation id="7067196344162293536">Автоповорот</translation>
 <translation id="7076293881109082629">Вход</translation>
 <translation id="7076878155205969899">Выключить звук</translation>
+<translation id="7083774521940805477">Сервис Steam для Chromebook (бета) недоступен на этом Chromebook.</translation>
 <translation id="7083848064787091821">Режим концентрации внимания</translation>
 <translation id="7084678090004350185">Включить или отключить точку доступа. Сейчас она работает. К ней подключено несколько устройств (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7086931198345821656">Чтобы установить это обновление, на устройстве <ph name="DEVICE_TYPE" /> необходимо воспользоваться функцией Powerwash. Все данные будут удалены. Узнайте больше о последнем обновлении <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@
 <translation id="7130207228079676353">САМЫЕ ПОДХОДЯЩИЕ</translation>
 <translation id="7131634465328662194">После этого вы выйдете из системы.</translation>
 <translation id="7143207342074048698">Подключение</translation>
+<translation id="7143409552554575716">Экспериментальные параметры ChromeOS</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7144942256906679589">Состояние батареи</translation>
 <translation id="7145639536026937076">Батарея заряжена на <ph name="PERCENTAGE" /> % и подключена к источнику питания. Режим энергосбережения включен.</translation>
 <translation id="7147587499155271409">Нет результатов из истории браузера.</translation>
 <translation id="7147657298465433425">Для использования функциональных клавиш нажимайте клавиши верхнего ряда, удерживая Fn.</translation>
 <translation id="7149149900052329230">Управляйте файлами на устройстве и Google Диске через приложение "Файлы".</translation>
+<translation id="7154020516215182599">Оставьте отзыв или опишите проблему. Если возможно, укажите действия для воспроизведения проблемы.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@
 <translation id="7726391492136714301">Просмотр уведомлений и приложений с телефона</translation>
 <translation id="7727952505535211425">Открыть сайт из адресной строки в новой вкладке</translation>
 <translation id="7728657226117099693">Отключить Caps Lock</translation>
+<translation id="7732702411411810416">Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="7742327441377685481">Уведомлений нет.</translation>
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
@@ -2121,6 +2154,7 @@
 <translation id="7866482334467279021">включена</translation>
 <translation id="7870790288828963061">Новых версий киоск-приложений нет. Обновление не требуется. Извлеките USB-накопитель.</translation>
 <translation id="7872786842639831132">Отключено</translation>
+<translation id="7873386145597434863">Steam для Chromebook</translation>
 <translation id="7875575368831396199">Включите Bluetooth на устройстве <ph name="DEVICE_TYPE" />, чтобы использовать функцию "Управление телефоном".</translation>
 <translation id="7884446017008693258">Настройки точки доступа</translation>
 <translation id="7884902759927478774">Отменить перетаскивание вкладки</translation>
@@ -2470,6 +2504,7 @@
 <translation id="8980862970816311842">Переместить значок приложения в папку или из папки в сетке приложений</translation>
 <translation id="8982906748181120328">Широкий доступ</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Вас приветствует Steam для Chromebook</translation>
 <translation id="8990809378771970590">Используется <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Для отмены нажмите Fn + Быстрая вставка или Shift.</translation>
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
@@ -2486,6 +2521,7 @@
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="9050012935252397793">Подключение по Bluetooth недоступно</translation>
 <translation id="9050999376345823055">Чтобы отпустить кнопку, нажмите "."</translation>
+<translation id="9061694916020926968">Чтобы использовать Steam для Chromebook (бета), нужно войти в аккаунт Google. Сделайте это и повторите попытку.</translation>
 <translation id="906458777597946297">Развернуть окно</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9068849894565669697">Выберите цвет</translation>

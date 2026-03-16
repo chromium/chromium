@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="1557622599341396706">แสดงชื่อเดสก์</translation>
 <translation id="1569384531973824928">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้ คุณอาจต้องรีเฟรชหน้าเว็บหรือรีสตาร์ทแอป</translation>
+<translation id="1570235441606255261">โปรแกรมติดตั้ง Steam</translation>
 <translation id="1571697193564730395">เปิด/ปิดโหมดห้ามรบกวน <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">เลือกแฮนเดิลขอบด้านซ้ายแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="1576623706766186887">ซูมออกเมื่อแว่นขยายเปิดอยู่</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
+<translation id="1642895994345928121">มีพื้นที่เก็บข้อมูลของอุปกรณ์ไม่เพียงพอที่จะเปิดแอปนี้ เพิ่มพื้นที่ว่างแล้วลองอีกครั้ง</translation>
 <translation id="1647986356840967552">หน้าที่แล้ว</translation>
 <translation id="1651914502370159744">เปิดหน้าประวัติการเข้าชม</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">กลุ่มแอปและกลุ่มแท็บ</translation>
 <translation id="2386292613071805067">เลือกทุกอย่างในหน้า</translation>
 <translation id="2389423187722941333">เปิด/ปิด Gemini</translation>
+<translation id="2391805183137601570">เปิด Steam</translation>
 <translation id="2392659840443812875">ไม่มีฮอตสปอตที่ใช้ได้ ตรวจสอบว่าอุปกรณ์อยู่ใกล้ๆ และบลูทูธเปิดอยู่</translation>
 <translation id="2397416548179033562">แสดงเมนู Chrome</translation>
 <translation id="240006516586367791">การควบคุมสื่อ</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">เปิดเมื่อวานนี้</translation>
 <translation id="2440978926514840421">บันทึก GIF แล้ว</translation>
 <translation id="2441427462554639370">การบันทึกสิ้นสุดเนื่องจากพื้นที่เก็บข้อมูลใกล้เต็มแล้ว</translation>
+<translation id="2447587550790814052">ตอนนี้คุณใช้ Steam สําหรับ Chromebook (เบต้า) ได้แล้ว</translation>
 <translation id="2449089818483227734">แบตเตอรี่เหลือน้อย</translation>
 <translation id="2450205753526923158">โหมดภาพหน้าจอ</translation>
 <translation id="2453860139492968684">เสร็จสิ้น</translation>
 <translation id="2455994958736234930">เพิ่ม www. และ .com ในแถบที่อยู่ จากนั้นเปิดเว็บไซต์</translation>
 <translation id="2456008742792828469">ปฏิทิน <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">เจาะลึก</translation>
+<translation id="2462332841984057083">กําลังตั้งค่า Steam อยู่แล้ว โปรดรอให้การตั้งค่าเสร็จสมบูรณ์</translation>
 <translation id="2465145153332031561">ประสิทธิภาพแบตเตอรี่ <ph name="BATTERY_HEALTH_PERCENTAGE" />%, จำนวนรอบ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ยืนยันความละเอียด</translation>
 <translation id="2475783092753560388">แทรก <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">ตัวอย่าง <ph name="DESK_NAME" /> เดสก์ที่ใช้งานอยู่</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" เปลี่ยนเป็นความละเอียด <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) หากไม่ยืนยัน ระบบจะคืนค่าการตั้งค่าก่อนหน้านี้ใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="2487915095798731898">เข้าร่วม</translation>
+<translation id="2494555621641843783">ติดตั้ง Steam ไม่ได้</translation>
 <translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="2499445554382787206">เมนูโปรไฟล์เดสก์ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">ตอบ</translation>
 <translation id="2727744317940422214">ขออภัย มีข้อผิดพลาดเกิดขึ้น โปรดส่งความคิดเห็นพร้อมใส่ #bruschetta ในคำอธิบาย รหัสข้อผิดพลาดคือ <ph name="ERROR" /> ล้างข้อมูลไม่สําเร็จ คุณอาจต้องดำเนินการด้วยตนเอง</translation>
 <translation id="2727977024730340865">เสียบอยู่กับที่ชาร์จพลังงานต่ำ การชาร์จแบตเตอรี่อาจไม่น่าเชื่อถือ</translation>
+<translation id="2737538893171115082">ผู้ดูแลระบบบล็อก Steam สำหรับ Chromebook (เบต้า) ผู้ดูแลระบบต้องเปิดใช้นโยบายต่อไปนี้</translation>
 <translation id="2743301740238894839">เริ่ม</translation>
 <translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911">รวมกับ <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">สไตลัสเหลือแบตเตอรี่ <ph name="PERCENTAGE" /> เปอร์เซ็นต์</translation>
 <translation id="304097922505898963">เปิดแอปแป้นพิมพ์ลัด</translation>
+<translation id="3040982432432547149">ช่วยเราปรับปรุง Steam สําหรับ Chromebook</translation>
 <translation id="304417730895741346">แอปที่ปักหมุดและเปิดไว้จะอยู่ในแถบ หากต้องการปักหมุดแอปในแถบ ให้คลิกขวาที่แอปหรือใช้ 2 นิ้วแตะทัชแพด</translation>
 <translation id="3045670165536837541">เลือกแฮนเดิลด้านขวาบนแล้ว ใช้แป้นลูกศรเพื่อย้าย</translation>
 <translation id="3047761520276763270">ลองพูดว่า</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">การรีสตาร์ทอาจใช้เวลาสักพัก</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{เชื่อมต่ออุปกรณ์แล้ว 1 เครื่อง}other{เชื่อมต่ออุปกรณ์แล้ว # เครื่อง}}</translation>
 <translation id="3203405173652969239">เปิดใช้ "การเข้าถึงด้วยสวิตช์" แล้ว</translation>
+<translation id="3204648577100496185">ระบบอาจนำข้อมูลที่เชื่อมโยงกับแอปดังกล่าวออกจากอุปกรณ์เครื่องนี้</translation>
 <translation id="3206735939915734551">เปิด/ปิด Caps Lock</translation>
 <translation id="3207953481422525583">การตั้งค่าของผู้ใช้</translation>
 <translation id="3208321278970793882">แอป</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ค้นหาเพื่อแทรก</translation>
 <translation id="3274634049061007184">ดูแอปของโทรศัพท์</translation>
 <translation id="3279230909244266691">ขั้นตอนนี้อาจใช้เวลาสักครู่ กำลังเริ่มเครื่องเสมือน</translation>
+<translation id="3285465040399788513">มีพื้นที่เก็บข้อมูลในอุปกรณ์ไม่เพียงพอที่จะตั้งค่าให้เสร็จสมบูรณ์ โปรดเพิ่มพื้นที่ว่างแล้วลองอีกครั้ง</translation>
 <translation id="3289364673986435196">เมนูเปิด/ปิด</translation>
 <translation id="3289544412142055976">ขณะนี้ยังไม่รองรับแอป Linux</translation>
 <translation id="3289674678944039601">กำลังชาร์จผ่านอะแดปเตอร์</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369111525500416043">ครบกำหนดเร็วๆ นี้</translation>
 <translation id="3371140690572404006">อุปกรณ์ USB-C (พอร์ตด้านหน้าขวา)</translation>
+<translation id="3373196968211632036">Steam สําหรับ Chromebook (เบต้า) ไม่พร้อมใช้งานกับบัญชี Google ของบุตรหลาน</translation>
 <translation id="3375634426936648815">เชื่อมต่อแล้ว</translation>
 <translation id="3386978599540877378">แว่นขยายแบบเต็มหน้าจอ</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ซ่อนชั้นวางโดยอัตโนมัติ</translation>
+<translation id="3496797737329654668">เริ่มเล่นเกมกันเลย</translation>
 <translation id="3505066820268455558">กำลังชาร์จแบตเตอรี่</translation>
 <translation id="3509391053705095206">ไม่พบโทรศัพท์ ตรวจสอบว่าบลูทูธของโทรศัพท์เปิดอยู่</translation>
 <translation id="3510164367642747937">ไฮไลต์เคอร์เซอร์เมาส์</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">เปิดคลิปบอร์ด</translation>
 <translation id="363473492175527493">ตั้งค่างานให้โฟกัสที่: <ph name="TASK_NAME" /> กด Enter เพื่อแก้ไขงาน</translation>
 <translation id="3638400994746983214">สลับหน้าจอส่วนตัว <ph name="STATE_TEXT" /></translation>
+<translation id="3641070112313110357">ต้องอัปเดต Steam สำหรับ Chromebook (เบต้า) รีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
 <translation id="3649256019230929621">ย่อหน้าต่าง</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" /> <ph name="EVENT_SUMMARY" /> เวลา <ph name="START_TIME" /> ถึง <ph name="END_TIME" /> ตาม<ph name="TIME_ZONE" /> เลือกเพื่อดูรายละเอียดเพิ่มเติมใน Google ปฏิทิน</translation>
 <translation id="3659444876902283058">(วันที่ <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
@@ -819,6 +832,7 @@
 <translation id="3702809606464356667">กำลังแสดงหน้าต่างจากเดสก์ปัจจุบัน กดปุ่มลูกศรขึ้นเพื่อแสดงหน้าต่างจากเดสก์ทั้งหมด</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">ความบันเทิง</translation>
+<translation id="370665806235115550">กำลังโหลด ...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> และ <ph name="UNAVAILABLE_DLC_TWO" /> ไม่พร้อมใช้งาน</translation>
 <translation id="3708186454126126312">อุปกรณ์ที่เคยเชื่อมต่อ</translation>
 <translation id="3712143870407382523">เลือกหน้าต่างสำหรับด้านนี้</translation>
@@ -856,6 +870,7 @@
 <translation id="3831226344927851293">ออกจากมุมมองบทแนะนำ</translation>
 <translation id="383629559565718788">แสดงการตั้งค่าแป้นพิมพ์</translation>
 <translation id="384082539148746321">ลบเทมเพลตใช่ไหม</translation>
+<translation id="3841282988425489367">ตั้งค่า Steam สําหรับ Chromebook (เบต้า) ไม่ได้</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> จากนั้น <ph name="KEY_ONE" /> หรือ <ph name="KEY_TWO" /> หรือ <ph name="KEY_THREE" /> หรือ <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">ไม่มีข้อมูลเครือข่ายที่สามารถใช้งานได้</translation>
 <translation id="3848526302597027234">เข้าถึงสิทธิ์ต่อไปนี้</translation>
@@ -947,6 +962,7 @@
 <translation id="4146671046252289537">ย้ายไปยังจุดสิ้นสุดของคำถัดไป</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
 <translation id="4151054805501931758">ปรับแต่งภาพบุคคล</translation>
+<translation id="4151449637210235443">บอกเราเกี่ยวกับเกมเพลย์ล่าสุดของคุณ</translation>
 <translation id="4156293514828496577">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) ระบบจำกัดฟีเจอร์บางอย่างเพื่อเพิ่มอายุการใช้งานแบตเตอรี่</translation>
 <translation id="4158003972857765638">จัดระเบียบในเดสก์ใหม่</translation>
 <translation id="4160919062868802509">ตรวจพบแหล่งที่มาของเสียงหลายแหล่ง</translation>
@@ -963,6 +979,7 @@
 <translation id="4192112279662688596">หรือ</translation>
 <translation id="4193857202545160520">แสดงการคลิกและแป้นพิมพ์</translation>
 <translation id="4193969623755915875">เปิด "ความช่วยเหลือ" ในแอปสำรวจโดยใช้แป้นพิมพ์ลัด "<ph name="NEW_SHORTCUT" />"</translation>
+<translation id="4195001808989442226">เปิด Steam สำหรับ Chromebook (เบต้า) ไม่ได้</translation>
 <translation id="4195579532193195633">เวอร์ชันปัจจุบัน <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ดำเนินการต่อจากที่ค้างอยู่</translation>
 <translation id="4195877955194704651">ปุ่มคลิกอัตโนมัติ</translation>
@@ -978,6 +995,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว, หยุดชั่วคราว</translation>
 <translation id="4228078597006700451">ยังไม่ได้ตั้งค่าการควบคุม</translation>
 <translation id="4230560241506423345">ใหม่</translation>
+<translation id="4231231258999726714">กําลังตั้งค่า Steam สําหรับ Chromebook</translation>
 <translation id="4236726631849783264">การช่วยเตือนเกี่ยวกับการดำเนินการที่แนะนำ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">โหมดภาพรวม</translation>
@@ -1062,6 +1080,7 @@
 <translation id="4471432286288241507">{0,plural, =0{อัปเดตอุปกรณ์ทันที}=1{อัปเดตอุปกรณ์ภายใน 1 วินาที}other{อัปเดตอุปกรณ์ภายใน # วินาที}}</translation>
 <translation id="4472575034687746823">เริ่มต้น</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">กำลังประมาณเวลา</translation>
 <translation id="4477350412780666475">แทร็กถัดไป</translation>
 <translation id="4477751544736611934">ซึ่งอาจมีค่าบริการอินเทอร์เน็ต
 มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง</translation>
@@ -1103,6 +1122,7 @@
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4596442969149038771"><ph name="USER" /> แชร์เมื่อ</translation>
+<translation id="4598556348158889687">การจัดการพื้นที่เก็บข้อมูล</translation>
 <translation id="4610493115106525653">เอาต์พุตดี</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
 <translation id="462160925400706389">เชื่อมต่อ <ph name="NAME" /> แล้ว</translation>
@@ -1112,6 +1132,7 @@
 <translation id="4633636853437260449">กด Ctrl+W เพื่อลบ</translation>
 <translation id="4635501805800894201">{0,plural, =0{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าตอนนี้เลย}=1{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วินาที}other{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วินาที}}</translation>
 <translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
+<translation id="4642587497923912728">Steam สำหรับ Chromebook (เบต้า) จะใช้ได้เฉพาะกับบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรกใน Chromebook เครื่องนี้</translation>
 <translation id="4644727592819780893">พื้นที่เล็กเกินกว่าที่จะแสดงตัวอย่างกล้อง</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, แอปแนะนำ</translation>
 <translation id="4649019912155580914">คุณแก้ไขเมื่อ</translation>
@@ -1345,6 +1366,7 @@
 <translation id="5352250171825660495">ธีมมืดเปิดอยู่</translation>
 <translation id="5354804064646502504">ซึ่งอาจมีค่าบริการอินเทอร์เน็ต
 ไม่มีอุปกรณ์ที่เชื่อมต่อ</translation>
+<translation id="5355498626146154079">คุณต้องเปิด Flag "Borealis Enabled"</translation>
 <translation id="5356963482258194581">สลับระหว่างธีมมืดและธีมสว่าง คลิกขวาที่เดสก์ท็อป แล้วเลือก "วอลเปเปอร์และสไตล์"</translation>
 <translation id="536019650977002321">ผู้ดูแลระบบไม่อนุญาตให้บันทึกเสียง ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5361524080961918551">ดาวน์โหลดไฟล์คําพูดภาษา<ph name="LANGUAGE" />แล้วบางส่วน</translation>
@@ -1355,6 +1377,7 @@
 <translation id="5377367976106153749">เปิดการเข้าถึงกล้องไหม</translation>
 <translation id="5378450298115733949">เพิ่มเติม</translation>
 <translation id="5379115545237091094">ลองหลายครั้งเกินไป</translation>
+<translation id="5380526436444479273">โปรดรอสักครู่แล้วลองอีกครั้ง</translation>
 <translation id="5383434787520761436">ไม่มีไฟล์ Google ไดรฟ์</translation>
 <translation id="5391307769715781764">แทนที่เดสก์ที่บันทึกไว้ใช่ไหม</translation>
 <translation id="5392327145184648521">กำลังคำนวณ % แบตเตอรี่...</translation>
@@ -1366,6 +1389,7 @@
 <translation id="5409208741270395213">ทำเครื่องหมายว่างานเสร็จสมบูรณ์แล้ว</translation>
 <translation id="5413656666631274079">หน้าการตั้งค่า</translation>
 <translation id="5414198321558177633">กำลังรีเฟรชรายการโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
+<translation id="5415328625985164836">โปรแกรมนี้เป็นเวอร์ชันเบต้า ตอนนี้คุณใช้ Steam เพื่อเล่นเกมบางเกมใน Chromebook ได้แล้ว</translation>
 <translation id="5426063383988017631">เมนูการตั้งค่าปิดแล้ว</translation>
 <translation id="5428899915242071344">เริ่มเลือก</translation>
 <translation id="5429993543155113935">ขณะนี้ยังไม่รองรับหน้าต่างที่ไม่ระบุตัวตน</translation>
@@ -1461,6 +1485,7 @@
 <translation id="5712132663381964774">ใช้แอปเพื่อทำทุกอย่างที่คุณต้องการใน <ph name="PRODUCT_NAME" /> คุณค้นหาแอปได้ใน Launcher</translation>
 <translation id="571295407079589142">อินเทอร์เน็ตมือถือปิดอยู่</translation>
 <translation id="5727460725221669831">หากคุณลืมรหัสผ่านหรือเปลี่ยนรหัสผ่านของบัญชี Google เมื่อเร็วๆ นี้ ให้ลองกู้คืนผู้ใช้รายนี้</translation>
+<translation id="572914206753951782">ตรวจสอบว่า Chromebook เป็นเวอร์ชันล่าสุด จากนั้นรีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
 <translation id="5733630091161562207">การแจ้งเตือนต้อนรับ</translation>
 <translation id="573413375004481890">อุปกรณ์นี้รองรับจอแสดงผลทั้งหมดไม่ได้ ระบบจึงยกเลิกการเชื่อมต่อจอแสดงผลจอหนึ่ง</translation>
 <translation id="574392208103952083">ปานกลาง</translation>
@@ -1708,6 +1733,7 @@
 <translation id="6507042703812908515">เปิดแอปแป้นพิมพ์ลัดโดยใช้ "<ph name="NEW_SHORTCUT" />"</translation>
 <translation id="6507618042428827377">เปลี่ยนไปใช้วิธีการป้อนข้อมูลถัดไปที่มีอยู่</translation>
 <translation id="6508923215158854599">ตรวจสอบว่า Chromebook อยู่ในเครือข่าย Wi-Fi เดียวกับอุปกรณ์ Chromecast</translation>
+<translation id="6511607461419653612">รีสตาร์ท Chromebook แล้วลองอีกครั้ง</translation>
 <translation id="6515727200518652613">กล้องขาดการเชื่อมต่อ กำลังพยายามเชื่อมต่ออีกครั้ง</translation>
 <translation id="651753338596587143">ขออภัย เกิดข้อผิดพลาดขณะติดตั้งทรัพยากร Dependency ของ DLC โปรดลองรีบูต จากนั้นหากปัญหายังคงอยู่ ให้ส่งความคิดเห็นพร้อมใส่ #bruschetta ในคำอธิบาย รหัสข้อผิดพลาดคือ <ph name="ERROR" /></translation>
 <translation id="6520517963145875092">เลือกหน้าต่างที่จะจับภาพ</translation>
@@ -1733,6 +1759,7 @@
 <translation id="6574587113394758819">การแจ้งเตือนของ <ph name="APP_TITLE" /> ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
 <translation id="6574622320167699133">ปลดล็อกแล้วด้วยโทรศัพท์ แตะหรือคลิกเพื่อเข้าใช้งาน</translation>
 <translation id="6578407462441924264">ไม่ได้ตั้งชื่อ</translation>
+<translation id="6580060371127789208">เสร็จแล้ว <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6582012689384648647">อนุญาตให้เข้าถึง YouTube Music เพื่อรับเพลย์ลิสต์เพื่อการโฟกัสที่ปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="6582034443359256692">กําลังคํานวณระดับการชาร์จแบตเตอรี่</translation>
 <translation id="6585808820553845416">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
@@ -1782,6 +1809,7 @@
 <translation id="6723839937902243910">พลังงาน</translation>
 <translation id="672609503628871915">ดูว่ามีอะไรใหม่</translation>
 <translation id="6727969043791803658">เชื่อมต่อแล้ว แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">การดำเนินการนี้อาจใช้เวลาสองถึงสามนาที</translation>
 <translation id="6732087373923685049">กล้อง</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ใช้กล้องและไมโครโฟนอยู่</translation>
@@ -1853,6 +1881,7 @@
 <translation id="6961840794482373852">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรขึ้น หากต้องการใช้แป้น Page Up ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
 <translation id="696267987219125751">การจัดเฟรมกล้องปิดอยู่</translation>
 <translation id="6965382102122355670">ตกลง</translation>
+<translation id="6967112302799758487">ระบบจะนำแอปและเกมที่ติดตั้งโดยใช้ Steam สำหรับ Chromebook (เบต้า) ออกจากอุปกรณ์นี้ รวมถึงจะนำข้อมูลที่เชื่อมโยงกับแอปและเกมเหล่านี้ออกด้วย อย่าลืมสำรองข้อมูลแอปและเกมที่บันทึกไว้ก่อนถอนการติดตั้ง</translation>
 <translation id="6972629891077993081">อุปกรณ์ HID</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6980402667292348590">Insert</translation>
@@ -1884,6 +1913,7 @@
 <translation id="7067196344162293536">หมุนอัตโนมัติ</translation>
 <translation id="7076293881109082629">กำลังลงชื่อเข้าใช้</translation>
 <translation id="7076878155205969899">ปิดเสียง</translation>
+<translation id="7083774521940805477">Steam สำหรับ Chromebook (เบต้า) ไม่พร้อมใช้งานใน Chromebook ของคุณ</translation>
 <translation id="7083848064787091821">โฟกัส</translation>
 <translation id="7084678090004350185">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ <ph name="DEVICECOUNT" /> เครื่อง</translation>
 <translation id="7086931198345821656">การอัปเดตนี้ต้องทำการ Powerwash <ph name="DEVICE_TYPE" /> ระบบจะลบข้อมูลทั้งหมด ดูข้อมูลเพิ่มเติมเกี่ยวกับอัปเดตล่าสุดของ <ph name="SYSTEM_APP_NAME" /></translation>
@@ -1901,12 +1931,14 @@
 <translation id="7130207228079676353">น่าจะใช้มากที่สุด</translation>
 <translation id="7131634465328662194">คุณจะออกจากระบบโดยอัตโนมัติ</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
+<translation id="7143409552554575716">ChromeOS Flag</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7144942256906679589">สถานะแบตเตอรี่</translation>
 <translation id="7145639536026937076">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="7147587499155271409">ไม่มีประวัติการท่องเว็บ</translation>
 <translation id="7147657298465433425">หากต้องการเข้าถึงแป้น F ให้กดแป้น fn + แป้นแถวบนสุด</translation>
 <translation id="7149149900052329230">จัดการไฟล์ในเครื่องและไฟล์ Google ไดรฟ์ทั้งหมดได้ในแอป Files</translation>
+<translation id="7154020516215182599">แชร์ความคิดเห็นหรืออธิบายปัญหาของคุณ หากเป็นไปได้ ให้ระบุขั้นตอนต่างๆ เพื่อจำลองปัญหา</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2082,6 +2114,7 @@
 <translation id="7726391492136714301">ดูการแจ้งเตือนและแอปในโทรศัพท์</translation>
 <translation id="7727952505535211425">เปิดเว็บไซต์ในแถบที่อยู่ในแท็บใหม่</translation>
 <translation id="7728657226117099693">ปิด Caps Lock</translation>
+<translation id="7732702411411810416">ตรวจสอบว่าคุณเชื่อมต่ออินเทอร์เน็ตอยู่แล้วลองอีกครั้ง</translation>
 <translation id="7742327441377685481">ไม่มีการแจ้งเตือน</translation>
 <translation id="7748275671948949022">ไฮไลต์ปุ่ม Launcher บนแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
@@ -2116,6 +2149,7 @@
 <translation id="7866482334467279021">เปิด</translation>
 <translation id="7870790288828963061">ไม่พบแอปคีออสก์เวอร์ชันใหม่กว่า ไม่มีรายการที่จะอัปเดต โปรดนำ USB สติ๊กออก</translation>
 <translation id="7872786842639831132">ปิด</translation>
+<translation id="7873386145597434863">Steam สําหรับ Chromebook</translation>
 <translation id="7875575368831396199">ดูเหมือนว่าบลูทูธของ <ph name="DEVICE_TYPE" /> จะปิดอยู่ โปรดเปิดบลูทูธเพื่อใช้ฮับโทรศัพท์</translation>
 <translation id="7884446017008693258">การตั้งค่าฮอตสปอต</translation>
 <translation id="7884902759927478774">ยกเลิกการลากแท็บ</translation>
@@ -2465,6 +2499,7 @@
 <translation id="8980862970816311842">ย้ายไอคอนแอปเข้า/ออกจากโฟลเดอร์ในตารางกริดสำหรับแอป</translation>
 <translation id="8982906748181120328">การมองเห็นใกล้เคียง</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">ยินดีต้อนรับสู่ Steam สำหรับ Chromebook</translation>
 <translation id="8990809378771970590">กำลังใช้<ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">กด fn + Quick Insert หรือ Shift เพื่อยกเลิก</translation>
 <translation id="899350903320462459">ปลดล็อกอุปกรณ์โดยใช้ <ph name="LOGIN_ID" /> เพื่อดำเนินการแจ้งเตือน</translation>
@@ -2481,6 +2516,7 @@
 <translation id="9047624247355796468">เปิดการตั้งค่าสำหรับ <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">บลูทูธไม่พร้อมใช้งาน</translation>
 <translation id="9050999376345823055">กด "." เพื่อปล่อย</translation>
+<translation id="9061694916020926968">คุณต้องลงชื่อเข้าใช้บัญชี Google เพื่อใช้ Steam สําหรับ Chromebook (เบต้า) ลงชื่อเข้าใช้แล้วลองอีกครั้ง</translation>
 <translation id="906458777597946297">ขยายหน้าต่างเต็มหน้าจอ</translation>
 <translation id="9065203028668620118">แก้ไข</translation>
 <translation id="9068849894565669697">เลือกสี</translation>

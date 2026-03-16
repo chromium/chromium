@@ -839,7 +839,6 @@
 <translation id="156793199942386351">ມີການມອບໝາຍ '<ph name="CURRENTKEY" />' ໃສ່ຄຳສັ່ງ '<ph name="ACTION" />' ຢູ່ກ່ອນແລ້ວ. ກົດປຸ່ມໃດກໍໄດ້ເພື່ອ <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1569466257325986920">ໃນຄັ້ງຕໍ່ໄປທີ່ລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານມີການປ່ຽນແປງ, ຂໍ້ມູນພາຍໃນເຄື່ອງຂອງທ່ານຈະຖືກກູ້ຄືນໂດຍອັດຕະໂນມັດຫຼັງຈາກທີ່ທ່ານເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານ</translation>
-<translation id="1570235441606255261">ຕົວຕິດຕັ້ງ Steam</translation>
 <translation id="1570604804919108255">ເຊົາປິດສຽງການແຈ້ງເຕືອນ</translation>
 <translation id="1570990174567554976">ສ້າງໂຟນເດີບຸກມາກ '<ph name="BOOKMARK_TITLE" />' ແລ້ວ.</translation>
 <translation id="1571041387761170095">ບໍ່ມີລະຫັດຜ່ານທີ່ອ່ອນແອ ຫຼື ລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ</translation>
@@ -964,7 +963,6 @@
 <translation id="1642299742557467312">ໄຟລ໌ນີ້ອາດເປັນອັນຕະລາຍຕໍ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="1642492862748815878">ເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /> ແລະ ອີກ <ph name="NUMBER_OF_DEVICES" /> ອຸປະກອນ Bluetooth ແລ້ວ</translation>
 <translation id="1642494467033190216">ການ​ເອົາ​ການ​ປົກ​ປ້ອງ rootfs ອອກ ແລະ​ຈຳ​ເປັນ​ຕ້ອງ​ມີ​ການ​ປິດ​ເປີດ​ໃໝ່ ກ່ອນ​ເປີດ​ໃຊ້​ງານ​ຄຸນສົມບັດ​ການ​ແກ້​ໄຂ​ບັນ​ຫາ​ອື່ນ.</translation>
-<translation id="1642895994345928121">ບໍ່ມີບ່ອນຈັດເກັບຂໍ້ມູນອຸປະກອນພຽງພໍເພື່ອເປີດແອັບນີ້. ສ້າງພື້ນທີ່ຫວ່າງແລ້ວລອງໃໝ່.</translation>
 <translation id="1643072738649235303">ລາຍເຊັນ X9.62 ECDSA ພ້ອມກັບ SHA-1</translation>
 <translation id="1643921258693943800">ເພື່ອໃຊ້ການແບ່ງປັນໃກ້ຄຽງ, ກະລຸນາເປີດ Bluetooth ແລະ Wi-Fi</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
@@ -2077,7 +2075,6 @@
 <translation id="2390347491606624519">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບພຣັອກຊີໄດ້, ກະລຸນາເຂົ້າສູ່ລະບົບອີກຄັ້ງ</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">ຟອນມາດ​ຕະ​ຖານ</translation>
-<translation id="2391805183137601570">ເປີດ Steam</translation>
 <translation id="239185270194776190">ການສົນທະນາ Gemini ຂອງທ່ານຢູ່ໃນໜ້າຈໍອື່ນ. ຄລິກບ່ອນໃດກໍໄດ້ຢູ່ແຜງຄວບຄຸມດ້ານຂ້າງນີ້ເພື່ອຍ້າຍມັນມາບ່ອນນີ້.</translation>
 <translation id="2392369802118427583">ເປີດໃຊ້ງານ</translation>
 <translation id="2393136602862631930">ຕັ້ງຄ່າ <ph name="APP_NAME" /> ໃນ Chromebook ຂອງທ່ານ</translation>
@@ -2159,7 +2156,6 @@
 <translation id="2445484935443597917">ສ້າງໂປຣໄຟລ໌ໃໝ່</translation>
 <translation id="2445726032315793326">ຕົວຂະຫຍາຍບາງສ່ວນ</translation>
 <translation id="244641233057214044">ກ່ຽວຂ້ອງກັບການຊອກຫາຂອງທ່ານ</translation>
-<translation id="2447587550790814052">ຕອນນີ້ທ່ານສາມາດໃຊ້ Steam ສຳລັບ Chromebook (ເບຕ້າ) ໄດ້ແລ້ວ</translation>
 <translation id="2448312741937722512">ປະ​ເພດ</translation>
 <translation id="2448810255793562605">ການສະແກນອັດຕະໂນມັດຂອງການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດ</translation>
 <translation id="2450021089947420533">ບັນທຶກ</translation>
@@ -2186,7 +2182,6 @@
 <translation id="2460826998961521840">ເພື່ອໃຊ້ກະແຈຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="2461550163693930491">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວ</translation>
 <translation id="2461593638794842577">ທ່ານສາມາດປິດການຕັ້ງຄ່ານີ້ໄດ້ເພື່ອບັນທຶກລະຫັດຜ່ານຂອງທ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ</translation>
-<translation id="2462332841984057083">ກຳລັງຕິດຕັ້ງ Steam ຢູ່ກ່ອນແລ້ວ. ກະລຸນາລໍຖ້າໃຫ້ການຕິດຕັ້ງສຳເລັດ.</translation>
 <translation id="2462724976360937186">ID ລະຫັດໜ່ວຍງານຢັ້ງຢືນ</translation>
 <translation id="2462752602710430187">ເພີ່ມ <ph name="PRINTER_NAME" /> ແລ້ວ</translation>
 <translation id="2464075479326723132">ສິ່ງທີ່ເຫັນນີ້ແມ່ນໄຟລ໌ແນະນຳເພື່ອຊ່ວຍໃຫ້ທ່ານກັບຄືນໄປຫາການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານໃນ SharePoint ແລະ OneDrive ຂອງ Microsoft ໄດ້ຢ່າງງ່າຍດາຍ.
@@ -2241,7 +2236,6 @@
 <translation id="2491587035099903063">ຕົວຢ່າງສຽງສຳລັບ <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">ກຳລັງກະກຽມຄຳຂໍເຊັນໃບຮັບຮອງ</translation>
 <translation id="249330843868392562">ເປີດການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
-<translation id="2494555621641843783">ບໍ່ສາມາດຕິດຕັ້ງ Steam ໄດ້</translation>
 <translation id="2496180316473517155">ປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="2496616243169085015">ການຖ່າຍຮູບ</translation>
 <translation id="2497229222757901769">ຄວາມໄວເມົ້າ</translation>
@@ -2597,7 +2591,6 @@
 <translation id="27349076983469322">ພື້ນຫຼັງແຈ້ງ</translation>
 <translation id="2735712963799620190">ກຳນົດເວລາ</translation>
 <translation id="2737363922397526254">ຍຸບລົງ...</translation>
-<translation id="2737538893171115082">Steam ສຳລັບ Chromebook (ເບຕ້າ) ແມ່ນຖືກບລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຕ້ອງການເປີດໃຊ້ນະໂຍບາຍເຫຼົ່ານີ້:</translation>
 <translation id="2737719817922589807">&amp;ບຸກມາກ ແລະ ລາຍຊື່</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> ຕ້ອງການແບ່ງປັນເນື້ອຫາໜ້າຈໍຂອງທ່ານນຳ <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຟອນທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນຂອງທ່ານໄດ້</translation>
@@ -3060,7 +3053,6 @@
 <translation id="3039491566278747710">ຕິດຕັ້ງນະໂຍບາຍອອບລາຍໃນອຸປະກອນບໍ່ສຳເລັດ.</translation>
 <translation id="303955801043931176">ແຖບປິດແລ້ວ</translation>
 <translation id="3040435070100611531">ບັດຮວມໃນ Google Wallet ຂອງທ່ານ</translation>
-<translation id="3040982432432547149">ຊ່ວຍພວກເຮົາປັບປຸງ Steam ສຳລັບ Chromebook</translation>
 <translation id="304169924727249890">ເຂົ້າຮ່ວມກຸ່ມແຖບກັບ <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">ປ່ຽນກົນລະຍຸດການສາກແບບປັບໃຫ້ເໝາະສົມ.</translation>
 <translation id="3043016484125065343">ເຂົ້າສູ່ລະບົບເພື່ອເບິ່ງບຸກມາກຂອງທ່ານ</translation>
@@ -3271,7 +3263,6 @@
 <translation id="3201422919974259695">ອຸປະກອນ USB ທີ່ສາມາດໃຊ້ໄດ້ຈະປາກົດຢູ່ບ່ອນນີ້.</translation>
 <translation id="3202499879214571401">ຢຸດສົ່ງສັນຍານໜ້າຈໍໄປຫາ <ph name="DEVICE_NAME" /> ຊົ່ວຄາວ</translation>
 <translation id="3202578601642193415">ໃໝ່ສຸດ</translation>
-<translation id="3204648577100496185">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ອາດຖືກລຶບອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="3206289903841621620">ວັດຈະນານຸກົມຜູ້ໃຊ້ <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">ທ່ານກຳລັງເຫັນການຊອກຫາ ແລະ ສ່ວນຫຼຸດການຊື້ເຄື່ອງທີ່ແນະນຳທີ່ອາດສົນໃຈທ່ານໂດຍອ້າງອີງຈາກການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານ.
         <ph name="BREAK" />
@@ -3379,7 +3370,6 @@
 <translation id="3283148363895519428">ປະຕິບັດຕາມຄໍາແນະນໍາຢູ່ໂທລະສັບຂອງທ່ານເພື່ອສືບຕໍ່ການຕັ້ງຄ່າ. ກວດສອບໃຫ້ແນ່ໃຈວ່າໂທລະສັບຂອງທ່ານຢູ່ໃກ້ ແລະ ເປີດ Bluetooth ແລ້ວ.</translation>
 <translation id="3284050785966252943">ຕື່ມຂໍ້ມູນອັດຕະໂນມັດຕົວຢ່າງເມເຕເດຕາ</translation>
 <translation id="3285322247471302225">ແຖບໃໝ່</translation>
-<translation id="3285465040399788513">ມີບ່ອນຈັດເກັບຂໍ້ມູນອຸປະກອນບໍ່ພຽງພໍໃຫ້ຕັ້ງຄ່າໃຫ້ສຳເລັດໄດ້. ກະລຸນາລຶບຂໍ້ມູນທີ່ບໍ່ຈຳເປັນອອກແລ້ວລອງໃໝ່.</translation>
 <translation id="3285500645985761267">ອະນຸຍາດເວັບໄຊທີ່ກ່ຽວຂ້ອງໃຫ້ສາມາດເຫັນການເຄື່ອນໄຫວຂອງທ່ານໃນກຸ່ມໄດ້</translation>
 <translation id="328571385944182268">ບັນທຶກລະຫັດຜ່ານຂອງທ່ານໄວ້ບໍ?</translation>
 <translation id="3289668031376215426">ເຮັດຕົວພິມໃຫຍ່ອັດຕະໂນມັດ</translation>
@@ -3502,7 +3492,6 @@
 <translation id="3372602033006349389">ຢູ່ອຸປະກອນອື່ນ</translation>
 <translation id="337286756654493126">ອ່ານ​​ໂຟລ​ເດີ​ທີ່​ທ່ານ​ເປີດ​ໃນ​ແອ​ັບພະລິ​ເຄຊັນ</translation>
 <translation id="3373059063088819384">ເປີດໃນໂໝດການອ່ານ</translation>
-<translation id="3373196968211632036">Steam ສຳລັບ Chromebook (ເບຕ້າ) ແມ່ນບໍ່ສາມາດໃຊ້ໄດ້ສຳລັບບັນຊີ Google ເດັກນ້ອຍ</translation>
 <translation id="3373701465337594448">ເມື່ອເປີດໃຊ້, ລາຍຊື່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງເຊິ່ງຄາດເດົາຄວາມສົນໃຈຂອງທ່ານຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="3374294321938930390">ຍ້າຍ '<ph name="BOOKMARK_TITLE" />' ໄປໃສ່ '<ph name="NEW_FOLDER_TITLE" />' ແລ້ວ.</translation>
 <translation id="3376035595160918049">ກວດສອບການອັບເດດແອັບ</translation>
@@ -3685,7 +3674,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (ບໍ່ໄດ້ເລືອກ)</translation>
 <translation id="3496689104192986836">ລະດັບແບັດເຕີຣີ <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">ແຫຼ່ງຂໍ້ມູນເພື່ອຮວບຮວມ</translation>
-<translation id="3496797737329654668">ມາຫຼິ້ນເກມກັນ</translation>
 <translation id="3496995426334945408">ໂດຍປົກກະຕິແລ້ວເວັບໄຊໃຊ້ JavaScript ເພື່ອສະແດງຄຸນສົມບັດແບບໂຕ້ຕອບເຊັ່ນ: ວິດີໂອເກມ ຫຼື ແບບຟອມເວັບ</translation>
 <translation id="3497501929010263034">ອຸປະກອນ USB ຈາກ <ph name="VENDOR_NAME" /> (ຜະລິດຕະພັນ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ແບ່ງປັນ Doodle</translation>
@@ -3898,7 +3886,6 @@
 <translation id="3637203148990213388">ບັນຊີເພີ່ມເຕີມ</translation>
 <translation id="3640347231390550691">ປົກປ້ອງລະຫັດຜ່ານຂອງທ່ານຈາກການຫຼອກເອົາຂໍ້ມູນ</translation>
 <translation id="364100968401221170">ເພື່ອລຶບຂໍ້ມູນການທ່ອງເວັບອອກຈາກອຸປະກອນທຸກເຄື່ອງທີ່ຊິ້ງໄວ້ຂອງທ່ານ ແລະ ບັນຊີ Google ຂອງທ່ານ, ໃຫ້ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steam ສຳລັບ Chromebook (ເບຕ້າ) ຕ້ອງໄດ້ຖືກອັບເດດ. ກະລຸນາຣີສະຕາດ Chromebook ຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="3641299252000913351">ກຳລັງອັບເດດເຟີມແວຂອງໂມເດັມ. ກະລຸນາຢ່າປິດອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="3641456520301071208">ເວັບໄຊສາມາດຂໍສະຖານທີ່ຂອງທ່ານໄດ້</translation>
 <translation id="3642064270296434810">ຕອນນີ້ທ່ານສາມາດໃຊ້ Google Lens ເພື່ອຊອກຫາສິ່ງຕ່າງໆທີ່ທ່ານເຫັນຢູ່ໜ້າຈໍຂອງທ່ານໄດ້ແລ້ວ</translation>
@@ -4235,7 +4222,6 @@
 <translation id="383891835335927981">ບໍ່ມີການຕັ້ງຄ່າຊູມເຂົ້າ ຫຼື ຊູມອອກສຳລັບເວັບໄຊໃດ</translation>
 <translation id="3839516600093027468">ບລັອກບໍ່ໃຫ້ <ph name="HOST" /> ເຫັນຄລິບບອດທຸກເທື່ອ</translation>
 <translation id="3840096463915153852">ປະຫວັດການສົນທະນາ</translation>
-<translation id="3841282988425489367">ບໍ່ສາມາດຕັ້ງຄ່າ Steam ສຳລັບ Chromebook (ເບຕ້າ) ໄດ້</translation>
 <translation id="3841319830220785495">ສຽງແບບທຳມະຊາດເລີ່ມຕົ້ນ</translation>
 <translation id="3841356782900714251">ຕົວອ່ານບັດອັດສະລິຍະ</translation>
 <translation id="3841964634449506551">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
@@ -4683,7 +4669,6 @@
 <translation id="4148195018520464922">ທ່ານສາມາດຈຳກັດການເຂົ້າສູ່ລະບົບໃຫ້ກັບບາງຜູ້ໃຊ້ໄດ້. ການດຳເນີນການນີ້ຈະລຶບຕົວເລືອກ "ເພີ່ມຜູ້ໃຊ້" ອອກຈາກໜ້າຈໍເຂົ້າສູ່ລະບົບ. ທ່ານຍັງສາມາດລຶບຜູ້ໃຊ້ປັດຈຸບັນອອກໄດ້.</translation>
 <translation id="4148957013307229264">ກໍາລັງ​ຕິດ​ຕັ້ງ...</translation>
 <translation id="4150201353443180367">ການສະແດງຜົນ</translation>
-<translation id="4151449637210235443">ບອກພວກເຮົາກ່ຽວກັບການຫຼິ້ນເກມເທື່ອຫຼ້າສຸດຂອງທ່ານ</translation>
 <translation id="4151503145138736576">ບໍ່ມີບ່ອນຈັດເກັບຂໍ້ມູນອອບລາຍໃຫ້ລຶບລ້າງ</translation>
 <translation id="4152011295694446843">ທ່ານຈະເຫັນບຸກມາກຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ແຖບ}other{# ​ແຖບ}}</translation>
@@ -4734,7 +4719,6 @@
 <translation id="4193251682249731404">CA ທີ່ເຊື່ອຖືໄດ້</translation>
 <translation id="4193575319002689239">ສະແດງບັດຕ່າງໆ</translation>
 <translation id="419427585139779713">ປ້ອນເທື່ອລະພະຍາງ</translation>
-<translation id="4195001808989442226">ບໍ່ສາມາດເປີດ Steam ສຳລັບ Chromebook (ເບຕ້າ) ໄດ້</translation>
 <translation id="4195643157523330669">ເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4195814663415092787">ສືບ​ຕໍ່​ບ່ອນທີ່ທ່ານອອກໄປ</translation>
 <translation id="4198268995694216131">ເວັບໄຊເພີ່ມເຕີມ</translation>
@@ -4780,7 +4764,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ບໍ່ອະນຸຍາດສ່ວນຂະຫຍາຍນີ້}other{ບໍ່ອະນຸຍາດສ່ວນຂະຫຍາຍບາງອັນ}}</translation>
 <translation id="4231053948789591973">ປັດຈຸບັນການສົ່ງສັນຍານຖືກຢຸດຊົ່ວຄາວ. ທ່ານສາມາດສືບຕໍ່ສົ່ງສັນຍານ ຫຼື ຢຸດສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານຕອນໃດກໍໄດ້.</translation>
 <translation id="4231095370974836764">ຕິດຕັ້ງແອັບ ແລະ ເກມຈາກ Google Play ໃນ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">ກຳລັງຕັ້ງຄ່າ Steam ສຳລັບ Chromebook</translation>
 <translation id="4232375817808480934">ກຳນົດຄ່າ Kerberos</translation>
 <translation id="4232376164796433044">ລະຫັດຜ່ານ ແລະ ການຕື່ມອັດຕະໂນມັດ</translation>
 <translation id="4232484478444192782">ໂທລະສັບ Android ຂອງທ່ານຄອບຄຸມທຸກຢ່າງແລ້ວ. Wi-Fi ແລະ ລະຫັດຜ່ານຂອງທ່ານກຳລັງຖືກໂອນຍ້າຍ.</translation>
@@ -5139,7 +5122,6 @@
 <translation id="4472533928615930332">ສ້າງຮູບ <ph name="INDEX" /> ຂອງ <ph name="SUBJECT" />, ໃນແບບ <ph name="STYLE" /> ແລ້ວ</translation>
 <translation id="4472575034687746823">ເລີ່ມຕົ້ນ</translation>
 <translation id="4473559657152613417">ຄລິກຂວາໃສ່ແຖບ ແລ້ວເລືອກ "ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່"</translation>
-<translation id="4473996011558324141">ກຳລັງປະເມີນເວລາ</translation>
 <translation id="4474155171896946103">ໃສ່ບຸກມາກຄ໌ທຸກແຖບ...</translation>
 <translation id="4476198534886170024">ອະນຸຍາດ. ເປີດ <ph name="LINK_BEGIN" />ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບຂອງລະບົບ<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">ນັກກິລາ</translation>
@@ -5374,7 +5356,6 @@
 <translation id="4638930039313743000">ເປີດນຳໃຊ້ການດີບັກ ADB</translation>
 <translation id="4639390152280993480">ເພື່ອເບິ່ງມຸມມອງແບບຮຽບງ່າຍຂອງໜ້ານີ້, ໃຫ້ເຂົ້າໄປ ເຄື່ອງມືເພີ່ມເຕີມ &gt; ໂໝດການອ່ານ</translation>
 <translation id="4641539339823703554">Chrome ບໍ່ສາມາດຕັ້ງເວລາຂອງລະບົບໄດ້. ກະລຸນາກວດເບິ່ງເວລາຢູ່ລຸ່ມນີ້ ແລະແກ້ໄຂໃຫ້ຖືກຕ້ອງ ຖ້າຈໍາເປັນ.</translation>
-<translation id="4642587497923912728">Steam ສຳລັບ Chromebook (ເບຕ້າ) ແມ່ນສາມາດໃຊ້ໄດ້ສຳລັບບັນຊີທີ່ເຂົ້າສູ່ລະບົບເທື່ອທຳອິດຢູ່ Chromebook ນີ້ເທົ່ານັ້ນ.</translation>
 <translation id="4643612240819915418">ເປີດວິດີໂອຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4643833688073835173">Chromebook ຂອງທ່ານຈະໃຊ້ເຊັນເຊີທີ່ມີມາໃນຕົວເພື່ອກວດຫາຄົນທີ່ຢູ່ໜ້າອຸປະກອນຂອງທ່ານ. ຂໍ້ມູນທັງໝົດຈະຖືກປະມວນຜົນຢູ່ອຸປະກອນຂອງທ່ານທັນທີແລ້ວຈາກນັ້ນຈະຖືກລຶບອອກ. ຂໍ້ມູນເຊັນເຊີຈະບໍ່ຖືກສົ່ງໃຫ້ Google ເດັດຂາດ.</translation>
 <translation id="4644205769234414680">ອະນຸຍາດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -6379,7 +6360,6 @@
 <translation id="5353769147530541973">ລຶບ <ph name="SITE_NAME" /> ອອກຈາກລາຍຊື່ແຖບເພື່ອໃຫ້ບໍ່ເຮັດວຽກ</translation>
 <translation id="5355099869024327351">ອະນຸຍາດໃຫ້ຜູ້ຊ່ວຍສະແດງການແຈ້ງເຕືອນໃຫ້ທ່ານເຫັນ</translation>
 <translation id="5355191726083956201">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນເປີດຢູ່</translation>
-<translation id="5355498626146154079">ທ່ານຈະຕ້ອງເປີດໃຊ້ທຸງ “Borealis Enabled”</translation>
 <translation id="5355501370336370394">ລົງທະບຽນອຸປະກອນອົງກອນ</translation>
 <translation id="5357010010552553606">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເຂົ້າສູ່ໂໝດເຕັມຈໍໂດຍອັດຕະໂນມັດ</translation>
 <translation id="5359910752122114278">ຜົນການຊອກຫາ 1 ລາຍການ</translation>
@@ -6409,7 +6389,6 @@
 <translation id="5376931455988532197">ໄຟລ໌ຍາວເກີນໄປ</translation>
 <translation id="5377367976106153749">ເປີດໃຊ້ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບບໍ?</translation>
 <translation id="5379140238605961210">ສືບ​ຕໍ່ບລັອກການເຂົ້າຫາໄມໂຄຣໂຟນ</translation>
-<translation id="5380526436444479273">ລໍຖ້າສອງສາມນາທີແລ້ວລອງໃໝ່</translation>
 <translation id="5382591305415226340">ຈັດການລິ້ງທີ່ຮອງຮັບ</translation>
 <translation id="5384401776498845256">ໃຜສາມາດແບ່ງປັນກັບທ່ານໄດ້</translation>
 <translation id="5385628342687007304">ລະຫັດຜ່ານນີ້ຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອໃຊ້ມັນຢູ່ອຸປະກອນອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກມັນໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -6463,7 +6442,6 @@
 <translation id="5414198321558177633">ກຳລັງໂຫຼດຂໍ້ມູນລາຍຊື່ໂປຣໄຟລ໌ຄືນໃໝ່. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="5414566801737831689">ອ່ານໄອຄອນຂອງເວັບໄຊທ໌ທີ່ທ່ານເຂົ້າເບິ່ງ</translation>
 <translation id="5414836363063783498">ກໍາລັງຢືນ​ຢັນ...</translation>
-<translation id="5415328625985164836">ນີ້ແມ່ນໂປຣແກຣມເບຕ້າ. ຕອນນີ້ທ່ານສາມາດໃຊ້ Steam ເພື່ອຫຼິ້ນບາງເກມຢູ່ Chromebook ຂອງທ່ານໄດ້ແລ້ວ.</translation>
 <translation id="5415497281076257439">ວະລີ</translation>
 <translation id="5415871492522952905">ທ່ານຈະມີປະຫວັດ ແລະ ແຖບຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ ເພື່ອໃຫ້ທ່ານສາມາດສືບຕໍ່ສິ່ງທີ່ທ່ານເຮັດຢູ່</translation>
 <translation id="5417293056300086453">ເວັບໄຊນີ້ສາມາດໃຊ້ຕົວລະບຸເພື່ອຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງໄດ້.</translation>
@@ -6904,7 +6882,6 @@
 <translation id="5727728807527375859">ສ່ວນຂະຫຍາຍ, ແອັບ, ແລະເທມສາມາດທໍາລາຍຄອມພິວເຕີຂອງທ່ານໄດ້. ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການສືບຕໍ່?</translation>
 <translation id="5728072125198221967">ບໍລິການ Google ທີ່ລິ້ງໄວ້</translation>
 <translation id="5728450728039149624">ຕົວເລືອກການລັອກໜ້າຈໍ Smart Lock</translation>
-<translation id="572914206753951782">ກວດສອບວ່າ Chromebook ເປັນເວີຊັນຫຼ້າສຸດແລ້ວ. ຈາກນັ້ນ, ໃຫ້ຣີສະຕາດ Chromebook ຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="5729712731028706266">ເບິ່ງ</translation>
 <translation id="5731247495086897348">ແປະໃສ່ ແລະຄົ້ນຫາ</translation>
 <translation id="5733109311583381874">ເພີ່ມຄຳສັບຂອງທ່ານໄປໃສ່ວັດຈະນານຸກົມຜູ້ໃຊ້ເພື່ອປັບແຕ່ງຕົວເລືອກການປ່ຽນຄ່າ.</translation>
@@ -8019,7 +7996,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ຕ້ອງການຕິດຕັ້ງແອັບຕໍ່ໄປນີ້ຢູ່ອຸປະກອນນີ້:}other{"<ph name="APP_NAME" />" ຕ້ອງການຕິດຕັ້ງແອັບຕໍ່ໄປນີ້ຢູ່ອຸປະກອນນີ້:}}</translation>
 <translation id="6508248480704296122">ກ່ຽວຂ້ອງກັບ <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">ແອັບ: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">ກະລຸນາຣີສະຕາດ Chromebook ຂອງທ່ານແລ້ວລອງໃໝ່</translation>
 <translation id="6511827214781912955">ພິຈາລະນາລຶບ <ph name="FILENAME" />, ເພື່ອບໍ່ໃຫ້ຜູ້ອື່ນທີ່ໃຊ້ອຸປະກອນນີ້ເຫັນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6512759338201777379">ສ້າງຮູບ <ph name="INDEX" /> ຂອງ <ph name="SUBJECT" />, ດ້ວຍອາລົມ <ph name="MOOD" /> ແລ້ວ.</translation>
 <translation id="6513247462497316522">Google Chrome ຈະໃຊ້ຂໍ້ມູນມືຖື ຖ້າທ່ານບໍ່ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍອື່ນ.</translation>
@@ -8128,7 +8104,6 @@
 <translation id="657866106756413002">ສະແນັບຊັອດສະຖານະພາບເຄືອຂ່າຍ</translation>
 <translation id="6579369886355986318">ສະແດງການ&amp;ຄວບຄຸມທັງໝົດ</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ແບ່ງປັນເນື້ອຫາໃນເດັສທັອບແລ້ວ</translation>
-<translation id="6580060371127789208">ສຳເລັດແລ້ວ <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">ຄວາມໄວການສະແກນ</translation>
 <translation id="6580676117087365538">ເພື່ອໃຊ້ສ່ວນຂະຫຍາຍນີ້ຢູ່ຄອມພິວເຕີທັງໝົດຂອງທ່ານ, ໃຫ້ຢັ້ງຢືນວ່າແມ່ນທ່ານແທ້ກ່ອນ</translation>
 <translation id="6581356304040102696">ບໍ່ສາມາດນຳເຂົ້າລະຫັດຜ່ານໄດ້. ໄຟລ໌ຄວນມີຂະໜາດໜ້ອຍກວ່າ 1 MB.</translation>
@@ -8347,7 +8322,6 @@
 <translation id="6729280095610283088">ກະແສແສງເໜືອທີ່ສົດໃສ, ເຊິ່ງໄຫຼຜ່ານປ່າ.</translation>
 <translation id="6729493062119577923">ກິດຈະກຳກຸ່ມແຖບທີ່ຖືກແບ່ງປັນ</translation>
 <translation id="6730744976532805323">ແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini, ເຖິງແມ່ນວ່າທ່ານຈະປ່ຽນແຖບ</translation>
-<translation id="6731320427842222405">ອັນນີ້​ອາດ​ຈະ​ໃຊ້​ເວ​ລາ​ສອງ​ສາມ​ນາ​ທີ</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">ທີ່ຢູ່</translation>
 <translation id="6737663862851963468">ລຶບປີ້ Kerberos ອອກ</translation>
@@ -8697,7 +8671,6 @@
 <translation id="6965648386495488594">ຜອດ</translation>
 <translation id="6965978654500191972">ອຸ​ປະ​ກອນ</translation>
 <translation id="6966831944134814478">ປິດ</translation>
-<translation id="6967112302799758487">ແອັບ ແລະ ເກມໃດກໍຕາມທີ່ຕິດຕັ້ງໄປແລ້ວໂດຍໃຊ້ Steam ສຳລັບ Chromebook (ເບຕ້າ) ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນທີ່ກ່ຽວຂ້ອງກັບແອັບ ແລະ ເກມເຫຼົ່ານີ້ຈະຖືກລຶບອອກໄປນຳ. ໃຫ້ກວດສອບວ່າທ່ານໄດ້ສຳຮອງຂໍ້ມູນແອັບ ແລະ ເກມທີ່ບັນທຶກໄວ້ກ່ອນການຖອນການຕິດຕັ້ງ.</translation>
 <translation id="6967430741871315905">ບໍ່ສາມາດກວດສອບໄດ້ວ່າອະນຸຍາດອຸປະກອນຫຼືບໍ່</translation>
 <translation id="6968288415730398122">ປ້ອນລະຫັດຜ່ານຂອງທ່ານເພື່ອກຳນົດຄ່າການລັອກໜ້າຈໍ</translation>
 <translation id="6969047215179982698">ປິດການແບ່ງປັນໃກ້ຄຽງ</translation>
@@ -8868,7 +8841,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> ແມ່ນຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7082850163410901674">ການແຈ້ງເຕືອນຖືກປິດໄວ້ໃນການຕັ້ງຄ່າລະບົບ Mac</translation>
 <translation id="7083729794572207131">ປົກກະຕິແລ້ວເວັບໄຊຈະຂໍຕິດຕັ້ງເວັບແອັບເພື່ອປັບປຸງປະສົບການໃນການນຳໃຊ້ເວັບໄຊຂອງທ່ານໃຫ້ດີຂຶ້ນ</translation>
-<translation id="7083774521940805477">Steam ສຳລັບ Chromebook (ເບຕ້າ) ແມ່ນບໍ່ສາມາດໃຊ້ໄດ້ຢູ່ Chromebook ຂອງທ່ານ.</translation>
 <translation id="7084095352418993433">ຖາມ Google ກ່ຽວກັບໜ້ານີ້: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(ບໍ່ໄດ້ຕັ້ງຄ່າ)</translation>
 <translation id="7086377898680121060">ຄວາມສະຫວ່າງ​ຂຶ້ນ</translation>
@@ -8947,7 +8919,6 @@
 <translation id="7141844554192012199">ການກວດສອບ</translation>
 <translation id="714301620504747562">ການເລືອກເບິ່ງ ແລະ ການຊອກຫາແມ່ນໄວກວ່າການໂຫຼດກ່ອນລ່ວງໜ້າແບບມາດຕະຖານ</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
-<translation id="7143409552554575716">ທຸງ ChromeOS</translation>
 <translation id="7144363643182336710">ການແຈ້ງເຕືອນຈະບໍ່ປາກົດຂຶ້ນໃນໜ້າຈໍ. ທ່ານຈະຍັງສາມາດເບິ່ງການແຈ້ງເຕືອນໄດ້ໂດຍການຄລິກໄອຄອນຫ້າມລົບກວນຢູ່ລຸ່ມສຸດເບື້ອງຂວາຂອງໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="7144856456372460176">&amp;ຕິດຕັ້ງ <ph name="APP" />...</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
@@ -8958,7 +8929,6 @@
 <translation id="7152478047064750137">ສ່ວນຂະຫຍາຍນີ້ບໍ່ຈຳເປັນຕ້ອງມີການອະນຸຍາດພິເສດໃດໆ</translation>
 <translation id="7153101072880472645">ເປີດ/ປິດ ຄວາມຄົມຊັດສູງ</translation>
 <translation id="715396040729904728">Launcher + Shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ຫາກເປັນໄປໄດ້, ໃຫ້ຮວມຂັ້ນຕອນໃນການເຮັດໃຫ້ເກີດບັນຫາຂອງທ່ານຄືນໃໝ່.</translation>
 <translation id="7154130902455071009">ປ່ຽນໜ້າເລີ່ມຕົ້ນຂອງທ່ານເປັນ​: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">ເບິ່ງວິດີໂອຄຸນນະພາບດີຂຶ້ນ ແລະ ຂະຫຍາຍອາຍຸແບັດເຕີຣີ. ວິດີໂອຈະຫຼິ້ນໃນໜ້າຈໍຂອງທ່ານທີ່ເປີດການນຳໃຊ້ Cast ໄວ້ເທົ່ານັ້ນ.</translation>
 <translation id="7159695867335480590">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
@@ -9809,7 +9779,6 @@
 <translation id="7728668285692163452">ການປ່ຽນຊ່ອງຈະຖືກນຳໃຊ້ໃນພາຍຫຼັງ</translation>
 <translation id="7730449930968088409">ແຄັບເຈີເນື້ອໃນຂອງໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="7730683939467795481">ໜ້ານີ້ຖືກປ່ຽນໂດຍສ່ວນຂະຫຍາຍ "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="7732702411411810416">ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານເຊື່ອມຕໍ່ກັບອິນເຕີເນັດແລ້ວລອງໃໝ່</translation>
 <translation id="773511996612364297">ເຄື່ອງໝາຍສຳນຽງ</translation>
 <translation id="7735558909644181051">ໃບຮັບຮອງລະດັບກາງ</translation>
 <translation id="7736119438443237821">ທ່ານກຳລັງຈະລຶບສິດເຂົ້າເຖິງກະແຈຜ່ານຂອງທ່ານໃນອຸປະກອນເຄື່ອງນີ້ອອກ</translation>
@@ -10007,7 +9976,6 @@
 <translation id="7871691770940645922">ການສະແດງຜົນໜັງສືໂພງສະເໝືອນຈິງ</translation>
 <translation id="787268756490971083">ປິດ</translation>
 <translation id="7872758299142009420">ມີກຸ່ມຊ້ອນກັນຫຼາຍເກີນໄປ: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam ສຳລັບ Chromebook</translation>
 <translation id="7876027585589532670">ບໍ່ສາມາດແກ້ໄຂທາງລັດໄດ້</translation>
 <translation id="7876243839304621966">ເອົາ​ອອກທັງ​ຫມົດ</translation>
 <translation id="7877126887274043657">ແກ້ໄຂບັນຫາ&amp;ການຊິ້ງ</translation>
@@ -11664,7 +11632,6 @@
 <translation id="8983018820925880511">ໂປຣໄຟລ໌ໃໝ່ນີ້ຈະໄດ້ຮັບການຈັດການໂດຍ <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂ <ph name="FILENAME" /> ໄດ້</translation>
 <translation id="8984694057134206124">ທ່ານຈະເບິ່ງເຫັນຕໍ່ກັບທຸກຄົນເປັນເວລາ <ph name="MINUTES" /> ນາທີ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">ຍິນດີຕ້ອນຮັບສູ່ Steam ສຳລັບ Chromebook</translation>
 <translation id="8985264973231822211">ເປີດນຳໃຊ້ເມື່ອ <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ກ່ອນ</translation>
 <translation id="8985561265504464578">ເກນການກວດພົບ</translation>
 <translation id="8985661493893822002">ກະ​ລຸ​ນາ​ເຊື່ອມ​ຕໍ່​ກັບ​ອິນ​ເຕີ​ເນັດເພື່ອເຂົ້າສູ່ລະບົບຫາ <ph name="DEVICE_TYPE" /> ຂອງ​ທ່ານ​.</translation>
@@ -11796,7 +11763,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ປະມານການແຈ້ງເຕືອນ 1 ລາຍການຕໍ່ມື້}other{ປະມານການແຈ້ງເຕືອນ {NUM_NOTIFICATION} ລາຍການຕໍ່ມື້}}</translation>
 <translation id="9058760336383947367">ເບິ່ງ PPD ຂອງເຄື່ອງພິມ</translation>
 <translation id="9061521313218438086">ຫາກ Chrome ພົບໜຶ່ງໃນລະຫັດຜ່ານຂອງທ່ານໃນການລະເມີດຂໍ້ມູນສາທາລະນະ, ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດສະເໜີໃຫ້ທ່ານປ່ຽນລະຫັດຜ່ານຂອງທ່ານຫາກທ່ານເຂົ້າສູ່ລະບົບ.</translation>
-<translation id="9061694916020926968">ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບຫາບັນຊີ Google ໃດໜຶ່ງກ່ອນເພື່ອໃຊ້ Steam ສຳລັບ Chromebook (ເບຕ້າ). ເຂົ້າສູ່ລະບົບແລ້ວລອງໃໝ່.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">ລຶບລ້າງທາງລັດການນຳທາງ</translation>
 <translation id="9063208415146866933">ຜິດພາດຈາກແຖວ <ph name="ERROR_LINE_START" /> ຫາ <ph name="ERROR_LINE_END" /></translation>

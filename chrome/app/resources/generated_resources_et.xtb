@@ -841,7 +841,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> on juba määratud toimingu „<ph name="ACTION" />” jaoks. Vajutage ükskõik millist klahvi, et <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScripti konsool</translation>
 <translation id="1569466257325986920">Järgmine kord, kui teie Google'i konto parool muutub, taastatakse teie kohalikud andmed automaatselt pärast seda, kui oma Google'i kontole sisse logite</translation>
-<translation id="1570235441606255261">Steami installiprogramm</translation>
 <translation id="1570604804919108255">Tühista märguannete summutus</translation>
 <translation id="1570990174567554976">Järjehoidjate kaust „<ph name="BOOKMARK_TITLE" />” on loodud.</translation>
 <translation id="1571041387761170095">Nõrku ega korduvalt kasutatud paroole pole</translation>
@@ -966,7 +965,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1642299742557467312">See fail võib teie seadet kahjustada</translation>
 <translation id="1642492862748815878">Ühendatud seadmega <ph name="DEVICE" /> ja veel <ph name="NUMBER_OF_DEVICES" /> Bluetooth-seadmega</translation>
 <translation id="1642494467033190216">Enne muude silumisfunktsioonide lubamist tuleb eemaldada kaitse rootfs ja seade tuleb taaskäivitada.</translation>
-<translation id="1642895994345928121">Selle rakenduse avamiseks ei ole seadmes piisavalt salvestusruumi. Vabastage ruumi ja proovige uuesti.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA allkiri SHA-1-ga</translation>
 <translation id="1643921258693943800">Läheduses jagamise kasutamiseks lülitage sisse Bluetooth ja WiFi</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
@@ -2069,7 +2067,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2390347491606624519">Ei saa puhverserveriga ühendust luua, logige uuesti sisse</translation>
 <translation id="2390782873446084770">WiFi sünkroonimine</translation>
 <translation id="2391419135980381625">Standardne font</translation>
-<translation id="2391805183137601570">Ava Steam</translation>
 <translation id="239185270194776190">Teie Gemini vestlus on teises aknas. Klõpsake sellel külgpaneelil mis tahes kohal, et see siia teisaldada.</translation>
 <translation id="2392369802118427583">Aktiveeri</translation>
 <translation id="2393136602862631930">Seadistage rakendus <ph name="APP_NAME" /> oma Chromebookis</translation>
@@ -2151,7 +2148,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2445484935443597917">Loo uus profiil</translation>
 <translation id="2445726032315793326">Osaline suurendus</translation>
 <translation id="244641233057214044">Seotud teie otsingutega</translation>
-<translation id="2447587550790814052">Nüüd saate kasutada teenust Steam Chromebookile (beeta)</translation>
 <translation id="2448312741937722512">Tüüp</translation>
 <translation id="2448810255793562605">Lülitiga juurdepääsu automaatne skannimine</translation>
 <translation id="2450021089947420533">Teekonnad</translation>
@@ -2178,7 +2174,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2460826998961521840">Teie Google'i kontole salvestatud pääsuvõtmete kasutamiseks</translation>
 <translation id="2461550163693930491">Ära luba saitidel jagatud vahelehti kerida ega suumida</translation>
 <translation id="2461593638794842577">Saate selle seade välja lülitada, et salvestada oma paroolid ainult sellesse seadmesse</translation>
-<translation id="2462332841984057083">Steami juba seadistatakse. Oodake, kuni seadistus jõuab lõpule.</translation>
 <translation id="2462724976360937186">Sertifitseerimisorgani võtme ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> on lisatud</translation>
 <translation id="2464075479326723132">Näete soovitatud faile, mis aitavad teil Microsoft SharePointis ja OneDrive'is hõlpsalt oma hiljutiste toimingute juurde naasta.
@@ -2233,7 +2228,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> keele eelvaatehääl</translation>
 <translation id="2492461744635776704">Sertifikaadi allkirjastamise taotluse ettevalmistamine</translation>
 <translation id="249330843868392562">Ava kõnesünteesi seaded</translation>
-<translation id="2494555621641843783">Steami ei saa installida</translation>
 <translation id="2496180316473517155">Sirvimise ajalugu</translation>
 <translation id="2496616243169085015">Fotograafia</translation>
 <translation id="2497229222757901769">Hiire kiirus</translation>
@@ -2590,7 +2584,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="27349076983469322">Hele taust</translation>
 <translation id="2735712963799620190">Ajakava</translation>
 <translation id="2737363922397526254">Ahenda ...</translation>
-<translation id="2737538893171115082">Teie administraator on teenuse Steam Chromebookile (beeta) blokeerinud. Teie administraator peab sisse lülitama järgmised reeglid:</translation>
 <translation id="2737719817922589807">Järjehoidjad ja loendid</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> soovib teie ekraanikuval olevat sisu jagada vahelehega <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Ära luba saitidel kasutada seadmesse installitud fonte</translation>
@@ -3053,7 +3046,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3039491566278747710">Võrguühenduseta reegli seadmesse installimine nurjus.</translation>
 <translation id="303955801043931176">Vahekaart on suletud</translation>
 <translation id="3040435070100611531">Teie Google Walleti pääsmed</translation>
-<translation id="3040982432432547149">Aidake meil Steami Chromebookile täiustada</translation>
 <translation id="304169924727249890">Liituge vahelehegrupiga, kus on <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Optimeeritud laadimisstrateegia muutmine.</translation>
 <translation id="3043016484125065343">Järjehoidjate nägemiseks logige sisse</translation>
@@ -3264,7 +3256,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3201422919974259695">Siin kuvatakse saadaolevad USB-seadmed.</translation>
 <translation id="3202499879214571401">Peata ekraani ülekandmine seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Uusim</translation>
-<translation id="3204648577100496185">Selle rakendusega seotud andmed võidakse seadmest eemaldada</translation>
 <translation id="3206289903841621620">Kasutaja sõnaraamat <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Teie hiljutise tegevuse põhjal kuvatakse teile soovitatud otsinguid ja ostuallahindlusi, mis võivad teile huvi pakkuda.
         <ph name="BREAK" />
@@ -3372,7 +3363,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3283148363895519428">Seadistamise jätkamiseks järgige oma telefonis kuvatavaid juhiseid. Veenduge, et teie telefon oleks läheduses ja Bluetooth oleks sisse lülitatud.</translation>
 <translation id="3284050785966252943">Automaattäite metaandmete eelvaade</translation>
 <translation id="3285322247471302225">Uus &amp;vaheleht</translation>
-<translation id="3285465040399788513">Seadistuse lõpuleviimiseks ei ole seadmes piisavalt salvestusruumi. Vabastage salvestusruumi ja proovige uuesti.</translation>
 <translation id="3285500645985761267">Luba seotud saitidel näha minu tegevusi grupis</translation>
 <translation id="328571385944182268">Kas salvestada teie paroolid?</translation>
 <translation id="3289668031376215426">Automaatne suurtähtede kasutamine</translation>
@@ -3495,7 +3485,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3372602033006349389">Teistes seadmetes</translation>
 <translation id="337286756654493126">Lugege kaustu, mille rakenduses avate</translation>
 <translation id="3373059063088819384">Ava lugemisrežiimis</translation>
-<translation id="3373196968211632036">Steam Chromebookile (beeta) ei ole saadaval laste Google'i kontode jaoks</translation>
 <translation id="3373701465337594448">Kui see on sisse lülitatud, kuvatakse siin need külastatavad saidid, mis prognoosivad teie huvisid.</translation>
 <translation id="3374294321938930390">„<ph name="BOOKMARK_TITLE" />“ teisaldati jaotisesse „<ph name="NEW_FOLDER_TITLE" />“.</translation>
 <translation id="3376035595160918049">Rakenduse värskenduse ülevaatus</translation>
@@ -3678,7 +3667,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (pole valitud)</translation>
 <translation id="3496689104192986836">Aku on <ph name="PERCENTAGE" />% laetud</translation>
 <translation id="3496692428582464972">Andmete kogumiseks kasutatavad andmeallikad</translation>
-<translation id="3496797737329654668">Hakkame mängima</translation>
 <translation id="3496995426334945408">Saidid kasutavad JavaScripti tavaliselt interaktiivsete funktsioonide, näiteks videomängude või veebivormide kuvamiseks</translation>
 <translation id="3497501929010263034">USB-seade teenusepakkujalt <ph name="VENDOR_NAME" /> (toode <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Jaga Doodle'i vigurlogo</translation>
@@ -3891,7 +3879,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3637203148990213388">Muud kontod</translation>
 <translation id="3640347231390550691">Kaitske paroole andmepüügi eest.</translation>
 <translation id="364100968401221170">Sirvimisandmete kustutamiseks kõigist sünkroonitud seadmetest ja oma Google'i kontolt <ph name="BEGIN_LINK" />logige sisse<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steami Chromebookile (beeta) tuleb värskendada. Taaskäivitage Chromebook ja proovige uuesti.</translation>
 <translation id="3641299252000913351">Modemi püsivara värskendus on pooleli. Ärge lülitage oma seadet välja.</translation>
 <translation id="3641456520301071208">Saidid saavad küsida teie asukohta</translation>
 <translation id="3642064270296434810">Nüüd saate Google Lensi abil otsida kõike, mida ekraanil näete</translation>
@@ -4228,7 +4215,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="383891835335927981">Ühtegi saiti pole sisse ega välja suumitud</translation>
 <translation id="3839516600093027468">Blokeeri hosti <ph name="HOST" /> jaoks alati lõikelaua nägemine</translation>
 <translation id="3840096463915153852">Vestluste ajalugu</translation>
-<translation id="3841282988425489367">Teenust Steam Chromebookile (beeta) ei saa seadistada</translation>
 <translation id="3841319830220785495">Loomuliku hääle vaikevalik</translation>
 <translation id="3841356782900714251">Kiipkaardilugejad</translation>
 <translation id="3841964634449506551">Parool on sobimatu</translation>
@@ -4676,7 +4662,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4148195018520464922">Sisselogimist saab piirata nii, et seda saavad teha vaid konkreetsed kasutajad. See eemaldab sisselogimiskuvalt valiku „Lisa isik”. Ka praegused kasutajad saate eemaldada.</translation>
 <translation id="4148957013307229264">Installimine ...</translation>
 <translation id="4150201353443180367">Kuva</translation>
-<translation id="4151449637210235443">Rääkige meile oma hiljutisest mängu mängimisest</translation>
 <translation id="4151503145138736576">Pole võrguvälist salvestusruumi, mida vabastada</translation>
 <translation id="4152011295694446843">Oma järjehoidjad leiate siit</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
@@ -4727,7 +4712,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4193251682249731404">Usaldusväärne CA</translation>
 <translation id="4193575319002689239">Kuva kaardid</translation>
 <translation id="419427585139779713">Sisesta üks silp korraga</translation>
-<translation id="4195001808989442226">Steami Chromebookile (beeta) ei saa avada</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
 <translation id="4198268995694216131">Täiendavad saidid</translation>
@@ -4773,7 +4757,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{See laiendus pole lubatud}other{Mõned laiendused pole lubatud}}</translation>
 <translation id="4231053948789591973">Ülekandmine on praegu lõpetatud. Saate oma ekraani ülekandmist igal ajal jätkata või lõpetada.</translation>
 <translation id="4231095370974836764">Installige Google Playst oma seadmesse <ph name="DEVICE_TYPE" /> rakendusi ja mänge. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Teenuse Steam Chromebookile seadistamine</translation>
 <translation id="4232375817808480934">Kerberose seadistamine</translation>
 <translation id="4232376164796433044">Paroolid ja automaattäide</translation>
 <translation id="4232484478444192782">Teie Android-telefon on abiks. Teie WiFi-võrgu mandaat ja parool kantakse üle.</translation>
@@ -5132,7 +5115,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4472533928615930332">Genereeritud pilt <ph name="INDEX" /> otsingu <ph name="SUBJECT" /> kohta; stiil: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Alustage</translation>
 <translation id="4473559657152613417">Paremklõpsake vahelehel ja tehke valik „Lisa vaheleht uude gruppi“</translation>
-<translation id="4473996011558324141">aja prognoosimine</translation>
 <translation id="4474155171896946103">Lisa kõik vahelehed järjehoidjatesse...</translation>
 <translation id="4476198534886170024">Lubatud. Lülitage sisse <ph name="LINK_BEGIN" />süsteemi juurdepääs kaamerale<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Sportlane</translation>
@@ -5367,7 +5349,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4638930039313743000">Luba ADB silumine</translation>
 <translation id="4639390152280993480">Selle lehe lihtsustatud vaate nägemiseks avage Rohkem tööriistu &gt; Lugemisrežiim</translation>
 <translation id="4641539339823703554">Chrome'il ei õnnestunud süsteemiaega määrata. Kontrollige allolevat aega ja vajaduse korral parandage seda.</translation>
-<translation id="4642587497923912728">Steam Chromebookile (beeta) on saadaval ainult konto jaoks, millega selles Chromebookis esimesena sisse logiti.</translation>
 <translation id="4643612240819915418">Ava video uuel va&amp;helehel</translation>
 <translation id="4643833688073835173">Teie Chromebook kasutab sisseehitatud andurit, et tuvastada seadme ees olevaid inimesi. Kõiki andmeid töödeldakse kohe seadmes ja seejärel need kustutatakse. Anduri andmeid ei saadeta mitte kunagi Google'ile.</translation>
 <translation id="4644205769234414680">Luba inkognito režiimis</translation>
@@ -6372,7 +6353,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5353769147530541973">Saidi <ph name="SITE_NAME" /> eemaldamine inaktiveeritavate vahelehtede loendist</translation>
 <translation id="5355099869024327351">Luba assistendil märguandeid esitada</translation>
 <translation id="5355191726083956201">Täiustatud kaitse on sisse lülitatud</translation>
-<translation id="5355498626146154079">Peate lipu „Borealis Enabled” sisse lülitama</translation>
 <translation id="5355501370336370394">Registreeri ettevõtte seade</translation>
 <translation id="5357010010552553606">Täisekraani automaatne aktiveerimine pole lubatud</translation>
 <translation id="5359910752122114278">1 tulemus</translation>
@@ -6402,7 +6382,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5376931455988532197">Fail on liiga suur</translation>
 <translation id="5377367976106153749">Kas lülitada juurdepääs kaamerale sisse?</translation>
 <translation id="5379140238605961210">Blokeeri ka edaspidi juurdepääs mikrofonile</translation>
-<translation id="5380526436444479273">Oodake mõni minut ja proovige uuesti</translation>
 <translation id="5382591305415226340">Toetatud linkide haldamine</translation>
 <translation id="5384401776498845256">Kes saavad teiega jagada</translation>
 <translation id="5385628342687007304">See parool on salvestatud ainult sellesse seadmesse. Selle kasutamiseks muudes seadmetes salvestage see oma Google’i kontole.</translation>
@@ -6457,7 +6436,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5414198321558177633">Profiililoendit värskendatakse. See võib võtta mõne minuti.</translation>
 <translation id="5414566801737831689">Külastatavate veebisaitide ikoonide lugemine</translation>
 <translation id="5414836363063783498">Kinnitamine ...</translation>
-<translation id="5415328625985164836">See on beetaprogramm. Nüüd saate Steami abil Chromebookis teatud mänge mängida.</translation>
 <translation id="5415497281076257439">Fraas</translation>
 <translation id="5415871492522952905">Teie ajalugu ja vahelehed on kõigis teie seadmetes, et saaksite pooleli jäänud toiminguid jätkata</translation>
 <translation id="5417293056300086453">See sait võib kasutada kaitstud sisu esitamiseks identifikaatoreid.</translation>
@@ -6898,7 +6876,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5727728807527375859">Laiendid, rakendused ja teemad võivad teie arvutit kahjustada. Kas soovite kindlasti jätkata?</translation>
 <translation id="5728072125198221967">Lingitud Google’i teenused</translation>
 <translation id="5728450728039149624">Smart Locki ekraaniluku valikud</translation>
-<translation id="572914206753951782">Veenduge et teil oleks Chromebooki uusim versioon. Seejärel taaskäivitage Chromebook ja proovige uuesti.</translation>
 <translation id="5729712731028706266">&amp;Kuva</translation>
 <translation id="5731247495086897348">Kl&amp;eebi ja mine</translation>
 <translation id="5733109311583381874">Konversioonikandidaatide kohandamiseks lisage oma sõnad kasutaja sõnaraamatutesse.</translation>
@@ -8013,7 +7990,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> soovib sellesse seadmesse järgmise rakenduse installida:}other{<ph name="APP_NAME" /> soovib sellesse seadmesse järgmised rakendused installida:}}</translation>
 <translation id="6508248480704296122">Seotud üksusega <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Rakendus: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Taaskäivitage Chromebook ja proovige uuesti</translation>
 <translation id="6511827214781912955">Kaaluge faili <ph name="FILENAME" /> kustutamist, et teised, kes seda seadet kasutavad, ei näeks teie paroole</translation>
 <translation id="6512759338201777379">Genereeritud pilt <ph name="INDEX" /> otsingu <ph name="SUBJECT" /> kohta; meeleolu <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome kasutab mobiilset andmesidet, kui te ei ole teise võrku ühendatud.</translation>
@@ -8122,7 +8098,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="657866106756413002">Võrgu seisukorra ülevaade</translation>
 <translation id="6579369886355986318">Kuva kõik &amp;juhtelemendid</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – jagab töölaua sisu</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% on lõpetatud</translation>
 <translation id="6580203076670148210">Skannimiskiirus</translation>
 <translation id="6580676117087365538">Selle laienduse saamiseks kõikidesse oma arvutitesse kinnitage oma isik.</translation>
 <translation id="6581356304040102696">Ei saa paroole importida. Faili suurus peab olema alla 1 MB.</translation>
@@ -8341,7 +8316,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6729280095610283088">Virmaliste valguskiired üle metsa.</translation>
 <translation id="6729493062119577923">Jagatud vahelehegrupi tegevus</translation>
 <translation id="6730744976532805323">Teie praegust vahelehte jagatakse Geminiga, isegi kui vahelehte vahetate.</translation>
-<translation id="6731320427842222405">Selleks võib kuluda mitu minutit</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Aadress</translation>
 <translation id="6737663862851963468">Kerberose pileti eemaldamine</translation>
@@ -8691,7 +8665,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6965648386495488594">Port</translation>
 <translation id="6965978654500191972">Seade</translation>
 <translation id="6966831944134814478">Lülita välja</translation>
-<translation id="6967112302799758487">Kõik teenuse Steam Chromebookile (beeta) abil installitud rakendused ja mängud eemaldatakse sellest seadmest. Samuti eemaldatakse nende rakenduste ja mängudega seotud andmed. Enne desinstallimist varundage kindlasti salvestatud rakendused ja mängud.</translation>
 <translation id="6967430741871315905">Ei saa kontrollida, kas seade on lubatud</translation>
 <translation id="6968288415730398122">Ekraaniluku seadistamiseks sisestage parool</translation>
 <translation id="6969047215179982698">Läheduses jagamise väljalülitamine</translation>
@@ -8863,7 +8836,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7082568314107259011">Võrku <ph name="NETWORK_NAME" /> haldab teie administraator</translation>
 <translation id="7082850163410901674">Märguanded on Maci süsteemiseadetes välja lülitatud</translation>
 <translation id="7083729794572207131">Tavaliselt paluvad saidid veebirakendusi installida selleks, et parandada saidi kasutuskogemust</translation>
-<translation id="7083774521940805477">Steam Chromebookile (beeta) ei ole teie Chromebookis saadaval.</translation>
 <translation id="7084095352418993433">Küsige Google'ilt selle lehe kohta: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(ei ole seadistatud)</translation>
 <translation id="7086377898680121060">Suurendab heledust</translation>
@@ -8942,7 +8914,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7141844554192012199">Kontroll</translation>
 <translation id="714301620504747562">Sirvimine ja otsimine on tavalise eelladimisega võrreldes kiirem</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
-<translation id="7143409552554575716">ChromeOS-i lipud</translation>
 <translation id="7144363643182336710">Märguandeid ei kuvata hüpikutena. Saate neid siiski vaadata, kui klõpsate ekraanikuva paremas allnurgas ikoonil Mitte segada.</translation>
 <translation id="7144856456372460176">&amp;Installige rakendus <ph name="APP" /> ...</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
@@ -8953,7 +8924,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7152478047064750137">Selle laienduse jaoks pole erilube vaja</translation>
 <translation id="7153101072880472645">Suur kontrastsus sees/väljas</translation>
 <translation id="715396040729904728">käivitaja + tõstuklahv + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Jagage tagasisidet või kirjeldage oma probleem. Võimaluse korral lisage juhised probleemi uuesti esile kutsumiseks.</translation>
 <translation id="7154130902455071009">Määrake avaleheks <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Vaadake parema kvaliteediga videoid ja säästke aku tööiga. Videot esitatakse ainult Casti toega ekraanil.</translation>
 <translation id="7159695867335480590">Esitamine/peatamine</translation>
@@ -9805,7 +9775,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="7728668285692163452">Kanali muudatus rakendatakse hiljem</translation>
 <translation id="7730449930968088409">Ekraanil oleva sisu jäädvustamine</translation>
 <translation id="7730683939467795481">Seda lehte muutis laiendus „<ph name="EXTENSION_NAME" />”</translation>
-<translation id="7732702411411810416">Veenduge, et teil oleks internetiühendus, ja proovige uuesti</translation>
 <translation id="773511996612364297">Rõhumärgid</translation>
 <translation id="7735558909644181051">Kesktaseme sertifikaadid</translation>
 <translation id="7736119438443237821">Te olete eemaldamas selles seadmes juurdepääsu oma pääsuvõtmetele</translation>
@@ -10003,7 +9972,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7871691770940645922">Virtuaalne punktkirjaekraan</translation>
 <translation id="787268756490971083">Väljas</translation>
 <translation id="7872758299142009420">Liiga palju pesastatud gruppe: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam Chromebookile</translation>
 <translation id="7876027585589532670">Otseteed ei saa muuta</translation>
 <translation id="7876243839304621966">Eemalda kõik</translation>
 <translation id="7877126887274043657">&amp;Sünkroonimisprobleemi lahendamine</translation>
@@ -11660,7 +11628,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8983018820925880511">Seda uut profiili haldab <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> saab faili <ph name="FILENAME" /> muuta</translation>
 <translation id="8984694057134206124">Olete <ph name="MINUTES" /> minutit kõigile nähtav. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Tere tulemast Chromebookile mõeldud Steami!</translation>
 <translation id="8985264973231822211">Aktiivne <ph name="DEVICE_LAST_ACTIVATED_TIME" /> päev tagasi</translation>
 <translation id="8985561265504464578">Tuvastamise lävi</translation>
 <translation id="8985661493893822002">Seadmesse <ph name="DEVICE_TYPE" /> sisselogimiseks looge ühendus internetiga.</translation>
@@ -11792,7 +11759,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Umbes 1 märguanne päevas}other{Umbes {NUM_NOTIFICATION} märguannet päevas}}</translation>
 <translation id="9058760336383947367">Kuva printeri PPD</translation>
 <translation id="9061521313218438086">Kui Chrome leiab avalikust andmetega seotud rikkumisest mõne teie parooli, võib Google’i paroolihaldur pakkuda teile võimalust parool ära muuta, kui sisse logite.</translation>
-<translation id="9061694916020926968">Teenuse Steam Chromebookile (beeta) kasutamiseks peate olema Google'i kontole sisse logitud. Logige sisse ja proovige uuesti.</translation>
 <translation id="9062468308252555888">14-kordne</translation>
 <translation id="9062873887761404531">Tühjenda navigeerimise otsetee</translation>
 <translation id="9063208415146866933">Viga ridadel <ph name="ERROR_LINE_START" /> kuni <ph name="ERROR_LINE_END" /></translation>

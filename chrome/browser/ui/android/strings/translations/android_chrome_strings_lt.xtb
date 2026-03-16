@@ -240,6 +240,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="200114059308480249">Įtraukti aplinkinį tekstą į „Google“ paieškas?</translation>
 <translation id="2004096469149679223">„<ph name="TAB_TITLE" />“, prisegtas nutildytas inkognito skirtukas</translation>
 <translation id="2021896219286479412">Viso ekrano svetainės valdikliai</translation>
+<translation id="2024195579772565064">Paieškos variklio ištrynimas</translation>
 <translation id="2029669011553795746">Patarimų pranešimų pasirinkimo lapas atidarytas per pusę ekrano aukščio</translation>
 <translation id="2038563949887743358">Įjungti stalinio kompiuterio svetainės užklausą</translation>
 <translation id="204321170514947529">„<ph name="APP_NAME" />“ duomenų taip pat yra naršyklėje „Chrome“</translation>
@@ -557,6 +558,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3384347053049321195">Bendrinti vaizdą</translation>
 <translation id="3387650086002190359">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl failų sistemos klaidų.</translation>
 <translation id="3414952576877147120">Dydis:</translation>
+<translation id="3417835166382867856">Ieškoti skirtukų</translation>
 <translation id="3430670036890315772">Išjungus profilio užraktą bus pašalinta išsaugota informacija</translation>
 <translation id="3435465986463792564">Atidaryta daug langų? Galite tvarkyti juos čia</translation>
 <translation id="3435575784518354875">Jei norite išsaugoti prieigą prie slaptažodžių, juos eksportuokite dabar, atnaujinkite „Google Play“ paslaugas ir tada importuokite juos atgal į „Google“ slaptažodžių tvarkyklę. <ph name="BEGIN_LINK" />Žr. išsamias instrukcijas<ph name="END_LINK" />.</translation>
@@ -1442,6 +1444,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6896758677409633944">Kopijuoti</translation>
 <translation id="6898797562238201317">Naudokite savo slaptafrazę, kad užšifruotumėte visus „Chrome“ duomenis „Google“ paskyroje</translation>
 <translation id="6900532703269623216">Sustiprinta apsauga</translation>
+<translation id="6900654715912436255">Ar tikrai norite ištrinti šį paieškos variklį?</translation>
 <translation id="6903907808598579934">Įjungti sinchronizavimą</translation>
 <translation id="6906448540340261898">Užtikrinkite, kad visada galėtumėte naudoti slaptažodžius „Google“ paskyroje</translation>
 <translation id="6908230663105268638">Svetainėje <ph name="SITE_NAME" /> pranešimai leidžiami</translation>

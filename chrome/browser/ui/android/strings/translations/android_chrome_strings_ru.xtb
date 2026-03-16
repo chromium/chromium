@@ -239,6 +239,7 @@
 <translation id="200114059308480249">Учитывать контекст в поиске Google?</translation>
 <translation id="2004096469149679223">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с отключенным звуком</translation>
 <translation id="2021896219286479412">Настройки полноэкранного режима</translation>
+<translation id="2024195579772565064">Удалить поисковую систему?</translation>
 <translation id="2029669011553795746">Нижний экран с предложением включить уведомления открыт наполовину</translation>
 <translation id="2038563949887743358">Включить полную версию сайта</translation>
 <translation id="204321170514947529">Приложение "<ph name="APP_NAME" />" также хранит свои данные в Chrome</translation>
@@ -556,6 +557,7 @@
 <translation id="3384347053049321195">Поделиться изображением</translation>
 <translation id="3387650086002190359">Не удалось скачать файл <ph name="FILE_NAME" /> из-за ошибок файловой системы.</translation>
 <translation id="3414952576877147120">Размер:</translation>
+<translation id="3417835166382867856">Поиск по вкладкам</translation>
 <translation id="3430670036890315772">Если вы отключите блокировку профиля, вся сохраненная вами информация будет удалена.</translation>
 <translation id="3435465986463792564">Открыто много окон? Ими можно управлять здесь.</translation>
 <translation id="3435575784518354875">Экспортируйте пароли, обновите сервисы Google Play и импортируйте пароли обратно в Google Менеджер паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@
 <translation id="6896758677409633944">Скопировать</translation>
 <translation id="6898797562238201317">Шифровать все данные Chrome в аккаунте Google с помощью собственной кодовой фразы</translation>
 <translation id="6900532703269623216">Улучшенная защита</translation>
+<translation id="6900654715912436255">Удалить эту поисковую систему?</translation>
 <translation id="6903907808598579934">Включить синхронизацию</translation>
 <translation id="6906448540340261898">Обеспечьте доступ к паролям в аккаунте Google.</translation>
 <translation id="6908230663105268638">Сайту <ph name="SITE_NAME" /> разрешено отправлять уведомления.</translation>

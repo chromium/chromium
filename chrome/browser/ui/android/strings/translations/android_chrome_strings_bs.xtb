@@ -239,6 +239,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="200114059308480249">Obuhvatiti okružujući tekst u pretraživanjima na Googleu?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, zakačena anonimna kartica s isključenim zvukom</translation>
 <translation id="2021896219286479412">Kontr. web lok. na cijelom ekr.</translation>
+<translation id="2024195579772565064">Brisanje pretraživača</translation>
 <translation id="2029669011553795746">Donja tabela uključivanja obavještenja o savjetima je otvorena na pola visine</translation>
 <translation id="2038563949887743358">Uključivanje zahtjeva za verziju web lokacije za računar</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> također ima podatke u Chromeu</translation>
@@ -556,6 +557,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3384347053049321195">Dijeli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo zbog sistemskih grešaka.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
+<translation id="3417835166382867856">Pretraživanje kartica</translation>
 <translation id="3430670036890315772">Isključenjem zaključavanja profila će se ukloniti sačuvane informacije</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Možete upravljati njima odavde</translation>
 <translation id="3435575784518354875">Da zadržite pristup lozinkama, izvezite ih sada, ažurirajte Google Play usluge, a zatim ponovo uvezite lozinke na Google upravitelj lozinki. <ph name="BEGIN_LINK" />Pogledajte sva uputstva<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6898797562238201317">Koristi moj vlastiti pristupni izraz za šifriranje svih podataka Chromea na Google računu</translation>
 <translation id="6900532703269623216">Poboljšana zaštita</translation>
+<translation id="6900654715912436255">Jeste li sigurni da želite izbrisati ovaj pretraživač?</translation>
 <translation id="6903907808598579934">Uključi sinhronizaciju</translation>
 <translation id="6906448540340261898">Pobrinite se da uvijek možete koristiti lozinke na Google računu</translation>
 <translation id="6908230663105268638">Obavještenja su dozvoljena za <ph name="SITE_NAME" /></translation>

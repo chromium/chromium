@@ -240,6 +240,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="200114059308480249">Google qidiruvlariga qamrovli matn kiritilsinmi?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ovozsiz inkognito varaq mahkamlandi</translation>
 <translation id="2021896219286479412">To‘liq ekranli rejim sozlamalari</translation>
+<translation id="2024195579772565064">Qidiruv tizimini oʻchirish</translation>
 <translation id="2029669011553795746">Maslahat bildirishnomalariga yozilish yarim hajmda ochildi</translation>
 <translation id="2038563949887743358">Saytning to‘liq versiyasini ko‘rish</translation>
 <translation id="204321170514947529">Chrome brauzeridagi <ph name="APP_NAME" /> maʼlumotlari ham tozalanadi</translation>
@@ -559,6 +560,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3384347053049321195">Rasmni ulashish</translation>
 <translation id="3387650086002190359">Fayllar tizimi xatoliklari tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="3414952576877147120">Hajmi:</translation>
+<translation id="3417835166382867856">Varaqlar ichidan qidirish</translation>
 <translation id="3430670036890315772">Profilingiz qulfi faolsizlantirilsa, saqlangan maʼlumotlaringiz olib tashlanadi</translation>
 <translation id="3435465986463792564">Koʻp oynalar ochildimi? Ularni bu yerdan boshqarish mumkin</translation>
 <translation id="3435575784518354875">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qilib, Googel Play xizmatlarini yangilang va Google Parollar meneriga qayta import qiling. <ph name="BEGIN_LINK" />Toʻliq koʻrsatmalar<ph name="END_LINK" />.</translation>
@@ -1445,6 +1447,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6896758677409633944">Nusxa olish</translation>
 <translation id="6898797562238201317">Google hisobidagi barcha Chrome maʼlumotlarini shaxsiy kodli ibora yordamida shifrlash</translation>
 <translation id="6900532703269623216">Kuchaytirilgan himoya</translation>
+<translation id="6900654715912436255">Bu qidiruv tizimi aniq oʻchirilsinmi?</translation>
 <translation id="6903907808598579934">Sinxronizatsiyani yoqish</translation>
 <translation id="6906448540340261898">Parollar Google hisobingizga sinxronlanishini tekshiring</translation>
 <translation id="6908230663105268638"><ph name="SITE_NAME" /> uchun bildirishnomalarga ruxsat berilgan</translation>

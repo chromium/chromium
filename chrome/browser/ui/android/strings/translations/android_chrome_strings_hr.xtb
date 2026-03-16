@@ -239,6 +239,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="200114059308480249">Želite li uključiti okolni tekst u Google pretraživanja?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, prikvačena anonimna kartica s isključenim zvukom</translation>
 <translation id="2021896219286479412">Kontrole web-lokacije na cijelom zaslonu</translation>
+<translation id="2024195579772565064">Brisanje tražilice</translation>
 <translation id="2029669011553795746">Uključivanje obavijesti o savjetima otvoreno je na pola visine</translation>
 <translation id="2038563949887743358">Uključivanje zahtjeva za prikaz klasične web-lokacije</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> ima podatke i u Chromeu</translation>
@@ -556,6 +557,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3384347053049321195">Dijeli sliku</translation>
 <translation id="3387650086002190359">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog nepoznate pogreške sustava datoteka.</translation>
 <translation id="3414952576877147120">Veličina:</translation>
+<translation id="3417835166382867856">Pretraži kartice</translation>
 <translation id="3430670036890315772">Isključivanjem zaključavanja profila uklonit će se vaši spremljeni podaci</translation>
 <translation id="3435465986463792564">Imate mnogo prozora? Možete upravljati njima odavde</translation>
 <translation id="3435575784518354875">Da biste zadržali pristup zaporkama, odmah ih izvezite, ažurirajte usluge za Google Play, a zatim ih ponovo uvezite u Google upravitelj zaporki. <ph name="BEGIN_LINK" />Pogledajte potpune upute<ph name="END_LINK" /></translation>
@@ -1440,6 +1442,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6898797562238201317">Koristi moju šifru za šifriranje svih Chromeovih podataka spremljenih na mojem Google računu</translation>
 <translation id="6900532703269623216">Poboljšana zaštita</translation>
+<translation id="6900654715912436255">Jeste li sigurni da želite izbrisati tu tražilicu?</translation>
 <translation id="6903907808598579934">Uključi sinkronizaciju</translation>
 <translation id="6906448540340261898">Provjerite možete li uvijek upotrebljavati zaporke na svom Google računu</translation>
 <translation id="6908230663105268638">Obavijesti su dopuštene za <ph name="SITE_NAME" /></translation>

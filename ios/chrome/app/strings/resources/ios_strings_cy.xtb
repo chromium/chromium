@@ -394,6 +394,7 @@
 <translation id="2360196772093551345">Gofyn am Wefan Symudol</translation>
 <translation id="2362083820973145409">Wedi mewngofnodi fel <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Yn agor gosodiadau.</translation>
 <translation id="2371084566192454134">Tabiau a grwpiau tabiau</translation>
+<translation id="2371303771137626249">Newydd</translation>
 <translation id="2381405137052800939">Hanfodion</translation>
 <translation id="2384692388811649784">Cuddio tabiau Anhysbys</translation>
 <translation id="2386793615875593361">Mae 1 wedi'i ddewis</translation>
@@ -690,6 +691,7 @@
 <translation id="3530206579861815432">Dod o hyd i dabiau sydd ar agor a'r rhai sydd wedi'u cau yn ddiweddar yn gyflym ar draws eich dyfeisiau sydd wedi'u cysoni.</translation>
 <translation id="3530767473765895035">Rheoli cyfrifon ar y ddyfais hon…</translation>
 <translation id="3533436815740441613">Tab Newydd</translation>
+<translation id="3534738261102690620">Gofyn i Gemini</translation>
 <translation id="3540141921715814660">Ychwanegu at Nodau Tudalen</translation>
 <translation id="3546122170015471515">Rhagolwg Mapiau ar Google.com</translation>
 <translation id="3547356470684043247">Darllenwch werthusiadau cwsmeriaid o gynhyrchion, gwasanaethau, neu brofiad i helpu i lywio'ch penderfyniadau gydag adolygiadau</translation>
@@ -1088,6 +1090,7 @@
 <translation id="4944543191714094452">Chwilio'r Dudalen…</translation>
 <translation id="4945756290001680296">Cyrchu gosodiadau cyfrinair</translation>
 <translation id="4949302115427722371">Rheoli gosodiadau…</translation>
+<translation id="4952050521954075618">Ni fydd lluniau o'r Rôl Camera yn cysoni ar draws eich dyfeisiau</translation>
 <translation id="4958444002117714549">Ehangu'r rhestr</translation>
 <translation id="496392417432935267">Wedi'i agor rhywle arall</translation>
 <translation id="4970724460420203313">Mae defnyddio Chrome gyda'ch cyfrif a reolir yn eich helpu i gadw pori sy'n gysylltiedig â'ch sefydliad (gan gynnwys tabiau, hanes a chyfrineiriau) ar wahân i'ch pori arall</translation>
@@ -1287,6 +1290,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5647702255748985085">Gadael y grŵp?</translation>
 <translation id="5648166631817621825">Saith diwrnod diwethaf</translation>
 <translation id="5652623411397330904">Bydd y cynhyrchion rydych yn eu holrhain yn ymddangos yma.</translation>
+<translation id="5653100054596780862">Pob tab</translation>
 <translation id="5656431592348714536">Calendr Gwell</translation>
 <translation id="5659593005791499971">E-bost</translation>
 <translation id="5665739277590037307">Mae <ph name="GOOGLE_TERMS" /> a'r <ph name="GEMINI_APPS_PRIVACY" /> yn berthnasol. Gall Gemini wneud camgymeriadau, felly gwiriwch ef ddwywaith.</translation>
@@ -1752,6 +1756,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7300448350764260141">Ychwanegu haen ychwanegol o amddiffyniad rhag bygythiadau ar-lein.</translation>
 <translation id="7311244614769792472">Ni chanfuwyd unrhyw ganlyniadau</translation>
 <translation id="7313347584264171202">Byddwch yn gweld eich tabiau Anhysbys yma</translation>
+<translation id="7322186060879266048">{count,plural, =1{Mae {count} opsiwn awtolenwi ar gael uwchben eich bysellfwrdd.}zero{Mae {count} opsiwn awtolenwi ar gael uwchben eich bysellfwrdd.}two{Mae {count} opsiwn awtolenwi ar gael uwchben eich bysellfwrdd.}few{Mae {count} opsiwn awtolenwi ar gael uwchben eich bysellfwrdd.}many{Mae {count} opsiwn awtolenwi ar gael uwchben eich bysellfwrdd.}other{Mae {count} opsiwn awtolenwi ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Mae <ph name="PERCENT" /> y cant wedi'i lawrlwytho</translation>
 <translation id="7345061034321640811">Ni chaniateir mewnforio</translation>

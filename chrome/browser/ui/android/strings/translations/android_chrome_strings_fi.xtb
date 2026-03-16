@@ -239,6 +239,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="200114059308480249">Sisällytetäänkö ympäröivä teksti Google-hakuihin?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, kiinnitetty mykistetty incognito-välilehti</translation>
 <translation id="2021896219286479412">Ohjaimet koko näytön tilassa</translation>
+<translation id="2024195579772565064">Poista hakukone</translation>
 <translation id="2029669011553795746">Vinkki-ilmoitusten salliminen avattu puolen näytön kokoisena</translation>
 <translation id="2038563949887743358">Ota käyttöön Käytä tietokoneversiota</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> sisältää dataa myös Chromessa</translation>
@@ -556,6 +557,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3384347053049321195">Jaa kuva</translation>
 <translation id="3387650086002190359">Tiedoston <ph name="FILE_NAME" /> lataus epäonnistui tiedostojärjestelmävirheen vuoksi.</translation>
 <translation id="3414952576877147120">Koko:</translation>
+<translation id="3417835166382867856">Hae välilehtiä</translation>
 <translation id="3430670036890315772">Jos laitat profiilin lukituksen pois päältä, tallennetut tiedot poistetaan</translation>
 <translation id="3435465986463792564">Onko monta ikkunaa auki? Voit ylläpitää niitä täältä</translation>
 <translation id="3435575784518354875">Jos haluat säilyttää pääsyn salasanoihin, vie ne nyt, päivitä Google Play Palvelut, ja siirrä ne sitten takaisin Google Salasanoihin. <ph name="BEGIN_LINK" />Tutustu tarkkoihin ohjeisiin<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6896758677409633944">Kopioi</translation>
 <translation id="6898797562238201317">Salaa kaikki Google-tilisi Chrome-data omalla tunnuslauseella</translation>
 <translation id="6900532703269623216">Parannettu suojaus</translation>
+<translation id="6900654715912436255">Haluatko varmasti poistaa tämän hakukoneen?</translation>
 <translation id="6903907808598579934">Ota synkronointi käyttöön</translation>
 <translation id="6906448540340261898">Varmista, että voit aina käyttää Google-tilisi salasanoja</translation>
 <translation id="6908230663105268638">Ilmoitukset sallittu: <ph name="SITE_NAME" /></translation>

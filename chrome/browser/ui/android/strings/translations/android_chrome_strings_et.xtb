@@ -239,6 +239,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="200114059308480249">Kas kaasata ümbritsev tekst Google'i otsingutesse?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, kinnitatud vaigistatud inkognito vaheleht</translation>
 <translation id="2021896219286479412">Saidi juhtelemendid täisekraanil</translation>
+<translation id="2024195579772565064">Otsingumootori kustutamine</translation>
 <translation id="2029669011553795746">Nõuandemärguannete lubamine on avatud poolel kõrgusel</translation>
 <translation id="2038563949887743358">Valiku Taotle arvutisaiti sisselülitamine</translation>
 <translation id="204321170514947529">Rakendusel <ph name="APP_NAME" /> on samuti Chrome’i andmeid</translation>
@@ -558,6 +559,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3384347053049321195">Jaga kujutist</translation>
 <translation id="3387650086002190359">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus failisüsteemi vigade tõttu.</translation>
 <translation id="3414952576877147120">Suurus:</translation>
+<translation id="3417835166382867856">Otsige vahelehtedelt</translation>
 <translation id="3430670036890315772">Profiililuku väljalülitamine eemaldab teie salvestatud teabe</translation>
 <translation id="3435465986463792564">Kas teil on palju aknaid? Saate neid kõiki siin hallata.</translation>
 <translation id="3435575784518354875">Paroolide kasutamise jätkamiseks eksportige need, värskendage Google Play teenused ja importige need uuesti Google'i paroolihaldurisse. <ph name="BEGIN_LINK" />Lugege juhiseid<ph name="END_LINK" />.</translation>
@@ -1443,6 +1445,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6898797562238201317">Kasuta kõigi Chrome'i andmete krüpteerimiseks Google'i kontol minu parooli</translation>
 <translation id="6900532703269623216">Parem kaitse</translation>
+<translation id="6900654715912436255">Kas soovite selle otsingumootori kindlasti kustutada?</translation>
 <translation id="6903907808598579934">Lülita sünkroonimine sisse</translation>
 <translation id="6906448540340261898">Veenduge, et saaksite alati kasutada oma Google'i kontol paroole</translation>
 <translation id="6908230663105268638">Saidi <ph name="SITE_NAME" /> märguanded on lubatud</translation>

@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Blau</translation>
 <translation id="1557622599341396706">Mostra el nom de l'escriptori</translation>
 <translation id="1569384531973824928">Permet l'accés a tots els llocs web i totes les aplicacions amb permisos per accedir a la càmera i al micròfon. És possible que hagis d'actualitzar la pàgina web o reiniciar l'aplicació.</translation>
+<translation id="1570235441606255261">Instal·lador de Steam</translation>
 <translation id="1571697193564730395">Commuta el mode No molestis. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Ansa de l'extrem esquerre seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="1576623706766186887">Redueix el zoom quan la lupa estigui activada</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositius</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
+<translation id="1642895994345928121">No hi ha prou emmagatzematge al dispositiu per obrir aquesta aplicació. Allibera espai i torna-ho a provar.</translation>
 <translation id="1647986356840967552">Pàgina anterior</translation>
 <translation id="1651914502370159744">Obre la pàgina de l'historial</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
@@ -401,6 +403,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2383521554963939360">Grups d'aplicacions i de pestanyes</translation>
 <translation id="2386292613071805067">Selecciona tots els elements de la pàgina</translation>
 <translation id="2389423187722941333">Activa o desactiva Gemini</translation>
+<translation id="2391805183137601570">Obre Steam</translation>
 <translation id="2392659840443812875">No hi ha cap punt d'accés Wi‐Fi disponible. Assegura't que el dispositiu estigui a prop i que el Bluetooth estigui activat.</translation>
 <translation id="2397416548179033562">Mostra el menú de Chrome</translation>
 <translation id="240006516586367791">Controls multimèdia</translation>
@@ -422,12 +425,14 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="243878895369688216">Obert ahir</translation>
 <translation id="2440978926514840421">S'ha gravat el GIF</translation>
 <translation id="2441427462554639370">La gravació ha finalitzat perquè queda molt poc espai d'emmagatzematge.</translation>
+<translation id="2447587550790814052">Ja pots utilitzar Steam per a Chromebook (beta)</translation>
 <translation id="2449089818483227734">Bateria baixa</translation>
 <translation id="2450205753526923158">Mode de captura de pantalla</translation>
 <translation id="2453860139492968684">Finalitza</translation>
 <translation id="2455994958736234930">Afegeix www. i .com a la barra d'adreces i, a continuació, obre el lloc web</translation>
 <translation id="2456008742792828469">Calendari, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Amplia els detalls</translation>
+<translation id="2462332841984057083">Ja s'està configurant Steam. Espera que finalitzi la configuració.</translation>
 <translation id="2465145153332031561">Estat de la bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%; recompte de cicles: <ph name="CYCLE_COUNT" />.</translation>
 <translation id="2473177541599297363">Confirma la resolució</translation>
 <translation id="2475783092753560388">Insereix <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2486214324139475545">Previsualització de <ph name="DESK_NAME" />. Escriptori actiu.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" ha canviat a una resolució de <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Si no ho confirmes, la configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Vull entrar-hi</translation>
+<translation id="2494555621641843783">No es pot instal·lar Steam</translation>
 <translation id="2496180316473517155">Historial de navegació</translation>
 <translation id="2499445554382787206">Menú del perfil de l'escriptori. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
@@ -512,6 +518,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2727175239389218057">Respon</translation>
 <translation id="2727744317940422214">S'ha produït un error. Envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />. No s'ha pogut esborrar; és possible que ho hagis de fer manualment.</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
+<translation id="2737538893171115082">El teu administrador ha bloquejat Steam per a Chromebook (beta). L'administrador ha d'activar aquestes polítiques:</translation>
 <translation id="2743301740238894839">Inicia</translation>
 <translation id="2743387203779672305">Copia al porta-retalls</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3033912566804961911">Combina amb l'escriptori <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">El llapis òptic té un <ph name="PERCENTAGE" /> de bateria.</translation>
 <translation id="304097922505898963">Obre l'aplicació Tecles de drecera</translation>
+<translation id="3040982432432547149">Ajuda'ns a millorar Steam per a Chromebook</translation>
 <translation id="304417730895741346">Les aplicacions fixades i les obertes es troben al prestatge. Per fixar-hi una aplicació, fes clic en una aplicació amb el botó dret o toca el ratolí tàctil amb dos dits.</translation>
 <translation id="3045670165536837541">Ansa superior dreta seleccionada; utilitza les tecles de fletxa per moure-la</translation>
 <translation id="3047761520276763270">Prova de dir:</translation>
@@ -656,6 +664,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3181441307743005334">Pot tardar una estona a reiniciar-se</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connectat a un dispositiu}other{Connectat a # dispositius}}</translation>
 <translation id="3203405173652969239">L'accés amb interruptors s'ha activat</translation>
+<translation id="3204648577100496185">Pot ser que les dades associades a aquesta aplicació se suprimeixin del dispositiu</translation>
 <translation id="3206735939915734551">Activa o desactiva la tecla de bloqueig de majúscules</translation>
 <translation id="3207953481422525583">Configuració d'usuari</translation>
 <translation id="3208321278970793882">Aplicació</translation>
@@ -677,6 +686,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3271554781793662131">Cerca per inserir</translation>
 <translation id="3274634049061007184">Consulta les aplicacions del telèfon</translation>
 <translation id="3279230909244266691">Aquest procés pot tardar uns quants minuts. S'està iniciant la màquina virtual.</translation>
+<translation id="3285465040399788513">No hi ha prou emmagatzematge al dispositiu per completar la configuració. Allibera espai i torna-ho a provar.</translation>
 <translation id="3289364673986435196">Menú d'engegada</translation>
 <translation id="3289544412142055976">Actualment, les aplicacions de Linux no s'admeten</translation>
 <translation id="3289674678944039601">S'està carregant per adaptador</translation>
@@ -702,6 +712,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3368922792935385530">Connectat</translation>
 <translation id="3369111525500416043">S'entreguen aviat</translation>
 <translation id="3371140690572404006">Dispositiu USB-C (port frontal dret)</translation>
+<translation id="3373196968211632036">Steam per a Chromebook (beta) no està disponible als Comptes de Google per a infants</translation>
 <translation id="3375634426936648815">Connectat</translation>
 <translation id="3386978599540877378">la lupa de pantalla completa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3477079411857374384">Control+Maj+espai</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="348799646910989694">El prestatge s'amaga automàticament</translation>
+<translation id="3496797737329654668">A jugar!</translation>
 <translation id="3505066820268455558">La bateria s'està carregant</translation>
 <translation id="3509391053705095206">No es troba el telèfon. Comprova que el Bluetooth del telèfon estigui activat.</translation>
 <translation id="3510164367642747937">Ressalta el cursor del ratolí</translation>
@@ -800,6 +812,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="3633851487917460983">Obre el porta-retalls</translation>
 <translation id="363473492175527493">Tasca en què concentrar-se: <ph name="TASK_NAME" />. Prem Retorn per editar la tasca.</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Cal actualitzar Steam per a Chromebook (beta). Reinicia el Chromebook i torna-ho a provar.</translation>
 <translation id="3649256019230929621">Minimitza la finestra</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3702809606464356667">S'estan mostrant les finestres de l'escriptori actual. Prem la tecla de fletxa amunt per mostrar les finestres de tots els escriptoris.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Entreteniment</translation>
+<translation id="370665806235115550">S'està carregant...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> i <ph name="UNAVAILABLE_DLC_TWO" /> no estan disponibles.</translation>
 <translation id="3708186454126126312">Connectats anteriorment</translation>
 <translation id="3712143870407382523">Tria una finestra per a aquest costat</translation>
@@ -860,6 +874,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3831226344927851293">Surt de la visualització del tutorial</translation>
 <translation id="383629559565718788">Mostra la configuració del teclat</translation>
 <translation id="384082539148746321">Vols suprimir la plantilla?</translation>
+<translation id="3841282988425489367">No es pot configurar Steam per a Chromebook (beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> i després <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> o <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">No hi ha informació de xarxa disponible</translation>
 <translation id="3848526302597027234">Accedeix als permisos següents:</translation>
@@ -951,6 +966,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4146671046252289537">Ves al final de la paraula següent</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4151054805501931758">Retoc de retrat</translation>
+<translation id="4151449637210235443">Explica'ns la teva partida recent</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de bateria (aproximadament <ph name="TIME_LEFT" />).
 Algunes funcions estan limitades per allargar la durada de la bateria.</translation>
 <translation id="4158003972857765638">Organitza en un escriptori nou</translation>
@@ -968,6 +984,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4192112279662688596">O</translation>
 <translation id="4193857202545160520">Mostra els clics i les tecles</translation>
 <translation id="4193969623755915875">Obre l'ajuda a l'aplicació Explora amb <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4195001808989442226">No es pot obrir Steam per a Chromebook (versió beta)</translation>
 <translation id="4195579532193195633">Versió actual <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continua des d'on ho vaig deixar</translation>
 <translation id="4195877955194704651">Botó Clics automàtics</translation>
@@ -983,6 +1000,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicació instal·lada, en pausa</translation>
 <translation id="4228078597006700451">Els controls no s'han configurat</translation>
 <translation id="4230560241506423345">Nou</translation>
+<translation id="4231231258999726714">S'està configurant Steam per a Chromebook</translation>
 <translation id="4236726631849783264">Recordatori sobre les accions suggerides</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode de visió general</translation>
@@ -1067,6 +1085,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4471432286288241507">{0,plural, =0{Actualitza el dispositiu ara}=1{Actualitza el dispositiu en 1 segon}other{Actualitza el dispositiu en # segons}}</translation>
 <translation id="4472575034687746823">Comença</translation>
 <translation id="4473489370276014885">Contactes de Google</translation>
+<translation id="4473996011558324141">S'està estimant el temps</translation>
 <translation id="4477350412780666475">Pista següent</translation>
 <translation id="4477751544736611934">Això pot comportar costos de dades.
 Hi ha 1 dispositiu connectat.</translation>
@@ -1108,6 +1127,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4585337515783392668">Deixa d'emetre en un receptor desconegut</translation>
 <translation id="4596144739579517758">El tema fosc està desactivat</translation>
 <translation id="4596442969149038771"><ph name="USER" /> l'ha compartit</translation>
+<translation id="4598556348158889687">Gestió de l'emmagatzematge</translation>
 <translation id="4610493115106525653">Bona sortida</translation>
 <translation id="4611292653554630842">Inicia la sessió</translation>
 <translation id="462160925400706389">S'ha connectat: <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4633636853437260449">Prem Ctrl+W per suprimir</translation>
 <translation id="4635501805800894201">{0,plural, =0{Actualitza el dispositiu a la versió anterior ara}=1{Actualitza el dispositiu a la versió anterior en el termini d'1 segon}other{Actualitza el dispositiu a la versió anterior en el termini de # segons}}</translation>
 <translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
+<translation id="4642587497923912728">Steam per a Chromebook (beta) només està disponible al compte amb què s'ha iniciat la sessió per primera vegada en aquest Chromebook.</translation>
 <translation id="4644727592819780893">La zona és massa petita perquè s'ajusti a la càmera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomanació d'aplicació</translation>
 <translation id="4649019912155580914">L'has editat</translation>
@@ -1350,6 +1371,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5352250171825660495">El tema fosc està activat</translation>
 <translation id="5354804064646502504">Això pot comportar costos de dades.
 No hi ha cap dispositiu connectat.</translation>
+<translation id="5355498626146154079">Cal que activis la marca "Borealis Enabled"</translation>
 <translation id="5356963482258194581">Canvia entre els temes clar i fosc. Fes clic amb el botó dret a l'escriptori i selecciona Estil i fons de pantalla.</translation>
 <translation id="536019650977002321">L'administrador no permet la captura d'àudio. Contacta-hi per obtenir més informació.</translation>
 <translation id="5361524080961918551">Fitxers de parla en <ph name="LANGUAGE" /> baixats parcialment</translation>
@@ -1360,6 +1382,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5377367976106153749">Vols activar l'accés a la càmera?</translation>
 <translation id="5378450298115733949">Més</translation>
 <translation id="5379115545237091094">Massa intents</translation>
+<translation id="5380526436444479273">Espera uns quants minuts i torna-ho a provar</translation>
 <translation id="5383434787520761436">No hi ha cap fitxer de Google Drive</translation>
 <translation id="5391307769715781764">Vols substituir l'escriptori desat?</translation>
 <translation id="5392327145184648521">S'està calculant el nivell de càrrega de la bateria.</translation>
@@ -1371,6 +1394,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5409208741270395213">Marca la tasca com a completada</translation>
 <translation id="5413656666631274079">Pàgina de configuració</translation>
 <translation id="5414198321558177633">S'està actualitzant la llista de perfils. Aquest procés pot tardar uns minuts.</translation>
+<translation id="5415328625985164836">Això és un programa beta. Ara pots utilitzar Steam per jugar a alguns jocs al teu Chromebook.</translation>
 <translation id="5426063383988017631">El menú de configuració s'ha tancat</translation>
 <translation id="5428899915242071344">Comença a seleccionar</translation>
 <translation id="5429993543155113935">Les finestres d'incògnit no s'admeten actualment</translation>
@@ -1466,6 +1490,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5712132663381964774">Utilitza les aplicacions per fer tot el que necessitis al teu <ph name="PRODUCT_NAME" />. Pots accedir a les teves aplicacions des del menú d'aplicacions.</translation>
 <translation id="571295407079589142">Les dades mòbils estan desactivades</translation>
 <translation id="5727460725221669831">Si has oblidat la contrasenya o has canviat la contrasenya del Compte de Google fa poc, prova de recuperar aquest usuari.</translation>
+<translation id="572914206753951782">Assegura't que el Chromebook tingui la versió més recent. A continuació, reinicia'l i torna-ho a provar.</translation>
 <translation id="5733630091161562207">Notificació de benvinguda</translation>
 <translation id="573413375004481890">Com que aquest dispositiu no ha pogut admetre totes les pantalles, se n'ha desconnectat una</translation>
 <translation id="574392208103952083">Mitja</translation>
@@ -1713,6 +1738,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6507042703812908515">Obre l'aplicació Tecles de drecera amb <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Canvia al següent mètode d'introducció de text que estigui disponible</translation>
 <translation id="6508923215158854599">Assegura't que el Chromebook estigui connectat a la mateixa xarxa Wi-Fi que el dispositiu Chromecast.</translation>
+<translation id="6511607461419653612">Reinicia el Chromebook i torna-ho a provar</translation>
 <translation id="6515727200518652613">S'ha perdut la càmera. S'està provant de tornar a connectar.</translation>
 <translation id="651753338596587143">Hi ha hagut un error en instal·lar les dependències de DLC. Prova de reiniciar i, si el problema continua, envia suggeriments amb #bruschetta a la descripció. El codi d'error és <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecciona la finestra que vols capturar</translation>
@@ -1738,6 +1764,7 @@ Instal·lació nova</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> està amagada perquè la protecció antimirades està activada</translation>
 <translation id="6574622320167699133">Desbloquejat pel teu telèfon. Toca o fes clic per entrar.</translation>
 <translation id="6578407462441924264">Sense nom</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% completat</translation>
 <translation id="6582012689384648647">Per gaudir de llistes de reproducció personalitzades per concentrar-se, permet l'accés a YouTube Music</translation>
 <translation id="6582034443359256692">S'està calculant el nivell de càrrega de la bateria.</translation>
 <translation id="6585808820553845416">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Instal·lació nova</translation>
 <translation id="6723839937902243910">Bateria</translation>
 <translation id="672609503628871915">Novetats</translation>
 <translation id="6727969043791803658">Connectat, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="6731320427842222405">Això pot trigar una estona</translation>
 <translation id="6732087373923685049">càmera</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Càmera i micròfon en ús</translation>
@@ -1858,6 +1886,7 @@ Instal·lació nova</translation>
 <translation id="6961840794482373852">La tecla de drecera Alt+fletxa amunt ha canviat. Per fer servir la tecla de retrocedir pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa amunt.</translation>
 <translation id="696267987219125751">L'enquadrament de la càmera està desactivat.</translation>
 <translation id="6965382102122355670">D'acord</translation>
+<translation id="6967112302799758487">Qualsevol aplicació o joc que s'hagi instal·lat mitjançant Steam per a Chromebook (beta) se suprimirà d'aquest dispositiu. També se suprimiran les dades associades a aquestes aplicacions i aquests jocs. Assegura't de crear una còpia de seguretat de les aplicacions i dels jocs desats abans de fer la desinstal·lació.</translation>
 <translation id="6972629891077993081">Dispositius d'interfície humana</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">Inser</translation>
@@ -1889,6 +1918,7 @@ Instal·lació nova</translation>
 <translation id="7067196344162293536">Rotació automàtica</translation>
 <translation id="7076293881109082629">Inicia la sessió</translation>
 <translation id="7076878155205969899">Silencia el so</translation>
+<translation id="7083774521940805477">Steam per a Chromebook (beta) no està disponible al teu Chromebook.</translation>
 <translation id="7083848064787091821">Sense distraccions</translation>
 <translation id="7084678090004350185">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="7086931198345821656">Aquesta actualització requereix executar la funció Powerwash al dispositiu <ph name="DEVICE_TYPE" />. Se'n suprimiran totes les dades. Obtén més informació sobre l'última actualització de: <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Instal·lació nova</translation>
 <translation id="7130207228079676353">LES MÉS PROBABLES</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
 <translation id="7143207342074048698">Connectant</translation>
+<translation id="7143409552554575716">Marques de ChromeOS</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="7144942256906679589">Estat de la bateria</translation>
 <translation id="7145639536026937076">La bateria s'està carregant i està a un <ph name="PERCENTAGE" /> %. L'estalvi de bateria està activat.</translation>
 <translation id="7147587499155271409">No hi ha cap historial de navegació</translation>
 <translation id="7147657298465433425">Per accedir a les tecles F, prem la tecla fn+les tecles de la fila superior</translation>
 <translation id="7149149900052329230">Gestiona els fitxers locals i els de Google Drive des de l'aplicació Fitxers.</translation>
+<translation id="7154020516215182599">Comparteix els teus suggeriments o descriu el problema. Si és possible, inclou els passos per reproduir el problema.</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7726391492136714301">Mostra les notificacions i aplicacions del telèfon</translation>
 <translation id="7727952505535211425">Obre el lloc web a la barra d'adreces en una pestanya nova</translation>
 <translation id="7728657226117099693">Desactiva el bloqueig de majúscules</translation>
+<translation id="7732702411411810416">Comprova que tinguis connexió a Internet i torna-ho a provar</translation>
 <translation id="7742327441377685481">Cap notificació</translation>
 <translation id="7748275671948949022">Marca el botó del menú d'aplicacions al prestatge</translation>
 <translation id="7749443890790263709">S'ha assolit el nombre màxim d'escriptoris.</translation>
@@ -2121,6 +2154,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7866482334467279021">activat</translation>
 <translation id="7870790288828963061">No s'ha trobat cap aplicació de Quiosc amb una versió més nova. No hi ha res per actualitzar. Extraieu la memòria USB.</translation>
 <translation id="7872786842639831132">Desactivat</translation>
+<translation id="7873386145597434863">Steam per a Chromebook</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
 <translation id="7884446017008693258">Configuració del punt d'accés Wi‐Fi</translation>
 <translation id="7884902759927478774">Cancel·la l'arrossegament de pestanyes</translation>
@@ -2470,6 +2504,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8980862970816311842">Mou la icona d'una aplicació a dins o fora d'una carpeta a la quadrícula d'aplicacions</translation>
 <translation id="8982906748181120328">Visibilitat Nearby</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Et donem la benvinguda a Steam per a Chromebook</translation>
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Prem fn+Inserció ràpida o Maj per cancel·lar.</translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
@@ -2486,6 +2521,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">El Bluetooth no està disponible</translation>
 <translation id="9050999376345823055">Prem "." per deixar anar</translation>
+<translation id="9061694916020926968">Per utilitzar Steam per a Chromebook (beta), has de tenir la sessió iniciada en un Compte de Google. Inicia la sessió i torna-ho a provar.</translation>
 <translation id="906458777597946297">Maximitza la finestra</translation>
 <translation id="9065203028668620118">Edita</translation>
 <translation id="9068849894565669697">Selecció de color</translation>

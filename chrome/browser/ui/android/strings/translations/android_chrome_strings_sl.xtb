@@ -239,6 +239,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="200114059308480249">Želite vključiti sobesedilo v iskanja v Googlu?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pripeti anonimni zavihek z izklopljenim zvokom</translation>
 <translation id="2021896219286479412">Kontrol. za mesto v celo. načinu</translation>
+<translation id="2024195579772565064">Izbris iskalnika</translation>
 <translation id="2029669011553795746">Možnost omogočanja obvestil z nasveti je odprta pri polovični višini</translation>
 <translation id="2038563949887743358">Vklop možnosti »Zahteva za namizno spletno mesto«</translation>
 <translation id="204321170514947529">Aplikacija <ph name="APP_NAME" /> ima prav tako podatke v Chromu</translation>
@@ -556,6 +557,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3384347053049321195">Skupna raba slike</translation>
 <translation id="3387650086002190359">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi napak v datotečnem sistemu.</translation>
 <translation id="3414952576877147120">Velikost:</translation>
+<translation id="3417835166382867856">Iskanje zavihkov</translation>
 <translation id="3430670036890315772">Če izklopite zaklepanje profila, se shranjeni podatki odstranijo</translation>
 <translation id="3435465986463792564">Imate odprtih veliko oken? Tukaj jih lahko upravljate.</translation>
 <translation id="3435575784518354875">Če želite ohraniti dostop do gesel, jih izvozite, posodobite Storitve Google Play in nato gesla znova uvozite v Googlovega upravitelja gesel. <ph name="BEGIN_LINK" />Oglejte si celotna navodila<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6898797562238201317">Za šifriranje vseh podatkov v Chromu v računu Google uporabi moje geslo</translation>
 <translation id="6900532703269623216">Izboljšana zaščita</translation>
+<translation id="6900654715912436255">Ali ste prepričani, da želite izbrisati ta iskalnik?</translation>
 <translation id="6903907808598579934">Vklopi sinhronizacijo</translation>
 <translation id="6906448540340261898">Poskrbite, da boste v računu Google lahko vedno uporabljali gesla</translation>
 <translation id="6908230663105268638">Obvestila so dovoljena za <ph name="SITE_NAME" /></translation>

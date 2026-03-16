@@ -240,6 +240,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="200114059308480249">Taka með texta umhverfis í Google leitum?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, festur huliðsflipi með slökkt á hljóði</translation>
 <translation id="2021896219286479412">Stýringar vefsvæðis á öllum skjá</translation>
+<translation id="2024195579772565064">Eyða leitarvél</translation>
 <translation id="2029669011553795746">Val um að fá tilkynningar um ráð opnað í hálfri hæð</translation>
 <translation id="2038563949887743358">Kveikja á beiðni um vefsvæði fyrir tölvur</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> er einnig með gögn í Chrome</translation>
@@ -559,6 +560,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3384347053049321195">Deila mynd</translation>
 <translation id="3387650086002190359">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna villu í skráakerfi.</translation>
 <translation id="3414952576877147120">Stærð:</translation>
+<translation id="3417835166382867856">Leita í flipum</translation>
 <translation id="3430670036890315772">Ef slökkt er á prófíllásnum veða vistaðar upplýsingar fjarlægðar</translation>
 <translation id="3435465986463792564">Ertu með of marga glugga opna? Þú getur stjórnað gluggunum héðan</translation>
 <translation id="3435575784518354875">Til að tryggja að þú hafir aðgang að aðgangsorðunum þínum skaltu flytja þau út núna, uppfæra þjónustu Google Play og flytja þau síðan aftur inn í Google-aðgangsorðastjórnun. <ph name="BEGIN_LINK" />Sjá ítarlegar leiðbeiningar<ph name="END_LINK" />.</translation>
@@ -1445,6 +1447,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6898797562238201317">Nota þitt eigið aðgangsorð til að dulkóða öll Chrome-gögn á Google-reikningnum þínum</translation>
 <translation id="6900532703269623216">Aukin vörn</translation>
+<translation id="6900654715912436255">Viltu örugglega eyða þessari leitarvél?</translation>
 <translation id="6903907808598579934">Kveikja á samstillingu</translation>
 <translation id="6906448540340261898">Gakktu úr skugga um að þú getir alltaf notað aðgangsorðin á Google-reikningnum þínum</translation>
 <translation id="6908230663105268638">Tilkynningar leyfðar fyrir <ph name="SITE_NAME" /></translation>

@@ -841,7 +841,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> liittyy jo toimintoon (<ph name="ACTION" />). <ph name="RESPONSE" /> painamalla mitä tahansa näppäintä.</translation>
 <translation id="1567993339577891801">JavaScript-konsoli</translation>
 <translation id="1569466257325986920">Kun Google-tilisi salasana vaihtuu seuraavan kerran, paikallinen datasi palautetaan automaattisesti, kun kirjaudut Google-tilillesi</translation>
-<translation id="1570235441606255261">Steamin asennusohjelma</translation>
 <translation id="1570604804919108255">Poista ilmoitusten mykistys</translation>
 <translation id="1570990174567554976">Kirjanmerkkikansio "<ph name="BOOKMARK_TITLE" />" luotu.</translation>
 <translation id="1571041387761170095">Ei heikkoja tai uudelleenkäytettyjä salasanoja</translation>
@@ -966,7 +965,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1642299742557467312">Tiedosto voi vahingoittaa laitettasi</translation>
 <translation id="1642492862748815878">Yhdistetty laitteeseen <ph name="DEVICE" /> ja <ph name="NUMBER_OF_DEVICES" /> muuhun Bluetooth-laitteeseen</translation>
 <translation id="1642494467033190216">Rootfs-suojauksen poisto ja uudelleenkäynnistys vaaditaan, ennen kuin muut virheenkorjausominaisuudet voidaan ottaa käyttöön.</translation>
-<translation id="1642895994345928121">Laitteen tallennustila ei riitä sovelluksen avaamiseen. Vapauta tilaa ja yritä uudelleen.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA ‑allekirjoitus, jossa on SHA-1</translation>
 <translation id="1643921258693943800">Laita Bluetooth ja Wi-Fi päälle, jotta voit käyttää lähijakamista</translation>
 <translation id="1644574205037202324">Historia</translation>
@@ -2077,7 +2075,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2390347491606624519">Ei yhteyttä välityspalvelimeen, kirjaudu sisään uudelleen</translation>
 <translation id="2390782873446084770">Wi-Fin synkronointi</translation>
 <translation id="2391419135980381625">Perusfontti</translation>
-<translation id="2391805183137601570">Avaa Steam</translation>
 <translation id="239185270194776190">Gemini-keskustelu on toisessa ikkunassa. Siirrä sivupaneeli tähän klikkaamalla mitä tahansa kohtaa.</translation>
 <translation id="2392369802118427583">Aktivoi</translation>
 <translation id="2393136602862631930">Ota <ph name="APP_NAME" /> käyttöön Chromebookilla</translation>
@@ -2159,7 +2156,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2445484935443597917">Luo uusi profiili</translation>
 <translation id="2445726032315793326">Osittainen suurennus</translation>
 <translation id="244641233057214044">Hakuusi liittyvää</translation>
-<translation id="2447587550790814052">Voit nyt käyttää Steam for Chromebookia (beta)</translation>
 <translation id="2448312741937722512">Tyyppi</translation>
 <translation id="2448810255793562605">Kytkimen käyttö: automaattinen skannaus</translation>
 <translation id="2450021089947420533">Selailu</translation>
@@ -2186,7 +2182,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2460826998961521840">Näin voit käyttää Google-tilillesi tallennettuja avainkoodeja</translation>
 <translation id="2461550163693930491">Älä salli sivustojen vierittää ja zoomata jaettuja välilehtiä</translation>
 <translation id="2461593638794842577">Voit laittaa tämän asetuksen pois päältä, jos haluat tallentaa salasanat vain tälle laitteelle</translation>
-<translation id="2462332841984057083">Steamin käyttöönotto on jo aloitettu. Odota, että käyttöönotto on valmis.</translation>
 <translation id="2462724976360937186">Varmenteen myöntäjän avaimen tunnus</translation>
 <translation id="2462752602710430187">Lisättiin <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Näet ehdotettuja tiedostoja, jotta voit helposti jatkaa viimeaikaista toimintaa Microsoft SharePointissa ja OneDrivessa.
@@ -2241,7 +2236,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2491587035099903063">esikuuntele ääni: <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Varmenteen allekirjoituspyyntöä valmistellaan</translation>
 <translation id="249330843868392562">Avaa Tekstistä puheeksi ‑asetukset</translation>
-<translation id="2494555621641843783">Steamia ei voi asentaa</translation>
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2496616243169085015">Valokuvamainen</translation>
 <translation id="2497229222757901769">Hiiren nopeus</translation>
@@ -2597,7 +2591,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="27349076983469322">Vaalea tausta</translation>
 <translation id="2735712963799620190">Aikataulu</translation>
 <translation id="2737363922397526254">Tiivistä...</translation>
-<translation id="2737538893171115082">Järjestelmänvalvoja on estänyt Steam for Chromebookin (beta). Järjestelmänvalvojan on laitettava nämä käytännöt päälle:</translation>
 <translation id="2737719817922589807">&amp;Kirjanmerkit ja listat</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> haluaa jakaa näyttösi sisällön tälle: <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Älä salli sivustojen käyttää laitteellesi asennettuja fontteja</translation>
@@ -3060,7 +3053,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3039491566278747710">Offline-käytäntöjen asentaminen laitteelle epäonnistui.</translation>
 <translation id="303955801043931176">Välilehti suljettu</translation>
 <translation id="3040435070100611531">Google Wallet ‑kortit</translation>
-<translation id="3040982432432547149">Auta meitä kehittämään Steamia Chromebookilla</translation>
 <translation id="304169924727249890">Liity välilehtiryhmään, jossa <ph name="OWNER_FIRST_NAME" /> on</translation>
 <translation id="3042097545107738107">Muuta optimoitua latausstrategiaa.</translation>
 <translation id="3043016484125065343">Kirjaudu sisään, niin näet kirjanmerkkisi</translation>
@@ -3271,7 +3263,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3201422919974259695">Käytettävissä olevat USB-laitteet näkyvät täällä.</translation>
 <translation id="3202499879214571401">Keskeytä näytön striimaus: <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Uusin</translation>
-<translation id="3204648577100496185">Tähän sovellukseen liittyvä data saatetaan poistaa tältä laitteelta</translation>
 <translation id="3206289903841621620">Käyttäjän sanakirja <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Näet viimeaikaiseen toimintaasi perustuvia hakuehdotuksia ja alennuksia.
         <ph name="BREAK" />
@@ -3379,7 +3370,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3283148363895519428">Jatka käyttöönottoa seuraamalla puhelimen ohjeita. Varmista, että puhelin on lähistöllä ja Bluetooth päällä.</translation>
 <translation id="3284050785966252943">Automaattisen täytön metadatan esikatselu</translation>
 <translation id="3285322247471302225">Uusi välileh&amp;ti</translation>
-<translation id="3285465040399788513">Laitteen tallennustila ei riitä käyttöönoton viimeistelyyn. Vapauta tilaa ja yritä uudelleen.</translation>
 <translation id="3285500645985761267">Salli toisiinsa liittyvien sivustojen nähdä toimintasi ryhmässä</translation>
 <translation id="328571385944182268">Tallennetaanko salasanat?</translation>
 <translation id="3289668031376215426">Automaattiset isot kirjaimet</translation>
@@ -3502,7 +3492,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3372602033006349389">Muilla laitteilla</translation>
 <translation id="337286756654493126">Lue sovelluksessa avaamiasi kansioita</translation>
 <translation id="3373059063088819384">Avaa lukutilassa</translation>
-<translation id="3373196968211632036">Steam for Chromebook (beta) ei ole saatavilla lasten Google-tileillä</translation>
 <translation id="3373701465337594448">Kun tämä on päällä, näet kaikki sivustot, jotka arvaavat kiinnostuksen kohteesi</translation>
 <translation id="3374294321938930390"><ph name="BOOKMARK_TITLE" /> siirretty kansioon <ph name="NEW_FOLDER_TITLE" /></translation>
 <translation id="3376035595160918049">Tarkista sovelluspäivitys</translation>
@@ -3685,7 +3674,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (ei valittu)</translation>
 <translation id="3496689104192986836">Akun varaustaso: <ph name="PERCENTAGE" /> %</translation>
 <translation id="3496692428582464972">Kerättävät datalähteet</translation>
-<translation id="3496797737329654668">Aloitetaan pelaaminen</translation>
 <translation id="3496995426334945408">Sivustot käyttävät JavaScriptiä yleensä videopelien, verkkolomakkeiden tai muiden interaktiivisten ominaisuuksien näyttämiseen</translation>
 <translation id="3497501929010263034">USB-laite: <ph name="VENDOR_NAME" /> (tuote <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Jaa Doodle</translation>
@@ -3898,7 +3886,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3637203148990213388">Muut tilit</translation>
 <translation id="3640347231390550691">Suojaa salasanat tietojenkalastelulta</translation>
 <translation id="364100968401221170">Jos haluat poistaa selausdatan kaikilta synkronoiduilta laitteilta ja Google-tililtä, <ph name="BEGIN_LINK" />kirjaudu sisään<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steam for Chromebook (beta) on päivitettävä. Käynnistä Chromebook uudelleen ja yritä sitten.</translation>
 <translation id="3641299252000913351">Modeemin laiteohjelmistopäivitys käynnissä. Älä sammuta laitetta.</translation>
 <translation id="3641456520301071208">Sivustot voivat pyytää sijaintiasi</translation>
 <translation id="3642064270296434810">Voit nyt hakea Google Lensilla mitä tahansa näytöllä näkemiäsi asioita</translation>
@@ -4235,7 +4222,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="383891835335927981">Zoomausta ei ole käytetty sivustoilla.</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> ei saa koskaan nähdä leikepöydän sisältöä</translation>
 <translation id="3840096463915153852">Keskusteluhistoria</translation>
-<translation id="3841282988425489367">Steam for Chromebookia (beta) ei voi ottaa käyttöön</translation>
 <translation id="3841319830220785495">Luonnollinen oletusääni</translation>
 <translation id="3841356782900714251">Älykortinlukijat</translation>
 <translation id="3841964634449506551">Virheellinen salasana</translation>
@@ -4680,7 +4666,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4148195018520464922">Voit rajoittaa sisäänkirjautumisen tietyille käyttäjille. Tämä poistaa Lisää henkilö ‐vaihtoehdon kirjautumisnäkymästä. Voit myös poistaa nykyisiä käyttäjiä.</translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
 <translation id="4150201353443180367">Näyttö</translation>
-<translation id="4151449637210235443">Kerro meille äskeisen pelin pelattavuudesta</translation>
 <translation id="4151503145138736576">Ei tyhjennettävää offline-tallennustilaa</translation>
 <translation id="4152011295694446843">Näet kirjanmerkkisi täällä</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 välilehti}other{# välilehteä}}</translation>
@@ -4731,7 +4716,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4193251682249731404">Luotettu CA-varmenne</translation>
 <translation id="4193575319002689239">Näytä kortit</translation>
 <translation id="419427585139779713">Kirjoita tavu kerrallaan</translation>
-<translation id="4195001808989442226">Steam for Chromebookia (beta) ei voi avata</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
 <translation id="4198268995694216131">Lisää sivustoja</translation>
@@ -4777,7 +4761,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Tämä laajennus ei ole sallittu}other{Nämä laajennukset eivät ole sallittuja}}</translation>
 <translation id="4231053948789591973">Striimaus on tällä hetkellä keskeytettynä. Voit jatkaa näytön striimausta tai lopettaa sen milloin tahansa.</translation>
 <translation id="4231095370974836764">Asenna sovelluksia ja pelejä Google Playsta (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Otetaan Steamia käyttöön Chromebookilla</translation>
 <translation id="4232375817808480934">Määritä Kerberos</translation>
 <translation id="4232376164796433044">Salasanat ja autom. täyttö</translation>
 <translation id="4232484478444192782">Android-puhelimesi huolehtii kaikesta. Wi-Fi-yhteyttä ja salasanaa siirretään.</translation>
@@ -5136,7 +5119,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4472533928615930332">Luotu kuva <ph name="INDEX" /> / <ph name="SUBJECT" />, tyyli: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Aloita</translation>
 <translation id="4473559657152613417">Klikkaa välilehteä kakkospainikkeella ja valitse "Lisää välilehti" uuteen ryhmään</translation>
-<translation id="4473996011558324141">arvioidaan aikaa</translation>
 <translation id="4474155171896946103">Lisää kaikki välilehdet kirjanmerkkeihin...</translation>
 <translation id="4476198534886170024">Sallittu. Salli <ph name="LINK_BEGIN" />järjestelmän kameran käyttö<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Urheilija</translation>
@@ -5371,7 +5353,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4638930039313743000">Ota käyttöön ADB-virheenkorjaus</translation>
 <translation id="4639390152280993480">Jos haluat nähdä sivusta yksinkertaistetun version, valitse Lisää työkaluja &gt; Lukutila</translation>
 <translation id="4641539339823703554">Chrome ei voinut asettaa järjestelmän aikaa. Tarkista aika alta ja korjaa sitä tarvittaessa.</translation>
-<translation id="4642587497923912728">Steam for Chromebook (beta) on saatavilla vain tilillä, jolla kirjauduit ensin tälle Chromebookille.</translation>
 <translation id="4643612240819915418">Avaa vide&amp;o uudessa välilehdessä</translation>
 <translation id="4643833688073835173">Chromebook käyttää sisäänrakennettua anturia, jonka avulla se havaitsee laitteesi edessä olevat ihmiset. Kaikki data käsitellään heti laitteellasi ja poistetaan sitten. Anturidataa ei koskaan lähetetä Googlelle.</translation>
 <translation id="4644205769234414680">Salli incognito-tilassa</translation>
@@ -6376,7 +6357,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5353769147530541973">Poista <ph name="SITE_NAME" /> välilehtilistasta, jotta voit poistaa sen käytöstä</translation>
 <translation id="5355099869024327351">Anna Assistantin näyttää ilmoituksia</translation>
 <translation id="5355191726083956201">Parannettu suojaus on päällä</translation>
-<translation id="5355498626146154079">Sinun on laitettava Borealis Enabled ‐merkintä päälle</translation>
 <translation id="5355501370336370394">Rekisteröi yrityksen laite</translation>
 <translation id="5357010010552553606">Automaattinen siirtyminen koko näytön tilaan kielletty</translation>
 <translation id="5359910752122114278">1 tulos</translation>
@@ -6406,7 +6386,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5376931455988532197">Tiedosto on liian suuri</translation>
 <translation id="5377367976106153749">Sallitaanko kameran käyttö?</translation>
 <translation id="5379140238605961210">Estä edelleen mikrofonin käyttö</translation>
-<translation id="5380526436444479273">Odota muutama minuutti ja yritä uudelleen</translation>
 <translation id="5382591305415226340">Hallinnoi tuettuja linkkejä</translation>
 <translation id="5384401776498845256">Kuka voi jakaa sinulle sisältöä</translation>
 <translation id="5385628342687007304">Salasana tallennetaan vain tälle laitteelle. Jos haluat käyttää sitä muilla laitteilla, tallenna se Google-tilillesi.</translation>
@@ -6461,7 +6440,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5414198321558177633">Päivitetään profiililistaa. Tämä voi kestää muutaman minuutin.</translation>
 <translation id="5414566801737831689">Käyttää selaamiesi sivustojen kuvakkeita</translation>
 <translation id="5414836363063783498">Vahvistetaan…</translation>
-<translation id="5415328625985164836">Tämä on betaohjelma. Voit nyt pelata pelejä Chromebookilla Steamin avulla.</translation>
 <translation id="5415497281076257439">Ilmaus</translation>
 <translation id="5415871492522952905">Historia ja välilehdet näkyvät kaikilla laitteilla, joten voit jatkaa siitä, mihin jäit</translation>
 <translation id="5417293056300086453">Tämä sivusto voi käyttää tunnisteita suojatun sisällön toistamiseen.</translation>
@@ -6902,7 +6880,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5727728807527375859">Laajennukset, sovellukset ja teemat saattavat vahingoittaa tietokonettasi. Haluatko varmasti jatkaa?</translation>
 <translation id="5728072125198221967">Linkitetyt Googlen palvelut</translation>
 <translation id="5728450728039149624">Smart Lock ‑lukitusnäytön asetukset</translation>
-<translation id="572914206753951782">Varmista, että Chromebookissa on uusin versio. Käynnistä Chromebook uudelleen ja yritä sitten.</translation>
 <translation id="5729712731028706266">&amp;Näytä</translation>
 <translation id="5731247495086897348">Liitä ja &amp;siirry</translation>
 <translation id="5733109311583381874">Muokkaa muunnosvaihtoehtoja lisäämällä omia sanojasi käyttäjän sanakirjoihin.</translation>
@@ -8017,7 +7994,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> haluaa asentaa tälle laitteelle seuraavan sovelluksen:}other{<ph name="APP_NAME" /> haluaa asentaa tälle laitteelle seuraavat sovellukset:}}</translation>
 <translation id="6508248480704296122">Liittyy kohteeseen <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Sovellus: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Käynnistä Chromebook uudelleen ja yritä sitten</translation>
 <translation id="6511827214781912955">Sinun kannattaa poistaa <ph name="FILENAME" />, jotta laitteen muut käyttäjät eivät näe salasanojasi</translation>
 <translation id="6512759338201777379">Luotu kuva <ph name="INDEX" /> / <ph name="SUBJECT" />, tunnelma: <ph name="MOOD" /></translation>
 <translation id="6513247462497316522">Google Chrome käyttää mobiilitiedonsiirtoa, jos et ole yhteydessä toiseen verkkoon.</translation>
@@ -8126,7 +8102,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="657866106756413002">Verkon toiminnan tilannekatsaus</translation>
 <translation id="6579369886355986318">Näytä kaikki &amp;säätimet</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – työpöydän sisältöä jaetaan</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % asennettu</translation>
 <translation id="6580203076670148210">Skannausnopeus</translation>
 <translation id="6580676117087365538">Vahvista henkilöllisyytesi, niin voit käyttää tätä laajennusta kaikilla tietokoneilla</translation>
 <translation id="6581356304040102696">Salasanojen siirto ei onnistu. Tiedoston koon täytyy olla alle 1 Mt.</translation>
@@ -8345,7 +8320,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6729280095610283088">Kirkkaita revontulia metsän yllä.</translation>
 <translation id="6729493062119577923">Jaettujen välilehtiryhmien toiminta</translation>
 <translation id="6730744976532805323">Jakaa nykyisen välilehden Geminille, vaikka vaihtaisit välilehtiä</translation>
-<translation id="6731320427842222405">Tämä saattaa kestää muutaman minuutin</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (tunnus: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Osoite</translation>
 <translation id="6737663862851963468">Poista Kerberos-tukipyyntö</translation>
@@ -8695,7 +8669,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6965648386495488594">Portti</translation>
 <translation id="6965978654500191972">Laite</translation>
 <translation id="6966831944134814478">Laita pois päältä</translation>
-<translation id="6967112302799758487">Steamin for Chromebookin (beta) kautta asennetut sovellukset ja pelit poistetaan tältä laitteelta. Myös näihin sovelluksiin ja peleihin liittyvä data poistetaan. Muista varmuuskopioida tallennetut sovellukset ja pelit ennen asennuksen poistamista.</translation>
 <translation id="6967430741871315905">Ei voi tarkistaa, onko laite sallittu</translation>
 <translation id="6968288415730398122">Määritä näytön lukitus antamalla salasanasi.</translation>
 <translation id="6969047215179982698">Laita lähijakaminen pois päältä</translation>
@@ -8867,7 +8840,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> on järjestelmänvalvojan hallinnoima</translation>
 <translation id="7082850163410901674">Ilmoitukset on laitettu pois päältä Macin järjestelmäasetuksissa</translation>
 <translation id="7083729794572207131">Sivustot pyytävät yleensä lupaa asentaa verkkosovelluksia, jotta käyttökokemus paranee</translation>
-<translation id="7083774521940805477">Steam for Chromebook (beta) ei ole saatavilla Chromebookillasi.</translation>
 <translation id="7084095352418993433">Kysy Googlelta tästä sivusta: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(ei määritetty)</translation>
 <translation id="7086377898680121060">Lisää kirkkautta.</translation>
@@ -8946,7 +8918,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7141844554192012199">Tarkistus</translation>
 <translation id="714301620504747562">Selaaminen ja hakeminen on tavallista esilatausta nopeampaa</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
-<translation id="7143409552554575716">ChromeOS-merkinnät</translation>
 <translation id="7144363643182336710">Ilmoitukset eivät avaudu näytöllä ponnahdusikkunassa. Voit edelleen nähdä ilmoitukset klikkaamalla näytön oikeassa alakulmassa olevaa Älä häiritse ‐kuvaketta.</translation>
 <translation id="7144856456372460176">&amp;Asenna <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
@@ -8957,7 +8928,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7152478047064750137">Tämä laajennus ei vaadi erityisiä käyttöoikeuksia.</translation>
 <translation id="7153101072880472645">Suuri kontrasti päälle/pois</translation>
 <translation id="715396040729904728">käynnistysohjelma + vaihto + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Jaa palautteesi tai kerro ongelmastasi. Lisää mahdollisuuksien mukaan vaiheet, jotta ongelma voidaan toistaa.</translation>
 <translation id="7154130902455071009">Vaihda aloitussivuksi <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Katso laadukkaampia videoita ja säästä akkua. Videoita toistetaan vain Cast-yhteensopivalla näytöllä.</translation>
 <translation id="7159695867335480590">Toista/keskeytä</translation>
@@ -9809,7 +9779,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7728668285692163452">Kanavan muutos otetaan käyttöön myöhemmin</translation>
 <translation id="7730449930968088409">Ota ruutukaappaus</translation>
 <translation id="7730683939467795481">Laajennus <ph name="EXTENSION_NAME" /> muutti tätä sivua</translation>
-<translation id="7732702411411810416">Varmista, että internetyhteys on muodostettu, ja yritä uudelleen</translation>
 <translation id="773511996612364297">Aksenttimerkit</translation>
 <translation id="7735558909644181051">Välivarmenteet</translation>
 <translation id="7736119438443237821">Olet poistamassa pääsyä avainkoodeihin tällä laitteella</translation>
@@ -10007,7 +9976,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7871691770940645922">Virtuaalinen pistekirjoitusnäyttö</translation>
 <translation id="787268756490971083">Pois päältä</translation>
 <translation id="7872758299142009420">Liikaa sisäkkäisiä ryhmiä: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">Pikakuvaketta ei voi muokata</translation>
 <translation id="7876243839304621966">Poista kaikki</translation>
 <translation id="7877126887274043657">Korjaa synkronointiongelma</translation>
@@ -11664,7 +11632,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8983018820925880511"><ph name="DOMAIN" /> ylläpitää tätä uutta profiilia. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> saa muokata tiedostoa <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Näyt kaikille <ph name="MINUTES" /> minuutin ajan. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Tervetuloa käyttämään Steamia Chromebookilla</translation>
 <translation id="8985264973231822211">Aktiivinen <ph name="DEVICE_LAST_ACTIVATED_TIME" /> päivä sitten</translation>
 <translation id="8985561265504464578">Havaitsemiskynnys</translation>
 <translation id="8985661493893822002">Muodosta verkkoyhteys kirjautuaksesi laitteelle (<ph name="DEVICE_TYPE" />).</translation>
@@ -11796,7 +11763,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Noin 1 ilmoitus päivässä}other{Noin {NUM_NOTIFICATION} ilmoitusta päivässä}}</translation>
 <translation id="9058760336383947367">Näytä tulostimen PPD</translation>
 <translation id="9061521313218438086">Jos Chrome löytää yhden salasanoistasi julkisesta tietosuojaloukkauksesta, Google Salasanat voi tarjota salasanan vaihtamista ollessasi sisäänkirjautuneena.</translation>
-<translation id="9061694916020926968">Sinun on oltava kirjautuneena Google-tilille, jotta voit käyttää Steam for Chrombeookia (beta). Kirjaudu sisään ja yritä uudelleen.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Tyhjennä navigoinnin pikanäppäin</translation>
 <translation id="9063208415146866933">Virhe riveillä <ph name="ERROR_LINE_START" />–<ph name="ERROR_LINE_END" /></translation>

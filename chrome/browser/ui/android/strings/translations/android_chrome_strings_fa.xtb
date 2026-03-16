@@ -239,6 +239,7 @@
 <translation id="200114059308480249">‏نوشتار اطراف در جستجوهای Google لحاظ شوند؟</translation>
 <translation id="2004096469149679223">‫<ph name="TAB_TITLE" />، زبانه ناشناس بی‌صدای سنجاق‌شده</translation>
 <translation id="2021896219286479412">کنترل‌های سایت تمام‌صفحه</translation>
+<translation id="2024195579772565064">حذف موتور جستجو</translation>
 <translation id="2029669011553795746">برگ زیرین موافقت کردن با نکات به‌صورت نیمه باز شده است</translation>
 <translation id="2038563949887743358">روشن کردن درخواست سایت رایانه‌ای</translation>
 <translation id="204321170514947529">‏<ph name="APP_NAME" /> داده‌هایی در Chrome نیز دارد</translation>
@@ -556,6 +557,7 @@
 <translation id="3384347053049321195">اشتراک‌گذاری تصویر</translation>
 <translation id="3387650086002190359">به‌دلیل خطاهای سیستم فایل، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="3414952576877147120">اندازه:</translation>
+<translation id="3417835166382867856">برگه‌های جستجو</translation>
 <translation id="3430670036890315772">خاموش کردن قفل نمایه باعث برداشته شدن اطلاعات ذخیره‌شده‌تان می‌شود</translation>
 <translation id="3435465986463792564">پنجره‌های زیادی دارید؟ می‌توانید از اینجا مدیریتشان کنید</translation>
 <translation id="3435575784518354875">‏برای اینکه دسترسی‌تان به گذرواژه‌ها حفظ شود، اکنون آن‌ها را صادر کنید، «خدمات Google Play» را به‌روز کنید، و سپس آن‌ها را دوباره به «مدیر گذرواژه Google» وارد کنید. <ph name="BEGIN_LINK" />کل دستورالعمل‌ها را ببینید<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6898797562238201317">‏استفاده از گذرعبارت خودتان برای رمزگذاری همه داده‌های Chrome در «حساب Google» شما</translation>
 <translation id="6900532703269623216">محافظت بهبودیافته</translation>
+<translation id="6900654715912436255">مطمئنید می‌خواهید این موتور جستجو را حذف کنید؟</translation>
 <translation id="6903907808598579934">روشن کردن همگام‌سازی</translation>
 <translation id="6906448540340261898">‏مطمئن شوید همیشه می‌توانید از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="6908230663105268638">اعلان‌های <ph name="SITE_NAME" /> مجاز شد</translation>

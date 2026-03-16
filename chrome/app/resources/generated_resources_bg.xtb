@@ -555,6 +555,7 @@
 <translation id="1368603372088757436">Linux не се поддържа от вашия <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">За да ги използвате на другите си устройства, запазете ги в профила си в Google</translation>
 <translation id="1370384480654163477">Прегледайте и редактирайте файловете от последния път, когато сте посетили този сайт:</translation>
+<translation id="1371253136879578532">За да изберете част от екрана в Gemini, използвайте клавишна комбинация.</translation>
 <translation id="1372259917802609049">При изтриването на ограничението възникна грешка</translation>
 <translation id="1372841398847029212">Синхронизиране с профила ви</translation>
 <translation id="1373176046406139583">Видимостта на устройството ви управлява това, кой може да споделя с вас, докато екранът ви е отключен. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -838,7 +839,6 @@
 <translation id="156793199942386351"><ph name="CURRENTKEY" /> вече се използва за действието „<ph name="ACTION" />“. Натиснете произволен клавиш, за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола на JavaScript</translation>
 <translation id="1569466257325986920">При следващата промяна на паролата за профила ви в Google, след като влезете в него, локалните ви данни ще бъдат възстановени автоматично</translation>
-<translation id="1570235441606255261">Инсталационна програма за Steam</translation>
 <translation id="1570604804919108255">Включване на известията</translation>
 <translation id="1570990174567554976">Папката с отметки „<ph name="BOOKMARK_TITLE" />“ бе създадена.</translation>
 <translation id="1571041387761170095">Няма ненадеждни или повторно използвани пароли</translation>
@@ -963,7 +963,6 @@
 <translation id="1642299742557467312">Този файл може да навреди на устройството ви</translation>
 <translation id="1642492862748815878">Установена е връзка с(ъс) <ph name="DEVICE" /> и още <ph name="NUMBER_OF_DEVICES" /> устройства с Bluetooth</translation>
 <translation id="1642494467033190216">Преди активирането на останалите функции за отстраняване на грешки трябва да се премахне защитата на rootfs и да се рестартира.</translation>
-<translation id="1642895994345928121">В хранилището на устройството няма достатъчно място за отваряне на това приложение. Освободете място и опитайте отново.</translation>
 <translation id="1643072738649235303">Подпис по X9.62 ECDSA с SHA-1</translation>
 <translation id="1643921258693943800">За да използвате „Споделяне наблизо“, включете Bluetooth и Wi-Fi</translation>
 <translation id="1644574205037202324">История</translation>
@@ -1467,6 +1466,7 @@
     <ph name="BEGIN_DESCRIPTION3" />Организацията може да осъществява отдалечен достъп до сесия на устройството с цел отстраняване на неизправности.<ph name="END_DESCRIPTION3" />
     <ph name="BEGIN_SUBTITLE4" /><ph name="BEGIN_BOLD" />Активиране на достъпа<ph name="END_BOLD" /><ph name="END_SUBTITLE4" />
     <ph name="BEGIN_DESCRIPTION4" />Приложенията, услугите и мрежите на организацията може да са налице само за регистрирани устройства.<ph name="END_DESCRIPTION4" /></translation>
+<translation id="1979208610845113582">Вече можете директно да възобновявате нишките в режима с AI оттук. Можете да освободите по всяко време.</translation>
 <translation id="1979280758666859181">Преминавате към канал с по-стара версия на <ph name="PRODUCT_NAME" />. Промяната на канала ще се приложи, когато версията в него вече съответства на инсталираната понастоящем на устройството ви.</translation>
 <translation id="1979582938184524893">Ръчно изберете личната информация, която да бъде включена</translation>
 <translation id="197989455406964291">Типът шифроване не се поддържа от KDC</translation>
@@ -1930,6 +1930,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2297705863329999812">Търсете принтери</translation>
 <translation id="2297822946037605517">Споделяне на тази страница</translation>
 <translation id="229871422646860597">Освобождаване от лентата с инструменти</translation>
+<translation id="2298749511072894576">Вече можете да възобновявате разговорите си с Gemini директно оттук. Можете да освободите по всяко време.</translation>
 <translation id="2299685119225839832">Можете да получите обобщение на това, което хората казват в отзивите си</translation>
 <translation id="2299734369537008228">Плъзгач: от <ph name="MIN_LABEL" /> до <ph name="MAX_LABEL" /></translation>
 <translation id="2299941608784654630">Добавяне на всички регистрационни файлове от debugd в отделен архив.</translation>
@@ -2074,7 +2075,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2390347491606624519">Не може да се установи връзка с прокси сървъра. Моля, влезте отново</translation>
 <translation id="2390782873446084770">Синхронизиране на Wi-Fi</translation>
 <translation id="2391419135980381625">Стандартен шрифт</translation>
-<translation id="2391805183137601570">Отваряне на Steam</translation>
 <translation id="239185270194776190">Разговорът ви с Gemini е в друг прозорец. За да го преместите тук, кликнете където и да е в този страничен панел.</translation>
 <translation id="2392369802118427583">Активиране</translation>
 <translation id="2393136602862631930">Настройте <ph name="APP_NAME" /> на своя Chromebook</translation>
@@ -2156,7 +2156,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2445484935443597917">Създаване на нов потребителски профил</translation>
 <translation id="2445726032315793326">Лупа за увеличаване на част от екрана</translation>
 <translation id="244641233057214044">Сродно на търсенето ви</translation>
-<translation id="2447587550790814052">Вече можете да използвате бета-версията на Steam за Chromebook</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2448810255793562605">Автоматично сканиране при достъп с превключване</translation>
 <translation id="2450021089947420533">Пътешествия</translation>
@@ -2183,7 +2182,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2460826998961521840">За да използвате ключовете за достъп, запазени в профила ви в Google</translation>
 <translation id="2461550163693930491">Да не се разрешава на сайтовете да превъртат и променят мащаба на споделените раздели</translation>
 <translation id="2461593638794842577">Можете да изключите тази настройка, ако искате паролите ви да се запазват само на това устройство</translation>
-<translation id="2462332841984057083">Steam вече се настройва. Изчакайте процесът да завърши.</translation>
 <translation id="2462724976360937186">Идентификатор (ИД) на ключ на сертифициращия орган</translation>
 <translation id="2462752602710430187">Добавихте <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Показват се предложени файлове, с чиято помощ лесно да се върнете към скорошната си активност в Microsoft SharePoint и OneDrive.
@@ -2238,7 +2236,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2491587035099903063">прослушване на гласа за <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Заявката за подписване на сертификат се подготвя</translation>
 <translation id="249330843868392562">Отваряне на настройките за синтезиран говор</translation>
-<translation id="2494555621641843783">Steam не може да се инсталира</translation>
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="2496616243169085015">Фотография</translation>
 <translation id="2497229222757901769">Скорост на мишката</translation>
@@ -2290,6 +2287,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="252418934079508528">Инсталиране на <ph name="DEVICE_OS" /></translation>
 <translation id="252513908494776481">Попитайте за този раздел</translation>
 <translation id="2525746158911982776">Актуализацията не бе успешна, защото в системата няма достатъчно място в хранилището.</translation>
+<translation id="2525842906387880861">На тази страница вече няма да се показват предложения</translation>
 <translation id="2526590354069164005">Работен плот</translation>
 <translation id="2526619973349913024">Проверка за актуализации</translation>
 <translation id="2527167509808613699">Каквато и да е връзка</translation>
@@ -2594,7 +2592,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="27349076983469322">Светъл фон</translation>
 <translation id="2735712963799620190">График</translation>
 <translation id="2737363922397526254">Свиване...</translation>
-<translation id="2737538893171115082">Бета-версията на Steam за Chromebook е блокирана от администратора ви. Той трябва да включи следните правила:</translation>
 <translation id="2737719817922589807">&amp;Отметки и списъци</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> иска да сподели съдържанието на екрана ви с(ъс) <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Да не се разрешава на сайтовете да използват шрифтовете, инсталирани на устройството ви</translation>
@@ -2776,6 +2773,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2855243985454069333">Изтриване на историята от всички синхронизирани устройства</translation>
 <translation id="2855812646048059450">Влизане с(ъс) <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2857047802954430547">Влезте в профила си, за да получите своите пароли, отметки и др. на всичките си устройства</translation>
+<translation id="2857195263461649321">Продължавайте оттам, откъдето сте прекъснали в Gemini</translation>
 <translation id="2859741939921354763">Импортиране на пароли в <ph name="BRAND" /></translation>
 <translation id="2860284453253554297">Корпоративни правила</translation>
 <translation id="2860710618359053450">Преместване на челюстта надясно</translation>
@@ -3057,7 +3055,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3039491566278747710">Правилото за работа офлайн не бе инсталирано успешно на устройството.</translation>
 <translation id="303955801043931176">Затворихте раздела</translation>
 <translation id="3040435070100611531">Картите ви в Google Wallet</translation>
-<translation id="3040982432432547149">Помогнете ни да подобрим Steam за Chromebook</translation>
 <translation id="304169924727249890">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Промяна на стратегията за оптимизирано зареждане.</translation>
 <translation id="3043016484125065343">Влезте в профила си, за да видите отметките си</translation>
@@ -3268,7 +3265,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3201422919974259695">Наличните USB устройства ще се показват тук.</translation>
 <translation id="3202499879214571401">Поставяне на пауза на предаването на екрана към „<ph name="DEVICE_NAME" />“</translation>
 <translation id="3202578601642193415">Най-нова</translation>
-<translation id="3204648577100496185">Данните, свързани с това приложение, може да бъдат премахнати от устройството</translation>
 <translation id="3206289903841621620">Потребителски речник <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Показват се предложения за търсене и отстъпки при пазаруване, които може да ви заинтересуват, въз основа на скорошната ви активност.
         <ph name="BREAK" />
@@ -3376,7 +3372,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3283148363895519428">Изпълнете инструкциите на телефона си, за да продължите настройването. Уверете се, че той е в близост и функцията за Bluetooth е включена.</translation>
 <translation id="3284050785966252943">Визуализация на метаданните за автоматичното попълване</translation>
 <translation id="3285322247471302225">Нов &amp;раздел</translation>
-<translation id="3285465040399788513">В хранилището на устройството няма достатъчно място за завършване на настройването. Освободете място и опитайте отново.</translation>
 <translation id="3285500645985761267">Разрешаване на сродните сайтове да виждат активността ви в групата</translation>
 <translation id="328571385944182268">Да се запазят ли паролите ви?</translation>
 <translation id="3289668031376215426">Автоматично поставяне на главни букви</translation>
@@ -3499,7 +3494,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3372602033006349389">На други устройства</translation>
 <translation id="337286756654493126">Четене на папки, които сте отворили в приложението</translation>
 <translation id="3373059063088819384">Отваряне в режима на четене</translation>
-<translation id="3373196968211632036">Бета-версията на Steam за Chromebook не е налице за профили на деца в Google</translation>
 <translation id="3373701465337594448">Когато настройката е включена, тук се показва списък с посещаваните от вас сайтове, които правят предположения за интересите ви</translation>
 <translation id="3374294321938930390">Преместихте „<ph name="BOOKMARK_TITLE" />“ в папката „<ph name="NEW_FOLDER_TITLE" />“.</translation>
 <translation id="3376035595160918049">Преглед на актуализацията на приложението</translation>
@@ -3682,7 +3676,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (не е избран)</translation>
 <translation id="3496689104192986836">Ниво на батерията: <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Източници за събиране на данни</translation>
-<translation id="3496797737329654668">Хайде да играем</translation>
 <translation id="3496995426334945408">Сайтовете обикновено използват JavaScript за показване на интерактивни функции, като например видеоигри или уеб формуляри</translation>
 <translation id="3497501929010263034">USB устройство от <ph name="VENDOR_NAME" /> (продукт <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Споделяне на драскулката</translation>
@@ -3895,7 +3888,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3637203148990213388">Допълнителни профили</translation>
 <translation id="3640347231390550691">Защитете паролите си от фишинг</translation>
 <translation id="364100968401221170">За да изтриете данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />влезте в него<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steam за Chromebook (бета) трябва да се актуализира. Рестартирайте своя Chromebook и опитайте отново.</translation>
 <translation id="3641299252000913351">Фърмуерът на модема се актуализира. Не изключвайте устройството.</translation>
 <translation id="3641456520301071208">Сайтовете могат да извеждат запитвания за достъп до местоположението ви</translation>
 <translation id="3642064270296434810">Вече можете да използвате Google Обектив, за да търсите всичко, което виждате на екрана си</translation>
@@ -4232,7 +4224,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="383891835335927981">Няма сайтове с увеличен или намален мащаб</translation>
 <translation id="3839516600093027468">Забраняване винаги на <ph name="HOST" /> да преглежда буферната памет</translation>
 <translation id="3840096463915153852">История на разговорите</translation>
-<translation id="3841282988425489367">Бета-версията на Steam за Chromebook не бе настроена</translation>
 <translation id="3841319830220785495">Естествен глас по подразбиране</translation>
 <translation id="3841356782900714251">Четци на смарткарти</translation>
 <translation id="3841964634449506551">Паролата е невалидна</translation>
@@ -4681,7 +4672,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4148195018520464922">Можете да ограничите влизането в профила до определени потребители. Това премахва опцията „Добавяне на човек“ на екрана за вход. Можете също да премахвате текущите потребители.</translation>
 <translation id="4148957013307229264">Инсталира се...</translation>
 <translation id="4150201353443180367">Екран</translation>
-<translation id="4151449637210235443">Разкажете ни за скорошните си изживявания от играта</translation>
 <translation id="4151503145138736576">Няма офлайн хранилище за изчистване</translation>
 <translation id="4152011295694446843">Тук ще се показват отметките ви</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 раздел}other{# раздела}}</translation>
@@ -4732,7 +4722,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4193251682249731404">Надежден сертифициращ орган</translation>
 <translation id="4193575319002689239">Показване на картите</translation>
 <translation id="419427585139779713">Въвеждане сричка по сричка</translation>
-<translation id="4195001808989442226">Steam за Chromebook (бета) не може да се отвори</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4195814663415092787">Продължаване оттам, откъдето сте прекъснали</translation>
 <translation id="4198268995694216131">Допълнителни сайтове</translation>
@@ -4778,7 +4767,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Това разширение не е разрешено}other{Някои разширения не са разрешени}}</translation>
 <translation id="4231053948789591973">Предаването е поставено на пауза. Можете да го възобновите или спрете по всяко време.</translation>
 <translation id="4231095370974836764">Инсталирайте приложения и игри от Google Play на своя <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Steam за Chromebook се настройва</translation>
 <translation id="4232375817808480934">Конфигуриране на Kerberos</translation>
 <translation id="4232376164796433044">Пароли и автоматично попълване</translation>
 <translation id="4232484478444192782">Можете да разчитате на телефона си с Android. Wi-Fi мрежата и паролата ви се прехвърлят.</translation>
@@ -5137,7 +5125,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4472533928615930332">Генерирано изображение <ph name="INDEX" /> с(ъс) <ph name="SUBJECT" /> в стил „<ph name="STYLE" />“</translation>
 <translation id="4472575034687746823">Първи стъпки</translation>
 <translation id="4473559657152613417">Кликнете с десния бутон върху даден раздел и изберете „Добавяне на раздела към нова група“</translation>
-<translation id="4473996011558324141">изчислява се оставащото време</translation>
 <translation id="4474155171896946103">Запазване на отметки към всички раздели…</translation>
 <translation id="4476198534886170024">Разрешено. Включете <ph name="LINK_BEGIN" />достъпа до системната камера<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Спортист</translation>
@@ -5325,6 +5312,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4607763915939540711">{FILE_LIMIT,plural, =1{Качете 1 файл, който да използвате с въпроса си}other{Качете до # файла, които да използвате с въпроса си}}</translation>
 <translation id="4608500690299898628">&amp;Търсене...</translation>
 <translation id="4609164937357979319">Избиране на профил</translation>
+<translation id="4610022258080608778">Клавишна комбинация за редактиране на избраното</translation>
 <translation id="4610493438923139095">Ненадеждно</translation>
 <translation id="4610637590575890427">Може би искахте да отворите <ph name="SITE" />?</translation>
 <translation id="4611114513649582138">Налице е връзка за пренос на данни</translation>
@@ -5372,7 +5360,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4638930039313743000">Активиране на отстраняването на грешки през ADB</translation>
 <translation id="4639390152280993480">За да видите опростен изглед на тази страница, отворете „Още инструменти &gt; Режим на четене“</translation>
 <translation id="4641539339823703554">Chrome не успя да зададе системния час. Моля, проверете го по-долу и го коригирайте при нужда.</translation>
-<translation id="4642587497923912728">Бета-версията на Steam за Chromebook е налице само за профила, който използван първи на този Chromebook.</translation>
 <translation id="4643612240819915418">&amp;Отваряне на видеоклипа в нов раздел</translation>
 <translation id="4643833688073835173">Вашият Chromebook използва вграден сензор, за да установява дали има хора пред устройството. Всички данни се обработват незабавно на устройството ви, след което се изтриват. Данните от сензорите никога не се изпращат до Google.</translation>
 <translation id="4644205769234414680">Разрешаване в режим „инкогнито“</translation>
@@ -6377,7 +6364,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5353769147530541973">Премахнете елемента <ph name="SITE_NAME" /> от списъка с раздели, за да стане неактивен</translation>
 <translation id="5355099869024327351">Разрешаване на Асистент да ви показва известия</translation>
 <translation id="5355191726083956201">Режимът за подобрена защита е включен</translation>
-<translation id="5355498626146154079">Трябва да включите флага Borealis Enabled</translation>
 <translation id="5355501370336370394">Регистриране на корпоративно устройство</translation>
 <translation id="5357010010552553606">Сайтове без разрешение за автоматично преминаване на цял екран</translation>
 <translation id="5359910752122114278">1 резултат</translation>
@@ -6407,7 +6393,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5376931455988532197">Файлът е твърде голям</translation>
 <translation id="5377367976106153749">Да се включи ли достъпът до камерата?</translation>
 <translation id="5379140238605961210">Достъпът до микрофона да продължи да се блокира</translation>
-<translation id="5380526436444479273">Изчакайте няколко минути и опитайте отново</translation>
 <translation id="5382591305415226340">Управление на поддържаните връзки</translation>
 <translation id="5384401776498845256">Кой може да споделя с вас</translation>
 <translation id="5385628342687007304">Паролата е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google.</translation>
@@ -6462,7 +6447,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5414198321558177633">Списъкът с профили за мобилни мрежи се опреснява. Това може да отнеме няколко минути.</translation>
 <translation id="5414566801737831689">Четене на иконите на посещаваните от вас уебсайтове</translation>
 <translation id="5414836363063783498">Потвърждава се…</translation>
-<translation id="5415328625985164836">Това е бета-програма. Вече можете да използвате Steam, за да играете някои игри на своя Chromebook.</translation>
 <translation id="5415497281076257439">По фраза</translation>
 <translation id="5415871492522952905">Ще имате достъп до историята и разделите си на всичките си устройства, за да можете да продължавате заниманията си на всяко от тях</translation>
 <translation id="5417293056300086453">Този сайт може да използва идентификатори с цел възпроизвеждане на защитено съдържание.</translation>
@@ -6701,6 +6685,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="557506220935336383">Преглед на разрешенията за разширенията за други сайтове</translation>
 <translation id="5575473780076478375">Разширение „Инкогнито“: <ph name="EXTENSION_NAME" /></translation>
 <translation id="5575528586625653441">Възникна проблем със заявката за регистрация за демонстрационен режим.</translation>
+<translation id="5576472948015790634">Вече можете да управлявате групите си раздели и разговорите си с Gemini от едно място. Можете да освободите по всяко време.</translation>
 <translation id="557722062034137776">Нулирането на устройството ви няма да засегне профилите ви в Google или данните, синхронизирани с тях. Всички файлове, запазени локално на устройството ви, обаче ще бъдат изтрити.</translation>
 <translation id="5578059481725149024">Автоматичен вход</translation>
 <translation id="5578387000057347457">Въведете персонализирана подкана или маркирайте текст, за да създадете изображение</translation>
@@ -6904,7 +6889,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5727728807527375859">Разширенията, приложенията и темите могат да навредят на компютъра ви. Наистина ли искате да продължите?</translation>
 <translation id="5728072125198221967">Свързани услуги на Google</translation>
 <translation id="5728450728039149624">Опции за заключване на екрана на Smart Lock</translation>
-<translation id="572914206753951782">Проверете дали вашият Chromebook е актуален. След това рестартирайте устройството си и опитайте отново.</translation>
 <translation id="5729712731028706266">&amp;Изглед</translation>
 <translation id="5731247495086897348">&amp;Поставяне и старт</translation>
 <translation id="5733109311583381874">Добавете собствени думи към потребителските речници, за да персонализирате предложенията за преобразуване.</translation>
@@ -7282,6 +7266,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5976780232488408272">Получаване на помощ при писане</translation>
 <translation id="5977976211062815271">На това устройство</translation>
 <translation id="5978277834170881274">&amp;Използване на основната проверка на правописа</translation>
+<translation id="597889390120790610">Научете повече за клавишната комбинация за избиране</translation>
 <translation id="5979084224081478209">Проверка на паролите</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Включихте 1 потенциално опасно разширение}other{Включихте {NUM_EXTENSIONS} потенциално опасни разширения}}</translation>
 <translation id="5979353814339191480">Тази опция се отнася за устройства Chromebook с план за данни или адаптер за връзка с мобилна мрежа, или връзка с тетъринг към преносима точка за достъп</translation>
@@ -7324,6 +7309,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6011193465932186973">Отпечатък</translation>
 <translation id="6011308810877101166">Подобряване на предложенията за търсене</translation>
 <translation id="6011908034087870826">Връзката се изпраща до <ph name="DEVICE_NAME" /></translation>
+<translation id="6013003831291591200">Задачата бе завършена</translation>
 <translation id="6013027779243312217">Показване на надписи за аудио- и видеосъдържание</translation>
 <translation id="6014293228235665243">Непрочетени</translation>
 <translation id="6015776718598175635">Звезди</translation>
@@ -8019,7 +8005,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{<ph name="APP_NAME" /> иска да инсталира следното приложение на това устройство:}other{<ph name="APP_NAME" /> иска да инсталира следните приложения на това устройство:}}</translation>
 <translation id="6508248480704296122">Свързано със <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Приложение: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Рестартирайте своя Chromebook и опитайте отново</translation>
 <translation id="6511827214781912955">Добре е да изтриете „<ph name="FILENAME" />“, така че другите хора, които използват това устройство, да не могат да видят паролите ви</translation>
 <translation id="6512759338201777379">Генерирано изображение <ph name="INDEX" /> с(ъс) <ph name="SUBJECT" /> в настроение „<ph name="MOOD" />“.</translation>
 <translation id="6513247462497316522">Google Chrome ще използва мобилни данни, ако не сте свързани с друга мрежа.</translation>
@@ -8128,7 +8113,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="657866106756413002">Моментна снимка на състоянието на мрежата</translation>
 <translation id="6579369886355986318">Показване на всички &amp;контроли</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – съдържанието на работния плот е споделено</translation>
-<translation id="6580060371127789208">Завършено: <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Скорост на сканиране</translation>
 <translation id="6580676117087365538">Потвърдете самоличността си, за да получите това разширение на всичките си компютри</translation>
 <translation id="6581356304040102696">Импортирането на паролите не е възможно. Размерът на файла трябва да е по-малък от 1 MB.</translation>
@@ -8325,6 +8309,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6716049856796700977">Местоположението ви не може да се използва, но е възможно да е видимо за приложенията и уебсайтовете чрез IP адреса ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Връзката с мрежата бе прекъсната. Проверете я или опитайте с друга Wi-Fi мрежа.</translation>
 <translation id="671868032356459320">Обхват на програмата за актуализиране: <ph name="OUTCOMES" /></translation>
+<translation id="6718728708077839052">Управление на разрешенията за родителското приложение</translation>
 <translation id="671928215901716392">Заключване на екрана</translation>
 <translation id="6719839880830057298">Качването на файла завърши</translation>
 <translation id="6721744718589119342">Възможно е да ви изпратим имейл за още информация или актуализации</translation>
@@ -8347,7 +8332,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6729280095610283088">Гора, озарена от ярките светлини на северното сияние.</translation>
 <translation id="6729493062119577923">Активност в споделената група раздели</translation>
 <translation id="6730744976532805323">Споделя текущия раздел с Gemini дори когато превключвате между раздели</translation>
-<translation id="6731320427842222405">Това може да отнеме няколко минути</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Адрес</translation>
 <translation id="6737663862851963468">Премахване на пропуск за Kerberos</translation>
@@ -8697,7 +8681,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6965648386495488594">Порт</translation>
 <translation id="6965978654500191972">Устройство</translation>
 <translation id="6966831944134814478">Изключване</translation>
-<translation id="6967112302799758487">Всички приложения и игри, инсталирани посредством бета-версията на Steam за Chromebook, ще бъдат премахнати от устройството. Свързаните с тях данни също ще бъдат премахнати. Уверете се, че сте създали резервни копия на запазените приложения и игри, преди да ги деинсталирате.</translation>
 <translation id="6967430741871315905">Не може да се провери дали устройството е разрешено</translation>
 <translation id="6968288415730398122">Въведете паролата си, за да конфигурирате заключването на екрана</translation>
 <translation id="6969047215179982698">Изключване на „Споделяне наблизо“</translation>
@@ -8869,7 +8852,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> се управлява от администратора ви</translation>
 <translation id="7082850163410901674">Известията са изключени в системните настройки на Mac</translation>
 <translation id="7083729794572207131">Сайтовете обикновено искат да инсталират уеб приложения, за да подобрят практическата ви работа на сайта</translation>
-<translation id="7083774521940805477">Бета-версията на Steam за Chromebook не е налице за вашия Chromebook.</translation>
 <translation id="7084095352418993433">Попитайте Google за тази страница: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(не е конфигурирано)</translation>
 <translation id="7086377898680121060">увеличаване на яркостта</translation>
@@ -8948,7 +8930,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7141844554192012199">Проверка</translation>
 <translation id="714301620504747562">Можете да сърфирате и търсите по-бързо, отколкото при стандартното предварително зареждане.</translation>
 <translation id="7143207342074048698">Свързва се</translation>
-<translation id="7143409552554575716">Флагове за ChromeOS</translation>
 <translation id="7144363643182336710">Известията няма да се показват на екрана. Пак можете да ги видите, като кликнете върху иконата на режима „Не безпокойте“ долу вдясно на екрана.</translation>
 <translation id="7144856456372460176">&amp;Инсталиране на <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
@@ -8959,7 +8940,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7152478047064750137">Това разширение не изисква специални разрешения</translation>
 <translation id="7153101072880472645">Включване/изключване на функцията за висок контраст</translation>
 <translation id="715396040729904728">клавиш за стартовия панел + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Споделете отзиви или опишете проблема си. Ако е възможно, включете стъпките за възпроизвеждане на проблема.</translation>
 <translation id="7154130902455071009">Промяна на началната ви страница на <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Гледайте видео с по-добро качество и удължете живота на батерията. Видеото ще се възпроизвежда само на екрана ви, поддържащ Cast.</translation>
 <translation id="7159695867335480590">Пускане/поставяне на пауза</translation>
@@ -9372,6 +9352,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7431991332293347422">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето и др.</translation>
 <translation id="7432200167665670017">Администраторът ви е блокирал <ph name="EXTENSION_NAME" /> – идентификационен номер на приложението <ph name="EXTENSION_ID" /></translation>
 <translation id="7433103263856598557">Архивиране</translation>
+<translation id="7433333862363162673">Клавишна комбинация за изчистване на избраното</translation>
 <translation id="7433708794692032816">Поставете смарткарта, за да продължите да използвате своя <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Запазване</translation>
 <translation id="7434100547946193426">Други приложения</translation>
@@ -9811,7 +9792,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7728668285692163452">Промяната на канала ще бъде приложена по-късно</translation>
 <translation id="7730449930968088409">Заснемане на съдържанието на екрана ви</translation>
 <translation id="7730683939467795481">Тази страница бе променена от разширението <ph name="EXTENSION_NAME" /></translation>
-<translation id="7732702411411810416">Проверете дали имате връзка с интернет и опитайте отново</translation>
 <translation id="773511996612364297">Диакритични знаци</translation>
 <translation id="7735558909644181051">Междинни сертификати</translation>
 <translation id="7736119438443237821">Напът сте да премахнете достъпа до ключовете си за достъп на това устройство</translation>
@@ -9844,6 +9824,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7758884017823246335">Добавяне на функцията за търсене в сайта</translation>
 <translation id="7759443981285558794">Преглед на сертификатите, импортирани от ChromeOS</translation>
 <translation id="7759606211476816416">Вашите преки пътища към сайтовете</translation>
+<translation id="7759748248923439385">Вече можете да управлявате групите си раздели и нишките в режима с AI от едно място. Можете да освободите по всяко време.</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7760176388948986635">Позволете на ChromeOS, приложенията за Android, уебсайтовете и услугите да ползват местоположението на това устройство, ако имат съответното разрешение. „Точност на местоположението“ предоставя на приложенията и услугите за Android по-точни данни за местоположението. За целта Google периодично обработва информацията от сензорите на това устройство и безжичните сигнали от него, за да определя местоположенията на съответните сигнали посредством отворена ангажираност. Използваме тези данни, без да идентифицираме лицата, за да подобряваме точността на местоположението и базиращите се на него услуги, както и да подобряваме, предоставяме и поддържаме услугите на Google въз основа на законните си интереси и тези на трети страни, така че да обслужваме нуждите на потребителите.</translation>
 <translation id="7762024824096060040">Не можете да използвате този профил</translation>
@@ -10009,7 +9990,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7871691770940645922">Виртуален брайлов дисплей</translation>
 <translation id="787268756490971083">Изключено</translation>
 <translation id="7872758299142009420">Твърде много вложени групи: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">Прекият път не бе редактиран</translation>
 <translation id="7876243839304621966">Премахване на всички</translation>
 <translation id="7877126887274043657">Отстраняване на проблема със &amp;синхронизирането</translation>
@@ -11666,7 +11646,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8983018820925880511">Този нов потребителски профил ще се управлява от <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> може да редактира „<ph name="FILENAME" />“</translation>
 <translation id="8984694057134206124">Устройството ви ще бъде видимо за всички в продължение на <ph name="MINUTES" /> минути. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Добре дошли в Steam за Chromebook</translation>
 <translation id="8985264973231822211">Активно преди <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ден</translation>
 <translation id="8985561265504464578">Праг за разпознаване</translation>
 <translation id="8985661493893822002">Моля, свържете се с интернет, за да влезете в устройството си <ph name="DEVICE_TYPE" />.</translation>
@@ -11798,7 +11777,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Около 1 известие на ден}other{Около {NUM_NOTIFICATION} известия на ден}}</translation>
 <translation id="9058760336383947367">Прегледайте PPD файла за принтера</translation>
 <translation id="9061521313218438086">В случай че Chrome открие една от паролите ви при обществено нарушение на сигурността на данните, Google Мениджър на пароли може да предложи да я промени вместо вас, ако сте влезли в профила си.</translation>
-<translation id="9061694916020926968">За да използвате бета-версията на Steam за Chromebook, трябва да сте влезли в профил в Google. Влезте в профила си и опитайте отново.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Изчистване на прекия път за навигация</translation>
 <translation id="9063208415146866933">Грешка от ред <ph name="ERROR_LINE_START" /> до ред <ph name="ERROR_LINE_END" /></translation>
@@ -12067,6 +12045,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="950079950995628542">От <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Ръководство за настройване</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Инсталирано от администратора ви</translation>
+<translation id="95160010745047025">Продължавайте оттам, откъдето сте прекъснали в режима с AI</translation>
 <translation id="951991426597076286">Отхвърляне</translation>
 <translation id="952137968828772361">Научавайте повече за продуктите, местата или текста, които виждате на екрана си</translation>
 <translation id="952471655966876828">Устройството ще се свърже автоматично, когато бъде включено и се използва</translation>

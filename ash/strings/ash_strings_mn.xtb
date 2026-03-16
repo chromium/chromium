@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Цэнхэр</translation>
 <translation id="1557622599341396706">Дэлгэцийн нэрийг харуулах</translation>
 <translation id="1569384531973824928">Энэ нь камер, микрофоны зөвшөөрөлтэй бүх апп болон вебсайтын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
+<translation id="1570235441606255261">Steam суулгагч</translation>
 <translation id="1571697193564730395">Бүү саад бол онцлогийг асаана уу/унтраана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Зүүн талын ирмэгийн бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="1576623706766186887">Томруулагч асаалттай үед жижгэрүүлэх</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хүртээмж хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> төхөөрөмж</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
+<translation id="1642895994345928121">Энэ аппыг нээхэд төхөөрөмжийн хангалттай хадгалах сан байхгүй байна. Сул зай гаргаад, дахин оролдоно уу.</translation>
 <translation id="1647986356840967552">Өмнөх хуудас</translation>
 <translation id="1651914502370159744">Түүхийн хуудсыг нээх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Апп, табын бүлэг</translation>
 <translation id="2386292613071805067">Хуудсан дээрх бүх зүйлийг сонгох</translation>
 <translation id="2389423187722941333">Gemini-г асаах/унтраах</translation>
+<translation id="2391805183137601570">Steam-г нээх</translation>
 <translation id="2392659840443812875">Боломжтой ямар ч сүлжээний цэг байхгүй. Таны төхөөрөмж ойролцоо бөгөөд Bluetooth-г асаасан эсэхийг шалгана уу.</translation>
 <translation id="2397416548179033562">Chrome-н цэсийг харуулах</translation>
 <translation id="240006516586367791">Медиа хяналт</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Өчигдөр нээсэн</translation>
 <translation id="2440978926514840421">GIF бичлэгийг хийсэн</translation>
 <translation id="2441427462554639370">Хадгалах сангийн зай хэт бага байгаа тул бичлэгийг дуусгасан</translation>
+<translation id="2447587550790814052">Та одоо Chromebook-н Steam-г (Бета) ашиглах боломжтой</translation>
 <translation id="2449089818483227734">Батарей бага байна</translation>
 <translation id="2450205753526923158">Дэлгэцийн агшны горим</translation>
 <translation id="2453860139492968684">Дуусгах</translation>
 <translation id="2455994958736234930">Хаяг оруулах хэсэгт www. болон .com гэж нэмээд дараа нь вебсайтыг нээх</translation>
 <translation id="2456008742792828469">Календарь, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Сайтар нягтлах</translation>
+<translation id="2462332841984057083">Steam-г аль хэдийн тохируулж байна. Тохируулгыг дуусахыг хүлээнэ үү.</translation>
 <translation id="2465145153332031561">Батарейн барилт <ph name="BATTERY_HEALTH_PERCENTAGE" />%, мөчлөгийн тоо <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Нягтралыг баталгаажуулах</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" />-г оруулах</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" />-н урьдчилан үзэлт. Идэвхтэй дэлгэц.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />"-г <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) нягтралтай болгож өөрчилсөн. Баталгаажуулахгүйгээр өмнөх тохиргоог <ph name="TIMEOUT_SECONDS" />-н дараа сэргээнэ.</translation>
 <translation id="2487915095798731898">Нэгдэх</translation>
+<translation id="2494555621641843783">Steam-г суулгах боломжгүй</translation>
 <translation id="2496180316473517155">Хайлтын түүх</translation>
 <translation id="2499445554382787206">Дэлгэцийн профайлын цэс. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Холбогч түлхүүр</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Хариулах</translation>
 <translation id="2727744317940422214">Уучлаарай, алдаа гарлаа. Тайлбарт #bruschetta-р санал хүсэлт илгээнэ үү. Алдааны код нь <ph name="ERROR" />. Цэвэрлэж чадсангүй. Та үүнийг гар аргаар хийх шаардлагатай байж магадгүй.</translation>
 <translation id="2727977024730340865">Бага энергитэй цэнэглэгч залгасан байна. Тэжээлийг цэнэглэхгүй байж болох юм.</translation>
+<translation id="2737538893171115082">Chromebook-н Steam-г (Бета) танай администратор блоклосон. Таны администратор эдгээр бодлогыг асаах шаардлагатай:</translation>
 <translation id="2743301740238894839">Эхлүүлэх</translation>
 <translation id="2743387203779672305">Завсрын түр санах самбар луу хуулах</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" />-тай нэгтгэнэ үү</translation>
 <translation id="3039939407102840004">Мэдрэгч үзгийн батарей <ph name="PERCENTAGE" /> хувьтай байна.</translation>
 <translation id="304097922505898963">Key Shortcuts аппыг нээх</translation>
+<translation id="3040982432432547149">Бидэнд Chromebook-д зориулсан Steam-г сайжруулахад тусална уу</translation>
 <translation id="304417730895741346">Таны бэхэлсэн болон нээсэн аппууд тавиурт байна. Тавиурт апп бэхлэхийн тулд апп дээр хулганын баруун талыг товших эсвэл хоёр хуруугаараа мэдрэгч самбарыг товшино уу.</translation>
 <translation id="3045670165536837541">Баруун дээд талын бариулыг сонгосон, зөөхөд суман товчнуудыг ашиглана уу</translation>
 <translation id="3047761520276763270">Дараахыг хэлж үзнэ үү:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">Дахин эхлүүлэхэд хэдэн хором шаардлагатай байж болзошгүй</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Төхөөрөмжид холбогдсон}other{# төхөөрөмжид холбогдсон}}</translation>
 <translation id="3203405173652969239">Сэлгүүрийг идэвхжүүлсэн</translation>
+<translation id="3204648577100496185">Энэ апптай холбоотой өгөгдлийг энэ төхөөрөмжөөс хасаж магадгүй</translation>
 <translation id="3206735939915734551">Сaps Lock-г асаах/унтраах</translation>
 <translation id="3207953481422525583">Хэрэглэгчийн тохиргоо</translation>
 <translation id="3208321278970793882">Апп</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">Оруулахын тулд хайх</translation>
 <translation id="3274634049061007184">Утасныхаа аппуудыг харах</translation>
 <translation id="3279230909244266691">Энэ үйл явцад хэдэн минут шаардлагатай. Виртуал машиныг эхлүүлж байна.</translation>
+<translation id="3285465040399788513">Тохируулгыг дуусгахад хангалттай хадгалах сан байхгүй байна. Сул зай гаргаад дахин оролдоно уу.</translation>
 <translation id="3289364673986435196">Асаах/унтраах цэс</translation>
 <translation id="3289544412142055976">Linux аппуудыг одоогоор дэмждэггүй</translation>
 <translation id="3289674678944039601">Адаптераар цэнэглэж байна</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">Холбогдсон</translation>
 <translation id="3369111525500416043">Эцсийн хугацаа нь удахгүй болох</translation>
 <translation id="3371140690572404006">USB-C төхөөрөмж (урд талын портын баруун тал)</translation>
+<translation id="3373196968211632036">Chromebook-н Steam (Бета) нь хүүхдийн Google Бүртгэлд боломжгүй</translation>
 <translation id="3375634426936648815">Холбогдсон</translation>
 <translation id="3386978599540877378">бүтэн дэлгэцийн томруулагч</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Shelf-г автоматаар нууна</translation>
+<translation id="3496797737329654668">Тоглоцгооё</translation>
 <translation id="3505066820268455558">Батарейг цэнэглэж байна</translation>
 <translation id="3509391053705095206">Таны утсыг олох боломжгүй. Утасны тань Bluetooth асаалттай эсэхийг шалгана уу.</translation>
 <translation id="3510164367642747937">Хулганы курсорыг тодруулах</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">Түр санах ойг нээх</translation>
 <translation id="363473492175527493">Төвлөрөхөөр сонгосон ажил: <ph name="TASK_NAME" />. Ажлыг засахын тулд enter дээр дарна уу.</translation>
 <translation id="3638400994746983214">Нууцлалын дэлгэцийг асаах/унтраах. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam for Chromebook-г (бета) шинэчлэх шаардлагатай. Chromebook-ээ дахин эхлүүлээд, дахин оролдоно уу.</translation>
 <translation id="3649256019230929621">Цонхыг хумих</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">Одоогийн дэлгэцээс цонхнуудыг харуулж байна. Бүх дэлгэцээс цонхнуудыг харуулахын тулд Дээш сум товчийг дарна уу</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Энтертайнмент</translation>
+<translation id="370665806235115550">Уншиж байна...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> болон <ph name="UNAVAILABLE_DLC_TWO" /> боломжгүй байна.</translation>
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
 <translation id="3712143870407382523">Энэ талд цонх сонгоно уу</translation>
@@ -861,6 +875,7 @@
 <translation id="3831226344927851293">Зааврын харагдах байдлаас гарах</translation>
 <translation id="383629559565718788">Гарын тохиргоог харуулах</translation>
 <translation id="384082539148746321">Загварыг устгах уу?</translation>
+<translation id="3841282988425489367">Chromebook-н Steam-г (Бета) тохируулах боломжгүй</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> дараа нь <ph name="KEY_ONE" /> эсвэл <ph name="KEY_TWO" /> эсвэл <ph name="KEY_THREE" /> эсвэл <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Сүлжээтэй холбоотой мэдээлэл байхгүй байна</translation>
 <translation id="3848526302597027234">Дараах зөвшөөрөлд хандана:</translation>
@@ -952,6 +967,7 @@
 <translation id="4146671046252289537">Дараагийн үгний төгсгөл рүү очих</translation>
 <translation id="4150201353443180367">Дэлгэц</translation>
 <translation id="4151054805501931758">Хөрөг засвар</translation>
+<translation id="4151449637210235443">Саяхны тоглоомынхоо тухай бидэнд хэлнэ үү</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% батарей үлдсэн (ойролцоогоор <ph name="TIME_LEFT" />).
 Зарим онцлогийг батарейн ажиллах хугацааг ихэсгэхээр хязгаарласан.</translation>
 <translation id="4158003972857765638">Шинэ дэлгэцэд зохион байгуулах</translation>
@@ -969,6 +985,7 @@
 <translation id="4192112279662688596">Эсвэл</translation>
 <translation id="4193857202545160520">Товшилт болон товчнуудыг харуулах</translation>
 <translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />"-р Судлах аппад "Тусламж"-ийг нээнэ үү.</translation>
+<translation id="4195001808989442226">Chromebook-н Steam-г (Бета) нээх боломжгүй</translation>
 <translation id="4195579532193195633">Одоогийн хувилбар <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Орхисон хэсгээсээ үргэлжлүүлэх</translation>
 <translation id="4195877955194704651">Автомат даралтын товчлуур</translation>
@@ -984,6 +1001,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Суулгасан апп, Түр зогсоосон</translation>
 <translation id="4228078597006700451">Тохиргоог тохируулаагүй</translation>
 <translation id="4230560241506423345">Шинэ</translation>
+<translation id="4231231258999726714">Chromebook-н Steam-г тохируулах</translation>
 <translation id="4236726631849783264">Санал болгосон үйлдлийн талаарх сануулагч</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Тойм горим</translation>
@@ -1068,6 +1086,7 @@
 <translation id="4471432286288241507">{0,plural, =0{Төхөөрөмжийг одоо шинэчилнэ үү}=1{Төхөөрөмжийг 1 секундийн дотор шинэчилнэ үү}other{Төхөөрөмжийг # секундийн дотор шинэчилнэ үү}}</translation>
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">хугацааг тооцоолж байна</translation>
 <translation id="4477350412780666475">Дараагийн бичлэг</translation>
 <translation id="4477751544736611934">Энэ нь дата ашиглалтын зардал гаргаж магадгүй.
 1 төхөөрөмж холбогдсон.</translation>
@@ -1109,6 +1128,7 @@
 <translation id="4585337515783392668">Үл мэдэгдэх хүлээн авагч руу дамжуулахаа зогсоох</translation>
 <translation id="4596144739579517758">Бараан загвар унтраалттай байна</translation>
 <translation id="4596442969149038771"><ph name="USER" /> хуваалцсан</translation>
+<translation id="4598556348158889687">Сангийн менежмент</translation>
 <translation id="4610493115106525653">Сайн гаралт</translation>
 <translation id="4611292653554630842">Нэвтрэх</translation>
 <translation id="462160925400706389"><ph name="NAME" /> холбогдсон</translation>
@@ -1118,6 +1138,7 @@
 <translation id="4633636853437260449">Устгахын тулд Ctrl + W дээр дарна уу</translation>
 <translation id="4635501805800894201">{0,plural, =0{Төхөөрөмжийг одоо өмнөх хувилбар луу нь шинэчилнэ үү}=1{Төхөөрөмжийг 1 секундийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # секундийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
 <translation id="4642092649622328492">Дэлгэцийн зургийг хэсэгчлэн дарах</translation>
+<translation id="4642587497923912728">Chromebook-н Steam (Бета) нь зөвхөн энэ Chromebook-д анх нэвтэрсэн бүртгэлд боломжтой.</translation>
 <translation id="4644727592819780893">Бүс нь камерыг багтаахад хэт жижиг байна</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, аппын зөвлөмж</translation>
 <translation id="4649019912155580914">Та зассан</translation>
@@ -1351,6 +1372,7 @@
 <translation id="5352250171825660495">Бараан загвар асаалттай байна</translation>
 <translation id="5354804064646502504">Энэ нь дата ашиглалтын зардал гаргаж магадгүй.
 Ямар ч төхөөрөмж холбогдоогүй.</translation>
+<translation id="5355498626146154079">Та “Borealis Enabled” дарцгийг асаах шаардлагатай</translation>
 <translation id="5356963482258194581">Бараан болон цайвар загварын хооронд сэлгэнэ үү. Дэлгэц дээр баруун талыг товшиж, Дэлгэцийн зураг &amp; стилийг сонгоно уу.</translation>
 <translation id="536019650977002321">Танай администратор аудио бичихийг зөвшөөрдөггүй. Нэмэлт мэдээлэл авах бол администратортайгаа холбогдоно уу.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг хэсэгчлэн татсан</translation>
@@ -1361,6 +1383,7 @@
 <translation id="5377367976106153749">Камерын хандалтыг асаах уу?</translation>
 <translation id="5378450298115733949">Бусад</translation>
 <translation id="5379115545237091094">Хэт олон удаа оролдлоо</translation>
+<translation id="5380526436444479273">Хэдэн минут хүлээгээд дахин оролдоно уу</translation>
 <translation id="5383434787520761436">Google Драйвын ямар ч файл байхгүй</translation>
 <translation id="5391307769715781764">Хадгалсан дэлгэцээ өөрчлөх үү?</translation>
 <translation id="5392327145184648521">Батарейн %-ийг тооцоолж байна...</translation>
@@ -1372,6 +1395,7 @@
 <translation id="5409208741270395213">Ажлыг дууссан гэж тэмдэглэх</translation>
 <translation id="5413656666631274079">Тохиргооны хуудас</translation>
 <translation id="5414198321558177633">Профайлын жагсаалтыг сэргээж байна. Үүнд хэдэн минут шаардлагатай байж магадгүй.</translation>
+<translation id="5415328625985164836">Энэ нь бета программ юм. Та одоо Steam-г Chromebook-дээ зарим тоглоомыг тоглохдоо ашиглах боломжтой.</translation>
 <translation id="5426063383988017631">Тохиргооны цэсийг хаасан</translation>
 <translation id="5428899915242071344">Сонгож эхлэх</translation>
 <translation id="5429993543155113935">Нууцлалтай цонхнуудыг одоогоор дэмждэггүй</translation>
@@ -1467,6 +1491,7 @@
 <translation id="5712132663381964774">Хэрэгтэй бүх зүйлээ <ph name="PRODUCT_NAME" /> дээрээ хийхийн тулд аппуудыг ашиглана уу. Та аппуудаа Эхлүүлэгчээс олох боломжтой.</translation>
 <translation id="571295407079589142">Мобайл дата унтраалттай байна</translation>
 <translation id="5727460725221669831">Хэрэв та нууц үгээ мартсан эсвэл Google Бүртгэлийн нууц үгээ саяхан өөрчилсөн бол энэ хэрэглэгчийг сэргээхээр оролдоно уу.</translation>
+<translation id="572914206753951782">Таны Chromebook хамгийн сүүлийн үеийн хувилбартай эсэхийг шалгана уу. Дараа нь Chromebook-ээ дахин эхлүүлээд дахин оролдоно уу.</translation>
 <translation id="5733630091161562207">Угтан авах мэдэгдэл</translation>
 <translation id="573413375004481890">Энэ төхөөрөмж нь таны бүх дэлгэцийг дэмжих боломжгүй байсан тул тэдний нэгийг нь салгасан</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>
@@ -1714,6 +1739,7 @@
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />"-тай Key Shortcuts аппыг нээнэ үү</translation>
 <translation id="6507618042428827377">Дараагийн боломжтой оруулах арга руу шилжих</translation>
 <translation id="6508923215158854599">Та Chromebook-ээ өөрийн Chromecast төхөөрөмжтэй ижил Wi-Fi сүлжээнд холбогдсон эсэхийг шалгана уу.</translation>
+<translation id="6511607461419653612">Chromebook-ээ дахин эхлүүлээд дахин оролдоно уу</translation>
 <translation id="6515727200518652613">Камер салсан байна. Дахин холбогдохоор оролдоно уу.</translation>
 <translation id="651753338596587143">Уучлаарай, DLC-н хамаарлуудыг суулгахад ямар нэг алдаа гарлаа. Дахин асааж үзээд, хэрэв асуудал байсаар байвал тайлбарт #bruschetta-р санал хүсэлт илгээнэ үү. Алдааны код нь <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Зургийг нь авах цонх сонгоно уу</translation>
@@ -1739,6 +1765,7 @@
 <translation id="6574587113394758819">Үзэх хамгаалалт асаалттай тул <ph name="APP_TITLE" />-н мэдэгдлийг нуусан</translation>
 <translation id="6574622320167699133">Таны утаснаас түгжээг тайлсан. Нэвтрэхийн тулд дарах эсвэл товшино уу.</translation>
 <translation id="6578407462441924264">Нэргүй</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />%-ийг гүйцээсэн</translation>
 <translation id="6582012689384648647">Төвлөрөхдөө сонсох хувийн болгосон тоглуулах жагсаалт авах бол YouTube Music-д хандах эрх олгоно уу</translation>
 <translation id="6582034443359256692">Батарейн цэнэгийн түвшнийг тооцоолж байна.</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> хугацааны дараа таны цаг дуусна.</translation>
@@ -1788,6 +1815,7 @@
 <translation id="6723839937902243910">Эрчим хүч</translation>
 <translation id="672609503628871915">Шинэ зүйл юу байна?</translation>
 <translation id="6727969043791803658">Холбогдсон, батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">Та түр хүлээнэ үү.</translation>
 <translation id="6732087373923685049">камер</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Камер болон микрофоныг ашиглаж байна</translation>
@@ -1859,6 +1887,7 @@
 <translation id="6961840794482373852">Alt + Дээш сумны товчлуурын шууд холбоосыг өөрчилсөн байна. Page Up товчлуурыг ашиглахын тулд <ph name="LAUNCHER_KEY_NAME" /> товчлуур + Дээш сумыг дарна уу.</translation>
 <translation id="696267987219125751">Камерын хүрээлэх онцлог унтраалттай байна.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Chromebook-н Steam-г (Бета) ашиглан суулгасан аливаа апп болон тоглоомыг энэ төхөөрөмжөөс хасна. Эдгээр апп болон тоглоомтой холбоотой өгөгдлийг мөн хасна. Устгахаасаа өмнө хадгалсан апп болон тоглоомуудыг хуулбарлаарай.</translation>
 <translation id="6972629891077993081">HID төхөөрөмжүүд</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">оруулах</translation>
@@ -1890,6 +1919,7 @@
 <translation id="7067196344162293536">Автоматаар эргүүлэх</translation>
 <translation id="7076293881109082629">Нэвтэрч байна</translation>
 <translation id="7076878155205969899">Дууны дууг хаах</translation>
+<translation id="7083774521940805477">Chromebook-н Steam (Бета) нь таны Chromebook-д боломжгүй.</translation>
 <translation id="7083848064787091821">Төвлөрөх горим</translation>
 <translation id="7084678090004350185">Сүлжээний цэгийг асаана уу/унтраана уу. Сүлжээний цэг асаалттай байна. <ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон.</translation>
 <translation id="7086931198345821656">Энэ шинэчлэлт таны <ph name="DEVICE_TYPE" />-г powerwash хийхийг шаардаж байна. Бүх өгөгдлийг устгана. <ph name="SYSTEM_APP_NAME" />-н хамгийн сүүлийн шинэчлэлтийн талаар нэмэлт мэдээлэл авна уу.</translation>
@@ -1907,12 +1937,14 @@
 <translation id="7130207228079676353">ДАРАГДАХ МАГАДЛАЛТАЙ</translation>
 <translation id="7131634465328662194">Таныг автоматаар гаргана.</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
+<translation id="7143409552554575716">ChromeOS-н дарцгууд</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="7144942256906679589">Батарейн төлөв</translation>
 <translation id="7145639536026937076">Батарей <ph name="PERCENTAGE" />%-тай байгаа бөгөөд цэнэглэж байна. Батарей хэмнэгч асаалттай байна.</translation>
 <translation id="7147587499155271409">Хөтчийн ямар ч түүх байхгүй</translation>
 <translation id="7147657298465433425">F товчнуудад хандахын тулд fn товч + дээд мөрийн товчнууд дээр дарна уу</translation>
 <translation id="7149149900052329230">Дотоод файл, Google Драйвын файлаа бүгдийг нь Файлс аппад удирдана уу.</translation>
+<translation id="7154020516215182599">Санал хүсэлтээ хуваалц эсвэл асуудлаа тайлбарлана уу. Боломжтой бол асуудлаа дахин гаргах алхмуудыг оруулаарай.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@
 <translation id="7726391492136714301">Утасныхаа мэдэгдлүүд болон аппуудыг хараарай</translation>
 <translation id="7727952505535211425">Хаяг оруулах хэсэг дэх вебсайтыг шинэ табд нээх</translation>
 <translation id="7728657226117099693">Caps Lock-г унтраах</translation>
+<translation id="7732702411411810416">Та интернэтэд холбогдсон эсэхээ шалгаад дахин оролдоно уу</translation>
 <translation id="7742327441377685481">Мэдэгдэл алга</translation>
 <translation id="7748275671948949022">Тавиур дээрх Эхлүүлэгчийн товчлуурыг тодруулах</translation>
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
@@ -2122,6 +2155,7 @@
 <translation id="7866482334467279021">асаалттай</translation>
 <translation id="7870790288828963061">Шинэ хувилбар бүхий ямар ч Киоск апп олдсонгүй. Шинэчлэх ямар ч зүйл алга. USB дискээ салгана уу.</translation>
 <translation id="7872786842639831132">Унтраалттай</translation>
+<translation id="7873386145597434863">Chromebook-н Steam</translation>
 <translation id="7875575368831396199">Таны <ph name="DEVICE_TYPE" /> дээр Bluetooth-г унтраасан бололтой. Phone Hub-г ашиглахын тулд Bluetooth-г асаана уу.</translation>
 <translation id="7884446017008693258">Сүлжээний цэгийн тохиргоо</translation>
 <translation id="7884902759927478774">Таб чирэхийг цуцлах</translation>
@@ -2472,6 +2506,7 @@
 <translation id="8980862970816311842">Аппын дүрс тэмдгийг аппын хүснэгт дэх фолдер луу эсвэл фолдероос гадагш зөөх</translation>
 <translation id="8982906748181120328">Ойролцоо харагдац</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebook-д зориулсан Steam-д тавтай морилно уу</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />-г ашиглаж байна</translation>
 <translation id="8991648557324317894">Fn + Шуурхай оруулга эсвэл Shift товчийг дарж цуцлаарай.</translation>
 <translation id="899350903320462459">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг <ph name="LOGIN_ID" />-р тайлна уу</translation>
@@ -2488,6 +2523,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
 <translation id="9050012935252397793">Bluetooth боломжгүй байна</translation>
 <translation id="9050999376345823055">Суллахын тулд "." дээр дарах</translation>
+<translation id="9061694916020926968">Chromebook-н Steam (Бета)-г ашиглахын тулд та Google Бүртгэлд нэвтэрсэн байх шаардлагатай. Нэвтрээд дахин оролдоно уу.</translation>
 <translation id="906458777597946297">Цонхыг томсгох</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9068849894565669697">Өнгө сонгох</translation>

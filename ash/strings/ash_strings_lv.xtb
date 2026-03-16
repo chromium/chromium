@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Zila</translation>
 <translation id="1557622599341396706">Rādīt darbvietas nosaukumu</translation>
 <translation id="1569384531973824928">Tādējādi piekļuve tiek atļauta visām lietotnēm un vietnēm, kurām ir kameras un mikrofona atļauja. Iespējams, jums būs jāatsvaidzina tīmekļa lapa vai jārestartē lietotne.</translation>
+<translation id="1570235441606255261">Steam instalēšanas programma</translation>
 <translation id="1571697193564730395">Pārslēgt režīmu “Netraucēt”. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Atlasīts turis kreisajā malā; izmantojiet bulttaustiņus, lai pārvietotu</translation>
 <translation id="1576623706766186887">Tālināt, kad ieslēgta lupa</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ierīces</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
+<translation id="1642895994345928121">Ierīces krātuvē nepietiek vietas, lai atvērtu šo lietotni. Atbrīvojiet vietu un mēģiniet vēlreiz.</translation>
 <translation id="1647986356840967552">Iepriekšējā lapa</translation>
 <translation id="1651914502370159744">Atvērt lapu Vēsture</translation>
 <translation id="1668469839109562275">Iebūvēts VPN</translation>
@@ -401,6 +403,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2383521554963939360">Lietotņu un ciļņu grupas</translation>
 <translation id="2386292613071805067">Atlasīt visu saturu lapā</translation>
 <translation id="2389423187722941333">Pārslēgt Gemini</translation>
+<translation id="2391805183137601570">Atvērt lietotni Steam</translation>
 <translation id="2392659840443812875">Nav pieejams neviens tīklājs. Jūsu ierīcei ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="2397416548179033562">Rādīt Chrome izvēlni</translation>
 <translation id="240006516586367791">Multivides vadīklas</translation>
@@ -422,12 +425,14 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="243878895369688216">Atvērts vakar</translation>
 <translation id="2440978926514840421">Tika ierakstīts GIF attēls</translation>
 <translation id="2441427462554639370">Ierakstīšana tika pārtraukta, jo krātuvē ir ļoti maz brīvas vietas.</translation>
+<translation id="2447587550790814052">Tagad varat izmantot Steam for Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Zems akumulatora uzlādes līmenis</translation>
 <translation id="2450205753526923158">Ekrānuzņēmumu režīms</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
 <translation id="2455994958736234930">Adreses joslā ievadīt elementus www. un .com un atvērt vietni</translation>
 <translation id="2456008742792828469">Kalendārs, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Lejupizpētīt</translation>
+<translation id="2462332841984057083">Lietotne Steam jau tiek iestatīta. Uzgaidiet, līdz iestatīšana ir pabeigta.</translation>
 <translation id="2465145153332031561">Akumulatora stāvoklis: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, ciklu skaits: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Apstipriniet izšķirtspēju</translation>
 <translation id="2475783092753560388">Ievietot rezultātu <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">Darbvietas <ph name="DESK_NAME" /> priekšskatījums. Aktīva darbvieta.</translation>
 <translation id="2486405091093637109">Displeja “<ph name="DISPLAY_NAME" />” izšķirtspēja tika mainīta uz <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Ja neapstiprināsiet, iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pievienoties</translation>
+<translation id="2494555621641843783">Nevar instalēt lietotni Steam</translation>
 <translation id="2496180316473517155">Pārlūkošanas vēsture</translation>
 <translation id="2499445554382787206">Darbvietas profila izvēlne. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taustiņu ķēde</translation>
@@ -512,6 +518,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2727175239389218057">Atbildēt</translation>
 <translation id="2727744317940422214">Diemžēl radās problēma. Lūdzu, iesniedziet atsauksmi, aprakstā norādot atsauci #bruschetta. Kļūdas kods ir <ph name="ERROR" />. Tīrīšana neizdevās. Iespējams, jums tas būs jādara manuāli.</translation>
 <translation id="2727977024730340865">Pievienots lādētājs ar mazu strāvas padevi. Akumulatora uzlāde var nebūt uzticama.</translation>
+<translation id="2737538893171115082">Jūsu administrators ir bloķējis lietotni Steam for Chromebook (Beta). Administratoram ir jāieslēdz šīs politikas:</translation>
 <translation id="2743301740238894839">Sākt</translation>
 <translation id="2743387203779672305">Kopēt starpliktuvē</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3033912566804961911">Apvienot ar darbvietu <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Skārienekrāna pildspalvas akumulatora uzlādes līmenis: <ph name="PERCENTAGE" /> procenti.</translation>
 <translation id="304097922505898963">Atvērt lietotni Galvenās saīsnes</translation>
+<translation id="3040982432432547149">Palīdziet mums uzlabot lietotni Steam Chromebook datoriem</translation>
 <translation id="304417730895741346">Jūsu piespraustās un atvērtās lietotnes ir pieejamas plauktā. Lai piespraustu kādu lietotni plauktam, noklikšķiniet ar peles labo pogu uz attiecīgās lietotnes vai pieskarieties skārienpaliktnim ar diviem pirkstiem.</translation>
 <translation id="3045670165536837541">Atlasīts turis augšējā labajā stūrī; izmantojiet bulttaustiņus, lai pārvietotu</translation>
 <translation id="3047761520276763270">Mēģiniet teikt:</translation>
@@ -656,6 +664,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3181441307743005334">Restartēšana var ilgt kādu brīdi</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Savienots ar ierīci}zero{Savienots ar # ierīcēm}one{Savienots ar # ierīci}other{Savienots ar # ierīcēm}}</translation>
 <translation id="3203405173652969239">Iespējota slēdžu piekļuve</translation>
+<translation id="3204648577100496185">Ar šo lietotni saistītie dati var tikt noņemti no šīs ierīces</translation>
 <translation id="3206735939915734551">Ieslēgt vai izslēgt burtslēgu</translation>
 <translation id="3207953481422525583">Lietotāja iestatījumi</translation>
 <translation id="3208321278970793882">Lietotne</translation>
@@ -677,6 +686,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3271554781793662131">Meklēt, lai ievietotu</translation>
 <translation id="3274634049061007184">Skatīt tālruņa lietotnes</translation>
 <translation id="3279230909244266691">Šis process var ilgt dažas minūtes. Notiek virtuālās mašīnas startēšana.</translation>
+<translation id="3285465040399788513">Ierīces krātuvē nepietiek vietas, lai pabeigtu iestatīšanu. Atbrīvojiet vietu un mēģiniet vēlreiz.</translation>
 <translation id="3289364673986435196">Barošanas izvēlne</translation>
 <translation id="3289544412142055976">Linux lietotnes pašlaik netiek atbalstītas.</translation>
 <translation id="3289674678944039601">Notiek uzlāde, izmantojot adapteri</translation>
@@ -702,6 +712,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3368922792935385530">pievienots</translation>
 <translation id="3369111525500416043">Drīz</translation>
 <translation id="3371140690572404006">USB-C ierīce (pieslēgvieta labajā pusē priekšā)</translation>
+<translation id="3373196968211632036">Lietotne Steam for Chromebook (Beta) nav pieejama bērnu Google kontiem.</translation>
 <translation id="3375634426936648815">Izveidots savienojums</translation>
 <translation id="3386978599540877378">pilnekrāna režīma lupa</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Plaukts tiek automātiski paslēpts</translation>
+<translation id="3496797737329654668">Sāksim spēlēt!</translation>
 <translation id="3505066820268455558">Notiek akumulatora uzlāde</translation>
 <translation id="3509391053705095206">Nevar atrast jūsu tālruni. Tālrunī ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="3510164367642747937">Izcelt peles kursoru</translation>
@@ -800,6 +812,7 @@ Pretējā gadījumā iebūvētais skārienpaliktnis tiks atkārtoti iespējots, 
 <translation id="3633851487917460983">Atvērt starpliktuvi</translation>
 <translation id="363473492175527493">Uzdevums, kam iestatīt fokusa režīmu: <ph name="TASK_NAME" />. Lai rediģētu uzdevumu, nospiediet taustiņu Enter.</translation>
 <translation id="3638400994746983214">Pārslēgt konfidencialitātes ekrānu. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Lietotne Steam Chromebook datoriem (beta versija) ir jāatjaunina. Restartējiet Chromebook datoru un mēģiniet vēlreiz.</translation>
 <translation id="3649256019230929621">Minimizēt logu</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3702809606464356667">Tiek rādīti pašreizējās darbvietas logi. Nospiediet augšupvērsto bultiņu, lai tiktu rādīti visu darbvietu logi.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Izklaide</translation>
+<translation id="370665806235115550">Notiek ielāde...</translation>
 <translation id="3707093869106077605">Funkcijas <ph name="UNAVAILABLE_DLC_ONE" /> un <ph name="UNAVAILABLE_DLC_TWO" /> nav pieejamas.</translation>
 <translation id="3708186454126126312">Ierīces, ar kurām iepriekš tika izveidots savienojums</translation>
 <translation id="3712143870407382523">Izvēlieties logu šai pusei.</translation>
@@ -860,6 +874,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3831226344927851293">Iziet no mācību skata</translation>
 <translation id="383629559565718788">Rādīt tastatūras iestatījumus</translation>
 <translation id="384082539148746321">Vai dzēst veidni?</translation>
+<translation id="3841282988425489367">Nevar iestatīt Steam for Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> un pēc tam <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> vai <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Tīkla informācija nav pieejama.</translation>
 <translation id="3848526302597027234">Piekļūt tālāk minētajām atļaujām.</translation>
@@ -951,6 +966,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4146671046252289537">Pārvietot uz nākamā vārda beigām</translation>
 <translation id="4150201353443180367">Displejs</translation>
 <translation id="4151054805501931758">Portreta retušēšana</translation>
+<translation id="4151449637210235443">Pastāstiet mums, kā veicās pēdējā spēles izspēlē</translation>
 <translation id="4156293514828496577">Atlikušais akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />% (aptuveni <ph name="TIME_LEFT" />).
 Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.</translation>
 <translation id="4158003972857765638">Sakārtot jaunā darbvietā</translation>
@@ -968,6 +984,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4192112279662688596">vai</translation>
 <translation id="4193857202545160520">Rādīt klikšķus un taustiņus</translation>
 <translation id="4193969623755915875">Lai lietotnē Izpēte atvērtu sadaļu Palīdzība, izmantojiet šādus īsinājumtaustiņus: <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4195001808989442226">Nevar atvērt Chromebook datoriem paredzēto lietotni Steam (beta versija)</translation>
 <translation id="4195579532193195633">Pašreizējā versija: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" />, <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Atsākt darbu no vietas, kur to beidzu</translation>
 <translation id="4195877955194704651">Poga Automātiskie klikšķi</translation>
@@ -983,6 +1000,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalēta lietotne, darbība apturēta</translation>
 <translation id="4228078597006700451">Vadīklas nav iestatītas.</translation>
 <translation id="4230560241506423345">Jaunums</translation>
+<translation id="4231231258999726714">Steam for Chromebook iestatīšana</translation>
 <translation id="4236726631849783264">Atgādinājums par ierosinātajām darbībām</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Pārskata režīms</translation>
@@ -1067,6 +1085,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4471432286288241507">{0,plural, =0{Ierīce tūlīt jāatjaunina}=1{Ierīce jāatjaunina 1 sekundes laikā}zero{Ierīce jāatjaunina # sekunžu laikā}one{Ierīce jāatjaunina # sekundes laikā}other{Ierīce jāatjaunina # sekunžu laikā}}</translation>
 <translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4473489370276014885">Google kontaktpersonas</translation>
+<translation id="4473996011558324141">Notiek laika aprēķināšana</translation>
 <translation id="4477350412780666475">Nākamais ieraksts</translation>
 <translation id="4477751544736611934">Tādējādi var rasties izmaksas par datu lietojumu.
 Pievienota viena ierīce.</translation>
@@ -1108,6 +1127,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4585337515783392668">Pārtraukt apraidi nezināmā uztvērējā</translation>
 <translation id="4596144739579517758">Tumšais motīvs ir izslēgts.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> kopīgoja</translation>
+<translation id="4598556348158889687">Krātuves pārvaldība</translation>
 <translation id="4610493115106525653">Labi izvades dati</translation>
 <translation id="4611292653554630842">Pieteikties</translation>
 <translation id="462160925400706389">Izveidots savienojums ar: <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4633636853437260449">Nospiediet taustiņu kombināciju Ctrl+W, lai dzēstu</translation>
 <translation id="4635501805800894201">{0,plural, =0{Atjaunojiet ierīcē iepriekšējo versiju tagad}=1{Atjaunojiet ierīcē iepriekšējo versiju 1 sekundes laikā}zero{Atjaunojiet ierīcē iepriekšējo versiju # sekunžu laikā}one{Atjaunojiet ierīcē iepriekšējo versiju # sekundes laikā}other{Atjaunojiet ierīcē iepriekšējo versiju # sekunžu laikā}}</translation>
 <translation id="4642092649622328492">Iegūt daļēju ekrānuzņēmumu</translation>
+<translation id="4642587497923912728">Lietotne Steam for Chromebook (Beta) ir pieejama tikai pirmajā kontā, kurā tika veikta pierakstīšanās šajā Chromebook datorā.</translation>
 <translation id="4644727592819780893">Reģions ir par mazu kamerai</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, lietotņu ieteikumi</translation>
 <translation id="4649019912155580914">Jūs rediģējāt</translation>
@@ -1350,6 +1371,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="5352250171825660495">Tumšais motīvs ir ieslēgts.</translation>
 <translation id="5354804064646502504">Tādējādi var rasties izmaksas par datu lietojumu.
 Nav pievienota neviena ierīce.</translation>
+<translation id="5355498626146154079">Jums ir jāieslēdz karodziņš “Borealis Enabled”.</translation>
 <translation id="5356963482258194581">Pārslēdzieties starp tumšo un gaišo motīvu. Noklikšķiniet ar peles labo pogu darbvirsmā un atlasiet “Fona tapete un stils”.</translation>
 <translation id="536019650977002321">Jūsu administrators neļauj tvert audio. Lai uzzinātu vairāk, sazinieties ar administratoru.</translation>
 <translation id="5361524080961918551">Runas faili (<ph name="LANGUAGE" />) ir daļēji lejupielādēti</translation>
@@ -1360,6 +1382,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5377367976106153749">Vai ieslēgt piekļuvi kamerai?</translation>
 <translation id="5378450298115733949">Vairāk</translation>
 <translation id="5379115545237091094">Pārāk daudz mēģinājumu</translation>
+<translation id="5380526436444479273">Uzgaidiet dažas minūtes un mēģiniet vēlreiz.</translation>
 <translation id="5383434787520761436">Nav Google diska failu</translation>
 <translation id="5391307769715781764">Vai aizstāt saglabāto darbvietu?</translation>
 <translation id="5392327145184648521">Notiek akumulatora uzlādes līmeņa aprēķināšana…</translation>
@@ -1371,6 +1394,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5409208741270395213">Atzīmēt uzdevumu kā pabeigtu</translation>
 <translation id="5413656666631274079">Lapa Iestatījumi</translation>
 <translation id="5414198321558177633">Notiek profilu saraksta atsvaidzināšana. Tas var ilgt dažas minūtes.</translation>
+<translation id="5415328625985164836">Šī ir beta programma. Tagad varat izmantot Steam, lai spēlētu spēles Chromebook datorā.</translation>
 <translation id="5426063383988017631">Iestatījumu izvēlne aizvērta</translation>
 <translation id="5428899915242071344">Sākt atlasīšanu</translation>
 <translation id="5429993543155113935">Inkognito režīma logi pašlaik netiek atbalstīti.</translation>
@@ -1466,6 +1490,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5712132663381964774">Izmantojiet lietotnes, lai veiktu visas nepieciešamās darbības savā ierīcē (<ph name="PRODUCT_NAME" />). Lietotnes varat atrast palaidējā.</translation>
 <translation id="571295407079589142">Mobilie dati ir izslēgti</translation>
 <translation id="5727460725221669831">Ja aizmirsāt paroli vai nesen mainījāt Google konta paroli, mēģiniet atkopt šo lietotāja profilu.</translation>
+<translation id="572914206753951782">Pārbaudiet, vai Chromebook datorā ir instalēta jaunākā versija. Pēc tam restartējiet Chromebook datoru un mēģiniet vēlreiz.</translation>
 <translation id="5733630091161562207">Sveiciena paziņojums</translation>
 <translation id="573413375004481890">Šajā ierīcē nevarēja atbalstīt visus jūsu displejus, tādējādi tika pārtraukts savienojums ar vienu no tiem.</translation>
 <translation id="574392208103952083">Vidējs</translation>
@@ -1713,6 +1738,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6507042703812908515">Atveriet lietotni Galvenie īsinājumtaustiņi, izmantojot īsinājumtaustiņus <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Pārslēgties uz nākamo pieejamo ievades metodi</translation>
 <translation id="6508923215158854599">Gādājiet, lai Chromebook datorā un Chromecast ierīcē būtu izveidots savienojums ar vienu un to pašu Wi-Fi tīklu.</translation>
+<translation id="6511607461419653612">Restartējiet Chromebook datoru un mēģiniet vēlreiz.</translation>
 <translation id="6515727200518652613">Zudis savienojums ar kameru, tiek mēģināts atjaunot savienojumu.</translation>
 <translation id="651753338596587143">Diemžēl radās problēma, instalējot DLC atkarības. Veiciet atkārtotu palaišanu. Ja problēmu neizdodas novērst, iesniedziet atsauksmi, aprakstā norādot atsauci #bruschetta. Kļūdas kods ir <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Atlasiet logu, kura saturs jātver</translation>
@@ -1738,6 +1764,7 @@ Jauna instalācija</translation>
 <translation id="6574587113394758819">Lietotnes <ph name="APP_TITLE" /> paziņojums ir paslēpts, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="6574622320167699133">Atbloķēšanai tika izmantots jūsu tālrunis. Pieskarieties vai noklikšķiniet, lai palaistu.</translation>
 <translation id="6578407462441924264">Bez nosaukuma</translation>
+<translation id="6580060371127789208">Pabeigta: <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6582012689384648647">Lai iegūtu personalizētus atskaņošanas sarakstus uzmanības koncentrēšanai, atļaujiet piekļuvi pakalpojumam YouTube Music.</translation>
 <translation id="6582034443359256692">Notiek akumulatora uzlādes līmeņa aprēķināšana.</translation>
 <translation id="6585808820553845416">Atlikušais laiks līdz šīs sesijas beigām: <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Jauna instalācija</translation>
 <translation id="6723839937902243910">Strāvas padeve</translation>
 <translation id="672609503628871915">Uzzināt jaunumus</translation>
 <translation id="6727969043791803658">Savienojums izveidots, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="6731320427842222405">Var paiet dažas minūtes.</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Tiek izmantota kamera un mikrofons</translation>
@@ -1858,6 +1886,7 @@ Jauna instalācija</translation>
 <translation id="6961840794482373852">Šie īsinājumtaustiņi ir mainījušies: Alt + augšupvērstais bulttaustiņš. Lai izmantotu augšupšķiršanas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + augšupvērstais bulttaustiņš.</translation>
 <translation id="696267987219125751">Kameras kadrēšana ir izslēgta.</translation>
 <translation id="6965382102122355670">Labi</translation>
+<translation id="6967112302799758487">Visas lietotnes un spēles, kas instalētas, izmantojot Steam for Chromebook (Beta), tiks noņemtas no šīs ierīces. Tiks noņemti arī ar šīm lietotnēm un spēlēm saistītie dati. Pirms atinstalēšanas dublējiet saglabātās lietotnes un spēles.</translation>
 <translation id="6972629891077993081">HID ierīces</translation>
 <translation id="6979158407327259162">Google disks</translation>
 <translation id="6980402667292348590">ievietošanas taustiņš</translation>
@@ -1889,6 +1918,7 @@ Jauna instalācija</translation>
 <translation id="7067196344162293536">Pagriezt automātiski</translation>
 <translation id="7076293881109082629">Pierakstīšanās</translation>
 <translation id="7076878155205969899">Izslēgt skaņu</translation>
+<translation id="7083774521940805477">Lietotne Steam for Chromebook (Beta) vēl nav pieejama jūsu Chromebook datorā.</translation>
 <translation id="7083848064787091821">Fokusa režīms</translation>
 <translation id="7084678090004350185">Pārslēdziet tīklāju. Tīklājs ir ieslēgts; savienojums ir izveidots ar <ph name="DEVICECOUNT" /> ierīcēm.</translation>
 <translation id="7086931198345821656">Šī atjauninājuma lietošanai ierīcē <ph name="DEVICE_TYPE" /> ir jāizmanto funkcija Powerwash. Visi dati tiks izdzēsti. Uzziniet vairāk par pēdējo <ph name="SYSTEM_APP_NAME" /> atjauninājumu.</translation>
@@ -1906,12 +1936,14 @@ Jauna instalācija</translation>
 <translation id="7130207228079676353">VISTICAMĀK</translation>
 <translation id="7131634465328662194">Jūs tiksiet automātiski izrakstīts.</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
+<translation id="7143409552554575716">ChromeOS karodziņi</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
 <translation id="7144942256906679589">Akumulatora statuss</translation>
 <translation id="7145639536026937076">Akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%, un notiek uzlāde. Akumulatora enerģijas taupīšanas režīms ir ieslēgts.</translation>
 <translation id="7147587499155271409">Nav pārlūkošanas vēstures</translation>
 <translation id="7147657298465433425">Lai piekļūtu funkciju taustiņiem, nospiediet taustiņu fn un augšējās rindas taustiņus.</translation>
 <translation id="7149149900052329230">Pārvaldiet savus lokālos failus un Google diska failus lietotnē Faili.</translation>
+<translation id="7154020516215182599">Sniedziet atsauksmes vai aprakstiet problēmu. Ja iespējams, norādiet darbības, ko veicāt, kad radās problēma.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />.
         <ph name="NETWORK" />.</translation>
@@ -2087,6 +2119,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7726391492136714301">Skatiet tālruņa paziņojumus un lietotnes.</translation>
 <translation id="7727952505535211425">Atvērt adreses joslā norādīto vietni jaunā cilnē</translation>
 <translation id="7728657226117099693">Izslēgt burtslēgu</translation>
+<translation id="7732702411411810416">Pārliecinieties, vai ir izveidots savienojums ar internetu, un mēģiniet vēlreiz.</translation>
 <translation id="7742327441377685481">Paziņojumu nav</translation>
 <translation id="7748275671948949022">Plauktā izcelt palaidēja pogu</translation>
 <translation id="7749443890790263709">Sasniegts maksimālais darbvietu skaits.</translation>
@@ -2121,6 +2154,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7866482334467279021">ieslēgts</translation>
 <translation id="7870790288828963061">Netika atrasta neviena Kioska lietotne ar jaunāku versiju. Nav jāatjaunina neviena lietotne. Lūdzu, izņemiet USB atmiņas karti.</translation>
 <translation id="7872786842639831132">Izslēgts</translation>
+<translation id="7873386145597434863">Steam Chromebook datoriem</translation>
 <translation id="7875575368831396199">Šķiet, jūsu ierīcē (<ph name="DEVICE_TYPE" />) ir izslēgts Bluetooth savienojums. Lai izmantotu funkciju Tālruņa centrmezgls, ieslēdziet Bluetooth savienojumu.</translation>
 <translation id="7884446017008693258">Tīklāja iestatījumi</translation>
 <translation id="7884902759927478774">Atcelt ciļņu vilkšanu</translation>
@@ -2470,6 +2504,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8980862970816311842">Lietotņu režģī pārvietot lietotnes ikonu uz mapi vai no tās</translation>
 <translation id="8982906748181120328">Tuvumā: redzamība</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Laipni lūdzam lietotnē Steam, kas paredzēta Chromebook datoriem</translation>
 <translation id="8990809378771970590">Izmantojot <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Lai atceltu, nospiediet fn + ātrās ievietošanas taustiņu vai pārslēgšanas (Shift) taustiņu.</translation>
 <translation id="899350903320462459">Atbloķēt ierīci kā <ph name="LOGIN_ID" />, lai veiktu paziņojuma darbību</translation>
@@ -2486,6 +2521,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9047624247355796468">Atvērt tīkla <ph name="NETWORK_NAME" /> iestatījumus</translation>
 <translation id="9050012935252397793">Tehnoloģija Bluetooth nav pieejama</translation>
 <translation id="9050999376345823055">Lai atbrīvotu, nospiediet taustiņu “.”</translation>
+<translation id="9061694916020926968">Lai izmantotu Steam for Chromebook (Beta), jums ir jāpierakstās Google kontā. Pierakstieties un mēģiniet vēlreiz.</translation>
 <translation id="906458777597946297">Maksimizēt logu</translation>
 <translation id="9065203028668620118">Labot</translation>
 <translation id="9068849894565669697">Krāsas izvēle</translation>

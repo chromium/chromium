@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">E kaltër</translation>
 <translation id="1557622599341396706">Shfaq emrin e tavolinës së punës</translation>
 <translation id="1569384531973824928">Kjo lejon qasjen për të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
+<translation id="1570235441606255261">Instaluesi i Steam</translation>
 <translation id="1571697193564730395">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Është zgjedhur doreza e skajit të majtë; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="1576623706766186887">Zvogëlo kur zmadhuesi është aktiv</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
+<translation id="1642895994345928121">Nuk ka hapësirë ruajtëse të mjaftueshme në pajisje për të hapur këtë aplikacion. Liro hapësirë dhe provo përsëri.</translation>
 <translation id="1647986356840967552">Faqja e mëparshme</translation>
 <translation id="1651914502370159744">Hap faqen e "Historikut"</translation>
 <translation id="1668469839109562275">VPN e integruar</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Grupet e aplikacioneve dhe skedave</translation>
 <translation id="2386292613071805067">Zgjidh gjithçka në faqe</translation>
 <translation id="2389423187722941333">Aktivizo/çaktivizo Gemini</translation>
+<translation id="2391805183137601570">Hap Steam</translation>
 <translation id="2392659840443812875">Nuk ka zona të disponueshme të qasjes për internet. Sigurohu që pajisja të jetë në afërsi dhe Bluetooth-i të jetë i aktivizuar.</translation>
 <translation id="2397416548179033562">Shfaq menynë e Chrome</translation>
 <translation id="240006516586367791">Kontrollet e medias</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Hapur dje</translation>
 <translation id="2440978926514840421">Regjistrimi i imazhit GIF u krye</translation>
 <translation id="2441427462554639370">Regjistrimi u mbyll për shkak të nivelit jashtëzakonisht të ulët të hapësirës ruajtëse</translation>
+<translation id="2447587550790814052">Tani mund të përdorësh Steam për Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Bateria në nivel të ulët</translation>
 <translation id="2450205753526923158">Modaliteti i pamjes së ekranit</translation>
 <translation id="2453860139492968684">Përfundo</translation>
 <translation id="2455994958736234930">Shto www. dhe .com në shiritin e adresës dhe më pas hap sajtin e uebit</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Futu më në brendësi</translation>
+<translation id="2462332841984057083">Steam po konfigurohet tashmë. Prit që të përfundojë konfigurimi.</translation>
 <translation id="2465145153332031561">Integriteti i baterisë: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, numri i cikleve: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Konfirmo rezolucionin</translation>
 <translation id="2475783092753560388">Fut "<ph name="SEARCH_RESULT_TEXT" />"</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Pamja paraprake e "<ph name="DESK_NAME" />". Tavolina e punës aktive.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" u kalua në rezolucionin <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Nëse nuk konfirmohet, cilësimet e mëparshme do të restaurohen pas <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Bashkohu</translation>
+<translation id="2494555621641843783">Nuk mund të instalohet Steam</translation>
 <translation id="2496180316473517155">Historiku i shfletimit</translation>
 <translation id="2499445554382787206">Menyja e profilit të tavolinës së punës. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tastet e përhershme</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Përgjigju</translation>
 <translation id="2727744317940422214">Më vjen keq, ndodhi një gabim. Jep komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" />. Pastrimi dështoi. Mund të duhet ta bësh këtë në mënyrë manuale.</translation>
 <translation id="2727977024730340865">E lidhur me një karikues me fuqi të ulët. Ngarkimi i baterisë mund të mos jetë i sigurt.</translation>
+<translation id="2737538893171115082">Steam për Chromebook (Beta) është bllokuar nga administratori yt. Administratori yt duhet të aktivizojë këto politika:</translation>
 <translation id="2743301740238894839">Nis</translation>
 <translation id="2743387203779672305">Kopjo te kujtesa e fragmenteve</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3033912566804961911">Kombinoje me <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Bateria e stilolapsit është <ph name="PERCENTAGE" /> për qind.</translation>
 <translation id="304097922505898963">Hap aplikacionin "Shkurtoret e tasteve"</translation>
+<translation id="3040982432432547149">Na ndihmo të përmirësojmë Steam për Chromebook</translation>
 <translation id="304417730895741346">Aplikacionet e tua të gozhduara dhe të hapura janë te rafti. Për të gozhduar një aplikacion te rafti, kliko me butonin djathtas te një aplikacion ose trokit me dy gishta te blloku me prekje.</translation>
 <translation id="3045670165536837541">Është zgjedhur doreza e sipërme djathtas; përdor tastet e shigjetave për ta zhvendosur</translation>
 <translation id="3047761520276763270">Provo të thuash:</translation>
@@ -656,6 +664,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3181441307743005334">Rindezja mund të zgjasë pak</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Lidhur me një pajisje}other{Lidhur me # pajisje}}</translation>
 <translation id="3203405173652969239">"Qasja me çelës" është aktivizuar</translation>
+<translation id="3204648577100496185">Të dhënat e lidhura me këtë aplikacion mund të hiqen nga kjo pajisje</translation>
 <translation id="3206735939915734551">Aktivizo/çaktivizo kyçjen e kapitaleve</translation>
 <translation id="3207953481422525583">Cilësimet e përdoruesit</translation>
 <translation id="3208321278970793882">Aplikacioni</translation>
@@ -677,6 +686,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3271554781793662131">Kërko për të futur</translation>
 <translation id="3274634049061007184">Shiko aplikacionet e telefonit tënd</translation>
 <translation id="3279230909244266691">Procesi mund të zgjasë disa minuta. Po niset pajisja virtuale.</translation>
+<translation id="3285465040399788513">Nuk ka hapësirë ruajtëse të mjaftueshme në pajisje për të përfunduar konfigurimin. Liro hapësirë dhe provo përsëri.</translation>
 <translation id="3289364673986435196">Menyja e energjisë</translation>
 <translation id="3289544412142055976">Aplikacionet për Linux nuk mbështeten aktualisht</translation>
 <translation id="3289674678944039601">Po karikohet përmes përshtatësit</translation>
@@ -702,6 +712,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3368922792935385530">Lidhur</translation>
 <translation id="3369111525500416043">Afati së shpejti</translation>
 <translation id="3371140690572404006">Pajisja USB-C (porta e përparme, djathtas)</translation>
+<translation id="3373196968211632036">Steam për Chromebook (Beta) nuk është i disponueshëm për "Llogaritë e Google" për fëmijët</translation>
 <translation id="3375634426936648815">Lidhur</translation>
 <translation id="3386978599540877378">zmadhuesi në ekran të plotë</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3477079411857374384">Control-Shift-Hapësirë</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rafti i fshehur automatikisht</translation>
+<translation id="3496797737329654668">Le të luajmë</translation>
 <translation id="3505066820268455558">Bateria po karikohet</translation>
 <translation id="3509391053705095206">Telefoni yt nuk mund të gjendet. Sigurohu që të jetë aktivizuar Bluetooth-i i telefonit tënd.</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
@@ -800,6 +812,7 @@ Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas <ph
 <translation id="3633851487917460983">Hap kujtesën e fragmenteve</translation>
 <translation id="363473492175527493">Detyra e caktuar për t'u fokusuar: <ph name="TASK_NAME" />. Shtyp "Enter" për të modifikuar detyrën.</translation>
 <translation id="3638400994746983214">Ndrysho ekranin e privatësisë. <ph name="STATE_TEXT" /></translation>
+<translation id="3641070112313110357">"Steam për Chromebook" (beta) duhet të përditësohet. Rinis pajisjen tënde Chromebook dhe provo përsëri.</translation>
 <translation id="3649256019230929621">Minimizo dritaren</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3702809606464356667">Po shfaqen dritaret nga tavolina aktuale e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga të gjitha tavolinat e punës</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Argëtimi</translation>
+<translation id="370665806235115550">Po ngarkon...</translation>
 <translation id="3707093869106077605">"<ph name="UNAVAILABLE_DLC_ONE" />" dhe "<ph name="UNAVAILABLE_DLC_TWO" />" nuk ofrohen.</translation>
 <translation id="3708186454126126312">Të lidhura më parë</translation>
 <translation id="3712143870407382523">Zgjidh një dritare për këtë anë</translation>
@@ -860,6 +874,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3831226344927851293">Dil nga pamja e udhëzuesit</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
 <translation id="384082539148746321">Të fshihet shablloni?</translation>
+<translation id="3841282988425489367">Nuk mund të konfigurohet Steam për Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> më pas <ph name="KEY_ONE" /> ose <ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /> ose <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Nuk mundësohen informacione mbi rrjetin</translation>
 <translation id="3848526302597027234">Të qaset në lejet e mëposhtme:</translation>
@@ -951,6 +966,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4146671046252289537">Kalo në fund të fjalës tjetër</translation>
 <translation id="4150201353443180367">Ekrani</translation>
 <translation id="4151054805501931758">Përmirësimi i portretit</translation>
+<translation id="4151449637210235443">Na trego për lojën tënde të fundit</translation>
 <translation id="4156293514828496577">Bateria e mbetur: <ph name="PERCENTAGE" />% (rreth <ph name="TIME_LEFT" />).
 Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translation>
 <translation id="4158003972857765638">Organizo në një tavolinë të re pune</translation>
@@ -968,6 +984,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4192112279662688596">Ose</translation>
 <translation id="4193857202545160520">Shfaq klikimet dhe tastet</translation>
 <translation id="4193969623755915875">Hap "Ndihmën" në aplikacionin "Eksploro" me "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">Nuk mund të hapet Steam për Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Versioni aktual <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Vazhdo ku e ke lënë</translation>
 <translation id="4195877955194704651">Butoni i klikimeve automatike</translation>
@@ -983,6 +1000,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplikacioni i instaluar, në pauzë</translation>
 <translation id="4228078597006700451">Kontrollet nuk janë konfiguruar</translation>
 <translation id="4230560241506423345">I ri</translation>
+<translation id="4231231258999726714">Steam për Chromebook po konfigurohet</translation>
 <translation id="4236726631849783264">Një rikujtesë për veprimet e sugjeruara</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modaliteti "Përmbledhja"</translation>
@@ -1067,6 +1085,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4471432286288241507">{0,plural, =0{Përditëso pajisjen tani}=1{Përditëso pajisjen brenda 1 sekonde}other{Përditëso pajisjen brenda # sekondash}}</translation>
 <translation id="4472575034687746823">Fillo</translation>
 <translation id="4473489370276014885">Kontaktet e Google</translation>
+<translation id="4473996011558324141">po përllogaritet koha</translation>
 <translation id="4477350412780666475">Kënga tjetër</translation>
 <translation id="4477751544736611934">Kjo mund të sjellë kosto për të dhënat.
 1 pajisje u lidh.</translation>
@@ -1108,6 +1127,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4585337515783392668">Ndalo transmetimin në një marrës të panjohur</translation>
 <translation id="4596144739579517758">"Tema e errët" është joaktive</translation>
 <translation id="4596442969149038771"><ph name="USER" /> është ndarë</translation>
+<translation id="4598556348158889687">Menaxhimi i hapësirës ruajtëse</translation>
 <translation id="4610493115106525653">Rezultat i mirë</translation>
 <translation id="4611292653554630842">Identifikohu</translation>
 <translation id="462160925400706389"><ph name="NAME" /> u lidh</translation>
@@ -1117,6 +1137,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4633636853437260449">Shtyp Ctrl+W për të fshirë</translation>
 <translation id="4635501805800894201">{0,plural, =0{Kalo pajisjen në versionin e mëparshëm tani}=1{Kalo pajisjen në versionin e mëparshëm brenda 1 sekonde}other{Kalo pajisjen në versionin e mëparshëm brenda # sekondash}}</translation>
 <translation id="4642092649622328492">Nxirr një pamje të pjesshme të ekranit</translation>
+<translation id="4642587497923912728">Steam për Chromebook (Beta) është i disponueshëm vetëm për llogarinë që është identifikuar e para në këtë Chromebook.</translation>
 <translation id="4644727592819780893">Rajoni është shumë i vogël për të shfaqur pamjen paraprake të kamerës</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomandim për aplikacione</translation>
 <translation id="4649019912155580914">E ke modifikuar</translation>
@@ -1350,6 +1371,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="5352250171825660495">"Tema e errët" është aktive</translation>
 <translation id="5354804064646502504">Kjo mund të sjellë kosto për të dhënat.
 Nuk ka pajisje të lidhura.</translation>
+<translation id="5355498626146154079">Duhet të aktivizosh flamurin “Borealis Enabled”</translation>
 <translation id="5356963482258194581">Ndërro mes temës së errët dhe temës së ndriçuar. Kliko me butonin djathtas në desktop dhe zgjidh "Imazhi i sfondit dhe stili".</translation>
 <translation id="536019650977002321">Administratori yt nuk e lejon regjistrimin e audios. Kontakto me administratorin për më shumë informacion.</translation>
 <translation id="5361524080961918551">Skedarët e ligjërimit në <ph name="LANGUAGE" /> janë shkarkuar pjesërisht</translation>
@@ -1360,6 +1382,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5377367976106153749">Të aktivizohet qasja te kamera?</translation>
 <translation id="5378450298115733949">Më shumë</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
+<translation id="5380526436444479273">Prit disa minuta dhe provo përsëri</translation>
 <translation id="5383434787520761436">Nuk ka skedarë të "Diskut të Google"</translation>
 <translation id="5391307769715781764">Të zëvendësohet tavolina e ruajtur e punës?</translation>
 <translation id="5392327145184648521">Po llogaritet përqindja e baterisë...</translation>
@@ -1371,6 +1394,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5409208741270395213">Shëno detyrën si të përfunduar</translation>
 <translation id="5413656666631274079">Faqja e cilësimeve</translation>
 <translation id="5414198321558177633">Lista e profilit po rifreskohet. Kjo mund të zgjasë disa minuta.</translation>
+<translation id="5415328625985164836">Ky është një program beta. Tani mund të përdorësh Steam për të luajtur disa lojëra në Chromebook.</translation>
 <translation id="5426063383988017631">Menyja e "Cilësimeve" është e mbyllur</translation>
 <translation id="5428899915242071344">Fillo përzgjedhjen</translation>
 <translation id="5429993543155113935">Dritaret "E fshehta" nuk mbështeten për momentin</translation>
@@ -1466,6 +1490,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5712132663381964774">Përdor aplikacionet për të bërë gjithçka që të duhet në <ph name="PRODUCT_NAME" />. Aplikacionet e tua mund t'i gjesh te "Nisësi".</translation>
 <translation id="571295407079589142">Të dhënat celulare janë çaktivizuar</translation>
 <translation id="5727460725221669831">Nëse e ke harruar fjalëkalimin tënd ose e ke ndryshuar së fundi fjalëkalimin e "Llogarisë sate të Google", provo ta rikuperosh këtë përdorues.</translation>
+<translation id="572914206753951782">Sigurohu që pajisja jote Chromebook ka versionin më të fundit. Më pas rinis pajisjen tënde Chromebook dhe provo përsëri</translation>
 <translation id="5733630091161562207">Njoftimi i mirëseardhjes</translation>
 <translation id="573413375004481890">Kjo pajisje nuk mund t'i mbështeste të gjitha ekranet, kështu që një prej tyre është shkëputur</translation>
 <translation id="574392208103952083">Mesatar</translation>
@@ -1713,6 +1738,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6507042703812908515">Hap aplikacionin "Shkurtoret e tasteve" me "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Kalo te metoda tjetër që ofrohet për hyrjen</translation>
 <translation id="6508923215158854599">Sigurohu që pajisja jote Chromebook është në të njëjtin rrjet Wi-Fi me pajisjen tënde Chromecast.</translation>
+<translation id="6511607461419653612">Rinis pajisjen tënde Chromebook dhe provo përsëri</translation>
 <translation id="6515727200518652613">Kamera u shkëput; po provohet rilidhja.</translation>
 <translation id="651753338596587143">Na vjen keq, por ndodhi një gabim gjatë instalimit të elementeve të varura të përmbajtjeve të shkarkueshme. Provo ta rindezësh dhe nëse problemi vazhdon, dërgo komente me #bruschetta në përshkrim. Kodi i gabimit është <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Zgjidh një dritare për të regjistruar</translation>
@@ -1738,6 +1764,7 @@ Instalim i ri</translation>
 <translation id="6574587113394758819">Njoftimi <ph name="APP_TITLE" /> është fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
 <translation id="6574622320167699133">Shkyçur nga telefoni yt. Trokit ose kliko për të hyrë.</translation>
 <translation id="6578407462441924264">Pa emër</translation>
+<translation id="6580060371127789208">Përfunduar <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6582012689384648647">Për listat e personalizuara për luajtje për përqendrimin, lejo qasjen te YouTube Music</translation>
 <translation id="6582034443359256692">Niveli i karikimit të baterisë po llogaritet.</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Instalim i ri</translation>
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="672609503628871915">Shiko ç'të reja ka</translation>
 <translation id="6727969043791803658">E lidhur, bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">Kjo mund të zgjasë disa minuta</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera dhe mikrofoni në përdorim</translation>
@@ -1858,6 +1886,7 @@ Instalim i ri</translation>
 <translation id="6961840794482373852">Shkurtorja e tastierës për Alt + Shigjeta lart është ndryshuar. Për të përdorur tastin Page Up, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta lart.</translation>
 <translation id="696267987219125751">Inkuadrimi i kamerës është joaktiv.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
+<translation id="6967112302799758487">Të gjitha aplikacionet dhe lojërat e instaluara duke përdorur Steam për Chromebook (Beta) do të hiqen nga kjo pajisje. Të dhënat e lidhura me këto aplikacione dhe lojëra do të hiqen po ashtu. Sigurohu që të rezervosh aplikacionet dhe lojërat e ruajtura para se t'i çinstalosh.</translation>
 <translation id="6972629891077993081">Pajisjet HID</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6980402667292348590">tasti Insert</translation>
@@ -1889,6 +1918,7 @@ Instalim i ri</translation>
 <translation id="7067196344162293536">Rrotullim automatik</translation>
 <translation id="7076293881109082629">Po identifikohesh</translation>
 <translation id="7076878155205969899">Çaktivizo tingullin</translation>
+<translation id="7083774521940805477">Steam për Chromebook (Beta) nuk është i disponueshëm në pajisjen tënde Chromebook.</translation>
 <translation id="7083848064787091821">Fokusi</translation>
 <translation id="7084678090004350185">Aktivizo/çaktivizo zonën e qasjes për internet. Zona e qasjes për internet është aktive. <ph name="DEVICECOUNT" /> pajisje të lidhura.</translation>
 <translation id="7086931198345821656">Ky përditësim kërkon që të kryesh Powerwash të <ph name="DEVICE_TYPE" />. Të gjitha të dhënat do të fshihen. Mëso më shumë rreth përditësimit të fundit të <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Instalim i ri</translation>
 <translation id="7130207228079676353">MË TË MUNDSHME</translation>
 <translation id="7131634465328662194">Do të dalësh automatikisht</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
+<translation id="7143409552554575716">Flamurët e ChromeOS</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
 <translation id="7144942256906679589">Statusi i baterisë</translation>
 <translation id="7145639536026937076">Bateria është në <ph name="PERCENTAGE" />% dhe po karikohet. "Kursyesi i baterisë" është aktiv.</translation>
 <translation id="7147587499155271409">Nuk ka historik shfletimi</translation>
 <translation id="7147657298465433425">Për t'u qasur te tastet F, shtyp tastin FN + tastet e rreshtit të sipërm</translation>
 <translation id="7149149900052329230">Menaxho skedarët lokalë dhe skedarët e "Diskut të Google", të gjithë në aplikacionin "Skedarët".</translation>
+<translation id="7154020516215182599">Ndaj komentet e tua ose përshkruaj problemin tënd. Nëse është e mundur, përfshi hapat për rikrijimin e problemit tënd.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7726391492136714301">Shiko njoftimet dhe aplikacionet e telefonit tënd</translation>
 <translation id="7727952505535211425">Hape në një skedë të re sajtin e uebit në shiritin e adresës</translation>
 <translation id="7728657226117099693">Çaktivizo kyçjen e kapitaleve</translation>
+<translation id="7732702411411810416">Sigurohu që të jesh lidhur me internetin dhe provo përsëri</translation>
 <translation id="7742327441377685481">Asnjë njoftim</translation>
 <translation id="7748275671948949022">Thekso butonin e "Nisësit" në raft</translation>
 <translation id="7749443890790263709">Është arritur numri maksimal i tavolinave të punës.</translation>
@@ -2121,6 +2154,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7866482334467279021">aktivizuar</translation>
 <translation id="7870790288828963061">Nuk u gjetën aplikacione kioskë me version më të ri. Nuk ka asgjë për të përditësuar. Hiqe memorien USB.</translation>
 <translation id="7872786842639831132">Joaktive</translation>
+<translation id="7873386145597434863">Steam për Chromebook</translation>
 <translation id="7875575368831396199">Me sa duket Bluetooth-i është çaktivizuar në <ph name="DEVICE_TYPE" />. Aktivizo Bluetooth-in për të përdorur Phone Hub.</translation>
 <translation id="7884446017008693258">Cilësimet e zonës së qasjes për internet</translation>
 <translation id="7884902759927478774">Anulo zvarritjen e skedës</translation>
@@ -2470,6 +2504,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8980862970816311842">Zhvendos një ikonë aplikacioni te/nga një dosje në rrjetën e aplikacioneve</translation>
 <translation id="8982906748181120328">Dukshmëria</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Mirë se vjen në Steam për Chromebook</translation>
 <translation id="8990809378771970590">Po përdor <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Shtyp tastin fn + "Fut shpejt" ose Shift për ta anuluar.</translation>
 <translation id="899350903320462459">Shkyç pajisjen si <ph name="LOGIN_ID" /> për të kryer veprimin e njoftimit</translation>
@@ -2486,6 +2521,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="9047624247355796468">Hap cilësimet për <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth-i nuk ofrohet</translation>
 <translation id="9050999376345823055">Shtyp "." për ta lëshuar</translation>
+<translation id="9061694916020926968">Duhet të jesh identifikuar në një "Llogari të Google" për të përdorur Steam për Chromebook (Beta). Identifikohu dhe provo përsëri.</translation>
 <translation id="906458777597946297">Zmadho dritaren</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9068849894565669697">Zgjidh ngjyrën</translation>

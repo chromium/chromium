@@ -839,7 +839,6 @@
 <translation id="156793199942386351">'<ph name="ACTION" />' ક્રિયાને '<ph name="CURRENTKEY" />' કી પહેલેથી સોંપવામાં આવી છે. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
 <translation id="1567993339577891801">JavaScript કન્સોલ</translation>
 <translation id="1569466257325986920">આગલી વખતે જ્યારે તમારા Google એકાઉન્ટનો પાસવર્ડ બદલાય, ત્યારે તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન કર્યા પછી તમારો સ્થાનિક ડેટા રિકવર કરવામાં આવશે</translation>
-<translation id="1570235441606255261">Steam ઇન્સ્ટૉલર</translation>
 <translation id="1570604804919108255">નોટિફિકેશનને અનમ્યૂટ કરો</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' બુકમાર્ક ફોલ્ડર બન્યું છે.</translation>
 <translation id="1571041387761170095">કોઈ નબળો કે ફરીથી ઉપયોગમાં લેવાયેલો પાસવર્ડ નથી</translation>
@@ -964,7 +963,6 @@
 <translation id="1642299742557467312">આ ફાઇલ તમારા ડિવાઇસને હાનિ પહોંચાડી શકે છે</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" /> અને અન્ય <ph name="NUMBER_OF_DEVICES" /> બ્લૂટૂથ ડિવાઇસ સાથે કનેક્ટેડ છે</translation>
 <translation id="1642494467033190216">અન્ય ડિબગિંગ સુવિધાઓ સક્ષમ કરતાં પહેલાં rootfs રક્ષણ દૂર કરી અને પુનઃપ્રારંભ કરવું જરૂરી છે.</translation>
-<translation id="1642895994345928121">આ ઍપ ખોલવા માટે ડિવાઇસમાં પર્યાપ્ત સ્ટોરેજ નથી. સ્પેસ ખાલી કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="1643072738649235303">SHA-1 સાથે X9.62 ECDSA સહી</translation>
 <translation id="1643921258693943800">'નજીકના શેર' સુવિધાનો ઉપયોગ કરવા માટે, બ્લૂટૂથ અને વાઇ-ફાઇ ચાલુ</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
@@ -2067,7 +2065,6 @@
 <translation id="2390347491606624519">પ્રૉક્સીથી કનેક્ટ કરી શકાતું નથી, કૃપા કરીને ફરીથી સાઇન ઇન કરો</translation>
 <translation id="2390782873446084770">વાઇ-ફાઇ સિંક</translation>
 <translation id="2391419135980381625">માનક ફૉન્ટ</translation>
-<translation id="2391805183137601570">Steam ખોલો</translation>
 <translation id="239185270194776190">તમારી Gemini વાતચીત અન્ય વિન્ડોમાં છે. આ બાજુની પૅનલને અહીં ખસેડવા માટે, તેના પર ગમે ત્યાં ક્લિક કરો.</translation>
 <translation id="2392369802118427583">સક્રિય કરો</translation>
 <translation id="2393136602862631930">તમારી Chromebook પર <ph name="APP_NAME" /> સેટ અપ કરો</translation>
@@ -2149,7 +2146,6 @@
 <translation id="2445484935443597917">એક નવી પ્રોફાઇલ બનાવો</translation>
 <translation id="2445726032315793326">આંશિક મેગ્નિફાયર</translation>
 <translation id="244641233057214044">તમારી શોધથી સંબંધિત</translation>
-<translation id="2447587550790814052">હવે તમે Chromebook માટે Steam (બીટા)નો ઉપયોગ કરી શકો છો</translation>
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2448810255793562605">સ્વિચ ઍક્સેસનું ઑટોમેટિક રીતે સ્કૅન</translation>
 <translation id="2450021089947420533">પ્રવાસ</translation>
@@ -2176,7 +2172,6 @@
 <translation id="2460826998961521840">તમારા Google એકાઉન્ટમાં સાચવવામાં આવેલી પાસકીનો ઉપયોગ કરવા માટે</translation>
 <translation id="2461550163693930491">સાઇટને શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2461593638794842577">તમે તમારા પાસવર્ડને ફક્ત આ ડિવાઇસ પર સાચવવા માટે આ સેટિંગ બંધ કરી શકો છો</translation>
-<translation id="2462332841984057083">Steamનું પહેલેથી સેટઅપ કરવામાં આવી રહ્યું છે. સેટઅપ પૂર્ણ થવાની રાહ જુઓ.</translation>
 <translation id="2462724976360937186">પ્રમાણન અધિકારી કી ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ઉમેર્યું</translation>
 <translation id="2464075479326723132">Microsoft SharePoint અને OneDriveમાં તમારી સૌથી તાજેતરની ઍક્ટિવિટી પર સરળતાથી પરત ફરવામાં તમને સહાય મળી રહે તે માટે તમને સૂચવેલી ફાઇલો જોવા મળી રહી છે.
@@ -2231,7 +2226,6 @@
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> માટે વૉઇસનો પ્રીવ્યૂ કરો</translation>
 <translation id="2492461744635776704">પ્રમાણપત્ર પર સહી કરવાની વિનંતીની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="249330843868392562">ટેક્સ્ટ-ટૂ-સ્પીચ સેટિંગ ખોલો</translation>
-<translation id="2494555621641843783">Steam ઇન્સ્ટૉલ કરી શકતા નથી</translation>
 <translation id="2496180316473517155">બ્રાઉઝિંગ ઇતિહાસ</translation>
 <translation id="2496616243169085015">ફોટોગ્રાફી</translation>
 <translation id="2497229222757901769">માઉસની ગતિ</translation>
@@ -2588,7 +2582,6 @@
 <translation id="27349076983469322">આછું બૅકગ્રાઉન્ડ</translation>
 <translation id="2735712963799620190">શેડ્યૂલ</translation>
 <translation id="2737363922397526254">સંકુચિત કરો...</translation>
-<translation id="2737538893171115082">Chromebook માટે Steam (બીટા)ને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા બ્લૉક કરવામાં આવ્યું છે. તમારા ઍડમિનિસ્ટ્રેટરે આ પૉલિસીઓ ચાલુ કરવાની જરૂર છે:</translation>
 <translation id="2737719817922589807">બુકમાર્ક તથા સૂચિઓ</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> તમારી સ્ક્રીન પરનું કન્ટેન્ટ <ph name="TARGET_NAME" /> સાથે શેર કરવા માગે છે.</translation>
 <translation id="2738030019664645674">સાઇટને તમારા ડિવાઇસ પર ઇન્સ્ટૉલ કરેલા ફૉન્ટનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
@@ -3052,7 +3045,6 @@
 <translation id="3039491566278747710">ડિવાઇસ પર ઑફલાઇન પૉલિસી ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
 <translation id="303955801043931176">ટેબ બંધ કર્યું છે</translation>
 <translation id="3040435070100611531">Google Walletમાંના તમારા પાસ</translation>
-<translation id="3040982432432547149">Chromebook માટેની Steam બહેતર બનાવવામાં અમારી સહાય કરો</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" /> સાથે ટૅબના ગ્રૂપમાં જોડાઓ</translation>
 <translation id="3042097545107738107">ચાર્જિંગની ઑપ્ટિમાઇઝ કરેલી વ્યૂહરચના બદલો.</translation>
 <translation id="3043016484125065343">તમારા બુકમાર્ક જોવા માટે સાઇન ઇન કરો</translation>
@@ -3263,7 +3255,6 @@
 <translation id="3201422919974259695">ઉપલબ્ધ USB ડિવાઇસ અહીં દેખાશે.</translation>
 <translation id="3202499879214571401"><ph name="DEVICE_NAME" /> પર સ્ક્રીન કાસ્ટ કરવાનું થોભાવો</translation>
 <translation id="3202578601642193415">સૌથી નવું</translation>
-<translation id="3204648577100496185">આ ઍપ સાથે સંકળાયેલા ડેટાને આ ડિવાઇસમાંથી કાઢી નાખવામાં આવે તેમ બની શકે</translation>
 <translation id="3206289903841621620">વપરાશકર્તા શબ્દકોશ <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">તમારી તાજેતરની પ્રવૃત્તિના આધારે તમને રુચિ હોય એવી સૂચવેલી શોધ અને શૉપિંગ ડિસ્કાઉન્ટ દેખાઈ રહ્યાં છે.
         <ph name="BREAK" />
@@ -3371,7 +3362,6 @@
 <translation id="3283148363895519428">સેટઅપ ચાલુ રાખવા માટે તમારા ફોન પરની સૂચનાઓને ફૉલો કરો. ખાતરી કરો કે તમારો ફોન નજીકમાં હોય અને તેમાં બ્લૂટૂથ ચાલુ કરેલું હોય.</translation>
 <translation id="3284050785966252943">ઑટોમૅટિક રીતે ભરવાના મેટાડેટાનો પ્રીવ્યૂ</translation>
 <translation id="3285322247471302225">નવું &amp;ટૅબ</translation>
-<translation id="3285465040399788513">સેટઅપ પૂર્ણ કરવા માટે ડિવાઇસમાં પર્યાપ્ત સ્ટોરેજ નથી. સ્પેસ ખાલી કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="3285500645985761267">ગ્રૂપમાંની તમારી પ્રવૃત્તિ જોવા માટે સંબંધિત સાઇટને મંજૂરી આપો</translation>
 <translation id="328571385944182268">તમારા પાસવર્ડ સાચવીએ?</translation>
 <translation id="3289668031376215426">ઑટોમૅટિક રીતે કૅપિટલ કરવાની સુવિધા</translation>
@@ -3494,7 +3484,6 @@
 <translation id="3372602033006349389">અન્ય ડિવાઇસ પર</translation>
 <translation id="337286756654493126">તમે એપ્લિકેશનમાં ખોલો છો તે ફોલ્ડર્સ વાંચો</translation>
 <translation id="3373059063088819384">વાંચન મોડમાં ખોલો</translation>
-<translation id="3373196968211632036">Chromebook માટે Steam (બીટા) બાળકના Google એકાઉન્ટ માટે ઉપલબ્ધ નથી</translation>
 <translation id="3373701465337594448">જ્યારે ચાલુ હોય, ત્યારે તમારી રુચિઓનું અનુમાન લગાવતી હોય તેવી તમે મુલાકાત લો છો તે સાઇટની સૂચિ અહીં દેખાય છે</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />'ને '<ph name="NEW_FOLDER_TITLE" />' ખસેડ્યું.</translation>
 <translation id="3376035595160918049">ઍપ સંબંધિત અપડેટનો રિવ્યૂ કરો</translation>
@@ -3677,7 +3666,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (પસંદ કરી નથી)</translation>
 <translation id="3496689104192986836">બૅટરીનું લેવલ <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">એકત્રિત કરવા માટેના ડેટા સૉર્સ</translation>
-<translation id="3496797737329654668">ચાલો ગેમ રમીએ</translation>
 <translation id="3496995426334945408">વીડિયો ગેમ અથવા વેબ ફોર્મ જેવી ક્રિયાપ્રતિક્રિયાત્મક સુવિધાઓ બતાવવા માટે, સાઇટ સામાન્ય રીતે JavaScriptનો ઉપયોગ કરે છે</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" />નું USB ડિવાઇસ (પ્રોડક્ટ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ડૂડલ શેર કરો</translation>
@@ -3890,7 +3878,6 @@
 <translation id="3637203148990213388">વધારાના એકાઉન્ટ</translation>
 <translation id="3640347231390550691">ફિશિંગ સામે તમારા પાસવર્ડનું રક્ષણ કરો</translation>
 <translation id="364100968401221170">તમારા બધા સિંક કરેલા ડિવાઇસ અને તમારા Google એકાઉન્ટમાંથી બ્રાઉઝિંગ ડેટા ડિલીટ કરવા માટે, <ph name="BEGIN_LINK" />સાઇન ઇન કરો<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Chromebook માટે Steam (બીટા)ને અપડેટ કરવાની જરૂર છે. તમારી Chromebook ફરી શરૂ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="3641299252000913351">મૉડેમ ફર્મવેયર અપડેટની પ્રક્રિયા ચાલુ છે. ડિવાઇસને બંધ કરશો નહીં.</translation>
 <translation id="3641456520301071208">સાઇટ તમારા સ્થાનની માહિતી પૂછી શકે છે</translation>
 <translation id="3642064270296434810">હવે તમે તમારી સ્ક્રીન પર જે કંઈ પણ દેખાય તેને શોધવા માટે Google Lensનો ઉપયોગ કરો</translation>
@@ -4227,7 +4214,6 @@
 <translation id="383891835335927981">કોઈ સાઇટનું ઝૂમ વધારેલું કે ઘટાડેલું નથી</translation>
 <translation id="3839516600093027468"><ph name="HOST" />ને હંમેશા ક્લિપબોર્ડ જોવાથી બ્લૉક કરો</translation>
 <translation id="3840096463915153852">વાતચીતનો ઇતિહાસ</translation>
-<translation id="3841282988425489367">Chromebook માટે Steam (બીટા)નું સેટઅપ કરી શકતા નથી</translation>
 <translation id="3841319830220785495">ડિફૉલ્ટ તરીકે સેટ કરેલો સાહજિક અવાજ</translation>
 <translation id="3841356782900714251">સ્માર્ટ કાર્ડ રીડર</translation>
 <translation id="3841964634449506551">પાસવર્ડ અમાન્ય</translation>
@@ -4675,7 +4661,6 @@
 <translation id="4148195018520464922">તમે સાઇન ઇનની સુવિધા અમુક વપરાશકર્તાઓ પૂરતી જ મર્યાદિત રાખી શકો છો. આ સાઇન ઇન કરવાની સ્ક્રીન પરથી "વ્યક્તિ ઉમેરો"નો વિકલ્પ કાઢી નાખે છે. તમે હાલના વપરાશકર્તાઓને કાઢી પણ નાખી શકો છો.</translation>
 <translation id="4148957013307229264">ઇન્સ્ટોલ કરી રહ્યું છે...</translation>
 <translation id="4150201353443180367">ડિસ્પ્લે</translation>
-<translation id="4151449637210235443">અમને તમારા તાજેતરના ગેમપ્લે વિશે જણાવો</translation>
 <translation id="4151503145138736576">સાફ કરવા માટે કોઈ ઑફલાઇન સ્ટોરેજ નથી</translation>
 <translation id="4152011295694446843">તમને તમારા બુકમાર્ક અહીં મળશે</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ટેબ}one{# ટેબ્સ}other{# ટેબ્સ}}</translation>
@@ -4726,7 +4711,6 @@
 <translation id="4193251682249731404">વિશ્વસનીય CA</translation>
 <translation id="4193575319002689239">કાર્ડ બતાવો</translation>
 <translation id="419427585139779713">એક સમયે એક જ અક્ષર ઇનપુટ કરો</translation>
-<translation id="4195001808989442226">Chromebook (બીટા) માટે Steam ખોલી શકાતું નથી</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4195814663415092787">તમે જ્યાંથી છોડેલું ત્યાંથી ચાલુ કરો</translation>
 <translation id="4198268995694216131">વધારાની સાઇટ</translation>
@@ -4772,7 +4756,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}one{આ એક્સ્ટેન્શન મંજૂરી ધરાવતું નથી}other{કેટલાક એક્સ્ટેન્શન મંજૂરી ધરાવતા નથી}}</translation>
 <translation id="4231053948789591973">કાસ્ટ કરવાનું હાલમાં થોભાવવામાં આવ્યું છે. તમે તમારી સ્ક્રીન કોઈપણ સમયે કાસ્ટ કરવાનું ફરી શરુ કરી શકો છો કે રોકી શકો છો.</translation>
 <translation id="4231095370974836764">Google Playમાંથી તમારા <ph name="DEVICE_TYPE" /> પર ઍપ અને ગેમ ઇન્સ્ટૉલ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Chromebook માટે Steamનું સેટઅપ કરી રહ્યાં છીએ</translation>
 <translation id="4232375817808480934">Kerberosની ગોઠવણી કરો</translation>
 <translation id="4232376164796433044">પાસવર્ડ + ઑટોમૅટિક ભરવાની સુવિધા</translation>
 <translation id="4232484478444192782">તમારા Android ફોને તમારી દરેક વસ્તુની કાળજી રાખી છે. તમારું વાઇ-ફાઇ અને પાસવર્ડ તેના પર ટ્રાન્સફર કરવામાં આવી રહ્યાં છે.</translation>
@@ -5131,7 +5114,6 @@
 <translation id="4472533928615930332"><ph name="STYLE" /> શૈલીમાં, <ph name="SUBJECT" />ની <ph name="INDEX" /> છબી જનરેટ કરી</translation>
 <translation id="4472575034687746823">શરૂ કરો</translation>
 <translation id="4473559657152613417">ટૅબ પર રાઇટ ક્લિક કરો અને "નવા ગ્રૂપમાં ટૅબ ઉમેરો" પસંદ કરો</translation>
-<translation id="4473996011558324141">સમયનો અંદાજ કાઢી રહ્યાં છીએ</translation>
 <translation id="4474155171896946103">બધા ટૅબ્સ બુકમાર્ક  કરો...</translation>
 <translation id="4476198534886170024">મંજૂરી છે. <ph name="LINK_BEGIN" />સિસ્ટમનો કૅમેરાનો ઍક્સેસ<ph name="LINK_END" /> ચાલુ કરો.</translation>
 <translation id="4476590490540813026">ઍથ્લીટ</translation>
@@ -5367,7 +5349,6 @@
 <translation id="4638930039313743000">ADB ડિબગીંગ ચાલુ કરો</translation>
 <translation id="4639390152280993480">આ પેજનો સરળ બનાવેલો વ્યૂ જોવા માટે, 'વધુ ટૂલ' &gt; 'વાંચન મોડ' પર જાઓ</translation>
 <translation id="4641539339823703554">Chrome, સિસ્ટમ સમય સેટ કરવામાં અસમર્થ હતું. કૃપા કરીને નીચે સમય તપાસો અને જરૂર પડવા પર તેને ઠીક કરો.</translation>
-<translation id="4642587497923912728">Chromebook માટે Steam (બીટા) ફક્ત એ એકાઉન્ટ માટે ઉપલબ્ધ છે, જેમાં પહેલા આ Chromebookમાં સાઇન ઇન થયેલું હોય.</translation>
 <translation id="4643612240819915418">નવા ટૅબમાં વીડિયો &amp;ખોલો</translation>
 <translation id="4643833688073835173">તમારા ડિવાઇસની સ્ક્રીનની સામે કોઈ અન્ય વ્યક્તિની હાજરીની ભાળ મેળવવા માટે, તમારું Chromebook બિલ્ટ-ઇન સેન્સરનો ઉપયોગ કરે છે. બધા ડેટા પર પ્રક્રિયા તરત જ તમારા ડિવાઇસમાં કરવામાં આવે છે અને પછી ડિલીટ કરવામાં આવે છે. સેન્સરનો ડેટા ક્યારેય Googleને મોકલવામાં આવતો નથી.</translation>
 <translation id="4644205769234414680">છૂપા મોડમાં મંજૂરી આપો</translation>
@@ -6372,7 +6353,6 @@
 <translation id="5353769147530541973">નિષ્ક્રિય કરવા માટે ટૅબની સૂચિમાંથી <ph name="SITE_NAME" />ને કાઢી નાખો</translation>
 <translation id="5355099869024327351">Assistantને તમને નોટિફિકેશન બતાવવાની મંજૂરી આપે છે.</translation>
 <translation id="5355191726083956201">વિગતવાર સુરક્ષા ચાલુ છે</translation>
-<translation id="5355498626146154079">તમારે “Borealis Enabled” ફ્લૅગ ચાલુ કરવાની જરૂર છે</translation>
 <translation id="5355501370336370394">એન્ટરપ્રાઇઝ ડિવાઇસની નોંધણી કરો</translation>
 <translation id="5357010010552553606">ઑટોમૅટિક રીતે પૂર્ણ સ્ક્રીનમાં દાખલ થવાની મંજૂરી નથી</translation>
 <translation id="5359910752122114278">1 પરિણામ</translation>
@@ -6402,7 +6382,6 @@
 <translation id="5376931455988532197">ફાઇલ ખૂબ મોટી છે</translation>
 <translation id="5377367976106153749">શું કૅમેરાનો ઍક્સેસ ચાલુ કરીએ?</translation>
 <translation id="5379140238605961210">માઇક્રોફોનની ઍક્સેસને અવરોધિત કરવાનું ચાલુ રાખો</translation>
-<translation id="5380526436444479273">થોડીવાર રાહ જુઓ અને ફરી પ્રયાસ કરો</translation>
 <translation id="5382591305415226340">સમર્થિત લિંકને મેનેજ કરો</translation>
 <translation id="5384401776498845256">તમારી સાથે કોણ શેર કરી શકે</translation>
 <translation id="5385628342687007304">આ પાસવર્ડને માત્ર આ ડિવાઇસ પર સાચવેલો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.</translation>
@@ -6457,7 +6436,6 @@
 <translation id="5414198321558177633">પ્રોફાઇલની સૂચિ રિફ્રેશ કરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="5414566801737831689">તમે મુલાકાત લો છો તે વેબસાઇટ્સના આયકન્સ વાંચો</translation>
 <translation id="5414836363063783498">ચકાસી રહ્યું છે...</translation>
-<translation id="5415328625985164836">આ બીટા પ્રોગ્રામ છે. હવે તમે તમારી Chromebook પર થોડીક ગેમ રમવા માટે Steamનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="5415497281076257439">શબ્દસમૂહ</translation>
 <translation id="5415871492522952905">તમારી પાસે તમારા બધા ડિવાઇસ પર તમારો ઇતિહાસ અને ટૅબ હશે, જેથી તમે જે કરી રહ્યાં હતા તે આગળ વધારી શકો</translation>
 <translation id="5417293056300086453">આ સાઇટ સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે ઓળખકર્તાઓનો ઉપયોગ કરી શકે છે.</translation>
@@ -6900,7 +6878,6 @@
 <translation id="5727728807527375859">એક્સટેન્શન્સ, ઍપ્લિકેશન અને થીમ્સ તમારા કમ્પ્યુટરને નુકસાન પહોંચાડી શકે છે. શું તમે ખરેખર આગળ વધવા માંગો છો?</translation>
 <translation id="5728072125198221967">લિંક કરેલી Google સેવાઓ</translation>
 <translation id="5728450728039149624">સ્ક્રીન લૉકને સરળતાથી અનલૉક કરવાના Smart Lockના વિકલ્પોના સેટિંગ</translation>
-<translation id="572914206753951782">ખાતરી કરો કે તમારી Chromebook નવીનતમ વર્ઝન ધરાવતી હોય. પછી, તમારી Chromebook ફરી શરૂ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="5729712731028706266">&amp;જુઓ</translation>
 <translation id="5731247495086897348">પે&amp;સ્ટ કરો અને જાઓ</translation>
 <translation id="5733109311583381874">રૂપાંતરણના ઉમેદવારોને કસ્ટમાઇઝ કરવા માટે, વપરાશકર્તાના શબ્દકોશોમાં તમારા પોતાના શબ્દો ઉમેરો.</translation>
@@ -7322,6 +7299,7 @@ USB ડિવાઇસ</translation>
 <translation id="6011193465932186973">ફિંગરપ્રિન્ટ</translation>
 <translation id="6011308810877101166">શોધ સંબંધિત સૂચનો બહેતર બનાવો</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" /> પર લિંક મોકલી રહ્યાં છીએ</translation>
+<translation id="6013003831291591200">કાર્ય પૂર્ણ થયું</translation>
 <translation id="6013027779243312217">તમારા ઑડિયો અને વીડિયો માટે કૅપ્શન મેળવો</translation>
 <translation id="6014293228235665243">વાંચ્યા વગરના</translation>
 <translation id="6015776718598175635">તારા</translation>
@@ -8017,7 +7995,6 @@ USB ડિવાઇસ</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" આ ડિવાઇસ પર નીચે જણાવેલી ઍપ ઇન્સ્ટૉલ કરવા માગે છે:}one{"<ph name="APP_NAME" />" આ ડિવાઇસ પર નીચે જણાવેલી ઍપ ઇન્સ્ટૉલ કરવા માગે છે:}other{"<ph name="APP_NAME" />" આ ડિવાઇસ પર નીચે જણાવેલી ઍપ ઇન્સ્ટૉલ કરવા માગે છે:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" />થી સંબંધિત</translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">તમારી Chromebook ફરી શરૂ કરો અને ફરીથી પ્રયાસ કરો</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />ને ડિલીટ કરવાનું વિચારો, જેથી આ ડિવાઇસનો ઉપયોગ કરનારા અન્ય લોકો તમારા પાસવર્ડ ન જોઈ શકે</translation>
 <translation id="6512759338201777379"><ph name="MOOD" /> મૂડ ધરાવતી <ph name="SUBJECT" />ની <ph name="INDEX" /> છબી જનરેટ કરી.</translation>
 <translation id="6513247462497316522">જો તમે બીજા નેટવર્કથી કનેક્ટ નથી, તો Google Chrome મોબાઇલ ડેટાનો ઉપયોગ કરશે.</translation>
@@ -8126,7 +8103,6 @@ USB ડિવાઇસ</translation>
 <translation id="657866106756413002">નેટવર્કના સ્વાસ્થ્યનો સ્નૅપશૉટ</translation>
 <translation id="6579369886355986318">તમામ નિયંત્રણો બતાવો</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - ડેસ્કટૉપ કન્ટેન્ટ શેર કર્યું</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% પૂર્ણ</translation>
 <translation id="6580203076670148210">સ્કૅન કરવાની ઝડપ</translation>
 <translation id="6580676117087365538">તમારા બધા કમ્પ્યૂટર પર આ એક્સ્ટેન્શન મેળવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="6581356304040102696">પાસવર્ડ આયાત કરી શકાતા નથી. ફાઇલનું કદ 1 MB કરતાં ઓછું હોવું જોઈએ.</translation>
@@ -8348,7 +8324,6 @@ USB ડિવાઇસ</translation>
 <translation id="6729280095610283088">કોઈ જંગલની ઉપર ધ્રુવીય અરુણપ્રકાશના રંગની વિવિધ છટા.</translation>
 <translation id="6729493062119577923">શેર કરેલા ટૅબના ગ્રૂપની ઍક્ટિવિટી</translation>
 <translation id="6730744976532805323">તમે ટૅબ સ્વિચ કરો, છતાં વર્તમાન ટૅબને Gemini સાથે શેર કરે છે</translation>
-<translation id="6731320427842222405">આમાં થોડો સમય લાગી શકે છે</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">સરનામું</translation>
 <translation id="6737663862851963468">Kerberos ટિકિટ કાઢી નાખો</translation>
@@ -8698,7 +8673,6 @@ USB ડિવાઇસ</translation>
 <translation id="6965648386495488594">પોર્ટ</translation>
 <translation id="6965978654500191972">ઉપકરણ</translation>
 <translation id="6966831944134814478">બંધ કરો</translation>
-<translation id="6967112302799758487">Chromebook માટે Steam (બીટા)નો ઉપયોગ કરીને ઇન્સ્ટૉલ કરવામાં આવેલી કોઈપણ ઍપ અને ગેમને આ ડિવાઇસ પરથી કાઢી નાખવામાં આવશે. આ ઍપ અને ગેમ સાથે સંકળાયેલા ડેટાને પણ કાઢી નાખવામાં આવશે. અનઇન્સ્ટૉલ કરતા પહેલાં સાચવેલી ઍપ અને ગેમના ડેટાનું બૅકઅપ લેવાની ખાતરી કરો.</translation>
 <translation id="6967430741871315905">ડિવાઇસને મંજૂરી આપવામાં આવી છે કે નહીં, તે ચેક કરી શકાતું નથી</translation>
 <translation id="6968288415730398122">સ્ક્રીન લૉક ગોઠવવા માટે તમારો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6969047215179982698">'નજીકના શેર' સુવિધા બંધ કરો</translation>
@@ -8870,7 +8844,6 @@ USB ડિવાઇસ</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" />ને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7082850163410901674">Mac સિસ્ટમના સેટિંગમાં નોટિફિકેશન બંધ કરવામાં આવ્યા છે</translation>
 <translation id="7083729794572207131">સાઇટ પર તમારા અનુભવને બહેતર બનાવવા માટે સાઇટ સામાન્ય રીતે વેબ ઍપ ઇન્સ્ટૉલ કરવાનું કહે છે</translation>
-<translation id="7083774521940805477">Chromebook માટે Steam (બીટા) તમારી Chromebook પર ઉપલબ્ધ નથી.</translation>
 <translation id="7084095352418993433">Googleને આ પેજ વિશે પૂછો: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(કન્ફિગ્યુરેશન થયું નથી)</translation>
 <translation id="7086377898680121060">તેજસ્વીતા વધારો</translation>
@@ -8949,7 +8922,6 @@ USB ડિવાઇસ</translation>
 <translation id="7141844554192012199">તપાસ</translation>
 <translation id="714301620504747562">બ્રાઉઝ કરવું અને શોધવું પહેલેથી લોડ કરવાની સ્ટૅન્ડર્ડ પ્રક્રિયા કરતાં વધુ ઝડપી બને છે</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
-<translation id="7143409552554575716">ChromeOS ફ્લૅગ</translation>
 <translation id="7144363643182336710">સ્ક્રીન પર નોટિફિકેશન પૉપ-અપ થશે નહીં. તમે હજી પણ તમારી સ્ક્રીનની નીચે જમણી બાજુએ 'ખલેલ પાડશો નહીં' આઇકન પર ક્લિક કરીને નોટિફિકેશન જોઈ શકો છો.</translation>
 <translation id="7144856456372460176"><ph name="APP" /> &amp;ઇન્સ્ટૉલ કરો...</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
@@ -8960,7 +8932,6 @@ USB ડિવાઇસ</translation>
 <translation id="7152478047064750137">આ એક્સટેન્શનને કોઈ વિશિષ્ટ પરવાનગીઓની જરૂર નથી</translation>
 <translation id="7153101072880472645">ઉચ્ચ કોન્ટ્રાસ્ટ ચાલુ/બંધ છે</translation>
 <translation id="715396040729904728">લૉન્ચર + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">તમારી સમસ્યાનું વર્ણન કરો અથવા તમારો પ્રતિસાદ શેર કરો. જો શક્ય હોય, તો તમારી સમસ્યા વધુ સારી રીતે સમજી શકાય તે માટે તબક્કાવાર જણાવો.</translation>
 <translation id="7154130902455071009">તમારા શરૂઆતના પેજને આનાથી બદલો: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">બહેતર ક્વૉલિટીના વીડિયો મેળવો અને બૅટરીની આવરદામાં વધારો કરો. વીડિયો માત્ર તમારા કાસ્ટ કરવામાં સક્ષમતા ધરાવતી તમારી કોઈ સ્ક્રીન પર જ ચલાવવામાં આવશે.</translation>
 <translation id="7159695867335480590">ચલાવો/થોભો</translation>
@@ -9813,7 +9784,6 @@ USB ડિવાઇસ</translation>
 <translation id="7728668285692163452">ચૅનલ ફેરફાર પછીથી લાગુ થશે</translation>
 <translation id="7730449930968088409">તમારી સ્ક્રીનની કન્ટેન્ટ કેપ્ચર કરો</translation>
 <translation id="7730683939467795481">પેજને "<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન દ્વારા બદલવામાં આવ્યું હતું</translation>
-<translation id="7732702411411810416">તમે ઇન્ટરનેટ સાથે કનેક્ટ થયા હોવાની ખાતરી કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="773511996612364297">ઍક્સેન્ટ માટેના ચિહ્નો</translation>
 <translation id="7735558909644181051">મધ્યવર્તી સર્ટિફિકેટ</translation>
 <translation id="7736119438443237821">તમે આ ડિવાઇસ પર તમારી પાસકીનો ઍક્સેસ કાઢી નાખવા જઈ રહ્યાં છો</translation>
@@ -10012,7 +9982,6 @@ USB ડિવાઇસ</translation>
 <translation id="7871691770940645922">વર્ચ્યુઅલ બ્રેઇલ ડિસ્પ્લે</translation>
 <translation id="787268756490971083">બંધ</translation>
 <translation id="7872758299142009420">વધુ પડતા નેસ્ટ કરેલાં ગ્રૂપ છે: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">શૉર્ટકટમાં ફેરફાર કરી શકાતો નથી</translation>
 <translation id="7876243839304621966">બધું દૂર કરો</translation>
 <translation id="7877126887274043657">સમસ્યાને ઠીક કરો &amp;સિંક કરો</translation>
@@ -11665,7 +11634,6 @@ USB ડિવાઇસ</translation>
 <translation id="8983018820925880511">આ નવી પ્રોફાઇલ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" />માં ફેરફાર કરી શકે છે</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> મિનિટ માટે દરેક વ્યક્તિ તમારું ડિવાઇસ જોઈ શકશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook માટેની Steam પર આપનું સ્વાગત છે</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> દિવસ પહેલાં સક્રિય</translation>
 <translation id="8985561265504464578">ભાળ મેળવવાની મર્યાદા</translation>
 <translation id="8985661493893822002">તમારી <ph name="DEVICE_TYPE" />માં સાઇન ઇન કરવા માટે, કૃપા કરીને ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
@@ -11797,7 +11765,6 @@ USB ડિવાઇસ</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{દિવસમાં લગભગ 1 નોટિફિકેશન}one{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}other{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}}</translation>
 <translation id="9058760336383947367">પ્રિન્ટર PPD જુઓ</translation>
 <translation id="9061521313218438086">જો Chromeને તમારો કોઈ પાસવર્ડ સાર્વજનિક ડેટા ઉલ્લંઘનમાં જોવા મળે, તો જો તમે સાઇન ઇન કર્યું હોય, તો Google Password Manager તમારા માટે તમારો પાસવર્ડ બદલવાની ઑફર કરી શકે છે.</translation>
-<translation id="9061694916020926968">Chromebook માટે Steam (બીટા)નો ઉપયોગ કરવા માટે, તમારે Google એકાઉન્ટમાં સાઇન ઇન થવું જરૂરી રહેશે. સાઇન ઇન કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">નૅવિગેશન શૉર્ટકટ સાફ કરો</translation>
 <translation id="9063208415146866933">લાઇન <ph name="ERROR_LINE_START" /> થી <ph name="ERROR_LINE_END" />માં ભૂલ આવી છે</translation>

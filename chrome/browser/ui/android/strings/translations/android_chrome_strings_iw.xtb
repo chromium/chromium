@@ -239,6 +239,7 @@
 <translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
 <translation id="2004096469149679223">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שהוצמדה והתוכן בה מושתק</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
+<translation id="2024195579772565064">מחיקת מנוע החיפוש</translation>
 <translation id="2029669011553795746">ההצעה להצטרפות לקבלת טיפים נפתחה בחצי הגובה</translation>
 <translation id="2038563949887743358">הפעלה של 'בקשת אתר עבור מחשב שולחני'</translation>
 <translation id="204321170514947529">‏ל-<ph name="APP_NAME" /> יש נתונים גם ב-Chrome</translation>
@@ -556,6 +557,7 @@
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
 <translation id="3414952576877147120">גודל:</translation>
+<translation id="3417835166382867856">חיפוש כרטיסיות</translation>
 <translation id="3430670036890315772">השבתה של נעילת הפרופיל תגרום להסרת המידע השמור</translation>
 <translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן.</translation>
 <translation id="3435575784518354875">‏כדי לשמור על הגישה לסיסמאות, צריך לייצא אותן עכשיו, לעדכן את Google Play Services ואז לייבא אותן חזרה למנהל הסיסמאות של Google. <ph name="BEGIN_LINK" />לצפייה בהוראות המלאות<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6898797562238201317">‏שימוש בביטוי סיסמה משלך כדי להצפין את כל נתוני Chrome בחשבון Google</translation>
 <translation id="6900532703269623216">הגנה משופרת</translation>
+<translation id="6900654715912436255">בחרת למחוק את מנוע החיפוש הזה. להמשיך?</translation>
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6906448540340261898">‏כדאי לוודא שתמיד תהיה לך אפשרות להשתמש בסיסמאות בחשבון Google שלך</translation>
 <translation id="6908230663105268638">לאתר <ph name="SITE_NAME" /> יש הרשאה לשלוח התראות</translation>

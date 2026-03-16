@@ -842,7 +842,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="156793199942386351">Phím "<ph name="CURRENTKEY" />" đã được gán cho thao tác "<ph name="ACTION" />". Hãy nhấn phím bất kỳ để <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Bảng điều khiển JavaScript</translation>
 <translation id="1569466257325986920">Lần tới khi bạn thay đổi mật khẩu Tài khoản Google, dữ liệu cục bộ của bạn sẽ tự động được khôi phục sau khi bạn đăng nhập vào Tài khoản Google</translation>
-<translation id="1570235441606255261">Trình cài đặt Steam</translation>
 <translation id="1570604804919108255">Hiển thị thông báo</translation>
 <translation id="1570990174567554976">Đã tạo thư mục dấu trang "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="1571041387761170095">Không có mật khẩu yếu hoặc mật khẩu trùng lặp</translation>
@@ -967,7 +966,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1642299742557467312">Tệp này có thể gây hại cho thiết bị của bạn</translation>
 <translation id="1642492862748815878">Đã kết nối với <ph name="DEVICE" /> và <ph name="NUMBER_OF_DEVICES" /> thiết bị Bluetooth khác</translation>
 <translation id="1642494467033190216">Yêu cầu xóa bảo vệ rootfs và khởi động lại trước khi bật các tính năng gỡ lỗi khác.</translation>
-<translation id="1642895994345928121">Không còn đủ bộ nhớ trên thiết bị để mở ứng dụng này. Hãy giải phóng dung lượng rồi thử lại.</translation>
 <translation id="1643072738649235303">Chữ ký X9.62 ECDSA với SHA-1</translation>
 <translation id="1643921258693943800">Để dùng tính năng Chia sẻ lân cận, hãy bật Bluetooth và Wi-Fi</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
@@ -2081,7 +2079,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2390347491606624519">Không thể kết nối với proxy, vui lòng đăng nhập lại</translation>
 <translation id="2390782873446084770">Đồng bộ hóa Wi-Fi</translation>
 <translation id="2391419135980381625">Phông chữ tiêu chuẩn</translation>
-<translation id="2391805183137601570">Mở Steam</translation>
 <translation id="239185270194776190">Cuộc trò chuyện của bạn trên Gemini đang ở một cửa sổ khác. Nhấp vào vị trí bất kỳ trên bảng điều khiển bên này để di chuyển cuộc trò chuyện sang đây.</translation>
 <translation id="2392369802118427583">Kích hoạt</translation>
 <translation id="2393136602862631930">Thiết lập ứng dụng <ph name="APP_NAME" /> trên Chromebook</translation>
@@ -2163,7 +2160,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2445484935443597917">Tạo hồ sơ mới</translation>
 <translation id="2445726032315793326">Phóng to một phần</translation>
 <translation id="244641233057214044">Liên quan đến nội dung tìm kiếm của bạn</translation>
-<translation id="2447587550790814052">Giờ đây, bạn có thể sử dụng Steam dành cho Chromebook (Beta)</translation>
 <translation id="2448312741937722512">Loại</translation>
 <translation id="2448810255793562605">Tự động quét tìm tính năng Tiếp cận bằng công tắc</translation>
 <translation id="2450021089947420533">Hành trình</translation>
@@ -2190,7 +2186,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2460826998961521840">Để dùng khoá truy cập đã lưu trong Tài khoản Google của bạn</translation>
 <translation id="2461550163693930491">Không cho phép các trang web cuộn và thu phóng các thẻ được chia sẻ</translation>
 <translation id="2461593638794842577">Bạn có thể tắt chế độ cài đặt này nếu chỉ muốn lưu mật khẩu trên thiết bị này</translation>
-<translation id="2462332841984057083">Steam đang được thiết lập. Vui lòng chờ quá trình thiết lập hoàn tất.</translation>
 <translation id="2462724976360937186">ID khóa của tổ chức phát hành chứng chỉ</translation>
 <translation id="2462752602710430187">Đã thêm <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Bạn đang xem các tệp được đề xuất giúp bạn dễ dàng quay lại hoạt động gần đây nhất trong Microsoft SharePoint và OneDrive.
@@ -2245,7 +2240,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2491587035099903063">nghe thử giọng nói <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Đang chuẩn bị yêu cầu ký chứng chỉ</translation>
 <translation id="249330843868392562">Mở tùy chọn cài đặt chuyển văn bản sang lời nói</translation>
-<translation id="2494555621641843783">Không cài đặt được Steam</translation>
 <translation id="2496180316473517155">Nhật ký duyệt web</translation>
 <translation id="2496616243169085015">Nhiếp ảnh</translation>
 <translation id="2497229222757901769">Tốc độ chuột</translation>
@@ -2601,7 +2595,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="27349076983469322">Nền sáng</translation>
 <translation id="2735712963799620190">Lịch biểu</translation>
 <translation id="2737363922397526254">Thu gọn...</translation>
-<translation id="2737538893171115082">Quản trị viên của bạn đã chặn Steam dành cho Chromebook (Beta). Quản trị viên của bạn cần bật các chính sách sau:</translation>
 <translation id="2737719817922589807">&amp;Dấu trang và danh sách</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> muốn chia sẻ nội dung trên màn hình của bạn với <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Không cho phép trang web sử dụng phông chữ đã cài đặt trên thiết bị của bạn</translation>
@@ -3065,7 +3058,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3039491566278747710">Không cài đặt được chính sách ngoại tuyến trên thiết bị.</translation>
 <translation id="303955801043931176">Đã đóng thẻ</translation>
 <translation id="3040435070100611531">Thẻ và vé của bạn trong Google Wallet</translation>
-<translation id="3040982432432547149">Giúp chúng tôi cải thiện Steam dành cho Chromebook</translation>
 <translation id="304169924727249890">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Thay đổi chiến lược sạc pin được tối ưu hoá.</translation>
 <translation id="3043016484125065343">Đăng nhập để xem dấu trang của bạn</translation>
@@ -3276,7 +3268,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3201422919974259695">Các thiết bị USB có sẵn sẽ xuất hiện ở đây.</translation>
 <translation id="3202499879214571401">Tạm dừng truyền màn hình tới <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Mới nhất</translation>
-<translation id="3204648577100496185">Dữ liệu liên kết với ứng dụng này có thể bị xoá khỏi thiết bị này</translation>
 <translation id="3206289903841621620">Từ điển người dùng <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Bạn sẽ thấy các cụm từ tìm kiếm đề xuất và ưu đãi giảm giá hàng hoá mà bạn có thể quan tâm, dựa trên hoạt động gần đây của bạn.
         <ph name="BREAK" />
@@ -3384,7 +3375,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3283148363895519428">Làm theo hướng dẫn trên điện thoại để tiếp tục thiết lập. Hãy đảm bảo điện thoại của bạn đang ở gần và đã bật Bluetooth.</translation>
 <translation id="3284050785966252943">Xem trước siêu dữ liệu tự động điền</translation>
 <translation id="3285322247471302225">&amp;Tab Mới</translation>
-<translation id="3285465040399788513">Không còn đủ bộ nhớ thiết bị để hoàn tất quá trình thiết lập. Hãy giải phóng dung lượng rồi thử lại.</translation>
 <translation id="3285500645985761267">Cho phép các trang web liên quan xem hoạt động của bạn trong nhóm</translation>
 <translation id="328571385944182268">Lưu mật khẩu của bạn?</translation>
 <translation id="3289668031376215426">Tự động viết hoa</translation>
@@ -3507,7 +3497,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3372602033006349389">Trên các thiết bị khác</translation>
 <translation id="337286756654493126">Đọc thư mục mà bạn mở trong ứng dụng</translation>
 <translation id="3373059063088819384">Mở ở Chế độ đọc</translation>
-<translation id="3373196968211632036">Không sử dụng được Steam dành cho Chromebook (Beta) cho Tài khoản Google của trẻ</translation>
 <translation id="3373701465337594448">Khi chế độ cài đặt này bật, danh sách trang web bạn truy cập đoán được mối quan tâm của bạn sẽ xuất hiện ở đây</translation>
 <translation id="3374294321938930390">Đã di chuyển "<ph name="BOOKMARK_TITLE" />" vào "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3376035595160918049">Xem xét bản cập nhật ứng dụng</translation>
@@ -3690,7 +3679,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (chưa chọn)</translation>
 <translation id="3496689104192986836">Mức pin <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Nguồn dữ liệu cần thu thập</translation>
-<translation id="3496797737329654668">Cùng chơi trò chơi nào</translation>
 <translation id="3496995426334945408">Các trang web thường sử dụng JavaScript để hiển thị những tính năng tương tác, như trò chơi điện tử hoặc biểu mẫu web</translation>
 <translation id="3497501929010263034">Thiết bị USB của <ph name="VENDOR_NAME" /> (sản phẩm <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Chia sẻ Doodle</translation>
@@ -3903,7 +3891,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3637203148990213388">Tài khoản bổ sung</translation>
 <translation id="3640347231390550691">Bảo vệ mật khẩu của bạn khỏi hành vi tấn công giả mạo</translation>
 <translation id="364100968401221170">Để xoá dữ liệu duyệt web khỏi tất cả các thiết bị đã đồng bộ hoá và Tài khoản Google, hãy <ph name="BEGIN_LINK" />đăng nhập<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steam cho Chromebook (Beta) cần được cập nhật. Hãy khởi động lại Chromebook rồi thử lại.</translation>
 <translation id="3641299252000913351">Đang cập nhật chương trình cơ sở cho modem. Đừng tắt thiết bị.</translation>
 <translation id="3641456520301071208">Các trang web có thể yêu cầu thông tin vị trí của bạn</translation>
 <translation id="3642064270296434810">Giờ đây, bạn có thể sử dụng Google Ống kính để tìm thông tin về nội dung bất kỳ mà bạn thấy trên màn hình</translation>
@@ -4240,7 +4227,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="383891835335927981">Không có trang web nào được phóng to hoặc thu nhỏ</translation>
 <translation id="3839516600093027468">Luôn chặn <ph name="HOST" /> xem bảng nhớ tạm</translation>
 <translation id="3840096463915153852">Nhật ký trò chuyện</translation>
-<translation id="3841282988425489367">Không thiết lập được Steam dành cho Chromebook (Beta)</translation>
 <translation id="3841319830220785495">Giọng nói tự nhiên mặc định</translation>
 <translation id="3841356782900714251">Máy đọc thẻ thông minh</translation>
 <translation id="3841964634449506551">Mật khẩu không hợp lệ</translation>
@@ -4688,7 +4674,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4148195018520464922">Bạn có thể giới hạn sao cho chỉ một số người dùng nhất định có thể đăng nhập. Khi đó, tuỳ chọn "Thêm người" trên màn hình đăng nhập sẽ bị xoá. Bạn cũng có thể xoá người dùng hiện tại.</translation>
 <translation id="4148957013307229264">Đang cài đặt...</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
-<translation id="4151449637210235443">Hãy cho chúng tôi biết lối chơi gần đây của bạn</translation>
 <translation id="4151503145138736576">Không có bộ nhớ ngoại tuyến nào để dọn dẹp</translation>
 <translation id="4152011295694446843">Bạn sẽ thấy các dấu trang ở đây</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 thẻ}other{# thẻ}}</translation>
@@ -4739,7 +4724,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4193251682249731404">Chứng chỉ CA đáng tin cậy</translation>
 <translation id="4193575319002689239">Hiện các thẻ</translation>
 <translation id="419427585139779713">Nhập mỗi lần một âm tiết</translation>
-<translation id="4195001808989442226">Không mở được Steam dành cho Chromebook (Beta)</translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4195814663415092787">Tiếp tục từ nơi bạn đã dừng lại</translation>
 <translation id="4198268995694216131">Các trang web khác</translation>
@@ -4785,7 +4769,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Không được phép dùng tiện ích này}other{Không được phép dùng một số tiện ích}}</translation>
 <translation id="4231053948789591973">Quá trình truyền đang tạm dừng. Bạn có thể tiếp tục hoặc ngừng truyền màn hình của mình bất cứ lúc nào.</translation>
 <translation id="4231095370974836764">Cài đặt ứng dụng và trò chơi từ Google Play trên <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Thiết lập Steam dành cho Chromebook</translation>
 <translation id="4232375817808480934">Định cấu hình Kerberos</translation>
 <translation id="4232376164796433044">Mật khẩu và tính năng tự động điền</translation>
 <translation id="4232484478444192782">Điện thoại Android sẽ lo liệu tất cả cho bạn. Wi-Fi và mật khẩu của bạn đang được chuyển sang Chromebook.</translation>
@@ -5144,7 +5127,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4472533928615930332">Hình ảnh đã tạo <ph name="INDEX" /> về <ph name="SUBJECT" />, theo kiểu <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4473559657152613417">Nhấp chuột phải vào một thẻ rồi chọn "Thêm thẻ vào nhóm mới"</translation>
-<translation id="4473996011558324141">thời gian ước tính</translation>
 <translation id="4474155171896946103">Đánh dấu tất cả các thẻ...</translation>
 <translation id="4476198534886170024">Được phép. Hãy bật <ph name="LINK_BEGIN" />quyền truy cập vào camera của hệ thống<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Vận động viên</translation>
@@ -5380,7 +5362,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4638930039313743000">Bật tùy chọn gỡ lỗi ADB</translation>
 <translation id="4639390152280993480">Để truy cập chế độ xem đơn giản của trang này, hãy chuyển đến Công cụ khác &gt; Chế độ đọc</translation>
 <translation id="4641539339823703554">Chrome đã không thể đặt giờ hệ thống. Vui lòng kiểm tra giờ bên dưới và sửa giờ nếu cần thiết.</translation>
-<translation id="4642587497923912728">Steam dành cho Chromebook (Beta) chỉ dùng được cho tài khoản đăng nhập đầu tiên trên Chromebook này.</translation>
 <translation id="4643612240819915418">&amp;Mở video trong thẻ mới</translation>
 <translation id="4643833688073835173">Chromebook của bạn dùng một cảm biến tích hợp sẵn để phát hiện người ở đối diện thiết bị. Mọi dữ liệu đều được xử lý ngay trên thiết bị và sau đó sẽ được xoá. Dữ liệu cảm biến không bao giờ được gửi cho Google.</translation>
 <translation id="4644205769234414680">Cho phép ở chế độ ẩn danh</translation>
@@ -6385,7 +6366,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5353769147530541973">Xoá <ph name="SITE_NAME" /> khỏi danh sách thẻ để dừng hoạt động của thẻ</translation>
 <translation id="5355099869024327351">Cho phép Trợ lý hiển thị thông báo cho bạn</translation>
 <translation id="5355191726083956201">Tính năng Bảo vệ tăng cường đang bật</translation>
-<translation id="5355498626146154079">Bạn cần bật cờ “Borealis Enabled”</translation>
 <translation id="5355501370336370394">Đăng ký thiết bị doanh nghiệp</translation>
 <translation id="5357010010552553606">Không được tự động chuyển sang chế độ toàn màn hình</translation>
 <translation id="5359910752122114278">1 kết quả</translation>
@@ -6415,7 +6395,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5376931455988532197">Tệp quá lớn</translation>
 <translation id="5377367976106153749">Bật quyền sử dụng máy ảnh?</translation>
 <translation id="5379140238605961210">Tiếp tục chặn quyền truy cập micrô</translation>
-<translation id="5380526436444479273">Vui lòng đợi một vài phút rồi thử lại</translation>
 <translation id="5382591305415226340">Quản lý đường liên kết được hỗ trợ</translation>
 <translation id="5384401776498845256">Người có thể chia sẻ với bạn</translation>
 <translation id="5385628342687007304">Mật khẩu này chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn.</translation>
@@ -6470,7 +6449,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5414198321558177633">Đang làm mới danh sách hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="5414566801737831689">Đọc biểu tượng của các trang web bạn truy cập</translation>
 <translation id="5414836363063783498">Đang xác minh...</translation>
-<translation id="5415328625985164836">Đây là chương trình beta. Giờ đây, bạn có thể sử dụng Steam để chơi một số trò chơi trên Chromebook.</translation>
 <translation id="5415497281076257439">Cụm từ</translation>
 <translation id="5415871492522952905">Bạn sẽ thấy nhật ký và thẻ trên tất cả thiết bị để có thể tiếp tục làm những việc còn dang dở</translation>
 <translation id="5417293056300086453">Trang web này có thể dùng giá trị nhận dạng để phát nội dung được bảo vệ.</translation>
@@ -6912,7 +6890,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5727728807527375859">Tiện ích, ứng dụng và chủ đề có thể gây hại cho máy tính của bạn. Bạn có chắc chắn muốn tiếp tục không?</translation>
 <translation id="5728072125198221967">Các dịch vụ của Google được liên kết</translation>
 <translation id="5728450728039149624">Các phương thức khóa màn hình của Smart Lock</translation>
-<translation id="572914206753951782">Đảm bảo bạn đang sử dụng phiên bản Chromebook mới nhất. Sau đó, hãy khởi động lại Chromebook rồi thử lại.</translation>
 <translation id="5729712731028706266">&amp;Xem</translation>
 <translation id="5731247495086897348">Dá&amp;n và Truy cập</translation>
 <translation id="5733109311583381874">Thêm từ của chính bạn vào từ điển người dùng để tuỳ chỉnh các đề xuất chuyển đổi.</translation>
@@ -7333,6 +7310,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6011193465932186973">Vân tay</translation>
 <translation id="6011308810877101166">Cải thiện cụm từ tìm kiếm được đề xuất</translation>
 <translation id="6011908034087870826">Đang gửi đường liên kết đến <ph name="DEVICE_NAME" /></translation>
+<translation id="6013003831291591200">Đã hoàn thành việc cần làm</translation>
 <translation id="6013027779243312217">Hiển thị phụ đề cho âm thanh và video của bạn</translation>
 <translation id="6014293228235665243">Chưa đọc</translation>
 <translation id="6015776718598175635">Sao</translation>
@@ -8028,7 +8006,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" muốn cài đặt ứng dụng sau trên thiết bị này:}other{"<ph name="APP_NAME" />" muốn cài đặt các ứng dụng sau trên thiết bị này:}}</translation>
 <translation id="6508248480704296122">Liên quan tới <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Ứng dụng: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Khởi động lại Chromebook của bạn rồi thử lại</translation>
 <translation id="6511827214781912955">Bạn nên xoá <ph name="FILENAME" /> để những người khác dùng thiết bị này không xem được mật khẩu của bạn</translation>
 <translation id="6512759338201777379">Hình ảnh đã tạo <ph name="INDEX" /> về <ph name="SUBJECT" />, mang tâm trạng <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome sẽ sử dụng dữ liệu di động nếu bạn không được kết nối với mạng khác.</translation>
@@ -8137,7 +8114,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="657866106756413002">Tổng quan nhanh về tình trạng mạng</translation>
 <translation id="6579369886355986318">Hiển thị tất cả &amp;nút điều khiển</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - Đã chia sẻ nội dung trên màn hình</translation>
-<translation id="6580060371127789208">Đã hoàn thành <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6580203076670148210">Tốc độ quét</translation>
 <translation id="6580676117087365538">Để sử dụng tiện ích này trên tất cả máy tính, hãy xác minh danh tính của bạn</translation>
 <translation id="6581356304040102696">Không nhập được mật khẩu. Kích thước tệp phải nhỏ hơn 1 MB.</translation>
@@ -8357,7 +8333,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6729280095610283088">Những luồng Bắc cực quang sáng rực bên trên một khu rừng.</translation>
 <translation id="6729493062119577923">Hoạt động trong nhóm thẻ được chia sẻ</translation>
 <translation id="6730744976532805323">Chia sẻ thẻ hiện tại với Gemini, ngay cả khi bạn chuyển đổi giữa các thẻ</translation>
-<translation id="6731320427842222405">Việc này có thể mất vài phút</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Mã nhận dạng: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Địa chỉ</translation>
 <translation id="6737663862851963468">Xóa vé Kerberos</translation>
@@ -8709,7 +8684,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6965648386495488594">Cổng</translation>
 <translation id="6965978654500191972">Thiết bị</translation>
 <translation id="6966831944134814478">Tắt</translation>
-<translation id="6967112302799758487">Mọi ứng dụng và trò chơi được cài đặt bằng Steam dành cho Chromebook (Beta) sẽ bị gỡ bỏ khỏi thiết bị này. Dữ liệu liên quan đến các ứng dụng và trò chơi này cũng sẽ bị xoá. Hãy nhớ sao lưu các ứng dụng và trò chơi đã lưu trước khi gỡ cài đặt.</translation>
 <translation id="6967430741871315905">Không thể kiểm tra xem thiết bị này có được cho phép hay không</translation>
 <translation id="6968288415730398122">Nhập mật khẩu của bạn để định cấu hình khóa màn hình</translation>
 <translation id="6969047215179982698">Tắt tính năng Chia sẻ lân cận</translation>
@@ -8881,7 +8855,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> do quản trị viên của bạn quản lý</translation>
 <translation id="7082850163410901674">Thông báo hiện đang tắt trong phần System Settings (Cài đặt hệ thống) trên máy Mac</translation>
 <translation id="7083729794572207131">Các trang web thường yêu cầu cài đặt ứng dụng web để nâng cao trải nghiệm của bạn trên trang web</translation>
-<translation id="7083774521940805477">Không sử dụng được Steam dành cho Chromebook (beta) trên Chromebook của bạn.</translation>
 <translation id="7084095352418993433">Hỏi Google về trang này: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(chưa được định cấu hình)</translation>
 <translation id="7086377898680121060">Tăng độ sáng</translation>
@@ -8960,7 +8933,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7141844554192012199">Kiểm tra</translation>
 <translation id="714301620504747562">Duyệt web và tìm kiếm nhanh hơn so với chế độ tải trước tiêu chuẩn</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
-<translation id="7143409552554575716">Cờ ChromeOS</translation>
 <translation id="7144363643182336710">Thông báo sẽ không bật lên trên màn hình. Bạn vẫn có thể nhấp vào biểu tượng Không làm phiền ở dưới cùng bên phải màn hình để xem thông báo.</translation>
 <translation id="7144856456372460176">Cài đặt <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Thử lại</translation>
@@ -8971,7 +8943,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7152478047064750137">Tiện ích này không yêu cầu quyền đặc biệt</translation>
 <translation id="7153101072880472645">Bật/tắt độ tương phản cao</translation>
 <translation id="715396040729904728">trình chạy + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Chia sẻ phản hồi hoặc mô tả vấn đề của bạn. Nếu có thể, hãy nêu các bước tái hiện vấn đề của bạn.</translation>
 <translation id="7154130902455071009">Thay đổi trang chủ của bạn thành: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Tận hưởng chất lượng video tốt hơn và tiết kiệm pin. Video sẽ chỉ phát trên màn hình có hỗ trợ Cast.</translation>
 <translation id="7159695867335480590">Phát/tạm dừng</translation>
@@ -9824,7 +9795,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7728668285692163452">Thay đổi kênh sẽ được áp dụng sau</translation>
 <translation id="7730449930968088409">Chụp nội dung trên màn hình của bạn</translation>
 <translation id="7730683939467795481">Tiện ích "<ph name="EXTENSION_NAME" />" đã thay đổi trang này</translation>
-<translation id="7732702411411810416">Hãy kiểm tra để chắc chắn rằng bạn đã kết nối Internet rồi thử lại</translation>
 <translation id="773511996612364297">Dấu nhấn trọng âm</translation>
 <translation id="7735558909644181051">Chứng chỉ trung gian</translation>
 <translation id="7736119438443237821">Bạn sắp xoá quyền truy cập vào các khoá truy cập trên thiết bị này</translation>
@@ -10023,7 +9993,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7871691770940645922">Màn hình chữ nổi ảo</translation>
 <translation id="787268756490971083">Đang tắt</translation>
 <translation id="7872758299142009420">Quá nhiều nhóm con: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam dành cho Chromebook</translation>
 <translation id="7876027585589532670">Không thể chỉnh sửa lối tắt</translation>
 <translation id="7876243839304621966">Xóa tất cả</translation>
 <translation id="7877126887274043657">Khắc phục sự cố &amp;đồng bộ hoá</translation>
@@ -11680,7 +11649,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="8983018820925880511">Hồ sơ mới này sẽ do <ph name="DOMAIN" /> quản lý. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> có thể chỉnh sửa <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Tất cả mọi người sẽ nhìn thấy bạn trong <ph name="MINUTES" /> phút. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chào mừng bạn đến với Steam dành cho Chromebook</translation>
 <translation id="8985264973231822211">Hoạt động <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ngày trước</translation>
 <translation id="8985561265504464578">Ngưỡng phát hiện</translation>
 <translation id="8985661493893822002">Vui lòng kết nối Internet để đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn.</translation>
@@ -11812,7 +11780,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Khoảng 1 thông báo mỗi ngày}other{Khoảng {NUM_NOTIFICATION} thông báo mỗi ngày}}</translation>
 <translation id="9058760336383947367">Xem PPD trong máy in</translation>
 <translation id="9061521313218438086">Nếu Chrome phát hiện ra rằng một trong những mật khẩu của bạn bị lộ trong sự cố rò rỉ dữ liệu công khai, Trình quản lý mật khẩu của Google có thể đề xuất thay đổi mật khẩu khi bạn đăng nhập.</translation>
-<translation id="9061694916020926968">Bạn cần đăng nhập vào một Tài khoản Google để sử dụng Steam dành cho Chromebook (Beta). Hãy đăng nhập rồi thử lại.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Xoá lối tắt điều hướng</translation>
 <translation id="9063208415146866933">Lỗi từ dòng <ph name="ERROR_LINE_START" /> đến <ph name="ERROR_LINE_END" /></translation>

@@ -841,7 +841,6 @@
 <translation id="156793199942386351">'<ph name="ACTION" />' చర్యకు '<ph name="CURRENTKEY" />' ఇప్పటికే కేటాయించబడింది. <ph name="RESPONSE" /> కోసం ఏదైనా కీని నొక్కండి.</translation>
 <translation id="1567993339577891801">JavaScript కన్సోల్</translation>
 <translation id="1569466257325986920">మరోసారి మీ Google ఖాతా పాస్‌వర్డ్ మారినప్పుడు, మీరు మీ Google ఖాతాకు సైన్ ఇన్ చేసిన తర్వాత మీ లోకల్ డేటా ఆటోమేటిక్‌గా రికవర్ చేయబడుతుంది</translation>
-<translation id="1570235441606255261">Steam ఇన్‌స్టాలర్</translation>
 <translation id="1570604804919108255">నోటిఫికేషన్‌లను అన్‌మ్యూట్ చేయండి</translation>
 <translation id="1570990174567554976">'<ph name="BOOKMARK_TITLE" />' బుక్‌మార్క్ ఫోల్డర్ క్రియేట్ చేయబడింది.</translation>
 <translation id="1571041387761170095">బలహీనమైన లేదా వేరే చోట వాడిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
@@ -966,7 +965,6 @@
 <translation id="1642299742557467312">ఈ ఫైల్ మీ పరికరానికి హాని కలిగించవచ్చు</translation>
 <translation id="1642492862748815878"><ph name="DEVICE" />కు, ఇంకా <ph name="NUMBER_OF_DEVICES" /> ఇతర బ్లూటూత్ పరికరాలకు కనెక్ట్ చేయబడింది</translation>
 <translation id="1642494467033190216">ఇతర డీబగ్గింగ్ ఫీచ‌ర్‌లను ప్రారంభించడానికి ముందు rootfs రక్షణను తీసివేసి, పునఃప్రారంభించాలి.</translation>
-<translation id="1642895994345928121">ఈ యాప్‌ను తెరవడానికి తగినంత పరికర స్టోరేజ్ లేదు. స్పేస్‌ను ఖాళీ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1643072738649235303">SHA-1తో X9.62 ECDSA సంతకం</translation>
 <translation id="1643921258693943800">సమీప షేరింగ్‌ను ఉపయోగించడానికి, బ్లూటూత్, Wi-Fiను ఆన్ చేయండి</translation>
 <translation id="1644574205037202324">హిస్టరీ</translation>
@@ -2078,7 +2076,6 @@
 <translation id="2390347491606624519">ప్రాక్సీకి కనెక్ట్ చేయడం సాధ్యపడలేదు, దయచేసి మళ్లీ సైన్ ఇన్ చేయండి</translation>
 <translation id="2390782873446084770">Wi-Fi సింక్</translation>
 <translation id="2391419135980381625">ప్రామాణిక ఫాంట్</translation>
-<translation id="2391805183137601570">Steamను తెరవండి</translation>
 <translation id="239185270194776190">మీ Gemini సంభాషణ మరొక విండోలో ఉంది. ఈ సైడ్ ప్యానెల్‌ను ఇక్కడికి తరలించడానికి, దానిలో ఎక్కడైనా క్లిక్ చేయండి.</translation>
 <translation id="2392369802118427583">యాక్టివేట్ చేయండి</translation>
 <translation id="2393136602862631930">మీ Chromebookలో <ph name="APP_NAME" />ను సెటప్ చేయండి</translation>
@@ -2160,7 +2157,6 @@
 <translation id="2445484935443597917">కొత్త ప్రొఫైల్‌ను క్రియేట్ చేయండి</translation>
 <translation id="2445726032315793326">పాక్షిక మ్యాగ్నిఫైయర్</translation>
 <translation id="244641233057214044">మీ సెర్చ్‌కు సంబంధించినది</translation>
-<translation id="2447587550790814052">మీరు ఇప్పుడు 'Steam for Chromebook' (బీటా)ను ఉపయోగించవచ్చు</translation>
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2448810255793562605">స్విచ్ యాక్సెస్ ఆటో స్కాన్</translation>
 <translation id="2450021089947420533">Chrome హిస్టరీలో మీ యాక్టివిటీలు</translation>
@@ -2187,7 +2183,6 @@
 <translation id="2460826998961521840">మీ Google ఖాతాలో సేవ్ చేసిన పాస్-కీలను ఉపయోగించడానికి</translation>
 <translation id="2461550163693930491">షేర్ చేసిన ట్యాబ్‌లను స్క్రోల్ చేయడానికి, జూమ్ చేయడానికి సైట్‌లను అనుమతించవద్దు</translation>
 <translation id="2461593638794842577">ఈ పరికరంలో మాత్రమే మీ పాస్‌వర్డ్‌లను సేవ్ చేయడానికి మీరు ఈ సెట్టింగ్‌ను ఆఫ్ చేయవచ్చు</translation>
-<translation id="2462332841984057083">Steam ఇప్పటికే సెటప్ చేయబడుతోంది. సెటప్ పూర్తయ్యే వరకు వేచి ఉండండి.</translation>
 <translation id="2462724976360937186">సర్టిఫికెట్ అధికార కీ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> జోడించబడింది</translation>
 <translation id="2464075479326723132">Microsoft SharePoint, OneDriveలో మీ అత్యంత ఇటీవలి యాక్టివిటీని సులభంగా తిరిగి పొందడంలో మీకు సహాయపడటానికి సూచించిన ఫైళ్లు కనిపిస్తున్నాయి.
@@ -2242,7 +2237,6 @@
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> భాష కోసం ప్రివ్యూ వాయిస్</translation>
 <translation id="2492461744635776704">సర్టిఫికెట్ సైనింగ్ రిక్వెస్ట్‌ను సిద్ధం చేస్తోంది</translation>
 <translation id="249330843868392562">వచనం నుండి ప్రసంగం సెట్టింగ్‌లను తెరువు</translation>
-<translation id="2494555621641843783">Steamను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు</translation>
 <translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2496616243169085015">ఫోటోగ్రఫీ</translation>
 <translation id="2497229222757901769">మౌస్ వేగం</translation>
@@ -2599,7 +2593,6 @@
 <translation id="27349076983469322">తేలికపాటి నేపథ్యం</translation>
 <translation id="2735712963799620190">షెడ్యూల్</translation>
 <translation id="2737363922397526254">కుదించు...</translation>
-<translation id="2737538893171115082">'Steam for Chromebook' (బీటా)ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు. మీ అడ్మినిస్ట్రేటర్ ఈ పాలసీలను ఆన్ చేయాలి:</translation>
 <translation id="2737719817922589807">&amp;బుక్‌మార్క్‌లు, లిస్ట్‌లు</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> మీ స్క్రీన్ కంటెంట్‌లను <ph name="TARGET_NAME" />తో షేర్ చేయాలనుకుంటుంది.</translation>
 <translation id="2738030019664645674">మీ పరికరంలో ఇన్‌స్టాల్ చేయబడిన ఫాంట్‌లను ఉపయోగించడానికి సైట్‌లను అనుమతించకండి</translation>
@@ -3063,7 +3056,6 @@
 <translation id="3039491566278747710">పరికరంలో ఆఫ్‌లైన్ విధానాన్ని ఇన్‌స్టాల్ చేయడంలో విఫలమైంది.</translation>
 <translation id="303955801043931176">ట్యాబ్ మూసివేయబడింది</translation>
 <translation id="3040435070100611531">మీ Google Wallet పాస్‌లు</translation>
-<translation id="3040982432432547149">Chromebook కోసం Steam గేమ్‌ను మెరుగుపరచడంలో మాకు సహాయపడండి</translation>
 <translation id="304169924727249890"><ph name="OWNER_FIRST_NAME" />‌తో కలిసి ట్యాబ్ గ్రూప్‌లో చేరండి</translation>
 <translation id="3042097545107738107">ఆప్టిమైజ్ చేసిన ఛార్జింగ్ స్ట్రాటజీని మార్చండి.</translation>
 <translation id="3043016484125065343">మీ బుక్‌మార్క్‌లను చూడటం కోసం సైన్ ఇన్ చేయండి</translation>
@@ -3274,7 +3266,6 @@
 <translation id="3201422919974259695">అందుబాటులో గల USB పరికరాలు ఇక్కడ కనిపిస్తాయి.</translation>
 <translation id="3202499879214571401">స్క్రీన్‌ను <ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని పాజ్ చేయండి</translation>
 <translation id="3202578601642193415">కొత్తది</translation>
-<translation id="3204648577100496185">ఈ యాప్‌తో అనుబంధించబడిన డేటా ఈ పరికరం నుండి తీసివేయబడవచ్చు</translation>
 <translation id="3206289903841621620">యూజర్ డిక్షనరీ <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">మీ ఇటీవలి యాక్టివిటీ ఆధారంగా, మీకు ఆసక్తి ఉండే అవకాశం గల సెర్చ్ సూచనలు, షాపింగ్ డిస్కౌంట్‌లు మీకు ప్రదర్శించబడుతున్నాయి.
         <ph name="BREAK" />
@@ -3382,7 +3373,6 @@
 <translation id="3283148363895519428">మీ ఫోన్‌లోని సూచనలను ఫాలో అయ్యి, సెటప్‌ను కొనసాగించండి. మీ ఫోన్ సమీపంలో ఉందని, బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="3284050785966252943">మెటాడేటా ప్రివ్యూను ఆటోఫిల్ చేయండి</translation>
 <translation id="3285322247471302225">కొత్త &amp;టాబ్</translation>
-<translation id="3285465040399788513">సెటప్‌ను పూర్తి చేయడానికి పరికరంలో తగినంత స్టోరేజ్ లేదు. స్పేస్‌ను ఖాళీ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3285500645985761267">గ్రూప్‌లో మీ యాక్టివిటీని చూడటానికి సంబంధిత సైట్‌లను అనుమతించండి</translation>
 <translation id="328571385944182268">మీ పాస్‌వర్డ్‌లను సేవ్ చేయాలా?</translation>
 <translation id="3289668031376215426">ఆటోమెటిక్ క్యాపిటలైజేషన్</translation>
@@ -3505,7 +3495,6 @@
 <translation id="3372602033006349389">ఇతర పరికరాల్లో</translation>
 <translation id="337286756654493126">మీరు అప్లికేషన్‌లో తెరిచే ఫోల్డర్‌లను చదవండి</translation>
 <translation id="3373059063088819384">రీడింగ్ మోడ్‌లో తెరవండి</translation>
-<translation id="3373196968211632036">పిల్లల Google ఖాతాలకు 'Steam for Chromebook' (బీటా) అందుబాటులో లేదు</translation>
 <translation id="3373701465337594448">ఈ సెట్టింగ్ ఆన్‌లో ఉన్నప్పుడు, మీ ఆసక్తులను అంచనా వేసే మీరు చూసే సైట్‌ల యొక్క లిస్ట్ ఇక్కడ కనిపిస్తుంది</translation>
 <translation id="3374294321938930390">'<ph name="BOOKMARK_TITLE" />' '<ph name="NEW_FOLDER_TITLE" />'కు తరలించబడింది.</translation>
 <translation id="3376035595160918049">యాప్ అప్‌డేట్‌ను రివ్యూ చేయండి</translation>
@@ -3688,7 +3677,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (ఎంచుకోబడలేదు)</translation>
 <translation id="3496689104192986836">బ్యాటరీ స్థాయి <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">డేటాను కలెక్ట్ చేయడానికి డేటా సోర్స్‌లు</translation>
-<translation id="3496797737329654668">గేమింగ్ మొదలుపెడదాం</translation>
 <translation id="3496995426334945408">సాధారణంగా వీడియో గేమ్‌లు లేదా వెబ్ ఫారమ్‌ల వంటి ఇంటరాక్టివ్ ఫీచర్‌లను డిస్‌ప్లే చేయడానికి గాను సైట్‌లు JavaScriptను ఉపయోగిస్తాయి</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> నుండి USB పరికరం (ప్రోడక్ట్ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">డూడుల్‌ని షేర్ చేయి</translation>
@@ -3901,7 +3889,6 @@
 <translation id="3637203148990213388">అదనపు ఖాతా</translation>
 <translation id="3640347231390550691">ఫిషింగ్ నుండి మీ పాస్‌వర్డ్‌లను రక్షించుకోండి</translation>
 <translation id="364100968401221170">మీరు సింక్‌ని ఆన్ చేసి ఉంచిన పరికరాలన్నిటితో సహా, మీ Google ఖాతా నుండి బ్రౌజింగ్ డేటాను తొలగించడానికి, <ph name="BEGIN_LINK" />సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Chromebook కోసం Steamను (బీటా) అప్‌డేట్ చేయాలి. మీ Chromebookను రీస్టార్ట్ చేసి, మళ్ళీ ట్రై చేయండి.</translation>
 <translation id="3641299252000913351">మోడెమ్ ఫర్మ్‌వేర్ అప్‌డేట్ ప్రోగ్రెస్‌లో ఉంది. మీ డివైజ్‌ను ఆఫ్ చేయవద్దు.</translation>
 <translation id="3641456520301071208">సైట్‌లు మీ లొకేషన్‌ను అడగవచ్చు</translation>
 <translation id="3642064270296434810">మీరు ఇప్పుడు మీ స్క్రీన్‌పై కనిపించే దేనినైనా సెర్చ్ చేయడానికి Google Lensను ఉపయోగించవచ్చు</translation>
@@ -4238,7 +4225,6 @@
 <translation id="383891835335927981">సైట్‌లు ఏవీ దగ్గరకు లేదా దూరానికి జూమ్ చేయబడలేదు</translation>
 <translation id="3839516600093027468">క్లిప్‌బోర్డ్‌ను చూడనీయకుండా ఎల్లప్పుడూ <ph name="HOST" />ని బ్లాక్ చేయండి</translation>
 <translation id="3840096463915153852">సంభాషణ హిస్టరీ</translation>
-<translation id="3841282988425489367">'Steam for Chromebook' (బీటా)ను సెటప్ చేయడం సాధ్యపడదు</translation>
 <translation id="3841319830220785495">ఆటోమేటిక్ సహజ వాయిస్</translation>
 <translation id="3841356782900714251">స్మార్ట్ కార్డ్ రీడర్‌లు</translation>
 <translation id="3841964634449506551">పాస్‌వర్డ్ చెల్లదు</translation>
@@ -4686,7 +4672,6 @@
 <translation id="4148195018520464922">నిర్దిష్ట వ్యక్తులకు మాత్రమే సైన్ ఇన్ చేయడానికి అనుమతిని ఇవ్వగలరు. ఇది సైన్-ఇన్ స్క్రీన్‌లోని "వ్యక్తిని జోడించండి" ఆప్షన్‌ను తీసివేస్తుంది. మీరు ప్రస్తుత యూజర్‌లను కూడా తీసివేయవచ్చు.</translation>
 <translation id="4148957013307229264">వ్యవస్థాపిస్తోంది...</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
-<translation id="4151449637210235443">మీ తాజా గేమ్ ఆడే విధానం గురించి మాకు తెలియజేయండి</translation>
 <translation id="4151503145138736576">క్లీనప్ చేయడానికి ఆఫ్‌లైన్ స్టోరేజ్ లేదు</translation>
 <translation id="4152011295694446843">మీరు మీ బుక్‌మార్క్‌లను ఇక్కడ చూడవచ్చు</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
@@ -4737,7 +4722,6 @@
 <translation id="4193251682249731404">విశ్వసనీయ CA</translation>
 <translation id="4193575319002689239">కార్డ్‌లను చూపు</translation>
 <translation id="419427585139779713">ఒకసారికి ఒక అక్షరాన్ని ఇన్‌పుట్ చేస్తుంది</translation>
-<translation id="4195001808989442226">'Chromebook కోసం Steam'ను (బీటా) తెరవడం సాధ్యపడలేదు</translation>
 <translation id="4195643157523330669">కొత్త ట్యాబ్‌లో తెరువు</translation>
 <translation id="4195814663415092787">ఇంతకు ముందు ఆపిన చోట నుండే కొనసాగించండి</translation>
 <translation id="4198268995694216131">అదనపు సైట్‌లు</translation>
@@ -4783,7 +4767,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{ఈ ఎక్స్‌టెన్షన్ అనుమతించబడదు}other{కొన్ని ఎక్స్‌టెన్షన్‌లు అనుమతించబడవు}}</translation>
 <translation id="4231053948789591973">ప్రసారం చేయడం ప్రస్తుతం పాజ్ చేయబడింది. మీరు మీ స్క్రీన్‌ను ప్రసారం చేయడాన్ని ఎప్పుడైనా కొనసాగించవచ్చు లేదా ఆపివేయవచ్చు.</translation>
 <translation id="4231095370974836764">మీ <ph name="DEVICE_TYPE" />లో Google Play నుండి యాప్‌లు, గేమ్‌లను ఇన్‌స్టాల్ చేయండి. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">'Steam for Chromebook'ను సెటప్ చేస్తోంది</translation>
 <translation id="4232375817808480934">Kerberosను కాన్ఫిగర్ చేయండి</translation>
 <translation id="4232376164796433044">పాస్‌వర్డ్‌లు, ఆటోఫిల్</translation>
 <translation id="4232484478444192782">మీ Android ఫోన్ మీకు సహాయం చేస్తుంది. మీ WiFi, పాస్‌వర్డ్ బదిలీ అవుతున్నాయి.</translation>
@@ -5142,7 +5125,6 @@
 <translation id="4472533928615930332"><ph name="SUBJECT" />‌కు సంబంధించి, <ph name="STYLE" /> స్టయిల్‌లో <ph name="INDEX" />వ ఇమేజ్ జెనరేట్ చేయబడింది</translation>
 <translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4473559657152613417">ట్యాబ్‌ను కుడి క్లిక్ చేసి, "కొత్త గ్రూప్‌నకు ట్యాబ్‌ను జోడించండి" అనే ఆప్షన్‌ను ఎంచుకోండి</translation>
-<translation id="4473996011558324141">అంచనా సమయం</translation>
 <translation id="4474155171896946103">అన్ని ట్యాబ్‌లను బుక్‌మార్క్ చేయండి...</translation>
 <translation id="4476198534886170024">అనుమతించబడింది. <ph name="LINK_BEGIN" />సిస్టమ్ కెమెరా యాక్సెస్<ph name="LINK_END" />‌ను ఆన్ చేయండి.</translation>
 <translation id="4476590490540813026">అథ్లెట్</translation>
@@ -5378,7 +5360,6 @@
 <translation id="4638930039313743000">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="4639390152280993480">ఈ పేజీ యొక్క సరళీకృత వీక్షణను చూడటానికి, మరిన్ని టూల్స్ &gt; రీడింగ్ మోడ్‌కు వెళ్లండి</translation>
 <translation id="4641539339823703554">Chrome సిస్టమ్ సమయాన్ని సెట్ చేయలేకపోయింది. దయచేసి దిగువ సమయాన్ని చెక్ చేసి, అవసరమైతే సరిదిద్దండి.</translation>
-<translation id="4642587497923912728">'Steam for Chromebook' (బీటా) అనేది ఈ Chromebookలో మొదట సైన్ ఇన్ చేసిన ఖాతాకు మాత్రమే అందుబాటులో ఉంటుంది.</translation>
 <translation id="4643612240819915418">కొత్త ట్యాబ్‌లో వీడియోను &amp;తెరవండి</translation>
 <translation id="4643833688073835173">మీ పరికరం ముందు వ్యక్తులను గుర్తించడానికి మీ Chromebook బిల్ట్-ఇన్ సెన్సార్‌ను ఉపయోగిస్తుంది. మీ పరికరంలో డేటా మొత్తం వెంటనే ప్రాసెస్ చేయబడుతుంది, ఆ తర్వాత తొలగించబడుతుంది. సెన్సార్ డేటా ఎప్పుడూ Googleకు పంపబడదు.</translation>
 <translation id="4644205769234414680">అజ్ఞాత మోడ్‌లో అనుమతించండి</translation>
@@ -6382,7 +6363,6 @@
 <translation id="5353769147530541973">ఇన్‌యాక్టివ్‌గా చేయడానికి ట్యాబ్‌ల జాబితా నుండి <ph name="SITE_NAME" />‌ను తీసివేయండి</translation>
 <translation id="5355099869024327351">మీకు నోటిఫికేషన్‌లను చూపించడానికి అసిస్టెంట్‌ను అనుమతించండి</translation>
 <translation id="5355191726083956201">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
-<translation id="5355498626146154079">మీరు "బొరియాలిస్ ఎనేబుల్డ్" ఫ్లాగ్‌ను ఆన్ చేయాలి</translation>
 <translation id="5355501370336370394">ఎంటర్‌ప్రైజ్ పరికరంలో ఎన్‌రోల్ అవ్వండి</translation>
 <translation id="5357010010552553606">ఫుల్ స్క్రీన్‌లోకి ఆటోమేటిక్‌గా ప్రవేశించడానికి అనుమతించబడదు</translation>
 <translation id="5359910752122114278">1 ఫలితం</translation>
@@ -6412,7 +6392,6 @@
 <translation id="5376931455988532197">ఫైల్ చాలా పెద్దదిగా ఉంది</translation>
 <translation id="5377367976106153749">కెమెరా యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
 <translation id="5379140238605961210">మైక్రోఫోన్ యాక్సెస్‌ను బ్లాక్ చేయడాన్ని కొనసాగించండి</translation>
-<translation id="5380526436444479273">కొద్ది నిమిషాలు ఆగి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="5382591305415226340">మద్దతు గల లింక్‌లను నిర్వహించండి</translation>
 <translation id="5384401776498845256">మీకు ఎవరు షేర్ చేయవచ్చు</translation>
 <translation id="5385628342687007304">ఈ పాస్‌వర్డ్ ఈ డివైజ్‌లో మాత్రమే సేవ్ అయింది. దీన్ని మీ ఇతర డివైజ్‌ల్లో ఉపయోగించడానికి, మీ Google ఖాతాలో దీన్ని సేవ్ చేయండి.</translation>
@@ -6467,7 +6446,6 @@
 <translation id="5414198321558177633">ప్రొఫైల్ లిస్ట్‌ను రిఫ్రెష్ చేస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="5414566801737831689">మీరు సందర్శించే వెబ్‌సైట్‌ల చిహ్నాలను చదవడం</translation>
 <translation id="5414836363063783498">ధృవీకరిస్తోంది...</translation>
-<translation id="5415328625985164836">ఇది బీటా ప్రోగ్రామ్. మీరు ఇప్పుడు మీ Chromebookలో కొన్ని గేమ్‌లను ఆడటానికి Steamను ఉపయోగించవచ్చు.</translation>
 <translation id="5415497281076257439">ఫ్రేజ్</translation>
 <translation id="5415871492522952905">మీరు మీ అన్ని పరికరాలలో మీ హిస్టరీ, ట్యాబ్‌లను కలిగి ఉంటారు కాబట్టి మీరు చేస్తున్న పనిని కొనసాగించవచ్చు</translation>
 <translation id="5417293056300086453">సురక్షితమైన కంటెంట్‌ను ప్లే చేయడానికి, ఈ సైట్ ఐడెంటిఫయర్‌లను ఉపయోగించగలదు.</translation>
@@ -6909,7 +6887,6 @@
 <translation id="5727728807527375859">ఎక్స్‌టెన్షన్‌లు, యాప్‌లు మరియు థీమ్‌లు మీ కంప్యూటర్‌కు హాని కలిగించవచ్చు. మీరు కొనసాగించాలనుకుంటున్నారా?</translation>
 <translation id="5728072125198221967">లింక్ అయిన Google సర్వీస్‌లు</translation>
 <translation id="5728450728039149624">స్మార్ట్ లాక్ స్క్రీన్ యొక్క లాక్ ఆప్షన్‌లు</translation>
-<translation id="572914206753951782">మీ Chromebook తాజా వెర్షన్‌లో ఉందని నిర్ధారించుకోండి. ఆపై, మీ Chromebookను రీస్టార్ట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5729712731028706266">&amp;వీక్షణ</translation>
 <translation id="5731247495086897348">పే&amp;స్ట్ చేసి ముందుకు వెళ్ళండి</translation>
 <translation id="5733109311583381874">కన్వర్షన్ పదాలను అనుకూలంగా మార్చడానికి, యూజర్ డిక్షనరీలకు మీ సొంత పదాలను జోడించండి.</translation>
@@ -7330,6 +7307,7 @@
 <translation id="6011193465932186973">వేలిముద్ర</translation>
 <translation id="6011308810877101166">సెర్చ్ సూచనలను మెరుగుపరుస్తుంది</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" />కు లింక్‌ను పంపుతోంది</translation>
+<translation id="6013003831291591200">టాస్క్ పూర్తయింది</translation>
 <translation id="6013027779243312217">మీ ఆడియో, వీడియోకు క్యాప్షన్‌లను పొందండి</translation>
 <translation id="6014293228235665243">చదవనివి</translation>
 <translation id="6015776718598175635">నక్షత్రాలు</translation>
@@ -8025,7 +8003,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{"<ph name="APP_NAME" />" ఈ పరికరంలో కింది యాప్‌ను ఇన్‌స్టాల్ చేయాలనుకుంటోంది:}other{"<ph name="APP_NAME" />" ఈ పరికరంలో కింది యాప్‌లను ఇన్‌స్టాల్ చేయాలనుకుంటోంది:}}</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" />కు సంబంధించినది</translation>
 <translation id="6508261954199872201">యాప్: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">మీ Chromebookను రీస్టార్ట్ చేసి, మళ్ళీ ట్రై చేయండి</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />‌ను తొలగించడం గురించి ఆలోచించండి, తద్వారా ఈ డివైజ్‌ను ఉపయోగించే ఇతర వ్యక్తులు మీ పాస్‌వర్డ్‌లను చూడలేరు</translation>
 <translation id="6512759338201777379"><ph name="SUBJECT" />‌కు సంబంధించి, <ph name="MOOD" /> మూడ్‌తో <ph name="INDEX" />వ ఇమేజ్ జెనరేట్ చేయబడింది.</translation>
 <translation id="6513247462497316522">మీరు మరొక నెట్‌వర్క్‌కు కనెక్ట్ అయ్యి ఉండకపోతే, Google Chrome మొబైల్ డేటాను ఉపయోగిస్తుంది.</translation>
@@ -8134,7 +8111,6 @@
 <translation id="657866106756413002">నెట్‌వర్క్ హెల్త్ స్నాప్‌షాట్</translation>
 <translation id="6579369886355986318">అన్ని కంట్రోల్‌లను చూడండి</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - డెస్క్‌టాప్‌ కంటెంట్‌ షేర్ చేయబడింది</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% పూర్తయింది</translation>
 <translation id="6580203076670148210">స్కానింగ్ వేగం</translation>
 <translation id="6580676117087365538">మీ కంప్యూటర్‌లన్నింటిలో ఈ ఎక్స్‌టెన్షన్‌ను పొందడానికి, అది మీరేనని ధృవీకరించండి</translation>
 <translation id="6581356304040102696">పాస్‌వర్డ్‌లను దిగుమతి చేయడం సాధ్యపడలేదు. ఫైల్ సైజ్ 1 MB కన్నా తక్కువ ఉండాలి.</translation>
@@ -8354,7 +8330,6 @@
 <translation id="6729280095610283088">అడవి అంతటా, మిరుమిట్లు గొలిపే ధృవాలలో విద్యుత్ కాంతులు ఉన్న అద్భుతమైన ఇమేజ్.</translation>
 <translation id="6729493062119577923">షేర్ చేసిన ట్యాబ్ గ్రూప్ యాక్టివిటీ</translation>
 <translation id="6730744976532805323">మీరు ట్యాబ్‌లను స్విచ్ చేసినప్పటికీ, ప్రస్తుత ట్యాబ్‌లోని కంటెంట్ Geminiతో షేర్ చేయబడుతుంది</translation>
-<translation id="6731320427842222405">దీనికి కొన్ని నిమిషాలు పట్టవచ్చు</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">అడ్రస్‌</translation>
 <translation id="6737663862851963468">Kerberos టిక్కెట్‌ను తీసివేయండి</translation>
@@ -8704,7 +8679,6 @@
 <translation id="6965648386495488594">పోర్ట్</translation>
 <translation id="6965978654500191972">డివైజ్</translation>
 <translation id="6966831944134814478">ఆఫ్ చేయండి</translation>
-<translation id="6967112302799758487">'Steam for Chromebook' (బీటా)ను ఉపయోగించి ఇన్‌స్టాల్ చేసిన ఏవైనా యాప్‌లు, గేమ్‌లు ఈ పరికరం నుండి తీసివేయబడతాయి. ఈ యాప్‌లతో, గేమ్‌లతో అనుబంధించిన డేటా సైతం తీసివేయబడుతుంది. అన్‌ఇన్‌స్టాల్ చేసే ముందు సేవ్ చేసిన యాప్‌లను, గేమ్‌లను బ్యాకప్ చేయాలని నిర్ధారించుకోండి.</translation>
 <translation id="6967430741871315905">పరికరం అనుమతించబడుతుందో లేదో చెక్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="6968288415730398122">స్క్రీన్ లాక్‌ను కాన్ఫిగర్ చేయడానికి మీ పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6969047215179982698">సమీప షేరింగ్‌ను ఆఫ్ చేయండి</translation>
@@ -8876,7 +8850,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" />‌ను మీ అడ్మినిస్ట్రేటర్ మేనేజ్ చేస్తున్నారు</translation>
 <translation id="7082850163410901674">Mac సిస్టమ్ సెట్టింగ్‌లలో నోటిఫికేషన్‌లు ఆఫ్ అయ్యాయి</translation>
 <translation id="7083729794572207131">సైట్‌లు సాధారణంగా సైట్‌లో మీ ఎక్స్‌పీరియన్స్‌ను మెరుగుపరచడానికి వెబ్ యాప్‌లను ఇన్‌స్టాల్ చేయమని అడుగుతాయి</translation>
-<translation id="7083774521940805477">'Steam for Chromebook' (బీటా) అనేది మీ Chromebookలో అందుబాటులో లేదు.</translation>
 <translation id="7084095352418993433">ఈ పేజీ వివరాల గురించి Googleను అడగండి: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(కాన్ఫిగర్ చేయబడలేదు)</translation>
 <translation id="7086377898680121060">బ్రైట్‌నెస్‌ను పెంచండి</translation>
@@ -8955,7 +8928,6 @@
 <translation id="7141844554192012199">చెకప్</translation>
 <translation id="714301620504747562">స్టాండర్డ్ ప్రీలోడింగ్‌లో కంటే బ్రౌజ్ చేయడం, సెర్చ్ చేయడం మరింత వేగంగా ఉంటాయి</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
-<translation id="7143409552554575716">ChromeOS ఫ్లాగ్‌లు</translation>
 <translation id="7144363643182336710">నోటిఫికేషన్‌లు స్క్రీన్‌పై పాప్-అప్ కావు. మీరు ఇప్పటికీ మీ స్క్రీన్ దిగువున కుడి వైపున ఉన్న 'అంతరాయం కలిగించవద్దు' చిహ్నాన్ని క్లిక్ చేయడం ద్వారా నోటిఫికేషన్‌లను చూడవచ్చు.</translation>
 <translation id="7144856456372460176"><ph name="APP" />ను ఇన్‌స్టాల్ చేయండి...</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
@@ -8966,7 +8938,6 @@
 <translation id="7152478047064750137">ఈ ఎక్స్‌టెన్షన్‌కు ప్రత్యేక అనుమతులు అవసరం లేదు</translation>
 <translation id="7153101072880472645">అధిక కాంట్రాస్ట్ ఆన్/ఆఫ్</translation>
 <translation id="715396040729904728">లాంచర్ + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి. అవసరమైతే, మీ సమస్య ఎలా ఏర్పడింది అనే దానిని దశల వారిగా చేర్చండి.</translation>
 <translation id="7154130902455071009">మీ ప్రారంభ పేజీని దీనికి మార్చండి: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">మెరుగైన క్వాలిటీ గల వీడియోను పొందండి, బ్యాటరీ లైఫ్‌ను సేవ్ చేయండి. వీడియో మీ ప్రసార అనుకూల స్క్రీన్‌లో మాత్రమే ప్లే అవుతుంది.</translation>
 <translation id="7159695867335480590">ప్లే చేయండి/పాజ్ చేయండి</translation>
@@ -9819,7 +9790,6 @@
 <translation id="7728668285692163452">ఛానెల్ మార్పు తర్వాత వర్తింపజేయబడుతుంది</translation>
 <translation id="7730449930968088409">మీ స్క్రీన్ కంటెంట్‌ని క్యాప్చర్ చేయండి</translation>
 <translation id="7730683939467795481">ఈ పేజీ "<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ ద్వారా మార్చబడింది</translation>
-<translation id="7732702411411810416">మీరు ఇంటర్నెట్‌కు కనెక్ట్ అయి ఉన్నారని నిర్ధారించుకుని, మళ్లీ ట్రై చేయండి</translation>
 <translation id="773511996612364297">యాక్సెంట్ మార్క్‌లు</translation>
 <translation id="7735558909644181051">మధ్యస్థ సర్టిఫికెట్‌లు</translation>
 <translation id="7736119438443237821">మీరు ఈ పరికరంలో మీ పాస్-కీలకు యాక్సెస్‌ను తీసివేయబోతున్నారు</translation>
@@ -10018,7 +9988,6 @@
 <translation id="7871691770940645922">వర్చువల్ బ్రెయిలీ డిస్‌ప్లే</translation>
 <translation id="787268756490971083">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="7872758299142009420">చాలా ఎక్కువ Nest చేయబడిన గ్రూప్‌లు: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7876027585589532670">షార్ట్‌కట్‌ను ఎడిట్ చేయడం సాధ్యపడదు</translation>
 <translation id="7876243839304621966">అన్నీ తొలగించండి</translation>
 <translation id="7877126887274043657">సమస్యను పరిష్కరించి &amp;సింక్ చేయండి</translation>
@@ -11672,7 +11641,6 @@
 <translation id="8983018820925880511">ఈ కొత్త ప్రొఫైల్‌ను <ph name="DOMAIN" /> మేనేజ్ చేస్తుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="FILENAME" />ను <ph name="ORIGIN" /> సవరించగలదు</translation>
 <translation id="8984694057134206124">మీరు <ph name="MINUTES" /> నిమిషాల పాటు ప్రతి ఒక్కరికి కనిపిస్తారు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Chromebook కోసం ఉద్దేశించిన Steamకు స్వాగతం</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> రోజు క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="8985561265504464578">గుర్తించిన పరిమితి</translation>
 <translation id="8985661493893822002">మీ <ph name="DEVICE_TYPE" />కు సైన్ ఇన్ చేయడానికి దయచేసి ఇంటర్నెట్‌కు కనెక్ట్ చేయండి.</translation>
@@ -11804,7 +11772,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{ఒక రోజులో సుమారు 1 నోటిఫికేషన్}other{ఒక రోజులో సుమారు {NUM_NOTIFICATION} నోటిఫికేషన్‌లు}}</translation>
 <translation id="9058760336383947367">ప్రింటర్ PPDని చూడండి</translation>
 <translation id="9061521313218438086">Chrome మీ పాస్‌వర్డ్‌లలో ఒక దానిని పబ్లిక్ డేటా ఉల్లంఘనలో కనుగొంటే, Google Password Manager, మీరు సైన్ ఇన్ చేసి ఉన్నట్లయితే, మీ పాస్‌వర్డ్‌ను మార్చుకునే అవకాశాన్ని ఇవ్వగలదు.</translation>
-<translation id="9061694916020926968">'Steam for Chromebook' (బీటా)ను ఉపయోగించడానికి మీరు ఒక Google ఖాతాకు సైన్ ఇన్ చేయాలి. సైన్ ఇన్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">నావిగేషన్ షార్ట్‌కట్‌ను క్లియర్ చేయండి</translation>
 <translation id="9063208415146866933">పంక్తి <ph name="ERROR_LINE_START" /> నుండి <ph name="ERROR_LINE_END" /> వరకు ఎర్రర్</translation>

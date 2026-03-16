@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Blå</translation>
 <translation id="1557622599341396706">Vis navnet på skrivebordet</translation>
 <translation id="1569384531973824928">Dette giver alle apps og websites, der har kamera- og mikrofontilladelserne, adgang. Du skal muligvis opdatere websiden eller genstarte appen.</translation>
+<translation id="1570235441606255261">Steam-installationsprogram</translation>
 <translation id="1571697193564730395">Aktiver eller deaktiver Forstyr ikke. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Håndtag på venstre kant er valgt, flyt ved hjælp af piletasterne</translation>
 <translation id="1576623706766186887">Zoom ud, når luppen er aktiveret</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Kontaktadgang kan deaktiveres under Indstillinger &gt; Hjælpefunktioner.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheder</translation>
 <translation id="1639239467298939599">Indlæser</translation>
+<translation id="1642895994345928121">Der er ikke nok ledig lagerplads på enheden til at åbne denne app. Frigør plads, og prøv igen.</translation>
 <translation id="1647986356840967552">Forrige side</translation>
 <translation id="1651914502370159744">Åbn siden Historik</translation>
 <translation id="1668469839109562275">Indbygget VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">App- og fanegrupper</translation>
 <translation id="2386292613071805067">Markér alt på siden</translation>
 <translation id="2389423187722941333">Slå Gemini til/fra</translation>
+<translation id="2391805183137601570">Åbn Steam</translation>
 <translation id="2392659840443812875">Der er intet tilgængeligt hotspot. Sørg for, at din enhed er i nærheden, og at Bluetooth er aktiveret.</translation>
 <translation id="2397416548179033562">Vis Chrome-menuen</translation>
 <translation id="240006516586367791">Mediestyring</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Åbnet i går</translation>
 <translation id="2440978926514840421">Optagelsen af gif er udført</translation>
 <translation id="2441427462554639370">Optagelsen blev afsluttet på grund af kritisk mangel på ledig lagerplads</translation>
+<translation id="2447587550790814052">Du kan nu bruge Steam til Chromebook (beta)</translation>
 <translation id="2449089818483227734">Lavt batteriniveau</translation>
 <translation id="2450205753526923158">Screenshottilstand</translation>
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2455994958736234930">Føj www. og .com til adresselinjen, og åbn derefter websitet</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Se detaljer</translation>
+<translation id="2462332841984057083">Steam er allerede ved at blive konfigureret. Vent, indtil konfigurationen er afsluttet.</translation>
 <translation id="2465145153332031561">Batteritilstand:<ph name="BATTERY_HEALTH_PERCENTAGE" /> %, antal cyklusser <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Bekræft opløsningen</translation>
 <translation id="2475783092753560388">Indsæt <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Forhåndsvisning af <ph name="DESK_NAME" />. Aktivt skrivebord.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" blev ændret til opløsningen <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Hvis du ikke bekræfter, gendannes de tidligere indstillinger om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Deltag</translation>
+<translation id="2494555621641843783">Steam kan ikke installeres</translation>
 <translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="2499445554382787206">Menu for skrivebordsprofil. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Træge taster</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727744317940422214">Noget gik galt. Send os feedback med #bruschetta i beskrivelsen. Fejlkoden er <ph name="ERROR" />. Oprydningen mislykkedes. Du skal muligvis gøre det manuelt.</translation>
 <translation id="2727977024730340865">Tilsluttet en oplader med lav kraft. Batteriopladningen er muligvis ikke pålidelig.</translation>
+<translation id="2737538893171115082">Din administrator har blokeret Steam til Chromebook (beta). Din administrator skal aktivere disse politikker:</translation>
 <translation id="2743301740238894839">Start</translation>
 <translation id="2743387203779672305">Kopiér til udklipsholderen</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3033912566804961911">Kombiner med <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Styluspennens batteriniveau er på <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="304097922505898963">Åbn appen Key Shortcuts</translation>
+<translation id="3040982432432547149">Hjælp os med at forbedre Steam til Chromebook</translation>
 <translation id="304417730895741346">Dine fastgjorte og åbne apps er på hylden. Du kan fastgøre en app til hylden ved at højreklikke på en app eller trykke på touchpladen med to fingre.</translation>
 <translation id="3045670165536837541">Håndtag øverst til højre er valgt, flyt ved hjælp af piletasterne</translation>
 <translation id="3047761520276763270">Prøv at sige:</translation>
@@ -656,6 +664,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3181441307743005334">Genstarten kan tage lidt tid</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Forbundet til en enhed}one{Forbundet til # enhed}other{Forbundet til # enheder}}</translation>
 <translation id="3203405173652969239">Kontaktadgang blev aktiveret</translation>
+<translation id="3204648577100496185">Data, der er knyttet til denne app, fjernes muligvis fra enheden</translation>
 <translation id="3206735939915734551">Slå Caps Lock til/fra</translation>
 <translation id="3207953481422525583">Brugerindstillinger</translation>
 <translation id="3208321278970793882">App</translation>
@@ -677,6 +686,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3271554781793662131">Søg for at indsætte</translation>
 <translation id="3274634049061007184">Se din telefons apps</translation>
 <translation id="3279230909244266691">Denne proces kan tage et par minutter. Den virtuelle maskine startes.</translation>
+<translation id="3285465040399788513">Der er ikke nok ledig lagerplads på enheden til at fuldføre konfigurationen. Frigør plads, og prøv igen.</translation>
 <translation id="3289364673986435196">Menu for afbryderknappen</translation>
 <translation id="3289544412142055976">Linux-apps understøttes ikke i øjeblikket</translation>
 <translation id="3289674678944039601">Oplader via adapter</translation>
@@ -702,6 +712,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3368922792935385530">Forbundet</translation>
 <translation id="3369111525500416043">Skal snart afleveres</translation>
 <translation id="3371140690572404006">USB-C-enhed (porten foran i højre side)</translation>
+<translation id="3373196968211632036">Steam til Chromebook (beta) er ikke tilgængeligt for underordnede Google-konti</translation>
 <translation id="3375634426936648815">Forbundet</translation>
 <translation id="3386978599540877378">luppen i fuld skærm</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3477079411857374384">Ctrl-Shift-mellemrumstast</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Hylden skjules automatisk</translation>
+<translation id="3496797737329654668">Så er det tid til at spille</translation>
 <translation id="3505066820268455558">Batteriet oplader</translation>
 <translation id="3509391053705095206">Din telefon blev ikke fundet. Sørg for, at Bluetooth er aktiveret på telefonen.</translation>
 <translation id="3510164367642747937">Fremhæv musemarkør</translation>
@@ -800,6 +812,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="3633851487917460983">Åbn udklipsholderen</translation>
 <translation id="363473492175527493">Opgaven er angivet til at fokusere på: <ph name="TASK_NAME" />. Tryk på Enter for at redigere opgaven.</translation>
 <translation id="3638400994746983214">Slå privatlivsfilter til eller fra. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam til Chromebook (beta) skal opdateres. Genstart din Chromebook, og prøv igen.</translation>
 <translation id="3649256019230929621">Minimer vinduet</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3702809606464356667">Når du får vist vinduer fra det aktuelle skrivebord, kan du trykke på pil op for at få vist vinduer fra alle skriveborde</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Underholdning</translation>
+<translation id="370665806235115550">Indlæser...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> og <ph name="UNAVAILABLE_DLC_TWO" /> er ikke tilgængelige.</translation>
 <translation id="3708186454126126312">Tidligere forbundne enheder</translation>
 <translation id="3712143870407382523">Vælg et vindue til denne side</translation>
@@ -860,6 +874,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3831226344927851293">Afslut vejledningsvisning</translation>
 <translation id="383629559565718788">Vis tastaturindstillinger</translation>
 <translation id="384082539148746321">Vil du slette skabelonen?</translation>
+<translation id="3841282988425489367">Steam til Chromebook (beta) kan ikke konfigureres</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> efterfulgt af <ph name="KEY_ONE" /> eller <ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /> eller <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Der er ingen tilgængelige netværksoplysninger</translation>
 <translation id="3848526302597027234">Få adgang til følgende tilladelser:</translation>
@@ -951,6 +966,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4146671046252289537">Flyt til slutningen af ​​næste ord</translation>
 <translation id="4150201353443180367">Skærm</translation>
 <translation id="4151054805501931758">Retouchering af ansigt</translation>
+<translation id="4151449637210235443">Fortæl os om dit seneste gameplay</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % batteri tilbage (ca. <ph name="TIME_LEFT" />).
 Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4158003972857765638">Organiser på et nyt skrivebord</translation>
@@ -968,6 +984,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4192112279662688596">Eller</translation>
 <translation id="4193857202545160520">Vis klik og taster</translation>
 <translation id="4193969623755915875">Åbn "Hjælp" i appen Udforsk med "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">Steam til Chromebook (beta) kan ikke åbnes</translation>
 <translation id="4195579532193195633">Aktuel version <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Fortsæt, hvor du slap</translation>
 <translation id="4195877955194704651">Knap til automatisk klik</translation>
@@ -983,6 +1000,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installeret app, sat på pause</translation>
 <translation id="4228078597006700451">Styringselementerne er ikke konfigureret</translation>
 <translation id="4230560241506423345">Ny</translation>
+<translation id="4231231258999726714">Konfigurerer Steam til Chromebook</translation>
 <translation id="4236726631849783264">En påmindelse om foreslåede handlinger</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oversigtstilstand</translation>
@@ -1067,6 +1085,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Genstart enheden nu}=1{Genstart enheden inden for 1 sekund}one{Genstart enheden inden for # sekund}other{Genstart enheden inden for # sekunder}}</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4473489370276014885">Google Kontakter</translation>
+<translation id="4473996011558324141">estimeret tid</translation>
 <translation id="4477350412780666475">Næste nummer</translation>
 <translation id="4477751544736611934">Dette kan medføre datagebyrer.
 1 enhed er forbundet.</translation>
@@ -1108,6 +1127,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4596442969149038771"><ph name="USER" /> har delt</translation>
+<translation id="4598556348158889687">Administration af lagerplads</translation>
 <translation id="4610493115106525653">Godt output</translation>
 <translation id="4611292653554630842">Log ind</translation>
 <translation id="462160925400706389"><ph name="NAME" /> er forbundet</translation>
@@ -1117,6 +1137,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4633636853437260449">Tryk på Ctrl+W for at slette</translation>
 <translation id="4635501805800894201">{0,plural, =0{Opdater enheden til en tidligere version nu}=1{Opdater enheden til en tidligere version inden for 1 sekund}one{Opdater enheden til en tidligere version inden for # sekund}other{Opdater enheden til en tidligere version inden for # sekunder}}</translation>
 <translation id="4642092649622328492">Tag et delvist screenshot</translation>
+<translation id="4642587497923912728">Steam til Chromebook (beta) er kun tilgængeligt for den konto, der var den første til at logge ind på denne Chromebook.</translation>
 <translation id="4644727592819780893">Området er for småt til kameraet</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, anbefalet app</translation>
 <translation id="4649019912155580914">Redigeret af dig</translation>
@@ -1350,6 +1371,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5352250171825660495">Mørkt tema er aktiveret</translation>
 <translation id="5354804064646502504">Dette kan medføre datagebyrer.
 Ingen enheder er forbundet.</translation>
+<translation id="5355498626146154079">Du skal aktivere demofunktionen "Borealis Enabled"</translation>
 <translation id="5356963482258194581">Skift mellem Mørkt og Lyst tema. Højreklik på skrivebordet, og vælg Baggrund og stil.</translation>
 <translation id="536019650977002321">Din administrator tillader ikke lydoptagelse. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="5361524080961918551">Talefiler på <ph name="LANGUAGE" /> er delvist downloadet</translation>
@@ -1360,6 +1382,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5377367976106153749">Vil du aktivere kameraadgang?</translation>
 <translation id="5378450298115733949">Mere</translation>
 <translation id="5379115545237091094">For mange forsøg</translation>
+<translation id="5380526436444479273">Vent et par minutter, og prøv igen</translation>
 <translation id="5383434787520761436">Ingen Google Drev-filer</translation>
 <translation id="5391307769715781764">Vil du erstatte det gemte skrivebord?</translation>
 <translation id="5392327145184648521">Beregner batteriprocent...</translation>
@@ -1371,6 +1394,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5409208741270395213">Markér opgave som fuldført</translation>
 <translation id="5413656666631274079">Siden Indstillinger</translation>
 <translation id="5414198321558177633">Profillisten opdateres. Dette kan tage et par minutter.</translation>
+<translation id="5415328625985164836">Dette er et betaprogram. Du kan nu bruge Steam til at spille nogle spil på din Chromebook.</translation>
 <translation id="5426063383988017631">Indstillingsmenuen er lukket</translation>
 <translation id="5428899915242071344">Gå i gang med at vælge</translation>
 <translation id="5429993543155113935">Inkognitovinduer understøttes ikke i øjeblikket</translation>
@@ -1466,6 +1490,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5712132663381964774">Brug apps, der kan hjælpe dig med alt, hvad du har brug for, på din <ph name="PRODUCT_NAME" />. Du finder dine apps på applisten.</translation>
 <translation id="571295407079589142">Mobildata er slået fra</translation>
 <translation id="5727460725221669831">Hvis du har glemt din adgangskode eller ændret adgangskoden til din Google-konto for nylig, kan du prøve at gendanne denne bruger.</translation>
+<translation id="572914206753951782">Sørg for, at din Chromebook kører den nyeste version. Genstart derefter din Chromebook, og prøv igen.</translation>
 <translation id="5733630091161562207">Velkomstnotifikation</translation>
 <translation id="573413375004481890">Denne enhed kunne ikke understøtte alle dine skærme, så tilslutningen af en af dem blev fjernet</translation>
 <translation id="574392208103952083">Mellem</translation>
@@ -1713,6 +1738,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6507042703812908515">Åbn appen Key Shortcuts med "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Skift til næste tilgængelige indtastningsmetode</translation>
 <translation id="6508923215158854599">Sørg for, at din Chromebook har forbindelse til det samme Wi-Fi-netværk som din Chromecast-enhed.</translation>
+<translation id="6511607461419653612">Genstart din Chromebook, og prøv igen</translation>
 <translation id="6515727200518652613">Forbindelsen til kameraet blev afbrudt. Genopretter forbindelsen.</translation>
 <translation id="651753338596587143">Noget gik galt under installationen af DLC-afhængigheder. Prøv at genstarte. Hvis problemet fortsætter, kan du indsende feedback med #bruschetta i beskrivelsen. Fejlkoden er <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Vælg et vindue, der skal tages billede af</translation>
@@ -1738,6 +1764,7 @@ Installeret for nylig</translation>
 <translation id="6574587113394758819">Notifikationen fra <ph name="APP_TITLE" /> er skjult, fordi visningsbeskyttelse er aktiveret</translation>
 <translation id="6574622320167699133">Skærmen er oplåst af din telefon. Tryk eller klik for at åbne.</translation>
 <translation id="6578407462441924264">Uden navn</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % fuldført</translation>
 <translation id="6582012689384648647">Giv YouTube Music adgang for at få personligt tilpassede fokusplaylister</translation>
 <translation id="6582034443359256692">Beregner batteriniveau.</translation>
 <translation id="6585808820553845416">Sessionen slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Installeret for nylig</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="672609503628871915">Se de nye funktioner</translation>
 <translation id="6727969043791803658">Forbundet, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="6731320427842222405">Dette kan tage et par minutter</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kameraet og mikrofonen er i brug</translation>
@@ -1858,6 +1886,7 @@ Installeret for nylig</translation>
 <translation id="6961840794482373852">Tastaturgenvejen Alt+pil op er blevet ændret. Hvis du vil bruge tasten Side op, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+pil op.</translation>
 <translation id="696267987219125751">Automatisk zoom er deaktiveret.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Alle apps og spil, der er installeret via Steam til Chromebook (beta), fjernes fra denne enhed. Data, der er knyttet til disse apps og spil, fjernes også. Sørg for at sikkerhedskopiere gemte apps og spil, før du afinstallerer dem.</translation>
 <translation id="6972629891077993081">HID-enheder</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6980402667292348590">Insert</translation>
@@ -1889,6 +1918,7 @@ Installeret for nylig</translation>
 <translation id="7067196344162293536">Automatisk rotering</translation>
 <translation id="7076293881109082629">Login</translation>
 <translation id="7076878155205969899">Slå lyden fra</translation>
+<translation id="7083774521940805477">Steam til Chromebook (beta) er ikke tilgængeligt på din Chromebook.</translation>
 <translation id="7083848064787091821">Fokus</translation>
 <translation id="7084678090004350185">Slå hotspot til/fra. Hotspot er aktiveret, og <ph name="DEVICECOUNT" /> enheder er forbundet.</translation>
 <translation id="7086931198345821656">Denne opdatering kræver, at du powerwasher din <ph name="DEVICE_TYPE" />. Alle data vil blive slettet. Få flere oplysninger om den nyeste <ph name="SYSTEM_APP_NAME" />-opdatering.</translation>
@@ -1906,12 +1936,14 @@ Installeret for nylig</translation>
 <translation id="7130207228079676353">HØJST SANDSYNLIGT</translation>
 <translation id="7131634465328662194">Du logges automatisk ud.</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
+<translation id="7143409552554575716">ChromeOS-demofunktioner</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="7144942256906679589">Batteristatus</translation>
 <translation id="7145639536026937076">Batteriet er på <ph name="PERCENTAGE" /> % og oplades. Batterisparefunktion er aktiveret.</translation>
 <translation id="7147587499155271409">Ingen browserhistorik</translation>
 <translation id="7147657298465433425">Du kan få adgang til F-tasterne ved at trykke på fn-tasten + tasterne i øverste række</translation>
 <translation id="7149149900052329230">Administrer dine lokale filer og dine Google Drev-filer – alt sammen i appen Filer.</translation>
+<translation id="7154020516215182599">Del din feedback, eller beskriv dit problem. Medtag en vejledning i at genskabe dit problem, hvis det er muligt.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7726391492136714301">Se din telefons notifikationer og apps</translation>
 <translation id="7727952505535211425">Åbn websitet i adresselinjen på en ny fane</translation>
 <translation id="7728657226117099693">Slå Caps Lock fra</translation>
+<translation id="7732702411411810416">Sørg for, at du har forbindelse til internettet, og prøv igen</translation>
 <translation id="7742327441377685481">Ingen notifikationer</translation>
 <translation id="7748275671948949022">Fremhæv knappen til applisten på hylden</translation>
 <translation id="7749443890790263709">Det maksimale antal skriveborde er nået.</translation>
@@ -2121,6 +2154,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7866482334467279021">til</translation>
 <translation id="7870790288828963061">Der blev ikke fundet nogen terminalapps med en nyere version. Intet at opdatere. Fjern USB-stikket.</translation>
 <translation id="7872786842639831132">Fra</translation>
+<translation id="7873386145597434863">Steam til Chromebook</translation>
 <translation id="7875575368831396199">Det ser ud til, at Bluetooth er deaktiveret på din <ph name="DEVICE_TYPE" />. Aktivér Bluetooth for at bruge Telefonstyring.</translation>
 <translation id="7884446017008693258">Indstillinger for hotspot</translation>
 <translation id="7884902759927478774">Annuller fanetræk</translation>
@@ -2470,6 +2504,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8980862970816311842">Flyt et appikon ind i eller ud af en mappe i appgitteret</translation>
 <translation id="8982906748181120328">Deling tæt på</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Her er Steam til Chromebook</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> anvendes</translation>
 <translation id="8991648557324317894">Tryk på fn + hurtigindsættelse eller Shift for at annullere.</translation>
 <translation id="899350903320462459">Lås enheden op som <ph name="LOGIN_ID" /> for at udføre notifikationshandlingen</translation>
@@ -2486,6 +2521,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9047624247355796468">Åbn indstillingerne for <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth er ikke tilgængelig</translation>
 <translation id="9050999376345823055">Tryk på "." for at slippe</translation>
+<translation id="9061694916020926968">Du skal være logget ind på en Google-konto for at bruge Steam til Chromebook (beta). Log ind, og prøv igen.</translation>
 <translation id="906458777597946297">Maksimér vinduet</translation>
 <translation id="9065203028668620118">Rediger</translation>
 <translation id="9068849894565669697">Vælg farve</translation>

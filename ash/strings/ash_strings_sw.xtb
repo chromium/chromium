@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="1557622599341396706">Kuonyesha jina la eneokazi</translation>
 <translation id="1569384531973824928">Hatua hii huruhusu ufikiaji kwa ajili ya programu na tovuti zote zilizo na ruhusa za kamera na maikrofoni. Huenda ukahitaji kuonyesha upya ukurasa wa wavuti au ufunge kisha uwashe programu.</translation>
+<translation id="1570235441606255261">Kisakinishaji cha programu ya Steam</translation>
 <translation id="1571697193564730395">Washa au zima kipengele cha Usinisumbue. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Umechagua ncha ya ukingo wa kushoto, tumia vitufe vya vishale kusogeza</translation>
 <translation id="1576623706766186887">Sogeza mbali kikuzaji kikiwa kimewashwa</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1637505162081889933">Vifaa <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Inapakia</translation>
+<translation id="1642895994345928121">Hakuna hifadhi ya kutosha kwenye kifaa ili ufungue programu hii. Futa baadhi ya faili kisha ujaribu tena.</translation>
 <translation id="1647986356840967552">Ukurasa uliotangulia</translation>
 <translation id="1651914502370159744">Fungua ukurasa wa Historia</translation>
 <translation id="1668469839109562275">VPN iliyojumuishwa ndani</translation>
@@ -401,6 +403,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2383521554963939360">Vikundi vya vichupo na programu</translation>
 <translation id="2386292613071805067">Chagua kila kitu kwenye ukurasa</translation>
 <translation id="2389423187722941333">Funga au ufungue Gemini</translation>
+<translation id="2391805183137601570">Fungua programu ya Steam</translation>
 <translation id="2392659840443812875">Hakuna mtandao pepe unaopatikana. Hakikisha kuwa kifaa chako kiko karibu na umewasha Bluetooth.</translation>
 <translation id="2397416548179033562">Onyesha Menyu ya Chrome</translation>
 <translation id="240006516586367791">Vidhibiti vya maudhui</translation>
@@ -422,12 +425,14 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="243878895369688216">Ilifunguliwa jana</translation>
 <translation id="2440978926514840421">GIF imerekodiwa</translation>
 <translation id="2441427462554639370">Imeacha kurekodi kwa sababu nafasi ya kuhifadhi ya kifaa ni ndogo sana</translation>
+<translation id="2447587550790814052">Sasa unaweza kutumia programu ya Steam for Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Chaji ya betri imepungua</translation>
 <translation id="2450205753526923158">Hali ya kupiga picha ya skrini</translation>
 <translation id="2453860139492968684">Maliza</translation>
 <translation id="2455994958736234930">Weka www. na .com kwenye sehemu ya anwani, kisha ufungue tovuti</translation>
 <translation id="2456008742792828469">Kalenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Changanua</translation>
+<translation id="2462332841984057083">Programu ya Steam inawekewa mipangilio. Subiri ikamilishe kusanikinisha.</translation>
 <translation id="2465145153332031561">Muda wa kudumu kwa betri ni asilimia <ph name="BATTERY_HEALTH_PERCENTAGE" />, mara ambazo betri imechajiwa na kutumia chaji ni <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Thibitisha Ubora</translation>
 <translation id="2475783092753560388">Weka <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2486214324139475545">Onyesho la kukagua <ph name="DESK_NAME" />. Eneokazi linalotumika.</translation>
 <translation id="2486405091093637109">Ubora wa "<ph name="DISPLAY_NAME" />" umebadilishwa kuwa <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Bila kuthibitisha, mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Jiunge</translation>
+<translation id="2494555621641843783">Imeshindwa kusakinisha programu ya Steam</translation>
 <translation id="2496180316473517155">Historia ya kuvinjari</translation>
 <translation id="2499445554382787206">Menyu ya wasifu wa eneokazi. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Vitufe vya kusalia kwa muda</translation>
@@ -512,6 +518,7 @@ Vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="2727175239389218057">Jibu</translation>
 <translation id="2727744317940422214">Samahani, hitilafu imetokea. Tafadhali tuma maoni ukitumia #bruschetta katika maelezo. Msimbo wa hitilafu ni <ph name="ERROR" />. Imeshindwa kusafisha, huenda ukahitaji kufanya hivyo mwenyewe.</translation>
 <translation id="2727977024730340865">Imechomekwa katika chaja ya kawi ya chini. Huenda kuchaji kwa betri hakutakuwa kuzuri.</translation>
+<translation id="2737538893171115082">Programu ya Steam for Chromebook (Beta) imezuiwa na msimamizi wako. Msimamizi wako anahitaji kuwasha sera hizi:</translation>
 <translation id="2743301740238894839">Anza</translation>
 <translation id="2743387203779672305">Nakili kwenye ubao wa kunakili</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="3033912566804961911">Unganisha na <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Chaji ya betri ya stylus ni asilimia <ph name="PERCENTAGE" />.</translation>
 <translation id="304097922505898963">Fungua programu ya Njia za Mkato za Ufunguo</translation>
+<translation id="3040982432432547149">Tusaidie kuboresha programu ya Steam iliyo mahususi kwa Chromebook</translation>
 <translation id="304417730895741346">Programu zako ulizobandika na kufungua zipo kwenye rafu. Ili ubandike programu kwenye rafu, bofya kulia kwenye programu au uguse padi ya kugusa ukitumia vidole viwili.</translation>
 <translation id="3045670165536837541">Umechagua ncha ya juu kulia, tumia vitufe vya vishale kusogeza</translation>
 <translation id="3047761520276763270">Jaribu kusema:</translation>
@@ -656,6 +664,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="3181441307743005334">Shughuli ya kuzima kisha uwashe inaweza kuchukua muda</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Imeunganishwa kwenye kifaa kimoja}other{Imeunganishwa kwenye vifaa #}}</translation>
 <translation id="3203405173652969239">Kipengele cha Kufikia Kupitia Swichi kimewashwa</translation>
+<translation id="3204648577100496185">Data inayohusiana na programu hii inaweza kuondolewa kwenye kifaa hiki</translation>
 <translation id="3206735939915734551">Washa/zima "Caps Lock"</translation>
 <translation id="3207953481422525583">Mipangilio ya Mtumiaji</translation>
 <translation id="3208321278970793882">Programu</translation>
@@ -677,6 +686,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="3271554781793662131">Tafuta ili uweke</translation>
 <translation id="3274634049061007184">Angalia programu za simu yako</translation>
 <translation id="3279230909244266691">Huenda mchakato ukachukua dakika kadhaa. Inaanzisha kompyuta iliyo mbali.</translation>
+<translation id="3285465040399788513">Hakuna nafasi ya hifadhi ya kutosha kwenye kifaa ili kukamilisha kusakinisha. Futa baadhi ya faili ili upate nafasi kisha ujaribu tena.</translation>
 <translation id="3289364673986435196">Menyu ya kuzima au kuwasha</translation>
 <translation id="3289544412142055976">Programu za Linux haziwezi kutumika kwa sasa</translation>
 <translation id="3289674678944039601">Inachaji kupitia adapta</translation>
@@ -702,6 +712,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="3368922792935385530">Umeunganishwa</translation>
 <translation id="3369111525500416043">Unazopaswa kulipia hivi karibuni</translation>
 <translation id="3371140690572404006">Kifaa cha USB-C (mlango wa upande wa kulia mbele)</translation>
+<translation id="3373196968211632036">Programu ya Steam for Chromebook (Beta) haipatikani katika Akaunti za Google mahususi kwa ajili ya watoto</translation>
 <translation id="3375634426936648815">Imeunganishwa</translation>
 <translation id="3386978599540877378">Kikuza skrini nzima</translation>
 <translation id="3387527074123400161">Mfumo wa uendeshaji wa Chromium</translation>
@@ -739,6 +750,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rafu itajificha kiotomatiki</translation>
+<translation id="3496797737329654668">Hebu tucheze michezo ya video</translation>
 <translation id="3505066820268455558">Betri inachaji</translation>
 <translation id="3509391053705095206">Imeshindwa kupata simu yako. Hakikisha umewasha Bluetooth ya simu yako.</translation>
 <translation id="3510164367642747937">Angazia kiteuzi cha kipanya</translation>
@@ -800,6 +812,7 @@ Vinginevyo, padi ya kugusa iliyojumuishwa kwenye kifaa itawashwa tena baada ya <
 <translation id="3633851487917460983">Fungua Ubao wa Kunakili</translation>
 <translation id="363473492175527493">Jukumu la kuangazia limewekwa kuwa: <ph name="TASK_NAME" />. Bonyeza "Enter" ili ubadilishe jukumu.</translation>
 <translation id="3638400994746983214">Weka skrini ya faragha. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Unahitaji kusasisha Steam kwenye Chromebook (toleo la Beta). Zima kisha uwashe Chromebook yako na ujaribu tena.</translation>
 <translation id="3649256019230929621">Punguza dirisha</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3702809606464356667">Inaonyesha madirisha yaliyo kwenye eneokazi la sasa, bonyeza kishale cha Juu ili uonyeshe madirisha yaliyo kwenye maeneokazi yote</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Burudani</translation>
+<translation id="370665806235115550">Inapakia...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> na <ph name="UNAVAILABLE_DLC_TWO" /> havipatikani.</translation>
 <translation id="3708186454126126312">Vilivyounganishwa awali</translation>
 <translation id="3712143870407382523">Chagua dirisha la upande huu</translation>
@@ -860,6 +874,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3831226344927851293">Funga mwonekano wa mafunzo</translation>
 <translation id="383629559565718788">Onyesha mipangilio ya kibodi</translation>
 <translation id="384082539148746321">Ungependa kufuta kiolezo?</translation>
+<translation id="3841282988425489367">Imeshindwa kusakinisha programu ya Steam for Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> kisha <ph name="KEY_ONE" /> au <ph name="KEY_TWO" /> au <ph name="KEY_THREE" /> au <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Hakuna maelezo ya mtandao yanayopatikana</translation>
 <translation id="3848526302597027234">Fikia ruhusa zifuatazo:</translation>
@@ -951,6 +966,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4146671046252289537">Sogeza hadi mwisho wa neno linalofuata</translation>
 <translation id="4150201353443180367">Onyesho</translation>
 <translation id="4151054805501931758">Kuboresha picha wima</translation>
+<translation id="4151449637210235443">Tueleze kuhusu uchezaji wako wa hivi karibuni</translation>
 <translation id="4156293514828496577">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri (takribani <ph name="TIME_LEFT" />).
 Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</translation>
 <translation id="4158003972857765638">Panga katika eneokazi jipya</translation>
@@ -968,6 +984,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4192112279662688596">Au</translation>
 <translation id="4193857202545160520">Onyesha njia za mkato za mibofyo na vitufe</translation>
 <translation id="4193969623755915875">Fungua "Usaidizi" kwenye programu ya Gundua ukitumia "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">Imeshindwa kufungua Steam katika Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Toleo la sasa <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Endelea kutoka ulipoachia</translation>
 <translation id="4195877955194704651">Kitufe cha mibofyo ya kiotomatiki</translation>
@@ -983,6 +1000,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Programu Iliyosakinishwa, Imesitishwa</translation>
 <translation id="4228078597006700451">Vidhibiti havijawekewa mipangilio</translation>
 <translation id="4230560241506423345">Mpya</translation>
+<translation id="4231231258999726714">Inaweka mipangilio ya programu ya Steam for Chromebook</translation>
 <translation id="4236726631849783264">Kikumbusho kuhusu vitendo vinavyopendekezwa</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Hali ya muhtasari</translation>
@@ -1067,6 +1085,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4471432286288241507">{0,plural, =0{Sasisha kifaa sasa}=1{Sasisha kifaa ndani ya sekunde moja}other{Sasisha kifaa ndani ya sekunde #}}</translation>
 <translation id="4472575034687746823">Anza</translation>
 <translation id="4473489370276014885">Anwani kwenye Google</translation>
+<translation id="4473996011558324141">muda unaokadiriwa</translation>
 <translation id="4477350412780666475">Wimbo Unaofuata</translation>
 <translation id="4477751544736611934">Huenda ukatozwa gharama za data.
 Kifaa 1 kimeunganishwa.</translation>
@@ -1108,6 +1127,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4585337515783392668">Acha kutuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>
 <translation id="4596144739579517758">Mandhari meusi yamezimwa</translation>
 <translation id="4596442969149038771"><ph name="USER" /> aliituma</translation>
+<translation id="4598556348158889687">Udhibiti wa hifadhi</translation>
 <translation id="4610493115106525653">Matokeo mazuri</translation>
 <translation id="4611292653554630842">Ingia katika akaunti</translation>
 <translation id="462160925400706389"><ph name="NAME" /> imeunganishwa</translation>
@@ -1117,6 +1137,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4633636853437260449">Bonyeza Ctrl+W ili ufute</translation>
 <translation id="4635501805800894201">{0,plural, =0{Sasisha kifaa utumie toleo la awali sasa}=1{Sasisha kifaa utumie toleo la awali ndani ya sekunde 1}other{Sasisha kifaa utumie toleo la awali ndani ya sekunde #}}</translation>
 <translation id="4642092649622328492">Piga picha ya sehemu ya skrini</translation>
+<translation id="4642587497923912728">Programu ya Steam for Chromebook (Beta) inapatikana tu kwenye akaunti ambazo zilitumiwa kuingia katika akaunti kwenye Chromebook hii mara ya kwanza.</translation>
 <translation id="4644727592819780893">Eneo ni dogo sana kuweka onyesho la kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Pendekezo la programu</translation>
 <translation id="4649019912155580914">Uliibadilisha</translation>
@@ -1350,6 +1371,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5352250171825660495">Mandhari meusi yamewashwa</translation>
 <translation id="5354804064646502504">Huenda ukatozwa gharama za data.
 Hakuna vifaa vilivyounganishwa.</translation>
+<translation id="5355498626146154079">Unahitaji kuwasha kitia alama cha “Borealis Enabled”</translation>
 <translation id="5356963482258194581">Kubadili kati ya mandhari meusi na meupe. Bofya kulia kwenye eneo-kazi kisha uchague Mandhari na mtindo.</translation>
 <translation id="536019650977002321">Msimamizi wako haruhusu unasaji wa sauti. Wasiliana na msimamizi wako ili upate maelezo zaidi.</translation>
 <translation id="5361524080961918551">Faili za matamshi ya <ph name="LANGUAGE" /> zimepakuliwa kiasi fulani</translation>
@@ -1360,6 +1382,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5377367976106153749">Ungependa kuwasha ufikiaji wa kamera?</translation>
 <translation id="5378450298115733949">Zaidi</translation>
 <translation id="5379115545237091094">Umejaribu mara nyingi mno</translation>
+<translation id="5380526436444479273">Subiri kwa dakika chache kisha ujaribu tena</translation>
 <translation id="5383434787520761436">Hakuna faili za Hifadhi ya Google</translation>
 <translation id="5391307769715781764">Ungependa kubadilisha eneokazi lililohifadhiwa?</translation>
 <translation id="5392327145184648521">Inakokotoa asilimia ya betri...</translation>
@@ -1371,6 +1394,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5409208741270395213">Weka alama kuonyesha kuwa umekamilisha jukumu</translation>
 <translation id="5413656666631274079">Ukurasa wa mipangilio</translation>
 <translation id="5414198321558177633">Inaonyesha upya orodha ya wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
+<translation id="5415328625985164836">Huu ni mpango wa Beta. Sasa unaweza kutumia programu ya Steam kucheza baadhi ya michezo kwenye Chromebook yako.</translation>
 <translation id="5426063383988017631">Menyu ya mipangilio imefungwa</translation>
 <translation id="5428899915242071344">Anza kuchagua</translation>
 <translation id="5429993543155113935">Madirisha fiche hayawezi kutumika kwa sasa</translation>
@@ -1466,6 +1490,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="5712132663381964774">Tumia programu kufanya kila kitu unachohitaji kwenye <ph name="PRODUCT_NAME" /> yako. Unaweza kupata programu zako kwenye Kifungua Programu.</translation>
 <translation id="571295407079589142">Data ya mtandao wa simu imezimwa</translation>
 <translation id="5727460725221669831">Ikiwa ulisahau nenosiri lako au ulibadilisha nenosiri la Akaunti yako ya Google hivi karibuni, jaribu kumrejesha mtumiaji huyu.</translation>
+<translation id="572914206753951782">Hakikisha kuwa unatumia toleo jipya zaidi la Chromebook. Zima kisha uwashe Chromebook na ujaribu tena.</translation>
 <translation id="5733630091161562207">Arifa ya kukaribishwa</translation>
 <translation id="573413375004481890">Kifaa hiki kimeshindwa kutumia skrini zako zote. Kwa hivyo, skrini moja imeondolewa</translation>
 <translation id="574392208103952083">Wastani</translation>
@@ -1713,6 +1738,7 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6507042703812908515">Fungua programu ya Njia za Mkato za Ufunguo ukitumia "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Badilisha utumie mbinu inayofuata inayopatikana ya kuingiza data</translation>
 <translation id="6508923215158854599">Hakikisha kuwa Chromebook yako inatumia mtandao wa Wi-Fi unaotumika kwenye kifaa chako cha Chromecast.</translation>
+<translation id="6511607461419653612">Funga kisha ufungue Chromebook yako kisha ujaribu tena</translation>
 <translation id="6515727200518652613">Kamera imepoteza muunganisho, inajaribu kuunganisha tena.</translation>
 <translation id="651753338596587143">Samahani, hitilafu fulani imetokea wakati wa kuweka vipengele tegemezi vya DLC. Tafadhali jaribu kuzima kisha uwashe kifaa chako tena na ikiwa tatizo litaendelea, tuma maoni ukitumia #bruschetta katika maelezo. Msimbo wa hitilafu ni <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Chagua dirisha ili unase</translation>
@@ -1738,6 +1764,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6574587113394758819">Arifa ya <ph name="APP_TITLE" /> imefichwa kwa sababu kipengele cha ulinzi dhidi ya kuchungulia kimewashwa</translation>
 <translation id="6574622320167699133">Imefunguliwa kwa kutumia simu yako. Gusa au bofya ili uingie.</translation>
 <translation id="6578407462441924264">Isiyo na jina</translation>
+<translation id="6580060371127789208">Asilimia <ph name="PERCENTAGE_COMPLETE" /> imekamilika</translation>
 <translation id="6582012689384648647">Ruhusu ufikiaji wa YouTube Music ili upate orodha ya muziki wa kuongeza umakini iliyowekewa mapendeleo</translation>
 <translation id="6582034443359256692">Inakokotoa kiwango cha chaji ya betri.</translation>
 <translation id="6585808820553845416">Kipindi kitakwisha baada ya <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6723839937902243910">Nishati</translation>
 <translation id="672609503628871915">Angalia yaliyo mapya</translation>
 <translation id="6727969043791803658">Imeunganishwa, kiasi cha chaji ni <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">Huenda hii ikachukua dakika kadhaa</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera na maikrofoni zinatumika</translation>
@@ -1858,6 +1886,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6961840794482373852">Mikato ya kibodi ya Alt + Kishale cha Juu imebadilika. Ili utumie kitufe cha Page Up, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na Kishale cha Juu.</translation>
 <translation id="696267987219125751">Kipengele cha kukuza picha kiotomatiki kimezimwa.</translation>
 <translation id="6965382102122355670">Sawa</translation>
+<translation id="6967112302799758487">Programu na michezo yoyote iliyosakinishwa kwa kutumia programu ya Steam for Chromebook (Beta) itaondolewa kwenye kifaa hiki. Data inayohusiana na programu pamoja na michezo hii pia itaondolewa. Hakikisha kuwa umehifadhi nakala ya programu na michezo iliyohifadhiwa kabla ya kuondoa programu.</translation>
 <translation id="6972629891077993081">Vifaa vya HID</translation>
 <translation id="6979158407327259162">Hifadhi ya Google</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1889,6 +1918,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7067196344162293536">Zungusha kiotomatiki</translation>
 <translation id="7076293881109082629">Unaingia katika akaunti</translation>
 <translation id="7076878155205969899">Zima sauti</translation>
+<translation id="7083774521940805477">Programu ya Steam for Chromebook (beta) haipatikani kwenye Chromebook yako.</translation>
 <translation id="7083848064787091821">Kumakinika</translation>
 <translation id="7084678090004350185">Kipengele cha kuwasha au kuzima mtandao pepe. Mtandao pepe umewashwa, vifaa <ph name="DEVICECOUNT" /> vimeunganishwa.</translation>
 <translation id="7086931198345821656">Sasisho hili linahitaji utumie powerwash kwenye <ph name="DEVICE_TYPE" /> yako. Data yote itafutwa. Pata maelezo zaidi kuhusu sasisho jipya zaidi la <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7130207228079676353">UNAZOWEZA KUBOFYA SANA</translation>
 <translation id="7131634465328662194">Utaondolewa kwenye akaunti kiotomatiki.</translation>
 <translation id="7143207342074048698">Inaunganisha</translation>
+<translation id="7143409552554575716">Vitia alama vya ChromeOS</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
 <translation id="7144942256906679589">Hali ya betri</translation>
 <translation id="7145639536026937076">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri na inaendelea kuchaji. Kiokoa Betri kimewashwa.</translation>
 <translation id="7147587499155271409">Hakuna historia ya kuvinjari</translation>
 <translation id="7147657298465433425">Ili kufikia vitufe vya F, bonyeza kitufe cha fn + vitufe vya safu mlalo ya juu</translation>
 <translation id="7149149900052329230">Dhibiti faili zilizo kwenye kifaa na faili zilizo kwenye Hifadhi ya Google, zote katika programu ya Faili.</translation>
+<translation id="7154020516215182599">Shiriki maoni yako au fafanua hitilafu iliyojitokeza. Ikiwezekana, jumuisha hatua zinazosababisha kutokea kwa hitilafu hiyo.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7726391492136714301">Angalia arifa na programu za simu yako</translation>
 <translation id="7727952505535211425">Fungua tovuti kwenye sehemu ya anwani katika kichupo kipya</translation>
 <translation id="7728657226117099693">Zima Caps Lock</translation>
+<translation id="7732702411411810416">Hakikisha kuwa kifaa kimeunganishwa kwenye intaneti kisha ujaribu tena</translation>
 <translation id="7742327441377685481">Hakuna arifa</translation>
 <translation id="7748275671948949022">Angazia kitufe cha Kifungua programu kwenye rafu</translation>
 <translation id="7749443890790263709">Umefikia idadi ya juu zaidi ya violesura.</translation>
@@ -2122,6 +2155,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7866482334467279021">imewashwa</translation>
 <translation id="7870790288828963061">Hamna programu za Skrini Nzima zilizo na toleo jipya zaidi zimepatikana. Hakuna cha kusasisha. Tafadhali ondoa hifadhi ya USB.</translation>
 <translation id="7872786842639831132">Umezimwa</translation>
+<translation id="7873386145597434863">Steam kwenye Chromebook</translation>
 <translation id="7875575368831396199">Inaonekana Bluetooth imezimwa kwenye <ph name="DEVICE_TYPE" /> yako. Tafadhali washa Bluetooth ili uweze kutumia Kituo cha Kudhibiti Simu.</translation>
 <translation id="7884446017008693258">Mipangilio ya Mtandao Pepe</translation>
 <translation id="7884902759927478774">Ghairi kuburuta kichupo</translation>
@@ -2471,6 +2505,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8980862970816311842">Sogeza aikoni ya programu nje au ndani ya folda katika gridi ya programu</translation>
 <translation id="8982906748181120328">Kuonekana</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Karibu kwenye programu ya Steam iliyo mahususi kwa Chromebook</translation>
 <translation id="8990809378771970590">Unatumia <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Bonyeza kitufe cha fn na cha Kuingiza Haraka au Shift ili uache.</translation>
 <translation id="899350903320462459">Fungua kifaa kwa kuingia katika akaunti ukitumia <ph name="LOGIN_ID" /> ili utekeleze kitendo cha arifa</translation>
@@ -2487,6 +2522,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9047624247355796468">Fungua mipangilio ya <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth haipatikani</translation>
 <translation id="9050999376345823055">Bofya "." ili uachilie</translation>
+<translation id="9061694916020926968">Unahitaji kuingia katika Akaunti ya Google ili utumie programu ya Steam for Chromebook (Beta). Ingia katika akaunti kisha ujaribu tena.</translation>
 <translation id="906458777597946297">Zidisha dirisha</translation>
 <translation id="9065203028668620118">Badilisha</translation>
 <translation id="9068849894565669697">Chagua rangi</translation>

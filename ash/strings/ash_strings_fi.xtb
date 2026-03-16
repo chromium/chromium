@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="1557622599341396706">Näytä työpöydän nimi</translation>
 <translation id="1569384531973824928">Sallii pääsyn kaikille sovelluksille ja verkkosivustoille, joilla on kamera- ja mikrofonilupa. Sinun on ehkä päivitettävä verkkosivu tai käynnistettävä sovellus uudelleen.</translation>
+<translation id="1570235441606255261">Steamin asennusohjelma</translation>
 <translation id="1571697193564730395">Älä häiritse ‑tila päälle tai pois. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Valittu vasemman reunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="1576623706766186887">Loitonna, kun suurennus on päällä</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Kytkimen käytön voi laittaa pois päältä kohdassa Asetukset &gt; Esteettömyys.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> laitetta</translation>
 <translation id="1639239467298939599">Ladataan</translation>
+<translation id="1642895994345928121">Laitteen tallennustila ei riitä sovelluksen avaamiseen. Vapauta tilaa ja yritä uudelleen.</translation>
 <translation id="1647986356840967552">Edellinen sivu</translation>
 <translation id="1651914502370159744">Avaa Historia-sivu</translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Sovellus- ja välilehtiryhmät</translation>
 <translation id="2386292613071805067">Valitse kaikki sisältö sivulta</translation>
 <translation id="2389423187722941333">Laita Gemini päälle tai pois päältä</translation>
+<translation id="2391805183137601570">Avaa Steam</translation>
 <translation id="2392659840443812875">Ei hotspoteja. Varmista, että laite on lähistöllä ja Bluetooth päällä.</translation>
 <translation id="2397416548179033562">Näytä Chrome-valikko</translation>
 <translation id="240006516586367791">Mediaohjaimet</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Avattu eilen</translation>
 <translation id="2440978926514840421">GIF-tallenne otettu</translation>
 <translation id="2441427462554639370">Tallennus päättyi, koska tallennustila on erittäin vähissä</translation>
+<translation id="2447587550790814052">Voit nyt käyttää Steam for Chromebookia (beta)</translation>
 <translation id="2449089818483227734">Akku vähissä</translation>
 <translation id="2450205753526923158">Kuvakaappaustila</translation>
 <translation id="2453860139492968684">Valmis</translation>
 <translation id="2455994958736234930">Lisää www. ja .com osoitepalkkiin ja avaa verkkosivusto</translation>
 <translation id="2456008742792828469">Kalenteri, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Siirry yksityiskohtiin</translation>
+<translation id="2462332841984057083">Steamin käyttöönotto on jo aloitettu. Odota, että käyttöönotto on valmis.</translation>
 <translation id="2465145153332031561">Akun kunto <ph name="BATTERY_HEALTH_PERCENTAGE" /> %, syklien määrä <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Vahvista resoluutio</translation>
 <translation id="2475783092753560388">Lisää <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Esikatselu: <ph name="DESK_NAME" />. Aktiivinen työpöytä.</translation>
 <translation id="2486405091093637109">Näytön "<ph name="DISPLAY_NAME" />" resoluutioksi vaihdettiin <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Jos et vahvista, aiemmat asetukset palautetaan <ph name="TIMEOUT_SECONDS" /> kuluttua.</translation>
 <translation id="2487915095798731898">Liity</translation>
+<translation id="2494555621641843783">Steamia ei voi asentaa</translation>
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2499445554382787206">Työpöytäprofiilin valikko. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Päälle jäävät näppäimet</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727744317940422214">Jotain meni pieleen. Lähetä palautetta ja lisää kuvaukseen #bruschetta. Virhekoodi on <ph name="ERROR" />. Tyhjennys epäonnistui. Sinun on ehkä tehtävä se manuaalisesti.</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
+<translation id="2737538893171115082">Järjestelmänvalvoja on estänyt Steam for Chromebookin (beta). Järjestelmänvalvojan on laitettava nämä käytännöt päälle:</translation>
 <translation id="2743301740238894839">Aloita</translation>
 <translation id="2743387203779672305">Kopioi leikepöydälle</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3033912566804961911">Yhdistä <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Näyttökynän akun varaus on <ph name="PERCENTAGE" /> prosenttia.</translation>
 <translation id="304097922505898963">Avaa Key Shortcuts ‑sovellus</translation>
+<translation id="3040982432432547149">Auta meitä kehittämään Steamia Chromebookilla</translation>
 <translation id="304417730895741346">Kiinnitetyt ja avoimet sovellukset näkyvät hyllyssä. Voit kiinnittää sovelluksen hyllyyn klikkaamalla sovellusta kakkospainikkeella tai napauttamalla sitä kosketuslevyllä kahdella sormella.</translation>
 <translation id="3045670165536837541">Valittu oikean yläreunan kahva, siirry nuolinäppäimillä</translation>
 <translation id="3047761520276763270">Kokeile sanoa:</translation>
@@ -656,6 +664,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3181441307743005334">Uudelleenkäynnistys voi kestää hetken</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Yhdistetty 1 laitteeseen}other{Yhdistetty # laitteeseen}}</translation>
 <translation id="3203405173652969239">Kytkimen käyttö päällä</translation>
+<translation id="3204648577100496185">Tähän sovellukseen liittyvä data saatetaan poistaa tältä laitteelta</translation>
 <translation id="3206735939915734551">Laita Caps Lock päälle / pois päältä</translation>
 <translation id="3207953481422525583">Käyttäjäasetukset</translation>
 <translation id="3208321278970793882">Sovellus</translation>
@@ -677,6 +686,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3271554781793662131">Hae lisättäviä lähteitä</translation>
 <translation id="3274634049061007184">Katsele puhelimesi sovelluksia</translation>
 <translation id="3279230909244266691">Tämä voi kestää muutaman minuutin. Käynnistetään virtuaalikonetta.</translation>
+<translation id="3285465040399788513">Laitteen tallennustila ei riitä käyttöönoton viimeistelyyn. Vapauta tilaa ja yritä uudelleen.</translation>
 <translation id="3289364673986435196">Virtavalikko</translation>
 <translation id="3289544412142055976">Linux-sovelluksia ei tällä hetkellä tueta</translation>
 <translation id="3289674678944039601">Ladataan virtalähteen kautta</translation>
@@ -702,6 +712,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3368922792935385530">Yhdistetty</translation>
 <translation id="3369111525500416043">Määräaika pian</translation>
 <translation id="3371140690572404006">C-tyypin USB-laite (oikean sivun etummainen portti)</translation>
+<translation id="3373196968211632036">Steam for Chromebook (beta) ei ole saatavilla lasten Google-tileillä</translation>
 <translation id="3375634426936648815">Yhdistetty</translation>
 <translation id="3386978599540877378">koko näytön suurentaja</translation>
 <translation id="3387527074123400161">Chromium-käyttöjärjestelmä</translation>
@@ -739,6 +750,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3477079411857374384">Ctrl + vaihto + välilyönti</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Hylly piilotettu automaattisesti</translation>
+<translation id="3496797737329654668">Aloitetaan pelaaminen</translation>
 <translation id="3505066820268455558">Akku latautuu</translation>
 <translation id="3509391053705095206">Puhelintasi ei löydy. Varmista, että puhelimen Bluetooth-yhteys on päällä.</translation>
 <translation id="3510164367642747937">Korosta hiiren osoitin</translation>
@@ -800,6 +812,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="3633851487917460983">Avaa leikepöytä</translation>
 <translation id="363473492175527493">Tehtävä, johon keskitytään: <ph name="TASK_NAME" />. Muokkaa tehtävää painamalla Enter.</translation>
 <translation id="3638400994746983214">Yksityinen näkyvyys päälle/pois. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam for Chromebook (beta) on päivitettävä. Käynnistä Chromebook uudelleen ja yritä sitten.</translation>
 <translation id="3649256019230929621">Pienennä ikkuna</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3702809606464356667">Näytetään nykyisen työpöydän ikkunat, näytä kaikkien työpöytien ikkunat painamalla ylänuolta</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Viihde</translation>
+<translation id="370665806235115550">Ladataan...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" /> ja <ph name="UNAVAILABLE_DLC_TWO" /> eivät ole käytettävissä.</translation>
 <translation id="3708186454126126312">Aiemmin yhdistetyt</translation>
 <translation id="3712143870407382523">Valitse ikkuna tälle puolelle</translation>
@@ -860,6 +874,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3831226344927851293">Poistu ohjenäkymästä</translation>
 <translation id="383629559565718788">Näytä näppäimistöasetukset</translation>
 <translation id="384082539148746321">Poistetaanko malli?</translation>
+<translation id="3841282988425489367">Steam for Chromebookia (beta) ei voi ottaa käyttöön</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, sitten <ph name="KEY_ONE" /> tai <ph name="KEY_TWO" /> tai <ph name="KEY_THREE" /> tai <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Verkon tietoja ei saatavilla</translation>
 <translation id="3848526302597027234">Käyttää seuraavia lupia:</translation>
@@ -951,6 +966,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4146671046252289537">Siirry seuraavan sanan loppuun</translation>
 <translation id="4150201353443180367">Näyttö</translation>
 <translation id="4151054805501931758">Muotokuvan parannus</translation>
+<translation id="4151449637210235443">Kerro meille äskeisen pelin pelattavuudesta</translation>
 <translation id="4156293514828496577">Akkua jäljellä <ph name="PERCENTAGE" /> % (noin <ph name="TIME_LEFT" />).
 Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4158003972857765638">Järjestä uudella työpöydällä</translation>
@@ -968,6 +984,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4192112279662688596">tai</translation>
 <translation id="4193857202545160520">Näytä klikkaukset ja pikanäppäimet</translation>
 <translation id="4193969623755915875">Avaa Ohje Explore-sovelluksessa painamalla "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">Steam for Chromebookia (beta) ei voi avata</translation>
 <translation id="4195579532193195633">Nykyinen versio <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
 <translation id="4195877955194704651">Automaattinen klikkaus ‑painike</translation>
@@ -983,6 +1000,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, asennettu sovellus, keskeytetty</translation>
 <translation id="4228078597006700451">Säätimiä ei ole otettu käyttöön</translation>
 <translation id="4230560241506423345">Uusi</translation>
+<translation id="4231231258999726714">Otetaan Steamia käyttöön Chromebookilla</translation>
 <translation id="4236726631849783264">Muistutus ehdotetuista toiminnoista</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Yleiskatsaustila</translation>
@@ -1067,6 +1085,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Päivitä laite nyt}=1{Päivitä laite 1 sekunnin kuluessa}other{Päivitä laite # sekunnin kuluessa}}</translation>
 <translation id="4472575034687746823">Aloita</translation>
 <translation id="4473489370276014885">Google-yhteystiedot</translation>
+<translation id="4473996011558324141">arvioidaan aikaa</translation>
 <translation id="4477350412780666475">Seuraava kappale</translation>
 <translation id="4477751544736611934">Tästä voidaan periä datansiirtomaksuja.
 Yksi laite yhdistetty.</translation>
@@ -1108,6 +1127,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4585337515783392668">Lopeta suoratoisto tuntemattomaan kohteeseen</translation>
 <translation id="4596144739579517758">Tumma teema on pois päältä</translation>
 <translation id="4596442969149038771"><ph name="USER" /> jakoi</translation>
+<translation id="4598556348158889687">Tallennustilan hallinta</translation>
 <translation id="4610493115106525653">Hyvä tulos</translation>
 <translation id="4611292653554630842">Kirjaudu sisään</translation>
 <translation id="462160925400706389"><ph name="NAME" /> yhdistetty</translation>
@@ -1117,6 +1137,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4633636853437260449">Poista painamalla Ctrl + W</translation>
 <translation id="4635501805800894201">{0,plural, =0{Päivitä laite aiempaan versioon nyt}=1{Päivitä laite edelliseen versioon sekunnin kuluessa}other{Päivitä laite edelliseen versioon # sekunnin kuluessa}}</translation>
 <translation id="4642092649622328492">Ota osittainen kuvakaappaus</translation>
+<translation id="4642587497923912728">Steam for Chromebook (beta) on saatavilla vain tilillä, jolla kirjauduit ensin tälle Chromebookille.</translation>
 <translation id="4644727592819780893">Alue on liian pieni kameralle</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, sovellussuositus</translation>
 <translation id="4649019912155580914">Sinä muokkasit</translation>
@@ -1350,6 +1371,7 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="5352250171825660495">Tumma teema on päällä</translation>
 <translation id="5354804064646502504">Tästä voidaan periä datansiirtomaksuja.
 Ei liitettyjä laitteita.</translation>
+<translation id="5355498626146154079">Sinun on laitettava Borealis Enabled ‐merkintä päälle</translation>
 <translation id="5356963482258194581">Vaihda tumman ja vaalean teeman välillä. Klikkaa työpöytää kakkospainikkeella ja valitse Taustakuva ja tyyli.</translation>
 <translation id="536019650977002321">Järjestelmänvalvoja ei salli äänen tallentamista. Pyydä lisätietoa järjestelmänvalvojalta.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> puhetiedostoa ladattu osittain</translation>
@@ -1360,6 +1382,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5377367976106153749">Sallitaanko kameran käyttö?</translation>
 <translation id="5378450298115733949">Lisää</translation>
 <translation id="5379115545237091094">Liian monta yritystä</translation>
+<translation id="5380526436444479273">Odota muutama minuutti ja yritä uudelleen</translation>
 <translation id="5383434787520761436">Ei Google Drive ‑tiedostoja</translation>
 <translation id="5391307769715781764">Korvataanko tallennettu työpöytä?</translation>
 <translation id="5392327145184648521">Lasketaan akun varaustasoa…</translation>
@@ -1371,6 +1394,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5409208741270395213">Merkitse tehtävä suoritetuksi</translation>
 <translation id="5413656666631274079">Asetukset-sivu</translation>
 <translation id="5414198321558177633">Päivitetään profiililistaa. Tämä voi kestää muutaman minuutin.</translation>
+<translation id="5415328625985164836">Tämä on betaohjelma. Voit nyt pelata pelejä Chromebookilla Steamin avulla.</translation>
 <translation id="5426063383988017631">Asetusvalikko suljettu</translation>
 <translation id="5428899915242071344">Aloita valitseminen</translation>
 <translation id="5429993543155113935">Incognito-ikkunoita ei tällä hetkellä tueta</translation>
@@ -1466,6 +1490,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5712132663381964774">Sovellusten avulla <ph name="PRODUCT_NAME" /> voi tehdä kaiken tarvittavan. Löydät sovellukset käynnistysohjelmasta.</translation>
 <translation id="571295407079589142">Mobiilidata on poissa päältä</translation>
 <translation id="5727460725221669831">Jos olet unohtanut salasanasi tai vaihtanut äskettäin Google-tilisi salasanan, kokeile palauttaa kyseinen käyttäjä.</translation>
+<translation id="572914206753951782">Varmista, että Chromebookissa on uusin versio. Käynnistä Chromebook uudelleen ja yritä sitten.</translation>
 <translation id="5733630091161562207">Tervetuloilmoitus</translation>
 <translation id="573413375004481890">Tämä laite ei voinut tukea kaikkia näyttöjäsi, joten yhden yhteys on katkaistu</translation>
 <translation id="574392208103952083">Keskivahva</translation>
@@ -1713,6 +1738,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6507042703812908515">Avaa Pikanäppäimet-sovellus pikanäppäimellä "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Vaihda seuraavaan käytettävissä olevaan syöttötapaan</translation>
 <translation id="6508923215158854599">Varmista, että Chromebookisi on yhdistetty samaan Wi-Fi-verkkoon kuin Chromecast-laitteesi.</translation>
+<translation id="6511607461419653612">Käynnistä Chromebook uudelleen ja yritä sitten</translation>
 <translation id="6515727200518652613">Kameraa ei löydy, yritetään yhdistää uudelleen.</translation>
 <translation id="651753338596587143">DLC-riippuvuuksien asennuksessa tapahtui virhe. Kokeile käynnistää laite uudelleen. Jos ongelma ei ratkea, lähetä palautetta ja lisää kuvaukseen #bruschetta. Virhekoodi on <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Valitse ikkuna kuvakaappausta varten</translation>
@@ -1738,6 +1764,7 @@ Uusi asennus</translation>
 <translation id="6574587113394758819">Ilmoitus (<ph name="APP_TITLE" />) on piilotettu, koska urkinnan esto on päällä</translation>
 <translation id="6574622320167699133">Lukitus avattu puhelimella. Avaa napauttamalla tai klikkaamalla.</translation>
 <translation id="6578407462441924264">Nimetön</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % asennettu</translation>
 <translation id="6582012689384648647">Salli pääsy YouTube Musiciin, niin saat personoituja keskittymiseen tarkoitettuja soittolistoja</translation>
 <translation id="6582034443359256692">Lasketaan akun varaustasoa.</translation>
 <translation id="6585808820553845416">Istunnon loppumiseen on <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Uusi asennus</translation>
 <translation id="6723839937902243910">Virta</translation>
 <translation id="672609503628871915">Uudet ominaisuudet</translation>
 <translation id="6727969043791803658">Yhdistetty, akun taso <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6731320427842222405">Tämä saattaa kestää muutaman minuutin</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera ja mikrofoni käytössä</translation>
@@ -1858,6 +1886,7 @@ Uusi asennus</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
 <translation id="696267987219125751">Kameran kehystys on pois päältä.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Steamin for Chromebookin (beta) kautta asennetut sovellukset ja pelit poistetaan tältä laitteelta. Myös näihin sovelluksiin ja peleihin liittyvä data poistetaan. Muista varmuuskopioida tallennetut sovellukset ja pelit ennen asennuksen poistamista.</translation>
 <translation id="6972629891077993081">HID-laitteet</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">lisää</translation>
@@ -1889,6 +1918,7 @@ Uusi asennus</translation>
 <translation id="7067196344162293536">Autom.kierto</translation>
 <translation id="7076293881109082629">Kirjautuminen</translation>
 <translation id="7076878155205969899">Mykistä ääni</translation>
+<translation id="7083774521940805477">Steam for Chromebook (beta) ei ole saatavilla Chromebookillasi.</translation>
 <translation id="7083848064787091821">Keskittymistila</translation>
 <translation id="7084678090004350185">Laita hotspot päälle tai pois päältä. Hotspot on päällä, ja siihen on yhdistetty <ph name="DEVICECOUNT" /> laitetta.</translation>
 <translation id="7086931198345821656">Päivitys edellyttää laitteen (<ph name="DEVICE_TYPE" />) powerwashia. Kaikki data poistetaan. Lue lisää uusimmasta päivityksestä: <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1906,12 +1936,14 @@ Uusi asennus</translation>
 <translation id="7130207228079676353">TODENNÄKÖISIMMÄT</translation>
 <translation id="7131634465328662194">Sinut kirjataan automaattisesti ulos.</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
+<translation id="7143409552554575716">ChromeOS-merkinnät</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
 <translation id="7144942256906679589">Akun tila</translation>
 <translation id="7145639536026937076">Akkua ladataan, varaus nyt <ph name="PERCENTAGE" /> %. Virransäästö on päällä.</translation>
 <translation id="7147587499155271409">Ei selaushistoriaa</translation>
 <translation id="7147657298465433425">Jos haluat käyttää F-näppäimiä, paina fn-näppäintä ja ylärivin näppäimiä</translation>
 <translation id="7149149900052329230">Hallinnoi paikallisia tiedostoja ja Google Drive ‐tiedostoja Tiedostot-sovelluksessa.</translation>
+<translation id="7154020516215182599">Jaa palautteesi tai kerro ongelmastasi. Lisää mahdollisuuksien mukaan vaiheet, jotta ongelma voidaan toistaa.</translation>
 <translation id="7165278925115064263">Alt+Vaihto+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7726391492136714301">Katsele puhelimesi ilmoituksia ja sovelluksia</translation>
 <translation id="7727952505535211425">Avaa verkkosivusto osoitepalkista uudelle välilehdelle</translation>
 <translation id="7728657226117099693">Laita Caps Lock pois päältä</translation>
+<translation id="7732702411411810416">Varmista, että internetyhteys on muodostettu, ja yritä uudelleen</translation>
 <translation id="7742327441377685481">Ei ilmoituksia</translation>
 <translation id="7748275671948949022">Korosta käynnistysohjelmapainike hyllyssä</translation>
 <translation id="7749443890790263709">Työpöytiä on enimmäismäärä.</translation>
@@ -2121,6 +2154,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7866482334467279021">päälle</translation>
 <translation id="7870790288828963061">Ei löytynyt kioskisovelluksia, joiden versio on uudempi. Ei päivitettävää. Irrota USB-tikku.</translation>
 <translation id="7872786842639831132">Pois päältä</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199">Bluetooth näyttää olevan poissa päältä laitteellasi (<ph name="DEVICE_TYPE" />). Laita Bluetooth päälle, jotta voit käyttää Phone Hubia.</translation>
 <translation id="7884446017008693258">Hotspot-asetukset</translation>
 <translation id="7884902759927478774">Peru välilehden vetäminen</translation>
@@ -2469,6 +2503,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8980862970816311842">Siirrä sovelluksen kuvake kansioon tai pois siitä sovellusruudukossa</translation>
 <translation id="8982906748181120328">Lähinäkyvyys</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Tervetuloa käyttämään Steamia Chromebookilla</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> käytössä</translation>
 <translation id="8991648557324317894">Peru painamalla fn + Pikalisäys tai Vaihto.</translation>
 <translation id="899350903320462459">Avaa laitteen lukitus tunnuksella <ph name="LOGIN_ID" />, niin voit käyttää ilmoitustoimintoa</translation>
@@ -2485,6 +2520,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9047624247355796468">Avaa asetukset: <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth ei ole käytettävissä</translation>
 <translation id="9050999376345823055">Vapauta painamalla "."</translation>
+<translation id="9061694916020926968">Sinun on oltava kirjautuneena Google-tilille, jotta voit käyttää Steam for Chrombeookia (beta). Kirjaudu sisään ja yritä uudelleen.</translation>
 <translation id="906458777597946297">Suurenna ikkuna</translation>
 <translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9068849894565669697">Valitse väri</translation>

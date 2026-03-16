@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Xanh dương</translation>
 <translation id="1557622599341396706">Hiện tên không gian làm việc</translation>
 <translation id="1569384531973824928">Nếu bạn bật, tất cả ứng dụng và trang web có quyền truy cập máy ảnh và micrô sẽ có thể sử dụng máy ảnh và micrô. Bạn có thể cần làm mới trang web hoặc khởi động lại ứng dụng.</translation>
+<translation id="1570235441606255261">Trình cài đặt Steam</translation>
 <translation id="1571697193564730395">Bật/tắt chế độ Không làm phiền. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Ô điều khiển cạnh trái đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="1576623706766186887">Thu nhỏ khi kính lúp đang bật</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Bạn có thể tắt tính năng Tiếp cận bằng công tắc trong phần Cài đặt &gt; Hỗ trợ tiếp cận.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> thiết bị</translation>
 <translation id="1639239467298939599">Đang tải</translation>
+<translation id="1642895994345928121">Không còn đủ bộ nhớ trên thiết bị để mở ứng dụng này. Hãy giải phóng dung lượng rồi thử lại.</translation>
 <translation id="1647986356840967552">Trang trước</translation>
 <translation id="1651914502370159744">Mở trang Nhật ký</translation>
 <translation id="1668469839109562275">VPN tích hợp sẵn</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">Nhóm thẻ và ứng dụng</translation>
 <translation id="2386292613071805067">Chọn mọi nội dung trên trang</translation>
 <translation id="2389423187722941333">Bật/tắt Gemini</translation>
+<translation id="2391805183137601570">Mở Steam</translation>
 <translation id="2392659840443812875">Không có điểm phát sóng nào. Hãy đảm bảo thiết bị của bạn đang ở gần và đã bật Bluetooth.</translation>
 <translation id="2397416548179033562">Hiển thị menu Chrome</translation>
 <translation id="240006516586367791">Điều khiển nội dung nghe nhìn</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">Mở hôm qua</translation>
 <translation id="2440978926514840421">Đã ghi ảnh GIF</translation>
 <translation id="2441427462554639370">Quá trình ghi đã kết thúc do dung lượng lưu trữ còn quá thấp</translation>
+<translation id="2447587550790814052">Giờ đây, bạn có thể sử dụng Steam dành cho Chromebook (Beta)</translation>
 <translation id="2449089818483227734">Pin yếu</translation>
 <translation id="2450205753526923158">Chế độ chụp ảnh màn hình</translation>
 <translation id="2453860139492968684">Kết thúc</translation>
 <translation id="2455994958736234930">Thêm www. và .com vào thanh địa chỉ rồi mở trang web</translation>
 <translation id="2456008742792828469">Lịch, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Xem chi tiết</translation>
+<translation id="2462332841984057083">Steam đang được thiết lập. Vui lòng chờ quá trình thiết lập hoàn tất.</translation>
 <translation id="2465145153332031561">Tình trạng pin: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, số chu kỳ: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Xác nhận độ phân giải</translation>
 <translation id="2475783092753560388">Chèn <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545">Bản xem trước <ph name="DESK_NAME" />. Không gian làm việc đang hoạt động.</translation>
 <translation id="2486405091093637109">Đã thay đổi "<ph name="DISPLAY_NAME" />" thành độ phân giải <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Nếu bạn không xác nhận, chế độ cài đặt trước đó sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Tham gia</translation>
+<translation id="2494555621641843783">Không cài đặt được Steam</translation>
 <translation id="2496180316473517155">Nhật ký duyệt web</translation>
 <translation id="2499445554382787206">Trình đơn hồ sơ không gian làm việc. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Phím cố định</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">Trả lời</translation>
 <translation id="2727744317940422214">Rất tiếc, đã xảy ra lỗi. Vui lòng gửi ý kiến phản hồi kèm #bruschetta trong phần mô tả. Mã lỗi là <ph name="ERROR" />. Không dọn dẹp được, bạn có thể cần dọn dẹp theo cách thủ công.</translation>
 <translation id="2727977024730340865">Được cắm vào bộ sạc công suất thấp. Việc sạc pin có thể không được đảm bảo.</translation>
+<translation id="2737538893171115082">Quản trị viên của bạn đã chặn Steam dành cho Chromebook (Beta). Quản trị viên của bạn cần bật các chính sách sau:</translation>
 <translation id="2743301740238894839">Bắt đầu</translation>
 <translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3033912566804961911">Kết hợp với <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Bút cảm ứng còn <ph name="PERCENTAGE" />% pin.</translation>
 <translation id="304097922505898963">Mở ứng dụng Phím tắt</translation>
+<translation id="3040982432432547149">Giúp chúng tôi cải thiện Steam dành cho Chromebook</translation>
 <translation id="304417730895741346">Các ứng dụng bạn đang mở và đã ghim sẽ xuất hiện trên kệ. Để ghim một ứng dụng vào kệ, nhấp chuột phải vào ứng dụng đó hoặc dùng hai ngón tay nhấn lên bàn di chuột.</translation>
 <translation id="3045670165536837541">Ô điều khiển trên cùng bên phải đã chọn, dùng phím mũi tên để di chuyển</translation>
 <translation id="3047761520276763270">Thử nói:</translation>
@@ -656,6 +664,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3181441307743005334">Quá trình khởi động có thể mất một chút thời gian</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Đã kết nối với một thiết bị}other{Đã kết nối với # thiết bị}}</translation>
 <translation id="3203405173652969239">Đã bật tùy chọn Tiếp cận bằng công tắc</translation>
+<translation id="3204648577100496185">Dữ liệu liên kết với ứng dụng này có thể bị xoá khỏi thiết bị này</translation>
 <translation id="3206735939915734551">Bật/tắt Caps Lock</translation>
 <translation id="3207953481422525583">Cài đặt người dùng</translation>
 <translation id="3208321278970793882">Ứng dụng</translation>
@@ -677,6 +686,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3271554781793662131">Tìm để chèn</translation>
 <translation id="3274634049061007184">Xem ứng dụng có trên điện thoại</translation>
 <translation id="3279230909244266691">Quá trình này có thể mất vài phút. Đang khởi động máy ảo.</translation>
+<translation id="3285465040399788513">Không còn đủ bộ nhớ thiết bị để hoàn tất quá trình thiết lập. Hãy giải phóng dung lượng rồi thử lại.</translation>
 <translation id="3289364673986435196">Trình đơn nguồn</translation>
 <translation id="3289544412142055976">Hiện không hỗ trợ ứng dụng Linux</translation>
 <translation id="3289674678944039601">Đang sạc qua bộ sạc</translation>
@@ -702,6 +712,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369111525500416043">Sắp đến hạn</translation>
 <translation id="3371140690572404006">Thiết bị USB-C (cổng phía trước, bên phải)</translation>
+<translation id="3373196968211632036">Không sử dụng được Steam dành cho Chromebook (Beta) cho Tài khoản Google của trẻ</translation>
 <translation id="3375634426936648815">Đã kết nối</translation>
 <translation id="3386978599540877378">tính năng phóng to toàn màn hình</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Giá tự động ẩn</translation>
+<translation id="3496797737329654668">Cùng chơi trò chơi nào</translation>
 <translation id="3505066820268455558">Đang sạc pin</translation>
 <translation id="3509391053705095206">Không tìm được điện thoại của bạn. Hãy đảm bảo bạn đã bật Bluetooth trên điện thoại.</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
@@ -800,6 +812,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3633851487917460983">Mở bảng nhớ tạm</translation>
 <translation id="363473492175527493">Việc cần làm được thiết lập ở chế độ tập trung: <ph name="TASK_NAME" />. Nhấn phím Enter để chỉnh sửa việc cần làm.</translation>
 <translation id="3638400994746983214">Bật/tắt màn hình bảo vệ quyền riêng tư. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Steam cho Chromebook (Beta) cần được cập nhật. Hãy khởi động lại Chromebook rồi thử lại.</translation>
 <translation id="3649256019230929621">Thu nhỏ cửa sổ</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3702809606464356667">Đang hiện các cửa sổ của không gian làm việc hiện tại, hãy nhấn phím Mũi tên lên để hiển thị các cửa sổ của mọi không gian làm việc</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Giải trí</translation>
+<translation id="370665806235115550">Đang tải...</translation>
 <translation id="3707093869106077605">Bạn chưa thể sử dụng <ph name="UNAVAILABLE_DLC_ONE" /> và <ph name="UNAVAILABLE_DLC_TWO" />.</translation>
 <translation id="3708186454126126312">Đã kết nối trước đây</translation>
 <translation id="3712143870407382523">Chọn một cửa sổ cho nửa bên này</translation>
@@ -860,6 +874,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3831226344927851293">Thoát chế độ xem hướng dẫn</translation>
 <translation id="383629559565718788">Hiển thị các tùy chọn cài đặt bàn phím</translation>
 <translation id="384082539148746321">Bạn muốn xoá mẫu?</translation>
+<translation id="3841282988425489367">Không thiết lập được Steam dành cho Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> rồi đến <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> hoặc <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Không có thông tin mạng</translation>
 <translation id="3848526302597027234">Có quyền truy cập vào:</translation>
@@ -951,6 +966,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4146671046252289537">Di chuyển đến cuối của từ kế tiếp</translation>
 <translation id="4150201353443180367">Hiển thị</translation>
 <translation id="4151054805501931758">Cải thiện chân dung</translation>
+<translation id="4151449637210235443">Hãy cho chúng tôi biết lối chơi gần đây của bạn</translation>
 <translation id="4156293514828496577">Còn <ph name="PERCENTAGE" />% pin (khoảng <ph name="TIME_LEFT" />).
 Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</translation>
 <translation id="4158003972857765638">Sắp xếp trong một không gian làm việc mới</translation>
@@ -968,6 +984,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4192112279662688596">Hoặc</translation>
 <translation id="4193857202545160520">Hiện thao tác nhấp và phím</translation>
 <translation id="4193969623755915875">Mở phần "Trợ giúp" trong ứng dụng Khám phá bằng phím tắt "<ph name="NEW_SHORTCUT" />".</translation>
+<translation id="4195001808989442226">Không mở được Steam dành cho Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Phiên bản hiện tại: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Tiếp tục từ nơi bạn đã dừng lại</translation>
 <translation id="4195877955194704651">Nút Lượt nhấp tự động</translation>
@@ -983,6 +1000,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ứng dụng đã được cài đặt nhưng đã tạm dừng</translation>
 <translation id="4228078597006700451">Chưa thiết lập các nút điều khiển</translation>
 <translation id="4230560241506423345">Mới</translation>
+<translation id="4231231258999726714">Thiết lập Steam dành cho Chromebook</translation>
 <translation id="4236726631849783264">Lời nhắc về các hành động được đề xuất</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Chế độ tổng quan</translation>
@@ -1067,6 +1085,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4471432286288241507">{0,plural, =0{Cập nhật thiết bị ngay}=1{Cập nhật thiết bị trong vòng 1 giây}other{Cập nhật thiết bị trong vòng # giây}}</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4473489370276014885">Danh bạ Google</translation>
+<translation id="4473996011558324141">thời gian ước tính</translation>
 <translation id="4477350412780666475">Bản nhạc tiếp theo</translation>
 <translation id="4477751544736611934">Bạn có thể phải chịu chi phí dữ liệu.
 Đã kết nối 1 thiết bị.</translation>
@@ -1108,6 +1127,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4585337515783392668">Dừng truyền trên bộ thu không xác định</translation>
 <translation id="4596144739579517758">Giao diện tối đang tắt</translation>
 <translation id="4596442969149038771"><ph name="USER" /> mới chia sẻ</translation>
+<translation id="4598556348158889687">Quản lý bộ nhớ</translation>
 <translation id="4610493115106525653">Kết quả đầu ra tốt</translation>
 <translation id="4611292653554630842">Đăng nhập</translation>
 <translation id="462160925400706389">Đã kết nối <ph name="NAME" /></translation>
@@ -1117,6 +1137,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4633636853437260449">Nhấn tổ hợp phím Ctrl+W để xoá</translation>
 <translation id="4635501805800894201">{0,plural, =0{Khôi phục hệ điều hành trên thiết bị về phiên bản trước ngay bây giờ}=1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giây}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # giây}}</translation>
 <translation id="4642092649622328492">Chụp ảnh một phần màn hình</translation>
+<translation id="4642587497923912728">Steam dành cho Chromebook (Beta) chỉ dùng được cho tài khoản đăng nhập đầu tiên trên Chromebook này.</translation>
 <translation id="4644727592819780893">Kích thước khu vực quá nhỏ, không đủ để chụp</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Ứng dụng đề xuất</translation>
 <translation id="4649019912155580914">Bạn đã chỉnh sửa</translation>
@@ -1350,6 +1371,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="5352250171825660495">Giao diện tối đang bật</translation>
 <translation id="5354804064646502504">Bạn có thể phải chịu chi phí dữ liệu.
 Chưa kết nối thiết bị nào.</translation>
+<translation id="5355498626146154079">Bạn cần bật cờ “Borealis Enabled”</translation>
 <translation id="5356963482258194581">Thay đổi giữa giao diện sáng và giao diện tối. Nhấp chuột phải vào màn hình rồi chọn Hình nền và phong cách.</translation>
 <translation id="536019650977002321">Quản trị viên của bạn không cho phép ghi âm. Hãy liên hệ với quản trị viên để biết thêm thông tin.</translation>
 <translation id="5361524080961918551">Đã tải một phần các tệp lời nói <ph name="LANGUAGE" /> xuống</translation>
@@ -1360,6 +1382,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5377367976106153749">Bật quyền sử dụng máy ảnh?</translation>
 <translation id="5378450298115733949">Xem thêm</translation>
 <translation id="5379115545237091094">Quá nhiều lần thử</translation>
+<translation id="5380526436444479273">Vui lòng đợi một vài phút rồi thử lại</translation>
 <translation id="5383434787520761436">Không có tệp nào trên Google Drive</translation>
 <translation id="5391307769715781764">Thay thế không gian làm việc đã lưu?</translation>
 <translation id="5392327145184648521">Đang tính toán % pin...</translation>
@@ -1371,6 +1394,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5409208741270395213">Đánh dấu việc cần làm là đã hoàn thành</translation>
 <translation id="5413656666631274079">Trang cài đặt</translation>
 <translation id="5414198321558177633">Đang làm mới danh sách hồ sơ. Quá trình này có thể mất vài phút.</translation>
+<translation id="5415328625985164836">Đây là chương trình beta. Giờ đây, bạn có thể sử dụng Steam để chơi một số trò chơi trên Chromebook.</translation>
 <translation id="5426063383988017631">Đã đóng trình đơn Cài đặt</translation>
 <translation id="5428899915242071344">Bắt đầu chọn</translation>
 <translation id="5429993543155113935">Hiện không hỗ trợ cửa sổ ẩn danh</translation>
@@ -1466,6 +1490,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="5712132663381964774">Dùng các ứng dụng để làm mọi việc bạn cần trên <ph name="PRODUCT_NAME" />. Bạn có thể tìm ứng dụng của mình trong Trình chạy.</translation>
 <translation id="571295407079589142">Dữ liệu di động đang tắt</translation>
 <translation id="5727460725221669831">Nếu gần đây bạn quên mật khẩu hoặc thay đổi mật khẩu của Tài khoản Google, hãy thử khôi phục người dùng này.</translation>
+<translation id="572914206753951782">Đảm bảo bạn đang sử dụng phiên bản Chromebook mới nhất. Sau đó, hãy khởi động lại Chromebook rồi thử lại.</translation>
 <translation id="5733630091161562207">Thông báo chào mừng</translation>
 <translation id="573413375004481890">Thiết bị này không thể hỗ trợ tất cả màn hình của bạn nên một màn hình đã bị ngắt kết nối</translation>
 <translation id="574392208103952083">Trung bình</translation>
@@ -1713,6 +1738,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6507042703812908515">Mở ứng dụng Phím tắt bằng "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Chuyển sang phương thức nhập hiện có tiếp theo</translation>
 <translation id="6508923215158854599">Đảm bảo Chromebook kết nối với cùng một mạng Wi-Fi như thiết bị Chromecast.</translation>
+<translation id="6511607461419653612">Khởi động lại Chromebook của bạn rồi thử lại</translation>
 <translation id="6515727200518652613">Máy ảnh bị mất kết nối, đang cố gắng kết nối lại.</translation>
 <translation id="651753338596587143">Rất tiếc, đã xảy ra lỗi khi cài đặt các phần phụ thuộc DLC. Vui lòng thử khởi động lại và nếu sự cố vẫn tiếp diễn, hãy gửi ý kiến phản hồi kèm #bruschetta trong phần mô tả. Mã lỗi là <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Chọn một cửa sổ để chụp</translation>
@@ -1738,6 +1764,7 @@ Mới cài đặt</translation>
 <translation id="6574587113394758819">Đã ẩn thông báo của <ph name="APP_TITLE" /> do đang bật chế độ chống nhìn lén</translation>
 <translation id="6574622320167699133">Đã mở khoá bằng điện thoại của bạn. Hãy nhấn hoặc nhấp để mở Chromebook.</translation>
 <translation id="6578407462441924264">Chưa đặt tên</translation>
+<translation id="6580060371127789208">Đã hoàn thành <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6582012689384648647">Hãy cho phép truy cập vào YouTube Music để thưởng thức danh sách phát giúp tập trung được cá nhân hoá</translation>
 <translation id="6582034443359256692">Đang tính toán mức pin.</translation>
 <translation id="6585808820553845416">Phiên sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1787,6 +1814,7 @@ Mới cài đặt</translation>
 <translation id="6723839937902243910">Nguồn</translation>
 <translation id="672609503628871915">Xem tính năng mới</translation>
 <translation id="6727969043791803658">Đã kết nối, <ph name="BATTERY_PERCENTAGE" />% pin</translation>
+<translation id="6731320427842222405">Việc này có thể mất vài phút</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+ <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Máy ảnh và micrô đang được sử dụng</translation>
@@ -1858,6 +1886,7 @@ Mới cài đặt</translation>
 <translation id="6961840794482373852">Phím tắt Alt + Mũi tên lên đã thay đổi. Để sử dụng phím Page Up, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên lên.</translation>
 <translation id="696267987219125751">Tính năng lấy khung hình của máy ảnh đang tắt.</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6967112302799758487">Mọi ứng dụng và trò chơi được cài đặt bằng Steam dành cho Chromebook (Beta) sẽ bị gỡ bỏ khỏi thiết bị này. Dữ liệu liên quan đến các ứng dụng và trò chơi này cũng sẽ bị xoá. Hãy nhớ sao lưu các ứng dụng và trò chơi đã lưu trước khi gỡ cài đặt.</translation>
 <translation id="6972629891077993081">Thiết bị HID</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1889,6 +1918,7 @@ Mới cài đặt</translation>
 <translation id="7067196344162293536">Tự động xoay</translation>
 <translation id="7076293881109082629">Đăng nhập</translation>
 <translation id="7076878155205969899">Tắt tiếng</translation>
+<translation id="7083774521940805477">Không sử dụng được Steam dành cho Chromebook (beta) trên Chromebook của bạn.</translation>
 <translation id="7083848064787091821">Tập trung</translation>
 <translation id="7084678090004350185">Bật/tắt điểm phát sóng. Điểm phát sóng đang bật, có <ph name="DEVICECOUNT" /> thiết bị đã kết nối.</translation>
 <translation id="7086931198345821656">Bản cập nhật này yêu cầu bạn phải chạy tính năng powerwash trên thiết bị <ph name="DEVICE_TYPE" /> của mình. Toàn bộ dữ liệu sẽ bị xoá. Tìm hiểu thêm về bản cập nhật <ph name="SYSTEM_APP_NAME" /> mới nhất.</translation>
@@ -1906,12 +1936,14 @@ Mới cài đặt</translation>
 <translation id="7130207228079676353">RẤT CÓ THỂ</translation>
 <translation id="7131634465328662194">Bạn sẽ tự động bị đăng xuất.</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
+<translation id="7143409552554575716">Cờ ChromeOS</translation>
 <translation id="7144878232160441200">Thử lại</translation>
 <translation id="7144942256906679589">Trạng thái pin</translation>
 <translation id="7145639536026937076">Pin ở mức <ph name="PERCENTAGE" />% và đang sạc. Trình tiết kiệm pin đang bật.</translation>
 <translation id="7147587499155271409">Không có nhật ký duyệt web</translation>
 <translation id="7147657298465433425">Để sử dụng các phím F, hãy nhấn tổ hợp phím fn + phím ở hàng trên cùng</translation>
 <translation id="7149149900052329230">Quản lý tệp trên thiết bị và tệp trên Google Drive, tất cả đều có trong ứng dụng Files.</translation>
+<translation id="7154020516215182599">Chia sẻ phản hồi hoặc mô tả vấn đề của bạn. Nếu có thể, hãy nêu các bước tái hiện vấn đề của bạn.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2087,6 +2119,7 @@ Mới cài đặt</translation>
 <translation id="7726391492136714301">Xem thông báo và ứng dụng trên điện thoại</translation>
 <translation id="7727952505535211425">Mở trang web trên thanh địa chỉ trong thẻ mới</translation>
 <translation id="7728657226117099693">Tắt Caps Lock</translation>
+<translation id="7732702411411810416">Hãy kiểm tra để chắc chắn rằng bạn đã kết nối Internet rồi thử lại</translation>
 <translation id="7742327441377685481">Không có thông báo</translation>
 <translation id="7748275671948949022">Đánh dấu nút Trình chạy trên kệ</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
@@ -2121,6 +2154,7 @@ Mới cài đặt</translation>
 <translation id="7866482334467279021">đang bật</translation>
 <translation id="7870790288828963061">Không tìm thấy ứng dụng Kiosk nào có phiên bản mới hơn. Không có gì để cập nhật. Vui lòng rút thẻ USB.</translation>
 <translation id="7872786842639831132">Tắt</translation>
+<translation id="7873386145597434863">Steam dành cho Chromebook</translation>
 <translation id="7875575368831396199">Có vẻ như bạn đã tắt Bluetooth trên <ph name="DEVICE_TYPE" />. Vui lòng bật Bluetooth để sử dụng Trung tâm điều khiển điện thoại.</translation>
 <translation id="7884446017008693258">Cài đặt điểm phát sóng</translation>
 <translation id="7884902759927478774">Huỷ thao tác kéo thẻ</translation>
@@ -2470,6 +2504,7 @@ Mới cài đặt</translation>
 <translation id="8980862970816311842">Di chuyển một biểu tượng ứng dụng vào/ra khỏi một thư mục trong lưới ứng dụng</translation>
 <translation id="8982906748181120328">Chế độ hiển thị lân cận</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chào mừng bạn đến với Steam dành cho Chromebook</translation>
 <translation id="8990809378771970590">Đang dùng <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Nhấn tổ hợp phím fn + Chèn nhanh hoặc phím Shift để huỷ.</translation>
 <translation id="899350903320462459">Mở khóa thiết bị bằng <ph name="LOGIN_ID" /> để thực hiện hành động thông báo</translation>
@@ -2486,6 +2521,7 @@ Mới cài đặt</translation>
 <translation id="9047624247355796468">Mở tùy chọn cài đặt cho <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Không có Bluetooth</translation>
 <translation id="9050999376345823055">Nhấn "." để nhả chuột</translation>
+<translation id="9061694916020926968">Bạn cần đăng nhập vào một Tài khoản Google để sử dụng Steam dành cho Chromebook (Beta). Hãy đăng nhập rồi thử lại.</translation>
 <translation id="906458777597946297">Phóng to cửa sổ</translation>
 <translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9068849894565669697">Chọn màu</translation>

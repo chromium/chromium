@@ -841,7 +841,6 @@
 <translation id="156793199942386351">Копчето „<ph name="CURRENTKEY" />“ е веќе назначено за дејството „<ph name="ACTION" />“. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Конзола за JavaScript</translation>
 <translation id="1569466257325986920">Следниот пат кога ќе се промени лозинката на вашата сметка на Google, вашите локални податоци ќе се вратат автоматски по најавувањето на сметката на Google</translation>
-<translation id="1570235441606255261">Инсталатор на Steam</translation>
 <translation id="1570604804919108255">Вклучете го звукот на известувањата</translation>
 <translation id="1570990174567554976">Папката со обележувачи „<ph name="BOOKMARK_TITLE" />“ е создадена.</translation>
 <translation id="1571041387761170095">Нема слаби или повторно употребени лозинки</translation>
@@ -966,7 +965,6 @@
 <translation id="1642299742557467312">Датотекава би можела да му наштети на вашиот уред</translation>
 <translation id="1642492862748815878">Поврзани сте со <ph name="DEVICE" /> и <ph name="NUMBER_OF_DEVICES" /> други уреди со Bluetooth</translation>
 <translation id="1642494467033190216">Потребно е отстранување на заштитата на rootfs и престартување пред да се овозможат другите функции за отстранување грешки.</translation>
-<translation id="1642895994345928121">Нема доволно простор на уредот за да се отвори апликацијава. Ослободете простор, па обидете се повторно.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA потпис со SHA-1</translation>
 <translation id="1643921258693943800">За да користите „Споделување во близина“, вклучете Bluetooth и Wi-Fi</translation>
 <translation id="1644574205037202324">Историја</translation>
@@ -2076,7 +2074,6 @@
 <translation id="2390347491606624519">Не може да се поврзе со прокси-серверот, најавете се повторно</translation>
 <translation id="2390782873446084770">Синхронизирање на Wi-Fi</translation>
 <translation id="2391419135980381625">Стандарден фонт</translation>
-<translation id="2391805183137601570">Отвори ја Steam</translation>
 <translation id="239185270194776190">Вашиот разговор со Gemini е во друг прозорец. Кликнете каде било во страничнава табла за да го преместите овде.</translation>
 <translation id="2392369802118427583">Активирај</translation>
 <translation id="2393136602862631930">Поставете <ph name="APP_NAME" /> на вашиот Chromebook</translation>
@@ -2158,7 +2155,6 @@
 <translation id="2445484935443597917">Создај нов профил</translation>
 <translation id="2445726032315793326">Делумна лупа</translation>
 <translation id="244641233057214044">Поврзано со вашето пребарување</translation>
-<translation id="2447587550790814052">Сега може да користите „Steam за Chromebook“ (Бета)</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2448810255793562605">Автоматско скенирање на „Пристап со прекинувачи“</translation>
 <translation id="2450021089947420533">Патувања</translation>
@@ -2185,7 +2181,6 @@
 <translation id="2460826998961521840">За да ги користите криптографските клучеви зачувани во вашата сметка на Google</translation>
 <translation id="2461550163693930491">Не им дозволувај на сајтовите да лизгаат и зумираат споделени картички</translation>
 <translation id="2461593638794842577">Може да ја исклучите поставкава за зачувување на лозинките само на овој уред</translation>
-<translation id="2462332841984057083">Steam веќе се поставува. Почекајте да заврши поставувањето.</translation>
 <translation id="2462724976360937186">ИД на клуч на орган за сертифицирање</translation>
 <translation id="2462752602710430187">Додаден е <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Гледате предложени датотеки за да ви помогнат лесно да се вратите на вашата најнеодамнешна активност во Microsoft SharePoint и OneDrive.
@@ -2240,7 +2235,6 @@
 <translation id="2491587035099903063">прегледајте глас за <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Се подготвува барање за најавување со сертификат</translation>
 <translation id="249330843868392562">Отвори ги поставките за „Од текст во говор“</translation>
-<translation id="2494555621641843783">Не може да се инсталира Steam</translation>
 <translation id="2496180316473517155">Историја на прелистување</translation>
 <translation id="2496616243169085015">Фотографија</translation>
 <translation id="2497229222757901769">Брзина на глувче</translation>
@@ -2595,7 +2589,6 @@
 <translation id="27349076983469322">Светла заднина</translation>
 <translation id="2735712963799620190">Распоред</translation>
 <translation id="2737363922397526254">Собери...</translation>
-<translation id="2737538893171115082">Вашиот администратор ја блокирал „Steam за Chromebook“ (Бета). Администраторот треба да ги вклучи следниве правила:</translation>
 <translation id="2737719817922589807">Обележувачи и списоци</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> сака да ги сподели содржините од вашиот екран со <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Не им дозволувај на сајтовите да ги користат фонтовите инсталирани на уредот</translation>
@@ -3058,7 +3051,6 @@
 <translation id="3039491566278747710">Не успеа да се инсталира офлајн правило на уредот.</translation>
 <translation id="303955801043931176">Картичката е затворена</translation>
 <translation id="3040435070100611531">Вашите пропусници во Google Wallet</translation>
-<translation id="3040982432432547149">Помогнете ни да ја подобриме Steam за Chromebook</translation>
 <translation id="304169924727249890">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Ја променува стратегијата на оптимизирано полнење.</translation>
 <translation id="3043016484125065343">Најавете се за да ги видите обележувачите</translation>
@@ -3269,7 +3261,6 @@
 <translation id="3201422919974259695">Достапните USB-уреди ќе се појават тука.</translation>
 <translation id="3202499879214571401">Паузирај со емитување екран на <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Најново</translation>
-<translation id="3204648577100496185">Податоците поврзани со апликацијава можеби ќе се отстранат од уредов</translation>
 <translation id="3206289903841621620">Речник на корисникот <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Гледате предложени пребарувања и попусти за купување што може да ве интересираат согласно со вашата последна активност.
         <ph name="BREAK" />
@@ -3377,7 +3368,6 @@
 <translation id="3283148363895519428">Следете ги упатствата на телефонот за да продолжите со поставувањето. Уверете се дека телефонот е во близина и има вклучено Bluetooth.</translation>
 <translation id="3284050785966252943">Преглед на метаподатоци за автоматско пополнување</translation>
 <translation id="3285322247471302225">Нова &amp;картичка</translation>
-<translation id="3285465040399788513">Нема доволно простор на уредот за да го завршите поставувањето. Ослободете простор и обидете се повторно.</translation>
 <translation id="3285500645985761267">Дозволувај поврзаните сајтови да ја гледаат мојата активност во групата</translation>
 <translation id="328571385944182268">Да се зачуваат лозинките?</translation>
 <translation id="3289668031376215426">Автоматска голема буква</translation>
@@ -3500,7 +3490,6 @@
 <translation id="3372602033006349389">На други уреди</translation>
 <translation id="337286756654493126">Читајте датотеки и папки што ги отворате во апликацијата</translation>
 <translation id="3373059063088819384">Отвори во „Режим на читање“</translation>
-<translation id="3373196968211632036">„Steam за Chromebook“ (Бета) не е достапна за подредени сметки на Google</translation>
 <translation id="3373701465337594448">Кога е вклучено, список со сајтови кои ги посетувате што ги погодуваат вашите интереси ќе се појави тука</translation>
 <translation id="3374294321938930390">Ознаката „<ph name="BOOKMARK_TITLE" />“ е преместена во „<ph name="NEW_FOLDER_TITLE" />“.</translation>
 <translation id="3376035595160918049">Прегледајте го ажурирањето за апликацијата</translation>
@@ -3682,7 +3671,6 @@
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (не е избран)</translation>
 <translation id="3496689104192986836">Ниво на батерија <ph name="PERCENTAGE" /> %</translation>
 <translation id="3496692428582464972">Извори на податоци за прибирање</translation>
-<translation id="3496797737329654668">Ајде да се фрлиме на гејминг</translation>
 <translation id="3496995426334945408">Сајтовите обично користат JavaScript за прикажување интерактивни функции како видеоигри или интернет-формулари</translation>
 <translation id="3497501929010263034">USB-уред од <ph name="VENDOR_NAME" /> (производ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Сподели Doodle</translation>
@@ -3894,7 +3882,6 @@
 <translation id="3637203148990213388">Дополнителни сметки</translation>
 <translation id="3640347231390550691">Заштитете ги лозинките од фишинг</translation>
 <translation id="364100968401221170">За да ги избришете податоците од прелистување од сите синхронизирани уреди и од сметката на Google, <ph name="BEGIN_LINK" />најавете се<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">„Steam за Chromebook“ (бета) треба да се ажурира. Рестартирајте го вашиот Chromebook, па обидете се повторно.</translation>
 <translation id="3641299252000913351">Во тек е ажурирање за фирмверот на модемот. Не исклучувајте го уредот.</translation>
 <translation id="3641456520301071208">Сајтовите може да прашуваат за вашата локација</translation>
 <translation id="3642064270296434810">Отсега може да ја користите Google Lens за да ги пребарувате нештата што ги гледате на екранот</translation>
@@ -4231,7 +4218,6 @@
 <translation id="383891835335927981">Ниеден сајт не е зумиран ниту одзумиран</translation>
 <translation id="3839516600093027468">Секогаш блокирај го пристапот на <ph name="HOST" /> за гледање на привремената меморија</translation>
 <translation id="3840096463915153852">Историја на разговори</translation>
-<translation id="3841282988425489367">Не може да се постави „Steam за Chromebook“ (Бета)</translation>
 <translation id="3841319830220785495">Стандарден природен глас</translation>
 <translation id="3841356782900714251">Читачи на паметни картички</translation>
 <translation id="3841964634449506551">Погрешна лозинка</translation>
@@ -4679,7 +4665,6 @@
 <translation id="4148195018520464922">Може да го ограничите најавувањето на конкретни корисници. Со ова ќе се отстрани опцијата „Додај лице“ на екранот за најавување. Може да ги отстраните и тековните корисници.</translation>
 <translation id="4148957013307229264">Се инсталира...</translation>
 <translation id="4150201353443180367">Екран</translation>
-<translation id="4151449637210235443">Кажете ни за вашето неодамнешно играње</translation>
 <translation id="4151503145138736576">Нема офлајн простор за подзачистување</translation>
 <translation id="4152011295694446843">Вашите обележувачи ќе ги најдете тука</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 картичка}one{# картичка}other{# картички}}</translation>
@@ -4730,7 +4715,6 @@
 <translation id="4193251682249731404">Доверлив CA</translation>
 <translation id="4193575319002689239">Прикажи картички</translation>
 <translation id="419427585139779713">Внесувај слог по слог</translation>
-<translation id="4195001808989442226">Не може да се отвори „Steam за Chromebook“ (Бета)</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
 <translation id="4198268995694216131">Дополнителни сајтови</translation>
@@ -4776,7 +4760,6 @@
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Екстензијава не е дозволена}one{Некои екстензии не се дозволени}other{Некои екстензии не се дозволени}}</translation>
 <translation id="4231053948789591973">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да сопрете со емитување на вашиот екран во секое време.</translation>
 <translation id="4231095370974836764">Инсталирајте апликации и игри од Google Play на вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Се поставува „Steam за Chromebook“</translation>
 <translation id="4232375817808480934">Конфигурирајте го Kerberos</translation>
 <translation id="4232376164796433044">Лозинки и автоматско пополнување</translation>
 <translation id="4232484478444192782">Вашиот телефон со Android ќе среди сѐ. Вашата Wi-Fi мрежа и лозинка се префрлаат.</translation>
@@ -5135,7 +5118,6 @@
 <translation id="4472533928615930332">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" />, во стил: <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Започнете</translation>
 <translation id="4473559657152613417">Кликнете картичка со десно копче и изберете „Додајте картичка во нова група“</translation>
-<translation id="4473996011558324141">се пресметува времетраењето</translation>
 <translation id="4474155171896946103">Обележи ги сите картички</translation>
 <translation id="4476198534886170024">Дозволено. Вклучете <ph name="LINK_BEGIN" />пристап до камерата за оперативниот систем<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Атлетичарка</translation>
@@ -5370,7 +5352,6 @@
 <translation id="4638930039313743000">Овозможете отстранување грешка на ADB</translation>
 <translation id="4639390152280993480">За да видите поедноставен приказ на страницава, одете во „Повеќе алатки &gt; Режим за читање“</translation>
 <translation id="4641539339823703554">Chrome не успеа да го постави системското време. Проверете го времето подолу и поправете го ако е потребно.</translation>
-<translation id="4642587497923912728">„Steam за Chromebook“ (Бета) е достапна само за сметката со којашто првпат сте се најавиле на овој Chromebook.</translation>
 <translation id="4643612240819915418">&amp;Отвори видео во нова картичка</translation>
 <translation id="4643833688073835173">Вашиот Chromebook користи вграден сензор за да открие луѓе пред вашиот уред. Сите податоци веднаш се обработуваат на уредот и се бришат потоа. Податоци од сензорите никогаш не се испраќаат до Google.</translation>
 <translation id="4644205769234414680">Дозволи во „Инкогнито“</translation>
@@ -6374,7 +6355,6 @@
 <translation id="5353769147530541973">Отстранете ја ставката <ph name="SITE_NAME" /> од списокот со картички за да ја деактивирате</translation>
 <translation id="5355099869024327351">Овозможува „Помошникот“ да ви прикажува известувања</translation>
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
-<translation id="5355498626146154079">Треба да ја вклучите ознаката „Borealis Enabled“</translation>
 <translation id="5355501370336370394">Регистрирајте го уредот на претпријатието</translation>
 <translation id="5357010010552553606">Не е дозволено отворање на цел екран автоматски</translation>
 <translation id="5359910752122114278">1 резултат</translation>
@@ -6404,7 +6384,6 @@
 <translation id="5376931455988532197">Датотеката е преголема</translation>
 <translation id="5377367976106153749">Да се вклучи пристапот до камерата?</translation>
 <translation id="5379140238605961210">Продолжи со блокирање пристап до микрофон</translation>
-<translation id="5380526436444479273">Почекајте неколку минути и обидете се повторно</translation>
 <translation id="5382591305415226340">Управувајте со поддржаните линкови</translation>
 <translation id="5384401776498845256">Кој може да споделува со вас</translation>
 <translation id="5385628342687007304">Лозинкава ќе се зачува само на овој уред. За да ја користите на другите ваши уреди, зачувајте ја во вашата сметка на Google</translation>
@@ -6459,7 +6438,6 @@
 <translation id="5414198321558177633">Се освежува списокот со профили. Може да потрае неколку минути.</translation>
 <translation id="5414566801737831689">Прочитајте ги иконите од посетените веб-локации</translation>
 <translation id="5414836363063783498">Се проверува…</translation>
-<translation id="5415328625985164836">Ова е бета-програма. Сега може да ја користите Steam за да играте некои игри на вашиот Chromebook.</translation>
 <translation id="5415497281076257439">Фраза</translation>
 <translation id="5415871492522952905">Ќе ги имате вашите картички и историја на сите ваши уреди, па ќе може да продолжувате со тоа што сте го правеле</translation>
 <translation id="5417293056300086453">Сајтов може да користи идентификатори за да пушта заштитени содржини.</translation>
@@ -6899,7 +6877,6 @@
 <translation id="5727728807527375859">Наставки, апликации и теми може да му наштетат на вашиот компјутер. Дали сте сигурни дека сакате да продолжите?</translation>
 <translation id="5728072125198221967">Поврзани услуги на Google</translation>
 <translation id="5728450728039149624">Опции за заклучување на екранот со Smart Lock</translation>
-<translation id="572914206753951782">Уверете се дека вашиот Chromebook ја има најновата верзија на оперативниот систем. Потоа, рестартирајте го вашиот Chromebook и обидете се повторно.</translation>
 <translation id="5729712731028706266">&amp;Приказ</translation>
 <translation id="5731247495086897348">За&amp;лепи и оди</translation>
 <translation id="5733109311583381874">Додајте свои зборови во речниците на корисникот за да ги приспособите кандидатите за конверзија.</translation>
@@ -8014,7 +7991,6 @@
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{„<ph name="APP_NAME" />“ сака да ја инсталира следнава апликација на уредов:}one{„<ph name="APP_NAME" />“ сака да ги инсталира следниве апликации на уредов:}other{„<ph name="APP_NAME" />“ сака да ги инсталира следниве апликации на уредов:}}</translation>
 <translation id="6508248480704296122">Поврзанo со <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Апликација: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Рестартирајте го вашиот Chromebook и обидете се повторно</translation>
 <translation id="6511827214781912955">Размислете да ја избришете <ph name="FILENAME" /> за да не можат другите луѓе кои го користат уредов да ги гледаат вашите лозинки</translation>
 <translation id="6512759338201777379">Генерирана слика: <ph name="INDEX" /> од <ph name="SUBJECT" />, со расположение: <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome ќе користи мобилен интернет ако не сте поврзани на друга мрежа.</translation>
@@ -8123,7 +8099,6 @@
 <translation id="657866106756413002">Слика на состојбата на мрежата</translation>
 <translation id="6579369886355986318">Прикажете ги сите контроли</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> - содржините од работната површина се споделени</translation>
-<translation id="6580060371127789208">Завршено: <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6580203076670148210">Брзина на скенирање</translation>
 <translation id="6580676117087365538">За да ја добиете екстензијава на сите ваши компјутери, потврдете дека сте вие</translation>
 <translation id="6581356304040102696">Не може да се увезат лозинките. Големината на датотеката треба да биде под 1 MB.</translation>
@@ -8344,7 +8319,6 @@
 <translation id="6729280095610283088">Светли зраци на Аурора бореалис, над шума.</translation>
 <translation id="6729493062119577923">Активност на споделената групи картички</translation>
 <translation id="6730744976532805323">Ја споделува тековната картичка со Gemini, дури и додека менувате картички</translation>
-<translation id="6731320427842222405">Ова може да потрае неколку минути</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Адреса</translation>
 <translation id="6737663862851963468">Отстрани го билетот на Kerberos</translation>
@@ -8693,7 +8667,6 @@
 <translation id="6965648386495488594">Порта</translation>
 <translation id="6965978654500191972">Уред</translation>
 <translation id="6966831944134814478">Исклучи</translation>
-<translation id="6967112302799758487">Сите апликации и игри инсталирани со „Steam за Chromebook“ (Бета) ќе се отстранат од уредов. Ќе се отстранат и податоците поврзани со овие апликации и игри. Пред да деинсталирате, погрижете се да направите бекап на зачуваните апликации и игри.</translation>
 <translation id="6967430741871315905">Не може да провери дали уредов е дозволен</translation>
 <translation id="6968288415730398122">Внесете ја лозинката за да го конфигурирате заклучувањето на екранот</translation>
 <translation id="6969047215179982698">Исклучете „Споделување во близина“</translation>
@@ -8864,7 +8837,6 @@
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> е управувана од вашиот администратор</translation>
 <translation id="7082850163410901674">Известувањата се исклучени во System Settings на Mac</translation>
 <translation id="7083729794572207131">Сајтовите обично бараат да инсталираат апликации за прелистувач за да го подобрат вашето доживување на сајтот</translation>
-<translation id="7083774521940805477">„Steam за Chromebook“ (Бета) не е достапна на вашиот Chromebook.</translation>
 <translation id="7084095352418993433">Прашајте го Google за страницава: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(не е конфигурирано)</translation>
 <translation id="7086377898680121060">Осветли</translation>
@@ -8943,7 +8915,6 @@
 <translation id="7141844554192012199">Проверка</translation>
 <translation id="714301620504747562">Прелистувањето и пребарувањето се побрзи од стандардното вчитување однапред</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
-<translation id="7143409552554575716">Ознаки на ChromeOS</translation>
 <translation id="7144363643182336710">Известувањата нема да се појавуваат во скокачки прозорци на екранот. Сѐ уште ќе може да ги видите известувањата ако кликнете на иконата за „Не вознемирувај“ во долниот десен агол на екранот.</translation>
 <translation id="7144856456372460176">Инсталирање <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
@@ -8954,7 +8925,6 @@
 <translation id="7152478047064750137">Екстензијава не бара специјални дозволи</translation>
 <translation id="7153101072880472645">Високиот контраст е вклучен/исклучен</translation>
 <translation id="715396040729904728">launcher + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Споделете повратни информации или опишете го проблемот. Ако е возможно, вклучете ги чекорите за репродуцирање на проблемот.</translation>
 <translation id="7154130902455071009">Променете ја почетната страница во: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Добијте подобар квалитет на видео и продолжете го траењето на батеријата. Видеото ќе се пушта само на екранот овозможен за Cast.</translation>
 <translation id="7159695867335480590">Пушти/паузирај</translation>
@@ -9806,7 +9776,6 @@
 <translation id="7728668285692163452">Промената на канал ќе се примени подоцна</translation>
 <translation id="7730449930968088409">Снимете содржина од својот екран</translation>
 <translation id="7730683939467795481">Екстензијата „<ph name="EXTENSION_NAME" />“ ја промени страницава</translation>
-<translation id="7732702411411810416">Уверете се дека сте поврзани на интернет и обидете се повторно</translation>
 <translation id="773511996612364297">Акцентирани знаци</translation>
 <translation id="7735558909644181051">Посредни сертификати</translation>
 <translation id="7736119438443237821">Ќе го отстраните пристапот до вашите криптографски клучеви на уредов</translation>
@@ -10003,7 +9972,6 @@
 <translation id="7871691770940645922">Виртуелен браилов приказ</translation>
 <translation id="787268756490971083">Исклучено</translation>
 <translation id="7872758299142009420">Премногу вгнездени групи: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam за Chromebook</translation>
 <translation id="7876027585589532670">Не може да се измени кратенката</translation>
 <translation id="7876243839304621966">Отстрани ги сите</translation>
 <translation id="7877126887274043657">Решете го проблемот со синхронизација</translation>
@@ -11663,7 +11631,6 @@
 <translation id="8983018820925880511"><ph name="DOMAIN" /> ќе управува со овој нов профил. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> може да ја изменува <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Уредот ќе биде видлив за сите во траење од <ph name="MINUTES" /> минути. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Добре дојдовте на Steam за Chromebook</translation>
 <translation id="8985264973231822211">Активен пред <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ден</translation>
 <translation id="8985561265504464578">Праг на откривање</translation>
 <translation id="8985661493893822002">Поврзете се на интернет за да се најавите на вашиот <ph name="DEVICE_TYPE" />.</translation>
@@ -11795,7 +11762,6 @@
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{За 1 известување дневно}one{За {NUM_NOTIFICATION} известување дневно}other{За {NUM_NOTIFICATION} известувања дневно}}</translation>
 <translation id="9058760336383947367">Прегледајте го PPD за печатачот</translation>
 <translation id="9061521313218438086">Ако Chrome најде некоја од вашите лозинки во јавен упад во податоци, Google Password Manager може да ви понуди да ја промени вашата лозинка за вас ако сте најавени.</translation>
-<translation id="9061694916020926968">Треба да бидете најавени на сметка на Google за да користите „Steam за Chromebook“ (Бета). Најавете се и обидете се повторно.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Избриши ја кратенката за навигација</translation>
 <translation id="9063208415146866933">Грешка од ред <ph name="ERROR_LINE_START" /> до <ph name="ERROR_LINE_END" /></translation>

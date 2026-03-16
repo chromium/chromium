@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">Plava</translation>
 <translation id="1557622599341396706">Prikaži naziv radne površine</translation>
 <translation id="1569384531973824928">Ovo omogućava pristup svim aplikacijama i veb-sajtovima koji imaju dozvole za kameru i mikrofon. Možda ćete morati da osvežite veb-stranicu ili restartujete aplikaciju.</translation>
+<translation id="1570235441606255261">Program za instalaciju Steam</translation>
 <translation id="1571697193564730395">Uključite/isključite režim Ne uznemiravaj. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Izabrali ste marker na levoj ivici, koristite tastere sa strelicama za pomeranje</translation>
 <translation id="1576623706766186887">Umanjite prikaz kada je lupa uključena</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaja</translation>
 <translation id="1639239467298939599">Učitava se</translation>
+<translation id="1642895994345928121">Nema dovoljno memorijskog prostora uređaja da biste otvorili ovu aplikaciju. Oslobodite prostor, pa probajte ponovo.</translation>
 <translation id="1647986356840967552">Prethodna stranica</translation>
 <translation id="1651914502370159744">Otvori stranicu Istorija</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
@@ -401,6 +403,7 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="2383521554963939360">Grupe aplikacija i kartica</translation>
 <translation id="2386292613071805067">Izaberi sve na stranici</translation>
 <translation id="2389423187722941333">Uključi/isključi Gemini</translation>
+<translation id="2391805183137601570">Otvori Steam</translation>
 <translation id="2392659840443812875">Nema dostupnog hotspota. Uverite se da je uređaj u blizini i da je Bluetooth uključen.</translation>
 <translation id="2397416548179033562">Prikaz Chrome menija</translation>
 <translation id="240006516586367791">Kontrole medija</translation>
@@ -422,12 +425,14 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="243878895369688216">Otvarano juče</translation>
 <translation id="2440978926514840421">GIF je snimljen</translation>
 <translation id="2441427462554639370">Snimanje je prekinuto zbog izuzetno malo prostora</translation>
+<translation id="2447587550790814052">Sada možete da koristite Steam za Chromebook (beta)</translation>
 <translation id="2449089818483227734">Nizak nivo baterije</translation>
 <translation id="2450205753526923158">Režim snimka ekrana</translation>
 <translation id="2453860139492968684">Završi</translation>
 <translation id="2455994958736234930">Dodaj www. i .com na traku za adresu, pa otvori veb-sajt</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Analiziraj</translation>
+<translation id="2462332841984057083">Steam se već podešava. Sačekajte da se podešavanje završi.</translation>
 <translation id="2465145153332031561">Stanje baterije <ph name="BATTERY_HEALTH_PERCENTAGE" />%, broj ciklusa <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Potvrdite rezoluciju</translation>
 <translation id="2475783092753560388">Umetnite rezultat <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -439,6 +444,7 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="2486214324139475545">Pregled radne površine <ph name="DESK_NAME" />. Aktivna radna površina.</translation>
 <translation id="2486405091093637109">Rezolucija „<ph name="DISPLAY_NAME" />“ je promenjena u <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) rezoluciju. Ako ne potvrdite, prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Pridruži me</translation>
+<translation id="2494555621641843783">Instaliranje Steam-a nije uspelo</translation>
 <translation id="2496180316473517155">Istorija pregledanja</translation>
 <translation id="2499445554382787206">Meni za profil na radnoj površini. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
@@ -512,6 +518,7 @@ Broj povezanih uređaja je <ph name="DEVICECOUNT" />.</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727744317940422214">Žao nam je, došlo je do greške. Pošaljite povratne informacije i navedite #bruschetta u opisu. Kôd greške je <ph name="ERROR" />. Čišćenje nije uspelo. Možda ćete morati da to uradite ručno.</translation>
 <translation id="2727977024730340865">Uređaj je uključen u punjač male snage. Punjenje baterije možda neće biti pouzdano.</translation>
+<translation id="2737538893171115082">Administrator je blokirao Steam za Chromebook (beta). Administrator mora da uključi ove smernice:</translation>
 <translation id="2743301740238894839">Pokreni</translation>
 <translation id="2743387203779672305">Kopiraj u memoriju</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3033912566804961911">Kombinujte sa: <ph name="DESK_NAME" /></translation>
 <translation id="3039939407102840004">Baterija pisaljke je na <ph name="PERCENTAGE" /> posto.</translation>
 <translation id="304097922505898963">Otvori aplikaciju Tasterske prečice</translation>
+<translation id="3040982432432547149">Pomozite nam da poboljšamo Steam za Chromebook</translation>
 <translation id="304417730895741346">Zakačene i otvorene aplikacije nalaze se na polici. Da biste zakačili aplikaciju za policu, kliknite desnim tasterom na nju ili dodirnite tačped sa dva prsta.</translation>
 <translation id="3045670165536837541">Izabrali ste gornji desni marker, koristite tastere sa strelicama za pomeranje</translation>
 <translation id="3047761520276763270">Probajte da kažete:</translation>
@@ -656,6 +664,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3181441307743005334">Restartovanje može da potraje</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Povezani ste sa jednim uređajem}one{Povezani ste sa # uređajem}few{Povezani ste sa # uređaja}other{Povezani ste sa # uređaja}}</translation>
 <translation id="3203405173652969239">Pristup pomoću prekidača je omogućen</translation>
+<translation id="3204648577100496185">Podaci povezani sa ovom aplikacijom će se možda ukloniti sa ovog uređaja</translation>
 <translation id="3206735939915734551">Uključi/isključi velika slova</translation>
 <translation id="3207953481422525583">Podešavanja korisnika</translation>
 <translation id="3208321278970793882">Aplikacija</translation>
@@ -677,6 +686,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3271554781793662131">Pretražite da biste umetnuli</translation>
 <translation id="3274634049061007184">Pregledajte aplikacije na telefonu</translation>
 <translation id="3279230909244266691">Ovo može da potraje par minuta. Pokreće se virtuelna mašina.</translation>
+<translation id="3285465040399788513">Nema dovoljno memorijskog prostora na uređaju da biste dovršili podešavanje. Oslobodite prostor, pa probajte ponovo.</translation>
 <translation id="3289364673986435196">Meni dugmeta za uključivanje</translation>
 <translation id="3289544412142055976">Linux aplikacije trenutno nisu podržane</translation>
 <translation id="3289674678944039601">Puni se preko adaptera</translation>
@@ -702,6 +712,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3368922792935385530">Povezan</translation>
 <translation id="3369111525500416043">Rok uskoro ističe</translation>
 <translation id="3371140690572404006">Uređaj sa USB priključkom tipa C (desni prednji port)</translation>
+<translation id="3373196968211632036">Steam za Chromebook (beta) nije dostupan za Google naloge za decu</translation>
 <translation id="3375634426936648815">Povezano</translation>
 <translation id="3386978599540877378">lupa preko celog ekrana</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -739,6 +750,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Polica je automatski sakrivena</translation>
+<translation id="3496797737329654668">Hajde da se igramo</translation>
 <translation id="3505066820268455558">Baterija se puni</translation>
 <translation id="3509391053705095206">Pronalaženje telefona nije uspelo. Proverite da li je Bluetooth na telefonu uključen.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
@@ -800,6 +812,7 @@ U suprotnom će ugrađeni tačped biti ponovo omogućen za <ph name="TIMEOUT_S
 <translation id="3633851487917460983">Otvori privremenu memoriju</translation>
 <translation id="363473492175527493">Zadatak koji je podešen za fokusiranje: <ph name="TASK_NAME" />. Pritisnite Enter da biste izmenili zadatak.</translation>
 <translation id="3638400994746983214">Uključuje/isključuje ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Treba da ažurirate Steam za Chromebook (beta). Restartujte Chromebook i probajte ponovo.</translation>
 <translation id="3649256019230929621">Smanjivanje prozora</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3702809606464356667">Prikazuju se prozori sa aktuelne radne površine. Pritisnite taster sa strelicom nagore da bi se prikazivali prozori sa svih radnih površina.</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">Zabava</translation>
+<translation id="370665806235115550">Učitava se...</translation>
 <translation id="3707093869106077605">Funkcije <ph name="UNAVAILABLE_DLC_ONE" /> i <ph name="UNAVAILABLE_DLC_TWO" /> nisu dostupne</translation>
 <translation id="3708186454126126312">Prethodno povezani</translation>
 <translation id="3712143870407382523">Odaberite prozor za ovu stranu</translation>
@@ -860,6 +874,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3831226344927851293">Izađite iz prikaza vodiča</translation>
 <translation id="383629559565718788">Pregledajte podešavanja tastature</translation>
 <translation id="384082539148746321">Želite da izbrišete šablon?</translation>
+<translation id="3841282988425489367">Podešavanje Steam-a za Chromebook (beta) nije uspelo</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, pa <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> ili <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">Nisu dostupne informacije o mreži</translation>
 <translation id="3848526302597027234">Pristupite sledećim dozvolama:</translation>
@@ -952,6 +967,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="4146671046252289537">Premestite iza sledeće reči</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4151054805501931758">Doterivanje portreta</translation>
+<translation id="4151449637210235443">Podelite sa nama utiske o nedavnoj igri</translation>
 <translation id="4156293514828496577">Preostalo je još <ph name="PERCENTAGE" />% baterije (oko <ph name="TIME_LEFT" />).
 Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation>
 <translation id="4158003972857765638">Organizujte na novoj radnoj površini</translation>
@@ -969,6 +985,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4192112279662688596">ili</translation>
 <translation id="4193857202545160520">Prikaži klikove i ključeve</translation>
 <translation id="4193969623755915875">Otvorite odeljak Pomoć u aplikaciji Istražite pomoću prečice <ph name="NEW_SHORTCUT" />.</translation>
+<translation id="4195001808989442226">Otvaranje Steam-a za Chromebook (beta) nije uspelo</translation>
 <translation id="4195579532193195633">Aktuelna verzija <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Nastavi prethodnu sesiju</translation>
 <translation id="4195877955194704651">Automatski klikovi na dugmad</translation>
@@ -984,6 +1001,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4221957499226645091"><ph name="APP_NAME" />, instalirana aplikacija, pauzirana</translation>
 <translation id="4228078597006700451">Kontrole nisu podešene</translation>
 <translation id="4230560241506423345">Novo</translation>
+<translation id="4231231258999726714">Podešava se Steam za Chromebook</translation>
 <translation id="4236726631849783264">Podsetnik o predloženim radnjama</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Režim pregleda</translation>
@@ -1068,6 +1086,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4471432286288241507">{0,plural, =0{Ažurirajte uređaj}=1{Ažurirajte uređaj u roku od 1 sekunde}one{Ažurirajte uređaj u roku od # sekunde}few{Ažurirajte uređaj u roku od # sekunde}other{Ažurirajte uređaj u roku od # sekundi}}</translation>
 <translation id="4472575034687746823">Započnimo</translation>
 <translation id="4473489370276014885">Google kontakti</translation>
+<translation id="4473996011558324141">procenjuje se vreme</translation>
 <translation id="4477350412780666475">Sledeća pesma</translation>
 <translation id="4477751544736611934">To može da dovede do troškova za prenos podataka.
 1 uređaj je povezan.</translation>
@@ -1109,6 +1128,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4585337515783392668">Zaustavi prebacivanje na nepoznati prijemnik</translation>
 <translation id="4596144739579517758">Tamna tema je isključena</translation>
 <translation id="4596442969149038771"><ph name="USER" /> deli</translation>
+<translation id="4598556348158889687">Upravljanje memorijskim prostorom</translation>
 <translation id="4610493115106525653">Dobar rezultat</translation>
 <translation id="4611292653554630842">Prijavi me</translation>
 <translation id="462160925400706389"><ph name="NAME" /> – povezano</translation>
@@ -1118,6 +1138,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4633636853437260449">Pritisnite Ctrl+W da biste izbrisali</translation>
 <translation id="4635501805800894201">{0,plural, =0{Promenite verziju uređaja u prethodnu verziju}=1{Promenite verziju uređaja u prethodnu verziju u roku od 1 sekunde}one{Promenite verziju uređaja u prethodnu verziju u roku od # sekunde}few{Promenite verziju uređaja u prethodnu verziju u roku od # sekunde}other{Promenite verziju uređaja u prethodnu verziju u roku od # sekundi}}</translation>
 <translation id="4642092649622328492">Napravite delimičan snimak ekrana</translation>
+<translation id="4642587497923912728">Steam za Chromebook (beta) je dostupan samo za nalog koji je prvi prijavljen na ovom Chromebook-u.</translation>
 <translation id="4644727592819780893">Region je premali da bi stala kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporučena aplikacija</translation>
 <translation id="4649019912155580914">Izmenili ste</translation>
@@ -1351,6 +1372,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5354804064646502504">To može da dovede do troškova za prenos podataka.
 Nijedan uređaj nije povezan.</translation>
+<translation id="5355498626146154079">Treba da uključite oznaku Borealis Enabled</translation>
 <translation id="5356963482258194581">Prelazite sa tamne na svetlu temu i obratno. Kliknite desnim tasterom na radnu površinu i izaberite Pozadina i stil.</translation>
 <translation id="536019650977002321">Administrator ne dozvoljava snimanje zvuka. Dodatne informacije potražite od administratora.</translation>
 <translation id="5361524080961918551">Fajlovi govora za jezik <ph name="LANGUAGE" /> su delimično preuzeti</translation>
@@ -1361,6 +1383,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5377367976106153749">Želite da uključite pristup kameri?</translation>
 <translation id="5378450298115733949">Još</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
+<translation id="5380526436444479273">Sačekajte par minuta i probajte ponovo</translation>
 <translation id="5383434787520761436">Nema fajlova na Google disku</translation>
 <translation id="5391307769715781764">Želite da zamenite sačuvanu radnu površinu?</translation>
 <translation id="5392327145184648521">Izračunava se procenat baterije...</translation>
@@ -1372,6 +1395,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5409208741270395213">Označite zadatak kao dovršen</translation>
 <translation id="5413656666631274079">Stranica podešavanja</translation>
 <translation id="5414198321558177633">Lista profila se osvežava. To može da potraje nekoliko minuta.</translation>
+<translation id="5415328625985164836">Ovo je beta program. Sada možete da koristite Steam da biste igrali neke igre na Chromebook-u.</translation>
 <translation id="5426063383988017631">Meni Podešavanja je zatvoren</translation>
 <translation id="5428899915242071344">Pokreni biranje</translation>
 <translation id="5429993543155113935">Prozori bez arhiviranja trenutno nisu podržani</translation>
@@ -1467,6 +1491,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5712132663381964774">Koristite aplikacije da biste obavljali sve potrebne radnje na <ph name="PRODUCT_NAME" />-u. Aplikacije možete da pronađete u Pokretaču.</translation>
 <translation id="571295407079589142">Podaci za mobilne uređaje su isključeni</translation>
 <translation id="5727460725221669831">Ako ste nedavno zaboravili lozinku ili promenili lozinku za Google nalog, probajte da vratite pristup svom korisničkom nalogu.</translation>
+<translation id="572914206753951782">Uverite se da je Chromebook ažuriran na najnoviju verziju. Zatim restartujte Chromebook i probajte ponovo.</translation>
 <translation id="5733630091161562207">Obaveštenje o dobrodošlici</translation>
 <translation id="573413375004481890">Ovaj uređaj ne može da podržava sve vaše ekrane, pa je veza sa jednim od njih prekinuta</translation>
 <translation id="574392208103952083">Srednja</translation>
@@ -1714,6 +1739,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6507042703812908515">Otvorite aplikaciju Tasterske prečice pomoću prečice <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Pređite na sledeći dostupni metod unosa</translation>
 <translation id="6508923215158854599">Uverite se da je Chromebook povezan na istu WiFi mrežu kao i Chromecast uređaj.</translation>
+<translation id="6511607461419653612">Restartujte Chromebook i probajte ponovo</translation>
 <translation id="6515727200518652613">Veza sa kamerom je prekinuta, pokušava da se ponovo poveže.</translation>
 <translation id="651753338596587143">Žao nam je, došlo je do greške pri instaliranju DLC neophodnih resursa. Probajte da restartujete, a ako se problem i dalje bude javljao, pošaljite povratne informacije sa #bruschetta u opisu. Kôd greške je <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Izaberite prozor za snimanje</translation>
@@ -1739,6 +1765,7 @@ Novo instaliranje</translation>
 <translation id="6574587113394758819">Obaveštenje aplikacije <ph name="APP_TITLE" /> je skriveno jer je zaštita od pregleda uključena</translation>
 <translation id="6574622320167699133">Otključan je telefonom. Dodirnite ili kliknite da biste pokrenuli Chromebook.</translation>
 <translation id="6578407462441924264">Bez imena</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% je završeno</translation>
 <translation id="6582012689384648647">Za personalizovane fokusirane plejliste dozvolite pristup YouTube Music-u</translation>
 <translation id="6582034443359256692">Izračunava se nivo napunjenosti baterije.</translation>
 <translation id="6585808820553845416">Sesija se završava za <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1788,6 +1815,7 @@ Novo instaliranje</translation>
 <translation id="6723839937902243910">Energija</translation>
 <translation id="672609503628871915">Prikaži šta je novo</translation>
 <translation id="6727969043791803658">Povezano, nivo baterije je <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="6731320427842222405">Ovo može da potraje par minuta</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera i mikrofon se koriste</translation>
@@ -1859,6 +1887,7 @@ Novo instaliranje</translation>
 <translation id="6961840794482373852">Tasterska prečica Ctrl + strelica nagore je promenjena. Da biste koristili taster Page Up, pritisnite taster <ph name="LAUNCHER_KEY_NAME" /> + strelica nagore.</translation>
 <translation id="696267987219125751">Uokvirivanje kamere je isključeno.</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
+<translation id="6967112302799758487">Sve aplikacije i igre instalirane pomoću Steam-a za Chromebook (beta) biće uklonjene sa ovog uređaja. Uklonićemo i podatke povezane sa ovim aplikacijama i igrama. Pre deinstaliranja obavezno napravite rezervne kopije sačuvanih aplikacija i igara.</translation>
 <translation id="6972629891077993081">Uređaji sa interfejsom</translation>
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6980402667292348590">insert</translation>
@@ -1890,6 +1919,7 @@ Novo instaliranje</translation>
 <translation id="7067196344162293536">Automatski rotiraj</translation>
 <translation id="7076293881109082629">Prijavljivanje</translation>
 <translation id="7076878155205969899">Isključi zvuk</translation>
+<translation id="7083774521940805477">Steam za Chromebook (beta) nije dostupan na Chromebook-u.</translation>
 <translation id="7083848064787091821">Fokus</translation>
 <translation id="7084678090004350185">Uključite/isključite hotspot. Hotspot je uključen, uređaji (<ph name="DEVICECOUNT" />) su povezani.</translation>
 <translation id="7086931198345821656">Ovo ažuriranje zahteva da obavite Powerwash na: <ph name="DEVICE_TYPE" />. Svi podaci će se izbrisati. Saznajte više o najnovijem ažuriranju za: <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -1907,12 +1937,14 @@ Novo instaliranje</translation>
 <translation id="7130207228079676353">NAJVEROVATNIJE</translation>
 <translation id="7131634465328662194">Odjavićemo vas automatski.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
+<translation id="7143409552554575716">ChromeOS oznake</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
 <translation id="7144942256906679589">Status baterije</translation>
 <translation id="7145639536026937076">Baterija je na <ph name="PERCENTAGE" />% i puni se. Ušteda baterije je uključena.</translation>
 <translation id="7147587499155271409">Nema istorije pregledanja</translation>
 <translation id="7147657298465433425">Da biste pristupili F tasterima, pritisnite taster fn + tastere u gornjem redu</translation>
 <translation id="7149149900052329230">Upravljajte lokalnim fajlovima i fajlovima sa Google diska, sve u aplikaciji Fajlovi.</translation>
+<translation id="7154020516215182599">Pošaljite povratne informacije ili opišite problem. Ako je to moguće, uvrstite korake za izazivanje istog problema.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2089,6 +2121,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7726391492136714301">Pregledajte obaveštenja i aplikacije sa telefona</translation>
 <translation id="7727952505535211425">Otvori veb-sajt iz trake za adresu na novoj kartici</translation>
 <translation id="7728657226117099693">Isključi velika slova</translation>
+<translation id="7732702411411810416">Proverite da li ste povezani na internet i probajte ponovo.</translation>
 <translation id="7742327441377685481">Nema obaveštenja</translation>
 <translation id="7748275671948949022">Istakni dugme pokretača na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalan broj radnih površina.</translation>
@@ -2123,6 +2156,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7866482334467279021">uključeno</translation>
 <translation id="7870790288828963061">Nije pronađena nijedna kiosk aplikacija sa novijom verzijom. Nema šta da se ažurira. Uklonite USB memoriju.</translation>
 <translation id="7872786842639831132">Isključeno</translation>
+<translation id="7873386145597434863">Steam za Chromebook</translation>
 <translation id="7875575368831396199">Izgleda da je isključen Bluetooth na uređaju <ph name="DEVICE_TYPE" />. Uključite Bluetooth da biste koristili Phone Hub.</translation>
 <translation id="7884446017008693258">Podešavanja hotspota</translation>
 <translation id="7884902759927478774">Otkaži prevlačenje kartica</translation>
@@ -2472,6 +2506,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8980862970816311842">Premestite ikonu aplikacije u folder u mreži aplikacija ili iz njega</translation>
 <translation id="8982906748181120328">Vidljivo u blizini</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Dobro došli u Steam za Chromebook</translation>
 <translation id="8990809378771970590">Koristi se <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Pritisnite fn + taster za brzo umetanje ili Shift da biste otkazali.</translation>
 <translation id="899350903320462459">Otključajte uređaj pomoću ID-a prijavljivanja <ph name="LOGIN_ID" /> da biste dobili obaveštenje</translation>
@@ -2488,6 +2523,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9047624247355796468">Otvorite podešavanja za <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth nije dostupan</translation>
 <translation id="9050999376345823055">Pritisnite „.“ da biste otpustili</translation>
+<translation id="9061694916020926968">Morate da budete prijavljeni na Google nalog da biste koristili Steam za Chromebook (beta). Prijavite se i probajte ponovo.</translation>
 <translation id="906458777597946297">Povećavanje prozora</translation>
 <translation id="9065203028668620118">Izmeni</translation>
 <translation id="9068849894565669697">Izaberite boju</translation>

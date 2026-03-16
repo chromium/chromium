@@ -240,6 +240,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="200114059308480249">Bao gồm văn bản xung quanh trong các lượt tìm kiếm của Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Thẻ ẩn danh đã tắt tiếng và được ghim</translation>
 <translation id="2021896219286479412">Kiểm soát trang toàn màn hình</translation>
+<translation id="2024195579772565064">Xoá công cụ tìm kiếm</translation>
 <translation id="2029669011553795746">Đã mở chế độ chọn nhận thông báo mẹo hay trên một nửa màn hình</translation>
 <translation id="2038563949887743358">Bật Yêu cầu trang web dành cho máy tính</translation>
 <translation id="204321170514947529"><ph name="APP_NAME" /> cũng có dữ liệu trong Chrome</translation>
@@ -557,6 +558,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3384347053049321195">Chia sẻ hình ảnh</translation>
 <translation id="3387650086002190359">Tải xuống <ph name="FILE_NAME" /> không thành công do lỗi hệ thống tệp.</translation>
 <translation id="3414952576877147120">Kích thước:</translation>
+<translation id="3417835166382867856">Tìm kiếm thẻ</translation>
 <translation id="3430670036890315772">Nếu bạn tắt khoá hồ sơ, thông tin đã lưu sẽ bị xoá</translation>
 <translation id="3435465986463792564">Có nhiều cửa sổ? Bạn có thể quản lý các trang web đó tại đây</translation>
 <translation id="3435575784518354875">Để tiếp tục sử dụng mật khẩu của bạn, hãy xuất mật khẩu ngay bây giờ, cập nhật Dịch vụ Google Play rồi nhập lại mật khẩu vào Trình quản lý mật khẩu của Google. <ph name="BEGIN_LINK" />Xem toàn bộ hướng dẫn<ph name="END_LINK" />.</translation>
@@ -1442,6 +1444,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6896758677409633944">Sao chép</translation>
 <translation id="6898797562238201317">Sử dụng cụm mật khẩu của riêng bạn để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google</translation>
 <translation id="6900532703269623216">Bảo vệ nâng cao</translation>
+<translation id="6900654715912436255">Bạn có chắc chắn muốn xoá công cụ tìm kiếm này không?</translation>
 <translation id="6903907808598579934">Bật đồng bộ hóa</translation>
 <translation id="6906448540340261898">Đảm bảo bạn luôn có thể sử dụng mật khẩu trong Tài khoản Google</translation>
 <translation id="6908230663105268638">Cho phép <ph name="SITE_NAME" /> gửi thông báo</translation>

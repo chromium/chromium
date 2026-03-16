@@ -181,6 +181,7 @@
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="1557622599341396706">డెస్క్ పేరును చూపండి</translation>
 <translation id="1569384531973824928">కెమెరా, మైక్రోఫోన్ అనుమతులతో ఇది అన్ని యాప్‌లు, వెబ్‌సైట్‌లకు యాక్సెస్‌ను అనుమతిస్తుంది. మీరు వెబ్ పేజీని రిఫ్రెష్ చేయాల్సి రావచ్చు లేదా యాప్‌ను రీస్టార్ట్ చేయాల్సి రావచ్చు.</translation>
+<translation id="1570235441606255261">Steam ఇన్‌స్టాలర్</translation>
 <translation id="1571697193564730395">'అంతరాయం కలిగించవద్దు'ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">ఎంచుకున్న ఎడమ అంచు హ్యాండిల్‌ను జరపడానికి, బాణం గుర్తు కీలను ఉపయోగించండి</translation>
 <translation id="1576623706766186887">మ్యాగ్నిఫైయర్ ఆన్‌లో ఉన్నప్పుడు జూమ్ - అవుట్ చేయండి</translation>
@@ -201,6 +202,7 @@
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> పరికరాలు</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
+<translation id="1642895994345928121">ఈ యాప్‌ను తెరవడానికి తగినంత పరికర స్టోరేజ్ లేదు. స్పేస్‌ను ఖాళీ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="1647986356840967552">మునుపటి పేజీ</translation>
 <translation id="1651914502370159744">హిస్టరీ పేజీని తెరవండి</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
@@ -401,6 +403,7 @@
 <translation id="2383521554963939360">యాప్, ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="2386292613071805067">పేజీలో ఉన్న మొత్తాన్ని ఎంచుకోండి</translation>
 <translation id="2389423187722941333">Geminiని టోగుల్ చేయండి</translation>
+<translation id="2391805183137601570">Steamను తెరవండి</translation>
 <translation id="2392659840443812875">అందుబాటులో ఉన్న హాట్‌స్పాట్ ఏదీ లేదు. మీ పరికరం సమీపంలో ఉందని, బ్లూటూత్ ఆన్ చేసి ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="2397416548179033562">Chrome మెనూను చూపు</translation>
 <translation id="240006516586367791">మీడియా నియంత్రణలు</translation>
@@ -422,12 +425,14 @@
 <translation id="243878895369688216">నిన్న తెరిచారు</translation>
 <translation id="2440978926514840421">GIF రికార్డింగ్ తీసుకోబడింది</translation>
 <translation id="2441427462554639370">చాలా తక్కువ స్టోరేజ్ స్పేస్ కారణంగా రికార్డ్ చేయడం ముగించబడింది</translation>
+<translation id="2447587550790814052">మీరు ఇప్పుడు 'Steam for Chromebook' (బీటా)ను ఉపయోగించవచ్చు</translation>
 <translation id="2449089818483227734">బ్యాటరీ తక్కువ ఉంది</translation>
 <translation id="2450205753526923158">స్క్రీన్‌షాట్ మోడ్</translation>
 <translation id="2453860139492968684">ముగించు</translation>
 <translation id="2455994958736234930">అడ్రస్ బార్‌కు www., .com‌ను జోడించి, ఆపై వెబ్‌సైట్‌ను తెరవండి</translation>
 <translation id="2456008742792828469">క్యాలెండర్, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">యూజర్ సమాచారానికి వెళ్లండి</translation>
+<translation id="2462332841984057083">Steam ఇప్పటికే సెటప్ చేయబడుతోంది. సెటప్ పూర్తయ్యే వరకు వేచి ఉండండి.</translation>
 <translation id="2465145153332031561">బ్యాటరీ స్థితి <ph name="BATTERY_HEALTH_PERCENTAGE" />%, సైకిల్ కౌంట్ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">రిజల్యూషన్‌ను ధృవీకరించండి</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" />‌ను ఇన్సర్ట్ చేయండి</translation>
@@ -439,6 +444,7 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> ప్రివ్యూ. యాక్టివ్ డెస్క్.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) రిజల్యూషన్‌కు మార్చబడింది. నిర్ధారించకుండా, మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />‌లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="2487915095798731898">చేర్చు</translation>
+<translation id="2494555621641843783">Steamను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు</translation>
 <translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2499445554382787206">డెస్క్ ప్రొఫైల్ మెనూ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">స్టిక్కీ కీలు</translation>
@@ -512,6 +518,7 @@
 <translation id="2727175239389218057">రిప్లయి ఇవ్వండి</translation>
 <translation id="2727744317940422214">క్షమించండి, ఏదో తప్పు జరిగింది. దయచేసి వివరణలో #bruschettaతో ఫీడ్‌బ్యాక్‌ను ఫైల్ చేయండి. ఎర్రర్ కోడ్ <ph name="ERROR" />. క్లీనింగ్ చేయడం విఫలమైంది, మీరు దీన్ని మాన్యువల్‌గా చేయాల్సి రావచ్చు.</translation>
 <translation id="2727977024730340865">తక్కువ-పవర్ గల ఛార్జర్‌కు ప్లగిన్ చేయబడింది. బ్యాటరీ ఛార్జింగ్ విశ్వసనీయంగా ఉండకపోవచ్చు.</translation>
+<translation id="2737538893171115082">'Steam for Chromebook' (బీటా)ను మీ అడ్మినిస్ట్రేటర్ బ్లాక్ చేశారు. మీ అడ్మినిస్ట్రేటర్ ఈ పాలసీలను ఆన్ చేయాలి:</translation>
 <translation id="2743301740238894839">ప్రారంభించండి</translation>
 <translation id="2743387203779672305">క్లిప్‌బోర్డ్‌కు కాపీ చేయి</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -607,6 +614,7 @@
 <translation id="3033912566804961911"><ph name="DESK_NAME" />‌తో కలపండి</translation>
 <translation id="3039939407102840004">స్టయిలస్ బ్యాటరీ <ph name="PERCENTAGE" /> శాతం ఉంది.</translation>
 <translation id="304097922505898963">కీ షార్ట్‌కట్‌ల యాప్‌ను తెరవండి</translation>
+<translation id="3040982432432547149">Chromebook కోసం Steam గేమ్‌ను మెరుగుపరచడంలో మాకు సహాయపడండి</translation>
 <translation id="304417730895741346">మీరు పిన్ చేసిన, తెరిచిన యాప్‌లు షెల్ఫ్‌లో ఉన్నాయి. యాప్‌ను షెల్ఫ్‌కి పిన్ చేయడానికి, యాప్‌పై కుడి క్లిక్ చేయండి లేదా రెండు వేళ్లతో మీ టచ్‌ప్యాడ్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="3045670165536837541">ఎంచుకున్న ఎగువ కుడి హ్యాండిల్‌ను జరపడానికి, బాణం గుర్తు కీలను ఉపయోగించండి</translation>
 <translation id="3047761520276763270">ఇలా చెప్పి ట్రై చేయండి:</translation>
@@ -656,6 +664,7 @@
 <translation id="3181441307743005334">రీస్టార్ట్ చేయడానికి కొంత సమయం పట్టవచ్చు</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{పరికరానికి కనెక్ట్ చేయబడింది}other{# పరికరాలకు కనెక్ట్ చేయబడింది}}</translation>
 <translation id="3203405173652969239">స్విచ్ యాక్సెస్ ఎనేబుల్ చేయబడింది</translation>
+<translation id="3204648577100496185">ఈ యాప్‌తో అనుబంధించబడిన డేటా ఈ పరికరం నుండి తీసివేయబడవచ్చు</translation>
 <translation id="3206735939915734551">Caps Lockను ఆన్ చేయండి/ఆఫ్ చేయండి</translation>
 <translation id="3207953481422525583">యూజర్ సెట్టింగ్‌లు</translation>
 <translation id="3208321278970793882">యాప్</translation>
@@ -677,6 +686,7 @@
 <translation id="3271554781793662131">ఇన్సర్ట్ చేయడానికి సెర్చ్ చేయండి</translation>
 <translation id="3274634049061007184">మీ ఫోన్‌లోని యాప్‌లను చూడండి</translation>
 <translation id="3279230909244266691">ఈ ప్రాసెస్‌కు కొన్ని నిమిషాలు పట్టవచ్చు. వర్చ్యువల్ మెషీన్‌ను ప్రారంభిస్తోంది.</translation>
+<translation id="3285465040399788513">సెటప్‌ను పూర్తి చేయడానికి పరికరంలో తగినంత స్టోరేజ్ లేదు. స్పేస్‌ను ఖాళీ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3289364673986435196">పవర్ మెనూ</translation>
 <translation id="3289544412142055976">ప్రస్తుతం Linux యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="3289674678944039601">అడాప్టర్ ద్వారా ఛార్జ్ అవుతోంది</translation>
@@ -702,6 +712,7 @@
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369111525500416043">గడువు తేదీ త్వరలో రానుంది</translation>
 <translation id="3371140690572404006">USB-C పరికరం (కుడివైపు ముందు పోర్ట్)</translation>
+<translation id="3373196968211632036">పిల్లల Google ఖాతాలకు 'Steam for Chromebook' (బీటా) అందుబాటులో లేదు</translation>
 <translation id="3375634426936648815">కనెక్ట్ చేయబడింది</translation>
 <translation id="3386978599540877378">ఫుల్-స్క్రీన్‌ మాగ్నిఫైయర్</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -739,6 +750,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">అర ఆటోమేటిక్‌గా దాచి పెట్టబడుతుంది</translation>
+<translation id="3496797737329654668">గేమింగ్ మొదలుపెడదాం</translation>
 <translation id="3505066820268455558">బ్యాటరీ ఛార్జ్ అవుతోంది</translation>
 <translation id="3509391053705095206">మీ ఫోన్‌ను కనుగొనడం సాధ్యపడలేదు. మీ ఫోన్‌లో బ్లూటూత్ ఆన్‌లో ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="3510164367642747937">మౌస్ కర్సర్‌ను హైలైట్ చేయి</translation>
@@ -800,6 +812,7 @@
 <translation id="3633851487917460983">క్లిప్‌బోర్డ్‌ను తెరువు</translation>
 <translation id="363473492175527493">ఫోకస్ చేయడాన్ని ఆన్ చేయడానికి టాస్క్ సెట్ చేయబడింది: <ph name="TASK_NAME" />. టాస్క్‌ను ఎంటర్ చేయడానికి ఎంటర్‌ను నొక్కండి.</translation>
 <translation id="3638400994746983214">గోప్యతా స్క్రీన్‌ను టోగుల్ చేస్తుంది. <ph name="STATE_TEXT" />.</translation>
+<translation id="3641070112313110357">Chromebook కోసం Steamను (బీటా) అప్‌డేట్ చేయాలి. మీ Chromebookను రీస్టార్ట్ చేసి, మళ్ళీ ట్రై చేయండి.</translation>
 <translation id="3649256019230929621">విండోను కుదించు</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
@@ -823,6 +836,7 @@
 <translation id="3702809606464356667">ప్రస్తుత డెస్క్ నుండి విండోలను చూపుతోంది, అన్ని డెస్క్‌ల నుండి విండోలను చూపడానికి పై వైపు బాణం కీని నొక్కండి</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706423975342040244">వినోదం</translation>
+<translation id="370665806235115550">లోడ్ అవుతోంది...</translation>
 <translation id="3707093869106077605"><ph name="UNAVAILABLE_DLC_ONE" />, <ph name="UNAVAILABLE_DLC_TWO" /> అందుబాటులో లేవు.</translation>
 <translation id="3708186454126126312">ఇంతకు మునుపు కనెక్ట్ చేయబడినవి</translation>
 <translation id="3712143870407382523">ఈ వైపు ఏ విండో కనిపించాలో ఎంచుకోండి</translation>
@@ -861,6 +875,7 @@
 <translation id="3831226344927851293">ట్యుటోరియల్ వీక్షణ నుండి ఎగ్జిట్ అవ్వండి</translation>
 <translation id="383629559565718788">కీబోర్డ్ సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="384082539148746321">టెంప్లేట్‌ను తొలగించాలా?</translation>
+<translation id="3841282988425489367">'Steam for Chromebook' (బీటా)ను సెటప్ చేయడం సాధ్యపడదు</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> తర్వాత <ph name="KEY_ONE" /> లేదా <ph name="KEY_TWO" /> లేదా <ph name="KEY_THREE" /> లేదా <ph name="KEY_FOUR" /></translation>
 <translation id="3846575436967432996">నెట్‌వర్క్ సమాచారం అందుబాటులో లేదు</translation>
 <translation id="3848526302597027234">ఈ కింది అనుమతులను యాక్సెస్ చేయండి:</translation>
@@ -952,6 +967,7 @@
 <translation id="4146671046252289537">తర్వాతి పదం ముగింపునకు తరలించు</translation>
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
 <translation id="4151054805501931758">పోర్ట్రెయిట్ టచ్-అప్</translation>
+<translation id="4151449637210235443">మీ తాజా గేమ్ ఆడే విధానం గురించి మాకు తెలియజేయండి</translation>
 <translation id="4156293514828496577">బ్యాటరీ <ph name="PERCENTAGE" />% మిగిలి ఉంది (<ph name="TIME_LEFT" /> సమయం మిగిలి ఉంది).
 కొన్ని ఫీచర్‌లు బ్యాటరీ లైఫ్‌ను పొడిగించడానికి పరిమితం చేయబడ్డాయి.</translation>
 <translation id="4158003972857765638">కొత్త డెస్క్‌లో ఆర్గనైజ్ చేయండి</translation>
@@ -969,6 +985,7 @@
 <translation id="4192112279662688596">లేదా</translation>
 <translation id="4193857202545160520">క్లిక్‌లు, కీలను చూడండి</translation>
 <translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />"ను ఉపయోగించి అన్వేషణ యాప్‌లో ఉన్న "సహాయ" విభాగాన్ని తెరవండి.</translation>
+<translation id="4195001808989442226">'Chromebook కోసం Steam'ను (బీటా) తెరవడం సాధ్యపడలేదు</translation>
 <translation id="4195579532193195633">ప్రస్తుత వెర్షన్ <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">ఇంతకు ముందు ఆపిన చోట నుండే కొనసాగించండి</translation>
 <translation id="4195877955194704651">ఆటోమేటిక్ క్లిక్‌ల బటన్</translation>
@@ -984,6 +1001,7 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ఇన్‌స్టాల్ చేయబడిన యాప్, పాజ్ చేయబడింది</translation>
 <translation id="4228078597006700451">కంట్రోల్స్ సెటప్ చేయబడలేదు</translation>
 <translation id="4230560241506423345">కొత్తది</translation>
+<translation id="4231231258999726714">'Steam for Chromebook'ను సెటప్ చేస్తోంది</translation>
 <translation id="4236726631849783264">సూచించిన చర్యల గురించి రిమైండర్</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">స్థూలదృష్టి మోడ్</translation>
@@ -1068,6 +1086,7 @@
 <translation id="4471432286288241507">{0,plural, =0{ఇప్పుడే డివైజ్‌ను అప్‌డేట్ చేయండి}=1{1 సెకను లోపు డివైజ్‌ను అప్‌డేట్ చేయండి}other{# సెకన్ల లోపు డివైజ్‌ను అప్‌డేట్ చేయండి}}</translation>
 <translation id="4472575034687746823">ప్రారంభించండి</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
+<translation id="4473996011558324141">అంచనా సమయం</translation>
 <translation id="4477350412780666475">తర్వాతి ట్రాక్</translation>
 <translation id="4477751544736611934">దీనికి డేటా ఖర్చు అవ్వచ్చు.
 1 పరికరం కనెక్ట్ అయింది.</translation>
@@ -1109,6 +1128,7 @@
 <translation id="4585337515783392668">తెలియని రిసీవర్‌లో ప్రసారం చేయడాన్ని ఆపివేయి</translation>
 <translation id="4596144739579517758">డార్క్ థీమ్‌ ఆఫ్‌లో ఉంది</translation>
 <translation id="4596442969149038771"><ph name="USER" /> షేర్ చేశారు</translation>
+<translation id="4598556348158889687">స్టోరేజ్‌ నిర్వహణ</translation>
 <translation id="4610493115106525653">మంచి ఫలితం</translation>
 <translation id="4611292653554630842">లాగిన్ చేయండి</translation>
 <translation id="462160925400706389"><ph name="NAME" /> కనెక్ట్ అయింది</translation>
@@ -1118,6 +1138,7 @@
 <translation id="4633636853437260449">తొలగించడానికి Ctrl + Wను నొక్కండి</translation>
 <translation id="4635501805800894201">{0,plural, =0{ఇప్పుడే డివైజ్‌ను మునుపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}=1{1 సెకను లోపు డివైజ్‌ను మునపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}other{# సెకన్ల లోపు డివైజ్‌ను మునపటి వెర్షన్‌కు అప్‌డేట్ చేయండి}}</translation>
 <translation id="4642092649622328492">పాక్షిక స్క్రీన్‌షాట్ తీయండి</translation>
+<translation id="4642587497923912728">'Steam for Chromebook' (బీటా) అనేది ఈ Chromebookలో మొదట సైన్ ఇన్ చేసిన ఖాతాకు మాత్రమే అందుబాటులో ఉంటుంది.</translation>
 <translation id="4644727592819780893">ప్రాంతం, కెమెరాలో చూపించలేనంత చిన్నదిగా ఉంది</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, యాప్ సిఫార్సు</translation>
 <translation id="4649019912155580914">మీరు ఎడిట్ చేసినది</translation>
@@ -1351,6 +1372,7 @@
 <translation id="5352250171825660495">డార్క్ థీమ్‌ ఆన్‌లో ఉంది</translation>
 <translation id="5354804064646502504">దీనికి డేటా ఖర్చు అవ్వచ్చు.
 పరికరాలు ఏవీ కనెక్ట్ కాలేదు.</translation>
+<translation id="5355498626146154079">మీరు "బొరియాలిస్ ఎనేబుల్డ్" ఫ్లాగ్‌ను ఆన్ చేయాలి</translation>
 <translation id="5356963482258194581">ముదురు రంగు, లేత రంగు రూపాల మధ్య స్విచ్ అవ్వండి. డెస్క్‌టాప్‌పై కుడి క్లిక్ చేసి, వాల్‌పేపర్ &amp; స్టయిల్‌ను ఎంచుకోండి.</translation>
 <translation id="536019650977002321">మీ అడ్మినిస్ట్రేటర్ ఆడియో క్యాప్చర్‌ను అనుమతించలేదు. మరింత సమాచారం కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్స్ పాక్షికంగా డౌన్‌లోడ్ చేయబడ్డాయి</translation>
@@ -1361,6 +1383,7 @@
 <translation id="5377367976106153749">కెమెరా యాక్సెస్‌ను ఆన్ చేయాలా?</translation>
 <translation id="5378450298115733949">మరిన్ని</translation>
 <translation id="5379115545237091094">అనేకసార్లు ప్రయత్నించారు</translation>
+<translation id="5380526436444479273">కొద్ది నిమిషాలు ఆగి, మళ్లీ ట్రై చేయండి</translation>
 <translation id="5383434787520761436">Google Drive ఫైళ్లు ఏవీ లేవు</translation>
 <translation id="5391307769715781764">సేవ్ చేసిన డెస్క్‌ను రీప్లేస్ చేయాలా?</translation>
 <translation id="5392327145184648521">బ్యాటరీ %ను కాలిక్యులేట్ చేస్తోంది...</translation>
@@ -1372,6 +1395,7 @@
 <translation id="5409208741270395213">టాస్క్ పూర్తయినట్లు మార్క్ చేయండి</translation>
 <translation id="5413656666631274079">సెట్టింగ్‌ల పేజీ</translation>
 <translation id="5414198321558177633">ప్రొఫైల్ లిస్ట్‌ను రిఫ్రెష్ చేస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
+<translation id="5415328625985164836">ఇది బీటా ప్రోగ్రామ్. మీరు ఇప్పుడు మీ Chromebookలో కొన్ని గేమ్‌లను ఆడటానికి Steamను ఉపయోగించవచ్చు.</translation>
 <translation id="5426063383988017631">సెట్టింగ్‌ల మెనూ మూసివేయబడింది</translation>
 <translation id="5428899915242071344">ఎంచుకోవడం ప్రారంభించండి</translation>
 <translation id="5429993543155113935">అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
@@ -1467,6 +1491,7 @@
 <translation id="5712132663381964774">మీ <ph name="PRODUCT_NAME" />లో మీ అవసరానికి తగిన విధంగా ప్రతి పనిని చేయడానికి యాప్‌లను ఉపయోగించండి. మీరు లాంచర్‌లో మీ యాప్‌లను కనుగొనవచ్చు.</translation>
 <translation id="571295407079589142">మొబైల్ డేటా ఆఫ్ చేయబడింది</translation>
 <translation id="5727460725221669831">మీరు మీ పాస్‌వర్డ్‌ను మరిచిపోతే లేదా ఇటీవల మీ Google ఖాతా పాస్‌వర్డ్‌ను మార్చినట్లయితే, ఈ యూజర్‌ను రికవర్ చేయడానికి ట్రై చేయండి.</translation>
+<translation id="572914206753951782">మీ Chromebook తాజా వెర్షన్‌లో ఉందని నిర్ధారించుకోండి. ఆపై, మీ Chromebookను రీస్టార్ట్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="5733630091161562207">స్వాగత నోటిఫికేషన్</translation>
 <translation id="573413375004481890">ఈ పరికరం మీ అన్ని ప్రదర్శన స్క్రీన్‌లకు మద్దతు ఇవ్వలేదు, కాబట్టి ఒకటి డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="574392208103952083">మధ్యస్థం</translation>
@@ -1714,6 +1739,7 @@
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />"తో కీ షార్ట్‌కట్‌ల యాప్‌ను తెరవండి.</translation>
 <translation id="6507618042428827377">తర్వాతి అందుబాటులో ఉన్న ఇన్‌పుట్ విధానానికి స్విచ్ అవ్వండి</translation>
 <translation id="6508923215158854599">మీ Chromecast పరికరం ఉన్న అదే Wi-Fi నెట్‌వర్క్‌లో మీ Chromebook ఉందని నిర్ధారించుకోండి.</translation>
+<translation id="6511607461419653612">మీ Chromebookను రీస్టార్ట్ చేసి, మళ్ళీ ట్రై చేయండి</translation>
 <translation id="6515727200518652613">కెమెరా డిస్‌కనెక్ట్ అయింది, తిరిగి కనెక్ట్ చేయడానికి ట్రై చేస్తున్నాను.</translation>
 <translation id="651753338596587143">క్షమించండి, DLC డిపెండెన్సీ‌లను ఇన్‌స్టాల్ చేయడంలో ఏదో పొరపాటు జరిగింది. దయచేసి రీబూట్ చేయడానికి ట్రై చేయండి, సమస్య కొనసాగితే వివరణలో #bruschettaతో ఫీడ్‌బ్యాక్‌ను ఫైల్ చేయండి. ఎర్రర్ కోడ్ <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">క్యాప్చర్ చేయడానికి విండోను ఎంచుకోండి</translation>
@@ -1739,6 +1765,7 @@
 <translation id="6574587113394758819">వీక్షణ ప్రొటెక్షన్ ఆన్‌లో ఉంది కాబట్టి <ph name="APP_TITLE" /> నోటిఫికేషన్ దాచబడింది</translation>
 <translation id="6574622320167699133">మీ ఫోన్ ద్వారా అన్‌లాక్ చేయబడింది. ఎంటర్ చేయడానికి ట్యాప్ లేదా క్లిక్ చేయండి.</translation>
 <translation id="6578407462441924264">పేరు లేదు</translation>
+<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% పూర్తయింది</translation>
 <translation id="6582012689384648647">వ్యక్తిగతీకరించిన ఫోకస్ ప్లేలిస్ట్‌ల కోసం, YouTube Musicకు యాక్సెస్ ఇవ్వండి</translation>
 <translation id="6582034443359256692">బ్యాటరీ ఛార్జ్ లెవెల్‌ను కాలిక్యులేట్ చేస్తోంది.</translation>
 <translation id="6585808820553845416">సెషన్ <ph name="SESSION_TIME_REMAINING" />లో ముగుస్తుంది.</translation>
@@ -1788,6 +1815,7 @@
 <translation id="6723839937902243910">పవర్</translation>
 <translation id="672609503628871915">కొత్తగా ఏమి ఉన్నాయో చూడండి</translation>
 <translation id="6727969043791803658">కనెక్ట్ చేయబడింది, <ph name="BATTERY_PERCENTAGE" />% బ్యాటరీ ఉంది</translation>
+<translation id="6731320427842222405">దీనికి కొన్ని నిమిషాలు పట్టవచ్చు</translation>
 <translation id="6732087373923685049">కెమెరా</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">కెమెరా, మైక్రోఫోన్ ఉపయోగంలో ఉన్నాయి</translation>
@@ -1859,6 +1887,7 @@
 <translation id="6961840794482373852">Alt +పై వైపు బాణం కీబోర్డ్ షార్ట్‌కట్ మార్చబడింది. పేజీ పై కీని ఉపయోగించడానికి, <ph name="LAUNCHER_KEY_NAME" /> కీ + పై వైపు బాణం కీను నొక్కండి.</translation>
 <translation id="696267987219125751">కెమెరా ఫ్రేమింగ్ ఆఫ్‌లో ఉంది.</translation>
 <translation id="6965382102122355670">సరే</translation>
+<translation id="6967112302799758487">'Steam for Chromebook' (బీటా)ను ఉపయోగించి ఇన్‌స్టాల్ చేసిన ఏవైనా యాప్‌లు, గేమ్‌లు ఈ పరికరం నుండి తీసివేయబడతాయి. ఈ యాప్‌లతో, గేమ్‌లతో అనుబంధించిన డేటా సైతం తీసివేయబడుతుంది. అన్‌ఇన్‌స్టాల్ చేసే ముందు సేవ్ చేసిన యాప్‌లను, గేమ్‌లను బ్యాకప్ చేయాలని నిర్ధారించుకోండి.</translation>
 <translation id="6972629891077993081">HID పరికరాలు</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">ఇన్‌సర్ట్ కీ</translation>
@@ -1890,6 +1919,7 @@
 <translation id="7067196344162293536">ఆటోమేటిక్‌గా తిప్పు</translation>
 <translation id="7076293881109082629">సైన్ ఇన్ చేస్తోంది</translation>
 <translation id="7076878155205969899">ధ్వనిని మ్యూట్ చేస్తుంది</translation>
+<translation id="7083774521940805477">'Steam for Chromebook' (బీటా) అనేది మీ Chromebookలో అందుబాటులో లేదు.</translation>
 <translation id="7083848064787091821">ఫోకస్</translation>
 <translation id="7084678090004350185">హాట్‌స్పాట్‌ను టోగుల్ చేయండి. హాట్‌స్పాట్ ఆన్‌లో ఉంది, <ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయి ఉన్నాయి.</translation>
 <translation id="7086931198345821656">ఈ అప్‌డేట్‌కు మీ <ph name="DEVICE_TYPE" />ను పవర్‌వాష్ చేయడం అవసరం. మొత్తం డేటా తొలగించబడుతుంది. తాజా <ph name="SYSTEM_APP_NAME" /> అప్‌డేట్ గురించి మరింత తెలుసుకోండి.</translation>
@@ -1907,12 +1937,14 @@
 <translation id="7130207228079676353">అత్యంత ఇష్టపడేవి</translation>
 <translation id="7131634465328662194">మీరు ఆటోమేటిక్‌గా సైన్ అవుట్ చేయబడతారు.</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
+<translation id="7143409552554575716">ChromeOS ఫ్లాగ్‌లు</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7144942256906679589">బ్యాటరీ స్టేటస్</translation>
 <translation id="7145639536026937076">బ్యాటరీ <ph name="PERCENTAGE" />% ఉంది, ఛార్జ్ అవుతోంది. బ్యాటరీ సేవర్ ఆన్‌లో ఉంది.</translation>
 <translation id="7147587499155271409">బ్రౌజింగ్ హిస్టరీ ఏదీ లేదు</translation>
 <translation id="7147657298465433425">F కీలను యాక్సెస్ చేయడానికి, fn కీ + పైన ఉండే అడ్డు వరుసలోని కీలను నొక్కండి</translation>
 <translation id="7149149900052329230">Files యాప్‌లో మీ లోకల్ ఫైల్స్, మీ Google Drive ఫైల్స్‌ను మేనేజ్ చేయండి.</translation>
+<translation id="7154020516215182599">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి. అవసరమైతే, మీ సమస్య ఎలా ఏర్పడింది అనే దానిని దశల వారిగా చేర్చండి.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -2088,6 +2120,7 @@
 <translation id="7726391492136714301">మీ ఫోన్‌లోని నోటిఫికేషన్‌లు, యాప్‌లను చూడండి</translation>
 <translation id="7727952505535211425">వెబ్‌సైట్‌ను కొత్త ట్యాబ్‌లోని అడ్రస్ బార్‌లో తెరవండి</translation>
 <translation id="7728657226117099693">Caps Lockను ఆఫ్ చేయండి</translation>
+<translation id="7732702411411810416">మీరు ఇంటర్నెట్‌కు కనెక్ట్ అయి ఉన్నారని నిర్ధారించుకుని, మళ్లీ ట్రై చేయండి</translation>
 <translation id="7742327441377685481">నోటిఫికేషన్‌లు లేవు</translation>
 <translation id="7748275671948949022">షెల్ఫ్‌లో లాంచర్ బటన్‌ను హైలైట్ చేయండి</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
@@ -2122,6 +2155,7 @@
 <translation id="7866482334467279021">ఆన్‌లో ఉంది</translation>
 <translation id="7870790288828963061">సరికొత్త వెర్షన్ అందుబాటులో ఉన్న కియోస్క్ యాప్‌లేవీ కనుగొనబడలేదు. అప్‌డేట్ చేయడానికి ఏదీ లేదు. దయచేసి USB స్టిక్‌ను తీసివేయండి.</translation>
 <translation id="7872786842639831132">ఆఫ్</translation>
+<translation id="7873386145597434863">Steam for Chromebook</translation>
 <translation id="7875575368831396199">మీ <ph name="DEVICE_TYPE" />లో మీ బ్లూటూత్ ఆఫ్ చేయబడి ఉన్నట్లుగా అనిపిస్తోంది. ఫోన్ హబ్‌ను ఉపయోగించడానికి దయచేసి బ్లూటూత్‌ను ఆన్ చేయండి.</translation>
 <translation id="7884446017008693258">హాట్‌స్పాట్ సెట్టింగ్‌లు</translation>
 <translation id="7884902759927478774">ట్యాబ్‌ను లాగడాన్ని రద్దు చేయండి</translation>
@@ -2471,6 +2505,7 @@
 <translation id="8980862970816311842">యాప్ గ్రిడ్ లోపల యాప్ చిహ్నాన్ని ఫోల్డర్‌లోకి/బయటికి తరలించండి</translation>
 <translation id="8982906748181120328">సమీప విజిబిలిటీ</translation>
 <translation id="8983038754672563810">HSPA</translation>
+<translation id="8985191021574400965">Chromebook కోసం ఉద్దేశించిన Steamకు స్వాగతం</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ఉపయోగిస్తోంది</translation>
 <translation id="8991648557324317894">రద్దు చేయడానికి fn + క్విక్ ఇన్సర్ట్ లేదా Shift నొక్కండి.</translation>
 <translation id="899350903320462459">నోటిఫికేషన్ చర్యను మేనేజ్ చేయడానికి <ph name="LOGIN_ID" />గా డివైజ్‌ను అన్‌లాక్ చేయండి</translation>
@@ -2487,6 +2522,7 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="9050012935252397793">బ్లూటూత్ అందుబాటులో లేదు</translation>
 <translation id="9050999376345823055">విడుదల చేయడానికి "." నొక్కండి</translation>
+<translation id="9061694916020926968">'Steam for Chromebook' (బీటా)ను ఉపయోగించడానికి మీరు ఒక Google ఖాతాకు సైన్ ఇన్ చేయాలి. సైన్ ఇన్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="906458777597946297">విండోను విస్తరించు</translation>
 <translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9068849894565669697">రంగుని ఎంచుకోండి</translation>

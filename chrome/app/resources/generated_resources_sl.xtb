@@ -844,7 +844,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="156793199942386351">Tipka »<ph name="CURRENTKEY" />« je že dodeljena dejanju »<ph name="ACTION" />«. Pritisnite poljubno tipko, če želite <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Konzola JavaScript</translation>
 <translation id="1569466257325986920">Ob naslednji spremembi gesla za račun Google bodo lokalni podatki samodejno obnovljeni, ko se prijavite v račun Google.</translation>
-<translation id="1570235441606255261">Namestitveni program za storitev Steam</translation>
 <translation id="1570604804919108255">Vklop zvoka obvestil</translation>
 <translation id="1570990174567554976">Mapa za zaznamke »<ph name="BOOKMARK_TITLE" />« je ustvarjena.</translation>
 <translation id="1571041387761170095">Ni šibkih ali znova uporabljenih gesel</translation>
@@ -969,7 +968,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1642299742557467312">Ta datoteka lahko škoduje vaši napravi</translation>
 <translation id="1642492862748815878">Povezano z napravo <ph name="DEVICE" /> in še toliko drugimi napravami Bluetooth: <ph name="NUMBER_OF_DEVICES" /></translation>
 <translation id="1642494467033190216">Pred omogočanjem drugih funkcij za odpravljanje napak je treba odstraniti zaščito rootfs in znova zagnati napravo.</translation>
-<translation id="1642895994345928121">Ni dovolj razpoložljive shrambe v napravi za odpiranje te aplikacije. Sprostite prostor in poskusite znova.</translation>
 <translation id="1643072738649235303">Podpis X9.62 ECDSA z algoritmom SHA-1</translation>
 <translation id="1643921258693943800">Če želite uporabljati deljenje v bližini, vklopite Bluetooth in Wi-Fi</translation>
 <translation id="1644574205037202324">Zgodovina</translation>
@@ -2080,7 +2078,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2390347491606624519">S strežnikom proxy se ni mogoče povezati, znova se prijavite</translation>
 <translation id="2390782873446084770">Sinhronizacija poverilnic za Wi-Fi</translation>
 <translation id="2391419135980381625">Standardna pisava</translation>
-<translation id="2391805183137601570">Odpri Steam</translation>
 <translation id="239185270194776190">Pogovor z Geminijem je v drugem oknu. Kliknite kjer koli v tem stranskem podoknu, če ga želite premakniti sem.</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
 <translation id="2393136602862631930">Nastavitev aplikacije <ph name="APP_NAME" /> v Chromebooku</translation>
@@ -2162,7 +2159,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2445484935443597917">Ustvari nov profil</translation>
 <translation id="2445726032315793326">Delna lupa</translation>
 <translation id="244641233057214044">Povezano z iskanjem</translation>
-<translation id="2447587550790814052">Zdaj lahko uporabljate Steam za Chromebook (beta)</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2448810255793562605">Samodejno iskanje stikalnega dostopa</translation>
 <translation id="2450021089947420533">Poti</translation>
@@ -2189,7 +2185,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2460826998961521840">Za uporabo ključev za dostop, shranjenih v računu Google</translation>
 <translation id="2461550163693930491">Spletnim mestom nista dovoljena pomikanje po deljenih zavihkih in njihova povečava/pomanjšava</translation>
 <translation id="2461593638794842577">To nastavitev lahko izklopite, če želite, da se gesla shranjujejo samo v tej napravi</translation>
-<translation id="2462332841984057083">Steam se že nastavlja. Počakajte, da se nastavitev konča.</translation>
 <translation id="2462724976360937186">ID ključa overitelja potrdil</translation>
 <translation id="2462752602710430187">Dodano: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Prikazane so predlagane datoteke, s katerimi se boste lažje vrnili k nedavni dejavnosti v storitvah Microsoft SharePoint in OneDrive.
@@ -2244,7 +2239,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2491587035099903063">predogled glasu za jezik <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Pripravljanje zahteve za podpisovanje potrdil</translation>
 <translation id="249330843868392562">Odpri nastavitve pretvorbe besedila v govor</translation>
-<translation id="2494555621641843783">Ni mogoče namestiti aplikacije Steam</translation>
 <translation id="2496180316473517155">Zgodovina brskanja</translation>
 <translation id="2496616243169085015">Fotografija</translation>
 <translation id="2497229222757901769">Hitrost miške</translation>
@@ -2600,7 +2594,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="27349076983469322">Svetlo ozadje</translation>
 <translation id="2735712963799620190">Razpored</translation>
 <translation id="2737363922397526254">Strni ...</translation>
-<translation id="2737538893171115082">Skrbnik je blokiral aplikacijo Steam za Chromebook (beta). Skrbnik mora vklopiti te pravilnike:</translation>
 <translation id="2737719817922589807">&amp;Zaznamki in seznami</translation>
 <translation id="2737916598897808047">Aplikacija <ph name="APP_NAME" /> želi deliti vsebino vašega zaslona s spletnim mestom <ph name="TARGET_NAME" />.</translation>
 <translation id="2738030019664645674">Spletnim mestom ni dovoljeno uporabljati pisave, nameščene v napravi</translation>
@@ -3063,7 +3056,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3039491566278747710">Namestitev pravilnika za način brez povezave v napravi ni uspela.</translation>
 <translation id="303955801043931176">Zavihek je zaprt</translation>
 <translation id="3040435070100611531">Vaše kartice v Google Denarnici</translation>
-<translation id="3040982432432547149">Pomagajte nam izboljšati aplikacijo Steam za Chromebook</translation>
 <translation id="304169924727249890">Pridružite se skupini zavihkov z osebo <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Spremenite strategijo optimiziranega polnjenja.</translation>
 <translation id="3043016484125065343">Prijavite se, če si želite ogledati zaznamke</translation>
@@ -3274,7 +3266,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3201422919974259695">Razpoložljive naprave USB bodo prikazane tukaj.</translation>
 <translation id="3202499879214571401">Začasno zaustavi predvajanje zaslona v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Najnovejše</translation>
-<translation id="3204648577100496185">Podatki, povezani s to aplikacijo, bodo morda odstranjeni iz te naprave.</translation>
 <translation id="3206289903841621620">Uporabniški slovar <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Prikazani so predlagani iskanja in popusti za nakupovanje, ki bi vas glede na nedavno dejavnost morda zanimali.
         <ph name="BREAK" />
@@ -3382,7 +3373,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3283148363895519428">Upoštevajte navodila v telefonu in nadaljujte nastavitev. Poskrbite, da je telefon v bližini in da je Bluetooth vklopljen.</translation>
 <translation id="3284050785966252943">Predogled metapodatkov za samodejno izpolnjevanje</translation>
 <translation id="3285322247471302225">Nov &amp;zavihek</translation>
-<translation id="3285465040399788513">Ni dovolj razpoložljive shrambe v napravi za dokončanje nastavitve. Sprostite prostor in poskusite znova.</translation>
 <translation id="3285500645985761267">Sorodnim spletnim mestom dovolite ogled vaše dejavnosti v skupini</translation>
 <translation id="328571385944182268">Želite shranjevati gesla?</translation>
 <translation id="3289668031376215426">Samodejna uporaba velikih začetnic</translation>
@@ -3505,7 +3495,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3372602033006349389">V drugih napravah</translation>
 <translation id="337286756654493126">Branje map, ki jih odprete v aplikaciji</translation>
 <translation id="3373059063088819384">Odpri v načinu za branje</translation>
-<translation id="3373196968211632036">Račun za Steam za Chromebook (Beta) ni na voljo za otroške račune Google</translation>
 <translation id="3373701465337594448">Ko je ta možnost vklopljena, se tukaj prikaže seznam spletnih mest, ki ugotovijo, kaj vas zanima.</translation>
 <translation id="3374294321938930390">»<ph name="BOOKMARK_TITLE" />« premaknjeno v »<ph name="NEW_FOLDER_TITLE" />«.</translation>
 <translation id="3376035595160918049">Pregled posodobitve aplikacije</translation>
@@ -3688,7 +3677,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (jezik ni izbran)</translation>
 <translation id="3496689104192986836">Raven napolnjenosti baterije: <ph name="PERCENTAGE" /> %</translation>
 <translation id="3496692428582464972">Viri podatkov za zbiranje</translation>
-<translation id="3496797737329654668">Pa začnimo z igranjem iger</translation>
 <translation id="3496995426334945408">Spletna mesta običajno uporabljajo JavaScript za prikaz interaktivnih funkcij, kot so videoigre ali spletni obrazci.</translation>
 <translation id="3497501929010263034">Naprava USB ponudnika <ph name="VENDOR_NAME" /> (izdelek <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Deli priložnostni logotip z drugimi</translation>
@@ -3901,7 +3889,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3637203148990213388">Dodatni računi</translation>
 <translation id="3640347231390550691">Zaščitite svoja gesla pred lažnim predstavljanjem.</translation>
 <translation id="364100968401221170">Če želite izbrisati podatke brskanja iz vseh sinhroniziranih naprav in računa Google, <ph name="BEGIN_LINK" />se prijavite<ph name="END_LINK" />.</translation>
-<translation id="3641070112313110357">Steam za Chromebook (beta) je treba posodobiti. Znova zaženite Chromebook in poskusite znova.</translation>
 <translation id="3641299252000913351">Poteka posodobitev vdelane programske opreme modema. Ne izklopite naprave.</translation>
 <translation id="3641456520301071208">Spletna mesta lahko zahtevajo lokacijo.</translation>
 <translation id="3642064270296434810">Z Googlom Lens lahko zdaj iščete kar koli na zaslonu</translation>
@@ -4238,7 +4225,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="383891835335927981">Nobeno spletno mesto ni povečano ali pomanjšano</translation>
 <translation id="3839516600093027468">Vedno prepreči naslovu <ph name="HOST" /> ogled odložišča</translation>
 <translation id="3840096463915153852">Zgodovina pogovorov</translation>
-<translation id="3841282988425489367">Ni mogoče nastaviti aplikacije Steam za Chromebook (beta)</translation>
 <translation id="3841319830220785495">Privzeti naravni glas</translation>
 <translation id="3841356782900714251">Bralniki pametnih kartic</translation>
 <translation id="3841964634449506551">Neveljavno geslo</translation>
@@ -4686,7 +4672,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4148195018520464922">Prijavo lahko omejite na nekatere uporabnike. S tem odstranite možnost »Dodaj osebo« na zaslonu za prijavo. Prav tako lahko odstranite trenutne uporabnike.</translation>
 <translation id="4148957013307229264">Nameščanje ...</translation>
 <translation id="4150201353443180367">Prikaz</translation>
-<translation id="4151449637210235443">Povejte nam, kako je potekalo nedavno igranje igre</translation>
 <translation id="4151503145138736576">Ni shrambe brez povezave za čiščenje</translation>
 <translation id="4152011295694446843">Tukaj bodo prikazani zavihki</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
@@ -4737,7 +4722,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4193251682249731404">Zaupanja vreden overitelj potrdil</translation>
 <translation id="4193575319002689239">Prikaz kartic</translation>
 <translation id="419427585139779713">Vnašanje posameznega zloga</translation>
-<translation id="4195001808989442226">Ni mogoče odpreti aplikacije Steam za Chromebook (Beta)</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4195814663415092787">Nadaljuj prejšnjo sejo</translation>
 <translation id="4198268995694216131">Dodatna spletna mesta</translation>
@@ -4783,7 +4767,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ta razširitev ni odobrena}one{Nekatere razširitve niso odobrene}two{Nekatere razširitve niso odobrene}few{Nekatere razširitve niso odobrene}other{Nekatere razširitve niso odobrene}}</translation>
 <translation id="4231053948789591973">Predvajanje je začasno zaustavljeno. Predvajanje zaslona lahko kadar koli nadaljujete ali ustavite.</translation>
 <translation id="4231095370974836764">Namestite aplikacije in igre iz Googla Play v napravi <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Nastavljanje aplikacije Steam za Chromebook</translation>
 <translation id="4232375817808480934">Konfiguriranje storitve Kerberos</translation>
 <translation id="4232376164796433044">Gesla in samodejno izpolnjevanje</translation>
 <translation id="4232484478444192782">Telefon Android ima vse, kar potrebujete. Poteka prenos omrežja Wi-Fi in gesla.</translation>
@@ -5142,7 +5125,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4472533928615930332">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />« v slogu <ph name="STYLE" /></translation>
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4473559657152613417">Z desnim gumbom kliknite zavihek in izberite »Dodaj zavihek novi skupini«</translation>
-<translation id="4473996011558324141">ocena časa</translation>
 <translation id="4474155171896946103">Dodaj vse zavihke med zaznamke ...</translation>
 <translation id="4476198534886170024">Dovoljeno. Vklopite <ph name="LINK_BEGIN" />dostop do sistemske kamere<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Športnik</translation>
@@ -5377,7 +5359,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4638930039313743000">Omogočanje mostu za odpravljanje težav s sistemom Android (ADB)</translation>
 <translation id="4639390152280993480">Če želite poenostavljen pogled te strani, odprite »Več orodij« &gt; »Način za branje«</translation>
 <translation id="4641539339823703554">Chrome ni mogel nastaviti sistemskega časa. Preverite spodaj navedeni čas in ga po potrebi popravite.</translation>
-<translation id="4642587497923912728">Steam za Chromebook (beta) je na voljo samo za račun, s katerim ste se najprej prijavili v ta Chromebook.</translation>
 <translation id="4643612240819915418">&amp;Odpri videoposnetek v novem zavihku</translation>
 <translation id="4643833688073835173">Chromebook uporablja vgrajeno tipalo za zaznavanje oseb pred napravo. Vsi podatki so v napravi takoj obdelani in nato izbrisani. Podatki tipal niso nikoli poslani Googlu.</translation>
 <translation id="4644205769234414680">Omogoči v anonimnem načinu</translation>
@@ -6382,7 +6363,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5353769147530541973">Odstranitev zavihka <ph name="SITE_NAME" /> s seznama zavihkov, da ne bo več aktiven</translation>
 <translation id="5355099869024327351">Dovoli Pomočniku, da vam prikazuje obvestila</translation>
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
-<translation id="5355498626146154079">Vklopiti morate zastavico »Borealis Enabled«</translation>
 <translation id="5355501370336370394">Včlanitev naprave podjetja</translation>
 <translation id="5357010010552553606">Samodejni preklop v celozaslonski način ni dovoljen</translation>
 <translation id="5359910752122114278">1 rezultat</translation>
@@ -6412,7 +6392,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5376931455988532197">Datoteka je prevelika</translation>
 <translation id="5377367976106153749">Želite vklopiti dostop do kamere?</translation>
 <translation id="5379140238605961210">Še naprej preprečuj dostop do mikrofona</translation>
-<translation id="5380526436444479273">Počakajte nekaj minut in poskusite znova</translation>
 <translation id="5382591305415226340">Upravljanje podprtih povezav</translation>
 <translation id="5384401776498845256">Kdo lahko deli z vami</translation>
 <translation id="5385628342687007304">To geslo je shranjeno samo v tej napravi. Če ga želite uporabiti v drugih napravah, ga shranite v računu Google.</translation>
@@ -6467,7 +6446,6 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5414198321558177633">Osveževanje seznama profilov. To lahko traja nekaj minut.</translation>
 <translation id="5414566801737831689">Branje ikon spletnih mest, ki jih obiščete</translation>
 <translation id="5414836363063783498">Preverjanje …</translation>
-<translation id="5415328625985164836">To je program različic beta. Zdaj lahko aplikacijo Steam uporabljate za igranje nekaterih iger v Chromebooku.</translation>
 <translation id="5415497281076257439">Besedna zveza</translation>
 <translation id="5415871492522952905">Zgodovino in zavihke boste imeli v vseh napravah, da boste lahko nadaljevali, kar ste počeli</translation>
 <translation id="5417293056300086453">To spletno mesto lahko uporablja identifikatorje za predvajanje zaščitene vsebine.</translation>
@@ -6910,7 +6888,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5727728807527375859">Razširitve, aplikacije in teme lahko škodujejo računalniku. Ali ste prepričani, da želite nadaljevati?</translation>
 <translation id="5728072125198221967">Povezane Googlove storitve</translation>
 <translation id="5728450728039149624">Možnosti zaklepanja zaslona Smart Lock</translation>
-<translation id="572914206753951782">V Chromebooku mora biti nameščena najnovejša različica. Nato znova zaženite Chromebook in poskusite znova.</translation>
 <translation id="5729712731028706266">&amp;Pogled</translation>
 <translation id="5731247495086897348">&amp;Prilepi in nadaljuj</translation>
 <translation id="5733109311583381874">V uporabniške slovarje lahko dodajate besede in tako prilagodite kandidate za pretvorbo.</translation>
@@ -8025,7 +8002,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{»<ph name="APP_NAME" />« želi v napravo namestiti to aplikacijo:}one{»<ph name="APP_NAME" />« želi v napravo namestiti te aplikacije:}two{»<ph name="APP_NAME" />« želi v napravo namestiti ti aplikaciji:}few{»<ph name="APP_NAME" />« želi v napravo namestiti te aplikacije:}other{»<ph name="APP_NAME" />« želi v napravo namestiti te aplikacije:}}</translation>
 <translation id="6508248480704296122">Sorodno z <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Program: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Znova zaženite Chromebook in poskusite znova</translation>
 <translation id="6511827214781912955">Priporočamo, da izbrišete datoteko <ph name="FILENAME" />, da drugi uporabniki te naprave ne bodo mogli videti vaših gesel.</translation>
 <translation id="6512759338201777379">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />« z razpoloženjem <ph name="MOOD" />.</translation>
 <translation id="6513247462497316522">Google Chrome bo uporabil mobilno podatkovno povezavo, če niste povezani z drugim omrežjem.</translation>
@@ -8134,7 +8110,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="657866106756413002">Posnetek stanja omrežja</translation>
 <translation id="6579369886355986318">Pokaži vse &amp;kontrolnike</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – vsebina namizja v skupni rabi</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" /> % dokončano</translation>
 <translation id="6580203076670148210">Hitrost iskanja</translation>
 <translation id="6580676117087365538">Če želite imeti to razširitev v vseh računalnikih, potrdite, da ste to vi</translation>
 <translation id="6581356304040102696">Gesel ni mogoče uvoziti. Velikost datoteke mora biti manjša od 1 MB.</translation>
@@ -8359,7 +8334,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6729280095610283088">Svetli žarki severnega sija nad gozdom.</translation>
 <translation id="6729493062119577923">Dejavnost v deljeni skupini zavihkov</translation>
 <translation id="6730744976532805323">Deli trenutni zavihek z Geminijem, tudi ko preklapljate med zavihki</translation>
-<translation id="6731320427842222405">To lahko traja nekaj minut</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Naslov</translation>
 <translation id="6737663862851963468">Odstranitev kartončka za Kerberos</translation>
@@ -8709,7 +8683,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6965648386495488594">Vrata</translation>
 <translation id="6965978654500191972">Naprava</translation>
 <translation id="6966831944134814478">Izklopi</translation>
-<translation id="6967112302799758487">Vse aplikacije in igre, nameščene s Steamom za Chromebook (beta), bodo odstranjene iz te naprave. Odstranjeni bodo tudi podatki, povezani s temi aplikacijami in igrami. Pred odmeščanjem varnostno kopirajte shranjene aplikacije in igre.</translation>
 <translation id="6967430741871315905">Ni mogoče preveriti, ali je naprava dovoljena.</translation>
 <translation id="6968288415730398122">Vnesite geslo, če želite konfigurirati zaklepanje zaslona</translation>
 <translation id="6969047215179982698">Izklop deljenja v bližini</translation>
@@ -8881,7 +8854,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> upravlja skrbnik</translation>
 <translation id="7082850163410901674">Obvestila so izklopljena v nastavitvah sistema macOS</translation>
 <translation id="7083729794572207131">Spletna mesta običajno zahtevajo namestitev spletnih aplikacij zaradi izboljšanja izkušnje na spletnem mestu</translation>
-<translation id="7083774521940805477">Steam za Chromebook (beta) v Chromebooku ni na voljo.</translation>
 <translation id="7084095352418993433">Vprašajte Google o tej strani: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(ni konfigurirano)</translation>
 <translation id="7086377898680121060">povečanje svetlosti</translation>
@@ -8960,7 +8932,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7141844554192012199">Pregled</translation>
 <translation id="714301620504747562">Brskanje in iskanje sta hitrejša od običajnega vnaprejšnjega nalaganja</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
-<translation id="7143409552554575716">Zastavice za ChromeOS</translation>
 <translation id="7144363643182336710">Obvestila ne bodo prikazana na zaslonu. Še vedno si lahko ogledate obvestila tako, da v spodnjem desnem kotu zaslona kliknete ikono za način »ne moti«.</translation>
 <translation id="7144856456372460176">&amp;Namesti aplikacijo <ph name="APP" /> ...</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
@@ -8971,7 +8942,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7152478047064750137">Za to razširitev niso potrebna posebna dovoljenja</translation>
 <translation id="7153101072880472645">Vklop/izklop visokega kontrasta</translation>
 <translation id="715396040729904728">tipka za zaganjalnik + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Pošljite povratne informacije ali opišite težavo. Če je mogoče, vključite postopek za ponovitev težave.</translation>
 <translation id="7154130902455071009">Sprememba začetne strani na: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Boljša kakovost videoposnetkov in prihranek energije v bateriji. Videoposnetki se bodo predvajali samo na zaslonu, ki podpira Google Cast.</translation>
 <translation id="7159695867335480590">Predvajaj/začasno zaustavi</translation>
@@ -9823,7 +9793,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7728668285692163452">Sprememba kanala bo uveljavljena pozneje</translation>
 <translation id="7730449930968088409">Zajem vsebine zaslona</translation>
 <translation id="7730683939467795481">To stran je spremenila razširitev »<ph name="EXTENSION_NAME" />«</translation>
-<translation id="7732702411411810416">Zagotovite, da imate vzpostavljeno internetno povezavo, in poskusite znova</translation>
 <translation id="773511996612364297">Naglasna znamenja</translation>
 <translation id="7735558909644181051">Vmesna potrdila</translation>
 <translation id="7736119438443237821">Odstranili boste dostop do ključev za dostop v tej napravi</translation>
@@ -10021,7 +9990,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7871691770940645922">Navidezni bralnik braille</translation>
 <translation id="787268756490971083">Izklopljeno</translation>
 <translation id="7872758299142009420">Preveč ugnezdenih skupin: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam za Chromebook</translation>
 <translation id="7876027585589532670">Bližnjice ni mogoče urediti.</translation>
 <translation id="7876243839304621966">Odstrani vse</translation>
 <translation id="7877126887274043657">Odpravite težavo s &amp;sinhronizacijo</translation>
@@ -11681,7 +11649,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8983018820925880511">Ta novi profil bo upravljala domena <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">Spletno mesto <ph name="ORIGIN" /> lahko ureja datoteko <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Vaša naprava bo <ph name="MINUTES" /> min vidna vsem. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Pozdravljeni v aplikaciji Steam za Chromebook</translation>
 <translation id="8985264973231822211">Aktivno pred toliko dnevi: <ph name="DEVICE_LAST_ACTIVATED_TIME" /></translation>
 <translation id="8985561265504464578">Prag zaznavanja</translation>
 <translation id="8985661493893822002">Če se želite prijaviti v napravo <ph name="DEVICE_TYPE" />, vzpostavite povezavo z internetom.</translation>
@@ -11813,7 +11780,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Približno 1 obvestilo na dan}one{Približno {NUM_NOTIFICATION} obvestilo na dan}two{Približno {NUM_NOTIFICATION} obvestili na dan}few{Približno {NUM_NOTIFICATION} obvestila na dan}other{Približno {NUM_NOTIFICATION} obvestil na dan}}</translation>
 <translation id="9058760336383947367">Ogled PPD-ja tiskalnika</translation>
 <translation id="9061521313218438086">Če Chrome v javni podatkovni kršitvi najde eno od vaših gesel, vam lahko Googlov upravitelj gesel ponudi, da ga spremeni, če ste prijavljeni.</translation>
-<translation id="9061694916020926968">Če želite uporabljati aplikacijo Steam za Chromebook (beta), morate biti prijavljeni v račun Google. Prijavite se in poskusite znova.</translation>
 <translation id="9062468308252555888">14 x</translation>
 <translation id="9062873887761404531">Izbris bližnjice za pomikanje</translation>
 <translation id="9063208415146866933">Napaka od vrstice <ph name="ERROR_LINE_START" /> do <ph name="ERROR_LINE_END" /></translation>

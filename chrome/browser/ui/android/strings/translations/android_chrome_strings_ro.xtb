@@ -239,6 +239,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="200114059308480249">Incluzi text din jur în căutările de pe Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, filă incognito fixată cu sunetul dezactivat</translation>
 <translation id="2021896219286479412">Comenzi site în ecran complet</translation>
+<translation id="2024195579772565064">Șterge motorul de căutare</translation>
 <translation id="2029669011553795746">Opțiunea de activare a notificărilor cu sfaturi s-a deschis la jumătate din înălțime</translation>
 <translation id="2038563949887743358">Activează opțiunea Versiune site pentru desktop</translation>
 <translation id="204321170514947529">Și <ph name="APP_NAME" /> are date în Chrome</translation>
@@ -556,6 +557,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3384347053049321195">Trimite imaginea</translation>
 <translation id="3387650086002190359">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor erori privind sistemul de fișiere.</translation>
 <translation id="3414952576877147120">Dimensiune:</translation>
+<translation id="3417835166382867856">Caută în file</translation>
 <translation id="3430670036890315772">Dacă dezactivezi blocarea profilului, informațiile tale salvate vor fi șterse</translation>
 <translation id="3435465986463792564">Ai deschis multe ferestre? Gestionează-le de aici</translation>
 <translation id="3435575784518354875">Pentru a păstra accesul la parole, exportă-le acum, actualizează serviciile Google Play și apoi importă-le înapoi în Managerul de parole Google. <ph name="BEGIN_LINK" />Consultă instrucțiunile complete<ph name="END_LINK" />.</translation>
@@ -1440,6 +1442,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6898797562238201317">Folosește propria expresie de acces pentru a cripta toate datele Chrome din Contul Google</translation>
 <translation id="6900532703269623216">Protecție îmbunătățită</translation>
+<translation id="6900654715912436255">Sigur ștergi acest motor de căutare?</translation>
 <translation id="6903907808598579934">Activează sincronizarea</translation>
 <translation id="6906448540340261898">Asigură-te că poți folosi oricând parolele din Contul Google</translation>
 <translation id="6908230663105268638">Notificări permise pentru <ph name="SITE_NAME" /></translation>

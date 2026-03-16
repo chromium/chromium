@@ -240,6 +240,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="200114059308480249">Vill du inkludera omgivande text i sökningar på Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, fäst inkognitoflik med ljud av</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
+<translation id="2024195579772565064">Ta bort sökmotor</translation>
 <translation id="2029669011553795746">Dialogrutan om att välja att få tipsaviseringar har öppnats över halva skärmen</translation>
 <translation id="2038563949887743358">Aktivera begäran av skrivbordsversion</translation>
 <translation id="204321170514947529">Data för <ph name="APP_NAME" /> finns även i Chrome</translation>
@@ -557,6 +558,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3384347053049321195">Dela bild</translation>
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
 <translation id="3414952576877147120">Storlek:</translation>
+<translation id="3417835166382867856">Sök bland flikar</translation>
 <translation id="3430670036890315772">Om du inaktiverar profillåset tas dina sparade uppgifter bort</translation>
 <translation id="3435465986463792564">Har du många fönster? Du kan hantera dem härifrån</translation>
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
@@ -1443,6 +1445,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6898797562238201317">Använd din egen lösenfras för att kryptera all Chrome-data i Google-kontot</translation>
 <translation id="6900532703269623216">Förbättrat skydd</translation>
+<translation id="6900654715912436255">Vill du radera den här sökmotorn?</translation>
 <translation id="6903907808598579934">Aktivera synkronisering</translation>
 <translation id="6906448540340261898">Se till att du alltid kan använda lösenorden i Google-kontot</translation>
 <translation id="6908230663105268638">Aviseringar har tillåtits för <ph name="SITE_NAME" /></translation>

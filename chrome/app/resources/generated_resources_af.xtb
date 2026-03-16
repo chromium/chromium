@@ -841,7 +841,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" is reeds toegewys aan die handeling "<ph name="ACTION" />". Druk enige sleutel en <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">JavaScript-konsole</translation>
 <translation id="1569466257325986920">Wanneer jy weer jou Google-rekening se wagwoord verander, sal jou plaaslike data outomaties teruggestel word nadat jy by jou Google-rekening aangemeld het</translation>
-<translation id="1570235441606255261">Steam-installeerder</translation>
 <translation id="1570604804919108255">Ontdemp kennisgewings</translation>
 <translation id="1570990174567554976">Boekmerkvouer “<ph name="BOOKMARK_TITLE" />” is geskep.</translation>
 <translation id="1571041387761170095">Geen swak of hergebruikte wagwoorde nie</translation>
@@ -966,7 +965,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1642299742557467312">Hierdie lêer kan jou toestel beskadig</translation>
 <translation id="1642492862748815878">Gekoppel aan <ph name="DEVICE" /> en <ph name="NUMBER_OF_DEVICES" /> ander Bluetooth-toestelle</translation>
 <translation id="1642494467033190216">Die verwydering van rootfs-beskerming en 'n herbegin is nodig voordat ander ontfoutingkenmerke geaktiveer word.</translation>
-<translation id="1642895994345928121">Daar is nie genoeg toestelberging om hierdie app oop te maak nie. Maak spasie beskikbaar en probeer weer.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-handtekening met SHA-1</translation>
 <translation id="1643921258693943800">Skakel Bluetooth en wi-fi aan om Nabydeling te gebruik</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
@@ -2078,7 +2076,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2390347491606624519">Kan nie aan instaanbediener koppel nie; meld asseblief weer aan</translation>
 <translation id="2390782873446084770">Wi-fi-sinkronisering</translation>
 <translation id="2391419135980381625">Standaardlettertipe</translation>
-<translation id="2391805183137601570">Maak Steam oop</translation>
 <translation id="239185270194776190">Jou Gemini-gesprek is in ’n ander venster. Klik enige plek op hierdie kantpaneel om dit hierheen te skuif.</translation>
 <translation id="2392369802118427583">Aktiveer</translation>
 <translation id="2393136602862631930">Stel <ph name="APP_NAME" /> op jou Chromebook op</translation>
@@ -2160,7 +2157,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2445484935443597917">Skep 'n nuwe profiel</translation>
 <translation id="2445726032315793326">Gedokte vergrootglas</translation>
 <translation id="244641233057214044">Verwant aan jou soektog</translation>
-<translation id="2447587550790814052">Jy kan nou Steam vir Chromebook (Beta) gebruik</translation>
 <translation id="2448312741937722512">Soort</translation>
 <translation id="2448810255793562605">Skakelaartoegang se outomatiese skandering</translation>
 <translation id="2450021089947420533">Reise</translation>
@@ -2187,7 +2183,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2460826998961521840">Om toegangsleutels te gebruik wat in jou Google-rekening gestoor is</translation>
 <translation id="2461550163693930491">Moenie werwe toelaat om gedeelde oortjies te rollees en te zoem nie</translation>
 <translation id="2461593638794842577">Jy kan hierdie instelling afskakel om jou wagwoorde slegs op hierdie toestel te stoor</translation>
-<translation id="2462332841984057083">Steam is reeds opgestel. Wag vir opstelling om klaar te maak.</translation>
 <translation id="2462724976360937186">Sertifiseringoutoriteit se Sleutel-ID</translation>
 <translation id="2462752602710430187">Het <ph name="PRINTER_NAME" /> bygevoeg</translation>
 <translation id="2464075479326723132">Jy sien tans voorgestelde lêers om jou te help om maklik terug te kom by jou mees onlangse aktiwiteit in Microsoft SharePoint en OneDrive.
@@ -2242,7 +2237,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2491587035099903063">voorbeskou stem vir <ph name="LANGUAGE" /></translation>
 <translation id="2492461744635776704">Berei tans sertifikaatondertekeningversoek voor</translation>
 <translation id="249330843868392562">Maak teks-na-spraak-instellings oop</translation>
-<translation id="2494555621641843783">Kan nie Steam installeer nie</translation>
 <translation id="2496180316473517155">Blaaigeskiedenis</translation>
 <translation id="2496616243169085015">Fotografie</translation>
 <translation id="2497229222757901769">Muisspoed</translation>
@@ -2598,7 +2592,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="27349076983469322">Ligte agtergrond</translation>
 <translation id="2735712963799620190">Skedule</translation>
 <translation id="2737363922397526254">Vou in …</translation>
-<translation id="2737538893171115082">Jou administrateur blokkeer Steam vir Chromebook (Beta) Jou administrateur moet hierdie beleide aanskakel:</translation>
 <translation id="2737719817922589807">&amp;Boekmerke en lyste</translation>
 <translation id="2737916598897808047"><ph name="APP_NAME" /> wil jou skerm se inhoud met <ph name="TARGET_NAME" /> deel.</translation>
 <translation id="2738030019664645674">Moenie werwe toelaat om lettertipes wat op jou toestel geïnstalleer is, te gebruik nie</translation>
@@ -3061,7 +3054,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3039491566278747710">Kon nie vanlyn beleid op die toestel installeer nie.</translation>
 <translation id="303955801043931176">Oortjie toegemaak</translation>
 <translation id="3040435070100611531">Jou Google Wallet-passe</translation>
-<translation id="3040982432432547149">Help ons om Steam vir Chromebook te verbeter</translation>
 <translation id="304169924727249890">Sluit aan by oortjiegroep met <ph name="OWNER_FIRST_NAME" /></translation>
 <translation id="3042097545107738107">Verander die strategie vir geoptimeerde laai.</translation>
 <translation id="3043016484125065343">Meld aan om jou boekmerke te sien</translation>
@@ -3272,7 +3264,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3201422919974259695">Beskikbare USB-toestelle sal hier verskyn.</translation>
 <translation id="3202499879214571401">Onderbreek uitsending van die skerm na <ph name="DEVICE_NAME" /></translation>
 <translation id="3202578601642193415">Nuutste</translation>
-<translation id="3204648577100496185">Data wat met hierdie app geassosieer word, kan van hierdie toestel verwyder word</translation>
 <translation id="3206289903841621620">Gebruikerwoordeboek <ph name="NUMBER" /></translation>
 <translation id="3207344462385471911">Jy sien voorgestelde soektogte en inkopieafslag waarin jy dalk belangstel op grond van jou onlangse aktiwiteit.
         <ph name="BREAK" />
@@ -3380,7 +3371,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3283148363895519428">Volg die instruksies op jou foon om met die opstelling voort te gaan. Maak seker dat jou foon byderhand is en dat Bluetooth aangeskakel is.</translation>
 <translation id="3284050785966252943">Outovul Metadata-voorskou</translation>
 <translation id="3285322247471302225">Nuwe oortjie</translation>
-<translation id="3285465040399788513">Daar is nie genoeg toestelberging om die opstelling te voltooi nie. Maak spasie beskikbaar en probeer weer.</translation>
 <translation id="3285500645985761267">Laat verwante werwe toe om jou aktiwiteit in die groep te sien</translation>
 <translation id="328571385944182268">Stoor jou wagwoorde?</translation>
 <translation id="3289668031376215426">Outohoofletters</translation>
@@ -3503,7 +3493,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3372602033006349389">Op ander toestelle</translation>
 <translation id="337286756654493126">Lees vouers wat jy in die app oopmaak</translation>
 <translation id="3373059063088819384">Maak in leesmodus oop</translation>
-<translation id="3373196968211632036">Steam vir Chromebook (Beta) is nie vir kinders se Google-rekeninge beskikbaar nie</translation>
 <translation id="3373701465337594448">Indien dit aan is, verskyn ’n lys werwe wat jy besoek wat jou belangstellings raai hier</translation>
 <translation id="3374294321938930390">"<ph name="BOOKMARK_TITLE" />" is geskuif na "<ph name="NEW_FOLDER_TITLE" />".</translation>
 <translation id="3376035595160918049">Gaan appopdatering na</translation>
@@ -3686,7 +3675,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (is nie gekies nie)</translation>
 <translation id="3496689104192986836">Batteryvlak <ph name="PERCENTAGE" />%</translation>
 <translation id="3496692428582464972">Databronne om in te samel</translation>
-<translation id="3496797737329654668">Kom ons begin speel</translation>
 <translation id="3496995426334945408">Werwe gebruik gewoonlik JavaScript om interaktiewe kenmerke te wys, soos videospeletjies of webvorms</translation>
 <translation id="3497501929010263034">USB-toestel van <ph name="VENDOR_NAME" /> af (produk <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Deel logoskets</translation>
@@ -3899,7 +3887,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3637203148990213388">Bykomende rekeninge</translation>
 <translation id="3640347231390550691">Beskerm jou wagwoorde teen uitvissing</translation>
 <translation id="364100968401221170"><ph name="BEGIN_LINK" />Meld aan<ph name="END_LINK" /> om jou blaaierdata van al jou gesinkroniseerde toestelle en jou Google-rekening af uit te vee.</translation>
-<translation id="3641070112313110357">Steam vir Chromebook (Beta) moet opgedateer word. Herbegin jou Chromebook en probeer weer.</translation>
 <translation id="3641299252000913351">Modemfermwareopdatering is aan die gang. Moenie jou toestel afskakel nie.</translation>
 <translation id="3641456520301071208">Werwe kan vir jou ligging vra</translation>
 <translation id="3642064270296434810">Jy kan nou Google Lens gebruik om enigiets te soek wat jy op jou skerm sien</translation>
@@ -4236,7 +4223,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="383891835335927981">Geen werwe is in- of uitgezoem nie</translation>
 <translation id="3839516600093027468">Blokkeer <ph name="HOST" /> altyd om die knipbord te sien</translation>
 <translation id="3840096463915153852">Gesprekgeskiedenis</translation>
-<translation id="3841282988425489367">Kan nie Steam vir Chromebook (Beta) opstel nie</translation>
 <translation id="3841319830220785495">Verstek- natuurlike stem</translation>
 <translation id="3841356782900714251">Slimkaartlesers</translation>
 <translation id="3841964634449506551">Wagwoord is ongeldig</translation>
@@ -4684,7 +4670,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4148195018520464922">Jy kan aanmelding tot sekere gebruikers beperk. Dit verwyder die “Voeg persoon by”-opsie op die aanmeldskerm. Jy kan ook huidige gebruikers verwyder.</translation>
 <translation id="4148957013307229264">Installeer tans …</translation>
 <translation id="4150201353443180367">Vertoon</translation>
-<translation id="4151449637210235443">Vertel ons van jou onlangse speluitleg</translation>
 <translation id="4151503145138736576">Geen vanlyn berging om skoon te maak nie</translation>
 <translation id="4152011295694446843">Jy sal jou boekmerke hier kry</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 oortjie}other{# oortjies}}</translation>
@@ -4735,7 +4720,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4193251682249731404">Vertroude CA</translation>
 <translation id="4193575319002689239">Wys kaarte</translation>
 <translation id="419427585139779713">Voer een lettergreep op 'n slag in</translation>
-<translation id="4195001808989442226">Kan nie Steam vir Chromebook (Beta) oopmaak nie</translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4195814663415092787">Gaan voort waar jy opgehou het</translation>
 <translation id="4198268995694216131">Bykomende werwe</translation>
@@ -4781,7 +4765,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding word nie toegelaat nie}other{Sommige uitbreidings word nie toegelaat nie}}</translation>
 <translation id="4231053948789591973">Uitsending is tans onderbreek. Jy kan enige tyd die uitsending van jou skerm hervat of ophou uitsaai.</translation>
 <translation id="4231095370974836764">Installeer apps en speletjies van Google Play af op jou <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
-<translation id="4231231258999726714">Stel tans Steam vir Chromebook op</translation>
 <translation id="4232375817808480934">Stel Kerberos op</translation>
 <translation id="4232376164796433044">Wagwoorde en outovul</translation>
 <translation id="4232484478444192782">Jy is deur jou Android-foon gedek. Jou wi-fi en wagwoord word oorgedra.</translation>
@@ -5140,7 +5123,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4472533928615930332">Gegenereerde prent <ph name="INDEX" /> van <ph name="SUBJECT" />, in <ph name="STYLE" />-styl</translation>
 <translation id="4472575034687746823">Kom aan die gang</translation>
 <translation id="4473559657152613417">Regsklik op ’n oortjie en kies “Voeg oortjie by nuwe groep”</translation>
-<translation id="4473996011558324141">geskatte tyd</translation>
 <translation id="4474155171896946103">Boekmerk alle oortjies …</translation>
 <translation id="4476198534886170024">Toegelaat. Skakel <ph name="LINK_BEGIN" />stelselkameratoegang<ph name="LINK_END" /> aan.</translation>
 <translation id="4476590490540813026">Atleet</translation>
@@ -5375,7 +5357,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4638930039313743000">Aktiveer ADB-ontfouting.</translation>
 <translation id="4639390152280993480">Gaan na Meer nutsgoed &gt; Leesmodus om ’n vereenvoudigde aansig van hierdie bladsy te sien</translation>
 <translation id="4641539339823703554">Chrome kon nie die stelsel se tyd stel nie. Gaan asseblief die tyd hieronder na en stel dit reg indien nodig.</translation>
-<translation id="4642587497923912728">Steam vir Chromebook (Beta) is net beskikbaar vir die rekening wat eerste op hierdie Chromebook aangemeld het.</translation>
 <translation id="4643612240819915418">Maak video in nuwe oortjie oop</translation>
 <translation id="4643833688073835173">Jou Chromebook gebruik 'n ingeboude sensor om mense voor jou toestel te bespeur. Alle data word onmiddellik op jou toestel verwerk en dan uitgevee. Sensordata word nooit na Google toe gestuur nie.</translation>
 <translation id="4644205769234414680">Laat in Incognito toe</translation>
@@ -6380,7 +6361,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5353769147530541973">Verwyder <ph name="SITE_NAME" /> vanaf lys van oortjies om onaktief te maak</translation>
 <translation id="5355099869024327351">Stel die Assistent in staat om vir jou kennisgewings te wys</translation>
 <translation id="5355191726083956201">Verbeterde Beskerming is aan</translation>
-<translation id="5355498626146154079">Jy moet die “Borealis Enabled”-vlag aanskakel</translation>
 <translation id="5355501370336370394">Skryf ondernemingtoestel in</translation>
 <translation id="5357010010552553606">Word nie toegelaat om outomaties na volskerm te gaan nie</translation>
 <translation id="5359910752122114278">1 resultaat</translation>
@@ -6410,7 +6390,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5376931455988532197">Lêer is te groot</translation>
 <translation id="5377367976106153749">Skakel kameratoegang aan?</translation>
 <translation id="5379140238605961210">Hou aan om mikrofoontoegang te blokkeer</translation>
-<translation id="5380526436444479273">Wag ’n paar minute en probeer dan weer</translation>
 <translation id="5382591305415226340">Bestuur gesteunde skakels</translation>
 <translation id="5384401776498845256">Wie kan met jou deel</translation>
 <translation id="5385628342687007304">Hierdie wagwoord word net op hierdie toestel gestoor. Stoor dit in jou Google-rekening, om dit op jou ander toestelle te gebruik.</translation>
@@ -6465,7 +6444,6 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5414198321558177633">Herlaai tans profiellys. Dit kan 'n paar minute neem.</translation>
 <translation id="5414566801737831689">Lees die ikone van die webwerwe wat jy besoek</translation>
 <translation id="5414836363063783498">Verifieer tans …</translation>
-<translation id="5415328625985164836">Dit is ’n betaprogram. Jy kan Steam nou gebruik om speletjies op jou Chromebook te speel.</translation>
 <translation id="5415497281076257439">Frase</translation>
 <translation id="5415871492522952905">Jy sal jou geskiedenis en oortjies op al jou toestelle hê sodat jy kan voortgaan waarmee jy besig was</translation>
 <translation id="5417293056300086453">Hierdie werf kan identifiseerders gebruik om beskermde inhoud te speel.</translation>
@@ -6907,7 +6885,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5727728807527375859">Uitbreidings, programme en temas kan jou rekenaar beskadig. Is jy seker jy wil voortgaan?</translation>
 <translation id="5728072125198221967">Gekoppelde Google-dienste</translation>
 <translation id="5728450728039149624">Smart Lock-skermslotopsies</translation>
-<translation id="572914206753951782">Maak seker dat jou Chromebook op die jongste weergawe is. Herbegin dan jou Chromebook en probeer weer.</translation>
 <translation id="5729712731028706266">Bekyk</translation>
 <translation id="5731247495086897348">Plak en gaan</translation>
 <translation id="5733109311583381874">Voeg jou eie woorde by die gebruikerwoordeboek om die omskakelingkandidate te pasmaak.</translation>
@@ -8022,7 +7999,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6507194767856842483">{NUM_SUB_APP_INSTALLS,plural, =1{“<ph name="APP_NAME" />” wil die volgende app op hierdie toestel installeer:}other{“<ph name="APP_NAME" />” wil die volgende apps op hierdie toestel installeer:}}</translation>
 <translation id="6508248480704296122">Soortgelyk aan <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">App: <ph name="APP_NAME" /></translation>
-<translation id="6511607461419653612">Herbegin jou Chromebook en probeer weer</translation>
 <translation id="6511827214781912955">Oorweeg dit om <ph name="FILENAME" /> uit te vee sodat ander wat hierdie toestel gebruik, nie jou wagwoorde kan sien nie</translation>
 <translation id="6512759338201777379">Gegenereerde prent <ph name="INDEX" /> van <ph name="SUBJECT" />, met <ph name="MOOD" />-luim.</translation>
 <translation id="6513247462497316522">Google Chrome sal mobiele data gebruik as jy nie aan 'n ander netwerk gekoppel is nie.</translation>
@@ -8131,7 +8107,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="657866106756413002">Netwerkgesondheidoorsig</translation>
 <translation id="6579369886355986318">Wys alle &amp;kontroles</translation>
 <translation id="6579705087617859690"><ph name="WINDOW_TITLE" /> – Werkskerminhoud gedeel</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% voltooi</translation>
 <translation id="6580203076670148210">Skandeerspoed</translation>
 <translation id="6580676117087365538">Verifieer dat dit jy is om hierdie uitbreiding op al jou rekenaars te kry</translation>
 <translation id="6581356304040102696">Kan nie wagwoorde invoer nie. Die lêergrootte moet kleiner as 1 MB wees.</translation>
@@ -8350,7 +8325,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6729280095610283088">Helder strome van die Noorderlig oor ’n woud.</translation>
 <translation id="6729493062119577923">Gedeelde oortjiegroepaktiwiteit</translation>
 <translation id="6730744976532805323">Deel die huidige oortjie met Gemini, selfs wanneer jy oortjies wissel</translation>
-<translation id="6731320427842222405">Dit kan 'n paar minute neem</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (ID: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6736243959894955139">Adres</translation>
 <translation id="6737663862851963468">Verwyder Kerberos-kaartjie</translation>
@@ -8700,7 +8674,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6965648386495488594">Poort</translation>
 <translation id="6965978654500191972">Toestel</translation>
 <translation id="6966831944134814478">Skakel af</translation>
-<translation id="6967112302799758487">Enige apps en speletjies wat met Steam vir Chromebook (Beta) geïnstalleer is, sal van hierdie toestel verwyder word. Data wat met hierdie apps en speletjies geassosieer word, sal ook verwyder word. Maak seker dat jy gestoorde apps en speletjies rugsteun voordat jy deïnstalleer.</translation>
 <translation id="6967430741871315905">Kan nie kyk of die toestel toegelaat word nie</translation>
 <translation id="6968288415730398122">Voer jou wagwoord in om skermslot op te stel</translation>
 <translation id="6969047215179982698">Skakel Nabydeling af</translation>
@@ -8871,7 +8844,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> word deur jou administrateur bestuur</translation>
 <translation id="7082850163410901674">Kennisgewings is afgeskakel in Mac-stelselinstellings</translation>
 <translation id="7083729794572207131">Werwe vra gewoonlik of webapps geïnstalleer kan word om jou ervaring op die werf te verbeter</translation>
-<translation id="7083774521940805477">Steam vir Chromebook (Beta) is nie op jou Chromebook beskikbaar nie.</translation>
 <translation id="7084095352418993433">Vra Google oor hierdie bladsy: <ph name="PAGE_TITLE" /></translation>
 <translation id="708550780726587276">(nie opgestel nie)</translation>
 <translation id="7086377898680121060">Verhoog helderheid</translation>
@@ -8950,7 +8922,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7141844554192012199">Kontrole</translation>
 <translation id="714301620504747562">Blaai en soek is vinniger as standaardvooraflaai</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
-<translation id="7143409552554575716">ChromeOS-vlae</translation>
 <translation id="7144363643182336710">Kennisgewings sal nie op die skerm opspring nie. Jy kan steeds kennisgewings sien deur op die Moenie Steur Nie-ikoon regs onder op jou skerm te klik.</translation>
 <translation id="7144856456372460176">&amp;Installeer <ph name="APP" /> …</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
@@ -8961,7 +8932,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
 <translation id="7153101072880472645">Hoë kontras aan/af</translation>
 <translation id="715396040729904728">lanseerder + shift + <ph name="TOP_ROW_KEY" /></translation>
-<translation id="7154020516215182599">Deel jou terugvoer of beskryf jou kwessie. Sluit indien moontlik stappe in om jou kwessie te herproduseer.</translation>
 <translation id="7154130902455071009">Verander jou beginblad na: <ph name="START_PAGE" /></translation>
 <translation id="7155161204362351654">Kry video van beter gehalte en bespaar batterylewe. Video sal net op jou uitsaaigeaktiveerde skerm speel.</translation>
 <translation id="7159695867335480590">Speel/onderbreek</translation>
@@ -9813,7 +9783,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="7728668285692163452">Kanaalverandering sal later toegepas word</translation>
 <translation id="7730449930968088409">Vang inhoud van jou skerm vas</translation>
 <translation id="7730683939467795481">Hierdie bladsy is deur die "<ph name="EXTENSION_NAME" />"-uitbreiding verander</translation>
-<translation id="7732702411411810416">Maak seker dat jy aan die internet gekoppel is en probeer weer</translation>
 <translation id="773511996612364297">Aksenttekens</translation>
 <translation id="7735558909644181051">Tussensertifikate</translation>
 <translation id="7736119438443237821">Jy staan op die punt om toegang tot jou toegangsleutels op hierdie toestel te verwyder</translation>
@@ -10011,7 +9980,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7871691770940645922">Virtuele Braille-skerm</translation>
 <translation id="787268756490971083">Af</translation>
 <translation id="7872758299142009420">Te veel geneste groepe: <ph name="ERROR_LINE" /></translation>
-<translation id="7873386145597434863">Steam vir Chromebook</translation>
 <translation id="7876027585589532670">Kan nie kortpad wysig nie</translation>
 <translation id="7876243839304621966">Verwyder alles</translation>
 <translation id="7877126887274043657">Stel &amp;sinkroniseringkwessie reg</translation>
@@ -11668,7 +11636,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="8983018820925880511">Hierdie nuwe profiel sal bestuur word deur <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> wysig</translation>
 <translation id="8984694057134206124">Jy sal vir <ph name="MINUTES" /> minute vir almal sigbaar wees. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
-<translation id="8985191021574400965">Welkom by Steam vir Chromebook</translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> dag gelede aktief</translation>
 <translation id="8985561265504464578">Bespeuringdrempel</translation>
 <translation id="8985661493893822002">Koppel aan die internet om by jou <ph name="DEVICE_TYPE" /> aan te meld.</translation>
@@ -11800,7 +11767,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Ongeveer 1 kennisgewing per dag}other{Ongeveer {NUM_NOTIFICATION} kennisgewings per dag}}</translation>
 <translation id="9058760336383947367">Bekyk drukker-PPD</translation>
 <translation id="9061521313218438086">As Chrome een van jou wagwoorde in ’n publieke dataskending vind, kan Google Wagwoordbestuurder aanbied om jou wagwoord vir jou te verander as jy aangemeld is.</translation>
-<translation id="9061694916020926968">Jy moet by ’n Google-rekening aangemeld wees om Steam vir Chromebook (Beta) te gebruik. Meld aan en probeer weer.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9062873887761404531">Vee navigasiekortpad uit</translation>
 <translation id="9063208415146866933">Fout vanaf reël <ph name="ERROR_LINE_START" /> tot <ph name="ERROR_LINE_END" /></translation>
