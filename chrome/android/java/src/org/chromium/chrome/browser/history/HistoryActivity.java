@@ -97,6 +97,7 @@ public class HistoryActivity extends SnackbarActivity {
                         shouldShowClearData,
                         appSpecificHistory,
                         showAppFilter,
+                        ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING),
                         /* openHistoryItemCallback= */ null,
                         edgeToEdgePadAdjusterGenerator);
         ViewGroup contentView = mHistoryManager.getView();

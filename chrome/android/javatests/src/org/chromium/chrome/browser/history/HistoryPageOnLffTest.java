@@ -156,6 +156,7 @@ public class HistoryPageOnLffTest {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ isAppSpecificHistoryEnabled,
+                        /* shouldClusterByDomain= */ false,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         HistoryManagerToolbar toolbar = historyManager.getToolbarForTests();

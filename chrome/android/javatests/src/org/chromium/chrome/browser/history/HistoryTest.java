@@ -6,9 +6,15 @@ package org.chromium.chrome.browser.history;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
@@ -30,6 +36,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +49,9 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -98,6 +108,18 @@ public class HistoryTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+                });
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getForProfile(ProfileManager.getLastUsedRegularProfile())
+                            .clearBrowsingData(
+                                    () -> {},
+                                    new int[] {BrowsingDataType.HISTORY},
+                                    TimePeriod.ALL_TIME);
                 });
     }
 
@@ -249,5 +271,155 @@ public class HistoryTest {
                 });
 
         historyActivity.finish();
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
+    public void testHistoryClustering_ExpandCollapse() throws Exception {
+        mActivityTestRule.startOnBlankPage();
+        String urlOne =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/one.html");
+        String urlTwo =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/two.html");
+        String domain = new org.chromium.url.GURL(urlOne).getHost();
+
+        mActivityTestRule.loadUrl(urlOne);
+        mActivityTestRule.loadUrl(urlTwo);
+
+        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+
+        waitForView(withId(R.id.history_page_recycler_view));
+
+        // Initial state: cluster is collapsed. "One" and "Two" should not be displayed.
+        onViewWaiting(withText(domain)).check(matches(isDisplayed()));
+
+        onView(withText("One")).check(doesNotExist());
+        onView(withText("Two")).check(doesNotExist());
+
+        // Click on the expand button. It has the content description "Expand"
+        onView(
+                        org.hamcrest.Matchers.allOf(
+                                withContentDescription(
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getString(R.string.accessibility_expand_section)),
+                                isDisplayed()))
+                .perform(click());
+
+        // Now "One" and "Two" should be displayed.
+        onViewWaiting(withText("One")).check(matches(isDisplayed()));
+        onViewWaiting(withText("Two")).check(matches(isDisplayed()));
+
+        // Click on the collapse button.
+        onView(
+                        org.hamcrest.Matchers.allOf(
+                                withContentDescription(
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getString(
+                                                        R.string.accessibility_collapse_section)),
+                                isDisplayed()))
+                .perform(click());
+
+        // "One" and "Two" should be hidden.
+        waitForNoView(withText("One"));
+        waitForNoView(withText("Two"));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
+    public void testHistoryClustering_RemoveItem() throws Exception {
+        mActivityTestRule.startOnBlankPage();
+        String urlOne =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/one.html");
+        String urlTwo =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/two.html");
+        String domain = new org.chromium.url.GURL(urlOne).getHost();
+
+        mActivityTestRule.loadUrl(urlOne);
+        mActivityTestRule.loadUrl(urlTwo);
+
+        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+
+        waitForView(withId(R.id.history_page_recycler_view));
+
+        // Expand the cluster.
+        onViewWaiting(
+                        org.hamcrest.Matchers.allOf(
+                                withContentDescription(
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getString(R.string.accessibility_expand_section)),
+                                isDisplayed()))
+                .perform(click());
+
+        // Wait for items to be visible.
+        onViewWaiting(withText("One")).check(matches(isDisplayed()));
+
+        // Remove "One".
+        onView(
+                        org.hamcrest.Matchers.allOf(
+                                withId(R.id.end_button),
+                                withContentDescription(R.string.remove),
+                                isDescendantOfA(
+                                        org.hamcrest.Matchers.allOf(
+                                                hasDescendant(withText("One")),
+                                                isAssignableFrom(HistoryItemView.class)))))
+                .perform(click());
+
+        // "One" should disappear.
+        waitForNoView(withText("One"));
+
+        // The cluster should dissolve, so "Two" is visible as a normal item.
+        onViewWaiting(withText("Two")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
+    public void testHistoryClustering_RemoveCluster() throws Exception {
+        mActivityTestRule.startOnBlankPage();
+        String urlOne =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/one.html");
+        String urlTwo =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/two.html");
+        String domain = new org.chromium.url.GURL(urlOne).getHost();
+
+        mActivityTestRule.loadUrl(urlOne);
+        mActivityTestRule.loadUrl(urlTwo);
+
+        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+
+        waitForView(withId(R.id.history_page_recycler_view));
+
+        // Verify the cluster is created.
+        onViewWaiting(withText(domain)).check(matches(isDisplayed()));
+
+        // Select the cluster head using long click.
+        onView(withText(domain)).perform(androidx.test.espresso.action.ViewActions.longClick());
+
+        // Click delete on the toolbar.
+        onViewWaiting(withId(R.id.selection_mode_delete_menu_id)).perform(click());
+
+        // Ensure "domain" is removed.
+        waitForNoView(withText(domain));
+
+        // Also ensure the items are actually removed (they shouldn't be visible).
+        waitForNoView(withText("One"));
+        waitForNoView(withText("Two"));
     }
 }

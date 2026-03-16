@@ -56,7 +56,8 @@ import java.util.function.Supplier;
 @EnableFeatures({
     ChromeFeatureList.HISTORY_PANE_ANDROID,
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
-    SigninFeatures.ENABLE_SEAMLESS_SIGNIN
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+    ChromeFeatureList.ANDROID_HISTORY_CLUSTERING
 })
 public class HistoryPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

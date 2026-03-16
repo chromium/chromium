@@ -52,7 +52,38 @@ public class HistoryTestUtils {
                 Assert.assertEquals(ItemViewType.DATE, adapter.getItemViewType(i));
             } else {
                 Assert.assertEquals(ItemViewType.NORMAL, adapter.getItemViewType(i));
-                Assert.assertEquals(items[i], adapter.getItemAt(i).second);
+                HistoryItem expected = (HistoryItem) items[i];
+                HistoryItem actual = (HistoryItem) adapter.getItemAt(i).second;
+                if (expected == actual) {
+                    // Success, exact object reference match.
+                } else if (actual.isClusterHead()
+                        && actual.getSubItems() != null
+                        && !actual.getSubItems().isEmpty()
+                        && expected.getUrl().equals(actual.getSubItems().get(0).getUrl())) {
+                    // Success, the actual item is a virtual head representing the expected template
+                    // item.
+                } else if (expected.getUrl().equals(actual.getUrl())
+                        && expected.getTimestamp() == actual.getTimestamp()) {
+                    // Success, the objects represent the same underlying navigation but might be
+                    // different instances (e.g. one has a cluster ID assigned).
+                } else {
+                    System.out.println(
+                            "checkAdapterContents MISMATCH at index "
+                                    + i
+                                    + "\n Expected: url="
+                                    + expected.getUrl()
+                                    + ", timestamp="
+                                    + expected.getTimestamp()
+                                    + ", isClusterHead="
+                                    + expected.isClusterHead()
+                                    + "\n Actual: url="
+                                    + actual.getUrl()
+                                    + ", timestamp="
+                                    + actual.getTimestamp()
+                                    + ", isClusterHead="
+                                    + actual.isClusterHead());
+                    Assert.assertEquals(expected, actual);
+                }
             }
         }
     }

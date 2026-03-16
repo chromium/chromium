@@ -12,6 +12,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneBase;
@@ -111,6 +112,8 @@ public class HistoryPane extends PaneBase {
                             /* shouldShowClearData= */ true,
                             /* launchedForApp= */ false,
                             /* showAppFilter= */ true,
+                            ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.ANDROID_HISTORY_CLUSTERING),
                             this::onHistoryItemOpened,
                             // TODO(crbug.com/427776544): make history pane support edge to edge.
                             /* edgeToEdgePadAdjusterGenerator= */ null);

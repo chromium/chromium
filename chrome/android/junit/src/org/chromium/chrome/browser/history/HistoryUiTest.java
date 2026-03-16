@@ -221,6 +221,7 @@ public class HistoryUiTest {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ isAppSpecificHistoryEnabled,
+                        /* shouldClusterByDomain= */ false,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         mContentManager = mHistoryManager.getContentManagerForTests();
@@ -824,6 +825,7 @@ public class HistoryUiTest {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ true,
+                        /* shouldClusterByDomain= */ false,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         mContentManager = mHistoryManager.getContentManagerForTests();
@@ -883,6 +885,7 @@ public class HistoryUiTest {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ true,
                         /* showAppFilter= */ false,
+                        /* shouldClusterByDomain= */ false,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
 
@@ -924,6 +927,7 @@ public class HistoryUiTest {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ true,
                         /* showAppFilter= */ false,
+                        /* shouldClusterByDomain= */ false,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
         InfoHeaderPref headerPref = mHistoryManager.getInfoHeaderPrefForTests();
@@ -1104,6 +1108,7 @@ public class HistoryUiTest {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ false,
+                        /* shouldClusterByDomain= */ false,
                         /* openHistoryItemCallback= */ null,
                         /* edgeToEdgePadAdjusterGenerator= */ null);
 

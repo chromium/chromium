@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.history;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,12 +37,16 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Bridges the user's browsing history and the UI used to display it. */
 @NullMarked
 public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistoryObserver {
     private static final String EMPTY_QUERY = "";
+    private static final String CLUSTER_EXPANSION_KEY_PREFIX = "cluster_";
 
     private final HistoryContentManager mManager;
     private final ArrayList<HistoryItemView> mItemViews;
@@ -92,11 +97,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mShowSourceApp;
 
     private boolean mIsLargeScreenWithKeyboard;
+    private final boolean mShouldClusterByDomain;
+    private final Set<String> mExpandedClusterKeys = new HashSet<>();
+    private final List<HistoryItem> mAllItems = new ArrayList<>();
+    // Monotonically increasing ID for clustering.
+    private long mNextClusterId = 1;
 
     public HistoryAdapter(
             HistoryContentManager manager,
             HistoryProvider provider,
-            @Nullable SigninPromoCoordinator historySyncPromoCoordinator) {
+            @Nullable SigninPromoCoordinator historySyncPromoCoordinator,
+            boolean shouldClusterByDomain) {
         setHasStableIds(true);
         mHistoryProvider = provider;
         mHistoryProvider.setObserver(this);
@@ -107,6 +118,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mShowSourceApp = mShowAppFilter; // defaults to BrApp full history
         mHistorySyncPromoCoordinator = historySyncPromoCoordinator;
         mIsLargeScreenWithKeyboard = false;
+        mShouldClusterByDomain = shouldClusterByDomain;
     }
 
     /** Called when the activity/native page is destroyed. */
@@ -202,11 +214,20 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     /**
      * Adds the HistoryItem to the list of items being removed and removes it from the adapter. The
      * removal will not be committed until #removeItems() is called.
+     *
      * @param item The item to mark for removal.
      */
     public void markItemForRemoval(HistoryItem item) {
-        removeItem(item);
-        mHistoryProvider.markItemForRemoval(item);
+        mAllItems.remove(item);
+        if (item.isClusterHead() && item.getSubItems() != null) {
+            mAllItems.removeAll(item.getSubItems());
+            for (HistoryItem subItem : item.getSubItems()) {
+                mHistoryProvider.markItemForRemoval(subItem);
+            }
+        } else {
+            mHistoryProvider.markItemForRemoval(item);
+        }
+        rebuildItemList();
     }
 
     /** Removes all items that have been marked for removal through #markItemForRemoval(). */
@@ -267,6 +288,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     @Override
     protected void bindViewHolderForTimedItem(ViewHolder current, TimedItem timedItem) {
         final HistoryItem item = (HistoryItem) timedItem;
+
+        HistoryItemView itemView = (HistoryItemView) current.itemView;
+        if (item.isClusterHead()) {
+            itemView.setClusterToggleHandler(() -> toggleCluster(item));
+        } else {
+            itemView.setClusterToggleHandler(null);
+        }
+
         mManager.bindViewHolderForHistoryItem(current, item);
     }
 
@@ -282,14 +311,20 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         // destroyed to avoid unnecessary work.
         if (mIsDestroyed) return;
 
+        removeFooter();
+
         if (mClearOnNextQueryComplete) {
+            mAllItems.clear();
             clear(true);
             mClearOnNextQueryComplete = false;
         }
 
-        removeFooter();
+        mAllItems.addAll(items);
 
-        loadItems(items);
+        mIsLoadingItems = false;
+        mHasMorePotentialItems = hasMorePotentialMatches;
+
+        rebuildItemList();
 
         boolean isEmpty = items.size() > 0 || mHistorySyncPromoVisible;
         if ((!mAreHeadersInitialized && isEmpty && !mIsSearching)
@@ -298,9 +333,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             setHeaders();
             mAreHeadersInitialized = true;
         }
-
-        mIsLoadingItems = false;
-        mHasMorePotentialItems = hasMorePotentialMatches;
 
         if (mHasMorePotentialItems) updateFooter();
     }
@@ -773,5 +805,113 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     @Nullable String getAppIdForTest() {
         return mAppId;
+    }
+
+    public void toggleCluster(HistoryItem item) {
+        String key = getExpansionKey(item);
+        if (mExpandedClusterKeys.contains(key)) {
+            mExpandedClusterKeys.remove(key);
+        } else {
+            mExpandedClusterKeys.add(key);
+        }
+        rebuildItemList();
+    }
+
+    private void rebuildItemList() {
+        clear(true);
+        List<HistoryItem> clustered = clusterItems(mAllItems);
+        loadItems(clustered);
+        if (mAreHeadersInitialized) {
+            setHeaders();
+        }
+        if (mHasMorePotentialItems) {
+            updateFooter();
+        }
+        if (mAreHeadersInitialized && clustered.isEmpty() && !mIsSearching) {
+            removeHeaderIfEmpty();
+        }
+    }
+
+    /**
+     * Groups consecutive history items with the same domain and timestamp into clusters. For each
+     * cluster, creates a virtual head item and optionally includes its sub-items if the cluster is
+     * expanded.
+     *
+     * @param items The list of history items to cluster.
+     * @return A new list of items with clustered items grouped under cluster heads.
+     */
+    private List<HistoryItem> clusterItems(List<HistoryItem> items) {
+        if (!mShouldClusterByDomain) {
+            return items;
+        }
+
+        List<HistoryItem> clusteredItems = new ArrayList<>();
+        int i = 0;
+        while (i < items.size()) {
+            HistoryItem current = items.get(i);
+
+            int j = i + 1;
+            while (j < items.size() && isSameCluster(current, items.get(j))) {
+                j++;
+            }
+
+            if (j > i + 1) {
+                List<HistoryItem> cluster = items.subList(i, j);
+                // Determine the cluster ID to use.
+                @Nullable HistoryItem itemWithClusterId = null;
+                for (HistoryItem item : cluster) {
+                    if (item.getClusterId() != null) {
+                        itemWithClusterId = item;
+                        break;
+                    }
+                }
+                Long clusterId =
+                        itemWithClusterId != null
+                                ? itemWithClusterId.getClusterId()
+                                : mNextClusterId++;
+
+                // Assign the cluster ID to all items in this cluster
+                for (int k = 0; k < cluster.size(); k++) {
+                    cluster.set(k, cluster.get(k).toBuilder().setClusterId(clusterId).build());
+                }
+
+                // Create a virtual head for the cluster
+                HistoryItem head = createClusterHead(cluster, clusterId);
+                clusteredItems.add(head);
+                if (head.isExpanded()) {
+                    clusteredItems.addAll(cluster);
+                }
+                i = j;
+            } else {
+                assert !current.isClusterHead();
+                clusteredItems.add(current);
+                i++;
+            }
+        }
+        return clusteredItems;
+    }
+
+    private boolean isSameCluster(HistoryItem item1, HistoryItem item2) {
+        return TextUtils.equals(item1.getDomain(), item2.getDomain())
+                && compareDate(new Date(item1.getTimestamp()), new Date(item2.getTimestamp())) == 0;
+    }
+
+    private HistoryItem createClusterHead(List<HistoryItem> cluster, long clusterId) {
+        HistoryItem template = cluster.get(0);
+        String expansionKey = CLUSTER_EXPANSION_KEY_PREFIX + clusterId;
+        HistoryItem head =
+                template.toBuilder()
+                        .setTitle(template.getDomain())
+                        .setIsClusterHead(true)
+                        .setSubItems(new ArrayList<>(cluster))
+                        .setClusterId(clusterId)
+                        .setIsExpanded(mExpandedClusterKeys.contains(expansionKey))
+                        .setHistoryManager(mManager)
+                        .build();
+        return head;
+    }
+
+    private String getExpansionKey(HistoryItem item) {
+        return CLUSTER_EXPANSION_KEY_PREFIX + item.getClusterId();
     }
 }

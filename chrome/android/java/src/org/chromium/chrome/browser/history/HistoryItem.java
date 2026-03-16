@@ -218,7 +218,7 @@ public class HistoryItem extends TimedItem {
         private final long[] mNativeTimestampList;
         private final boolean mWasBlockedVisit;
         private final boolean mIsActorVisit;
-        private final @Nullable HistoryContentManager mManager;
+        private @Nullable HistoryContentManager mManager;
 
         private String mTitle;
         private boolean mIsExpanded;
@@ -265,6 +265,11 @@ public class HistoryItem extends TimedItem {
 
         public Builder setSubItems(@Nullable List<HistoryItem> subItems) {
             mSubItems = subItems;
+            return this;
+        }
+
+        public Builder setHistoryManager(@Nullable HistoryContentManager manager) {
+            mManager = manager;
             return this;
         }
 

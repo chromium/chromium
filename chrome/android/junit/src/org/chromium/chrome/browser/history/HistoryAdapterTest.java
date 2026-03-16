@@ -49,7 +49,8 @@ public class HistoryAdapterTest {
     public void setUp() {
         mHistoryProvider = new StubbedHistoryProvider();
         mAdapter =
-                new HistoryAdapter(mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator);
+                new HistoryAdapter(
+                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, false);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         doReturn(mTextView).when(mAppFilterChip).getPrimaryTextView();
@@ -104,7 +105,8 @@ public class HistoryAdapterTest {
         // Reinstantiate HistoryAdapter with |showAppFilter| flag on. Now we're in BrApp.
         doReturn(true).when(mContentManager).showAppFilter();
         mAdapter =
-                new HistoryAdapter(mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator);
+                new HistoryAdapter(
+                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, false);
 
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
@@ -377,5 +379,214 @@ public class HistoryAdapterTest {
                         .getString(R.string.android_history_blocked_site),
                 item2.getTitle());
         Assert.assertTrue(item2.wasBlockedVisit());
+    }
+
+    @Test
+    public void testClusteringByDomain() {
+        // Re-instantiate adapter with clustering enabled
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+        mAdapter.generateHeaderItemsForTest();
+
+        Date today = new Date();
+        long timestamp = today.getTime();
+        // Two items from google.com
+        HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
+        HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 100);
+        // One item from example.com
+        HistoryItem item3 = StubbedHistoryProvider.createHistoryItem(1, timestamp - 200);
+
+        mHistoryProvider.addItem(item1);
+        mHistoryProvider.addItem(item2);
+        mHistoryProvider.addItem(item3);
+
+        mAdapter.startLoadingItems();
+
+        // The items should be clustered.
+        // Expected displayed items: Header, Date, item1, item3
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item3);
+        HistoryItem clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        Assert.assertTrue(clusterHead1.isClusterHead());
+        Assert.assertNotNull(clusterHead1.getSubItems());
+        Assert.assertEquals(2, clusterHead1.getSubItems().size());
+        Assert.assertEquals(item1.getUrl(), clusterHead1.getSubItems().get(0).getUrl());
+        Assert.assertEquals(item2.getUrl(), clusterHead1.getSubItems().get(1).getUrl());
+
+        // Toggle expansion
+        mAdapter.toggleCluster(clusterHead1);
+        // Expected display: Header, Date, head(item1), item1, item2, item3
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item1, item2, item3);
+        clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        Assert.assertTrue(clusterHead1.isExpanded());
+
+        // Toggle back
+        mAdapter.toggleCluster(clusterHead1);
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item3);
+        clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        Assert.assertFalse(clusterHead1.isExpanded());
+    }
+
+    @Test
+    public void testRemoveClusterHead() {
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+        mAdapter.generateHeaderItemsForTest();
+
+        Date today = new Date();
+        long timestamp = today.getTime();
+        HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
+        HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 100);
+        mHistoryProvider.addItem(item1);
+        mHistoryProvider.addItem(item2);
+
+        mAdapter.startLoadingItems();
+        // Header, Date, item1 (cluster head)
+        checkAdapterContents(mAdapter, true, false, null, null, item1);
+
+        HistoryItem clusterHead = (HistoryItem) mAdapter.getItemAt(2).second;
+        mAdapter.markItemForRemoval(clusterHead);
+
+        // Both item1 and item2 should be removed.
+        checkAdapterContents(mAdapter, false, false);
+        Assert.assertEquals(2, mHistoryProvider.markItemForRemovalCallback.getCallCount());
+    }
+
+    @Test
+    public void testRemoveSubItem() {
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+        mAdapter.generateHeaderItemsForTest();
+
+        Date today = new Date();
+        long timestamp = today.getTime();
+        HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
+        HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 100);
+        HistoryItem item3 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 200);
+        mHistoryProvider.addItem(item1);
+        mHistoryProvider.addItem(item2);
+        mHistoryProvider.addItem(item3);
+
+        mAdapter.startLoadingItems();
+        // item1 is cluster head, item2 and item3 are sub-items.
+        // display: Header, Date, item1
+        checkAdapterContents(mAdapter, true, false, null, null, item1);
+        HistoryItem clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        Assert.assertEquals(3, clusterHead1.getSubItems().size());
+
+        // Remove item2 (a sub-item)
+        HistoryItem actualItem2 = clusterHead1.getSubItems().get(1);
+        mAdapter.markItemForRemoval(actualItem2);
+        // item1 should still be cluster head but with only item3 as sub-item.
+        checkAdapterContents(mAdapter, true, false, null, null, item1);
+        clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        Assert.assertEquals(2, clusterHead1.getSubItems().size());
+        Assert.assertEquals(item1.getUrl(), clusterHead1.getSubItems().get(0).getUrl());
+        Assert.assertEquals(item3.getUrl(), clusterHead1.getSubItems().get(1).getUrl());
+
+        // Remove item3
+        HistoryItem actualItem3 = clusterHead1.getSubItems().get(1);
+        mAdapter.markItemForRemoval(actualItem3);
+        // only item1 left, it shouldn't be a cluster head anymore.
+        checkAdapterContents(mAdapter, true, false, null, null, item1);
+        clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        Assert.assertFalse(clusterHead1.isClusterHead());
+    }
+
+    @Test
+    public void testStableIdInvariantOnClusterDeletion() {
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+        mAdapter.generateHeaderItemsForTest();
+
+        Date today = new Date();
+        long timestamp = today.getTime();
+        HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
+        HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 100);
+        HistoryItem item3 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 200);
+        mHistoryProvider.addItem(item1);
+        mHistoryProvider.addItem(item2);
+        mHistoryProvider.addItem(item3);
+
+        mAdapter.startLoadingItems();
+        // The cluster head is the first item returned.
+        HistoryItem clusterHeadBefore = (HistoryItem) mAdapter.getItemAt(2).second;
+        long stableIdBefore = clusterHeadBefore.getStableId();
+
+        // Remove item1, which is the first sub-item and the template for the virtual head.
+        HistoryItem actualItem1 = clusterHeadBefore.getSubItems().get(0);
+        mAdapter.markItemForRemoval(actualItem1);
+
+        // Get the cluster head again.
+        HistoryItem clusterHeadAfter = (HistoryItem) mAdapter.getItemAt(2).second;
+        long stableIdAfter = clusterHeadAfter.getStableId();
+
+        // The stable ID should remain the same even after the first sub-item is deleted.
+        Assert.assertEquals(
+                "Stable ID should be invariant when first sub-item is deleted",
+                stableIdBefore,
+                stableIdAfter);
+    }
+
+    @Test
+    public void testDistinctClustersSameDomain() {
+        mAdapter =
+                new HistoryAdapter(
+                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+        mAdapter.generateHeaderItemsForTest();
+
+        Date today = new Date();
+        long timestamp = today.getTime();
+
+        // Cluster 1 (Google)
+        HistoryItem item1 = StubbedHistoryProvider.createHistoryItem(0, timestamp);
+        HistoryItem item2 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 100);
+
+        // Interrupting item (Example)
+        HistoryItem item3 = StubbedHistoryProvider.createHistoryItem(1, timestamp - 200);
+
+        // Cluster 2 (Google, same day)
+        HistoryItem item4 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 300);
+        HistoryItem item5 = StubbedHistoryProvider.createHistoryItem(0, timestamp - 400);
+
+        mHistoryProvider.addItem(item1);
+        mHistoryProvider.addItem(item2);
+        mHistoryProvider.addItem(item3);
+        mHistoryProvider.addItem(item4);
+        mHistoryProvider.addItem(item5);
+
+        mAdapter.startLoadingItems();
+
+        // The items should form two separate clusters for Google.
+        // Expected displayed items: Header, Date, item1 (head), item3, item4 (head)
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item3, item4);
+
+        HistoryItem clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        HistoryItem clusterHead4 = (HistoryItem) mAdapter.getItemAt(4).second;
+
+        Assert.assertTrue(clusterHead1.isClusterHead());
+        Assert.assertTrue(clusterHead4.isClusterHead());
+
+        Assert.assertNotEquals(
+                "Distinct clusters should have different stable IDs",
+                clusterHead1.getStableId(),
+                clusterHead4.getStableId());
+
+        // Toggle expansion of the first cluster
+        mAdapter.toggleCluster(clusterHead1);
+
+        // Expected display: Header, Date, item1 (head), item1, item2, item3, item4 (head)
+        checkAdapterContents(mAdapter, true, false, null, null, item1, item1, item2, item3, item4);
+
+        clusterHead1 = (HistoryItem) mAdapter.getItemAt(2).second;
+        clusterHead4 = (HistoryItem) mAdapter.getItemAt(6).second;
+
+        Assert.assertTrue(clusterHead1.isExpanded());
+        Assert.assertFalse(
+                "Expanding one cluster should not expand the other independent cluster",
+                clusterHead4.isExpanded());
     }
 }

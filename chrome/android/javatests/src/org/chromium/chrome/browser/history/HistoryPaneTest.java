@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.history;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.transit.Triggers.noopTo;
 
@@ -17,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -47,6 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
     ChromeFeatureList.HISTORY_PANE_ANDROID,
     ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
 })
+@DisableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
 public class HistoryPaneTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
@@ -141,6 +146,51 @@ public class HistoryPaneTest {
         HistoryWithEntriesFacility history =
                 page.openRegularTabSwitcher().selectHistoryPane().expectEntries(mIsLLFDevice);
         history.expectEntry("One").selectToOpenWebPage(page, urlOne);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
+    public void testHistoryClustering_ExpandCollapse() {
+        String urlOne =
+                mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/one.html");
+        String urlTwo =
+                mCtaTestRule.getTestServer().getURL("/chrome/test/data/android/navigate/two.html");
+
+        // urlOne and urlTwo are from the same host. In tests, the test server usually runs on
+        // 127.0.0.1.
+        String domain = new org.chromium.url.GURL(urlOne).getHost();
+
+        RegularTabSwitcherStation tabSwitcher =
+                mStartingPage
+                        .loadWebPageProgrammatically(urlOne)
+                        .loadWebPageProgrammatically(urlTwo)
+                        .openRegularTabSwitcher();
+        HistoryWithEntriesFacility history =
+                tabSwitcher.selectHistoryPane().expectEntries(mIsLLFDevice);
+
+        // Before expansion, only the cluster head is visible. "One" and "Two" are hidden.
+        history.expectEntry(domain);
+        history.expectNoEntry("One");
+        history.expectNoEntry("Two");
+
+        // Expand the cluster.
+        org.chromium.chrome.test.transit.hub.HistoryPaneStation.HistoryEntryFacility clusterHead =
+                history.expectEntry(domain);
+        onView(clusterHead.removeButtonElement.getViewSpec().getViewMatcher()).perform(click());
+
+        // After expansion, the items should be visible alongside the cluster head.
+        history.expectEntry(domain);
+        history.expectEntry("One");
+        history.expectEntry("Two");
+
+        // Collapse the cluster.
+        onView(clusterHead.removeButtonElement.getViewSpec().getViewMatcher()).perform(click());
+
+        // The items should be hidden again.
+        history.expectEntry(domain);
+        history.expectNoEntry("One");
+        history.expectNoEntry("Two");
     }
 
     private void clearHistory(Profile profile) {

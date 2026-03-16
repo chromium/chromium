@@ -67,7 +67,10 @@ public class BrowsingHistoryBridgeTest {
         HistoryContentManager contentManager = mock(HistoryContentManager.class);
         HistoryAdapter adapter =
                 new HistoryAdapter(
-                        contentManager, mBrowsingHistoryBridge, mHistorySyncPromoCoordinator);
+                        contentManager,
+                        mBrowsingHistoryBridge,
+                        mHistorySyncPromoCoordinator,
+                        false);
         mBrowsingHistoryBridge.setObserver(adapter);
 
         List<HistoryItem> items = new ArrayList<>();

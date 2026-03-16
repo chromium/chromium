@@ -213,6 +213,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 null,
                 /* launchedForApp= */ false,
                 /* showAppFilter= */ false,
+                /* shouldClusterByDomain= */ false,
                 /* openHistoryItemCallback= */ null,
                 regularAsyncTabLauncher,
                 incognitoAsyncTabLauncher);
@@ -277,6 +278,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             @Nullable String appId,
             boolean launchedForApp,
             boolean showAppFilter,
+            boolean shouldClusterByDomain,
             @Nullable Runnable openHistoryItemCallback,
             AsyncTabLauncher regularAsyncTabLauncher,
             AsyncTabLauncher incognitoAsyncTabLauncher) {
@@ -303,6 +305,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 appId,
                 launchedForApp,
                 showAppFilter,
+                shouldClusterByDomain,
                 openHistoryItemCallback,
                 regularAsyncTabLauncher,
                 incognitoAsyncTabLauncher);
@@ -330,6 +333,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             @Nullable String appId,
             boolean launchedForApp,
             boolean showAppFilter,
+            boolean shouldClusterByDomain,
             @Nullable Runnable openHistoryItemCallback,
             AsyncTabLauncher regularAsyncTabLauncher,
             AsyncTabLauncher incognitoAsyncTabLauncher) {
@@ -402,7 +406,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                 new HistoryAdapter(
                         this,
                         sProviderForTests != null ? sProviderForTests : historyProvider,
-                        mHistorySyncPromoCoordinator);
+                        mHistorySyncPromoCoordinator,
+                        shouldClusterByDomain);
 
         // Create a recycler view.
         mRecyclerView =
@@ -791,8 +796,17 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @param item The item that has been clicked.
      */
     public void onItemClicked(HistoryItem item) {
+        if (item.isClusterHead()) {
+            toggleCluster(item);
+            return;
+        }
         mObserver.onItemClicked(item);
         openUrl(item.getUrl(), null, false, true);
+    }
+
+    /** Toggles the expansion state of a clustered item. */
+    public void toggleCluster(HistoryItem item) {
+        mHistoryAdapter.toggleCluster(item);
     }
 
     /**

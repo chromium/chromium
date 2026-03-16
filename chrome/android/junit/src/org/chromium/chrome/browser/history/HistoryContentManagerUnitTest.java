@@ -112,6 +112,7 @@ public class HistoryContentManagerUnitTest {
                         null,
                         false,
                         false,
+                        /* shouldClusterByDomain= */ false,
                         null,
                         mRegularAsyncTabLauncher,
                         mIncognitoAsyncTabLauncher);
