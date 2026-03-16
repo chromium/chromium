@@ -10,6 +10,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_functional_browsertest.h"
+#include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser.h"
@@ -62,19 +63,6 @@ MATCHER_P2(VerifyRemixedFirstPartySkill, expected, source, "") {
              sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY &&
          arg->source_skill_id == source.id && arg->id != source.id &&
          base::Uuid::ParseLowercase(arg->id).is_valid();
-}
-
-glic::mojom::SkillSource ToMojomSkillSource(sync_pb::SkillSource source) {
-  switch (source) {
-    case sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN:
-      return glic::mojom::SkillSource::kUnknown;
-    case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
-      return glic::mojom::SkillSource::kFirstParty;
-    case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
-      return glic::mojom::SkillSource::kUserCreated;
-    case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY:
-      return glic::mojom::SkillSource::kDerivedFromFirstParty;
-  }
 }
 
 optimization_guide::OptimizationMetadata SkillVectorToOptimizationMetaData(
@@ -173,8 +161,9 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
   auto CreateSkill(skills::Skill skill) {
     return Do([this, skill = std::move(skill)]() {
       auto request = glic::mojom::CreateSkillRequest::New(
-          skill.id, skill.name, skill.icon, ToMojomSkillSource(skill.source),
-          skill.prompt, skill.description);
+          skill.id, skill.name, skill.icon,
+          skills::SyncPbToGlicMojomSkillSource(skill.source), skill.prompt,
+          skill.description);
       skills::SkillsFunctionalBrowserTestBase::CreateSkill(std::move(request));
     });
   }

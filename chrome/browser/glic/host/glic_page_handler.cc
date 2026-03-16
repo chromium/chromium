@@ -68,6 +68,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/skills/skills_glic_mojom_util.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -222,40 +223,6 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
 // NEEDS_ANDROID_IMPL: (crbug.com/477622144) Remove desktop-only restrictions
 // from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)
-mojom::SkillSource ToMojomSkillSource(sync_pb::SkillSource source) {
-  switch (source) {
-    case sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN:
-      return mojom::SkillSource::kUnknown;
-    case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
-      return mojom::SkillSource::kFirstParty;
-    case sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED:
-      return mojom::SkillSource::kUserCreated;
-    case sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY:
-      return mojom::SkillSource::kDerivedFromFirstParty;
-  }
-}
-
-mojom::SkillPreviewPtr ToMojomSkillPreview(const skills::Skill* skill) {
-  if (!skill) {
-    return nullptr;
-  }
-  return mojom::SkillPreview::New(skill->id, skill->name, skill->icon,
-                                  ToMojomSkillSource(skill->source),
-                                  skill->description);
-}
-
-sync_pb::SkillSource FromMojomSkillSource(mojom::SkillSource source) {
-  switch (source) {
-    case mojom::SkillSource::kUnknown:
-      return sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN;
-    case mojom::SkillSource::kFirstParty:
-      return sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
-    case mojom::SkillSource::kUserCreated:
-      return sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
-    case mojom::SkillSource::kDerivedFromFirstParty:
-      return sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
-  }
-}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Monitors the panel state and the browser widget state. Emits an event any
@@ -1362,7 +1329,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     // directly in skills::Skill..
     skills::Skill skill(request->id, request->name, request->icon,
                         request->prompt, request->description,
-                        FromMojomSkillSource(request->source));
+                        skills::GlicMojomToSyncPbSkillSource(request->source));
     host().skills_manager().LaunchSkillsDialog(
         profile_, std::move(skill), skills::mojom::SkillsDialogType::kAdd,
         std::move(scoped_callback));
@@ -2423,7 +2390,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     // We should only set the source_skill_id if the skill was derived from
     // another skill.
     return mojom::Skill::New(
-        ToMojomSkillPreview(skill), skill->prompt,
+        skills::SkillToGlicMojomSkillPreview(skill), skill->prompt,
         skill->source ==
                 sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY
             ? skill->source_skill_id
@@ -2445,7 +2412,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         skills_service_->GetSkills();
     skill_previews.reserve(skills.size());
     for (const auto& skill : skills) {
-      skill_previews.push_back(ToMojomSkillPreview(skill.get()));
+      skill_previews.push_back(
+          skills::SkillToGlicMojomSkillPreview(skill.get()));
     }
 #endif  //  !BUILDFLAG(IS_ANDROID)
     return skill_previews;
