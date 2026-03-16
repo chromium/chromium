@@ -338,7 +338,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     .addDelegate(browserControlsManager.getBrowserVisibilityDelegate());
         }
 
-        if (OpenInAppUtils.isOpenInAppAvailable()) {
+        if (OpenInAppUtils.isOpenInAppAvailable() && intentDataProvider.get().isOpenedByChrome()) {
             mOpenInAppEntryPoint =
                     new CustomTabOpenInAppEntryPoint(
                             mActivityTabProvider.asObservable(),
