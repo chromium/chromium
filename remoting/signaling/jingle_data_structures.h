@@ -341,7 +341,7 @@ class JingleMessage {
 
   void SetPayload(Payload payload);
 
-  std::string ToSerializedXml();
+  std::string ToSerializedXml() const;
   ftl::IqStanza ToFtlIqStanza() const;
 
   // Unique identifier for the message.
@@ -408,7 +408,7 @@ struct JingleMessageReply {
   JingleMessageReply& operator=(JingleMessageReply&&);
   ~JingleMessageReply();
 
-  std::string ToSerializedXml();
+  std::string ToSerializedXml() const;
   ftl::IqStanza ToFtlIqStanza() const;
 
   // Defines the role of this reply in the IQ request/response pattern.

@@ -128,7 +128,7 @@ void JingleMessage::SetPayload(Payload payload) {
   action_ = ActionFromPayload(payload_);
 }
 
-std::string JingleMessage::ToSerializedXml() {
+std::string JingleMessage::ToSerializedXml() const {
   return JingleMessageToXml(*this)->Str();
 }
 
@@ -157,7 +157,7 @@ JingleMessageReply& JingleMessageReply::operator=(JingleMessageReply&&) =
 
 JingleMessageReply::~JingleMessageReply() = default;
 
-std::string JingleMessageReply::ToSerializedXml() {
+std::string JingleMessageReply::ToSerializedXml() const {
   return JingleMessageReplyToXml(*this)->Str();
 }
 
