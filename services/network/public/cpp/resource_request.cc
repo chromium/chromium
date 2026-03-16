@@ -230,6 +230,8 @@ ResourceRequest::TrustedParams& ResourceRequest::TrustedParams::operator=(
   response_body_stream = other.response_body_stream;
   expected_response_headers_for_synthetic_response =
       other.expected_response_headers_for_synthetic_response;
+  is_ad_auction_trusted_signals_request =
+      other.is_ad_auction_trusted_signals_request;
   return *this;
 }
 
@@ -253,7 +255,9 @@ bool ResourceRequest::TrustedParams::EqualsForTesting(
          // comparison of the refptrs themselves.
          (!!response_body_stream == !!other.response_body_stream) &&
          expected_response_headers_for_synthetic_response ==
-             other.expected_response_headers_for_synthetic_response;
+             other.expected_response_headers_for_synthetic_response &&
+         is_ad_auction_trusted_signals_request ==
+             other.is_ad_auction_trusted_signals_request;
 }
 
 ResourceRequest::WebBundleTokenParams::WebBundleTokenParams() = default;

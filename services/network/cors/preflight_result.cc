@@ -193,8 +193,8 @@ std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
 std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginHeaders(
     const net::HttpRequestHeaders& headers,
     bool is_revalidating,
-    NonWildcardRequestHeadersSupport non_wildcard_request_headers_support)
-    const {
+    NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+    bool is_ad_auction_trusted_signals_request) const {
   const bool has_wildcard = !credentials_ && headers_.contains("*");
   if (has_wildcard) {
     if (non_wildcard_request_headers_support) {
@@ -216,7 +216,8 @@ std::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginHeaders(
   // beforehand. But user-agents may add these headers internally, and it's
   // fine.
   for (const auto& name : CorsUnsafeNotForbiddenRequestHeaderNames(
-           headers.GetHeaderVector(), is_revalidating)) {
+           headers.GetHeaderVector(), is_revalidating,
+           is_ad_auction_trusted_signals_request)) {
     // Header list check is performed in case-insensitive way. Here, we have a
     // parsed header list set in lower case, and search each header in lower
     // case.
@@ -238,7 +239,8 @@ bool PreflightResult::EnsureAllowedRequest(
     const net::HttpRequestHeaders& headers,
     bool is_revalidating,
     NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
-    bool acam_preflight_spec_conformant) const {
+    bool acam_preflight_spec_conformant,
+    bool is_ad_auction_trusted_signals_request) const {
   if (!credentials_ && credentials_mode == mojom::CredentialsMode::kInclude) {
     return false;
   }
@@ -248,7 +250,8 @@ bool PreflightResult::EnsureAllowedRequest(
   }
 
   if (EnsureAllowedCrossOriginHeaders(headers, is_revalidating,
-                                      non_wildcard_request_headers_support)) {
+                                      non_wildcard_request_headers_support,
+                                      is_ad_auction_trusted_signals_request)) {
     return false;
   }
 

@@ -17,29 +17,32 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
   using List = std::vector<std::string>;
 
   // Empty => Empty
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({}, false /* is_revalidating */),
-      List({}));
+  EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
+                {}, false /* is_revalidating */,
+                false /* is_ad_auction_trusted_signals_request */),
+            List({}));
 
   // "user-agent" is NOT forbidden per spec, but forbidden in Chromium.
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({{"content-type", "text/plain"},
-                                                {"dpr", "12345"},
-                                                {"aCCept", "en,ja"},
-                                                {"accept-charset", "utf-8"},
-                                                {"uSer-Agent", "foo"},
-                                                {"hogE", "fuga"}},
-                                               false /* is_revalidating */),
-      List({"hoge"}));
+  EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
+                {{"content-type", "text/plain"},
+                 {"dpr", "12345"},
+                 {"aCCept", "en,ja"},
+                 {"accept-charset", "utf-8"},
+                 {"uSer-Agent", "foo"},
+                 {"hogE", "fuga"}},
+                false /* is_revalidating */,
+                false /* is_ad_auction_trusted_signals_request */),
+            List({"hoge"}));
 
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({{"content-type", "text/html"},
-                                                {"dpr", "123-45"},
-                                                {"aCCept", "en,ja"},
-                                                {"accept-charset", "utf-8"},
-                                                {"hogE", "fuga"}},
-                                               false /* is_revalidating */),
-      List({"content-type", "dpr", "hoge"}));
+  EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
+                {{"content-type", "text/html"},
+                 {"dpr", "123-45"},
+                 {"aCCept", "en,ja"},
+                 {"accept-charset", "utf-8"},
+                 {"hogE", "fuga"}},
+                false /* is_revalidating */,
+                false /* is_ad_auction_trusted_signals_request */),
+            List({"content-type", "dpr", "hoge"}));
 
   // `safelistValueSize` is 1024.
   EXPECT_EQ(
@@ -55,7 +58,8 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
            {"width", std::string(126, '1')},
            {"accept-charset", "utf-8"},
            {"hogE", "fuga"}},
-          false /* is_revalidating */),
+          false /* is_revalidating */,
+          false /* is_ad_auction_trusted_signals_request */),
       List({"hoge"}));
 
   // `safelistValueSize` is 1025.
@@ -72,7 +76,8 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
            {"width", std::string(127, '1')},
            {"accept-charset", "utf-8"},
            {"hogE", "fuga"}},
-          false /* is_revalidating */),
+          false /* is_revalidating */,
+          false /* is_ad_auction_trusted_signals_request */),
       List({"hoge", "content-type", "accept", "accept-language",
             "content-language", "dpr", "device-memory", "save-data",
             "viewport-width", "width"}));
@@ -91,7 +96,8 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNames) {
            {"width", std::string(127, '1')},
            {"accept-charset", "utf-8"},
            {"hogE", "fuga"}},
-          false /* is_revalidating */),
+          false /* is_revalidating */,
+          false /* is_ad_auction_trusted_signals_request */),
       List({"content-type", "hoge"}));
 }
 
@@ -100,25 +106,28 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNamesWithRevalidating) {
   using List = std::vector<std::string>;
 
   // Empty => Empty
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({}, true /* is_revalidating */),
-      List({}));
+  EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
+                {}, true /* is_revalidating */,
+                false /* is_ad_auction_trusted_signals_request */),
+            List({}));
 
   // These three headers will be ignored.
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({{"If-MODifIED-since", "x"},
-                                                {"iF-nONE-MATCh", "y"},
-                                                {"CACHE-ContrOl", "z"}},
-                                               true /* is_revalidating */),
-      List({}));
+  EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
+                {{"If-MODifIED-since", "x"},
+                 {"iF-nONE-MATCh", "y"},
+                 {"CACHE-ContrOl", "z"}},
+                true /* is_revalidating */,
+                false /* is_ad_auction_trusted_signals_request */),
+            List({}));
 
   // Without is_revalidating set, these three headers will not be safelisted.
-  EXPECT_EQ(
-      CorsUnsafeNotForbiddenRequestHeaderNames({{"If-MODifIED-since", "x"},
-                                                {"iF-nONE-MATCh", "y"},
-                                                {"CACHE-ContrOl", "z"}},
-                                               false /* is_revalidating */),
-      List({"if-modified-since", "if-none-match", "cache-control"}));
+  EXPECT_EQ(CorsUnsafeNotForbiddenRequestHeaderNames(
+                {{"If-MODifIED-since", "x"},
+                 {"iF-nONE-MATCh", "y"},
+                 {"CACHE-ContrOl", "z"}},
+                false /* is_revalidating */,
+                false /* is_ad_auction_trusted_signals_request */),
+            List({"if-modified-since", "if-none-match", "cache-control"}));
 }
 
 }  // namespace

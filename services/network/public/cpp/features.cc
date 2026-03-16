@@ -583,9 +583,6 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kPopulatePermissionsPolicyOnRequest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kProtectedAudienceCorsSafelistKVv2Signals,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kStorageAccessHeadersRespectPermissionsPolicy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

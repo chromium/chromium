@@ -181,6 +181,12 @@ struct TrustedUrlRequestParams {
   // TODO(crbug.com/447039330): This is temporary for the SyntheticResponse
   // experiment and will be removed after standardization.
   HttpResponseHeaders? expected_response_headers_for_synthetic_response;
+
+  // If true, `Content-Type: message/ad-auction-trusted-signals-request` will
+  // be treated as a CORS-safelisted Content-Type, so it will not trigger a CORS
+  // preflight. No new consumers should use this. It will be removed once the
+  // deprecated Protected Audiences code is deleted.
+  bool is_ad_auction_trusted_signals_request = false;
 };
 
 // Options that may only be set on URLRequests which are related to WebBundle.

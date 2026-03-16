@@ -92,10 +92,16 @@ std::optional<PreflightRequiredReason> NeedsPreflight(
   if (!IsCorsSafelistedMethod(request.method))
     return PreflightRequiredReason::kDisallowedMethod;
 
+  bool is_ad_auction_trusted_signals_request =
+      request.trusted_params &&
+      request.trusted_params->is_ad_auction_trusted_signals_request;
+
   if (!CorsUnsafeNotForbiddenRequestHeaderNames(
-           request.headers.GetHeaderVector(), request.is_revalidating)
-           .empty())
+           request.headers.GetHeaderVector(), request.is_revalidating,
+           is_ad_auction_trusted_signals_request)
+           .empty()) {
     return PreflightRequiredReason::kDisallowedHeader;
+  }
 
   return std::nullopt;
 }

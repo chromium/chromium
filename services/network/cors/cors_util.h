@@ -39,10 +39,14 @@ bool ShouldAllowUnsafeHeaders(
 // "cache-control" are also exempted.
 // The returned list is NOT sorted.
 // The returned list consists of lower-cased names.
+//
+// `is_ad_auction_trusted_signals_request` should only be true if this request
+// is a Protected Audiences trusted signals request.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
     const net::HttpRequestHeaders::HeaderVector& headers,
-    bool is_revalidating);
+    bool is_revalidating,
+    bool is_ad_auction_trusted_signals_request);
 
 }  // namespace network::cors
 

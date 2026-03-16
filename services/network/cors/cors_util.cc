@@ -33,7 +33,8 @@ bool ShouldAllowUnsafeHeaders(
 
 std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
     const net::HttpRequestHeaders::HeaderVector& headers,
-    bool is_revalidating) {
+    bool is_revalidating,
+    bool is_ad_auction_trusted_signals_request) {
   std::vector<std::string> header_names;
   std::vector<std::string> potentially_unsafe_names;
 
@@ -52,7 +53,8 @@ std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
         continue;
       }
     }
-    if (!IsCorsSafelistedHeader(name, header.value)) {
+    if (!IsCorsSafelistedHeader(name, header.value,
+                                is_ad_auction_trusted_signals_request)) {
       header_names.push_back(name);
     } else {
       potentially_unsafe_names.push_back(name);

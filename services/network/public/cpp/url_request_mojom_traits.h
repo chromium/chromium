@@ -204,6 +204,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return trusted_params.expected_response_headers_for_synthetic_response;
   }
 
+  static bool is_ad_auction_trusted_signals_request(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.is_ad_auction_trusted_signals_request;
+  }
+
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
                    network::ResourceRequest::TrustedParams* out);
 };

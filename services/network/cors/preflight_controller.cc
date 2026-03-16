@@ -49,6 +49,14 @@ namespace network::cors {
 
 namespace {
 
+// Returns true if
+// `request.trusted_params.is_ad_auction_trusted_signals_request` exists and is
+// true.
+bool IsAdAuctionTrustedSignalsRequest(const ResourceRequest& request) {
+  return request.trusted_params &&
+         request.trusted_params->is_ad_auction_trusted_signals_request;
+}
+
 int RetrieveCacheFlags(int load_flags) {
   return load_flags & (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
                        net::LOAD_DISABLE_CACHE);
@@ -71,13 +79,15 @@ std::optional<std::string> GetHeaderString(
 //  - byte-lowercased
 std::string CreateAccessControlRequestHeadersHeader(
     const net::HttpRequestHeaders& headers,
-    bool is_revalidating) {
+    bool is_revalidating,
+    bool is_ad_auction_trusted_signals_request) {
   // Exclude the forbidden headers because they may be added by the user
   // agent. They must be checked separately and rejected for
   // JavaScript-initiated requests.
   std::vector<std::string> filtered_headers =
-      CorsUnsafeNotForbiddenRequestHeaderNames(headers.GetHeaderVector(),
-                                               is_revalidating);
+      CorsUnsafeNotForbiddenRequestHeaderNames(
+          headers.GetHeaderVector(), is_revalidating,
+          is_ad_auction_trusted_signals_request);
   if (filtered_headers.empty())
     return std::string();
 
@@ -120,7 +130,8 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
       header_names::kAccessControlRequestMethod, request.method);
 
   std::string request_headers = CreateAccessControlRequestHeadersHeader(
-      request.headers, request.is_revalidating);
+      request.headers, request.is_revalidating,
+      IsAdAuctionTrustedSignalsRequest(request));
   if (!request_headers.empty()) {
     preflight_request->headers.SetHeader(
         header_names::kAccessControlRequestHeaders, request_headers);
@@ -311,7 +322,8 @@ std::optional<CorsErrorStatus> CheckPreflightResult(
 
   return result.EnsureAllowedCrossOriginHeaders(
       original_request.headers, original_request.is_revalidating,
-      non_wildcard_request_headers_support);
+      non_wildcard_request_headers_support,
+      IsAdAuctionTrustedSignalsRequest(original_request));
 }
 
 }  // namespace
@@ -608,11 +620,13 @@ void PreflightController::PerformPreflightCheck(
           : request.trusted_params.has_value()
                 ? request.trusted_params->isolation_info.network_isolation_key()
                 : net::NetworkIsolationKey();
+
   if (!RetrieveCacheFlags(request.load_flags) &&
       cache_.CheckIfRequestCanSkipPreflight(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.credentials_mode, request.method, request.headers,
-          request.is_revalidating, net_log, acam_preflight_spec_conformant)) {
+          request.is_revalidating, net_log, acam_preflight_spec_conformant,
+          IsAdAuctionTrustedSignalsRequest(request))) {
     std::move(callback).Run(net::OK, std::nullopt, false);
     return;
   }

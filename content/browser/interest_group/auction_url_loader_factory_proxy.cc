@@ -303,6 +303,8 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
       }
       new_request.trusted_params->client_security_state =
           client_security_state_.Clone();
+      new_request.trusted_params->is_ad_auction_trusted_signals_request =
+          is_trusted_signals_request;
     }
   } else if (needs_cors_for_additional_bid_) {
     // For additional bid reporting, act like the frame provided it as well.
@@ -318,6 +320,8 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     new_request.trusted_params->isolation_info = isolation_info_;
     new_request.trusted_params->client_security_state =
         client_security_state_.Clone();
+    new_request.trusted_params->is_ad_auction_trusted_signals_request =
+        is_trusted_signals_request;
   }
 
   if (owner_frame_tree_node_id_) {

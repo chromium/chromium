@@ -519,6 +519,7 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
   client_security_state->local_network_access_request_policy =
       network::mojom::LocalNetworkAccessRequestPolicy::kBlock;
   trusted_params.client_security_state = std::move(client_security_state);
+  trusted_params.is_ad_auction_trusted_signals_request = true;
 
   auction_downloader_ = std::make_unique<auction_worklet::AuctionDownloader>(
       url_loader_factory, trusted_signals_url,

@@ -74,7 +74,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
       const net::HttpRequestHeaders& headers,
       bool is_revalidating,
       NonWildcardRequestHeadersSupport
-          with_non_wildcard_request_headers_support) const;
+          with_non_wildcard_request_headers_support,
+      bool is_ad_auction_trusted_signals_request = false) const;
 
   // Checks if this entry is expired.
   bool IsExpired() const;
@@ -83,13 +84,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // `headers` is allowed by the CORS-preflight response.
   // This also does not reject the forbidden headers as
   // EnsureAllowCrossOriginHeaders does not.
-  bool EnsureAllowedRequest(mojom::CredentialsMode credentials_mode,
-                            const std::string& method,
-                            const net::HttpRequestHeaders& headers,
-                            bool is_revalidating,
-                            NonWildcardRequestHeadersSupport
-                                with_non_wildcard_request_headers_support,
-                            bool acam_preflight_spec_conformant) const;
+  bool EnsureAllowedRequest(
+      mojom::CredentialsMode credentials_mode,
+      const std::string& method,
+      const net::HttpRequestHeaders& headers,
+      bool is_revalidating,
+      NonWildcardRequestHeadersSupport
+          with_non_wildcard_request_headers_support,
+      bool acam_preflight_spec_conformant,
+      bool is_ad_auction_trusted_signals_request = false) const;
 
   // Returns true when `headers` has "authorization" which is covered by the
   // wildcard symbol (and not covered by "authorization") in the preflight

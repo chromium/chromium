@@ -189,10 +189,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
     lna_checks_params["LocalNetworkAccessChecksWarn"] = "false";
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{network::features::kLocalNetworkAccessChecks, lna_checks_params},
-         // Enable `kProtectedAudienceCorsSafelistKVv2Signals` by default, so
-         // behavior matches the eventual expected behavior.
-         {network::features::kProtectedAudienceCorsSafelistKVv2Signals, {}}},
+        {{network::features::kLocalNetworkAccessChecks, lna_checks_params}},
         /*disabled_features=*/{});
     embedded_test_server_.SetSSLConfig(
         net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -228,10 +225,7 @@ class TrustedSignalsFetcherTest : public testing::Test {
         })");
   }
 
-  // Sets `script_origin_` to be cross origin to be cross-origin to the trusted
-  // signals URL. Additional, sets whether a CORS preflight request is expected
-  // to be observed, which should depend on whether the
-  // `kProtectedAudienceCorsSafelistKVv2Signals` Feature is enabled.
+  // sets whether a CORS preflight request is expected to be observed.
   void SetCrossOrigin(bool cors_preflight_expected = false) {
     base::AutoLock auto_lock(lock_);
     // No requests are made to this origin, so doesn't need to come from the
@@ -2378,43 +2372,26 @@ TEST_F(TrustedSignalsFetcherTest,
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOrigin) {
-  // Test cross-origin requests both in the case
-  // `kProtectedAudienceCorsSafelistKVv2Signals` is disabled and when it's
-  // enabled. In only the first case should there be a CORS preflight.
-  for (bool add_content_type_to_cors_safelist : {false, true}) {
-    SCOPED_TRACE(add_content_type_to_cors_safelist);
-
-    base::test::ScopedFeatureList feature_list;
-    if (add_content_type_to_cors_safelist) {
-      feature_list.InitAndEnableFeature(
-          network::features::kProtectedAudienceCorsSafelistKVv2Signals);
-    } else {
-      feature_list.InitAndDisableFeature(
-          network::features::kProtectedAudienceCorsSafelistKVv2Signals);
-    }
-
-    SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
-        R"({
-          "compressionGroups": [
-            {
-              "compressionGroupId": 0,
-              "content": "content"
-            }
-          ]
-        })"));
-    SetCrossOrigin(
-        /*cors_preflight_expected=*/!add_content_type_to_cors_safelist);
-    auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
-    auto result =
-        RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
-    TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
-    expected_result.try_emplace(
-        0, CreateCompressionGroupResult(
-               auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
-               "content", base::Milliseconds(0)));
-    ValidateFetchResult(result, expected_result);
-    ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
-  }
+  // Test where the bidder script URL is cross-origin to the bidder signals URL.
+  SetResponseBodyAndAddHeader(auction_worklet::test::ToKVv2ResponseCborString(
+      R"({
+        "compressionGroups": [
+          {
+            "compressionGroupId": 0,
+            "content": "content"
+          }
+        ]
+      })"));
+  SetCrossOrigin(/*cors_preflight_expected=*/false);
+  auto bidding_signals_request = CreateBasicBiddingSignalsRequest();
+  auto result = RequestBiddingSignalsAndWaitForResult(bidding_signals_request);
+  TrustedSignalsFetcher::CompressionGroupResultMap expected_result;
+  expected_result.try_emplace(
+      0, CreateCompressionGroupResult(
+             auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone,
+             "content", base::Milliseconds(0)));
+  ValidateFetchResult(result, expected_result);
+  ValidateRequestBodyHex(kBasicBiddingSignalsRequestBody);
 }
 
 TEST_F(TrustedSignalsFetcherTest, BiddingSignalsCrossOriginLNAFailure) {

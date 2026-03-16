@@ -59,7 +59,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
       const net::HttpRequestHeaders& headers,
       bool is_revalidating,
       const net::NetLogWithSource& net_log,
-      bool acam_preflight_spec_conformant);
+      bool acam_preflight_spec_conformant,
+      bool is_ad_auction_trusted_signals_request);
 
   void ClearCache(mojom::ClearDataFilterPtr url_filter);
 

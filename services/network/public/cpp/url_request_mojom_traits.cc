@@ -98,6 +98,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
           &out->expected_response_headers_for_synthetic_response)) {
     return false;
   }
+  out->is_ad_auction_trusted_signals_request =
+      data.is_ad_auction_trusted_signals_request();
   return true;
 }
 

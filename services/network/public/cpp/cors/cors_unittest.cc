@@ -360,25 +360,12 @@ TEST_F(CorsTest, SafelistedContentType) {
                                      "application/x-www-form-urlencoded"));
   EXPECT_TRUE(IsCorsSafelistedHeader("content-type", "multipart/form-data"));
 
-  // Test message/ad-auction-trusted-signals-request, which is currently
-  // safelisted by default, but has a feature to disable it, in case the rollout
-  // runs into any issues.
-  EXPECT_TRUE(IsCorsSafelistedHeader(
+  EXPECT_FALSE(IsCorsSafelistedHeader(
       "content-type", "message/ad-auction-trusted-signals-request"));
-  for (bool enable_pa_safelist_kv_v2_signals : {false, true}) {
-    base::test::ScopedFeatureList feature_list;
-    if (enable_pa_safelist_kv_v2_signals) {
-      feature_list.InitAndEnableFeature(
-          features::kProtectedAudienceCorsSafelistKVv2Signals);
-    } else {
-      feature_list.InitAndDisableFeature(
-          features::kProtectedAudienceCorsSafelistKVv2Signals);
-    }
-    EXPECT_EQ(
-        enable_pa_safelist_kv_v2_signals,
-        IsCorsSafelistedHeader("content-type",
-                               "message/ad-auction-trusted-signals-request"));
-  }
+  EXPECT_TRUE(IsCorsSafelistedHeader(
+      "content-type", "message/ad-auction-trusted-signals-request",
+      /*is_ad_auction_trusted_signals_request=*/
+      true));
 
   EXPECT_TRUE(IsCorsSafelistedHeader("content-type", "Text/plain"));
   EXPECT_TRUE(IsCorsSafelistedHeader("content-type", "tEXT/PLAIN"));
