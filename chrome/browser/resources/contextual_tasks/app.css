@@ -542,6 +542,7 @@ error-page {
 
 .thread-header {
   color: var(--color-zero-state-greeting);
+  display: block;
   font-family: var(--google-sans-font);
   font-size: 32px;
   font-weight: 500;

@@ -32,15 +32,17 @@ export function getHtml(this: ContextualTasksAppElement) {
     <div id="composeboxHeaderWrapper"
         ?hidden="${this.enableBasicMode_ && this.isInBasicMode_ && !this.enableBasicModeZOrder_}">
       <h1 class="thread-header" id="composeboxHeader">
-          ${this.friendlyZeroStateGaiaName_
-            ? html`<span>${this.friendlyZeroStateTitleBeforeName_}</span><span
-              id="nameShimmer" class="name-shimmer">
-              ${this.friendlyZeroStateGaiaName_}</span><span>${this.friendlyZeroStateTitleAfterName_}</span>`
+        ${this.userName_
+            ? [
+              html`<span>${this.friendlyZeroStateTitleBeforeName_}</span>`,
+              html`<span id="nameShimmer" class="name-shimmer">${this.userName_}</span>`,
+              html`<span>${this.friendlyZeroStateTitleAfterName_}</span>`,
+            ]
             : html`<span>${this.friendlyZeroStateTitle}</span>`
-          }
-          ${this.friendlyZeroStateSubtitle.length > 0 ?
-              html`<br>
-              ${this.friendlyZeroStateSubtitle}` : ''}
+        }
+        ${this.friendlyZeroStateSubtitle.length > 0 ?
+            html`<br>
+            ${this.friendlyZeroStateSubtitle}` : ''}
       </h1>
     </div>
     ${this.showOnboardingTooltip_ ? html`

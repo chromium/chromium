@@ -190,7 +190,7 @@ export class ContextualTasksAppElement extends CrLitElement {
         reflect: true,
       },
       forcedComposeboxBounds_: {type: Object},
-      friendlyZeroStateGaiaName_: {type: String},
+      userName_: {type: String},
       friendlyZeroStateTitleBeforeName_: {type: String},
       friendlyZeroStateTitleAfterName_: {type: String},
       occluders_: {type: Array},
@@ -203,8 +203,7 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   protected accessor showOnboardingTooltip_: boolean =
       loadTimeData.getBoolean('showOnboardingTooltip');
-
-  protected accessor friendlyZeroStateGaiaName_: string =
+  protected accessor userName_: string =
       loadTimeData.getString('friendlyZeroStateGaiaName');
   protected accessor friendlyZeroStateTitleBeforeName_: string =
       loadTimeData.getString('friendlyZeroStateTitleBeforeName');
