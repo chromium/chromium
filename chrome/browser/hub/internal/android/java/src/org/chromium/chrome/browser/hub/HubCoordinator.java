@@ -132,7 +132,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
 
         // Get bottom toolbar delegate and visibility supplier
         HubBottomToolbarDelegate bottomToolbarDelegate =
-                HubBottomToolbarDelegateFactory.createDelegate();
+                HubBottomToolbarDelegateFactory.createDelegate(activity);
         NonNullObservableSupplier<Boolean> bottomToolbarVisibilitySupplier =
                 bottomToolbarDelegate != null
                         ? bottomToolbarDelegate.getBottomToolbarVisibilitySupplier()
