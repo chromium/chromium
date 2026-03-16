@@ -1578,9 +1578,8 @@ BASE_FEATURE(kLowLatencyUsageSupportedForCanvas2D,
 );
 
 // Allow low latency WebGL to be in overlay (generally meaning scanned out
-// directly to display), even if regular canvas are not in overlay
-// (WebGLImageChromium is disabled).
-BASE_FEATURE(kLowLatencyWebGLImageChromium,
+// directly to display), even if regular canvases are not in overlay.
+BASE_FEATURE(kLowLatencyUsageSupportedForWebGL,
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

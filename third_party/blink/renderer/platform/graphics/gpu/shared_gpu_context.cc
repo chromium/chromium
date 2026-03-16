@@ -469,7 +469,8 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
   // on a canvas is a no-op on Mac). If/once that bug is resolved, determine
   // whether this method can then return true on Apple if
   // IsDelegatedCompositingEnabled() holds.
-  return base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
+  return base::FeatureList::IsEnabled(
+      features::kLowLatencyUsageSupportedForWebGL);
 }
 
 bool SharedGpuContext::UseOverlaysForWebGL() {
