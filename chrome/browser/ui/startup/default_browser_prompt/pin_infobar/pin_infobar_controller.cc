@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -142,8 +142,18 @@ void PinInfoBarController::OnShouldOfferToPinResult(
   // Show the pin-to-taskbar infobar.
   content::WebContents* web_contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
+  if (!web_contents) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+
   infobar_manager_ =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (!infobar_manager_) {
+    std::move(done_callback).Run(false);
+    return;
+  }
+
   infobar_manager_->AddObserver(this);
   infobar_ = PinInfoBarDelegate::Create(infobar_manager_);
   SetInfoBarShownRecently();
