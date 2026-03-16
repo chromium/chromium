@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_CURRENT_AUTHORITATIVE_STORE;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TAB_PERSISTENCE_SHADOW_WRITTEN_STORE;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.allowFullMigration;
+import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.fullRollback;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isStorageAuthoritative;
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isTabStorageEnabled;
 
@@ -53,7 +54,9 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
     @Override
     public @StoreType int getShadowStoreType() {
         @StoreType int currentAuthoritativeStoreType = getAuthoritativeStoreType();
-        if (isTabStorageEnabled() && currentAuthoritativeStoreType == StoreType.LEGACY) {
+        if (isTabStorageEnabled()
+                && !fullRollback()
+                && currentAuthoritativeStoreType == StoreType.LEGACY) {
             return StoreType.TAB_STATE_STORE;
         } else if (!allowFullMigration()
                 && currentAuthoritativeStoreType == StoreType.TAB_STATE_STORE) {

@@ -393,6 +393,30 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     }
 
     @Test
+    public void testMigration_FullRollback() {
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
+        ChromeSharedPreferences.getInstance()
+                .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
+
+        // Start full rollback. LEGACY should shadow to catch up and TAB_STATE_STORE should be
+        // authoritative.
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_ROLLBACK);
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.LEGACY, mManager.getShadowStoreType());
+
+        mManager.onShadowStoreCreated(StoreType.LEGACY);
+        mManager.onShadowStoreCaughtUp();
+
+        // Start Rollback in next session. Legacy should now be authoritative.
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
     public void testMigration_ForceFullRollback() {
         ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
