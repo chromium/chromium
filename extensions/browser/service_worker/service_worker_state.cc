@@ -4,6 +4,8 @@
 
 #include "extensions/browser/service_worker/service_worker_state.h"
 
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
@@ -178,10 +180,27 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
     return;
   }
 
-  if (renderer_state() == RendererState::kActive) {
-    // We already received `RendererDidStartServiceWorkerContext` and know that
-    // this worker instance is already active.
-    return;
+  if (renderer_state() != RendererState::kNotActive) {
+    // If the new token is different from the preexisting token, and it's still
+    // live, we are in an unexpected situation in which the content layer is
+    // tracking two different service workers.
+    auto renderer_state_debug = renderer_state_;
+    base::debug::Alias(&renderer_state_debug);
+    CHECK(worker_id_.has_value());
+    auto preexisting_version_id = worker_id_->version_id;
+    auto preexisting_token = *worker_id_->start_token;
+    auto new_version_id = worker_id.version_id;
+    auto new_token = *worker_id.start_token;
+    base::debug::Alias(&preexisting_version_id);
+    base::debug::Alias(&new_version_id);
+    if (preexisting_token != new_token &&
+        service_worker_context_->IsLiveServiceWorkerWithToken(
+            preexisting_version_id, preexisting_token)) {
+      base::debug::DumpWithoutCrashing();
+      return;
+    }
+    // However, if the preexisting instance is actually not running anymore,
+    // then we should set a new `worker_id` here.
   }
 
   SetWorkerId(worker_id);
