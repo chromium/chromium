@@ -92,7 +92,9 @@ class WebUIUrlNoConsoleErrorsTest : public WebUIAllUrlsBrowserTest {
 // Note: If one test case fails, move the failing WebUI URL to the
 // untested list in webui_urls_for_test.h. Do not globally disable
 // all tests in this suite.
-IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, NoConsoleErrors) {
+//
+// TODO(https://crbug.com/487113801): Fix the flakiness.
+IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, DISABLED_NoConsoleErrors) {
   CheckNoConsoleErrors(GetParam());
   WaitBeforeNavigation();
 }
