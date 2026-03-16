@@ -100,3 +100,19 @@ source_set("signin_promo") {
     "//url",
   ]
 }
+
+source_set("google_accounts_private_api") {
+  sources = [
+    "google_accounts_private_api_host.cc",
+    "google_accounts_private_api_host.h",
+    "google_accounts_private_api_util.cc",
+    "google_accounts_private_api_util.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/common:mojo_bindings",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [ "//google_apis" ]
+}
