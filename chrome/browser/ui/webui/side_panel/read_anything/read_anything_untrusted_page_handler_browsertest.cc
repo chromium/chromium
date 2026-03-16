@@ -2028,8 +2028,7 @@ class ReadAnythingUntrustedPageHandlerDistillerTest
  public:
   ReadAnythingUntrustedPageHandlerDistillerTest()
       : ReadAnythingUntrustedPageHandlerTest(
-            {features::kReadAnythingWithReadability,
-             features::kReadAnythingReadAloudTSTextSegmentation}) {}
+            {features::kReadAnythingWithReadability}) {}
 };
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,

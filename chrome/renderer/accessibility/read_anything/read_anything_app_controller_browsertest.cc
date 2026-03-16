@@ -4927,7 +4927,6 @@ class ReadAnythingAppControllerReadabilityTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingWithReadability,
-         features::kReadAnythingReadAloudTSTextSegmentation,
          features::kReadAnythingWithReadabilityAllowLinks},
         {});
 
