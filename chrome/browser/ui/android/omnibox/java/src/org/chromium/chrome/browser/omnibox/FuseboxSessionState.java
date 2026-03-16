@@ -199,6 +199,11 @@ public class FuseboxSessionState implements UserData {
         if (onFullyActivated != null) onFullyActivated.run();
     }
 
+    @Override
+    public void destroy() {
+        tearDownSessionControllers();
+    }
+
     /** Tear down session controllers. */
     private void tearDownSessionControllers() {
         if (mFuseboxAttachmentModelList != null) {
