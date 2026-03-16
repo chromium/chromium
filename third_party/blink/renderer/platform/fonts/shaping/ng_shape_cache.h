@@ -40,9 +40,12 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -58,6 +61,35 @@ struct ShaperResult {
   const ShapeResult* shape_result;
   bool can_cache;
 };
+
+// The key for the shape-cache. Contains:
+//  - The text to be shaped.
+struct ShapeCacheKey {
+  DISALLOW_NEW();
+
+ public:
+  ShapeCacheKey() = default;
+  explicit ShapeCacheKey(const String& text) : text_(text) {
+    DCHECK_NE(text_, g_empty_string);
+  }
+  explicit ShapeCacheKey(HashTableDeletedValueType) : text_(g_empty_string) {}
+
+  bool IsHashTableDeletedValue() const { return text_ == g_empty_string; }
+
+  unsigned GetHash() const { return HashTraits<String>::GetHash(text_); }
+
+  bool operator==(const ShapeCacheKey& other) const {
+    return text_ == other.text_;
+  }
+
+  const String& GetText() const { return text_; }
+
+ private:
+  String text_;
+};
+
+template <>
+struct HashTraits<ShapeCacheKey> : SimpleClassHashTraits<ShapeCacheKey> {};
 
 class NGShapeCache : public GarbageCollected<NGShapeCache>,
                      public base::MemoryConsumer {
@@ -106,27 +138,29 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
   }
 
   template <typename ShapeResultFunc>
-  const ShapeResult* GetOrCreate(const String& text,
+  const ShapeResult* GetOrCreate(const ShapeCacheKey& key,
                                  TextDirection direction,
                                  const ShapeResultFunc& shape_result_func) {
-    if (text.length() > kMaxTextLengthOfEntries) {
+    DCHECK(!key.GetText().empty());
+
+    if (key.GetText().length() > kMaxTextLengthOfEntries) {
       return shape_result_func().shape_result;
     }
 
     if (RuntimeEnabledFeatures::MemoryConsumerForNGShapeCacheEnabled()) {
       return GetOrCreateImpl(
           IsLtr(direction) ? ltr_string_map_strong_ : rtl_string_map_strong_,
-          text, shape_result_func);
+          key, shape_result_func);
     } else {
       return GetOrCreateImpl(
-          IsLtr(direction) ? ltr_string_map_ : rtl_string_map_, text,
+          IsLtr(direction) ? ltr_string_map_ : rtl_string_map_, key,
           shape_result_func);
     }
   }
 
  private:
-  typedef HeapHashMap<String, WeakMember<const ShapeResult>> SmallStringMap;
-  typedef HeapHashMap<String, Member<const ShapeResult>> SmallStringMapStrong;
+  typedef HeapHashMap<ShapeCacheKey, WeakMember<const ShapeResult>> WeakMap;
+  typedef HeapHashMap<ShapeCacheKey, Member<const ShapeResult>> StrongMap;
 
   static constexpr char kConsumerId[] = "NGShapeCache";
   static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits = {
@@ -152,21 +186,22 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
 
   template <typename StringMap, typename ShapeResultFunc>
   const ShapeResult* GetOrCreateImpl(StringMap& map,
-                                     const String& text,
+                                     const ShapeCacheKey& key,
                                      const ShapeResultFunc& shape_result_func) {
     if (map.size() >= kMaxSize) [[unlikely]] {
-      const auto it = map.find(text);
+      const auto it = map.find(key);
       return (it != map.end() && it->value) ? it->value.Get()
                                             : shape_result_func().shape_result;
     }
 
-    const auto add_result = map.insert(text, nullptr);
+    const auto add_result = map.insert(key, nullptr);
     if (const auto* cached_result = add_result.stored_value->value.Get()) {
       // Verify that the cache is consistent.
 #if EXPENSIVE_DCHECKS_ARE_ON()
       const auto [other_shape_result, can_cache_other] = shape_result_func();
       const bool has_private_or_non_characters =
-          !text.Is8Bit() && std::ranges::any_of(text.Span16(), [](UChar32 c) {
+          !key.GetText().Is8Bit() &&
+          std::ranges::any_of(key.GetText().Span16(), [](UChar32 c) {
             return Character::IsPrivateUse(c) || Character::IsNonCharacter(c);
           });
       // The shape-result call might try and reuse previous shape-results, we
@@ -198,10 +233,10 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
     return shape_result;
   }
 
-  SmallStringMap ltr_string_map_;
-  SmallStringMap rtl_string_map_;
-  SmallStringMapStrong ltr_string_map_strong_;
-  SmallStringMapStrong rtl_string_map_strong_;
+  WeakMap ltr_string_map_;
+  WeakMap rtl_string_map_;
+  StrongMap ltr_string_map_strong_;
+  StrongMap rtl_string_map_strong_;
   Member<const SimpleFontData> primary_font_;
 
   std::unique_ptr<MemoryConsumerRegistration> memory_consumer_registration_;
