@@ -636,6 +636,7 @@ if (enable_pdf) {
     deps = [
       ":internal",
       "//base",
+      "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
   }
 
