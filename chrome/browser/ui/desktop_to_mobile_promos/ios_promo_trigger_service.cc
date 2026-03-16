@@ -188,7 +188,16 @@ IOSPromoTriggerService::CreateNotificationPayload(
       title_id = IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE;
       body_id = IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_BODY;
       break;
-    default:
+    case desktop_to_mobile_promos::PromoType::kTabGroups:
+      title_id = IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_NOTIFICATION_TITLE;
+      body_id = IDS_IOS_DESKTOP_TAB_GROUPS_PROMO_NOTIFICATION_BODY;
+      break;
+    case desktop_to_mobile_promos::PromoType::kPriceTracking:
+      title_id = IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_NOTIFICATION_TITLE;
+      body_id = IDS_IOS_DESKTOP_PRICE_TRACKING_PROMO_NOTIFICATION_BODY;
+      break;
+    case desktop_to_mobile_promos::PromoType::kAddress:
+    case desktop_to_mobile_promos::PromoType::kPayment:
       NOTREACHED();
   }
 
