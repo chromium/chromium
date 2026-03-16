@@ -727,19 +727,4 @@ void GapGeometry::AdjustCrossGapsRangesForFragmentation(
   }
 }
 
-bool GapGeometry::MulticolCrossGapIntersectionsEndAtSpanner(
-    wtf_size_t intersection_index,
-    const Vector<GapIntersection>& intersections) const {
-  CHECK(GetContainerType() == ContainerType::kMultiColumn);
-
-  // In multicol, a gap of intersections will be spanner adjacent if and only if
-  // there are 3 intersections in the gap, and we are at the middle
-  // intersection. This is because all multicol CrossGaps will have only 2
-  // intersections, except if they are adjacent to a spanner, in which case they
-  // will have 3 intersections: One at the start of the gap, one at the start of
-  // the spanner, and one at the end of the spanner. The middle intersection is
-  // the one that is spanner adjacent.
-  return intersections.size() == 3 && intersection_index == 1;
-}
-
 }  // namespace blink

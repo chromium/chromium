@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/flex/flex_item_iterator.h"
 
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
-#include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 
 namespace blink {
 

@@ -64,10 +64,6 @@ class CORE_EXPORT MainGap {
     range_of_cross_gaps_after_.Increment(cross_gap_index);
   }
 
-  const CrossGapRange& RangeOfCrossGapsBefore() const {
-    return range_of_cross_gaps_before_;
-  }
-
   blink::String ToString(bool verbose = false) const;
 
   bool IsStartSpannerMainGap() const {

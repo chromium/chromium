@@ -347,17 +347,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
                                              GridTrackSizingDirection direction,
                                              bool cross_gap_is_at_end) const;
 
-  // In multicol, the intersections of a given `CrossGap` will be spanner
-  // adjacent if and only if there are 3 intersections in the gap, and we are at
-  // the middle intersection. This is because all multicol `CrossGap` will have
-  // only 2 intersections, except if they are adjacent to a spanner, in which
-  // case they will have 3 intersections: One at the start of the gap, one at
-  // the start of the spanner, and one at the end of the spanner. The middle
-  // intersection is the one that is spanner adjacent.
-  bool MulticolCrossGapIntersectionsEndAtSpanner(
-      wtf_size_t intersection_index,
-      const Vector<GapIntersection>& intersections) const;
-
   // In flex it refers to the gap between flex items, and in grid it
   // refers to the column gutter size.
   LayoutUnit inline_gap_size_;

@@ -234,12 +234,6 @@ class CORE_EXPORT FlexGapAccumulator {
     effective_gap_between_lines_ = effective_gap;
   }
 
-  LayoutUnit EffectiveGapBetweenLines() const {
-    return effective_gap_between_lines_;
-  }
-
-  const Vector<MainGap>& MainGaps() const { return main_gaps_; }
-
   // In the flex algorithm, there are some cases where we need to suppress a row
   // gap (i.e. if a row gap is the last content in a fragment). In such cases,
   // we must then also remove the `MainGap` that was created for that row gap
