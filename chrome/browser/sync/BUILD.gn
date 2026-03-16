@@ -95,6 +95,7 @@ source_set("sync") {
 
     # TODO(crbug.com/483063966) Investigate why putting contextual_tasks
     # dependency behind !is_android leads to failures on android-binary-size.
+    "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/gcm",
     "//chrome/browser/glic",

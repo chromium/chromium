@@ -38,6 +38,7 @@
 #include "components/collaboration/public/data_type_controller/shared_tab_group_data_type_controller.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/contextual_tasks/public/ai_thread_data_type_controller.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
@@ -241,6 +242,11 @@ void CommonControllerBuilder::SetAutofillWebDataService(
   autofill_web_data_ui_thread_.Set(ui_thread);
   profile_autofill_web_data_service_.Set(web_data_service_on_disk);
   account_autofill_web_data_service_.Set(web_data_service_in_memory);
+}
+
+void CommonControllerBuilder::SetAimEligibilityService(
+    AimEligibilityService* aim_eligibility_service) {
+  aim_eligibility_service_.Set(aim_eligibility_service);
 }
 
 void CommonControllerBuilder::SetBookmarkModel(
@@ -919,20 +925,21 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
   if (!disabled_types.Has(syncer::AI_THREAD) &&
       base::FeatureList::IsEnabled(syncer::kSyncAIThread) &&
-      contextual_tasks_service_.value()) {
+      contextual_tasks_service_.value() && aim_eligibility_service_.value()) {
     syncer::DataTypeControllerDelegate* delegate =
         contextual_tasks_service_.value()
             ->GetAiThreadControllerDelegate()
             .get();
     if (delegate) {
-      controllers.push_back(std::make_unique<DataTypeController>(
-          /*type= */ syncer::AI_THREAD,
-          /*delegate_for_full_sync_mode= */
-          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-              delegate),
-          /*delegate_for_transport_mode= */
-          std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
-              delegate)));
+      controllers.push_back(
+          std::make_unique<contextual_tasks::AIThreadDataTypeController>(
+              aim_eligibility_service_.value(),
+              /*delegate_for_full_sync_mode= */
+              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  delegate),
+              /*delegate_for_transport_mode= */
+              std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
+                  delegate)));
     }
   }
 
