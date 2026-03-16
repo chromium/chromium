@@ -27,6 +27,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/ash/quick_insert/quick_insert_file_suggester.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -507,6 +508,36 @@ TEST_F(QuickInsertClientImplTest, GetRecentDriveFilesTruncates) {
   client.GetRecentDriveFileResults(/*max_files=*/1, future.GetCallback());
 
   EXPECT_THAT(future.Get(), SizeIs(1));
+}
+
+TEST_F(QuickInsertClientImplTest,
+       GetRecentDriveFilesWithoutDriveIntegrationServiceReturnsEmpty) {
+  TestingProfile::Builder builder;
+  builder.SetPath(profile()->GetPath().AppendASCII("no_drive_integration"));
+  std::unique_ptr<TestingProfile> profile_without_drive_integration =
+      builder.Build();
+  SetRecentFiles(
+      profile_without_drive_integration.get(),
+      {
+          Volume{
+              .type = fmp::VolumeType::kDrive,
+              .files =
+                  {
+                      CreateRecentFile(
+                          profile_without_drive_integration->GetPath()
+                              .AppendASCII("drive.png"),
+                          storage::kFileSystemTypeDriveFs),
+                  },
+          },
+      });
+
+  QuickInsertFileSuggester suggester(profile_without_drive_integration.get());
+  base::test::TestFuture<std::vector<QuickInsertFileSuggester::DriveFile>>
+      future;
+
+  suggester.GetRecentDriveFiles(/*max_files=*/100, future.GetCallback());
+
+  EXPECT_THAT(future.Get(), IsEmpty());
 }
 
 TEST_F(QuickInsertClientImplTest,

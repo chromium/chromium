@@ -170,6 +170,7 @@ void QuickInsertFileSuggester::OnGetRecentDriveFiles(
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (!drive_integration) {
     std::move(callback).Run({});
+    return;
   }
 
   auto barrier_callback = base::BarrierCallback<std::optional<DriveFile>>(
