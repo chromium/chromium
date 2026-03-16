@@ -395,6 +395,7 @@ class WizardController : public OobeUI::Observer {
   void ShowAccountSelectionScreen();
   void ShowAppLaunchSplashScreen();
   void ShowFjordImageSelectionScreen();
+  void ShowFjordImageDownloadScreen();
   void ShowFjordTouchControllerScreen();
   void ShowFjordStationSetupScreen();
   void ShowFjordFwUpdateScreen();
@@ -520,6 +521,7 @@ class WizardController : public OobeUI::Observer {
   void OnPerksDiscoveryScreenExit(PerksDiscoveryScreen::Result result);
   void OnAppLaunchSplashScreenExit();
   void OnFjordImageSelectionScreenExit();
+  void OnFjordImageDownloadScreenExit();
   void OnFjordTouchControllerScreenExit();
   void OnFjordStationSetupScreenExit();
   void OnFjordFwUpdateScreenExit();

@@ -47,6 +47,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Family-link-notice"/>
   <variant name="Fingerprint-setup"/>
   <variant name="Fjord-fw-update"/>
+  <variant name="Fjord-image-download"/>
   <variant name="Fjord-image-selection"/>
   <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
@@ -144,6 +145,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Family-link-notice"/>
   <variant name="Fingerprint-setup"/>
   <variant name="Fjord-fw-update"/>
+  <variant name="Fjord-image-download"/>
   <variant name="Fjord-image-selection"/>
   <variant name="Fjord-station-setup"/>
   <variant name="Fjord-touch-controller"/>
