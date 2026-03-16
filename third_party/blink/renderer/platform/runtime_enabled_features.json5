@@ -5071,7 +5071,7 @@
       // When enabled, sets the default drop effect as according to spec for
       // events like dragOver, dragLeave, etc. See https://crbug.com/434151262
       name: "SetDefaultDropEffect",
-      status: "test",
+      status: "stable",
     },
     {
       name: "SetHTMLCanRunScripts",
