@@ -6,18 +6,14 @@
 #define CHROME_BROWSER_EXTENSIONS_SYSTEM_DISPLAY_DISPLAY_INFO_PROVIDER_UTILS_H_
 
 #include "chromeos/crosapi/mojom/cros_display_config.mojom-forward.h"
-#include "extensions/browser/api/system_display/display_info_provider.h"
 #include "extensions/common/api/system_display.h"
 #include "ui/gfx/geometry/insets.h"
 
-namespace extensions {
+namespace display {
+class Display;
+}  // namespace display
 
-// Callback function for CrosDisplayConfigController crosapi interface.
-// Converts input display layout `info` from crosapi to extension api type.
-// Passes converted array into a `callback`.
-void OnGetDisplayLayoutResult(
-    base::OnceCallback<void(DisplayInfoProvider::DisplayLayoutList)> callback,
-    crosapi::mojom::DisplayLayoutInfoPtr info);
+namespace extensions {
 
 // Converts display id string to number.
 // Returns invalid id in case of error.

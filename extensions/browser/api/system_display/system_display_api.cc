@@ -326,15 +326,8 @@ void SystemDisplayGetInfoFunction::Response(
 ExtensionFunction::ResponseAction SystemDisplayGetDisplayLayoutFunction::Run() {
   DisplayInfoProvider* provider = DisplayInfoProvider::Get();
   DCHECK(provider);
-  provider->GetDisplayLayout(
-      base::BindOnce(&SystemDisplayGetDisplayLayoutFunction::Response, this));
-  return RespondLater();
-}
-
-void SystemDisplayGetDisplayLayoutFunction::Response(
-    std::vector<api::system_display::DisplayLayout> display_layout) {
-  return Respond(
-      ArgumentList(display::GetDisplayLayout::Results::Create(display_layout)));
+  return RespondNow(ArgumentList(display::GetDisplayLayout::Results::Create(
+      provider->GetDisplayLayout())));
 }
 
 bool SystemDisplayGetDisplayLayoutFunction::ShouldRestrictToKioskAndWebUI() {

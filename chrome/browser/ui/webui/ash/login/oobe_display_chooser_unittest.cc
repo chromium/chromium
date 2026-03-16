@@ -10,6 +10,7 @@
 #include "ash/display/cros_display_config.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/shell.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -40,7 +41,9 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   // CrosDisplayConfig:
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
-  void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override {}
+  crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() override {
+    NOTREACHED();
+  }
   void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override {}
   void GetDisplayUnitInfoList(

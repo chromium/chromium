@@ -1245,16 +1245,12 @@ void DeviceSection::OnDisplayConfigChanged() {
 
 void DeviceSection::OnGetDisplayUnitInfoList(
     std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list) {
-  if (cros_display_config_) {
-    cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
-        &DeviceSection::OnGetDisplayLayoutInfo, base::Unretained(this),
-        std::move(display_unit_info_list)));
+  if (!cros_display_config_) {
+    return;
   }
-}
 
-void DeviceSection::OnGetDisplayLayoutInfo(
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list,
-    crosapi::mojom::DisplayLayoutInfoPtr display_layout_info) {
+  crosapi::mojom::DisplayLayoutInfoPtr display_layout_info =
+      cros_display_config_->GetDisplayLayoutInfo();
   bool has_multiple_displays = display_unit_info_list.size() > 1u;
 
   // Mirroring mode is active if there's at least one display and if there's a

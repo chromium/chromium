@@ -85,9 +85,6 @@ class DeviceSection : public OsSettingsSection,
 
   void OnGetDisplayUnitInfoList(
       std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list);
-  void OnGetDisplayLayoutInfo(
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list,
-      crosapi::mojom::DisplayLayoutInfoPtr display_layout_info);
 
   void AddDevicePointersStrings(content::WebUIDataSource* html_source);
   void AddDeviceGraphicsTabletStrings(

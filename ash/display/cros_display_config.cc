@@ -625,11 +625,12 @@ void CrosDisplayConfigImpl::RemoveObserver(
   observer_impl_->RemoveObserver(observer);
 }
 
-void CrosDisplayConfigImpl::GetDisplayLayoutInfo(
-    GetDisplayLayoutInfoCallback callback) {
+crosapi::mojom::DisplayLayoutInfoPtr
+CrosDisplayConfigImpl::GetDisplayLayoutInfo() {
   display::DisplayManager* display_manager = GetDisplayManager();
 
   auto info = crosapi::mojom::DisplayLayoutInfo::New();
+
   if (display_manager->IsInUnifiedMode()) {
     info->layout_mode = crosapi::mojom::DisplayLayoutMode::kUnified;
   } else if (display_manager->IsInMirrorMode()) {
@@ -650,7 +651,7 @@ void CrosDisplayConfigImpl::GetDisplayLayoutInfo(
     info->layouts = GetDisplayLayouts();
   }
 
-  std::move(callback).Run(std::move(info));
+  return info;
 }
 
 crosapi::mojom::DisplayConfigResult SetDisplayLayouts(

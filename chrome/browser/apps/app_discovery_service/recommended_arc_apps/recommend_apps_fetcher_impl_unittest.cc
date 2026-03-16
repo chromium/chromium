@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "base/base64url.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -99,7 +100,9 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   // ash::CrosDisplayConfig:
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
-  void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override {}
+  crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() override {
+    NOTREACHED();
+  }
   void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override {}
   void GetDisplayUnitInfoList(

@@ -141,20 +141,6 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
     return GetAllDisplaysInfoSetSingleUnified(false);
   }
 
-  DisplayLayoutList GetDisplayLayout() {
-    DisplayLayoutList result;
-    base::RunLoop run_loop;
-    provider_->GetDisplayLayout(base::BindOnce(
-        [](DisplayLayoutList* result_ptr, base::OnceClosure callback,
-           DisplayLayoutList result) {
-          *result_ptr = std::move(result);
-          std::move(callback).Run();
-        },
-        &result, run_loop.QuitClosure()));
-    run_loop.Run();
-    return result;
-  }
-
   bool SetDisplayLayout(const DisplayLayoutList& layouts) {
     std::string result;
     base::RunLoop run_loop;
@@ -690,7 +676,7 @@ TEST_F(DisplayInfoProviderChromeosTest, Layout) {
   std::string primary_id = displays[0].id;
   ASSERT_EQ(3u, displays.size());
 
-  DisplayLayoutList layout = GetDisplayLayout();
+  DisplayLayoutList layout = provider_->GetDisplayLayout();
 
   ASSERT_EQ(2u, layout.size());
 
@@ -715,7 +701,7 @@ TEST_F(DisplayInfoProviderChromeosTest, Layout) {
   EXPECT_TRUE(SetDisplayLayout(layout));
 
   // Get updated layout.
-  layout = GetDisplayLayout();
+  layout = provider_->GetDisplayLayout();
 
   // Confirm modified layout.
   EXPECT_EQ(displays[1].id, layout[0].id);
@@ -745,7 +731,7 @@ TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
   ASSERT_EQ(4u, displays.size());
 
   // Get the default layout, which should be a horizontal layout.
-  DisplayLayoutList default_layout = GetDisplayLayout();
+  DisplayLayoutList default_layout = provider_->GetDisplayLayout();
 
   // There is no placement for the primary display.
   ASSERT_EQ(3u, default_layout.size());
@@ -793,7 +779,7 @@ TEST_F(DisplayInfoProviderChromeosTest, UnifiedModeLayout) {
                                .id()));
 
   // Confirm the new layout.
-  DisplayLayoutList new_layout = GetDisplayLayout();
+  DisplayLayoutList new_layout = provider_->GetDisplayLayout();
   ASSERT_EQ(3u, new_layout.size());
 
   EXPECT_EQ(layout[0].id, new_layout[0].id);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/system_display/display_info_provider_utils.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "ui/display/display.h"
@@ -13,41 +14,8 @@
 namespace extensions {
 
 namespace {
-
 namespace system_display = api::system_display;
-
-system_display::LayoutPosition GetLayoutPositionFromMojo(
-    crosapi::mojom::DisplayLayoutPosition position) {
-  switch (position) {
-    case crosapi::mojom::DisplayLayoutPosition::kTop:
-      return system_display::LayoutPosition::kTop;
-    case crosapi::mojom::DisplayLayoutPosition::kRight:
-      return system_display::LayoutPosition::kRight;
-    case crosapi::mojom::DisplayLayoutPosition::kBottom:
-      return system_display::LayoutPosition::kBottom;
-    case crosapi::mojom::DisplayLayoutPosition::kLeft:
-      return system_display::LayoutPosition::kLeft;
-  }
-  NOTREACHED();
-}
 }  // namespace
-
-void OnGetDisplayLayoutResult(
-    base::OnceCallback<void(DisplayInfoProvider::DisplayLayoutList)> callback,
-    crosapi::mojom::DisplayLayoutInfoPtr info) {
-  DisplayInfoProvider::DisplayLayoutList result;
-  if (info->layouts) {
-    for (crosapi::mojom::DisplayLayoutPtr& layout : *info->layouts) {
-      api::system_display::DisplayLayout display_layout;
-      display_layout.id = layout->id;
-      display_layout.parent_id = layout->parent_id;
-      display_layout.position = GetLayoutPositionFromMojo(layout->position);
-      display_layout.offset = layout->offset;
-      result.emplace_back(std::move(display_layout));
-    }
-  }
-  std::move(callback).Run(std::move(result));
-}
 
 int64_t GetDisplayId(const std::string& display_id_str) {
   int64_t display_id;

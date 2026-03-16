@@ -44,8 +44,7 @@ class DisplayInfoProviderChromeOS : public DisplayInfoProviderBase,
   void GetAllDisplaysInfo(
       bool single_unified,
       base::OnceCallback<void(DisplayUnitInfoList result)> callback) override;
-  void GetDisplayLayout(
-      base::OnceCallback<void(DisplayLayoutList result)> callback) override;
+  DisplayLayoutList GetDisplayLayout() override;
   bool OverscanCalibrationStart(const std::string& id) override;
   bool OverscanCalibrationAdjust(
       const std::string& id,
@@ -71,14 +70,6 @@ class DisplayInfoProviderChromeOS : public DisplayInfoProviderBase,
   void OnDisplayConfigChanged() override;
 
  private:
-  void CallSetDisplayLayoutInfo(
-      crosapi::mojom::DisplayLayoutInfoPtr layout_info,
-      ErrorCallback callback,
-      crosapi::mojom::DisplayLayoutInfoPtr cur_info);
-  void CallGetDisplayUnitInfoList(
-      bool single_unified,
-      base::OnceCallback<void(DisplayUnitInfoList result)> callback,
-      crosapi::mojom::DisplayLayoutInfoPtr layout);
   void OnGetDisplayUnitInfoList(
       crosapi::mojom::DisplayLayoutInfoPtr layout,
       base::OnceCallback<void(DisplayUnitInfoList)> callback,

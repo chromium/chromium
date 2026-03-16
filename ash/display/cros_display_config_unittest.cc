@@ -106,18 +106,7 @@ class CrosDisplayConfigTest : public AshTestBase {
   }
 
   crosapi::mojom::DisplayLayoutInfoPtr GetDisplayLayoutInfo() {
-    crosapi::mojom::DisplayLayoutInfoPtr display_layout_info;
-    base::RunLoop run_loop;
-    cros_display_config_->GetDisplayLayoutInfo(base::BindOnce(
-        [](crosapi::mojom::DisplayLayoutInfoPtr* result_ptr,
-           base::OnceClosure callback,
-           crosapi::mojom::DisplayLayoutInfoPtr result) {
-          *result_ptr = std::move(result);
-          std::move(callback).Run();
-        },
-        &display_layout_info, run_loop.QuitClosure()));
-    run_loop.Run();
-    return display_layout_info;
+    return cros_display_config_->GetDisplayLayoutInfo();
   }
 
   crosapi::mojom::DisplayConfigResult SetDisplayLayoutInfo(

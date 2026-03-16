@@ -75,8 +75,7 @@ class DisplayInfoProvider : public display::DisplayObserver {
       base::OnceCallback<void(DisplayUnitInfoList result)> callback);
 
   // Gets display layout information.
-  virtual void GetDisplayLayout(
-      base::OnceCallback<void(DisplayLayoutList result)> callback);
+  virtual DisplayLayoutList GetDisplayLayout();
 
   // Start/Stop observing display state change
   virtual void StartObserving();

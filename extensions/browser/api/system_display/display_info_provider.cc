@@ -138,8 +138,7 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
       std::move(callback));
 }
 
-void DisplayInfoProvider::GetDisplayLayout(
-    base::OnceCallback<void(DisplayLayoutList result)> callback) {
+DisplayInfoProvider::DisplayLayoutList DisplayInfoProvider::GetDisplayLayout() {
   NOTREACHED();  // Implemented on Chrome OS only in override.
 }
 
