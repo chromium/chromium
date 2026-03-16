@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view.h"
 
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_delegate.h"
 
 namespace {
@@ -58,6 +59,14 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   [self updatePositioning];
 }
 
+- (void)setFullscreenProgress:(CGFloat)progress {
+  if (_fullscreenProgress == progress) {
+    return;
+  }
+  _fullscreenProgress = progress;
+  [self updatePositioning];
+}
+
 #pragma mark - UIView
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
@@ -94,7 +103,11 @@ constexpr CGFloat kDefaultAppBarWidth = 300;
   _appBarWidthConstraint.constant = shortSideLength;
 
   CGFloat offset = (containerLength - tallSideLength) / 2;
-  _appBarVerticalPositioning.constant = -offset;
+
+  CGFloat extraOffset =
+      (1 - _fullscreenProgress) * (kAppBarHeight - kAppBarHeightFullscreen);
+
+  _appBarVerticalPositioning.constant = -offset + extraOffset;
 }
 
 @end

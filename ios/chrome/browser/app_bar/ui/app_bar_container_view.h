@@ -16,6 +16,9 @@
 // Delegate for rotation and window events.
 @property(nonatomic, weak) id<AppBarContainerViewDelegate> delegate;
 
+// The progress of the fullscreen state.
+@property(nonatomic, assign) CGFloat fullscreenProgress;
+
 // Sets the App Bar view to be contained.
 - (void)setAppBar:(UIView*)appBar;
 

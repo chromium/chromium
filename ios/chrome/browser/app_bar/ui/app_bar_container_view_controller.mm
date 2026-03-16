@@ -14,7 +14,8 @@
 
 @implementation AppBarContainerViewController {
   AppBarViewController* _appBar;
-  AppBarContainerView* _appBarContainer;
+  // The last fullscreen progress value received.
+  CGFloat _fullscreenProgress;
 }
 
 @dynamic view;
@@ -39,6 +40,7 @@
 - (void)loadView {
   self.view = [[AppBarContainerView alloc] init];
   self.view.delegate = self;
+  _fullscreenProgress = 1;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -58,6 +60,22 @@
 #pragma mark - AppBarContainerViewDelegate
 
 - (void)appBarContainerDidMoveToWindow:(AppBarContainerView*)appBarContainer {
+  [self updateLayout];
+}
+
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  UIWindowScene* windowScene = self.view.window.windowScene;
+  if (!windowScene) {
+    return;
+  }
+  UIInterfaceOrientation orientation =
+      windowScene.effectiveGeometry.interfaceOrientation;
+  if (orientation != UIInterfaceOrientationPortrait) {
+    return;
+  }
+  _fullscreenProgress = progress;
   [self updateLayout];
 }
 
@@ -89,6 +107,7 @@
   }
 
   self.view.transform = CGAffineTransformMakeRotation(angle);
+  self.view.fullscreenProgress = _fullscreenProgress;
   [_appBar updateForAngle:-angle];
 }
 

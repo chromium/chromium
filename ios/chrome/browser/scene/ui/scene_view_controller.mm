@@ -24,6 +24,8 @@
   NSArray<NSLayoutConstraint*>* _portraitConstraints;
   NSArray<NSLayoutConstraint*>* _landscapeLeftConstraints;
   NSArray<NSLayoutConstraint*>* _landscapeRightConstraints;
+  // The last fullscreen progress value received.
+  CGFloat _fullscreenProgress;
 }
 
 #pragma mark - UIViewController
@@ -36,6 +38,7 @@
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   }
   self.view = view;
+  _fullscreenProgress = 1;
 }
 
 - (void)viewDidLoad {
@@ -135,7 +138,23 @@
   [self updateLayoutForAppBar];
 }
 
+#pragma mark - FullscreenUIElement
+
+- (void)updateForFullscreenProgress:(CGFloat)progress {
+  UIInterfaceOrientation orientation = [self currentOrientation];
+  if (orientation != UIInterfaceOrientationPortrait) {
+    return;
+  }
+  _fullscreenProgress = progress;
+  [self updateLayoutForAppBar];
+}
+
 #pragma mark - Private
+
+// Returns the current orientation of the scene.
+- (UIInterfaceOrientation)currentOrientation {
+  return self.view.window.windowScene.effectiveGeometry.interfaceOrientation;
+}
 
 // Updates the layout to adapt to screen changes.
 - (void)updateLayoutForAppBar {
@@ -144,8 +163,7 @@
     return;
   }
 
-  UIInterfaceOrientation orientation =
-      windowScene.effectiveGeometry.interfaceOrientation;
+  UIInterfaceOrientation orientation = [self currentOrientation];
 
   if (!IsFullscreenRefactoringEnabled()) {
     CGRect frame = self.view.bounds;
@@ -159,14 +177,19 @@
         insets = UIEdgeInsetsMake(0, 0, 0, kAppBarHeight);
         break;
 
-      case UIInterfaceOrientationPortrait:
-        insets = UIEdgeInsetsMake(0, 0, kAppBarHeight, 0);
+      case UIInterfaceOrientationPortrait: {
+        CGFloat appBarHeight =
+            kAppBarHeightFullscreen -
+            _fullscreenProgress * (kAppBarHeightFullscreen - kAppBarHeight);
+        insets = UIEdgeInsetsMake(0, 0, appBarHeight, 0);
         break;
+      }
 
       default:
         break;
     }
     _appContentView.frame = UIEdgeInsetsInsetRect(frame, insets);
+    return;
   }
 
   [NSLayoutConstraint deactivateConstraints:_portraitConstraints];

@@ -14,6 +14,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/browser/app_bar/ui",
+    "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:util_swift",

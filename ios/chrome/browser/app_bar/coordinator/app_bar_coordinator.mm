@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
 
+#import "ios/chrome/browser/app_bar/coordinator/app_bar_container_mediator.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
@@ -34,6 +35,7 @@
   AppBarContainerViewController* _containerViewController;
   AppBarViewController* _viewController;
   AppBarMediator* _mediator;
+  AppBarContainerMediator* _containerMediator;
   raw_ptr<Browser> _incognitoBrowser;
   raw_ptr<Browser> _regularBrowser;
 }
@@ -108,6 +110,11 @@
   _containerViewController = [[AppBarContainerViewController alloc] init];
   [_containerViewController setAppBar:_viewController];
 
+  _containerMediator = [[AppBarContainerMediator alloc]
+      initWithRegularFullscreenController:regularFullscreenController
+            incognitoFullscreenController:incognitoFullscreenController];
+  _containerMediator.consumer = _containerViewController;
+
   if (IsBestOfAppGuidedTourEnabled()) {
     [_regularBrowser->GetCommandDispatcher()
         startDispatchingToTarget:self
@@ -118,6 +125,8 @@
 - (void)stop {
   [_mediator disconnect];
   _mediator = nil;
+  [_containerMediator disconnect];
+  _containerMediator = nil;
   _viewController = nil;
   _regularBrowser = nullptr;
   _incognitoBrowser = nullptr;
@@ -135,6 +144,11 @@
                                           ? incognitoBrowser->GetWebStateList()
                                           : nullptr];
   [_mediator
+      setIncognitoFullscreenController:incognitoBrowser
+                                           ? FullscreenController::FromBrowser(
+                                                 incognitoBrowser)
+                                           : nullptr];
+  [_containerMediator
       setIncognitoFullscreenController:incognitoBrowser
                                            ? FullscreenController::FromBrowser(
                                                  incognitoBrowser)

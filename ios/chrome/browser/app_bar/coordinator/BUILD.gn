@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "app_bar_container_mediator.h",
+    "app_bar_container_mediator.mm",
     "app_bar_coordinator.h",
     "app_bar_coordinator.mm",
     "app_bar_mediator.h",
