@@ -21,7 +21,8 @@ namespace blink {
 
 namespace {
 
-wtf_size_t ComputeCommonPrefixLength(const String& str1, const String& str2) {
+wtf_size_t ComputeCommonPrefixLength(const StringView& str1,
+                                     const StringView& str2) {
   const wtf_size_t max_common_prefix_length =
       std::min(str1.length(), str2.length());
   ForwardCodePointStateMachine code_point_state_machine;
@@ -37,7 +38,8 @@ wtf_size_t ComputeCommonPrefixLength(const String& str1, const String& str2) {
   return max_common_prefix_length;
 }
 
-wtf_size_t ComputeCommonSuffixLength(const String& str1, const String& str2) {
+wtf_size_t ComputeCommonSuffixLength(const StringView& str1,
+                                     const StringView& str2) {
   const wtf_size_t length1 = str1.length();
   const wtf_size_t length2 = str2.length();
   const wtf_size_t max_common_suffix_length = std::min(length1, length2);
@@ -50,8 +52,8 @@ wtf_size_t ComputeCommonSuffixLength(const String& str1, const String& str2) {
 
 wtf_size_t ComputeCommonGraphemeClusterPrefixLength(
     const Position& selection_start,
-    const String& old_text,
-    const String& new_text) {
+    const StringView& old_text,
+    const StringView& new_text) {
   const wtf_size_t common_prefix_length =
       ComputeCommonPrefixLength(old_text, new_text);
   const int selection_offset = selection_start.ComputeOffsetInContainerNode();
@@ -88,8 +90,8 @@ wtf_size_t ComputeCommonGraphemeClusterPrefixLength(
 
 wtf_size_t ComputeCommonGraphemeClusterSuffixLength(
     const Position& selection_start,
-    const String& old_text,
-    const String& new_text) {
+    const StringView& old_text,
+    const StringView& new_text) {
   const wtf_size_t common_suffix_length =
       ComputeCommonSuffixLength(old_text, new_text);
   const int selection_offset = selection_start.ComputeOffsetInContainerNode();
@@ -113,7 +115,7 @@ wtf_size_t ComputeCommonGraphemeClusterSuffixLength(
 const String ComputeTextForInsertion(const String& new_text,
                                      const wtf_size_t common_prefix_length,
                                      const wtf_size_t common_suffix_length) {
-  return new_text.Substring(
+  return new_text.substr(
       common_prefix_length,
       new_text.length() - common_prefix_length - common_suffix_length);
 }
@@ -158,24 +160,21 @@ void InsertIncrementalTextCommand::DoApply(EditingState* editing_state) {
   const String& new_text = text_;
 
   const Position& selection_start = visible_selection.Start();
-  const wtf_size_t new_text_length = new_text.length();
-  const wtf_size_t old_text_length = old_text.length();
   const wtf_size_t common_prefix_length =
       ComputeCommonGraphemeClusterPrefixLength(selection_start, old_text,
                                                new_text);
   // We should ignore common prefix when finding common suffix.
   const wtf_size_t common_suffix_length =
       ComputeCommonGraphemeClusterSuffixLength(
-          selection_start,
-          old_text.Right(old_text_length - common_prefix_length),
-          new_text.Right(new_text_length - common_prefix_length));
-  DCHECK_GE(old_text_length, common_prefix_length + common_suffix_length);
+          selection_start, old_text.subview(common_prefix_length),
+          new_text.subview(common_prefix_length));
+  DCHECK_GE(old_text.length(), common_prefix_length + common_suffix_length);
 
   text_ = ComputeTextForInsertion(text_, common_prefix_length,
                                   common_suffix_length);
 
   const int offset = static_cast<int>(common_prefix_length);
-  const int length = static_cast<int>(old_text_length - common_prefix_length -
+  const int length = static_cast<int>(old_text.length() - common_prefix_length -
                                       common_suffix_length);
   const VisibleSelection& selection_for_insertion = CreateVisibleSelection(
       ComputeSelectionForInsertion(selection_range, offset, length));
