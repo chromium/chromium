@@ -342,6 +342,7 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<GlicAndActorButtonsContainer> glic_actor_button_container_ = nullptr;
   raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
+  raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;

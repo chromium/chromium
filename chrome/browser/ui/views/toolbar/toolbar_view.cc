@@ -486,6 +486,37 @@ void ToolbarView::Init() {
     location_bar_ = toolbar_webview_->GetLocationBar();
   }
 
+  if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
+    auto* vertical_tab_strip_state_controller =
+        tabs::VerticalTabStripStateController::From(browser_view_->browser());
+    if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+        features::kGlicActorUiTaskIcon.Get()) {
+      glic_actor_button_container_ =
+          AddChildView(CreateGlicActorButtonContainer());
+      glic_actor_task_icon_ =
+          glic_actor_button_container_->AddChildView(CreateGlicActorTaskIcon());
+      glic_actor_button_container_->SetVisible(false);
+    }
+
+    glic_button_ = AddChildView(CreateGlicButton());
+    std::unique_ptr<ToolbarDivider> glic_button_divider =
+        std::make_unique<ToolbarDivider>();
+    glic_button_divider_ = AddChildView(std::move(glic_button_divider));
+    glic_button_divider_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(
+            0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
+    if (vertical_tab_strip_state_controller) {
+      vertical_tab_subscription_ =
+          vertical_tab_strip_state_controller->RegisterOnModeChanged(
+              base::BindRepeating(&ToolbarView::OnVerticalTabStripModeChanged,
+                                  base::Unretained(this)));
+      should_display_vertical_tabs_ =
+          vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
+    }
+    UpdateGlicButtonVisibility();
+  }
+
   if (extensions_container) {
     extensions_container_ = AddChildView(std::move(extensions_container));
     extensions_toolbar_coordinator_ =
@@ -540,30 +571,6 @@ void ToolbarView::Init() {
 
   if (media_button) {
     media_button_ = AddChildView(std::move(media_button));
-  }
-
-  if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
-    auto* vertical_tab_strip_state_controller =
-        tabs::VerticalTabStripStateController::From(browser_view_->browser());
-    if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-        features::kGlicActorUiTaskIcon.Get()) {
-      glic_actor_button_container_ =
-          AddChildView(CreateGlicActorButtonContainer());
-      glic_actor_task_icon_ =
-          glic_actor_button_container_->AddChildView(CreateGlicActorTaskIcon());
-      glic_actor_button_container_->SetVisible(false);
-    }
-
-    glic_button_ = AddChildView(CreateGlicButton());
-    if (vertical_tab_strip_state_controller) {
-      vertical_tab_subscription_ =
-          vertical_tab_strip_state_controller->RegisterOnModeChanged(
-              base::BindRepeating(&ToolbarView::OnVerticalTabStripModeChanged,
-                                  base::Unretained(this)));
-      should_display_vertical_tabs_ =
-          vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
-    }
-    UpdateGlicButtonVisibility();
   }
 
   avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
@@ -827,8 +834,11 @@ void ToolbarView::UpdateGlicButtonVisibility() {
     return;
   }
 
-  glic_button_->SetVisible(should_show_glic_button_ &&
-                           should_display_vertical_tabs_);
+  bool is_glic_visible =
+      should_show_glic_button_ && should_display_vertical_tabs_;
+
+  glic_button_->SetVisible(is_glic_visible);
+  glic_button_divider_->SetVisible(is_glic_visible);
 }
 
 void ToolbarView::SetGlicShowState(bool show) {
