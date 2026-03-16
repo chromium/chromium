@@ -111,7 +111,9 @@ class WorkerIdSetTest : public ExtensionsTest {
       const std::vector<WorkerId>& worker_ids) {
     auto worker_id_set = std::make_unique<WorkerIdSet>();
     for (const WorkerId& worker_id : worker_ids) {
-      worker_id_set->Add(worker_id, browser_context());
+      WorkerId id_with_token = worker_id;
+      id_with_token.start_token = blink::ServiceWorkerToken();
+      worker_id_set->Add(id_with_token, browser_context());
     }
     return worker_id_set;
   }

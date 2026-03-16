@@ -1056,7 +1056,8 @@ void ProcessManager::StopTrackingServiceWorkerRunningInstance(
 // once multi workers per extension is fixed.
 void ProcessManager::StopTrackingServiceWorkerRunningInstance(
     const ExtensionId& extension_id,
-    int64_t worker_version_id) {
+    int64_t worker_version_id,
+    const blink::ServiceWorkerToken& service_worker_token) {
   // NOTE: Multiple notifications can try to remove a worker when the worker
   // stops (DidStopServiceWorkerContext(), ProcessManager::RenderProcessExit(),
   // or extension uninstall/disable).
@@ -1072,7 +1073,9 @@ void ProcessManager::StopTrackingServiceWorkerRunningInstance(
   // TODO(crbug.com/40936639): After the fix releases there should only be one
   // worker instance tracked for each extension at any time.
   for (const WorkerId& worker_id : worker_ids_for_extension) {
-    StopTrackingServiceWorkerRunningInstance(worker_id);
+    if (worker_id.start_token == service_worker_token) {
+      StopTrackingServiceWorkerRunningInstance(worker_id);
+    }
   }
 }
 

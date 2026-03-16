@@ -496,14 +496,17 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
   pending_storage_registrations_.erase(context_id.extension_id);
 }
 
-void ServiceWorkerTaskQueue::OnWorkerStop(int64_t version_id,
-                                          const GURL& scope) {
+void ServiceWorkerTaskQueue::OnWorkerStop(
+    int64_t version_id,
+    const blink::ServiceWorkerToken& service_worker_token,
+    const GURL& scope) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Stop tracking the worker for extension API purposes.
   const ExtensionId& extension_id = scope.GetHost();
   ProcessManager::Get(browser_context_)
-      ->StopTrackingServiceWorkerRunningInstance(extension_id, version_id);
+      ->StopTrackingServiceWorkerRunningInstance(extension_id, version_id,
+                                                 service_worker_token);
 
   if (g_test_observer) {
     g_test_observer->UntrackServiceWorkerState(scope);

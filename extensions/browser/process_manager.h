@@ -106,8 +106,10 @@ class ProcessManager : public KeyedService,
   // Workers.
   void StartTrackingServiceWorkerRunningInstance(const WorkerId& worker_id);
   void StopTrackingServiceWorkerRunningInstance(const WorkerId& worker_id);
-  void StopTrackingServiceWorkerRunningInstance(const ExtensionId& extension_id,
-                                                int64_t worker_version_id);
+  void StopTrackingServiceWorkerRunningInstance(
+      const ExtensionId& extension_id,
+      int64_t worker_version_id,
+      const blink::ServiceWorkerToken& service_worker_token);
 
   using FrameSet = std::set<content::RenderFrameHost*>;
   const FrameSet GetAllFrames() const;

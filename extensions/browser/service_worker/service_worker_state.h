@@ -68,7 +68,10 @@ class ServiceWorkerState
     // TODO(crbug.com/485056792): observers should be aware that there's
     // currently no guarantee that the `version_id` matches the one this class
     // is currently tracking.
-    virtual void OnWorkerStop(int64_t version_id, const GURL& scope) {}
+    virtual void OnWorkerStop(
+        int64_t version_id,
+        const blink::ServiceWorkerToken& service_worker_token,
+        const GURL& scope) {}
   };
 
   void AddObserver(Observer* observer);
