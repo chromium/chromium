@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -12,7 +13,8 @@
 class FrameLayoutGuideTest : public PlatformTest {
  protected:
   FrameLayoutGuideTest()
-      : window_([[UIWindow alloc] init]),
+      : window_([[UIWindow alloc]
+            initWithWindowScene:chrome_test_util::GetAnyWindowScene()]),
         view_([[UIView alloc] init]),
         frame_layout_guide_([[FrameLayoutGuide alloc] init]) {}
 

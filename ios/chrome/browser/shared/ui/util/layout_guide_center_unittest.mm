@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -51,7 +52,8 @@ TEST_F(LayoutGuideCenterTest, LayoutGuideMatchesReferenceView) {
   UIView* view = [[UIView alloc] init];
   [view addLayoutGuide:layout_guide];
 
-  UIWindow* window = [[UIWindow alloc] init];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
   [window addSubview:reference_view];
   [window addSubview:view];
 
@@ -68,7 +70,8 @@ TEST_F(LayoutGuideCenterTest, LayoutGuideTracksReferenceView) {
   UILayoutGuide* layout_guide = [center_ makeLayoutGuideNamed:@"view"];
   UIView* view = [[UIView alloc] init];
   [view addLayoutGuide:layout_guide];
-  UIWindow* window = [[UIWindow alloc] init];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
   [window addSubview:reference_view];
   [window addSubview:view];
   EXPECT_TRUE(CGRectEqualToRect(layout_guide.layoutFrame, CGRectZero));
@@ -101,12 +104,9 @@ TEST_F(LayoutGuideCenterTest,
   UIView* view = [[UIView alloc] init];
   [view addLayoutGuide:layout_guide];
   // Set up windows in the same scene.
-  UIWindowScene* scene = base::apple::ObjCCastStrict<UIWindowScene>(
-      [UIApplication.sharedApplication.connectedScenes anyObject]);
-  UIWindow* reference_window = [[UIWindow alloc] init];
-  reference_window.windowScene = scene;
-  UIWindow* window = [[UIWindow alloc] init];
-  window.windowScene = scene;
+  UIWindowScene* scene = chrome_test_util::GetAnyWindowScene();
+  UIWindow* reference_window = [[UIWindow alloc] initWithWindowScene:scene];
+  UIWindow* window = [[UIWindow alloc] initWithWindowScene:scene];
 
   [reference_window addSubview:reference_view];
   [window addSubview:view];
