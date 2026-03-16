@@ -145,7 +145,14 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
 
     layouts.child_layouts.emplace_back(child, true, bounds);
   }
-  layouts.host_size = gfx::Size(total_width, total_height);
+
+  // Make sure we snap to bounded width if defined. This is necessary as the
+  // `child_width` calculation above rounds width down and this can result in
+  // off-by-one width calculations when the number of children on a row changes.
+  // Changes in host width can be interpreted as a resize and animations may
+  // otherwise snap to target.
+  layouts.host_size =
+      gfx::Size(size_bounds.width().value_or(total_width), total_height);
   return layouts;
 }
 
