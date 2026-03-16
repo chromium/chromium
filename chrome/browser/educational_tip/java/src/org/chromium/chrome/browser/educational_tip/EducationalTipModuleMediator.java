@@ -178,16 +178,12 @@ public class EducationalTipModuleMediator {
                     completable.getCardImageCompletedResId());
         }
 
-        // Wait for transition and delay, then move the module to the end of the Magic Stack.
+        // Wait for transition and delay, then refresh the Magic Stack.
         mHandler.postDelayed(
                 mCallbackController.makeCancelable(
                         () -> {
                             SetupListModuleUtils.finishCompletionAnimation(mModuleType);
-                            mModuleDelegate.maybeMoveModuleToTheEnd(mModuleType);
-                            mModuleDelegate.scrollTo(0);
-                            if (SetupListManager.getInstance().shouldShowCelebratoryPromo()) {
-                                mModuleDelegate.refreshModules();
-                            }
+                            mModuleDelegate.refreshModules();
                         }),
                 SetupListManager.STRIKETHROUGH_DURATION_MS + SetupListManager.HIDE_DURATION_MS);
     }

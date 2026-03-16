@@ -59,7 +59,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -972,49 +971,6 @@ public class HomeModulesMediatorUnitTest {
         // Segmentation modules follow.
         assertTrue(result.subList(2, 4).contains(ModuleType.PRICE_CHANGE));
         assertTrue(result.subList(2, 4).contains(ModuleType.SINGLE_TAB));
-    }
-
-    @Test
-    @SmallTest
-    public void testMaybeMoveModuleToTheEnd_MovesItemToCorrectManualPosition() {
-        int manual1 = ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
-        int manual2 = ModuleType.ADDRESS_BAR_PLACEMENT_PROMO;
-        int segmentation1 = ModuleType.SINGLE_TAB;
-
-        // Mock Builders needed for the re-insertion loop in maybeMoveModuleToTheEnd.
-        ModuleProviderBuilder manualBuilder = mock(ModuleProviderBuilder.class);
-        when(manualBuilder.getManualRank()).thenReturn(0); // Any non-null value
-        when(mModuleRegistry.getModuleProviderBuilder(manual1)).thenReturn(manualBuilder);
-        when(mModuleRegistry.getModuleProviderBuilder(manual2)).thenReturn(manualBuilder);
-
-        ModuleProviderBuilder segmentationBuilder = mock(ModuleProviderBuilder.class);
-        when(segmentationBuilder.getManualRank()).thenReturn(null);
-        when(mModuleRegistry.getModuleProviderBuilder(segmentation1))
-                .thenReturn(segmentationBuilder);
-
-        Set<Integer> enabledSet = Set.of(manual1, manual2, segmentation1);
-
-        // Spy on mediator to mock the result of manual sorting.
-        mMediator = Mockito.spy(mMediator);
-        doReturn(List.of(manual2, manual1))
-                .when(mMediator)
-                .getSortedManuallyRankedModules(eq(enabledSet));
-
-        // Initialize state manually.
-        mMediator.setModuleListToShowForTesting(
-                new ArrayList<>(List.of(manual1, manual2, segmentation1)));
-        mModel.add(new ListItem(manual1, mock(PropertyModel.class)));
-        mModel.add(new ListItem(manual2, mock(PropertyModel.class)));
-        mModel.add(new ListItem(segmentation1, mock(PropertyModel.class)));
-
-        // Act: Trigger reordering.
-        mMediator.maybeMoveModuleToTheEnd(manual1);
-
-        // Assert: manual1 should now be at the absolute end.
-        assertEquals(3, mModel.size());
-        assertEquals(manual2, mModel.get(0).type);
-        assertEquals(segmentation1, mModel.get(1).type);
-        assertEquals(manual1, mModel.get(2).type);
     }
 
     @Test
