@@ -1735,14 +1735,8 @@ public abstract class ChromeFeatureList {
                     "start_surface_return_time_on_tablet_seconds",
                     14400); // 4 hours
 
-    public static final BooleanCachedFeatureParam sTabStorageSqlitePrototypeAllowFullMigration =
-            newBooleanCachedFeatureParam(
-                    TAB_STORAGE_SQLITE_PROTOTYPE, "allow_full_migration", false);
-
-    public static final BooleanCachedFeatureParam
-            sTabStorageSqlitePrototypeAuthoritativeReadSource =
-                    newBooleanCachedFeatureParam(
-                            TAB_STORAGE_SQLITE_PROTOTYPE, "authoritative_read_source", false);
+    public static final StringCachedFeatureParam sTabStorageSqlitePrototypePhase =
+            newStringCachedFeatureParam(TAB_STORAGE_SQLITE_PROTOTYPE, "phase", "");
 
     public static final IntCachedFeatureParam
             sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs =
@@ -1853,8 +1847,7 @@ public abstract class ChromeFeatureList {
                     sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabGroupListContainment,
-                    sTabStorageSqlitePrototypeAllowFullMigration,
-                    sTabStorageSqlitePrototypeAuthoritativeReadSource,
+                    sTabStorageSqlitePrototypePhase,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sTopControlsRefactorNarrowWidthTransitionThreshold,
                     sTouchToSearchCalloutIph,

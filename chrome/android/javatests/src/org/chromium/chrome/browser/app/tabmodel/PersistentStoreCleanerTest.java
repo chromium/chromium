@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
+import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
@@ -110,8 +111,8 @@ public class PersistentStoreCleanerTest {
     @MediumTest
     public void cleanState_FullMigration() throws Exception {
         // 1. Configure Full Migration state before Activity start
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
 

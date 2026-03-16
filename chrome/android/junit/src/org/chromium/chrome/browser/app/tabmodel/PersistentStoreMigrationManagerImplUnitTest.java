@@ -24,6 +24,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.tab.TabStateStorageFlagHelper;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager.StoreType;
 
 /** Unit tests for {@link PersistentStoreMigrationManagerImpl}. */
@@ -49,8 +50,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     @Before
     public void setUp() {
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
     }
 
     @After
@@ -85,7 +86,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testReadyState_LegacyToTabStateStore() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
 
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.LEGACY);
@@ -103,7 +105,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testSwitchedState_LegacyToTabStateStore() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
 
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.LEGACY);
@@ -122,7 +125,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testSteadyState_TabStateStore() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
 
@@ -133,7 +137,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testShadowState_TabStateStoreToLegacy() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
 
@@ -156,7 +161,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     @Test
     public void testReadyAndSwitchedState_TabStateStoreToLegacy() {
         // Setup TabStateStore as authoritative with Legacy shadow caught up
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
         ChromeSharedPreferences.getInstance()
@@ -167,7 +173,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
         mManager.onShadowStoreCaughtUp();
 
         // Restart with authoritative read source DISABLED (revert to Legacy)
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
 
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
@@ -176,21 +183,24 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testMigration_Rollback() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(SHADOW_WRITTEN_STORE_KEY_1, StoreType.LEGACY);
 
         // Rollback to Legacy.
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
 
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
 
         // Rollback to TabStateStore.
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
 
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
@@ -200,14 +210,16 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
     public void testMigration_ShadowStoreRazedWhenFeatureDisabled() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(SHADOW_WRITTEN_STORE_KEY_1, StoreType.LEGACY);
 
         // Rollback to Legacy with no shadow.
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
 
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
@@ -279,7 +291,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testOnWindowCleared() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
         mManager.onShadowStoreCreated(StoreType.LEGACY);
@@ -332,8 +345,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testShadowState_FullMigration() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
 
@@ -344,12 +357,13 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testLegacyShadowAfterFullMigration() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
 
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.LEGACY, mManager.getShadowStoreType());
@@ -357,13 +371,14 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testMigration_RollbackFromFullMigration() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
 
         // Start Rollback. Start shadowing as legacy.
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.LEGACY, mManager.getShadowStoreType());
@@ -380,13 +395,14 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.TAB_STORAGE_SQLITE_PROTOTYPE)
     public void testMigration_ForceFullRollback() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.TAB_STATE_STORE);
 
         // Should fully rollback to Legacy without catchup phase.
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
@@ -406,8 +422,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testShouldRazeShadowStoreForWindow_FullMigration() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         mManager.onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
 
@@ -415,8 +431,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
         assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
 
         // Start a rollback. Begin Shadowing.
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_ONLY_SHADOW);
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
 
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
@@ -467,7 +483,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testDefaultStore_AuthoritativeReadsEnabled() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
         assertFalse(mManager.isShadowStoreCaughtUp());
@@ -475,8 +492,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testDefaultStore_FullMigration() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
         assertFalse(mManager.isShadowStoreCaughtUp());
@@ -521,7 +538,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testDefaultAfterClear_AuthoritativeReadsEnabled() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
 
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
@@ -537,8 +555,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
 
     @Test
     public void testDefaultAfterClear_FullMigration() {
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_FULL_MIGRATION);
 
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
@@ -563,7 +581,8 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     public void testGetAuthoritativeStoreType_UnknownWithTabStateStoreDefault() {
         ChromeSharedPreferences.getInstance()
                 .writeIntSync(CURRENT_AUTHORITATIVE_STORE_KEY_1, StoreType.UNKNOWN);
-        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypePhase.setForTesting(
+                TabStateStorageFlagHelper.PHASE_AUTHORITATIVE_READ_SOURCE);
         // With flag true, fallback should be TAB_STATE_STORE.
         mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
