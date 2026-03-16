@@ -2085,6 +2085,9 @@
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE" desc="The action button to use the selected credentials to fill the username on a username only form without password.">
         Continue
       </message>
+      <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_MORE_PASSKEYS" desc="The action button to dismiss the credential bottom sheet and defer the passkey request back to iOS, for potentially more passkey options.">
+        More passkeys
+      </message>
       <message name="IDS_IOS_CREDENTIAL_BOTTOM_SHEET_NO_USERNAME" desc="Text shown for an option in a list of the user's saved passwords, when the user did not save a username along with the password.">
         No username ••••••••
       </message>
