@@ -170,6 +170,7 @@ public class GeolocationHeaderTest {
     @SmallTest
     @Feature({"Location"})
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/421965472")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/421965472")
     public void testGpsFallback() {
         setPermission(ContentSetting.ALLOW);
         // Only GPS location, should be sent when flag is on.
