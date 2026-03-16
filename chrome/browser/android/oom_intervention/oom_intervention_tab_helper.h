@@ -64,6 +64,8 @@ class OomInterventionTabHelper
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // CrashDumpManager::Observer:
   void OnCrashDumpProcessed(
@@ -81,6 +83,9 @@ class OomInterventionTabHelper
   void ResetInterventionState();
 
   void ResetInterfaces();
+
+  // BackForwardCache restore handler
+  void OnBackForwardCacheRestore(content::NavigationHandle* navigation_handle);
 
   bool navigation_started_ = false;
   std::optional<base::TimeTicks> near_oom_detected_time_;
