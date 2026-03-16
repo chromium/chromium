@@ -174,7 +174,10 @@ TEST_F(ContactCenterInsightsExtensionManagerTest,
   auto delegate = std::make_unique<TestDelegate>();
   auto* delegate_raw_ptr = delegate.get();
   ComponentLoader* component_loader = nullptr;
-  ASSERT_FALSE(delegate_raw_ptr->IsExtensionInstalled(component_loader));
+
+  // Install extension initially.
+  delegate_raw_ptr->InstallExtension(component_loader);
+  EXPECT_TRUE(delegate_raw_ptr->IsExtensionInstalled(component_loader));
 
   unaffiliated_user_profile_->GetPrefs()->SetBoolean(
       ::prefs::kInsightsExtensionEnabled, true);
