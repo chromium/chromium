@@ -186,11 +186,17 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 }
 
 - (void)setTabGridVisible:(BOOL)tabGridVisible {
+  if (_isTabGridVisible == tabGridVisible) {
+    return;
+  }
   _isTabGridVisible = tabGridVisible;
   [self updateTabGridButtonForTabGridVisibility];
 }
 
 - (void)setInTabGroup:(BOOL)inTabGroup {
+  if (_inTabGroup == inTabGroup) {
+    return;
+  }
   _inTabGroup = inTabGroup;
   [self updateTabGridButtonForTabGridVisibility];
 }
