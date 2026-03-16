@@ -208,13 +208,13 @@ WebContents* OpenApplicationTab(Profile* profile,
   CHECK(extension);
   WindowOpenDisposition disposition = launch_params.disposition;
 
-  Browser* browser =
+  BrowserWindowInterface* browser =
       chrome::FindTabbedBrowser(profile, false, launch_params.display_id);
   WebContents* contents = nullptr;
   if (browser) {
     // For existing browser, ensure its window is shown and activated.
-    browser->window()->Show();
-    browser->window()->Activate();
+    browser->GetWindow()->Show();
+    browser->GetWindow()->Activate();
   } else {
     // No browser for this profile, need to open a new one.
     if (Browser::GetCreationStatusForProfile(profile) !=
@@ -226,7 +226,7 @@ WebContents* OpenApplicationTab(Profile* profile,
     // system to here.
     browser = Browser::Create(
         Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
-    browser->window()->Show();
+    browser->GetWindow()->Show();
     // There's no current tab in this browser window, so add a new one.
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
@@ -246,8 +246,8 @@ WebContents* OpenApplicationTab(Profile* profile,
 
   if (disposition == WindowOpenDisposition::CURRENT_TAB) {
     WebContents* existing_tab =
-        browser->tab_strip_model()->GetActiveWebContents();
-    TabStripModel* model = browser->tab_strip_model();
+        browser->GetTabStripModel()->GetActiveWebContents();
+    TabStripModel* model = browser->GetTabStripModel();
     int tab_index = model->GetIndexOfWebContents(existing_tab);
 
     existing_tab->OpenURL(
@@ -260,7 +260,7 @@ WebContents* OpenApplicationTab(Profile* profile,
             disposition, transition, false),
         /*navigation_handle_callback=*/{});
     // Reset existing_tab as OpenURL() may have clobbered it.
-    existing_tab = browser->tab_strip_model()->GetActiveWebContents();
+    existing_tab = browser->GetTabStripModel()->GetActiveWebContents();
     if (params.tabstrip_add_types & AddTabTypes::ADD_PINNED) {
       model->SetTabPinned(tab_index, true);
       // Pinning may have moved the tab.
@@ -288,7 +288,7 @@ WebContents* OpenApplicationTab(Profile* profile,
   // the tab, but stay in full screen mode.  Should we leave full screen mode in
   // this case?
   if (launch_type == extensions::LaunchType::kFullscreen &&
-      !browser->window()->IsFullscreen()) {
+      !browser->GetWindow()->IsFullscreen()) {
     chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

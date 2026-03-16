@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -109,9 +110,11 @@ class WebAppSettingsWindowDelegate
   ~WebAppSettingsWindowDelegate() override = default;
 
   gfx::NativeWindow GetUninstallAnchorWindow() const override {
-    return chrome::FindTabbedBrowser(profile_, false)
-        ->window()
-        ->GetNativeWindow();
+    BrowserWindowInterface* browser =
+        chrome::FindTabbedBrowser(profile_, false);
+
+    return browser ? browser->GetWindow()->GetNativeWindow()
+                   : gfx::NativeWindow();
   }
 
  private:

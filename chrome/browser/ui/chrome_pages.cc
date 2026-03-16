@@ -302,11 +302,11 @@ void ShowSiteSettingsFileSystemImpl(Browser* browser,
 }
 
 Browser* GetOrCreateBrowserForProfile(Profile* profile) {
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
   if (!browser) {
     return Browser::Create(Browser::CreateParams(profile, true));
   }
-  return browser;
+  return browser->GetBrowserForMigrationOnly();
 }
 
 }  // namespace

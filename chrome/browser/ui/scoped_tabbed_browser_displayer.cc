@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 namespace chrome {
 
@@ -19,18 +20,22 @@ ScopedTabbedBrowserDisplayer::ScopedTabbedBrowserDisplayer(Profile* profile) {
   }
 }
 
+Browser* ScopedTabbedBrowserDisplayer::browser() {
+  return browser_ ? browser_->GetBrowserForMigrationOnly() : nullptr;
+}
+
 ScopedTabbedBrowserDisplayer::~ScopedTabbedBrowserDisplayer() {
   if (!browser_) {
     return;
   }
 
-  // Make sure to restore the window, since window()->Show() will not unminimize
-  // it.
-  if (browser_->window()->IsMinimized()) {
-    browser_->window()->Restore();
+  // Make sure to restore the window, since GetWindow()->Show() will not
+  // unminimize it.
+  if (browser_->GetWindow()->IsMinimized()) {
+    browser_->GetWindow()->Restore();
   }
 
-  browser_->window()->Show();
+  browser_->GetWindow()->Show();
 }
 
 }  // namespace chrome

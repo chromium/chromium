@@ -18,8 +18,8 @@
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 
+class BrowserWindowInterface;
 class Profile;
-class Browser;
 
 // //chrome's implementation of the SecurityBlockingPageFactory interface.
 class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
@@ -95,8 +95,9 @@ class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
 
   // Opens a login tab if not opened already in the browser
   // provided by get_browser.
-  static void OpenLoginPageForBrowser(base::FunctionRef<Browser*()> get_browser,
-                                      bool focus_tab);
+  static void OpenLoginPageForBrowser(
+      base::FunctionRef<BrowserWindowInterface*()> get_browser,
+      bool focus_tab);
 #endif
 };
 

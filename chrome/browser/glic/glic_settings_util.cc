@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -32,7 +33,7 @@ namespace {
 void OpenGlicSettingsPageWithPromo(Profile* profile,
                                    const base::Feature& feature,
                                    ShowPromoInPage::Params promo_params) {
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
   if (!browser) {
     // At this point we don't have a browser window open for profile.
     // User Education resources are initialized when browser view is created,
@@ -46,7 +47,8 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
     promo_params.target_url =
         chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage);
     promo_params.page_open_mode = user_education::PageOpenMode::kSingletonTab;
-    ShowPromoInPage::Start(browser, std::move(promo_params));
+    ShowPromoInPage::Start(browser->GetBrowserForMigrationOnly(),
+                           std::move(promo_params));
   } else {
     glic::OpenGlicSettingsPage(profile);
   }

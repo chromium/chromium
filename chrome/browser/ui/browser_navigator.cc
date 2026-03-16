@@ -124,13 +124,13 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
 // Finds an existing Browser compatible with |profile|, making a new one if no
 // such Browser is located.
 Browser* GetOrCreateBrowser(Profile* profile, bool user_gesture) {
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
 
   if (!browser && Browser::GetCreationStatusForProfile(profile) ==
                       Browser::CreationStatus::kOk) {
     browser = Browser::Create(Browser::CreateParams(profile, user_gesture));
   }
-  return browser;
+  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
 }
 
 bool IncognitoModeForced(const Profile* profile) {

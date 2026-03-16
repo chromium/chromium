@@ -20,6 +20,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #endif
 
@@ -67,14 +68,15 @@ void ExtensionTask::Activate() {
   if (!extension)
     return;
 
-  Browser* browser = chrome::FindTabbedBrowser(
+  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()), true);
 
   // If an existing browser isn't found, don't create a new one.
   if (!browser)
     return;
 
-  chrome::ShowExtensions(browser, extension->id());
+  chrome::ShowExtensions(browser->GetBrowserForMigrationOnly(),
+                         extension->id());
 #else
   // TODO(crbug.com/417512763): Support activation on desktop Android.
   NOTIMPLEMENTED();

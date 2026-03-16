@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -58,9 +59,9 @@ void ShowWarningOnOpenOperationResult(Profile* profile,
       break;
   }
 
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
   chrome::ShowWarningMessageBoxAsync(
-      browser ? browser->window()->GetNativeWindow() : nullptr,
+      browser ? browser->GetWindow()->GetNativeWindow() : nullptr,
       path.BaseName().AsUTF16Unsafe(), l10n_util::GetStringUTF16(message_id));
 }
 

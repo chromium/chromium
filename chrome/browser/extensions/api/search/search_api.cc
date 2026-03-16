@@ -19,6 +19,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #else
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -94,7 +95,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     // find the associated browser or tab model.
     web_contents = GetSenderWebContents();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    Browser* browser = nullptr;
+    BrowserWindowInterface* browser = nullptr;
     if (web_contents) {
       browser = chrome::FindBrowserWithTab(web_contents);
     }
@@ -107,7 +108,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
       if (!browser) {
         return RespondNow(Error("No active browser."));
       }
-      web_contents = browser->tab_strip_model()->GetActiveWebContents();
+      web_contents = browser->GetTabStripModel()->GetActiveWebContents();
     }
 #else
     TabModel* tab_model = nullptr;

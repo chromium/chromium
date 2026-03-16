@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace chrome {
@@ -27,10 +28,10 @@ class ScopedTabbedBrowserDisplayer {
 
   ~ScopedTabbedBrowserDisplayer();
 
-  Browser* browser() { return browser_; }
+  Browser* browser();
 
  private:
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 };
 
 }  // namespace chrome

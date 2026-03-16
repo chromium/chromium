@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
@@ -42,7 +43,7 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
   const bool browser_created = !browser;
   if (!browser) {
     if (Browser::GetCreationStatusForProfile(profile) !=
@@ -73,7 +74,7 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
 
   // Close the browser if chrome::Navigate created a new one.
   if (browser_created && (browser != nav_params.browser)) {
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 
   return nav_params.navigated_or_inserted_contents;
@@ -99,7 +100,7 @@ void ChromeWebContentsHandler::AddNewContents(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  Browser* browser = chrome::FindTabbedBrowser(profile, false);
+  BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
   const bool browser_created = !browser;
   if (!browser) {
     // The request can be triggered by Captive portal when browser is not ready
@@ -121,7 +122,7 @@ void ChromeWebContentsHandler::AddNewContents(
 
   // Close the browser if chrome::Navigate created a new one.
   if (browser_created && (browser != params.browser)) {
-    browser->window()->Close();
+    browser->GetWindow()->Close();
   }
 }
 

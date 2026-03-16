@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -485,10 +486,10 @@ void ExternalInstallErrorDesktop::OnDialogReady(
       // DidChangeInstallAlertVisibility() regardless because we depend on this
       // in unit tests.
       manager_->DidChangeInstallAlertVisibility(this, true);
-      Browser* browser = chrome::FindTabbedBrowser(
+      BrowserWindowInterface* browser = chrome::FindTabbedBrowser(
           Profile::FromBrowserContext(browser_context_), true);
       if (browser) {
-        global_error_->ShowBubbleView(browser);
+        global_error_->ShowBubbleView(browser->GetBrowserForMigrationOnly());
       }
     }
   } else {

@@ -22,6 +22,7 @@ source_set("search") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common/extensions/api",
     "//components/search_engines",
   ]

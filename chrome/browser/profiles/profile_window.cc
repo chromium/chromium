@@ -34,6 +34,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
@@ -92,9 +93,9 @@ void FindOrCreateNewWindowForProfile(
                profile->GetPath());
 
   if (!always_create) {
-    Browser* browser = chrome::FindTabbedBrowser(profile, false);
+    BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
     if (browser) {
-      browser->window()->Activate();
+      browser->GetWindow()->Activate();
       return;
     }
   }
@@ -170,11 +171,11 @@ void OpenBrowserWindowForProfile(base::OnceCallback<void(Browser*)> callback,
   // case, as you could manually activate an incorrect browser and trigger
   // a false positive.
   if (!always_create) {
-    Browser* browser = chrome::FindTabbedBrowser(profile, false);
+    BrowserWindowInterface* browser = chrome::FindTabbedBrowser(profile, false);
     if (browser) {
-      browser->window()->Activate();
+      browser->GetWindow()->Activate();
       if (callback) {
-        std::move(callback).Run(browser);
+        std::move(callback).Run(browser->GetBrowserForMigrationOnly());
       }
       return;
     }

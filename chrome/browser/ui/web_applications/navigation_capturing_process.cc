@@ -194,7 +194,7 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
   CHECK(!source_browser->app_controller() ||
         !source_browser->app_controller()->IsIsolatedWebApp());
 
-  Browser* existing_browser_window =
+  BrowserWindowInterface* existing_browser_window =
       navigate_params_browser &&
               !AppBrowserController::IsWebApp(navigate_params_browser)
           ? navigate_params_browser
@@ -203,7 +203,7 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
 
   // Create a new browser window if the navigation was triggered via a
   // shift-click, or if there are no open tabbed browser windows at the moment.
-  Browser* target_browser_window =
+  BrowserWindowInterface* target_browser_window =
       (disposition == WindowOpenDisposition::NEW_WINDOW ||
        !existing_browser_window)
           ? Browser::Create(Browser::CreateParams(source_browser->profile(),

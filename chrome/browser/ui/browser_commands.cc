@@ -2504,7 +2504,7 @@ bool IsWebAppOrCustomTab(const BrowserWindowInterface* bwi) {
 
 Browser* OpenInChrome(Browser* hosted_app_browser) {
   // Find a non-incognito browser.
-  Browser* target_browser =
+  BrowserWindowInterface* target_browser =
       chrome::FindTabbedBrowser(hosted_app_browser->profile(), false);
 
   if (!target_browser) {
@@ -2516,7 +2516,7 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
       hosted_app_browser,
       hosted_app_browser->tab_strip_model()->GetActiveWebContents(),
       target_browser);
-  return target_browser;
+  return target_browser->GetBrowserForMigrationOnly();
 }
 
 bool CanViewSource(const Browser* browser) {
