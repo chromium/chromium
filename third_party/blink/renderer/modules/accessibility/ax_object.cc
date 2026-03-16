@@ -2943,10 +2943,6 @@ bool AXObject::IsProgressIndicator() const {
   return false;
 }
 
-bool AXObject::IsAXRadioInput() const {
-  return false;
-}
-
 bool AXObject::IsSlider() const {
   return false;
 }
@@ -3220,10 +3216,6 @@ bool AXObject::IsImageMapLink() const {
   return false;
 }
 
-bool AXObject::IsMenu() const {
-  return RoleValue() == ax::mojom::blink::Role::kMenu;
-}
-
 bool AXObject::IsCheckable() const {
   switch (RoleValue()) {
     case ax::mojom::blink::Role::kCheckBox:
@@ -3340,14 +3332,6 @@ bool AXObject::IsNativeCheckboxInMixedState(const Node* node) {
   return input->ShouldAppearIndeterminate();
 }
 
-bool AXObject::IsMenuRelated() const {
-  return ui::IsMenuRelated(RoleValue());
-}
-
-bool AXObject::IsMeter() const {
-  return RoleValue() == ax::mojom::blink::Role::kMeter;
-}
-
 bool AXObject::IsNativeImage() const {
   return false;
 }
@@ -3418,10 +3402,6 @@ bool AXObject::IsRangeValueSupported() const {
   return ui::IsRangeValueSupported(RoleValue());
 }
 
-bool AXObject::IsScrollbar() const {
-  return RoleValue() == ax::mojom::blink::Role::kScrollBar;
-}
-
 bool AXObject::IsNativeSlider() const {
   return false;
 }
@@ -3432,10 +3412,6 @@ bool AXObject::IsSpinButton() const {
 
 bool AXObject::IsTabItem() const {
   return RoleValue() == ax::mojom::blink::Role::kTab;
-}
-
-bool AXObject::IsTabList() const {
-  return RoleValue() == ax::mojom::blink::Role::kTabList;
 }
 
 bool AXObject::IsTextField() const {

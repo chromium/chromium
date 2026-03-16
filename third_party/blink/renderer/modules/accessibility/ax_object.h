@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/accessibility/axid.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
-#include "third_party/blink/renderer/core/inspector/protocol/accessibility.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
@@ -59,7 +58,6 @@
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enums.mojom-blink.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 namespace gfx {
@@ -358,7 +356,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsAXInlineTextBox() const;
   virtual bool IsList() const;
   virtual bool IsProgressIndicator() const;
-  virtual bool IsAXRadioInput() const;
   virtual bool IsSlider() const;
   virtual bool IsValidationMessage() const;
 
@@ -380,9 +377,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsImage() const;
   virtual bool IsInputImage() const;
   bool IsLink() const;
-  bool IsMenu() const;
-  bool IsMenuRelated() const;
-  bool IsMeter() const;
   virtual bool IsNativeImage() const;
   virtual bool IsNativeSpinButton() const;
 
@@ -408,11 +402,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   bool IsPresentational() const;
   bool IsRangeValueSupported() const;
-  bool IsScrollbar() const;
   virtual bool IsNativeSlider() const;
   virtual bool IsSpinButton() const;
   bool IsTabItem() const;
-  bool IsTabList() const;
 
   // This object is a text field. This is any widget in which the user should be
   // able to enter and edit text.
@@ -427,7 +419,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool IsTextField() const;
 
   bool IsTextObject() const;
-  bool IsTree() const { return RoleValue() == ax::mojom::blink::Role::kTree; }
   bool IsWebArea() const {
     return RoleValue() == ax::mojom::blink::Role::kRootWebArea;
   }
@@ -539,7 +530,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ComputeIsDescendantOfDisabledNode();
   // Some objects, such as table header containers, could be the children of
   // more than one object but have only one primary parent.
-  bool HasIndirectChildren() const;
   bool IsExcludedByFormControlsFilter() const;
 
   void SetIsOnScreen(bool visibility) { cached_is_on_screen_ = visibility; }
@@ -1733,11 +1723,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   bool IsCheckable() const;
   static bool IsNativeCheckboxInMixedState(const Node*);
-  static bool IncludesARIAWidgetRole(const String&);
-  static bool HasInteractiveARIAAttribute(const Element&);
-  ax::mojom::blink::Role RemapAriaRoleDueToParent(ax::mojom::blink::Role) const;
-  unsigned ComputeAriaColumnIndex() const;
-  unsigned ComputeAriaRowIndex() const;
   const ComputedStyle* GetComputedStyle() const;
   bool ComputeIsHiddenViaStyle(const ComputedStyle*);
   bool ComputeIsUsedForLabelOrDescription();

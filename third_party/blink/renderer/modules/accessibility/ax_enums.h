@@ -29,12 +29,6 @@ enum AccessibilityExpanded {
   kExpandedExpanded,
 };
 
-enum AccessibilityGrabbedState {
-  kGrabbedStateUndefined = 0,
-  kGrabbedStateFalse,
-  kGrabbedStateTrue,
-};
-
 enum AccessibilitySelectedState {
   kSelectedStateUndefined = 0,
   kSelectedStateFalse,
@@ -82,12 +76,6 @@ enum AXObjectInclusion {
   kIncludeObject,
   kIgnoreObject,
   kDefaultBehavior,
-};
-
-enum AccessibilityOptionalBool {
-  kOptionalBoolUndefined = 0,
-  kOptionalBoolTrue,
-  kOptionalBoolFalse
 };
 
 // The potential native host-language-based text (name, description or

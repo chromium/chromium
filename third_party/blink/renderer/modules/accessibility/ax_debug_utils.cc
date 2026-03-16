@@ -4,10 +4,8 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_debug_utils.h"
 
-#include <memory>
 #include <numeric>
 #include <string>
-#include <utility>
 
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
