@@ -4,20 +4,20 @@
 
 chrome.runtime.onMessageExternal.addListener(
     function(message, sender, sendResponse) {
-  if (message[0] == "getStream") {
+  if (message[0] == 'getStream') {
     chrome.desktopCapture.chooseDesktopMedia(
-        ["screen", "window"],
+        ['screen', 'window'],
         sender.tab,
         function(id) {
-          sendResponse({"id": id});
+          sendResponse({id: id});
         });
     return true;
-  } else if (message[0] == "getStreamNoWait") {
+  } else if (message[0] == 'getStreamNoWait') {
     chrome.desktopCapture.chooseDesktopMedia(
-        ["screen", "window"],
+        ['screen', 'window'],
         sender.tab, function() {});
     sendResponse({});
   } else {
-    sendResponse({"error": "invalid message"});
+    sendResponse({error: 'invalid message'});
   }
 });
