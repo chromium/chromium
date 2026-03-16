@@ -26,6 +26,13 @@ patchset 1 has automatic changes and the reproduction instructions and patchset
 Authors **must** attest that the code they submit is their original creation,
 regardless of whether AI tooling was used.
 
+When engaged in discussion (code review, bugs, mailing lists, etc), there is a
+simple rule which all accounts are required to comply with: **a human reply must
+get a human reply**, so if an AI agent files a bug or creates a CL, and a human
+leaves feedback on it, the human operator of that agent must be the one to reply
+to that feedback. This is described in our project's
+[code of conduct](../CODE_OF_CONDUCT.md).
+
 ## Recommendations
 
 Authors **may** explain in the CL description or the code base itself how AI
@@ -33,11 +40,11 @@ tools were used to produce the CL.
 
 Examples:
 
-*   If a single prompt to a tool (e.g. gemini-cli) was used to create the CL
-    then the prompt may be included in the CL description.
-*   If a design spec was provided along with a prompt as input to a tool that
-    produced a working change, the spec may be checked in alongside the code and
-    the prompt may be included in the CL description.
+- If a single prompt to a tool (e.g. gemini-cli) was used to create the CL then
+  the prompt may be included in the CL description.
+- If a design spec was provided along with a prompt as input to a tool that
+  produced a working change, the spec may be checked in alongside the code and
+  the prompt may be included in the CL description.
 
 Additional examples for gemini-cli can be added to `//agents/prompts/eval`,
 which will serve as eval cases for improvements to common system prompts.
