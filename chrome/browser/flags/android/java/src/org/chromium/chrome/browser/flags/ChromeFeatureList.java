@@ -201,6 +201,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_PAGE_INFO_AS_APP_MENU_ITEM = "AndroidPageInfoAsAppMenuItem";
     public static final String ANDROID_PROGRESS_BAR_VISUAL_UPDATE =
             "AndroidProgressBarVisualUpdate";
+    public static final String ANDROID_SELF_OCCLUSION_TRACKING = "AndroidSelfOcclusionTracking";
     public static final String ANDROID_SETTINGS_CONTAINMENT = "AndroidSettingsContainment";
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
@@ -754,6 +755,8 @@ public abstract class ChromeFeatureList {
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
+    public static final CachedFlag sAndroidSelfOcclusionTracking =
+            newCachedFlag(ANDROID_SELF_OCCLUSION_TRACKING, false);
     public static final CachedFlag sAndroidSettingsContainment =
             newCachedFlag(
                     ANDROID_SETTINGS_CONTAINMENT,
@@ -1164,6 +1167,7 @@ public abstract class ChromeFeatureList {
                     sAndroidOpenIncognitoAsWindow,
                     sAndroidPageInfoAsAppMenuItem,
                     sAndroidProgressBarVisualUpdate,
+                    sAndroidSelfOcclusionTracking,
                     sAndroidSettingsContainment,
                     sAndroidSetupList,
                     sAndroidSurfaceColorUpdate,

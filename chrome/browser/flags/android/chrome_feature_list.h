@@ -52,6 +52,7 @@ BASE_DECLARE_FEATURE(kAndroidOmniboxFocusedNewTabPage);
 BASE_DECLARE_FEATURE(kAndroidPageInfoAsAppMenuItem);
 BASE_DECLARE_FEATURE(kAndroidProgressBarVisualUpdate);
 BASE_DECLARE_FEATURE(kAndroidSearchInSettings);
+BASE_DECLARE_FEATURE(kAndroidSelfOcclusionTracking);
 BASE_DECLARE_FEATURE(kAndroidSettingsContainment);
 BASE_DECLARE_FEATURE(kAndroidSetupList);
 BASE_DECLARE_FEATURE(kAndroidSurfaceColorUpdate);
