@@ -30,13 +30,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="Wallet.WalletablePass.PassCategory">
   <variant name="BoardingPass" summary="boarding passes"/>
-  <variant name="DriverLicense" summary="driver licenses"/>
   <variant name="EventPass" summary="event passes"/>
-  <variant name="KTN" summary="Known Traveler Numbers (KTNs)"/>
   <variant name="LoyaltyCard" summary="loyalty cards"/>
-  <variant name="NationalIdentityCard" summary="national identity cards"/>
-  <variant name="Passport" summary="passports"/>
-  <variant name="RedressNumber" summary="redress numbers"/>
   <variant name="TransitTicket" summary="transit tickets"/>
   <variant name="Unspecified" summary="unspecified pass category"/>
 </variants>

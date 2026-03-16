@@ -23,12 +23,7 @@ enum class PassCategory {
   kEventPass = 2,
   kTransitTicket = 3,
   kBoardingPass = 4,
-  kPassport = 5,
-  kDriverLicense = 6,
-  kNationalIdentityCard = 7,
-  kKTN = 8,
-  kRedressNumber = 9,
-  kMaxValue = kRedressNumber,
+  kMaxValue = kBoardingPass,
 };
 
 // The following structs represent the data models for the different pass
@@ -111,93 +106,7 @@ struct TransitTicket {
   std::optional<WalletBarcode> barcode;
 };
 
-// Represents a passport with its relevant details.
-struct Passport {
-  Passport();
-  Passport(const Passport&);
-  Passport& operator=(const Passport&);
-  Passport(Passport&&);
-  Passport& operator=(Passport&&);
-  ~Passport();
 
-  friend bool operator==(const Passport&, const Passport&) = default;
-
-  std::string owner_name;
-  std::string country_code;
-  std::string passport_number;
-  base::Time issue_date;
-  base::Time expiration_date;
-};
-
-// Represents a driver's license with its relevant details.
-struct DriverLicense {
-  DriverLicense();
-  DriverLicense(const DriverLicense&);
-  DriverLicense& operator=(const DriverLicense&);
-  DriverLicense(DriverLicense&&);
-  DriverLicense& operator=(DriverLicense&&);
-  ~DriverLicense();
-
-  friend bool operator==(const DriverLicense&, const DriverLicense&) = default;
-
-  std::string owner_name;
-  std::string region;
-  std::string driver_license_number;
-  base::Time issue_date;
-  base::Time expiration_date;
-  std::string country_code;
-};
-
-// Represents a national identity card with its relevant details.
-struct NationalIdentityCard {
-  NationalIdentityCard();
-  NationalIdentityCard(const NationalIdentityCard&);
-  NationalIdentityCard& operator=(const NationalIdentityCard&);
-  NationalIdentityCard(NationalIdentityCard&&);
-  NationalIdentityCard& operator=(NationalIdentityCard&&);
-  ~NationalIdentityCard();
-
-  friend bool operator==(const NationalIdentityCard&,
-                         const NationalIdentityCard&) = default;
-
-  std::string owner_name;
-  std::string region;
-  std::string id_number;
-  base::Time issue_date;
-  base::Time expiration_date;
-  std::string country_code;
-};
-
-// Represents a Known Traveler Number (KTN) with its relevant details.
-struct KTN {
-  KTN();
-  KTN(const KTN&);
-  KTN& operator=(const KTN&);
-  KTN(KTN&&);
-  KTN& operator=(KTN&&);
-  ~KTN();
-
-  friend bool operator==(const KTN&, const KTN&) = default;
-
-  std::string owner_name;
-  std::string known_traveller_number;
-  base::Time expiration_date;
-};
-
-// Represents a redress number with its relevant details.
-struct RedressNumber {
-  RedressNumber();
-  RedressNumber(const RedressNumber&);
-  RedressNumber& operator=(const RedressNumber&);
-  RedressNumber(RedressNumber&&);
-  RedressNumber& operator=(RedressNumber&&);
-  ~RedressNumber();
-
-  friend bool operator==(const RedressNumber&, const RedressNumber&) = default;
-
-  std::string owner_name;
-  std::string redress_number;
-};
 
 // Represents a generic Google Wallet pass.
 struct WalletPass {
@@ -217,16 +126,7 @@ struct WalletPass {
   // save pass requests.
   std::optional<std::string> id;
 
-  std::variant<LoyaltyCard,
-               EventPass,
-               BoardingPass,
-               TransitTicket,
-               Passport,
-               DriverLicense,
-               NationalIdentityCard,
-               KTN,
-               RedressNumber>
-      pass_data;
+  std::variant<LoyaltyCard, EventPass, BoardingPass, TransitTicket> pass_data;
 };
 
 }  // namespace wallet

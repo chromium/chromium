@@ -19,16 +19,6 @@ std::string PassCategoryToString(PassCategory category) {
       return "TransitTicket";
     case PassCategory::kBoardingPass:
       return "BoardingPass";
-    case PassCategory::kPassport:
-      return "Passport";
-    case PassCategory::kDriverLicense:
-      return "DriverLicense";
-    case PassCategory::kNationalIdentityCard:
-      return "NationalIdentityCard";
-    case PassCategory::kKTN:
-      return "KTN";
-    case PassCategory::kRedressNumber:
-      return "RedressNumber";
     case PassCategory::kUnspecified:
       return "Unspecified";
   }

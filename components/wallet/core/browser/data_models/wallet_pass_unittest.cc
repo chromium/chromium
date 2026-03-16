@@ -16,14 +16,6 @@ TEST(WalletPassTest, PassCategoryToString) {
   EXPECT_EQ(PassCategoryToString(PassCategory::kTransitTicket),
             "TransitTicket");
   EXPECT_EQ(PassCategoryToString(PassCategory::kBoardingPass), "BoardingPass");
-  EXPECT_EQ(PassCategoryToString(PassCategory::kPassport), "Passport");
-  EXPECT_EQ(PassCategoryToString(PassCategory::kDriverLicense),
-            "DriverLicense");
-  EXPECT_EQ(PassCategoryToString(PassCategory::kNationalIdentityCard),
-            "NationalIdentityCard");
-  EXPECT_EQ(PassCategoryToString(PassCategory::kKTN), "KTN");
-  EXPECT_EQ(PassCategoryToString(PassCategory::kRedressNumber),
-            "RedressNumber");
   EXPECT_EQ(PassCategoryToString(PassCategory::kUnspecified), "Unspecified");
 }
 
@@ -41,21 +33,6 @@ TEST(WalletPassTest, GetPassCategory) {
 
   pass.pass_data = TransitTicket();
   EXPECT_EQ(pass.GetPassCategory(), PassCategory::kTransitTicket);
-
-  pass.pass_data = Passport();
-  EXPECT_EQ(pass.GetPassCategory(), PassCategory::kPassport);
-
-  pass.pass_data = DriverLicense();
-  EXPECT_EQ(pass.GetPassCategory(), PassCategory::kDriverLicense);
-
-  pass.pass_data = NationalIdentityCard();
-  EXPECT_EQ(pass.GetPassCategory(), PassCategory::kNationalIdentityCard);
-
-  pass.pass_data = KTN();
-  EXPECT_EQ(pass.GetPassCategory(), PassCategory::kKTN);
-
-  pass.pass_data = RedressNumber();
-  EXPECT_EQ(pass.GetPassCategory(), PassCategory::kRedressNumber);
 }
 
 }  // namespace wallet

@@ -44,11 +44,6 @@ optimization_guide::proto::PassCategory ToProtoPassCategory(
     case PassCategory::kTransitTicket:
       return optimization_guide::proto::PASS_CATEGORY_TRANSIT_TICKET;
     case PassCategory::kBoardingPass:
-    case PassCategory::kPassport:
-    case PassCategory::kDriverLicense:
-    case PassCategory::kNationalIdentityCard:
-    case PassCategory::kKTN:
-    case PassCategory::kRedressNumber:
     case PassCategory::kUnspecified:
       return optimization_guide::proto::PASS_CATEGORY_UNSPECIFIED;
   }
@@ -407,21 +402,17 @@ void WalletablePassIngestionController::FinishExtraction(const GURL& url) {
         pass.barcode = processing_state_.detected_barcodes[0];
       }
     };
-    std::visit(
-        absl::Overload([&](LoyaltyCard& pass) { set_barcode(pass); },
-                       [&](EventPass& pass) { set_barcode(pass); },
-                       [&](BoardingPass& pass) {
-                         // TODO(crbug.com/465909190): Report UMA for
-                         // unexpected boarding pass from LLM response.
-                         // Ideally, boarding pass branch should never
-                         // be triggered, because LLM never returns
-                         // boarding pass proto.
-                       },
-                       [&](TransitTicket& pass) { set_barcode(pass); },
-                       [&](Passport& pass) {}, [&](DriverLicense& pass) {},
-                       [&](NationalIdentityCard& pass) {}, [&](KTN& pass) {},
-                       [&](RedressNumber& pass) {}),
-        processing_state_.extracted_pass->pass_data);
+    std::visit(absl::Overload([&](LoyaltyCard& pass) { set_barcode(pass); },
+                              [&](EventPass& pass) { set_barcode(pass); },
+                              [&](BoardingPass& pass) {
+                                // TODO(crbug.com/465909190): Report UMA for
+                                // unexpected boarding pass from LLM response.
+                                // Ideally, boarding pass branch should never
+                                // be triggered, because LLM never returns
+                                // boarding pass proto.
+                              },
+                              [&](TransitTicket& pass) { set_barcode(pass); }),
+               processing_state_.extracted_pass->pass_data);
     ShowSaveBubble(url, std::move(*processing_state_.extracted_pass));
   }
 }
