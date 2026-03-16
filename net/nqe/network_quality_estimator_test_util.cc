@@ -96,7 +96,7 @@ const GURL TestNetworkQualityEstimator::GetEchoURL() {
   if (!embedded_test_server_.Started()) {
     EXPECT_TRUE(embedded_test_server_.Start());
   }
-  return embedded_test_server_.GetURL("/simple.html");
+  return embedded_test_server_.GetURL("/BullRunSpeech.txt");
 }
 
 const GURL TestNetworkQualityEstimator::GetRedirectURL() {
