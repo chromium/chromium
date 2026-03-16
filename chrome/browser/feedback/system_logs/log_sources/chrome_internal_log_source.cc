@@ -284,23 +284,18 @@ void PopulateDiskSpaceLogsAsync(std::unique_ptr<SystemLogsResponse> response,
 void PopulateMonitorInfoAsync(SystemLogsResponse* response,
                               base::OnceCallback<void()> callback) {
   if (ash::Shell::HasInstance()) {
-    ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
-        false /* single_unified */,
-        base::BindOnce(
-            [](SystemLogsResponse* response,
-               base::OnceCallback<void()> callback,
-               std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
-              std::string entry;
-              for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
-                if (!entry.empty()) {
-                  base::StringAppendF(&entry, "\n");
-                }
-                entry += GetDisplayInfoString(*info);
-              }
-              response->emplace(kMonitorInfoKey, entry);
-              std::move(callback).Run();
-            },
-            response, std::move(callback)));
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+        ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
+            /*single_unified=*/false);
+    std::string entry;
+    for (const auto& info : info_list) {
+      if (!entry.empty()) {
+        base::StringAppendF(&entry, "\n");
+      }
+      entry += GetDisplayInfoString(*info);
+    }
+    response->emplace(kMonitorInfoKey, entry);
+    std::move(callback).Run();
   } else {
     // TODO(crbug.com/485123493): Remove once confirmed this does/doesn't
     // happen.

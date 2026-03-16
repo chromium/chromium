@@ -70,10 +70,6 @@ class DisplayInfoProviderChromeOS : public DisplayInfoProviderBase,
   void OnDisplayConfigChanged() override;
 
  private:
-  void OnGetDisplayUnitInfoList(
-      crosapi::mojom::DisplayLayoutInfoPtr layout,
-      base::OnceCallback<void(DisplayUnitInfoList)> callback,
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list);
   void CallTouchCalibration(const std::string& id,
                             crosapi::mojom::DisplayConfigOperation op,
                             crosapi::mojom::TouchCalibrationPtr calibration,

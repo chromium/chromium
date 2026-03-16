@@ -221,15 +221,10 @@ void OobeTestAPIHandler::ShowGaiaDialog() {
 
 void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
     const std::string& callback_id) {
-  ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
-      false /* single_unified */,
-      base::BindOnce(&OobeTestAPIHandler::OnGetDisplayUnitInfoList,
-                     base::Unretained(this), callback_id));
-}
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+      ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
+          /*single_unified=*/false);
 
-void OobeTestAPIHandler::OnGetDisplayUnitInfoList(
-    const std::string& callback_id,
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
   std::string display_name;
   for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
     if (info->is_primary) {
@@ -237,13 +232,14 @@ void OobeTestAPIHandler::OnGetDisplayUnitInfoList(
       break;
     }
   }
+
   if (display_name.empty()) {
     RejectJavascriptCallback(base::Value(callback_id),
                              base::Value(display_name));
-    return;
+  } else {
+    ResolveJavascriptCallback(base::Value(callback_id),
+                              base::Value(display_name));
   }
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(display_name));
 }
 
 void OobeTestAPIHandler::HandleGetShouldSkipChoobe(

@@ -1235,19 +1235,13 @@ void DeviceSection::OnNightLightEnabledChanged(bool enabled) {
 }
 
 void DeviceSection::OnDisplayConfigChanged() {
-  if (cros_display_config_) {
-    cros_display_config_->GetDisplayUnitInfoList(
-        /*single_unified=*/true,
-        base::BindOnce(&DeviceSection::OnGetDisplayUnitInfoList,
-                       base::Unretained(this)));
-  }
-}
-
-void DeviceSection::OnGetDisplayUnitInfoList(
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list) {
   if (!cros_display_config_) {
     return;
   }
+
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list =
+      cros_display_config_->GetDisplayUnitInfoList(
+          /*single_unified=*/true);
 
   crosapi::mojom::DisplayLayoutInfoPtr display_layout_info =
       cros_display_config_->GetDisplayLayoutInfo();

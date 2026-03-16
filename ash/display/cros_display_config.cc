@@ -739,9 +739,8 @@ crosapi::mojom::DisplayConfigResult CrosDisplayConfigImpl::SetDisplayLayoutInfo(
   return crosapi::mojom::DisplayConfigResult::kSuccess;
 }
 
-void CrosDisplayConfigImpl::GetDisplayUnitInfoList(
-    bool single_unified,
-    GetDisplayUnitInfoListCallback callback) {
+std::vector<crosapi::mojom::DisplayUnitInfoPtr>
+CrosDisplayConfigImpl::GetDisplayUnitInfoList(bool single_unified) {
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list;
   display::DisplayManager* display_manager = GetDisplayManager();
 
@@ -766,7 +765,7 @@ void CrosDisplayConfigImpl::GetDisplayUnitInfoList(
   for (const display::Display& display : displays) {
     info_list.emplace_back(GetDisplayUnitInfo(display, primary_id));
   }
-  std::move(callback).Run(std::move(info_list));
+  return info_list;
 }
 
 void CrosDisplayConfigImpl::SetDisplayProperties(

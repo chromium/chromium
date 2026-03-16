@@ -69,10 +69,6 @@ class DisplaySettingsHandler : public ash::CrosDisplayConfig::Observer {
   void Start();
 
  private:
-  // Receives the initial display info list and initializes the class.
-  void OnGetInitialDisplayInfo(
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list);
-
   // Requests the list of displays and applies each setting.
   void RequestDisplaysAndApplyChanges();
 
@@ -87,11 +83,6 @@ class DisplaySettingsHandler : public ash::CrosDisplayConfig::Observer {
   void UpdateSettingAndApplyChanges(
       DisplaySettingsPolicyHandler* handler,
       const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list);
-
-  // Called on display configuration changes for each handler.
-  void OnConfigurationChangeForHandler(
-      DisplaySettingsPolicyHandler* handler,
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list);
 
   const raw_ptr<ash::CrosDisplayConfig> cros_display_config_;
   std::vector<std::unique_ptr<DisplaySettingsPolicyHandler>> handlers_;

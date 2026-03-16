@@ -42,10 +42,6 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void HandleGetShouldSkipTouchpadScroll(const std::string& callback_id);
   void HandleGetMetricsClientID(const std::string& callback_id);
   void HandleGetShouldSkipSplitModifierScreen(const std::string& callback_id);
-
-  void OnGetDisplayUnitInfoList(
-      const std::string& callback_id,
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list);
 };
 
 }  // namespace ash

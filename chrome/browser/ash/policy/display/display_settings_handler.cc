@@ -58,25 +58,17 @@ void DisplaySettingsHandler::Start() {
   }
 
   // Make the initial display unit info request.
-  cros_display_config_->GetDisplayUnitInfoList(
-      false /* single_unified */,
-      base::BindOnce(&DisplaySettingsHandler::OnGetInitialDisplayInfo,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DisplaySettingsHandler::OnGetInitialDisplayInfo(
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+      cros_display_config_->GetDisplayUnitInfoList(false /* single_unified */);
   // (We only care about changes that occur after we apply any changes below).
   cros_display_config_observation_.Observe(cros_display_config_);
-
   ApplyChanges(std::move(info_list));
 }
 
 void DisplaySettingsHandler::RequestDisplaysAndApplyChanges() {
-  cros_display_config_->GetDisplayUnitInfoList(
-      false /* single_unified */,
-      base::BindOnce(&DisplaySettingsHandler::ApplyChanges,
-                     weak_ptr_factory_.GetWeakPtr()));
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+      cros_display_config_->GetDisplayUnitInfoList(/*single_unified=*/false);
+  ApplyChanges(std::move(info_list));
 }
 
 void DisplaySettingsHandler::ApplyChanges(
@@ -87,10 +79,10 @@ void DisplaySettingsHandler::ApplyChanges(
 
 void DisplaySettingsHandler::OnSettingUpdate(
     DisplaySettingsPolicyHandler* handler) {
-  cros_display_config_->GetDisplayUnitInfoList(
-      false /* single_unified */,
-      base::BindOnce(&DisplaySettingsHandler::OnConfigurationChangeForHandler,
-                     weak_ptr_factory_.GetWeakPtr(), handler));
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+      cros_display_config_->GetDisplayUnitInfoList(
+          /*single_unified=*/false);
+  UpdateSettingAndApplyChanges(handler, info_list);
 }
 
 void DisplaySettingsHandler::UpdateSettingAndApplyChanges(
@@ -98,12 +90,6 @@ void DisplaySettingsHandler::UpdateSettingAndApplyChanges(
     const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
   handler->OnSettingUpdate();
   handler->ApplyChanges(*cros_display_config_, info_list);
-}
-
-void DisplaySettingsHandler::OnConfigurationChangeForHandler(
-    DisplaySettingsPolicyHandler* handler,
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
-  UpdateSettingAndApplyChanges(handler, info_list);
 }
 
 }  // namespace policy

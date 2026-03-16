@@ -272,26 +272,19 @@ void DisplayInfoProviderChromeOS::GetAllDisplaysInfo(
   if (cros_display_config_) {
     crosapi::mojom::DisplayLayoutInfoPtr layout =
         cros_display_config_->GetDisplayLayoutInfo();
-    cros_display_config_->GetDisplayUnitInfoList(
-        single_unified,
-        base::BindOnce(&DisplayInfoProviderChromeOS::OnGetDisplayUnitInfoList,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(layout),
-                       std::move(callback)));
+    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list =
+        cros_display_config_->GetDisplayUnitInfoList(single_unified);
+    DisplayUnitInfoList all_displays;
+    for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
+      system_display::DisplayUnitInfo display =
+          GetDisplayUnitInfoFromMojo(*info);
+      SetDisplayUnitInfoLayoutProperties(*layout, &display);
+      all_displays.push_back(std::move(display));
+    }
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::move(all_displays)));
   }
-}
-
-void DisplayInfoProviderChromeOS::OnGetDisplayUnitInfoList(
-    crosapi::mojom::DisplayLayoutInfoPtr layout,
-    base::OnceCallback<void(DisplayUnitInfoList)> callback,
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> info_list) {
-  DisplayUnitInfoList all_displays;
-  for (const crosapi::mojom::DisplayUnitInfoPtr& info : info_list) {
-    system_display::DisplayUnitInfo display = GetDisplayUnitInfoFromMojo(*info);
-    SetDisplayUnitInfoLayoutProperties(*layout, &display);
-    all_displays.push_back(std::move(display));
-  }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(all_displays)));
 }
 
 DisplayInfoProvider::DisplayLayoutList

@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_SECTION_H_
 
-#include <optional>
-#include <vector>
-
 #include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/shell_observer.h"
@@ -82,9 +79,6 @@ class DeviceSection : public OsSettingsSection,
   void OnDisplayConfigChanged() override;
 
   void UpdateStylusSearchTags();
-
-  void OnGetDisplayUnitInfoList(
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_unit_info_list);
 
   void AddDevicePointersStrings(content::WebUIDataSource* html_source);
   void AddDeviceGraphicsTabletStrings(

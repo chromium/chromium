@@ -101,18 +101,12 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher,
   // Populate the required device config info.
   void PopulateDeviceConfig();
 
-  // Start the connection to ash. Send the request to get display unit info
-  // list.
-  void StartAshRequest();
+  // Helper for `PopulateDeviceConfig` that deals with displays.
+  void PopulateDisplaySettings();
 
   // Start to compress and encode the proto message if we finish ash request
   // and ARC feature is read.
   void MaybeStartCompressAndEncodeProtoMessage();
-
-  // Callback function called when display unit info list is retrieved from ash.
-  // It will populate the device config info related to the screen density.
-  void OnAshResponse(
-      std::vector<crosapi::mojom::DisplayUnitInfoPtr> all_displays_info);
 
   // Callback function called when ARC features are read by the parser.
   // It will populate the device config info related to ARC features.
@@ -145,7 +139,6 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher,
 
   std::string encoded_device_configuration_proto_;
 
-  bool ash_ready_ = false;
   bool arc_features_ready_ = false;
   bool has_started_proto_processing_ = false;
   bool proto_compressed_and_encoded_ = false;

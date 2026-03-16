@@ -117,20 +117,7 @@ class CrosDisplayConfigTest : public AshTestBase {
 
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
       bool single_unified = false) {
-    std::vector<crosapi::mojom::DisplayUnitInfoPtr> display_info_list;
-    base::RunLoop run_loop;
-    cros_display_config_->GetDisplayUnitInfoList(
-        single_unified,
-        base::BindOnce(
-            [](std::vector<crosapi::mojom::DisplayUnitInfoPtr>* result_ptr,
-               base::OnceClosure callback,
-               std::vector<crosapi::mojom::DisplayUnitInfoPtr> result) {
-              *result_ptr = std::move(result);
-              std::move(callback).Run();
-            },
-            &display_info_list, run_loop.QuitClosure()));
-    run_loop.Run();
-    return display_info_list;
+    return cros_display_config_->GetDisplayUnitInfoList(single_unified);
   }
 
   crosapi::mojom::DisplayConfigResult SetDisplayProperties(

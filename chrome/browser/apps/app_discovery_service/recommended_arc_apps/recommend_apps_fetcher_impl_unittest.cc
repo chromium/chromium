@@ -87,14 +87,9 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   TestCrosDisplayConfig& operator=(const TestCrosDisplayConfig&) = delete;
   ~TestCrosDisplayConfig() = default;
 
-  bool RunGetDisplayUnitInfoListCallback(
+  void SetNextDisplayUnitInfoList(
       std::vector<crosapi::mojom::DisplayUnitInfoPtr> unit_info_list) {
-    if (!get_display_unit_info_list_callback_) {
-      return false;
-    }
-    std::move(get_display_unit_info_list_callback_)
-        .Run(std::move(unit_info_list));
-    return true;
+    next_display_unit_info_list_ = std::move(unit_info_list);
   }
 
   // ash::CrosDisplayConfig:
@@ -107,10 +102,11 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
       crosapi::mojom::DisplayLayoutInfoPtr info) override {
     NOTREACHED();
   }
-  void GetDisplayUnitInfoList(
-      bool single_unified,
-      GetDisplayUnitInfoListCallback callback) override {
-    get_display_unit_info_list_callback_ = std::move(callback);
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> GetDisplayUnitInfoList(
+      bool single_unified) override {
+    auto result = std::move(next_display_unit_info_list_);
+    next_display_unit_info_list_.clear();
+    return result;
   }
   void SetDisplayProperties(
       const std::string& id,
@@ -132,7 +128,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
                         int32_t delta_y) override {}
 
  private:
-  GetDisplayUnitInfoListCallback get_display_unit_info_list_callback_;
+  std::vector<crosapi::mojom::DisplayUnitInfoPtr> next_display_unit_info_list_;
 };
 
 // Helper class to extract relevant information from the app list request
@@ -373,10 +369,10 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithTouch) {
           {1, ui::INPUT_DEVICE_INTERNAL, "internal keyboard"}});
   SetDisplaySize(gfx::Size(1920, 1200));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23)));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23))));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -413,10 +409,10 @@ TEST_F(RecommendAppsFetcherImplTest, NoArcFeatures) {
           {1, ui::INPUT_DEVICE_INTERNAL, "internal keyboard"}});
   SetDisplaySize(gfx::Size(1920, 1200));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23)));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23))));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(std::nullopt);
@@ -459,10 +455,10 @@ TEST_F(RecommendAppsFetcherImplTest, HasHardKeyboard) {
                                        base::FilePath("sys_path"), 0, 0, 0}});
   SetDisplaySize(gfx::Size(1920, 1200));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23)));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23))));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -493,10 +489,10 @@ TEST_F(RecommendAppsFetcherImplTest, NoKeyboard) {
 
   SetDisplaySize(gfx::Size(1920, 1200));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23)));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(110, 120), Dpi(117.23, 117.23))));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -535,10 +531,10 @@ TEST_F(RecommendAppsFetcherImplTest, ExtraLargeScreenWithStylus) {
 
   SetDisplaySize(gfx::Size(1200, 1920));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117.23, 117.23), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117.23, 117.23), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -573,10 +569,10 @@ TEST_F(RecommendAppsFetcherImplTest, LargeScreenWithoutTouchScreen) {
 
   SetDisplaySize(gfx::Size(1200, 1200));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -610,10 +606,10 @@ TEST_F(RecommendAppsFetcherImplTest, NormalScreenWithoutTouchScreen) {
 
   SetDisplaySize(gfx::Size(1200, 512));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -648,10 +644,10 @@ TEST_F(RecommendAppsFetcherImplTest, SmallScreenWithoutTouchScreen) {
 
   SetDisplaySize(gfx::Size(512, 456));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -686,13 +682,13 @@ TEST_F(RecommendAppsFetcherImplTest, ArcFeaturesReadyBeforeAsh) {
 
   SetDisplaySize(gfx::Size(512, 456));
 
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
+
   recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
-
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
@@ -724,10 +720,10 @@ TEST_F(RecommendAppsFetcherImplTest, RetryCalledBeforeFirstRequest) {
 
   SetDisplaySize(gfx::Size(512, 456));
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   recommend_apps_fetcher_->Retry();
   EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
@@ -745,13 +741,13 @@ TEST_F(RecommendAppsFetcherImplTest, EmptyResponse) {
 
   SetDisplaySize(gfx::Size(512, 456));
 
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
+
   recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
-
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
@@ -767,13 +763,13 @@ TEST_F(RecommendAppsFetcherImplTest, EmptyAppList) {
 
   SetDisplaySize(gfx::Size(512, 456));
 
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
+
   recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
-
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
 
   network::ResourceRequest* request = WaitForAppListRequest();
   ASSERT_TRUE(request);
@@ -784,10 +780,10 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithLeadingBrackets) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -800,10 +796,10 @@ TEST_F(RecommendAppsFetcherImplTest, MalformedJsonResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -821,10 +817,10 @@ TEST_F(RecommendAppsFetcherImplTest, UnexpectedResponseType) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -839,10 +835,10 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithMultipleApps) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -870,10 +866,10 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidAppItemsIgnored) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -899,10 +895,10 @@ TEST_F(RecommendAppsFetcherImplTest, DictionaryResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -917,10 +913,10 @@ TEST_F(RecommendAppsFetcherImplTest, InvalidErrorCodeType) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -936,10 +932,10 @@ TEST_F(RecommendAppsFetcherImplTest, ResponseWithErrorCode) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -955,10 +951,10 @@ TEST_F(RecommendAppsFetcherImplTest, NotEnoughAppsError) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -974,10 +970,10 @@ TEST_F(RecommendAppsFetcherImplTest, AppListRequestFailure) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -996,10 +992,10 @@ TEST_F(RecommendAppsFetcherImplTest, SuccessOnRetry) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1015,10 +1011,10 @@ TEST_F(RecommendAppsFetcherImplTest, FailureOnRetry) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1033,10 +1029,10 @@ TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryValidResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
@@ -1054,10 +1050,10 @@ TEST_F(RecommendAppsFetcherImplTest, AppDiscoveryParseErrorResponse) {
   ASSERT_TRUE(recommend_apps_fetcher_);
   RecommendAppsFetcherImpl::ScopedGpuInfoForTest scoped(&gpu_info_);
 
-  recommend_apps_fetcher_->Start();
+  cros_display_config_->SetNextDisplayUnitInfoList(
+      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt));
 
-  ASSERT_TRUE(cros_display_config_->RunGetDisplayUnitInfoListCallback(
-      CreateDisplayUnitInfo(Dpi(117, 117), std::nullopt)));
+  recommend_apps_fetcher_->Start();
 
   ASSERT_TRUE(arc_features_callback_);
   std::move(arc_features_callback_).Run(CreateArcFeaturesForTest());
