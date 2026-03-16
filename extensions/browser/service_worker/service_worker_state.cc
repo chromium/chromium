@@ -136,6 +136,12 @@ void ServiceWorkerState::DidStartWorkerForScope(
   const WorkerId worker_id = {extension_id, process_id, version_id, thread_id,
                               token};
 
+  if (!service_worker_context_->IsLiveServiceWorkerWithToken(version_id,
+                                                             token)) {
+    // Drop the IPC message. It is from a stale worker instance.
+    return;
+  }
+
   // HACK: The service worker layer might invoke this callback with an ID for a
   // RenderProcessHost that has already terminated. This isn't the right fix for
   // this, because it results in the internal state here stalling out - we'll
@@ -145,9 +151,9 @@ void ServiceWorkerState::DidStartWorkerForScope(
   // this callback with stale processes.
   // https://crbug.com/1335821.
   if (!content::RenderProcessHost::FromID(worker_id.render_process_id)) {
-    // This is definitely hit, and often enough that we can't NOTREACHED(),
-    // CHECK(), or DumpWithoutCrashing(). Instead, log an error and gracefully
-    // return.
+    // The IsLiveServiceWorkerWithToken() check above *should* have caught
+    // this instance.
+    base::debug::DumpWithoutCrashing();
     // TODO(crbug.com/40913640): Investigate and fix.
     LOG(ERROR) << "Received bad DidStartWorkerForScope() message. "
                   "No corresponding RenderProcessHost.";
