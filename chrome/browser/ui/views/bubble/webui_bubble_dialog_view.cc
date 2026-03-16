@@ -130,6 +130,10 @@ base::WeakPtr<WebUIBubbleDialogView> WebUIBubbleDialogView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void WebUIBubbleDialogView::OnWidgetClosing(views::Widget* widget) {
+  ClearContentsWrapper();
+}
+
 gfx::Size WebUIBubbleDialogView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   // Constrain the size to popup min/max.
@@ -145,15 +149,13 @@ void WebUIBubbleDialogView::AddedToWidget() {
   // This view needs to be added to the widget before setting itself as the host
   // of the contents, so that the contents' resizing request can be propagated
   // to the widget.
+  views::Widget* widget = GetWidget();
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
-  RegisterWindowClosingCallback(
-      base::BindOnce(&WebUIBubbleDialogView::ClearContentsWrapper,
-                     weak_factory_.GetWeakPtr()));
-
+  bubble_widget_observation_.Observe(widget);
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
 
 #if defined(USE_AURA)
-  aura::Window* window = GetWidget()->GetNativeView();
+  aura::Window* window = widget->GetNativeView();
   if (ShouldUseEventHandlerForBubbleDrag(window)) {
     event_handler_ = std::make_unique<WebUIBubbleEventHandlerAura>();
     window->AddPreTargetHandler(event_handler_.get());
@@ -198,7 +200,6 @@ void WebUIBubbleDialogView::ShowUI() {
 
 void WebUIBubbleDialogView::CloseUI() {
   DCHECK(GetWidget());
-  ClearContentsWrapper();
   GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
