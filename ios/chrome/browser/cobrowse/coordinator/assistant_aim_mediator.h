@@ -19,6 +19,16 @@ namespace web {
 class WebState;
 }
 
+@class AssistantAIMMediator;
+
+// Delegate for the Assistant AIM Mediator.
+@protocol AssistantAIMMediatorDelegate <NSObject>
+
+// Called after a query is loaded.
+- (void)assistantAIMMediatorDidLoadQuery:(AssistantAIMMediator*)mediator;
+
+@end
+
 // Mediator that manages the business logic and data for the AI mode Assistant.
 @interface AssistantAIMMediator : NSObject <ComposeboxURLLoader>
 
@@ -34,6 +44,9 @@ class WebState;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// The delegate of the mediator.
+@property(nonatomic, weak) id<AssistantAIMMediatorDelegate> delegate;
 
 // Disconnects the mediator.
 - (void)disconnect;

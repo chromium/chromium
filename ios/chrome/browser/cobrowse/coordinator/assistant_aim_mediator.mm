@@ -82,6 +82,8 @@ const CGFloat kSheetDetentAnimationDuration = 0.3;
       _context.url, "q", base::SysNSStringToUTF8(queryText));
   web::NavigationManager::WebLoadParams params{url};
   _webState->GetNavigationManager()->LoadURLWithParams(params);
+
+  [self.delegate assistantAIMMediatorDidLoadQuery:self];
 }
 
 - (void)loadURLParams:(const UrlLoadParams&)URLLoadParams {

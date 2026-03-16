@@ -21,6 +21,7 @@
 
 @interface AssistantAIMCoordinator () <AssistantAIMViewControllerDelegate,
                                        AssistantContainerDelegate,
+                                       AssistantAIMMediatorDelegate,
                                        TabGridStateObserver>
 @end
 
@@ -59,6 +60,7 @@
       initWithWebState:web::WebState::Create(params)
                context:_context
       containerHandler:containerHandler];
+  _mediator.delegate = self;
   _mediator.consumer = _viewController;
 
   _modeHolder = [[ComposeboxModeHolder alloc] init];
@@ -144,6 +146,12 @@
   // NOTE: This API is already called in a animation block so no need to
   // animate.
   [_viewController adjustForContainerOpenPercentage:percentage];
+}
+
+#pragma mark - AssistantAIMMediatorDelegate
+
+- (void)assistantAIMMediatorDidLoadQuery:(AssistantAIMMediator*)mediator {
+  [_inputPlateCoordinator endEditing];
 }
 
 @end

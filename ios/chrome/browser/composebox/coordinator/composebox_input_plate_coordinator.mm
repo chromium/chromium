@@ -302,6 +302,10 @@ const CGFloat kSnackbarBottomMargin = 10;
   [_omniboxCoordinator toggleOmniboxDebuggerView];
 }
 
+- (void)endEditing {
+  [_omniboxCoordinator endEditing];
+}
+
 #pragma mark - ComposeboxInputPlateViewControllerDelegate
 
 - (void)composeboxViewController:

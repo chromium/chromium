@@ -49,6 +49,9 @@ class Browser;
 /// Shows the debug UI.
 - (void)showOmniboxDebugUI;
 
+/// Ends omnibox editing / defocus the omnibox.
+- (void)endEditing;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_INPUT_PLATE_COORDINATOR_H_
