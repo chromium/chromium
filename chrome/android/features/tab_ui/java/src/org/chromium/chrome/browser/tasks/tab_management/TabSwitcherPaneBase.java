@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.ui.actions.FullButtonData;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.tab_ui.R;
@@ -90,6 +91,8 @@ public abstract class TabSwitcherPaneBase extends PaneBase
 
     private static boolean sShowIphForTesting;
 
+    private final MonotonicObservableSupplier<FullButtonData> mEmptyActionButtonDataSupplier =
+            ObservableSuppliers.alwaysNull();
     protected final SettableMonotonicObservableSupplier<FullButtonData> mNewTabButtonDataSupplier =
             ObservableSuppliers.createMonotonic();
 
@@ -171,7 +174,7 @@ public abstract class TabSwitcherPaneBase extends PaneBase
             TabGroupCreationUiDelegate tabGroupCreationUiDelegate,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         super(paneId, context, onToolbarAlphaChange);
-        mMenuButtonVisible = true;
+        mMenuButtonVisible = shouldShowMenuButton(context);
         mFactory = factory;
         mIsIncognito = isIncognito;
         mIsVisibleSupplier.addSyncObserverAndPostIfNonNull(mVisibilityObserver);
@@ -273,6 +276,10 @@ public abstract class TabSwitcherPaneBase extends PaneBase
 
     @Override
     public MonotonicObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
+        if (BottomBarConfigUtils.isBottomBarEnabled(mContext)
+                && BottomBarConfigUtils.shouldShowOnGts()) {
+            return mEmptyActionButtonDataSupplier;
+        }
         return mNewTabButtonDataSupplier;
     }
 
@@ -736,6 +743,14 @@ public abstract class TabSwitcherPaneBase extends PaneBase
 
     void destroyCoordinatorForTesting() {
         mDestroyCoordinatorRunnable.run();
+    }
+
+    private static boolean shouldShowMenuButton(Context context) {
+        // If the bottom bar is enabled and the app menu button is included in the bottom bar, then
+        // we should not show the menu button in the toolbar.
+        return !(BottomBarConfigUtils.isBottomBarEnabled(context)
+                && BottomBarConfigUtils.shouldShowOnGts()
+                && BottomBarConfigUtils.shouldIncludeAppMenuButton());
     }
 
     static void setShowIphForTesting(boolean showIphForTesting) {

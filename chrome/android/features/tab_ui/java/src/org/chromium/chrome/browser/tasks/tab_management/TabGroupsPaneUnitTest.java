@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -208,6 +209,12 @@ public class TabGroupsPaneUnitTest {
     @Test
     public void testNewTabGroupButtonEnabled() {
         assertNotNull(mTabGroupsPane.getActionButtonDataSupplier().get());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_bottom_bar_on_gts/true")
+    public void testNewTabGroupButton_BottomBarEnabled() {
+        assertNull(mTabGroupsPane.getActionButtonDataSupplier().get());
     }
 
     @Test

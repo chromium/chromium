@@ -482,6 +482,22 @@ public class TabSwitcherPaneUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_bottom_bar_on_gts/true")
+    public void testNewTabButton_BottomBarEnabled() {
+        assertNull(mTabSwitcherPane.getActionButtonDataSupplier().get());
+        assertFalse(mTabSwitcherPane.getMenuButtonVisible());
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":keep_app_menu_in_toolbar/true/show_bottom_bar_on_gts/true")
+    public void testMenuButton_BottomBarEnabled_KeepAppMenuInToolbar() {
+        assertNull(mTabSwitcherPane.getActionButtonDataSupplier().get());
+        assertTrue(mTabSwitcherPane.getMenuButtonVisible());
+    }
+
+    @Test
     public void testReferenceButton() {
         DisplayButtonData buttonData = mTabSwitcherPane.getReferenceButtonDataSupplier().get();
 
