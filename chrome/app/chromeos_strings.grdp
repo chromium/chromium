@@ -5445,23 +5445,11 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_EDU_LOGIN_NEXT" desc="The name of the button that goes to the next step in EDU login flow.">
     Next
   </message>
-  <message name="IDS_EDU_LOGIN_WELCOME_TITLE" desc="Title for the welcome screen in EDU account addition flow.">
-    Get started with a school account
-  </message>
   <message name="IDS_EDU_LOGIN_WELCOME_TITLE_2" desc="Title for the welcome screen in EDU account addition flow.">
     Ask a parent for permission
   </message>
-  <message name="IDS_EDU_LOGIN_WELCOME_BODY" desc="Text on the welcome screen in EDU account addition flow informing user to ask their parent for permission to add the account.">
-    To add an account for access to educational resources, ask a parent to give you permission
-  </message>
   <message name="IDS_EDU_LOGIN_WELCOME_BODY_2" desc="Text on the welcome screen in EDU account addition flow informing user to ask their parent for permission to add the account.">
     Select the parent who is granting permission to add a school account.
-  </message>
-  <message name="IDS_EDU_LOGIN_WELCOME_PARENT_ACCOUNT_LIST" desc="Text on the welcome screen in EDU account addition flow above the list of parent accounts.">
-    Parent account list
-  </message>
-  <message name="IDS_EDU_LOGIN_WELCOME_REAUTH_TITLE" desc="Title for the reauthentication screen in EDU account addition flow.">
-    Sign in again with a school account
   </message>
   <message name="IDS_EDU_LOGIN_WELCOME_REAUTH_BODY" desc="Text on the reauthentication screen in EDU account addition flow informing user to ask their parent for permission to reauthenticate the account.">
     To sign in again for access to educational resources, ask a parent to give you permission
