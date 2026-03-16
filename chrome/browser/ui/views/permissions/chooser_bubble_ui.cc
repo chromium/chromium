@@ -11,7 +11,10 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
@@ -21,6 +24,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
@@ -95,6 +99,10 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
  private:
   raw_ptr<DeviceChooserContentView> device_chooser_content_view_ = nullptr;
 
+  // Prevent the tab from entering content fullscreen mode while the chooser
+  // bubble is visible.
+  base::ScopedClosureRunner fullscreen_blocker_;
+
   base::WeakPtrFactory<ChooserBubbleUiViewDelegate> weak_ptr_factory_{this};
 };
 
@@ -141,6 +149,16 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetCloseCallback(
       base::BindOnce(&DeviceChooserContentView::Close,
                      base::Unretained(device_chooser_content_view_)));
+  FullscreenController* fullscreen_controller = browser->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+  CHECK(fullscreen_controller);
+  // Drop fullscreen mode for the current webcontent so that the user sees the
+  // URL.
+  if (fullscreen_controller->IsTabFullscreen()) {
+    fullscreen_blocker_ =
+        contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+  }
 }
 
 ChooserBubbleUiViewDelegate::~ChooserBubbleUiViewDelegate() = default;
