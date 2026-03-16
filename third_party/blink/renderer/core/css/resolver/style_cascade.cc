@@ -2285,9 +2285,8 @@ void StyleCascade::FlattenFunctionBody(
       }
     } else if (auto* navigation_rule =
                    DynamicTo<StyleRuleNavigation>(child.Get())) {
-      // TODO(crbug.com/431374376): Implement
+      // TODO(crbug.com/493044687): Implement
       (void)navigation_rule;
-      NOTREACHED() << "Not yet implemented.";
     }
   }
 }
