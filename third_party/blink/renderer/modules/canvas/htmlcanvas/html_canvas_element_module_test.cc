@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_raster_interface.h"
@@ -12,7 +11,6 @@
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -148,12 +146,8 @@ TEST_F(HTMLCanvasElementModuleTest,
 TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   // TODO(crbug.com/922218): enable desynchronized on Mac.
 #if !BUILDFLAG(IS_MAC)
-  // This test relies on GpuMemoryBuffers being supported and enabled for low
-  // latency canvas.  The latter is true only on ChromeOS in production.
   ScopedTestingPlatformSupport<LowLatencyTestPlatform> platform;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kLowLatencyUsageSupportedForCanvas2D);
+  SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(true);
 
   auto context_provider = viz::TestContextProvider::CreateRaster();
 #if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
