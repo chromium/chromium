@@ -11,10 +11,13 @@
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -50,7 +53,9 @@ class DemoLoginController
 
   using ResultCode = DemoSessionMetricsRecorder::DemoAccountRequestResultCode;
 
-  explicit DemoLoginController(base::RepeatingClosure auto_login_mgs_callback);
+  // `local_state` must be non-null and must outlive `this`.
+  DemoLoginController(PrefService* local_state,
+                      base::RepeatingClosure auto_login_mgs_callback);
   DemoLoginController(const DemoLoginController&) = delete;
   DemoLoginController& operator=(const DemoLoginController&) = delete;
   ~DemoLoginController() override;
@@ -112,6 +117,8 @@ class DemoLoginController
 
   // Called on 5th second for waiting policy manager connection.
   void OnPolicyManagerConnectionTimeOut();
+
+  const raw_ref<PrefService> local_state_;
 
   // We only allow 1 demo account request at a time.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

@@ -404,6 +404,7 @@ ExistingUserController::ExistingUserController(
     // for now because first session is very short and it will be a auto sign
     // out in 90s if idle.
     demo_login_controller_ = std::make_unique<ash::DemoLoginController>(
+        &local_state_.get(),
         base::BindRepeating(&ExistingUserController::ConfigureAutoLogin,
                             base::Unretained(this)));
   }

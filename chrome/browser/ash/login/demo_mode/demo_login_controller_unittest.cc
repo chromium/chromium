@@ -794,10 +794,11 @@ class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
     features_.InitAndEnableFeature(features::kDemoModeSignIn);
     DBusThreadManager::Initialize();
     DeviceSettingsService::Initialize();
-    demo_login_controller_ = std::make_unique<
-        DemoLoginController>(base::BindRepeating(
-        &DemoLoginControllerCloudPolicyConnectionTest::MockConfigureAutoLogin,
-        base::Unretained(this)));
+    demo_login_controller_ = std::make_unique<DemoLoginController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        base::BindRepeating(&DemoLoginControllerCloudPolicyConnectionTest::
+                                MockConfigureAutoLogin,
+                            base::Unretained(this)));
   }
 
   void TearDown() override {

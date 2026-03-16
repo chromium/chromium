@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
@@ -388,8 +389,10 @@ base::DictValue GetDeviceInfo() {
 }  // namespace
 
 DemoLoginController::DemoLoginController(
+    PrefService* local_state,
     base::RepeatingClosure configure_auto_login_callback)
-    : configure_auto_login_callback_(std::move(configure_auto_login_callback)) {
+    : local_state_(CHECK_DEREF(local_state)),
+      configure_auto_login_callback_(std::move(configure_auto_login_callback)) {
   state_ = State::kLoadingAvailibility;
 
   auto* cloud_policy_manager = GetDeviceCloudPolicyManager();
@@ -570,10 +573,9 @@ void DemoLoginController::HandleSetupDemoAcountResponse(
   DemoSessionMetricsRecorder::SetCurrentSessionType(
       DemoSessionMetricsRecorder::SessionType::kSignedInDemoSession);
 
-  auto* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
-  local_state->SetString(prefs::kDemoModeSessionIdentifier,
-                         sign_in_scoped_device_id);
+  local_state_->SetString(prefs::kDemoAccountGaiaId, *gaia_id);
+  local_state_->SetString(prefs::kDemoModeSessionIdentifier,
+                          sign_in_scoped_device_id);
   // TODO(crbug.com/383198613): Wait device local account policy loaded since we
   // applied that policy to demo account.
   LoginDemoAccount(*email, GaiaId(*gaia_id), *auth_code,
@@ -632,11 +634,10 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
   RemoveGaiaUsersOnDevice();
 
   // Clean up last gaia user on server side.
-  auto* local_state = g_browser_process->local_state();
   const GaiaId gaia_id_to_clean_up =
-      GaiaId(local_state->GetString(prefs::kDemoAccountGaiaId));
+      GaiaId(local_state_->GetString(prefs::kDemoAccountGaiaId));
   const std::string login_scope_device_id =
-      local_state->GetString(prefs::kDemoModeSessionIdentifier);
+      local_state_->GetString(prefs::kDemoModeSessionIdentifier);
   // For the first session of demo account, `gaia_id_to_clean_up and session
   // identifier`could be empty.
   if (gaia_id_to_clean_up.empty() || login_scope_device_id.empty()) {
@@ -692,9 +693,8 @@ void DemoLoginController::OnCleanUpDemoAccountComplete(
 
     // Clear the the gaia_id and sign_in_scoped_device_id in pref to prevent
     // repeating cleanups.
-    auto* local_state = g_browser_process->local_state();
-    local_state->ClearPref(prefs::kDemoAccountGaiaId);
-    local_state->ClearPref(prefs::kDemoModeSessionIdentifier);
+    local_state_->ClearPref(prefs::kDemoAccountGaiaId);
+    local_state_->ClearPref(prefs::kDemoModeSessionIdentifier);
 
     if (cleanup_request_callback_for_testing_) {
       std::move(cleanup_request_callback_for_testing_).Run();
