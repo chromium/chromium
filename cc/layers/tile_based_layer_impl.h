@@ -469,16 +469,14 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
                            append_quads_data);
       has_draw_quad = true;
     }
-
-    if (has_draw_quad) {
-      if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
-        append_quads_data->approximated_visible_content_area +=
-            visible_geometry_rect.size().Area64();
-      }
-    }
   }
 
-  if (!has_draw_quad) {
+  if (has_draw_quad) {
+    if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
+      append_quads_data->approximated_visible_content_area +=
+          visible_geometry_rect.size().Area64();
+    }
+  } else {
     // Checkerboard due to missing raster.
     AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,
                            offset_visible_geometry_rect, iter,
