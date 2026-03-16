@@ -18617,7 +18617,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       This file
     </message>
     <message name="IDS_DEEP_SCANNING_DIALOG_SAVE_TO_CLOUD_STORAGE_MESSAGE" desc="Button text to allow the user to save a file to cloud storage">
-      <ph name="FILE_NAME">$1<ex>foo.txt</ex></ph> has sensitive or dangerous data. Your organization will let you save it to cloud storage or discard it
+      <ph name="FILE_NAME">$1<ex>foo.txt</ex></ph> has sensitive data. Your organization will let you save it to cloud storage or discard it
     </message>
 
     <!-- Data sharing UI strings -->

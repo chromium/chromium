@@ -1168,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
                      ->dialog_delegate_for_testing();
   EXPECT_EQ(nullptr, dialog->GetSideIconSpinnerForTesting());
   EXPECT_EQ(dialog->GetMessageForTesting()->GetText(),
-            u"This file has sensitive or dangerous data. Your organization "
+            u"This file has sensitive data. Your organization "
             u"will let you save it to cloud storage or discard it");
 }
 
