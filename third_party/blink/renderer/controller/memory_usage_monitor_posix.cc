@@ -5,12 +5,11 @@
 #include "third_party/blink/renderer/controller/memory_usage_monitor_posix.h"
 
 #include <fcntl.h>
-#include <inttypes.h>
 #include <unistd.h>
 
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 
@@ -57,6 +56,43 @@ bool MemoryUsageMonitorPosix::CalculateProcessMemoryFootprint(
     uint64_t* swap_footprint,
     uint64_t* vm_size,
     uint64_t* vm_hwm_size) {
+  // Helper to parse the next whitespace-delimited uint64 from a string_view,
+  // advancing past it.
+  auto consume_uint64 = [](std::string_view& sv, uint64_t* out) -> bool {
+    size_t start = sv.find_first_not_of(" \t");
+    if (start == std::string_view::npos) {
+      return false;
+    }
+    sv.remove_prefix(start);
+    size_t end = sv.find_first_of(" \t\n");
+    if (!base::StringToUint64(sv.substr(0, end), out)) {
+      return false;
+    }
+    sv.remove_prefix(std::min(end, sv.size()));
+    return true;
+  };
+
+  // Helper to find a field like "VmSwap:  10 kB" and parse its uint64 value.
+  auto parse_status_field = [&consume_uint64](std::string_view contents,
+                                              std::string_view field_name,
+                                              uint64_t* out) -> bool {
+    size_t pos = contents.find(field_name);
+    if (pos == std::string_view::npos) {
+      return false;
+    }
+    std::string_view rest = contents.substr(pos + field_name.size());
+    // Skip past the ":" separator.
+    size_t colon = rest.find(':');
+    if (colon == std::string_view::npos) {
+      return false;
+    }
+    rest.remove_prefix(colon + 1);
+    if (!consume_uint64(rest, out)) {
+      return false;
+    }
+    return rest.starts_with(" kB");
+  };
+
   // Get total resident and shared sizes from statm file.
   static size_t page_size = getpagesize();
   uint64_t resident_pages;
@@ -66,30 +102,25 @@ bool MemoryUsageMonitorPosix::CalculateProcessMemoryFootprint(
   char line[kMaxLineSize];
   if (!ReadFileContents(statm_fd, line))
     return false;
-  int num_scanned =
-      UNSAFE_TODO(sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
-                         &vm_size_pages, &resident_pages, &shared_pages));
-  if (num_scanned != 3)
+
+  // statm format: "vm_size resident shared ..."
+  std::string_view statm_view(line);
+  if (!consume_uint64(statm_view, &vm_size_pages) ||
+      !consume_uint64(statm_view, &resident_pages) ||
+      !consume_uint64(statm_view, &shared_pages)) {
     return false;
+  }
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
   if (!ReadFileContents(status_fd, line))
     return false;
-  char* swap_line = UNSAFE_TODO(strstr(line, "VmSwap"));
-  if (!swap_line)
+  std::string_view status_view(line);
+  if (!parse_status_field(status_view, "VmSwap", swap_footprint)) {
     return false;
-  num_scanned =
-      UNSAFE_TODO(sscanf(swap_line, "VmSwap: %" SCNu64 " kB", swap_footprint));
-  if (num_scanned != 1)
+  }
+  if (!parse_status_field(status_view, "VmHWM", vm_hwm_size)) {
     return false;
-
-  char* hwm_line = UNSAFE_TODO(strstr(line, "VmHWM"));
-  if (!hwm_line)
-    return false;
-  num_scanned =
-      UNSAFE_TODO(sscanf(hwm_line, "VmHWM: %" SCNu64 " kB", vm_hwm_size));
-  if (num_scanned != 1)
-    return false;
+  }
 
   *vm_hwm_size *= 1024;
   *swap_footprint *= 1024;

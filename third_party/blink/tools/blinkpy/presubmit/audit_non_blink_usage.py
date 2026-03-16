@@ -1083,6 +1083,14 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/controller/memory_usage_monitor_posix.cc',
+        ],
+        'allowed': [
+            'base::StringToUint64',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/animation'],
         'allowed': [
             '[a-z_]+_functions::.+',
