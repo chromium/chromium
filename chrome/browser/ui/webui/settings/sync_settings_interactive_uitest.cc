@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string_view>
+
+#include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -39,13 +44,36 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
+
+using DeepQuery = ::WebContentsInteractionTestUtil::DeepQuery;
+
 const char kTestEmail[] = "kTestEmail@email.com";
-const InteractiveBrowserTest::DeepQuery kHistoryOptinAcceptButton = {
-    "history-sync-optin-app", "#acceptButton"};
-const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
-    "history-sync-optin-app", "#rejectButton"};
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSignoutDialogWebContentsId);
+
+const DeepQuery& GetHistoryOptinAcceptButtonQuery() {
+  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app-refresh", "#acceptButton"});
+    return *kQuery;
+  } else {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app", "#acceptButton"});
+    return *kQuery;
+  }
+}
+
+const DeepQuery& GetHistoryOptinRejectButtonQuery() {
+  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app-refresh", "#rejectButton"});
+    return *kQuery;
+  } else {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app", "#rejectButton"});
+    return *kQuery;
+  }
+}
 
 std::unique_ptr<net::test_server::HttpResponse> HandleSigninPageResponse(
     const net::test_server::HttpRequest& request) {
@@ -214,10 +242,12 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinRejectButton)));
+      WaitForStateChange(
+          kHistorySyncOptinDialogContentsId,
+          UiElementHasAppeared(GetHistoryOptinAcceptButtonQuery())),
+      WaitForStateChange(
+          kHistorySyncOptinDialogContentsId,
+          UiElementHasAppeared(GetHistoryOptinRejectButtonQuery())));
 
   histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
                                       signin_metrics::AccessPoint::kSettings,
@@ -258,8 +288,10 @@ IN_PROC_BROWSER_TEST_F(
       WaitForShow(SigninViewController::kHistorySyncOptinViewId),
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinRejectButton)));
+      WaitForStateChange(
+          kHistorySyncOptinDialogContentsId,
+          UiElementHasAppeared(GetHistoryOptinAcceptButtonQuery())),
+      WaitForStateChange(
+          kHistorySyncOptinDialogContentsId,
+          UiElementHasAppeared(GetHistoryOptinRejectButtonQuery())));
 }
