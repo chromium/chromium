@@ -44,10 +44,6 @@ class UserActivityBrowserAgent
   // Opens a new Tab or routes to correct Tab.
   void RouteToCorrectTab();
 
-  // Return YES if the user intends to open links in a certain mode and the
-  // browser will proceed the request.
-  BOOL ProceedWithUserActivity(NSUserActivity* user_activity);
-
   // If users request to open tab or search and Chrome is not opened in the mode
   // they expected, show a toast to clarify that the expected mode is not
   // available.

@@ -10,6 +10,7 @@
 #import "ios/chrome/app/task_request_private.h"
 #import "ios/chrome/app/unexpected_mode_toast_util.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
+#import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -48,17 +49,17 @@
   CHECK(browser);
 
   PrefService* prefs = sceneState.profileState.profile->GetPrefs();
-  UserActivityBrowserAgent* userActivityBrowserAgent =
-      UserActivityBrowserAgent::FromBrowser(browser);
-  if (IsIncognitoPolicyApplied(prefs) &&
-      !userActivityBrowserAgent->ProceedWithUserActivity(_userActivity)) {
+  if (!ProceedWithUserActivity(_userActivity, prefs)) {
     ApplicationModeForTabOpening targetMode =
         IsIncognitoModeForced(prefs) ? ApplicationModeForTabOpening::INCOGNITO
                                      : ApplicationModeForTabOpening::NORMAL;
     ShowToastWhenOpenInUnexpectedMode(sceneState, targetMode);
-  } else {
-    userActivityBrowserAgent->ContinueUserActivity(_userActivity, YES);
+    return;
   }
+
+  UserActivityBrowserAgent* userActivityBrowserAgent =
+      UserActivityBrowserAgent::FromBrowser(browser);
+  userActivityBrowserAgent->ContinueUserActivity(_userActivity, YES);
 }
 
 - (void)executeFromColdStart {

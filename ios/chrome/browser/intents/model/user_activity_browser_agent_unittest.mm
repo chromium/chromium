@@ -32,6 +32,7 @@
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
+#import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
@@ -196,18 +197,14 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     EXPECT_TRUE(IsIncognitoModeDisabled(pref_service));
   }
 
+  web::WebTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestProfileIOS> profile_;
   ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;
-
- private:
-  web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
-
- protected:
   raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
 };
 
@@ -227,8 +224,7 @@ TEST_F(UserActivityBrowserAgentTest,
     NSUserActivity* user_activity =
         [[NSUserActivity alloc] initWithActivityType:user_activity_type];
 
-    EXPECT_TRUE(
-        user_activity_browser_agent_->ProceedWithUserActivity(user_activity));
+    EXPECT_TRUE(ProceedWithUserActivity(user_activity, profile_->GetPrefs()));
   }
 }
 
@@ -240,8 +236,7 @@ TEST_F(UserActivityBrowserAgentTest,
 
   NSUserActivity* user_activity =
       [[NSUserActivity alloc] initWithActivityType:kSiriShortcutOpenInChrome];
-  EXPECT_FALSE(
-      user_activity_browser_agent_->ProceedWithUserActivity(user_activity));
+  EXPECT_FALSE(ProceedWithUserActivity(user_activity, profile_->GetPrefs()));
 }
 
 // Tests that method canProceedWithUserActivity returns true when incognito mode
@@ -260,8 +255,7 @@ TEST_F(UserActivityBrowserAgentTest,
     NSUserActivity* user_activity =
         [[NSUserActivity alloc] initWithActivityType:user_activity_type];
 
-    EXPECT_TRUE(
-        user_activity_browser_agent_->ProceedWithUserActivity(user_activity));
+    EXPECT_TRUE(ProceedWithUserActivity(user_activity, profile_->GetPrefs()));
   }
 }
 
@@ -279,8 +273,7 @@ TEST_F(UserActivityBrowserAgentTest,
     NSUserActivity* user_activity =
         [[NSUserActivity alloc] initWithActivityType:user_activity_type];
 
-    EXPECT_FALSE(
-        user_activity_browser_agent_->ProceedWithUserActivity(user_activity));
+    EXPECT_FALSE(ProceedWithUserActivity(user_activity, profile_->GetPrefs()));
   }
 }
 
@@ -290,8 +283,7 @@ TEST_F(UserActivityBrowserAgentTest,
        CanProceedWithUserActivityWithWrongActivityType) {
   NSUserActivity* user_activity =
       [[NSUserActivity alloc] initWithActivityType:@"not_an_activity_type"];
-  EXPECT_FALSE(
-      user_activity_browser_agent_->ProceedWithUserActivity(user_activity));
+  EXPECT_FALSE(ProceedWithUserActivity(user_activity, profile_->GetPrefs()));
 }
 
 // Tests that Chrome does not continue the activity if the activity type is

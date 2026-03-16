@@ -29,6 +29,22 @@ source_set("constants") {
   ]
 }
 
+source_set("user_activity_compatibility_util") {
+  sources = [
+    "user_activity_compatibility_util.h",
+    "user_activity_compatibility_util.mm",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//components/crash/core/common",
+    "//components/handoff",
+    "//components/prefs",
+    "//ios/chrome/browser/policy/model:policy_util",
+  ]
+}
+
 source_set("user_activity_browser_agent") {
   sources = [
     "user_activity_browser_agent.h",
@@ -38,6 +54,7 @@ source_set("user_activity_browser_agent") {
   public_deps = [ "//ios/chrome/browser/shared/model/browser" ]
   deps = [
     ":constants",
+    ":user_activity_compatibility_util",
     "//base",
     "//components/crash/core/common",
     "//components/handoff",
@@ -81,6 +98,7 @@ source_set("unit_tests") {
   deps = [
     ":constants",
     ":user_activity_browser_agent",
+    ":user_activity_compatibility_util",
     "//components/handoff",
     "//components/policy/core/common:common_constants",
     "//components/prefs",

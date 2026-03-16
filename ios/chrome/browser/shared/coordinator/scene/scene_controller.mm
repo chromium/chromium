@@ -68,6 +68,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_promo_scene_agent.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
+#import "ios/chrome/browser/intents/model/user_activity_compatibility_util.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/main/ui_bundled/browser_lifecycle_manager.h"
@@ -659,7 +660,7 @@ void InjectNTP(Browser* browser) {
   UserActivityBrowserAgent* userActivityBrowserAgent =
       UserActivityBrowserAgent::FromBrowser(self.currentInterface.browser);
   if (IsIncognitoPolicyApplied(prefs) &&
-      !userActivityBrowserAgent->ProceedWithUserActivity(userActivity)) {
+      !ProceedWithUserActivity(userActivity, prefs)) {
     // If users request opening url in a unavailable mode, don't open the url
     // but show a toast.
     userActivityBrowserAgent->ShowToastWhenOpenExternalIntentInUnexpectedMode();

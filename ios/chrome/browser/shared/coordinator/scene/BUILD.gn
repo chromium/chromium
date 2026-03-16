@@ -155,6 +155,7 @@ source_set("scene") {
     "//ios/chrome/browser/intelligence/bwg/coordinator",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",
+    "//ios/chrome/browser/intents/model:user_activity_compatibility_util",
     "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
     "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/main/model",
