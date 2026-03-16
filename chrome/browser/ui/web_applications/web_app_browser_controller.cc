@@ -922,6 +922,15 @@ void WebAppBrowserController::OnMigrationDialogResult(
     const WebAppIdentityUpdate& identity_update,
     WebAppIdentityUpdateResult result) const {
   CHECK(!browser()->profile()->IsOffTheRecord());
+
+  if (identity_update.is_forced_migration) {
+    base::UmaHistogramEnumeration(
+        "WebApp.UpdateDialog.MigrateForced.UserAction", result);
+  } else {
+    base::UmaHistogramEnumeration(
+        "WebApp.UpdateDialog.MigrateSuggested.UserAction", result);
+  }
+
   auto* web_app_provider = WebAppProvider::GetForWebApps(browser()->profile());
   CHECK(web_app_provider);
 

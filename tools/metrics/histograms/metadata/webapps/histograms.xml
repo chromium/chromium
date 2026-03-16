@@ -2957,6 +2957,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.UpdateDialog.MigrateForced.UserAction"
+    enum="WebAppIdentityUpdateResult" expires_after="2027-03-11">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the user action taken on seeing the PWA migration dialog,
+    specifically when the developer has specified the migration should be
+    'forced'. This blocking dialog is shown to the user immediately when they
+    launch the app.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.UpdateDialog.MigrateSuggested.UserAction"
+    enum="WebAppIdentityUpdateResult" expires_after="2027-03-11">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the user action taken on seeing the PWA migration dialog,
+    specifically when the developer has specified the migration should be
+    'suggested'. This dialog is shown to the user after the select the 'update'
+    menu item in the 3-dot menu of an installed PWA window.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.UpdateReviewDialog.TriggerToShowTime" units="ms"
     expires_after="2026-09-19">
   <owner>dibyapal@chromium.org</owner>

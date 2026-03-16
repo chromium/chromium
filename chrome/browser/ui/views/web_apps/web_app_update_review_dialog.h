@@ -9,7 +9,6 @@
 #include "ui/base/interaction/element_identifier.h"
 
 namespace web_app {
-
 // This property is set on the BrowserView to 'true' when the update dialog is
 // showing, and 'false' when it closes.
 extern const ui::ClassProperty<bool>* const kIsPwaUpdateDialogShowingKey;
