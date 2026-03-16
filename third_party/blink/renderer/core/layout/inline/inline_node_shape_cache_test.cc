@@ -100,4 +100,34 @@ TEST_F(InlineNodeShapeCacheTest, ShapeResultPointerEqualNewLine) {
   EXPECT_EQ(LastShapeResult(target1), LastShapeResult(target2));
 }
 
+TEST_F(InlineNodeShapeCacheTest, ShapeCacheFloating) {
+  SetBodyInnerHTML("<div id=t>abc<div style='float: left'></div>def</div>");
+  InlineNodeForTest node = CreateInlineNode(GetLayoutBlockFlowByElementId("t"));
+  EXPECT_TRUE(node.IsNGShapeCacheAllowed());
+}
+
+TEST_F(InlineNodeShapeCacheTest, ShapeCacheOutOfFlowPositioned) {
+  SetBodyInnerHTML(
+      "<div id=t>abc<div style='position: absolute'></div>def</div>");
+  InlineNodeForTest node = CreateInlineNode(GetLayoutBlockFlowByElementId("t"));
+  EXPECT_TRUE(node.IsNGShapeCacheAllowed());
+}
+
+TEST_F(InlineNodeShapeCacheTest, ShapeResultPointerEqualFloatsAndOutOfFlow) {
+  // We can have a mismatch in the number and type of float/OOF-positioned
+  // items as they are transparent to shaping.
+  SetBodyInnerHTML(
+      "<style>float { float: left; } abspos { position: absolute; }</style>"
+      "<div id=target1>abc<float></float>defg</div>"
+      "<div id=target2>abc<abspos></abspos><float></float>defg</div>");
+
+  const LayoutBlockFlow* target1 = GetLayoutBlockFlowByElementId("target1");
+  const LayoutBlockFlow* target2 = GetLayoutBlockFlowByElementId("target2");
+
+  EXPECT_EQ(FirstShapeResult(target1)->NumCharacters(), 3u);
+  EXPECT_EQ(LastShapeResult(target1)->NumCharacters(), 4u);
+  EXPECT_EQ(FirstShapeResult(target1), FirstShapeResult(target2));
+  EXPECT_EQ(LastShapeResult(target1), LastShapeResult(target2));
+}
+
 }  // namespace blink

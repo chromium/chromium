@@ -1499,16 +1499,23 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
         }
         previous_text_end_offset = item->EndOffset();
         break;
+      case InlineItem::kFloating:
+      case InlineItem::kOutOfFlowPositioned:
+        if (!RuntimeEnabledFeatures::ExtendedShapeCacheEnabled()) {
+          return false;
+        }
+        // Floats/OOF-positioned objects are transparent to shaping, and just
+        // split the text similar to control items (resulting in multiple shape
+        // calls with different start/end offsets).
+        break;
       case InlineItem::kAtomicInline:
       case InlineItem::kBlockInInline:
       case InlineItem::kCloseTag:
-      case InlineItem::kFloating:
       case InlineItem::kInitialLetterBox:
       case InlineItem::kListMarker:
       case InlineItem::kBidiControl:
       case InlineItem::kOpenRubyColumn:
       case InlineItem::kOpenTag:
-      case InlineItem::kOutOfFlowPositioned:
       case InlineItem::kCloseRubyColumn:
       case InlineItem::kRubyLinePlaceholder:
         return false;
