@@ -320,8 +320,23 @@ public class SharedPreferencesManager {
     }
 
     /**
-     * Increments the integer value specified by the given key.  If no initial value is present then
+     * Sets all int values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be set.
+     * @param value The value to set the matching keys to.
+     */
+    public void setIntsWithPrefix(KeyPrefix prefix, int value) {
+        SharedPreferences.Editor ed = getEditor();
+        for (String key : readAllKeysWithPrefix(prefix)) {
+            ed.putInt(key, value);
+        }
+        ed.apply();
+    }
+
+    /**
+     * Increments the integer value specified by the given key. If no initial value is present then
      * an initial value of 0 is assumed and incremented, so a new value of 1 is set.
+     *
      * @param key The key specifying which integer value to increment.
      * @return The newly incremented value.
      */
@@ -389,6 +404,20 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Sets all long values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be set.
+     * @param value The value to set the matching keys to.
+     */
+    public void setLongsWithPrefix(KeyPrefix prefix, long value) {
+        SharedPreferences.Editor ed = getEditor();
+        for (String key : readAllKeysWithPrefix(prefix)) {
+            ed.putLong(key, value);
+        }
+        ed.apply();
+    }
+
+    /**
      * Writes the given float to the named shared preference.
      *
      * @param key The name of the preference to modify.
@@ -433,6 +462,20 @@ public class SharedPreferencesManager {
      */
     public Map<String, Float> readFloatsWithPrefix(KeyPrefix prefix) {
         return readAllWithPrefix(prefix);
+    }
+
+    /**
+     * Sets all float values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be set.
+     * @param value The value to set the matching keys to.
+     */
+    public void setFloatsWithPrefix(KeyPrefix prefix, float value) {
+        SharedPreferences.Editor ed = getEditor();
+        for (String key : readAllKeysWithPrefix(prefix)) {
+            ed.putFloat(key, value);
+        }
+        ed.apply();
     }
 
     /**
@@ -485,6 +528,21 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Sets all double values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be set.
+     * @param value The value to set the matching keys to.
+     */
+    public void setDoublesWithPrefix(KeyPrefix prefix, double value) {
+        SharedPreferences.Editor ed = getEditor();
+        long ieee754LongValue = Double.doubleToRawLongBits(value);
+        for (String key : readAllKeysWithPrefix(prefix)) {
+            ed.putLong(key, ieee754LongValue);
+        }
+        ed.apply();
+    }
+
+    /**
      * Writes the given boolean to the named shared preference.
      *
      * @param key The name of the preference to modify.
@@ -530,6 +588,20 @@ public class SharedPreferencesManager {
      */
     public Map<String, Boolean> readBooleansWithPrefix(KeyPrefix prefix) {
         return readAllWithPrefix(prefix);
+    }
+
+    /**
+     * Sets all boolean values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be set.
+     * @param value The value to set the matching keys to.
+     */
+    public void setBooleansWithPrefix(KeyPrefix prefix, boolean value) {
+        SharedPreferences.Editor ed = getEditor();
+        for (String key : readAllKeysWithPrefix(prefix)) {
+            ed.putBoolean(key, value);
+        }
+        ed.apply();
     }
 
     /**
@@ -583,6 +655,20 @@ public class SharedPreferencesManager {
      */
     public Map<String, String> readStringsWithPrefix(KeyPrefix prefix) {
         return readAllWithPrefix(prefix);
+    }
+
+    /**
+     * Sets all String values associated with keys with the given prefix.
+     *
+     * @param prefix The key prefix for which all values should be set.
+     * @param value The value to set the matching keys to.
+     */
+    public void setStringsWithPrefix(KeyPrefix prefix, @Nullable String value) {
+        SharedPreferences.Editor ed = getEditor();
+        for (String key : readAllKeysWithPrefix(prefix)) {
+            ed.putString(key, value);
+        }
+        ed.apply();
     }
 
     /**
@@ -646,6 +732,18 @@ public class SharedPreferencesManager {
     public boolean contains(@JniType("std::string") String key) {
         checkIsKeyInUse(key);
         return ContextUtils.getAppSharedPreferences().contains(key);
+    }
+
+    private Set<String> readAllKeysWithPrefix(KeyPrefix prefix) {
+        checkIsPrefixInUse(prefix);
+        Map<String, ?> allPrefs = ContextUtils.getAppSharedPreferences().getAll();
+        Set<String> keysWithPrefix = new HashSet<>();
+        for (String key : allPrefs.keySet()) {
+            if (prefix.hasGenerated(key)) {
+                keysWithPrefix.add(key);
+            }
+        }
+        return keysWithPrefix;
     }
 
     private <T> Map<String, T> readAllWithPrefix(KeyPrefix prefix) {
