@@ -1851,12 +1851,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   browser_process_->profile_manager()->AutoloadProfiles();
 #endif
 
-  // The initial profile load is complete. From this point, profiles are
-  // intended to be loaded asynchronously. Ideally, profiles should be loaded
-  // asynchronously even before this call, but this would require significant
-  // changes because there is no main loop yet.
-  browser_process_->profile_manager()->UnblockAsyncLoading();
-
   // Post-profile init ---------------------------------------------------------
 
   TranslateService::Initialize();
@@ -2073,6 +2067,13 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   }
   browser_creator_.reset();
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  // The initial profile loads are complete (initial profile + last opened
+  // profiles). From this point, profiles are intended to be loaded
+  // asynchronously. Ideally, all profiles should be loaded asynchronously even
+  // before this call, but this would require significant changes because there
+  // is no main loop yet.
+  browser_process_->profile_manager()->UnblockAsyncLoading();
 
   PostBrowserStart();
 
