@@ -27,9 +27,6 @@ std::string EscapeValue(const std::string& value) {
 
 NSArray<NSString*>* ArgumentsFromConfiguration(
     AppLaunchConfiguration configuration) {
-  CHECK(configuration.features_enabled.empty() ||
-        configuration.features_enabled_and_params.empty());
-
   NSMutableArray<NSString*>* namesToEnable = [NSMutableArray array];
   NSMutableArray<NSString*>* namesToDisable = [NSMutableArray array];
   NSMutableArray<NSString*>* variations = [NSMutableArray array];

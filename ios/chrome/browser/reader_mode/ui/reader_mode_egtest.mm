@@ -172,7 +172,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   config.iph_feature_enabled =
       feature_engagement::kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name;
-  config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
+  config.features_enabled.push_back(kEnableReaderModeInUS);
 
   if ([self isRunningTest:@selector(testTurnOnReaderModeViaPageActionMenu)] ||
       [self isRunningTest:@selector(testReaderModeChipShowsAIHubIfAvailable)] ||
@@ -184,9 +184,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
             (FLAKY_testSampleContextualChipVisibleInReaderMode)] ||
 #endif
       [self isRunningTest:@selector(testReaderModeChipHiddenInReaderMode)]) {
-    config.features_enabled_and_params.push_back({kPageActionMenu, {}});
-    config.features_enabled_and_params.push_back(
-        {kProactiveSuggestionsFramework, {}});
+    config.features_enabled.push_back(kPageActionMenu);
+    config.features_enabled.push_back(kProactiveSuggestionsFramework);
   } else {
     // Force an app restart before any tests that require the Gemini kill
     // switch. This is required to ensure that
@@ -194,21 +193,19 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
     // configuration, otherwise a cached BWGService instance may be used.
     config.relaunch_policy = ForceRelaunchByCleanShutdown;
     config.features_disabled.push_back(kPageActionMenu);
-    config.features_enabled_and_params.push_back({kGeminiKillSwitch, {}});
+    config.features_enabled.push_back(kGeminiKillSwitch);
   }
   if ([self isRunningTest:@selector(testOmniboxEntryPointDisabled)]) {
     config.features_disabled.push_back(kEnableReaderModeOmniboxEntryPointInUS);
   } else {
-    config.features_enabled_and_params.push_back(
-        {kEnableReaderModeOmniboxEntryPointInUS, {}});
+    config.features_enabled.push_back(kEnableReaderModeOmniboxEntryPointInUS);
   }
 
   if ([self isRunningTest:@selector(testReaderModeContentSettingsOldToggle)]) {
     config.features_disabled.push_back(kEnableContentSettingsOptionForLinks);
   }
   if ([self isRunningTest:@selector(testReaderModeContentSettingsNewOptions)]) {
-    config.features_enabled_and_params.push_back(
-        {kEnableContentSettingsOptionForLinks, {}});
+    config.features_enabled.push_back(kEnableContentSettingsOptionForLinks);
   }
 
   if ([self isRunningTest:@selector(testReaderModeDistillationTimeout)]) {
@@ -224,9 +221,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
             (FLAKY_testSampleContextualChipVisibleInReaderMode)]
 #endif
   ) {
-    config.features_enabled_and_params.push_back(
-        {kProactiveSuggestionsFramework, {}});
-    config.features_enabled_and_params.push_back({kAskGeminiChip, {}});
+    config.features_enabled.push_back(kProactiveSuggestionsFramework);
+    config.features_enabled.push_back(kAskGeminiChip);
   }
 #if TARGET_OS_SIMULATOR
   if ([self isRunningTest:@selector
@@ -246,8 +242,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   if ([self isRunningTest:@selector
             (FLAKY_testSampleContextualChipVisibleInReaderMode)]) {
 #endif
-    config.features_enabled_and_params.push_back(
-        {kContextualPanelForceShowEntrypoint, {}});
+    config.features_enabled.push_back(kContextualPanelForceShowEntrypoint);
   }
   return config;
 }

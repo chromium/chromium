@@ -55,11 +55,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled_and_params.push_back({kPageActionMenu, {}});
+  config.features_enabled.push_back(kPageActionMenu);
 
   if ([self isRunningTest:@selector
             (testAskGeminiChipDoesNotShowForNonConsentedUsers)]) {
-    config.features_enabled_and_params.push_back({kAskGeminiChip, {}});
+    config.features_enabled.push_back(kAskGeminiChip);
   } else {
     config.features_enabled_and_params.push_back(
         {kAskGeminiChip, {{kAskGeminiChipIgnoreCriteria, "true"}}});

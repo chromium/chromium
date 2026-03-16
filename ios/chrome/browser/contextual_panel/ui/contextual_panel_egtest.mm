@@ -79,10 +79,9 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  config.features_enabled_and_params.push_back(
-      {kContextualPanelForceShowEntrypoint, {}});
-  config.features_enabled_and_params.push_back({kPageActionMenu, {}});
-  config.features_enabled_and_params.push_back({kAskGeminiChip, {}});
+  config.features_enabled.push_back(kContextualPanelForceShowEntrypoint);
+  config.features_enabled.push_back(kPageActionMenu);
+  config.features_enabled.push_back(kAskGeminiChip);
 
   if ([self isRunningTest:@selector(testOpenContextualPanelFromIPH)] ||
       [self isRunningTest:@selector(testOrientationChangeDismissesIPH)]) {

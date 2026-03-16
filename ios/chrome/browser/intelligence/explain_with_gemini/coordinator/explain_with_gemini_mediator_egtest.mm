@@ -105,10 +105,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       {kExplainGeminiEditMenu, {{{kExplainGeminiEditMenuParams, "1"}}}});
   config.features_enabled_and_params.push_back(
       {kBWGPromoConsent, {{{kBWGPromoConsentParams, "3"}}}});
-  config.features_enabled_and_params.push_back({kPageActionMenu, {}});
+  config.features_enabled.push_back(kPageActionMenu);
   config.features_disabled.push_back(kZeroStateSuggestions);
   if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
-    config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
+    config.features_enabled.push_back(kEnableReaderModeInUS);
   }
   return config;
 }

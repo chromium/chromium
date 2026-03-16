@@ -77,8 +77,8 @@ static const char* kInterstitialDetails = "Details";
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals,
          {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "0"}}}});
-    config.features_enabled_and_params.push_back(
-        {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
+    config.features_enabled.push_back(
+        supervised_user::kSupervisedUserBlockInterstitialV3);
   } else if (
       [self isRunningTest:@selector
             (testSupervisedUserShowInterstitialDetailsLinkForNarrowScreen)] ||
@@ -100,8 +100,8 @@ static const char* kInterstitialDetails = "Details";
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals,
          {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "5000"}}}});
-    config.features_enabled_and_params.push_back(
-        {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
+    config.features_enabled.push_back(
+        supervised_user::kSupervisedUserBlockInterstitialV3);
   }
   return config;
 }
