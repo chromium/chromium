@@ -180,24 +180,24 @@ public class ProfileDataCacheUnitTest {
     }
 
     @Test
-    public void cacheShouldBeNotPopulatedOnAccountWithoutDisplayableInfoOnCoreAccountsUpdate() {
+    public void cacheShouldBePopulatedOnAccountWithoutDisplayableInfoOnCoreAccountsUpdate() {
         mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
+        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test
     public void
-            cacheShouldBeNotPopulatedOnAccountWithoutDisplayableInfoOnIdentityManagerAccountsUpdate() {
+            cacheShouldBePopulatedOnAccountWithoutDisplayableInfoOnIdentityManagerAccountsUpdate() {
         mAccountManagerTestRule.blockGetAccountsUpdate();
         mProfileDataCache.addObserver(mObserverMock);
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
+        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test
@@ -213,7 +213,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertFalse(mProfileDataCache.getAccounts().getResult().isEmpty());
+        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test
@@ -229,7 +229,7 @@ public class ProfileDataCacheUnitTest {
         Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
         mAccountManagerTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NO_NAME);
         RobolectricUtil.runAllBackgroundAndUi();
-        Assert.assertFalse(mProfileDataCache.getAccounts().getResult().isEmpty());
+        Assert.assertNotNull(mProfileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId()));
     }
 
     @Test
@@ -291,23 +291,6 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(accountInfo.getEmail(), cachedProfileData.getAccountEmail());
         Assert.assertEquals(accountInfo.getFullName(), cachedProfileData.getFullName());
         Assert.assertEquals(accountInfo.getGivenName(), cachedProfileData.getGivenName());
-    }
-
-    /**
-     * TODO(https://crbug.com/483627535): Remove this test after full migration to IdentityManager.
-     */
-    @Test
-    public void
-            givenEmptyCacheWhenGetByIdThenShouldFallbackToAccountManagerAndReturnDefaultProfileData() {
-        var accountInfo = TestAccounts.ACCOUNT1;
-        mAccountManagerTestRule.addAccount(accountInfo); // lack of observer cause not cache updated
-        mAccountManagerTestRule.getIdentityManager().removeAccount(accountInfo.getId());
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        DisplayableProfileData cachedProfileData = mProfileDataCache.getById(accountInfo.getId());
-        Assert.assertEquals(accountInfo.getEmail(), cachedProfileData.getAccountEmail());
-        Assert.assertNull(cachedProfileData.getFullName());
-        Assert.assertNull(cachedProfileData.getGivenName());
     }
 
     @Test(expected = IllegalArgumentException.class)

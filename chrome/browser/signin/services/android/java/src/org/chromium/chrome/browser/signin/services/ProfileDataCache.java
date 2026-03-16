@@ -205,17 +205,6 @@ public class ProfileDataCache implements IdentityManager.Observer {
             return profileData;
         }
 
-        // TODO(https://crbug.com/483627535): Remove that fallback to AccountManagerFacade after
-        // full migration to IdentityManager.
-        var accounts = getCoreAccountsIfLoaded();
-        if (accounts != null) {
-            for (var account : accounts) {
-                if (account.getId().equals(accountId)) {
-                    return createDefaultProfileData(account.getEmail());
-                }
-            }
-        }
-
         throw new IllegalArgumentException("Account not found");
     }
 
@@ -258,12 +247,12 @@ public class ProfileDataCache implements IdentityManager.Observer {
     public void setBadge(CoreAccountId accountId, @Nullable BadgeConfig badgeConfig) {
         if (mPerAccountBadgeConfig.containsKey(accountId)
                 && Objects.equals(mPerAccountBadgeConfig.get(accountId), badgeConfig)) {
-            // Update is a no-op. The per-account badge set to accountEmail is the same as the
+            // Update is a no-op. The per-account badge set to accountId is the same as the
             // badgeResId.
             return;
         }
         mPerAccountBadgeConfig.put(accountId, badgeConfig);
-        var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(accountId);
+        var accountInfo = findAccountInfo(accountId);
         if (accountInfo != null) {
             onExtendedAccountInfoUpdated(accountInfo);
         }
@@ -296,15 +285,10 @@ public class ProfileDataCache implements IdentityManager.Observer {
     /** Implements {@link IdentityManager.Observer}. */
     @Override
     public void onExtendedAccountInfoUpdated(AccountInfo accountInfo) {
-        // We don't update the cache if the account information and ProfileDataCache config mean
-        // that we would just be returning the default profile data.
-        if (accountInfo.hasDisplayableInfo()
-                || getBadgeConfigForAccount(accountInfo.getId()) != null) {
-            var displayableProfileData = toDisplayableProfileData(accountInfo);
-            mAccountsCache.putAccount(
-                    new AccountsCache.AccountEntry(accountInfo.getId(), displayableProfileData));
-            fireOnProfileDataUpdated(displayableProfileData);
-        }
+        var displayableProfileData = toDisplayableProfileData(accountInfo);
+        mAccountsCache.putAccount(
+                new AccountsCache.AccountEntry(accountInfo.getId(), displayableProfileData));
+        fireOnProfileDataUpdated(displayableProfileData);
     }
 
     /**
@@ -326,15 +310,14 @@ public class ProfileDataCache implements IdentityManager.Observer {
 
     private void updateCache(List<AccountInfo> accounts) {
         List<AccountsCache.AccountEntry> displayableAccounts = new ArrayList<>();
-        for (CoreAccountInfo account : accounts) {
-            var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(account.getId());
-            if (accountInfo != null
-                    && (accountInfo.hasDisplayableInfo()
-                            || getBadgeConfigForAccount(accountInfo.getId()) != null)) {
-                displayableAccounts.add(
-                        new AccountsCache.AccountEntry(
-                                accountInfo.getId(), toDisplayableProfileData(accountInfo)));
-            }
+        for (AccountInfo account : accounts) {
+            var extendedAccountInfo =
+                    mIdentityManager.findExtendedAccountInfoByAccountId(account.getId());
+            var displayableProfileData =
+                    toDisplayableProfileData(
+                            extendedAccountInfo != null ? extendedAccountInfo : account);
+            displayableAccounts.add(
+                    new AccountsCache.AccountEntry(account.getId(), displayableProfileData));
         }
         mAccountsCache.setAccounts(displayableAccounts);
 
@@ -358,11 +341,17 @@ public class ProfileDataCache implements IdentityManager.Observer {
         if (badgeConfig != null) {
             croppedAvatar = overlayBadgeOnUserPicture(badgeConfig, croppedAvatar);
         }
+
+        // TODO(crbug.com/493091231): Hide this logic behind the feature flag.
+        final var shouldPopulateNames = accountInfo.hasDisplayableInfo() || badgeConfig != null;
+        final var fullName = shouldPopulateNames ? accountInfo.getFullName() : null;
+        final var givenName = shouldPopulateNames ? accountInfo.getGivenName() : null;
+
         return new DisplayableProfileData(
                 accountInfo.getEmail(),
                 croppedAvatar,
-                accountInfo.getFullName(),
-                accountInfo.getGivenName(),
+                fullName,
+                givenName,
                 accountInfo.canHaveEmailAddressDisplayed());
     }
 
@@ -382,6 +371,23 @@ public class ProfileDataCache implements IdentityManager.Observer {
         for (Observer observer : mObservers) {
             observer.onProfileDataUpdated(profileData);
         }
+    }
+
+    private @Nullable AccountInfo findAccountInfo(CoreAccountId accountId) {
+        var accountInfo = mIdentityManager.findExtendedAccountInfoByAccountId(accountId);
+        if (accountInfo != null) {
+            return accountInfo;
+        }
+        var coreAccounts = getCoreAccountsIfLoaded();
+        if (coreAccounts == null) {
+            return null;
+        }
+        for (var coreAccountInfo : coreAccounts) {
+            if (coreAccountInfo.getId().equals(accountId)) {
+                return coreAccountInfo;
+            }
+        }
+        return null;
     }
 
     private @Nullable List<AccountInfo> getCoreAccountsIfLoaded() {
