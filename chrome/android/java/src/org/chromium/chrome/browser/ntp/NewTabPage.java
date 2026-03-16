@@ -81,8 +81,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudController.Entrypoint;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleCoordinator;
-import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
@@ -229,7 +227,6 @@ public class NewTabPage
     // tablet mode.
     private boolean mUseLightIconTint;
 
-    private @Nullable SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
     private @Nullable NtpSmoothTransitionDelegate mSmoothTransitionDelegate;
 
     private final CallbackController mCallbackController = new CallbackController();
@@ -557,14 +554,6 @@ public class NewTabPage
                 url,
                 edgeToEdgeControllerSupplier,
                 startupMetricsTracker);
-
-        // It is possible that the NewTabPage is created when the Tab model hasn't been initialized.
-        // For example, the user changes theme when a NTP is showing, which leads to the recreation
-        // of the ChromeTabbedActivity and showing the NTP as the last visited Tab.
-        TabModelUtils.runOnTabStateInitialized(
-                mTabModelSelector,
-                mCallbackController.makeCancelable(
-                        unusedTabModelSelector -> mayCreateSearchResumptionModule(profile)));
 
         View view = getView();
         view.addOnAttachStateChangeListener(
@@ -1139,9 +1128,6 @@ public class NewTabPage
         if (mVoiceRecognitionHandler != null) {
             mVoiceRecognitionHandler.removeObserver(this);
         }
-        if (mSearchResumptionModuleCoordinator != null) {
-            mSearchResumptionModuleCoordinator.destroy();
-        }
         if (mSingleTabSwitcherCoordinator != null) {
             destroySingleTabCard();
         }
@@ -1324,19 +1310,6 @@ public class NewTabPage
 
     @Nullable TabObserver getTabObserverForTesting() {
         return mTabObserver;
-    }
-
-    private void mayCreateSearchResumptionModule(Profile profile) {
-        // The module is disabled on tablets.
-        if (mIsTablet) return;
-
-        mSearchResumptionModuleCoordinator =
-                SearchResumptionModuleUtils.mayCreateSearchResumptionModule(
-                        mNewTabPageCoordinator.getNewTabPageLayout(),
-                        mTabModelSelector.getCurrentModel(),
-                        mTab,
-                        profile,
-                        R.id.search_resumption_module_container_stub);
     }
 
     /**
