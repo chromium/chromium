@@ -274,6 +274,14 @@ void TranslateBubbleView::ResetLanguage() {
 }
 
 void TranslateBubbleView::WindowClosing() {
+  if (GetBubbleFrameView()->GetWidget()->closed_reason() ==
+      views::Widget::ClosedReason::kCloseButtonClicked) {
+    model_->DeclineTranslation();
+    model_->ReportUIInteraction(translate::UIInteraction::kCloseUIExplicitly);
+  } else {
+    model_->ReportUIInteraction(translate::UIInteraction::kCloseUILostFocus);
+  }
+
   // The operations for |model_| are valid only when a WebContents is alive.
   // TODO(crbug.com/40341719): TranslateBubbleViewModel(Impl) should not hold a
   // WebContents as a member variable because the WebContents might be destroyed
@@ -462,16 +470,6 @@ void TranslateBubbleView::ExecuteCommand(int command_id, int event_flags) {
 
     default:
       NOTREACHED();
-  }
-}
-
-void TranslateBubbleView::OnWidgetClosing(views::Widget* widget) {
-  if (GetBubbleFrameView()->GetWidget()->closed_reason() ==
-      views::Widget::ClosedReason::kCloseButtonClicked) {
-    model_->DeclineTranslation();
-    model_->ReportUIInteraction(translate::UIInteraction::kCloseUIExplicitly);
-  } else {
-    model_->ReportUIInteraction(translate::UIInteraction::kCloseUILostFocus);
   }
 }
 
