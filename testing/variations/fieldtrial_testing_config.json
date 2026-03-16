@@ -2389,6 +2389,26 @@
             ]
         }
     ],
+    "AutofillEnableImportOfUnchangedValuesForCountryAndState": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableImportOfUnchangedValuesForCountryAndState"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableMandatoryReauthAndFpanRiskBasedAuthenticationChromeOs": [
         {
             "platforms": [
