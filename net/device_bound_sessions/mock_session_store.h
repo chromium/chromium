@@ -28,8 +28,7 @@ class SessionStoreMock : public SessionStore {
   MOCK_METHOD(void,
               RestoreSessionBindingKey,
               (const SessionKey& session_key,
-               RestoreSessionBindingKeyCallback callback,
-               RestoreSessionBindingKeyCallbackPriority priority),
+               RestoreSessionBindingKeyCallback callback),
               (override));
 };
 

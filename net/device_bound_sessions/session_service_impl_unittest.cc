@@ -2582,10 +2582,11 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
   EXPECT_CALL(
       store(),
       RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _, _))
+          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
       .WillOnce([&](const SessionKey& session_key,
-                    SessionStore::RestoreSessionBindingKeyCallback cb,
-                    auto priority) { restore_key_callback = std::move(cb); });
+                    SessionStore::RestoreSessionBindingKeyCallback cb) {
+        restore_key_callback = std::move(cb);
+      });
   service().DeferRequestForRefresh(*dbsc_request, *maybe_deferral,
                                    base::DoNothing());
   // Simulate the request being cleaned up before the callback has been called.
@@ -2632,7 +2633,7 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   EXPECT_CALL(
       store(),
       RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _, _))
+          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
       .WillOnce(RunOnceCallback<1>(unexportable_keys::UnexportableKeyId()));
 
   base::test::TestFuture<RefreshResult> future;
@@ -2655,227 +2656,6 @@ TEST_F(SessionServiceImplWithStoreTest, NoSessionUsageDuringInitialization) {
                             FirstPartySetMetadata());
 
   EXPECT_EQ(request->device_bound_session_usage().size(), 0);
-}
-
-TEST_F(SessionServiceImplWithStoreTest, GarbageCollectsStaleKeys) {
-  base::HistogramTester histograms;
-  base::test::ScopedFeatureList feature_list(
-      unexportable_keys::kUnexportableKeyDeletion);
-  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
-      SwitchToMockKeyProvider().mock();
-
-  EXPECT_CALL(store(), LoadSessions).Times(1);
-  EXPECT_CALL(store(), RestoreSessionBindingKey)
-      .WillRepeatedly(
-          [](const SessionKey& session_key,
-             SessionStore::RestoreSessionBindingKeyCallback callback,
-             auto priority) {
-            std::move(callback).Run(base::unexpected(
-                unexportable_keys::ServiceError::kKeyNotFound));
-          });
-  service().LoadSessionsAsync();
-
-  // The first two keys are known to the service, but the third key is stale.
-  const std::vector<uint8_t> kWrappedKey1 = {1, 2, 3};
-  const std::vector<uint8_t> kWrappedKey2 = {4, 5, 6};
-  const std::vector<uint8_t> kStaleWrappedKey = {7, 8, 9};
-
-  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).WillRepeatedly([=] {
-    auto key1 = std::make_unique<unexportable_keys::MockUnexportableKey>();
-    auto key2 = std::make_unique<unexportable_keys::MockUnexportableKey>();
-    auto stale_key = std::make_unique<unexportable_keys::MockUnexportableKey>();
-
-    ON_CALL(*key1, GetWrappedKey).WillByDefault(Return(kWrappedKey1));
-    ON_CALL(*key2, GetWrappedKey).WillByDefault(Return(kWrappedKey2));
-    ON_CALL(*stale_key, GetWrappedKey).WillByDefault(Return(kStaleWrappedKey));
-
-    return base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
-        std::move(key1),
-        std::move(key2),
-        std::move(stale_key),
-    });
-  });
-
-  // Obtain the corresponding key ids.
-  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
-      std::vector<unexportable_keys::UnexportableKeyId>>>
-      get_all_keys_future;
-  key_service()->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-      unexportable_keys::BackgroundTaskPriority::kBestEffort,
-      get_all_keys_future.GetCallback());
-  ASSERT_OK_AND_ASSIGN(
-      std::vector<unexportable_keys::UnexportableKeyId> all_keys_ids,
-      get_all_keys_future.Take());
-
-  // Create a session map with two sessions, each associated with a known key.
-  auto session1 =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
-  session1->set_unexportable_key_id(all_keys_ids[0]);
-  auto session2 =
-      Session::CreateFromProto(CreateSessionProto(kSessionId2, kUrlString2));
-  session2->set_unexportable_key_id(all_keys_ids[1]);
-  SessionStore::SessionsMap session_map;
-  session_map[SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)}] =
-      std::move(session1);
-  session_map[SessionKey{SchemefulSite(kTestUrl2), Session::Id(kSessionId2)}] =
-      std::move(session2);
-
-  // Finish loading the sessions, and wait for the stale key to be deleted.
-  EXPECT_CALL(mock_key_provider, DeleteSigningKeysSlowly)
-      .WillOnce([&](auto keys) {
-        auto wrapped_keys = base::ToVector(
-            keys, [](auto* key) { return key->GetWrappedKey(); });
-        EXPECT_THAT(wrapped_keys, ElementsAre(kStaleWrappedKey));
-        return wrapped_keys.size();
-      });
-
-  FinishLoadingSessions(std::move(session_map));
-  // Advance time to allow StartGarbageCollection to run.
-  FastForwardUntilNoTasksRemain();
-
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "TotalKeyCount",
-      3, 1);
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "UsedKeyCount",
-      2, 1);
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "ObsoleteKeyCount",
-      1, 1);
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "ObsoleteKeyDeletionCount",
-      1, 1);
-}
-
-TEST_F(SessionServiceImplWithStoreTest,
-       GarbageCollectsWithPartialSessionsReady) {
-  base::HistogramTester histograms;
-  base::test::ScopedFeatureList feature_list(
-      unexportable_keys::kUnexportableKeyDeletion);
-  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
-      SwitchToMockKeyProvider().mock();
-
-  EXPECT_CALL(store(), LoadSessions).Times(1);
-  service().LoadSessionsAsync();
-
-  // The first two keys are known to the service, but the third key is stale.
-  const std::vector<uint8_t> kWrappedKey1 = {1, 2, 3};
-  const std::vector<uint8_t> kWrappedKey2 = {4, 5, 6};
-  const std::vector<uint8_t> kStaleWrappedKey = {7, 8, 9};
-
-  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).WillRepeatedly([=] {
-    auto key1 = std::make_unique<unexportable_keys::MockUnexportableKey>();
-    auto key2 = std::make_unique<unexportable_keys::MockUnexportableKey>();
-    auto stale_key = std::make_unique<unexportable_keys::MockUnexportableKey>();
-
-    ON_CALL(*key1, GetWrappedKey).WillByDefault(Return(kWrappedKey1));
-    ON_CALL(*key2, GetWrappedKey).WillByDefault(Return(kWrappedKey2));
-    ON_CALL(*stale_key, GetWrappedKey).WillByDefault(Return(kStaleWrappedKey));
-
-    return base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
-        std::move(key1),
-        std::move(key2),
-        std::move(stale_key),
-    });
-  });
-
-  // Obtain the corresponding key ids.
-  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
-      std::vector<unexportable_keys::UnexportableKeyId>>>
-      get_all_keys_future;
-  key_service()->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
-      unexportable_keys::BackgroundTaskPriority::kBestEffort,
-      get_all_keys_future.GetCallback());
-  ASSERT_OK_AND_ASSIGN(
-      std::vector<unexportable_keys::UnexportableKeyId> all_keys_ids,
-      get_all_keys_future.Take());
-
-  // Create a session map with three sessions. One already has its key ready,
-  // the other two will lazily load it, but one will fail to load.
-  auto session1 =
-      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString));
-  session1->set_unexportable_key_id(all_keys_ids[0]);
-
-  auto session2 =
-      Session::CreateFromProto(CreateSessionProto(kSessionId2, kUrlString2));
-  // session2 remains in the kKeyNotReady state.
-
-  auto session3 = Session::CreateFromProto(
-      CreateSessionProto("SessionId3", "https://url3.com"));
-  // session3 remains in the kKeyNotReady state.
-
-  SessionStore::SessionsMap session_map;
-  session_map[SessionKey{SchemefulSite(kTestUrl), Session::Id(kSessionId)}] =
-      std::move(session1);
-  SessionKey session_key_2{SchemefulSite(kTestUrl2), Session::Id(kSessionId2)};
-  session_map[session_key_2] = std::move(session2);
-  SessionKey session_key_3{SchemefulSite(GURL("https://url3.com")),
-                           Session::Id("SessionId3")};
-  session_map[session_key_3] = std::move(session3);
-
-  // We expect RestoreSessionBindingKey to be called for session2 and session3.
-  EXPECT_CALL(store(), RestoreSessionBindingKey)
-      .WillOnce(
-          [&all_keys_ids](
-              const SessionKey& session_key,
-              SessionStore::RestoreSessionBindingKeyCallback callback,
-              auto priority) { std::move(callback).Run(all_keys_ids[1]); })
-      .WillOnce([](const SessionKey& session_key,
-                   SessionStore::RestoreSessionBindingKeyCallback callback,
-                   auto priority) {
-        std::move(callback).Run(
-            base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
-      });
-
-  EXPECT_CALL(store(), DeleteSession(testing::Eq(session_key_3))).Times(1);
-
-  // Finish loading the sessions, and wait for the stale key to be deleted.
-  // We expect session1 and session2's keys to be protected.
-  EXPECT_CALL(mock_key_provider, DeleteSigningKeysSlowly)
-      .WillOnce([&](auto keys) {
-        auto wrapped_keys = base::ToVector(
-            keys, [](auto* key) { return key->GetWrappedKey(); });
-        EXPECT_THAT(wrapped_keys, ElementsAre(kStaleWrappedKey));
-        return wrapped_keys.size();
-      });
-
-  FinishLoadingSessions(std::move(session_map));
-  // Advance time to allow StartGarbageCollection to run.
-  FastForwardUntilNoTasksRemain();
-
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "TotalKeyCount",
-      3, 1);
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "UsedKeyCount",
-      2, 1);
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "ObsoleteKeyCount",
-      1, 1);
-  histograms.ExpectUniqueSample(
-      "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions."
-      "ObsoleteKeyDeletionCount",
-      1, 1);
-}
-
-TEST_F(SessionServiceImplWithStoreTest,
-       GarbageCollectionDoesNotTriggerIfFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      unexportable_keys::kUnexportableKeyDeletion);
-  unexportable_keys::MockUnexportableKeyProvider& mock_key_provider =
-      SwitchToMockKeyProvider().mock();
-
-  EXPECT_CALL(mock_key_provider, GetAllSigningKeysSlowly).Times(0);
-  EXPECT_CALL(mock_key_provider, DeleteAllSigningKeysSlowly).Times(0);
-  FinishLoadingSessions({});
 }
 
 TEST_F(SessionServiceImplWithStoreTest,
@@ -2919,7 +2699,7 @@ TEST_F(SessionServiceImplWithStoreTest,
   EXPECT_CALL(
       store(),
       RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _, _))
+          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
       .WillOnce(RunOnceCallback<1>(key));
   EXPECT_CALL(store(), SaveSession).Times(1);
   service().RegisterBoundSession(

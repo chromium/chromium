@@ -7,11 +7,13 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
@@ -38,6 +40,15 @@ constexpr base::TaskTraits kDBTaskTraits = {
 
 const char kSessionTableName[] = "dbsc_session_tbl";
 const base::TimeDelta kFlushDelay = base::Seconds(2);
+
+// The delay between when the session service is loaded and the garbage
+// collection is started. This is delayed to not slow down the startup of the
+// browser.
+constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
+
+// Histogram name for the garbage collection of unexportable keys.
+constexpr std::string_view kGarbageCollectionHistogramPrefix =
+    "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions.";
 
 SessionStoreImpl::DBStatus InitializeOnDbSequence(
     sql::Database* db,
@@ -137,10 +148,22 @@ void SessionStoreImpl::OnDatabaseLoaded(LoadSessionsCallback callback,
     std::vector<std::string> keys_to_delete;
     sessions = CreateSessionsFromLoadedData(session_data_->GetAllCached(),
                                             keys_to_delete);
-    if (keys_to_delete.size() > 0) {
+    if (!keys_to_delete.empty()) {
       session_data_->DeleteData(keys_to_delete);
     }
+
+    // Schedule a task for original profiles to obtain all keys that were
+    // created for this profile in the past, including all OTR profiles.
+    if (base::FeatureList::IsEnabled(
+            unexportable_keys::kUnexportableKeyDeletion)) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&SessionStoreImpl::StartGarbageCollection,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kGarbageCollectionDelay);
+    }
   }
+
   base::UmaHistogramBoolean("Net.DeviceBoundSessions.SessionStoreLoadSuccess",
                             db_status == DBStatus::kSuccess);
   base::UmaHistogramTimes("Net.DeviceBoundSessions.SessionStoreLoadDuration",
@@ -275,8 +298,7 @@ SessionStore::SessionsMap SessionStoreImpl::GetAllSessions() const {
 
 void SessionStoreImpl::RestoreSessionBindingKey(
     const SessionKey& session_key,
-    RestoreSessionBindingKeyCallback callback,
-    RestoreSessionBindingKeyCallbackPriority priority) {
+    RestoreSessionBindingKeyCallback callback) {
   auto key_id_or_error = base::unexpected(ServiceError::kKeyNotFound);
   if (db_status_ != DBStatus::kSuccess) {
     std::move(callback).Run(key_id_or_error);
@@ -292,8 +314,7 @@ void SessionStoreImpl::RestoreSessionBindingKey(
       // session key.
       auto [callbacks_it, inserted] =
           restore_callbacks_.try_emplace(session_key);
-      callbacks_it->second[static_cast<size_t>(priority)].emplace_back(
-          std::move(callback));
+      callbacks_it->second.emplace_back(std::move(callback));
       if (!inserted) {
         return;
       }
@@ -323,14 +344,77 @@ void SessionStoreImpl::OnSessionBindingKeyRestored(
     return;
   }
 
-  auto callbacks_by_priority = std::move(it->second);
-  for (auto& callbacks : callbacks_by_priority) {
-    for (auto& callback : callbacks) {
-      std::move(callback).Run(key_or_error);
-    }
+  auto callbacks = std::move(it->second);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(key_or_error);
   }
 
   restore_callbacks_.erase(it);
+}
+
+void SessionStoreImpl::StartGarbageCollection() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK_EQ(db_status_, DBStatus::kSuccess);
+  key_service_->GetAllSigningKeysForGarbageCollectionSlowlyAsync(
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      base::BindOnce(&SessionStoreImpl::OnGetAllKeysForGarbageCollection,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SessionStoreImpl::OnGetAllKeysForGarbageCollection(
+    unexportable_keys::ServiceErrorOr<
+        std::vector<unexportable_keys::UnexportableKeyId>>
+        all_key_ids_or_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!all_key_ids_or_error.has_value() || all_key_ids_or_error->empty()) {
+    return;
+  }
+
+  absl::flat_hash_set<std::vector<uint8_t>> known_wrapped_keys;
+  for (const auto& [_, site_sessions] : session_data_->GetAllCached()) {
+    for (const auto& [_, session_proto] : site_sessions.sessions()) {
+      if (std::string_view wrapped_key = session_proto.wrapped_key();
+          !wrapped_key.empty()) {
+        known_wrapped_keys.emplace(std::from_range, wrapped_key);
+      }
+    }
+  }
+
+  std::vector<unexportable_keys::UnexportableKeyId> all_key_ids =
+      *std::move(all_key_ids_or_error);
+
+  const size_t key_count = all_key_ids.size();
+  base::UmaHistogramCounts100(
+      base::StrCat({kGarbageCollectionHistogramPrefix, "TotalKeyCount"}),
+      key_count);
+
+  // Don't garbage collect keys that are still used, or were created after the
+  // process started.
+  std::erase_if(all_key_ids, [&](unexportable_keys::UnexportableKeyId key_id) {
+    return known_wrapped_keys.contains(
+               key_service_->GetWrappedKey(key_id).value_or({})) ||
+           key_service_->GetCreationTime(key_id).value_or(base::Time::Now()) >=
+               base::Process::Current().CreationTime();
+  });
+
+  base::UmaHistogramCounts100(
+      base::StrCat({kGarbageCollectionHistogramPrefix, "UsedKeyCount"}),
+      key_count - all_key_ids.size());
+
+  base::UmaHistogramCounts100(
+      base::StrCat({kGarbageCollectionHistogramPrefix, "ObsoleteKeyCount"}),
+      all_key_ids.size());
+
+  // Delete all remaining keys.
+  key_service_->DeleteKeysSlowlyAsync(
+      all_key_ids, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      base::BindOnce([](unexportable_keys::ServiceErrorOr<size_t> result) {
+        base::UmaHistogramCounts100(
+            base::StrCat({kGarbageCollectionHistogramPrefix,
+                          "ObsoleteKeyDeletionCount"}),
+            result.value_or(0));
+      }));
 }
 
 }  // namespace net::device_bound_sessions
