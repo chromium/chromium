@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<title>Overscroll container without overscroll areas crash</title>
+<link rel=author href="mailto:flackr@chromium.org">
+<body>
+<div id="container" overscrollcontainer style="width: 100px; height: 100px; background: red; overflow: auto;">
+  Content
+</div>
+<script>
+  // Force layout and hit test
+  document.elementFromPoint(50, 50);
+</script>
+</body>
+</html>

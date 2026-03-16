@@ -766,12 +766,13 @@ gfx::Vector2d PhysicalBoxFragment::PixelSnappedOverscrollContentOffset() const {
     return gfx::Vector2d();
   }
   gfx::Vector2d offset;
-  for (const Element* element : To<Element>(GetLayoutObject()->GetNode())
-                                    ->GetOverscrollAreaTracker()
-                                    ->DOMSortedElements()) {
-    offset += element->GetPseudoElement(kPseudoIdOverscrollAreaParent)
-                  ->GetLayoutBox()
-                  ->PixelSnappedScrolledContentOffset();
+  if (auto* tracker = To<Element>(GetLayoutObject()->GetNode())
+                          ->GetOverscrollAreaTracker()) {
+    for (const Element* element : tracker->DOMSortedElements()) {
+      offset += element->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                    ->GetLayoutBox()
+                    ->PixelSnappedScrolledContentOffset();
+    }
   }
   return offset;
 }
