@@ -43,7 +43,6 @@ public class ActorNotificationFactoryTest {
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
 
     private Context mContext;
-    private static final int NOTIFICATION_ID = 123;
     private static final String TASK_TITLE = "Test Task";
 
     @Before
@@ -58,10 +57,8 @@ public class ActorNotificationFactoryTest {
 
     @Test
     public void testBuildNotification_Acting() {
-        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
-
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mContext, mTask, NOTIFICATION_ID);
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.ACTING);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -93,10 +90,8 @@ public class ActorNotificationFactoryTest {
 
     @Test
     public void testBuildNotification_Paused() {
-        when(mTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
-
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mContext, mTask, NOTIFICATION_ID);
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.PAUSED_BY_USER);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -128,10 +123,8 @@ public class ActorNotificationFactoryTest {
 
     @Test
     public void testBuildNotification_WaitingOnUser() {
-        when(mTask.getState()).thenReturn(ActorTaskState.WAITING_ON_USER);
-
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mContext, mTask, NOTIFICATION_ID);
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.WAITING_ON_USER);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -160,10 +153,8 @@ public class ActorNotificationFactoryTest {
 
     @Test
     public void testBuildNotification_Finished() {
-        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
-
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mContext, mTask, NOTIFICATION_ID);
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.FINISHED);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();
@@ -195,10 +186,8 @@ public class ActorNotificationFactoryTest {
     @Test
     public void testBuildNotification_FallbackInterrupted() {
         // Use an unhandled state to trigger the fallback
-        when(mTask.getState()).thenReturn(ActorTaskState.CREATED);
-
         NotificationWrapper wrapper =
-                ActorNotificationFactory.buildNotification(mContext, mTask, NOTIFICATION_ID);
+                ActorNotificationFactory.buildNotification(mTask, ActorTaskState.CREATED);
 
         assertNotNull("Notification wrapper should not be null", wrapper);
         Notification notification = wrapper.getNotification();

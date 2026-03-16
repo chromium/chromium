@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -25,15 +26,15 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
 @NullMarked
 public class ActorNotificationFactory {
     /**
-     * Builds a notification for an actor task.
+     * Builds a notification for an actor task with an state.
      *
-     * @param context The {@link Context} to use.
      * @param task The {@link ActorTask} to build the notification for.
-     * @param notificationId The unique ID for the notification.
+     * @param state The {@link ActorTaskState} of the task.
      * @return The built {@link NotificationWrapper}.
      */
-    public static NotificationWrapper buildNotification(
-            Context context, ActorTask task, int notificationId) {
+    public static NotificationWrapper buildNotification(ActorTask task, @ActorTaskState int state) {
+        int notificationId = task.getId();
+        Context context = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.ACTOR,
@@ -45,7 +46,6 @@ public class ActorNotificationFactory {
                         .setGroup(NotificationConstants.GROUP_ACTOR)
                         .setLocalOnly(true);
 
-        @ActorTaskState int state = task.getState();
         if (state == ActorTaskState.ACTING || state == ActorTaskState.REFLECTING) {
             return buildRunningNotification(builder, context, task, notificationId);
         } else if (state == ActorTaskState.PAUSED_BY_ACTOR

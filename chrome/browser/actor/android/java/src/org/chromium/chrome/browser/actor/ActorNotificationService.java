@@ -5,21 +5,12 @@
 package org.chromium.chrome.browser.actor;
 
 import android.app.Notification;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Icon;
-
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
-import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
-import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
-import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
-import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -75,9 +66,9 @@ public class ActorNotificationService {
             return;
         }
 
-        // TODO(487671227): Use ActorNotificationFactory to build real notifications.
-        // For now, we use a stub notification to establish the pipeline.
-        NotificationWrapper notification = createStubNotification(task);
+        NotificationWrapper notification =
+                ActorNotificationFactory.buildNotification(task, newState);
+        mNotificationManager.notify(notification);
         mNotificationCache.put(taskId, notification);
     }
 
@@ -93,7 +84,7 @@ public class ActorNotificationService {
         if (notification == null) {
             ActorTask task = mKeyedService.getTask(taskId);
             if (task != null) {
-                notification = createStubNotification(task);
+                notification = ActorNotificationFactory.buildNotification(task, task.getState());
                 mNotificationCache.put(taskId, notification);
             }
         }
@@ -104,22 +95,5 @@ public class ActorNotificationService {
     public void clearAll() {
         mNotificationManager.cancelAll();
         mNotificationCache.clear();
-    }
-
-    @VisibleForTesting
-    protected NotificationWrapperBuilder getNotificationBuilder(int notificationId) {
-        return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                ChromeChannelDefinitions.ChannelId.ACTOR,
-                new NotificationMetadata(SystemNotificationType.ACTOR, TAG, notificationId));
-    }
-
-    private NotificationWrapper createStubNotification(ActorTask task) {
-        // TODO(487671227) : Set correct icon and string.
-        NotificationWrapperBuilder builder = getNotificationBuilder(task.getId());
-        builder.setContentTitle(task.getTitle())
-                .setContentText("Gemini is performing task.")
-                .setSmallIcon(
-                        Icon.createWithBitmap(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)));
-        return builder.buildNotificationWrapper();
     }
 }
