@@ -29,6 +29,10 @@ import org.chromium.ui.widget.ButtonCompat;
 
 @NullMarked
 final class SigninPromoViewBinder {
+    private static final float ALPHA_DISABLED_BUTTON = 0.9f;
+    private static final float ALPHA_DISABLED_SELECTED_ACCOUNT_VIEW = 0.6f;
+    private static final float ALPHA_ENABLED = 1.0f;
+
     public static void bind(
             PropertyModel model, PersonalizedSigninPromoView view, PropertyKey key) {
         Context context = view.getContext();
@@ -234,17 +238,17 @@ final class SigninPromoViewBinder {
             PersonalizedSigninPromoView view) {
         assert promoType != SigninFeatureMap.SeamlessSigninPromoType.NON_SEAMLESS;
         ButtonCompat primaryButton = view.getPrimaryButton();
-        primaryButton.setAlpha(0.9f);
+        primaryButton.setAlpha(ALPHA_DISABLED_BUTTON);
         primaryButton.setEnabled(false);
         if (promoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
             View selectedAccountView = view.getSelectedAccountView();
-            selectedAccountView.setAlpha(0.6f);
+            selectedAccountView.setAlpha(ALPHA_DISABLED_SELECTED_ACCOUNT_VIEW);
             selectedAccountView.setEnabled(false);
         } else if (promoType == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
             Button secondaryButton = view.getSecondaryButton();
-            secondaryButton.setAlpha(0.9f);
+            secondaryButton.setAlpha(ALPHA_DISABLED_BUTTON);
             secondaryButton.setEnabled(false);
-            view.getImage().setAlpha(0.6f);
+            view.getImage().setAlpha(ALPHA_DISABLED_SELECTED_ACCOUNT_VIEW);
         }
     }
 
@@ -253,17 +257,17 @@ final class SigninPromoViewBinder {
             PersonalizedSigninPromoView view) {
         assert promoType != SigninFeatureMap.SeamlessSigninPromoType.NON_SEAMLESS;
         ButtonCompat primaryButton = view.getPrimaryButton();
-        primaryButton.setAlpha(1.0f);
+        primaryButton.setAlpha(ALPHA_ENABLED);
         primaryButton.setEnabled(true);
         if (promoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
             View selectedAccountView = view.getSelectedAccountView();
-            selectedAccountView.setAlpha(1.0f);
+            selectedAccountView.setAlpha(ALPHA_ENABLED);
             selectedAccountView.setEnabled(true);
         } else if (promoType == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
             Button secondaryButton = view.getSecondaryButton();
-            secondaryButton.setAlpha(1.0f);
+            secondaryButton.setAlpha(ALPHA_ENABLED);
             secondaryButton.setEnabled(true);
-            view.getImage().setAlpha(1.0f);
+            view.getImage().setAlpha(ALPHA_ENABLED);
         }
     }
 }
