@@ -31,7 +31,7 @@ TEST_F(NGShapeCacheTest, AddEntriesAndCacheHits) {
   };
 
   auto CreateKey = [](const String& text) -> ShapeCacheKey {
-    return ShapeCacheKey(text);
+    return ShapeCacheKey(text, 0, text.length());
   };
 
   // Adding an entry is successful.

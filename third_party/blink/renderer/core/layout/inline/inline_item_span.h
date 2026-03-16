@@ -38,15 +38,17 @@ struct InlineItemSpan final {
   wtf_size_t size() const { return size_; }
 
   InlineItems::const_iterator begin() const {
-    return base::span{data_->items}.subspan(begin_).begin();
+    return base::span{data_->items}.subspan(begin_, size_).begin();
   }
   InlineItems::const_iterator end() const {
-    return base::span{data_->items}.first(begin_ + size_).end();
+    return base::span{data_->items}.subspan(begin_, size_).end();
   }
 
   const InlineItem& front() const {
-    CHECK(!empty());
-    return **begin();
+    return *base::span{data_->items}.subspan(begin_, size_).front();
+  }
+  const InlineItem& back() const {
+    return *base::span{data_->items}.subspan(begin_, size_).back();
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(data_); }

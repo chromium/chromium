@@ -64,28 +64,41 @@ struct ShaperResult {
 
 // The key for the shape-cache. Contains:
 //  - The text to be shaped.
+//  - The start/end offset of the text.
+//
+// NOTE: We don't store a StringView or similar so we can reuse the hash of the
+//       text in multiple keys.
 struct ShapeCacheKey {
   DISALLOW_NEW();
 
  public:
   ShapeCacheKey() = default;
-  explicit ShapeCacheKey(const String& text) : text_(text) {
+  ShapeCacheKey(const String& text, unsigned start_offset, unsigned end_offset)
+      : text_(text), start_offset_(start_offset), end_offset_(end_offset) {
     DCHECK_NE(text_, g_empty_string);
   }
   explicit ShapeCacheKey(HashTableDeletedValueType) : text_(g_empty_string) {}
 
   bool IsHashTableDeletedValue() const { return text_ == g_empty_string; }
 
-  unsigned GetHash() const { return HashTraits<String>::GetHash(text_); }
+  unsigned GetHash() const {
+    unsigned hash = blink::GetHash(text_);
+    AddIntToHash(hash, start_offset_);
+    AddIntToHash(hash, end_offset_);
+    return hash;
+  }
 
   bool operator==(const ShapeCacheKey& other) const {
-    return text_ == other.text_;
+    return text_ == other.text_ && start_offset_ == other.start_offset_ &&
+           end_offset_ == other.end_offset_;
   }
 
   const String& GetText() const { return text_; }
 
  private:
   String text_;
+  unsigned start_offset_ = 0u;
+  unsigned end_offset_ = 0u;
 };
 
 template <>

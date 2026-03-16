@@ -170,7 +170,9 @@ class ReusingTextShaper final {
     };
     if (allow_shape_cache_) {
       return font.PrimaryFont()->GetShapeCache().GetOrCreate(
-          ShapeCacheKey(shaper_.GetText()), start_item.Direction(), ShapeFunc);
+          ShapeCacheKey(shaper_.GetText(), start_item.StartOffset(),
+                        end_offset),
+          start_item.Direction(), ShapeFunc);
     }
     return ShapeFunc().shape_result;
   }
@@ -1481,12 +1483,17 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
 
   for (const auto& item : items) {
     switch (item->Type()) {
+      case InlineItem::kControl:
       case InlineItem::kText:
-        // Only support a single text-item at the moment.
-        if (!is_at_text_start()) {
-          return false;
+        if (!RuntimeEnabledFeatures::ExtendedShapeCacheEnabled()) {
+          // Only support a single text-item at the moment.
+          if (!is_at_text_start()) {
+            return false;
+          }
+          if (item->Type() == InlineItem::kControl) {
+            return false;
+          }
         }
-
         if (previous_text_end_offset != item->StartOffset()) {
           return false;
         }
@@ -1495,7 +1502,6 @@ bool InlineNode::IsNGShapeCacheAllowed(const String& text_content,
       case InlineItem::kAtomicInline:
       case InlineItem::kBlockInInline:
       case InlineItem::kCloseTag:
-      case InlineItem::kControl:
       case InlineItem::kFloating:
       case InlineItem::kInitialLetterBox:
       case InlineItem::kListMarker:
