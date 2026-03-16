@@ -1,0 +1,15 @@
+android.webkit.WebView focusable focused
+++android.view.View role_description='carousel' container_title='Highlighted television shows'
+++++android.widget.Button clickable focusable interesting content_description='Stop automatic slide show'
+++++android.view.ViewGroup role_description='tab list' collection name='Slides' item_count=2 row_count=2 column_count=1
+++++++android.view.View role_description='tab' clickable collection_item focusable selected interesting content_description='Slide 1' item_index=0 row_index=0
+++++++android.view.View role_description='tab' clickable collection_item focusable interesting content_description='Slide 2' item_index=1 row_index=1
+++++android.view.View
+++++++android.view.View role_description='slide' name='1 of 2'
+++++++++android.view.View
+++++++++++android.view.View role_description='link' clickable focusable link interesting name='Walking Tour in Amsterdam'
+++++++++++++android.widget.Image content_description='Walking Tour in Amsterdam'
+++++++++android.view.View role_description='heading 3 link' clickable heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++android.view.View role_description='heading 3 link' clickable focusable heading link interesting name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++++++android.widget.TextView heading name='Dynamic Europe: Amsterdam, Prague, Berlin'
+++++++++android.widget.TextView interesting name='7 pm Tuesday, March 3, on TV'

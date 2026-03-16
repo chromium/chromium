@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- HTML snippet based on W3C ARIA Carousel (Tabs for Slide Control) Pattern -->
+    <!-- https://www.w3.org/WAI/ARIA/apg/patterns/carousel/examples/carousel-2-tablist/ -->
+    <!-- The HTML snippet is slightly modified to remove unnecessary noise -->
+  <section id="myCarousel"
+           class="carousel-tablist"
+           aria-roledescription="carousel"
+           aria-label="Highlighted television shows">
+    <div class="carousel-inner">
+      <!-- Controls (SVGs removed to reduce tree noise, using text instead) -->
+      <div class="controls">
+        <button class="rotation" type="button" aria-label="Stop automatic slide show">
+          Pause
+        </button>
+        <!-- Tablist replacing the Prev/Next buttons -->
+        <div class="tab-wrapper">
+          <div role="tablist" aria-label="Slides">
+            <button id="carousel-tab-1"
+                    type="button"
+                    role="tab"
+                    aria-label="Slide 1"
+                    aria-selected="true"
+                    aria-controls="carousel-item-1">
+              1
+            </button>
+            <button id="carousel-tab-2"
+                    type="button"
+                    role="tab"
+                    tabindex="-1"
+                    aria-label="Slide 2"
+                    aria-selected="false"
+                    aria-controls="carousel-item-2">
+              2
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Items Container -->
+      <div id="myCarousel-items"
+           class="carousel-items playing"
+           aria-live="off">
+        <!-- Slide 1 (Active Tabpanel) -->
+        <div class="carousel-item active"
+             id="carousel-item-1"
+             role="tabpanel"
+             aria-roledescription="slide"
+             aria-label="1 of 2">
+          <div class="carousel-image">
+            <a href="#" id="carousel-image-1">
+              <img src="." alt="Walking Tour in Amsterdam">
+            </a>
+          </div>
+          <div class="carousel-caption">
+            <h3>
+              <a href="#">Dynamic Europe: Amsterdam, Prague, Berlin</a>
+            </h3>
+            <div class="hidden-xs hidden-sm">
+              <p><span class="contrast">7 pm Tuesday, March 3, on TV</span></p>
+            </div>
+          </div>
+        </div>
+        <!-- Slide 2 (Inactive Tabpanel - 'hidden' attribute added) -->
+        <div class="carousel-item"
+             id="carousel-item-2"
+             role="tabpanel"
+             aria-roledescription="slide"
+             aria-label="2 of 2"
+             hidden>
+          <div class="carousel-image">
+            <a href="#" id="carousel-image-2">
+              <img src="." alt="Land's End in Cornwall">
+            </a>
+          </div>
+          <div class="carousel-caption">
+            <h3>
+              <a href="#">Travel to Southwest England and Paris</a>
+            </h3>
+            <div>
+              <p><span class="contrast">Sept. 14 to Sept. 24 or 27</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

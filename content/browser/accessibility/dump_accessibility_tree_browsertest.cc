@@ -841,6 +841,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-carousel-buttons.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaCarouselTabs) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-carousel-tabs.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaCaption) {
   RunAriaTest(FILE_PATH_LITERAL("aria-caption.html"));
 }
