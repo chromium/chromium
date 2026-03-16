@@ -3761,10 +3761,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // If `kExplicitSigninForBookmarks` is enabled, syncing bookmarks is turned
-  // off. If it is not, then bookmarks should be on by default with
-  // `kReplaceSyncPromosWithSignInPromos` enabled. See
-  // `SyncPrefs::IsTypeSelectedByDefaultInTransportMode()`.
+  // For the user group with `kReplaceSyncPromosWithSignInPromos` enabled but
+  // `kExplicitSigninForBookmarks` disabled: Bookmarks are enabled for
+  // pre-existing sessions and does not require new sign-in, therefore expect
+  // bookmarks sync to be on.
+  // If `kExplicitSigninForBookmarks` is enabled: Bookmarks are enabled for new
+  // sign-ins only. Therefore, expect sync bookmarks to be off.
   EXPECT_NE(GetParam(),
             GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
                 syncer::UserSelectableType::kBookmarks));
@@ -3786,6 +3788,80 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     SingleClientBookmarksExplicitSigninForBookmarksSyncTest,
     testing::Bool());
+
+class SingleClientBookmarksExplicitSigninTransitionTest : public SyncTest {
+ public:
+  SingleClientBookmarksExplicitSigninTransitionTest()
+      : SyncTest(SINGLE_CLIENT) {
+    const std::string test_name =
+        testing::UnitTest::GetInstance()->current_test_info()->name();
+
+    if (test_name.starts_with("PRE_PRE_")) {
+      // Stage 1: Main feature OFF.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
+    } else if (test_name.starts_with("PRE_")) {
+      // Stage 2: Main ON, kExplicitSigninForBookmarks OFF.
+      feature_list_.InitAndEnableFeatureWithParameters(
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          {{syncer::kExplicitSigninForBookmarks.name, "false"}});
+    } else {
+      // Stage 3: Main ON, kExplicitSigninForBookmarks ON.
+      feature_list_.InitAndEnableFeatureWithParameters(
+          syncer::kReplaceSyncPromosWithSignInPromos,
+          {{syncer::kExplicitSigninForBookmarks.name, "true"}});
+    }
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
+                       PRE_PRE_ExplicitSigninForBookmarksOffToOn) {
+  ASSERT_FALSE(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_TRUE(SetupSyncWithMode(SetupSyncMode::kSyncTransportOnly));
+
+  // If `kReplaceSyncPromosWithSignInPromos` is disabled, syncing bookmarks is
+  // turned off.
+  EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
+                       PRE_ExplicitSigninForBookmarksOffToOn) {
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_FALSE(syncer::kExplicitSigninForBookmarks.Get());
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // For the user group with `kReplaceSyncPromosWithSignInPromos` but before
+  // `kExplicitSigninForBookmarks` being enabled, bookmarks were enabled for
+  // pre-existing sessions and did not require new sign-in.
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksExplicitSigninTransitionTest,
+                       ExplicitSigninForBookmarksOffToOn) {
+  ASSERT_TRUE(
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  ASSERT_TRUE(syncer::kExplicitSigninForBookmarks.Get());
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // Moving the user group to `kExplicitSigninForBookmarks` enabled should not
+  // impact syncing bookmarks.
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kBookmarks));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

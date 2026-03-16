@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -131,6 +132,16 @@ class SyncUserSettingsImplTest : public testing::Test {
   void SetSyncAccountState(SyncPrefs::SyncAccountState sync_account_state) {
     ON_CALL(delegate_, GetSyncAccountStateForPrefs)
         .WillByDefault(Return(sync_account_state));
+
+    if (base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
+      // Enabling `kBookmarks`, `kReadingList` and `kExtensions` require a
+      // sign-in pref to be set. This is handled in the `PrimaryAccountManager`
+      // on Sign-in/startup. Set manually for this unittest.
+      SigninPrefs(pref_service_)
+          .SetBookmarksExplicitBrowserSignin(kTestGaiaId, true);
+      SigninPrefs(pref_service_)
+          .SetExtensionsExplicitBrowserSignin(kTestGaiaId, true);
+    }
   }
 
   std::unique_ptr<SyncUserSettingsImpl> MakeSyncUserSettings(
@@ -227,12 +238,14 @@ TEST_F(SyncUserSettingsImplTest,
   EXPECT_THAT(sync_user_settings->GetSelectedTypes(),
               ContainerEq(expected_types));
 
+#if !BUILDFLAG(IS_CHROMEOS)
   SigninPrefs(pref_service_)
       .SetBookmarksExplicitBrowserSignin(kTestGaiaId, true);
   expected_types.Put(UserSelectableType::kBookmarks);
   expected_types.Put(UserSelectableType::kReadingList);
   EXPECT_THAT(sync_user_settings->GetSelectedTypes(),
               ContainerEq(expected_types));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 

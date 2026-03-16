@@ -90,6 +90,40 @@ DecodeTrustedVaultAutoUpgradeExperimentGroupFromString(
   return proto;
 }
 
+bool IsBookmarksSelectedByDefaultInTransportMode(PrefService& pref_service,
+                                                 const GaiaId& gaia_id) {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+#else
+  // If `kReplaceSyncPromosWithSignInPromos` is enabled, bookmarks and reading
+  // list are enabled by default for new sign-ins (not pre-existing sessions).
+  // This pref is set if the above conditions are met.
+  // Note: If `kReplaceSyncPromosWithSignInPromos` gets disabled, the pref is
+  // not reset and users will keep their bookmarks because that reduces the
+  // risks of perceived dataloss.
+  return SigninPrefs(pref_service).GetBookmarksExplicitBrowserSignin(gaia_id) ||
+         base::FeatureList::IsEnabled(
+             kEnableBookmarksSelectedTypeOnSigninForTesting);
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+}
+
+bool IsExtensionsSelectedByDefaultInTransportMode(PrefService& pref_service,
+                                                  const GaiaId& gaia_id) {
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+#else
+  // if `kReplaceSyncPromosWithSignInPromos` is enabled, extensions are enabled
+  // by default for new sign-ins (not pre-existing sessions). This pref is set
+  // if the above conditions are met.
+  // Note: If `kReplaceSyncPromosWithSignInPromos` gets disabled, the pref is
+  // not reset and users will keep their extensions because that reduces the
+  // risks of perceived dataloss.
+  return SigninPrefs(pref_service).GetExtensionsExplicitBrowserSignin(gaia_id);
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+}
+
 }  // namespace
 
 SyncPrefObserver::~SyncPrefObserver() = default;
@@ -1147,32 +1181,16 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
       return false;
     case UserSelectableType::kBookmarks:
     case UserSelectableType::kReadingList:
-      // Bookmarks and reading list require a specific explicit sign in if
-      // `kExplicitSigninForBookmarks` is enabled (relevant for desktop only).
-      // If it is not, but `kReplaceSyncPromosWithSignInPromos` is, then
-      // bookmarks and reading list are on by default.
-      return (base::FeatureList::IsEnabled(
-                  kReplaceSyncPromosWithSignInPromos) &&
-              !syncer::kExplicitSigninForBookmarks.Get()) ||
-             SigninPrefs(*pref_service_)
-                 .GetBookmarksExplicitBrowserSignin(gaia_id) ||
-             base::FeatureList::IsEnabled(
-                 kEnableBookmarksSelectedTypeOnSigninForTesting);
+      return IsBookmarksSelectedByDefaultInTransportMode(*pref_service_,
+                                                         gaia_id);
     case UserSelectableType::kPreferences:
     case UserSelectableType::kThemes:
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) ||
              pref_service_->GetBoolean(
                  ::prefs::kPrefsThemesSearchEnginesAccountStorageEnabled);
     case UserSelectableType::kExtensions:
-      // Extensions require a specific explicit sign in if
-      // `kExplicitSigninForExtensions` is enabled (relevant for desktop only).
-      // If it is not, but `kReplaceSyncPromosWithSignInPromos` is, then
-      // extensions are on by default.
-      return (base::FeatureList::IsEnabled(
-                  kReplaceSyncPromosWithSignInPromos) &&
-              !syncer::kExplicitSigninForExtensions.Get()) ||
-             SigninPrefs(*pref_service_)
-                 .GetExtensionsExplicitBrowserSignin(gaia_id);
+      return IsExtensionsSelectedByDefaultInTransportMode(*pref_service_,
+                                                          gaia_id);
     case UserSelectableType::kApps:
     case UserSelectableType::kProductComparison:
     case UserSelectableType::kCookies:
