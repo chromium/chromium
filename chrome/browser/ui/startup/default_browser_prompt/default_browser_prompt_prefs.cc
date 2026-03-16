@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -15,6 +15,9 @@ void chrome::startup::default_prompt::ResetPromptPrefs(Profile* profile) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->ClearPref(prefs::kDefaultBrowserInfobarLastDeclinedTime);
   local_state->ClearPref(prefs::kDefaultBrowserInfobarDeclinedCount);
+
+  local_state->ClearPref(prefs::kDefaultBrowserDeclinedCount);
+  local_state->ClearPref(prefs::kDefaultBrowserLastDeclinedTime);
 }
 
 void chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
@@ -27,5 +30,10 @@ void chrome::startup::default_prompt::UpdatePrefsForDismissedPrompt(
   local_state->SetTime(prefs::kDefaultBrowserInfobarLastDeclinedTime, now);
   local_state->SetInteger(
       prefs::kDefaultBrowserInfobarDeclinedCount,
+      local_state->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount) + 1);
+
+  local_state->SetTime(prefs::kDefaultBrowserLastDeclinedTime, now);
+  local_state->SetInteger(
+      prefs::kDefaultBrowserDeclinedCount,
       local_state->GetInteger(prefs::kDefaultBrowserInfobarDeclinedCount) + 1);
 }
