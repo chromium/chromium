@@ -448,12 +448,7 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
     }
   }
 
-  if (has_draw_quad) {
-    if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
-      append_quads_data->approximated_visible_content_area +=
-          visible_geometry_rect.size().Area64();
-    }
-  } else {
+  if (!has_draw_quad) {
     // Checkerboard due to missing raster.
     SkColor4f color = safe_opaque_background_color();
     if (ShowDebugBorders(DebugBorderType::LAYER)) {
@@ -470,6 +465,10 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
                                                         custom_data);
   }
 
+  if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
+    append_quads_data->approximated_visible_content_area +=
+        visible_geometry_rect.size().Area64();
+  }
   produced_tile_last_append_quads_ = true;
   AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
 
