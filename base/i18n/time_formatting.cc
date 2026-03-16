@@ -272,7 +272,8 @@ std::string TimeFormatAsIso8601(const Time& time) {
 }
 
 std::string TimeFormatHTTP(const Time& time) {
-  return UnlocalizedTimeFormatWithPattern(time, "E, dd MMM yyyy HH:mm:ss O",
+  // https://www.rfc-editor.org/rfc/rfc7231#section-7.1.1.1
+  return UnlocalizedTimeFormatWithPattern(time, "E, dd MMM yyyy HH:mm:ss 'GMT'",
                                           icu::TimeZone::getGMT());
 }
 
