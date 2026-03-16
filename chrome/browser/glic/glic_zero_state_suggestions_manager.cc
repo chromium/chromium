@@ -399,7 +399,7 @@ void GlicZeroStateSuggestionsManager::Reset() {
 }
 
 bool GlicZeroStateSuggestionsManager::WasAutoOpenedForPdf() {
-  return base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf) &&
+  return GlicEnabling::IsAutoOpenForPdfEnabled(host().profile()) &&
          host().invocation_source() ==
              mojom::InvocationSource::kAutoOpenedForPdf;
 }

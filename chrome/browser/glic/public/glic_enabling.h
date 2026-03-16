@@ -160,6 +160,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   static bool ShouldBypassFreUi(Profile* profile,
                                 mojom::InvocationSource invocation_source);
 
+  // Whether the auto open for pdf flow is enabled.
+  static bool IsAutoOpenForPdfEnabled(Profile* profile);
+
   // Whether the required feature flags for multi-instance - kGlicMultiInstance,
   // kGlicMultiTab, and kGlicMultitabUnderlines - are enabled. When calling, be
   // sure that IsMultiInstanceEnabled() should not be used instead.

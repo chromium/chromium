@@ -545,6 +545,13 @@ bool GlicEnabling::ShouldBypassFreUi(
          !HasConsentedForProfile(profile);
 }
 
+bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {
+  if (!IsTrustFirstOnboardingEnabledForProfile(profile)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf);
+}
+
 bool GlicEnabling::IsMultiInstanceEnabledByFlags() {
   const bool multi_instance_enabled =
       base::FeatureList::IsEnabled(features::kGlicMultiInstance);
