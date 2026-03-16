@@ -39,6 +39,8 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -71,6 +73,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -96,6 +99,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
@@ -177,6 +181,13 @@ class ExtensionTabsTest : public ExtensionApiTest {
   ExtensionTabsTest(const ExtensionTabsTest&) = delete;
   ExtensionTabsTest& operator=(const ExtensionTabsTest&) = delete;
 
+  // ExtensionApiTest overrides:
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    // Map all hosts to localhost.
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
   std::string GetWindowType(BrowserWindowInterface* test_browser,
                             scoped_refptr<const Extension> extension) {
     auto function = base::MakeRefCounted<WindowsGetFunction>();
@@ -201,6 +212,11 @@ class ExtensionTabsTest : public ExtensionApiTest {
     return utils::RunFunctionWithDelegateAndReturnSingleResult(
         std::move(function), args, std::move(dispatcher),
         utils::FunctionMode::kNone);
+  }
+
+  content::WebContents* OpenUrlAndWaitForLoad(const GURL& url) {
+    NavigateToURLInNewTab(url);
+    return GetActiveWebContents();
   }
 };
 
@@ -2140,8 +2156,6 @@ class ExtensionTabsZoomTest : public ExtensionTabsTest {
                                             const char* mode,
                                             const char* scope);
 
-  content::WebContents* OpenUrlAndWaitForLoad(const GURL& url);
-
  private:
   scoped_refptr<const Extension> extension_;
 };
@@ -2291,11 +2305,6 @@ std::string ExtensionTabsZoomTest::RunSetZoomSettingsExpectError(
       profile());
 }
 
-content::WebContents* ExtensionTabsZoomTest::OpenUrlAndWaitForLoad(
-    const GURL& url) {
-  NavigateToURLInNewTab(url);
-  return GetActiveWebContents();
-}
 
 namespace {
 
@@ -2832,6 +2841,263 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_OpenerAndOrigin) {
   }
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// Tests that calling chrome.tabs.update updates the URL as expected.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UpdateTest").Build();
+
+  const GURL example_url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  const GURL chromium_url =
+      embedded_test_server()->GetURL("chromium.org", "/title1.html");
+
+  // Navigate the browser to example.com
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, example_url));
+  EXPECT_EQ(example_url, web_contents->GetLastCommittedURL());
+
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Use the TabsUpdateFunction to navigate to chromium.org
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
+  function->set_extension(extension.get());
+  static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
+  const std::string args =
+      base::StringPrintf(kFormatArgs, tab_id, chromium_url.spec().c_str());
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_EQ(chromium_url, web_contents->GetLastCommittedURL());
+}
+
+// Tests that calling chrome.tabs.update does not update a saved tab.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_SavedTabGroupTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UpdateTest").Build();
+
+  const GURL example_url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+  const GURL chromium_url =
+      embedded_test_server()->GetURL("chromium.org", "/title1.html");
+
+  TabListInterface* tab_list = GetTabListInterface();
+
+  // Create 2 tabs.
+  content::WebContents* tab1_contents = OpenUrlAndWaitForLoad(example_url);
+  content::WebContents* tab2_contents =
+      OpenUrlAndWaitForLoad(GURL(url::kAboutBlankURL));
+
+  EXPECT_EQ(tab_list->GetActiveTab()->GetContents(), tab2_contents);
+  int tab1_id = ExtensionTabUtil::GetTabId(tab1_contents);
+  int non_updated_tab2_id = ExtensionTabUtil::GetTabId(tab2_contents);
+
+  tab_groups::TabGroupSyncService* saved_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(saved_service);
+  // Wait for the TabGroupSyncService to properly initialize before making any
+  // changes to tab groups. This is not used on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  tab_groups::TabGroupSyncServiceInitializedObserver observer(saved_service);
+  observer.Wait();
+#endif
+
+  // Group the tab and save it.
+  tab_groups::TabGroupId group =
+      tab_list->CreateTabGroup({tab_list->GetTab(1)->GetHandle()}).value();
+  tab_groups::TabGroupVisualData visual_data(
+      u"Initial title", tab_groups::TabGroupColorId::kBlue);
+  tab_list->SetTabGroupVisualData(group, visual_data);
+
+  std::optional<tab_groups::TabGroupId> tab1_group_id =
+      tab_list->GetTab(1)->GetGroup();
+  ASSERT_TRUE(tab1_group_id.has_value());
+
+// TabGroupSyncService takes in different types for its methods depending on
+// platform.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_TRUE(saved_service->GetGroup(tab1_group_id->token()).has_value());
+  auto group_id = group.token();
+#else
+  EXPECT_TRUE(saved_service->GetGroup(*tab1_group_id).has_value());
+  tab_groups::TabGroupId group_id = group;
+#endif
+
+  {  // Test the active state change for a saved tab.
+    tab_list->ActivateTab(tab_list->GetTab(2)->GetHandle());
+
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"active": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab1_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+    EXPECT_EQ(tab_list->GetActiveTab()->GetContents(), tab1_contents);
+  }
+
+  ASSERT_TRUE(saved_service->GetGroup(group_id));
+
+  {  // Reset the active states, and then test highlighted for a saved tab.
+    tab_list->ActivateTab(tab_list->GetTab(2)->GetHandle());
+
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"highlighted": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab1_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+    EXPECT_TRUE(tab_list->GetTab(1)->IsSelected());
+  }
+
+  ASSERT_TRUE(saved_service->GetGroup(group_id));
+
+  {  // Reset the active states, and then test selected state for a saved tab.
+    tab_list->ActivateTab(tab_list->GetTab(2)->GetHandle());
+
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"selected": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab1_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+    EXPECT_TRUE(tab_list->GetTab(1)->IsSelected());
+  }
+
+  ASSERT_TRUE(saved_service->GetGroup(group_id));
+
+  {  // Test Muted state.
+    // Tab should not be muted by default.
+    EXPECT_FALSE(tab1_contents->IsAudioMuted());
+
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"muted": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab1_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+    EXPECT_TRUE(tab1_contents->IsAudioMuted());
+  }
+
+  ASSERT_TRUE(saved_service->GetGroup(group_id));
+
+  {  // Test setting the opener.
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"openerTabId": %d}])";
+    const std::string args =
+        base::StringPrintf(kFormatArgs, tab1_id, non_updated_tab2_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+
+    auto* opener_tab =
+        tab_list->GetOpenerForTab(tab_list->GetTab(1)->GetHandle());
+    EXPECT_EQ(tab_list->GetTab(2), opener_tab);
+  }
+
+  ASSERT_TRUE(saved_service->GetGroup(group_id));
+
+// TODO(https://crbug.com/447211263): Re-enable this subtest once there is
+// support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  {  // Test setting the discard state.
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"autoDiscardable": false}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab1_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+
+    auto* lifecycle_unit =
+        resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+            tab1_contents);
+    ASSERT_TRUE(lifecycle_unit);
+    EXPECT_FALSE(lifecycle_unit->IsAutoDiscardable());
+  }
+
+  ASSERT_TRUE(saved_service->GetGroup(group_id));
+#endif
+
+  {  // Test setting URL should pass.
+    EXPECT_EQ(example_url, tab1_contents->GetLastCommittedURL());
+
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
+    const std::string args =
+        base::StringPrintf(kFormatArgs, tab1_id, chromium_url.spec().c_str());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+
+    content::WaitForLoadStop(tab1_contents);
+    EXPECT_EQ(chromium_url, tab1_contents->GetLastCommittedURL());
+  }
+
+  ASSERT_TRUE(saved_service->GetGroup(group_id));
+
+  // Test setting pinned state should pass. This must be done last since pinning
+  // destroys the group.
+  {
+    EXPECT_FALSE(tab_list->GetTab(1)->IsPinned());
+
+    auto function = base::MakeRefCounted<TabsUpdateFunction>();
+    function->set_extension(extension.get());
+    static constexpr char kFormatArgs[] = R"([%d, {"pinned": true}])";
+    const std::string args = base::StringPrintf(kFormatArgs, tab1_id);
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone));
+
+    // Pinned tab moves to the front of the tab strip, so it becomes tab 0.
+    EXPECT_EQ(tab1_contents, tab_list->GetTab(0)->GetContents());
+    EXPECT_TRUE(tab_list->GetTab(0)->IsPinned());
+  }
+
+  ASSERT_FALSE(saved_service->GetGroup(group_id));
+}
+
+// Tests that calling chrome.tabs.update with a JavaScript URL results
+// in an error.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_JavaScriptUrlNotAllowed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // An extension with access to www.example.com.
+  // TODO(crbug.com/371432155): Use the semantic extension builder and Manifest
+  // V3.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder()
+          .SetManifest(base::DictValue()
+                           .Set("name", "Extension with a host permission")
+                           .Set("version", "1.0")
+                           .Set("manifest_version", 2)
+                           .Set("permissions", base::ListValue().Append(
+                                                   "http://www.example.com/*")))
+          .Build();
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
+  function->set_extension(extension.get());
+
+  const GURL example_url =
+      embedded_test_server()->GetURL("example.com", "/title1.html");
+
+  // Navigate the browser to example.com
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, example_url));
+
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  static constexpr char kFormatArgs[] = R"([%d, {"url": "%s"}])";
+  const std::string args = base::StringPrintf(
+      kFormatArgs, tab_id, "javascript:void(document.title = 'Won't work')");
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+  EXPECT_EQ(ExtensionTabUtil::kJavaScriptUrlsNotAllowedInExtensionNavigations,
+            error);
+}
+
 // Tests updating a URL of a web tab to an about:blank.  Verify that the new
 // frame is placed in the correct process, has the correct origin and that no
 // DCHECKs are hit anywhere.
@@ -2857,10 +3123,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToAboutBlank) {
   content::WebContents* test_contents = nullptr;
   {
     content::WebContentsAddedObserver test_contents_observer;
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), web_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    GetTabListInterface()->OpenTab(web_url, -1);
     test_contents = test_contents_observer.GetWebContents();
+    content::WaitForLoadStop(test_contents);
   }
   EXPECT_EQ(web_origin,
             test_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -2909,8 +3174,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToAboutNewTab) {
   // definitely undesirable for http-initiated navigations (see r818969), but
   // it is less clear what should happen in extension-initiated navigations.
   GURL about_newtab_url = GURL("about:newtab");
+#if BUILDFLAG(IS_ANDROID)
+  GURL chrome_newtab_url = GURL("chrome-native://newtab/");
+#else
   GURL chrome_newtab_url = GURL("chrome://new-tab-page/");
-
+#endif
   // Navigate a tab to an extension page.
   content::WebContents* extension_contents = GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(extension_contents, extension_url));
@@ -2922,10 +3190,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToAboutNewTab) {
   content::WebContents* test_contents = nullptr;
   {
     content::WebContentsAddedObserver test_contents_observer;
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), web_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    GetTabListInterface()->OpenTab(web_url, -1);
     test_contents = test_contents_observer.GetWebContents();
+    content::WaitForLoadStop(test_contents);
   }
 
   // Use |chrome.tabs.update| API to navigate |test_contents| to an about:newtab
@@ -2945,8 +3212,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToAboutNewTab) {
   // Verify the origin and process of the about:newtab tab.
   content::RenderFrameHost* test_frame = test_contents->GetPrimaryMainFrame();
   EXPECT_EQ(chrome_newtab_url, test_frame->GetLastCommittedURL());
+
+#if BUILDFLAG(IS_ANDROID)
+  // "chrome-native://newtab/" has an opaque origin.
+  EXPECT_TRUE(test_frame->GetLastCommittedOrigin().opaque());
+#else
   EXPECT_EQ(url::Origin::Create(chrome_newtab_url),
             test_frame->GetLastCommittedOrigin());
+#endif
   EXPECT_NE(extension_contents->GetPrimaryMainFrame()->GetProcess(),
             test_contents->GetPrimaryMainFrame()->GetProcess());
 }
@@ -2975,10 +3248,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToNonWAR) {
   content::WebContents* test_contents = nullptr;
   {
     content::WebContentsAddedObserver test_contents_observer;
-    ui_test_utils::NavigateToURLWithDisposition(
-        browser(), web_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    GetTabListInterface()->OpenTab(web_url, -1);
     test_contents = test_contents_observer.GetWebContents();
+    content::WaitForLoadStop(test_contents);
   }
   EXPECT_EQ(web_origin,
             test_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -3006,6 +3278,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsUpdate_WebToNonWAR) {
   EXPECT_EQ(extension_contents->GetPrimaryMainFrame()->GetProcess(),
             test_contents->GetPrimaryMainFrame()->GetProcess());
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                        ExtensionAPICannotCreateWindowForDevtools) {
