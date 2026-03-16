@@ -25,6 +25,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
@@ -125,9 +126,7 @@ TEST_F(SystemComponentsTest, PillButtonTooltip) {
   EXPECT_EQ(pill_button->GetRenderedTooltipText(gfx::Point()), u"Tooltip");
 }
 
-// TODO(crbug.com/40878458): Disable for constant failure.
-TEST_F(SystemComponentsTest,
-       DISABLED_IconButtonWithBackgroundColorIdDoesNotCrash) {
+TEST_F(SystemComponentsTest, IconButtonWithBackgroundColorIdDoesNotCrash) {
   // Create an IconButton with an explicit background color ID.
   auto icon_button = std::make_unique<IconButton>(
       IconButton::PressedCallback(), IconButton::Type::kSmall, &kTestIcon,
@@ -141,8 +140,8 @@ TEST_F(SystemComponentsTest,
   icon_button_ptr->SchedulePaint();
   EXPECT_TRUE(views::ViewTestApi(icon_button_ptr).needs_paint());
 
-  // Spin the message loop so the button paints.
-  base::RunLoop().RunUntilIdle();
+  // Wait for the compositor frame to complete its paint.
+  ui::DrawWaiterForTest::WaitForCompositingEnded(widget->GetCompositor());
   EXPECT_FALSE(views::ViewTestApi(icon_button_ptr).needs_paint());
 
   // No crash.
