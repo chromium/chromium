@@ -220,6 +220,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="No user action taken"/>
 </enum>
 
+<!-- LINT.IfChange(PersistentStoreType) -->
+
+<enum name="PersistentStoreType">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Legacy"/>
+  <int value="2" label="TabStateStore"/>
+  <int value="3" label="Unknown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/PersistentStoreMigrationManager.java:StoreType) -->
+
 <enum name="PullDownGestureAction">
   <summary>The type of action performed on the overscroll UI.</summary>
   <int value="0" label="NewTab">The user selected the new tab action.</int>

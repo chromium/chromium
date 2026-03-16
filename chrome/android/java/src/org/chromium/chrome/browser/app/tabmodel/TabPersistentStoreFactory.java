@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.chrome.browser.tab.TabStateStorageFlagHelper.isTabStorageEnabled;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -66,6 +67,7 @@ public class TabPersistentStoreFactory {
         }
 
         @StoreType int storeType = migrationManager.getAuthoritativeStoreType();
+        recordStoreTypeHistogram("Tabs.TabPersistentStore.AuthoritativeStoreType", storeType);
         if (storeType == StoreType.LEGACY) {
             TabPersistentStoreImpl legacyStore =
                     new TabPersistentStoreImpl(
@@ -148,6 +150,7 @@ public class TabPersistentStoreFactory {
         }
 
         @StoreType int shadowStoreType = migrationManager.getShadowStoreType();
+        recordStoreTypeHistogram("Tabs.TabPersistentStore.ShadowStoreType", shadowStoreType);
         TabPersistentStore shadowTabPersistentStore;
         if (shadowStoreType == StoreType.TAB_STATE_STORE) {
             // Headless and Archived models specifically choose not to restore incognito tabs
@@ -227,5 +230,9 @@ public class TabPersistentStoreFactory {
                         manager.onShadowStoreCaughtUp();
                     }
                 });
+    }
+
+    private static void recordStoreTypeHistogram(String name, @StoreType int storeType) {
+        RecordHistogram.recordEnumeratedHistogram(name, storeType, StoreType.UNKNOWN);
     }
 }

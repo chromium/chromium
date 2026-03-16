@@ -3063,12 +3063,23 @@ chromium-metrics-reviews@google.com.
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records the time elapsed since TabModelOrchestrator initialization until the
-    active {ActiveTabType} tab is loaded.
+    active {ActiveTabType} tab is loaded. Recorded upon loading the active tab.
+    Android-only.
   </summary>
   <token key="ActiveTabType">
     <variant name="Incognito" summary="Incognito"/>
     <variant name="Regular" summary="Regular"/>
   </token>
+</histogram>
+
+<histogram name="Tabs.TabPersistentStore.AuthoritativeStoreType"
+    enum="PersistentStoreType" expires_after="2026-08-23">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the type of authoritative TabPersistentStore. Recorded upon creation
+    of the authoritative TabPersistentStore. Android-only.
+  </summary>
 </histogram>
 
 <histogram name="Tabs.TabPersistentStore.Initialized" units="ms"
@@ -3077,7 +3088,18 @@ chromium-metrics-reviews@google.com.
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records the time elapsed since TabModelOrchestrator initialization until the
-    TabPersistentStore is initialized (metadata read).
+    TabPersistentStore is initialized (metadata read). Recorded when the
+    TabPersistentStore is initialized. Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabPersistentStore.ShadowStoreType"
+    enum="PersistentStoreType" expires_after="2026-10-28">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the type of a shadow store. Recorded upon creation of a shadow
+    store. Android-only.
   </summary>
 </histogram>
 
@@ -3087,7 +3109,8 @@ chromium-metrics-reviews@google.com.
   <owner>clank-tab-dev@google.com</owner>
   <summary>
     Records the time elapsed since TabModelOrchestrator initialization until the
-    tab state is fully loaded.
+    tab state is fully loaded. Recorded upon fully loading the tab state.
+    Android-only.
   </summary>
 </histogram>
 
