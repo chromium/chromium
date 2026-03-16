@@ -7,6 +7,7 @@
 #include <limits>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -155,6 +156,27 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   return config;
 }
 
+// If this feature is enabled, we use the destination color space for
+// SharedImage instead of passing an invalid color space.
+BASE_FEATURE(kUseDestinationColorSpaceInVideoEncode,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+gfx::ColorSpace GetDestinationColorSpace(
+    VideoPixelFormat src_format,
+    const gfx::ColorSpace& src_color_space) {
+  bool is_src_rgb =
+      src_format == PIXEL_FORMAT_XBGR || src_format == PIXEL_FORMAT_XRGB ||
+      src_format == PIXEL_FORMAT_ABGR || src_format == PIXEL_FORMAT_ARGB;
+  // For RGB frames, ConvertAndScale uses BT.601 as that is used for libyuv's
+  // RGB to YUV conversion. For YUV frames, ConvertAndScale uses `src_frame`
+  // color space so use that directly.
+  // TODO(b/425634684): Update all callsites of ConvertAndScale so that the
+  // VideoFrame::set_color_space is performed by callers and not set inside.
+  // TODO(b/425634684): Check for `src_color_space` validity and use
+  // default BT.709 if it is invalid.
+  return is_src_rgb ? gfx::ColorSpace::CreateREC601() : src_color_space;
+}
+
 }  // namespace
 
 class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
@@ -171,7 +193,8 @@ class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
       const MappableSharedImageVideoFramePool&) = delete;
 
   scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
-      const gfx::Size& visible_size) {
+      const gfx::Size& visible_size,
+      const gfx::ColorSpace& color_space) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(gfx::Rect(coded_size_).Contains(gfx::Rect(visible_size)));
 
@@ -183,7 +206,17 @@ class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    scoped_refptr<VideoFrame> video_frame;
+    if (!available_shared_images_.empty() &&
+        base::FeatureList::IsEnabled(kUseDestinationColorSpaceInVideoEncode)) {
+      auto shared_image = available_shared_images_.back();
+      // If the color space changes, clear the pool as we need to destroy
+      // SharedImages with previous color space. This should not be happening
+      // often.
+      if (shared_image->color_space() != color_space) {
+        available_shared_images_.clear();
+      }
+    }
+
     gpu::SyncToken sync_token;
     if (available_shared_images_.empty()) {
       auto* sii = gpu_factories_->SharedImageInterface();
@@ -193,7 +226,7 @@ class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
       }
 
       auto shared_image = sii->CreateSharedImage(
-          {si_format, coded_size_, gfx::ColorSpace(),
+          {si_format, coded_size_, color_space,
            gpu::SharedImageUsageSet(si_usage), "VideoEncodeAcceleratorAdapter"},
           gpu::kNullSurfaceHandle, buffer_usage);
       if (!shared_image) {
@@ -210,9 +243,11 @@ class VideoEncodeAcceleratorAdapter::MappableSharedImageVideoFramePool
     auto shared_image_release_cb = base::BindPostTaskToCurrentDefault(
         base::BindOnce(&MappableSharedImageVideoFramePool::ReuseFrame, this,
                        shared_image));
-    video_frame = media::VideoFrame::WrapMappableSharedImage(
-        std::move(shared_image), sync_token, std::move(shared_image_release_cb),
-        gfx::Rect(visible_size), visible_size, base::TimeDelta());
+    scoped_refptr<VideoFrame> video_frame =
+        media::VideoFrame::WrapMappableSharedImage(
+            std::move(shared_image), sync_token,
+            std::move(shared_image_release_cb), gfx::Rect(visible_size),
+            visible_size, base::TimeDelta());
     return video_frame;
   }
 
@@ -1099,8 +1134,13 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
         gpu_factories_, dest_coded_size);
   }
 
-  auto gpu_frame =
-      gmb_frame_pool_->MaybeCreateVideoFrame(dest_visible_rect.size());
+  gfx::ColorSpace color_space;
+  if (base::FeatureList::IsEnabled(kUseDestinationColorSpaceInVideoEncode)) {
+    color_space =
+        GetDestinationColorSpace(src_frame->format(), src_frame->ColorSpace());
+  }
+  auto gpu_frame = gmb_frame_pool_->MaybeCreateVideoFrame(
+      dest_visible_rect.size(), color_space);
   if (!gpu_frame)
     return EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError);
 
