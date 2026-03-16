@@ -141,12 +141,18 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                     case ActorTaskState.ACTING:
                     case ActorTaskState.REFLECTING:
                         mButtonState = ButtonState.WORKING;
+                        // TODO(haileywang): Start the animation of the working button.
                         break;
                     case ActorTaskState.PAUSED_BY_USER:
                     case ActorTaskState.PAUSED_BY_ACTOR:
+                        mButtonState = ButtonState.WORKING;
+                        break;
+                    case ActorTaskState.CANCELLED:
+                    case ActorTaskState.CREATED:
+                        // Show the default button for these states.
                         break;
                     default:
-                        throw new AssertionError("unreachable");
+                        throw new AssertionError("Unexpected task state: " + state);
                 }
             }
         }
