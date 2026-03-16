@@ -30,7 +30,7 @@
 #include <iterator>
 #include <memory>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
 #include "style_rule.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
@@ -2248,37 +2248,17 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
   }
 }
 
-constexpr bool IsPseudoMapSorted(const NameToPseudoStruct* map, unsigned size) {
-  for (unsigned i = 0; i < size - 1; i++) {
-    // strcmp/strncmp would be much better here, but unfortunately they aren't
-    // constexpr.
-    const char* current_string = UNSAFE_TODO(map[i].string);
-    const char* next_string = UNSAFE_TODO(map[i + 1].string);
-    while (true) {
-      if (*current_string > *next_string) {
-        return false;
-      }
-      if (*current_string < *next_string) {
-        break;
-      }
-      if (!*current_string) {
-        break;
-      }
-      if (!*next_string) {
-        return false;
-      }
-      UNSAFE_TODO(current_string++);
-      UNSAFE_TODO(next_string++);
-    }
-  }
-  return true;
-}
+constexpr auto PseudoNameProjection = [](const NameToPseudoStruct& entry) {
+  return std::string_view(entry.string);
+};
 
-static_assert(IsPseudoMapSorted(kPseudoTypeWithoutArgumentsMap,
-                                std::size(kPseudoTypeWithoutArgumentsMap)),
+static_assert(std::ranges::is_sorted(kPseudoTypeWithoutArgumentsMap,
+                                     {},
+                                     PseudoNameProjection),
               "kPseudoTypeWithoutArgumentsMap must be sorted.");
-static_assert(IsPseudoMapSorted(kPseudoTypeWithArgumentsMap,
-                                std::size(kPseudoTypeWithArgumentsMap)),
+static_assert(std::ranges::is_sorted(kPseudoTypeWithArgumentsMap,
+                                     {},
+                                     PseudoNameProjection),
               "kPseudoTypeWithArgumentsMap must be sorted.");
 
 }  // namespace blink
