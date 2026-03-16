@@ -128,7 +128,7 @@ bool AppBannerManagerAndroid::IsRunningForTesting(JNIEnv* env) {
 }
 
 int AppBannerManagerAndroid::GetPipelineStatusForTesting(JNIEnv* env) {
-  return static_cast<int>(app_banner_manager_->state_for_testing());
+  return static_cast<int>(app_banner_manager_->state());
 }
 
 int AppBannerManagerAndroid::GetBadgeStatusForTesting(JNIEnv* env) {
@@ -147,7 +147,8 @@ void AppBannerManagerAndroid::OnAppDetailsRetrieved(
     const JavaRef<jstring>& jicon_url) {
   // If the state isn't fetching native data, that means the page must have
   // navigated or reset in some way.
-  if (!app_banner_manager_->IsFetchingNativeData()) {
+  if (app_banner_manager_->state() !=
+      AppBannerManager::State::FETCHING_NATIVE_DATA) {
     return;
   }
   if (request_id != current_native_request_id_) {
@@ -193,7 +194,7 @@ void AppBannerManagerAndroid::ShowBannerFromBadge(
   // Close our bindings to ensure that any existing beforeinstallprompt events
   // cannot trigger add to home screen (which would cause a crash). If the
   // banner is dismissed, the event will be resent.
-  app_banner_manager_->PrepareForBannerPromptReplacement();
+  app_banner_manager_->ResetBindings();
 }
 
 // static
@@ -340,8 +341,7 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge(
                              current_config->web_app_data.manifest_id) {
     // TODO(https://crbug.com/324322110): remove once crash understood.
     DUMP_WILL_BE_CHECK(false)
-        << "Pipeline state:"
-        << static_cast<int>(app_banner_manager_->state_for_testing());
+        << "Pipeline state:" << static_cast<int>(app_banner_manager_->state());
     return;
   }
 
@@ -379,9 +379,8 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge(
                                   install_config.validated_url))));
 }
 
-AppBannerManager::ShowBannerUiResult AppBannerManagerAndroid::ShowBannerUi(
-    WebappInstallSource install_source,
-    const InstallBannerConfig& config) {
+void AppBannerManagerAndroid::ShowBannerUi(WebappInstallSource install_source,
+                                           const InstallBannerConfig& config) {
   content::WebContents* contents = app_banner_manager_->web_contents();
   DCHECK(contents);
 
@@ -412,12 +411,15 @@ AppBannerManager::ShowBannerUiResult AppBannerManagerAndroid::ShowBannerUi(
 
   if (was_shown) {
     if (native_java_app_data.is_null()) {
-      return AppBannerManager::ShowBannerUiResult::kShownWebApp;
+      app_banner_manager_->ReportStatus(
+          InstallableStatusCode::SHOWING_WEB_APP_BANNER);
     } else {
-      return AppBannerManager::ShowBannerUiResult::kShownNativeApp;
+      app_banner_manager_->ReportStatus(
+          InstallableStatusCode::SHOWING_NATIVE_APP_BANNER);
     }
   } else {
-    return AppBannerManager::ShowBannerUiResult::kFailed;
+    app_banner_manager_->ReportStatus(
+        InstallableStatusCode::FAILED_TO_CREATE_BANNER);
   }
 }
 

@@ -202,9 +202,8 @@ web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() const {
   return provider->registrar_unsafe();
 }
 
-AppBannerManager::ShowBannerUiResult AppBannerManagerDesktop::ShowBannerUi(
-    WebappInstallSource install_source,
-    const InstallBannerConfig& config) {
+void AppBannerManagerDesktop::ShowBannerUi(WebappInstallSource install_source,
+                                           const InstallBannerConfig& config) {
   AppBannerSettingsHelper::RecordBannerEvent(
       app_banner_manager_->web_contents(), config,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
@@ -215,7 +214,6 @@ AppBannerManager::ShowBannerUiResult AppBannerManagerDesktop::ShowBannerUi(
                               weak_factory_.GetWeakPtr(),
                               config.web_app_data.manifest().id,
                               weak_factory_.GetWeakPtr()));
-  return AppBannerManager::ShowBannerUiResult::kShownAppInstallationDialog;
 }
 
 void AppBannerManagerDesktop::OnWebAppInstalledWithOsHooks(

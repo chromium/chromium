@@ -52,7 +52,7 @@ class TestAppBannerManagerDesktop : public AppBannerManagerDesktop,
   void SetCompleteCallback(base::OnceClosure on_complete);
 
   // Returns the internal state of the AppBannerManager.
-  AppBannerManager::State state_for_testing() const;
+  AppBannerManager::State state();
 
   // Block until the current app has been installed.
   void AwaitAppInstall();

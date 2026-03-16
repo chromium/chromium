@@ -89,8 +89,8 @@ void TestAppBannerManagerDesktop::SetCompleteCallback(
   on_complete_ = std::move(on_complete);
 }
 
-AppBannerManager::State TestAppBannerManagerDesktop::state_for_testing() const {
-  return app_banner_manager()->state_for_testing();
+AppBannerManager::State TestAppBannerManagerDesktop::state() {
+  return app_banner_manager()->state();
 }
 
 void TestAppBannerManagerDesktop::AwaitAppInstall() {
