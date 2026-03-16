@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -187,6 +188,19 @@ void ChooserBubbleUiViewDelegate::OnSelectionChanged() {
 void ChooserBubbleUiViewDelegate::UpdateAnchor(Browser* browser) {
   AnchorConfiguration configuration = GetChooserAnchorConfiguration(browser);
   SetAnchor(configuration.anchor);
+  // In fullscreen, `anchor` may be nullptr therefore anchor to the browser
+  // window instead.
+  if (std::holds_alternative<View*>(configuration.anchor)) {
+    set_parent_window(
+        std::get<View*>(configuration.anchor)->GetWidget()->GetNativeView());
+  } else if (std::holds_alternative<ui::TrackedElement*>(
+                 configuration.anchor)) {
+    set_parent_window(
+        std::get<ui::TrackedElement*>(configuration.anchor)->GetNativeView());
+  } else {
+    set_parent_window(
+        platform_util::GetViewForWindow(browser->window()->GetNativeWindow()));
+  }
   if (configuration.highlighted_element) {
     SetHighlightedElement(*configuration.highlighted_element);
   }
@@ -294,12 +308,6 @@ base::OnceClosure ShowDeviceChooserDialog(
   auto bubble = std::make_unique<ChooserBubbleUiViewDelegate>(
       browser, contents, std::move(controller));
 
-  // Set |parent_window_| because some valid anchors can become hidden.
-  views::Widget* parent_widget = views::Widget::GetWidgetForNativeWindow(
-      browser->window()->GetNativeWindow());
-  gfx::NativeView parent = parent_widget->GetNativeView();
-  DCHECK(parent);
-  bubble->set_parent_window(parent);
   bubble->UpdateAnchor(browser);
 
   base::OnceClosure close_closure = bubble->MakeCloseClosure();
