@@ -27,7 +27,9 @@ namespace save_to_drive {
 
 AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
     AccountChooserRadioButtonDelegate* delegate,
-    const AccountInfo& account)
+    const AccountInfo& account,
+    int pos_in_set,
+    int set_size)
     : delegate_(delegate), account_(account) {
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetIgnoreDefaultMainAxisMargins(true);
@@ -39,6 +41,8 @@ AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemRadio);
   GetViewAccessibility().SetName(base::UTF8ToUTF16(base::StrCat(
       {account.GetFullName().value_or(""), " ", account.GetEmail()})));
+  GetViewAccessibility().SetPosInSet(pos_in_set);
+  GetViewAccessibility().SetSetSize(set_size);
 
   auto account_row_container = std::make_unique<views::FlexLayoutView>();
   auto account_row = CreateAccountRow(account);
@@ -54,6 +58,8 @@ AccountChooserRadioButtonRow::AccountChooserRadioButtonRow(
   AddChildView(std::move(account_row_container));
 
   auto radio_button = std::make_unique<views::RadioButton>();
+  radio_button->GetViewAccessibility().SetPosInSet(pos_in_set);
+  radio_button->GetViewAccessibility().SetSetSize(set_size);
   radio_button->GetViewAccessibility().SetName(
       base::UTF8ToUTF16(account.GetEmail()));
   account_selected_subscription_ = radio_button->AddCheckedChangedCallback(
@@ -110,21 +116,28 @@ AccountChooserRadioGroupView::AccountChooserRadioGroupView(
 
   SetOrientation(views::LayoutOrientation::kVertical);
 
+  // Used for radio menu accessibility. Each item is labeled with "`pos` of
+  // `size`", e.g. "1 of 2".
+  const int set_size = static_cast<int>(accounts_.size());
+  int pos_in_set = primary_account_id ? 2 : 1;
+
   // Build the account rows.
   AddChildView(std::make_unique<views::Separator>());
   for (auto& account : accounts_) {
     // Keep track of the account to radio button mapping.
     if (account.first.GetAccountId() == primary_account_id) {
       // Ensures the primary account is the first account in the list.
-      account.second = AddChildViewAt(
-          std::make_unique<AccountChooserRadioButtonRow>(this, account.first),
-          1);
+      account.second =
+          AddChildViewAt(std::make_unique<AccountChooserRadioButtonRow>(
+                             this, account.first, /*pos_in_set=*/1, set_size),
+                         1);
       AddChildViewAt(std::make_unique<views::Separator>(), 2);
       // Select the primary account.
       account.second->SelectRadioButton();
     } else {
-      account.second = AddChildView(
-          std::make_unique<AccountChooserRadioButtonRow>(this, account.first));
+      account.second =
+          AddChildView(std::make_unique<AccountChooserRadioButtonRow>(
+              this, account.first, pos_in_set++, set_size));
       AddChildView(std::make_unique<views::Separator>());
     }
   }

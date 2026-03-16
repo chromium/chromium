@@ -129,8 +129,9 @@ TEST_F(AccountChooserRadioGroupViewTest,
        AccountChooserRadioButtonRowClickInvokesDelegate) {
   MockAccountChooserRadioButtonDelegate delegate;
   AccountInfo account = GetTestAccount("account", kTestDomain, /*gaia_id=*/1);
-  AccountChooserRadioButtonRow* row_view = anchor_view_->AddChildView(
-      std::make_unique<AccountChooserRadioButtonRow>(&delegate, account));
+  AccountChooserRadioButtonRow* row_view =
+      anchor_view_->AddChildView(std::make_unique<AccountChooserRadioButtonRow>(
+          &delegate, account, /*pos_in_set=*/1, /*set_size=*/1));
 
   EXPECT_CALL(delegate, SelectAccount(Field(&AccountInfo::account_id,
                                             account.account_id)));
@@ -174,8 +175,9 @@ TEST_F(AccountChooserRadioGroupViewTest,
        AccountChooserRadioButtonClickInvokesDelegate) {
   MockAccountChooserRadioButtonDelegate delegate;
   AccountInfo account = GetTestAccount("account", kTestDomain, /*gaia_id=*/1);
-  AccountChooserRadioButtonRow* row_view = anchor_view_->AddChildView(
-      std::make_unique<AccountChooserRadioButtonRow>(&delegate, account));
+  AccountChooserRadioButtonRow* row_view =
+      anchor_view_->AddChildView(std::make_unique<AccountChooserRadioButtonRow>(
+          &delegate, account, /*pos_in_set=*/1, /*set_size=*/1));
 
   EXPECT_CALL(delegate, SelectAccount(Field(&AccountInfo::account_id,
                                             account.account_id)));
