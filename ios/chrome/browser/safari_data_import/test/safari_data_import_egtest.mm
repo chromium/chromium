@@ -8,10 +8,10 @@
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/data_import/public/accessibility_utils.h"
 #import "ios/chrome/browser/data_import/public/credential_item_identifier.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_app_interface.h"
 #import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -289,8 +289,7 @@ NSString* const kInvalidPasswordUsername = @"Superman";
 /// password conflicts, if there is any,
 - (void)testPasswordConflictResolution {
   if (@available(iOS 18.2, *)) {
-    [PasswordSettingsAppInterface setUpMockReauthenticationModule];
-    [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+    [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                       ReauthenticationResult::kSuccess];
     /// Store some password that will result in a conflict.
     NSString* existingPassword = @"Google!Password)";
@@ -386,7 +385,6 @@ NSString* const kInvalidPasswordUsername = @"Superman";
                                   password:existingPassword];
     [PasswordManagerAppInterface verifyCredentialStoredWithUsername:kUsername2
                                                            password:kPassword2];
-    [PasswordSettingsAppInterface removeMockReauthenticationModule];
   }
 }
 

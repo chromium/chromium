@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/data_import/ui/data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/data_import/ui/data_import_invalid_credentials_view_controller.h"
 #import "ios/chrome/browser/data_import/ui/import_data_item_table_view.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -348,6 +350,9 @@ constexpr NSInteger kExpectedItemsCount = 4;
                        passkeyConflicts:[NSArray array]];
   conflictResolutionViewController.mutator = self.mediator;
   conflictResolutionViewController.delegate = self;
+  conflictResolutionViewController.reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetReauthModule();
   UINavigationController* wrapper = [[UINavigationController alloc]
       initWithRootViewController:conflictResolutionViewController];
   wrapper.toolbarHidden = NO;
