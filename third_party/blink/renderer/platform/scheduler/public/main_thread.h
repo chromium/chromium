@@ -39,6 +39,7 @@ class MainThreadTaskRunnerRestricted {
   friend class CanvasHibernationHandler;
   friend class HibernatedCanvasMemoryDumpProvider;
   friend class MainThreadTaskRunnerRestrictedForTesting;
+  friend class WebNNIntrospectionImpl;
   friend MainThreadTaskRunnerRestricted AccessMainThreadForGpuFactories();
   friend MainThreadTaskRunnerRestricted
   AccessMainThreadForWebGraphicsContext3DProvider();

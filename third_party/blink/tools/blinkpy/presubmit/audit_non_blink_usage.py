@@ -2788,6 +2788,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            "third_party/blink/renderer/modules/ml/webnn/webnn_introspection_impl.cc",
+        ],
+        'allowed': [
+            'base::BindOnce',
+            'base::Unretained',
+        ]
+    },
+    {
+        'paths': [
             "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/utils/ml_graph_dump.h",
             "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/utils/ml_graph_dump.cc",
         ],

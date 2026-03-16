@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_WEBNN_INTROSPECTION_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_WEBNN_INTROSPECTION_IMPL_H_
 
+#include <atomic>
+
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/cpp/webnn_buildflags.h"
@@ -35,11 +38,19 @@ class MODULES_EXPORT WebNNIntrospectionImpl
 #endif
 
  private:
-  WebNNIntrospectionImpl() : receiver_(this) {}
+  WebNNIntrospectionImpl();
 
-  mojo::Receiver<blink::mojom::blink::WebNNIntrospection> receiver_;
+#if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
+  void OnGraphRecordedMainThread(::mojo_base::BigBuffer json_data) const;
+#endif
+
+  mojo::Receiver<blink::mojom::blink::WebNNIntrospection> receiver_{this};
 
   mojo::Remote<blink::mojom::blink::WebNNIntrospectionClient> client_;
+
+  std::atomic<bool> is_graph_recording_enabled_{false};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink
