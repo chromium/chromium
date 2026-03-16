@@ -1454,6 +1454,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
                  {.role = PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
   });
   test_api(form).field(1).set_value(u"US");
+  test_api(form).field(1).set_selected_option_text(u"United States (+1)");
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form);
 

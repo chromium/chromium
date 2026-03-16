@@ -1932,8 +1932,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
 
   expected.set_value(u"CA");
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);
-  EXPECT_THAT(result.selected_option().CopyAsOptional(),
-              Optional(Field(&SelectOption::text, u"California")));
+  EXPECT_EQ(result.selected_option_text(), u"California");
   ASSERT_EQ(2U, result.options().size());
   EXPECT_EQ(u"CA", result.options()[0].value);
   EXPECT_EQ(u"California", result.options()[0].text);
@@ -4605,8 +4604,7 @@ TEST_F(FormAutofillTest, SelectOneAsText) {
   expected.set_form_control_type(FormControlType::kSelectOne);
   expected.set_max_length(0);
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
-  EXPECT_THAT(fields[2].selected_option().CopyAsOptional(),
-              Optional(Field(&SelectOption::text, u"Albania")));
+  EXPECT_EQ(fields[2].selected_option_text(), u"Albania");
 }
 
 TEST_F(FormAutofillTest, UnownedFormElementsToFormDataWithoutForm) {

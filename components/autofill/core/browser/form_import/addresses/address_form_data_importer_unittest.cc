@@ -1640,6 +1640,7 @@ TEST_F(AddressFormDataImporterTest,
   AutofillField field2(
       test::CreateTestSelectField("Country", "country", "US", "country",
                                   {"DE", "US"}, {"Germany", "United States"}));
+  field2.set_selected_option_text(u"United States");
   field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                    AutofillPredictionSource::kHeuristics);
   const std::array<const autofill::AutofillField*, 2> section_fields =
@@ -1662,6 +1663,7 @@ TEST_F(AddressFormDataImporterTest,
   AutofillField field(
       test::CreateTestSelectField("Country", "country", "US", "country",
                                   {"DE", "US"}, {"Germany", "United States"}));
+  field.set_selected_option_text(u"United States");
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
                   AutofillPredictionSource::kHeuristics);
   AutofillField field2;

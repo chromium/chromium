@@ -760,8 +760,9 @@ const std::u16string& AutofillField::value_for_import() const {
   if (!should_consider_value_for_import) {
     return base::EmptyString16();
   }
-  if (base::optional_ref<const SelectOption> o = selected_option()) {
-    return o->text;
+
+  if (const std::optional<std::u16string>& text = selected_option_text()) {
+    return *text;
   }
   return value();
 }

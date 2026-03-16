@@ -318,6 +318,7 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromNonDateSelect) {
                                FieldType::PASSPORT_NUMBER, "123"));
   fields.push_back(CreateSelect(Range(1, 3), {"Germany", "USA", "Vietnam"},
                                 FieldType::PASSPORT_ISSUING_COUNTRY, "2"));
+  fields.back()->set_selected_option_text(u"USA");
 
   // `CreateAttribute` requires that we use the country code.
   EXPECT_THAT(

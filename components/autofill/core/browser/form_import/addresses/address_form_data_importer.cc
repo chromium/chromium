@@ -56,8 +56,7 @@ using AddressImportRequirement =
 struct ValueForImport {
   // The return value of `AutofillField::value_for_import()`.
   std::u16string value_for_import;
-  // The value of the selected option. Only set for <select> fields and where
-  // `FormFieldData::selected_option()` doesn't return std::nullopt.
+  // The value of the selected option. Only set for <select> fields.
   std::optional<std::u16string> selected_option_value;
 };
 
@@ -371,10 +370,12 @@ AddressFormDataImporter::GetAddressObservedFieldValues(
         has_multiple_distinct_email_addresses = true;
       }
     }
-    std::optional<std::u16string> selected_option_value = std::nullopt;
-    if (base::optional_ref<const SelectOption> o = field->selected_option()) {
-      selected_option_value = o->value;
-    }
+    // This is different from `value = field->value_for_import()` because in
+    // case of select fields this can be equal to the SelectOption::text and not
+    // SelectOption::value of the selected option (see `SelectOption`
+    // documentation and `AutofillField::value_for_import()` for more details).
+    std::optional<std::u16string> selected_option_value =
+        field->IsSelectElement() ? std::optional(field->value()) : std::nullopt;
     // If the field type and |value| don't pass basic validity checks then
     // abandon the import.
     if (!IsValidFieldTypeAndValue(

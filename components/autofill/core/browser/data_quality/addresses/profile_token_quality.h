@@ -105,20 +105,17 @@ class ProfileTokenQuality {
 
   // Derives an observation from every field of the `form_structure` that was
   // autofilled with the `profile_`. Only fields with no existing observation
-  // for the same type are considered.
-  // The observations are associated with the fields' `Type()`.
+  // for the same type are considered. The observations are associated with the
+  // fields' `Type()`.
+  //
   // Because the set of types of the form is form identifying, some observations
   // are randomly dropped for privacy reasons (see `AddSubsetOfObservations()`).
-  // The values of the `form_structure`'s fields represent the initial values
-  // of those fields. To derive the observation types, the current value in the
-  // fields is required. For this reason, the `form_data` is passed in.
-  // The function does not persist new observation in the database.
-  // The `pdm` is necessary to access the other profiles of the user and derive
+  //
+  // The function does not persist new observations in the database.
+  // The `adm` is necessary to access the other profiles of the user and derive
   // observation types like `kEditedToSameTokenOfOtherProfile`.
   // The function returns true if at least one new observation was collected.
-  // TODO(crbug.com/40227496): Get rid of the `form_data` parameter.
   bool AddObservationsForFilledForm(const FormStructure& form_structure,
-                                    const FormData& form_data,
                                     const AddressDataManager& adm);
 
   // Collects observations using `AddObservationsForFilledForm()` for all
@@ -126,7 +123,6 @@ class ProfileTokenQuality {
   // Persists any newly collected observations.
   static void SaveObservationsForFilledFormForAllSubmittedProfiles(
       const FormStructure& form_structure,
-      const FormData& form_data,
       AddressDataManager& adm);
 
   // Returns all `ObservationType`s available for the `type`. The resulting

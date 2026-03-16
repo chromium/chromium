@@ -235,7 +235,7 @@ class FormFieldData {
   //   FormFieldData::value() may not be the ideal human-readable representation
   //   of a <select> element. The selected option's text is usually the better
   //   string to display to the user (e.g., during form import). For further
-  //   details, see SelectOption and FormFieldData::selected_option().
+  //   details, see `SelectOption` documentation.
   //
   // Truncated at `kMaxStringLength`.
   // TODO(crbug.com/40941640): Extract the value of contenteditables on iOS.
@@ -257,12 +257,6 @@ class FormFieldData {
   //   `SelectOption::value` and `SelectOption::text` (see `SelectOption`
   //   documentation for more details).
   //
-  // * vs. `selected_option()`: `selected_option()` searches for a
-  //   `SelectOption` object representing the approximated matched option from
-  //   the `options()` list (combining both value and text).
-  //   `selected_option_text()` is simply the standalone string extracted from
-  //   the DOM.
-  //
   // * vs. `selected_text()`: `selected_text()` refers to the string of text
   //   actively highlighted by the user's cursor within a text field or
   //   contenteditable. `selected_option_text()` strictly refers to the label
@@ -273,22 +267,6 @@ class FormFieldData {
   void set_selected_option_text(std::u16string selected_option_text) {
     selected_option_text_ = std::move(selected_option_text);
   }
-
-  // Returns an approximation to the (first) selected option. Returns
-  // `std::nullopt` if none is found.
-  //
-  // This is an approximation since <select> elements can have duplicate options
-  // (which means options having both the same value and text, which are the
-  // only attributes extracted by Autofill) and Autofill does not have enough
-  // information to be able to tell them apart. Hence it returns the first
-  // option that matches its data the most or `std::nullopt` if none do.
-  //
-  // The only field types that come with options are FormControlType::kSelect*
-  // and FormControlType::kInput* with a datalist. But even their `value()` may
-  // mismatch all `options()`, e.g., when JavaScript set the value to a
-  // different value or when the number or string length of the options exceeded
-  // limits during extraction.
-  base::optional_ref<const SelectOption> selected_option() const LIFETIME_BOUND;
 
   // The selected (highlighted text in a text input element or contenteditable)
   // text, or the empty string if no text is selected.

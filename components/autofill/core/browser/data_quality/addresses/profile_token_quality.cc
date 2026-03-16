@@ -119,10 +119,7 @@ bool ProfileTokenQuality::operator==(const ProfileTokenQuality& other) const {
 
 bool ProfileTokenQuality::AddObservationsForFilledForm(
     const FormStructure& form_structure,
-    const FormData& form_data,
     const AddressDataManager& adm) {
-  CHECK_EQ(form_structure.field_count(), form_data.fields().size());
-
   std::vector<const AutofillProfile*> other_profiles = adm.GetProfiles();
   std::erase_if(other_profiles, [&](const AutofillProfile* p) {
     return p->guid() == profile_->guid();
@@ -164,10 +161,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
     // If the field has a selected option, we give precedence to the option's
     // text over its value because the user-visible text is likely more
     // meaningful. Currently, only <select> elements may have a selected option.
-    base::optional_ref<const SelectOption> selected_option =
-        form_data.fields()[i].selected_option();
-    std::u16string value =
-        selected_option ? selected_option->text : form_data.fields()[i].value();
+    std::u16string value = field.value_for_import();
     possible_observations.emplace_back(
         stored_type,
         Observation{.type = std::to_underlying(GetObservationTypeFromField(
@@ -180,7 +174,6 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
 // static
 void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
     const FormStructure& form_structure,
-    const FormData& form_data,
     AddressDataManager& adm) {
   std::set<std::string> guids_seen;
   for (const std::unique_ptr<AutofillField>& field : form_structure) {
@@ -197,7 +190,7 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
     }
     AutofillProfile updatable_profile = *profile;
     if (updatable_profile.token_quality().AddObservationsForFilledForm(
-            form_structure, form_data, adm)) {
+            form_structure, adm)) {
       adm.UpdateProfile(updatable_profile);
     }
   }

@@ -124,8 +124,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Accepted) {
 
   const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
-  EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
+  EXPECT_TRUE(quality.AddObservationsForFilledForm(*form_structure, adm()));
 
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
@@ -158,8 +157,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_Edited) {
 
   const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
-  EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
+  EXPECT_TRUE(quality.AddObservationsForFilledForm(*form_structure, adm()));
 
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kEditedValueCleared));
@@ -195,8 +193,7 @@ TEST_F(ProfileTokenQualityTest,
 
   const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
-  EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
+  EXPECT_TRUE(quality.AddObservationsForFilledForm(*form_structure, adm()));
 
   EXPECT_THAT(
       quality.GetObservationTypesForFieldType(EMAIL_ADDRESS),
@@ -217,12 +214,10 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_SameField) {
 
   const FormStructure* form_structure =
       autofill_manager().FindCachedFormById(form.global_id());
-  EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
+  EXPECT_TRUE(quality.AddObservationsForFilledForm(*form_structure, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
-  EXPECT_FALSE(
-      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
+  EXPECT_FALSE(quality.AddObservationsForFilledForm(*form_structure, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
 }
@@ -241,8 +236,7 @@ TEST_F(ProfileTokenQualityTest, AddObservationsForFilledForm_DynamicChange) {
       test_api(autofill_manager()).FindCachedFormById(form.global_id());
   form_structure->field(0)->SetTypeTo(AutofillType(NAME_LAST),
                                       AutofillPredictionSource::kHeuristics);
-  EXPECT_TRUE(
-      quality.AddObservationsForFilledForm(*form_structure, form, adm()));
+  EXPECT_TRUE(quality.AddObservationsForFilledForm(*form_structure, adm()));
   EXPECT_THAT(quality.GetObservationTypesForFieldType(NAME_FIRST),
               UnorderedElementsAre(ObservationType::kAccepted));
 }
@@ -266,7 +260,7 @@ TEST_F(ProfileTokenQualityTest,
   FillForm(form, profile2, /*triggering_field_index=*/1);
 
   ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
-      *autofill_manager().FindCachedFormById(form.global_id()), form, adm());
+      *autofill_manager().FindCachedFormById(form.global_id()), adm());
 
   // Expect that observations for both profiles were collected. Since
   // `SaveObservationsForFilledFormForAllSubmittedProfiles()` operates on the
@@ -356,7 +350,7 @@ TEST_P(ProfileTokenQualityObservationDroppingTest,
   FillForm(form, profile);
 
   EXPECT_TRUE(quality.AddObservationsForFilledForm(
-      *autofill_manager().FindCachedFormById(form.global_id()), form, adm()));
+      *autofill_manager().FindCachedFormById(form.global_id()), adm()));
   EXPECT_EQ(test.expected_number_of_observations,
             std::ranges::count_if(test.form_types, [&](FieldType type) {
               return !quality.GetObservationTypesForFieldType(type).empty();
