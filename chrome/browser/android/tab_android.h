@@ -176,8 +176,6 @@ class TabAndroid : public tabs::TabInterface,
   // Set the media state of the tab. This is called by MediaStateObserver.
   void SetMediaState(int media_state);
 
-  void SetTabInterfaceAndroid(base::PassKey<TabInterfaceAndroid>,
-                              TabInterfaceAndroid* tab_interface_android);
   void ResetParentCollection(base::PassKey<TabInterfaceAndroid>);
 
   // Observers -----------------------------------------------------------------
@@ -319,7 +317,6 @@ class TabAndroid : public tabs::TabInterface,
   // Holds tab-scoped state. Constructed after tab_helpers.
   std::unique_ptr<tabs::TabFeatures> tab_features_;
 
-  raw_ptr<TabInterfaceAndroid> tab_interface_android_ = nullptr;
   raw_ptr<tabs::TabCollection> parent_collection_ = nullptr;
 
   base::ObserverList<Observer> observers_;
