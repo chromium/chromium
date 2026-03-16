@@ -2,17 +2,17 @@
     {
         "name": "activity",
         "group": "androidx.activity",
-        "version": "1.13.0-SNAPSHOT"
+        "version": "1.13.0"
     },
     {
         "name": "activity-compose",
         "group": "androidx.activity",
-        "version": "1.13.0-SNAPSHOT"
+        "version": "1.13.0"
     },
     {
         "name": "activity-ktx",
         "group": "androidx.activity",
-        "version": "1.13.0-SNAPSHOT"
+        "version": "1.13.0"
     },
     {
         "name": "annotation",
@@ -357,7 +357,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.18.0-SNAPSHOT"
+        "version": "1.18.0"
     },
     {
         "name": "core-animation",
@@ -372,7 +372,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.18.0-SNAPSHOT"
+        "version": "1.18.0"
     },
     {
         "name": "core-pip",
@@ -1412,12 +1412,12 @@
     {
         "name": "okio",
         "group": "com.squareup.okio",
-        "version": "3.9.1"
+        "version": "3.17.0"
     },
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.9.1"
+        "version": "3.17.0"
     },
     {
         "name": "wire-runtime",
