@@ -14,10 +14,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -53,6 +55,26 @@ class BrowserContext;
 class IsolationContext;
 class ProcessLock;
 struct UrlInfo;
+
+// When enabled, replaces certain ChildProcessSecurityPolicy functionality with
+// an experimental Rust implementation. See https://crbug.com/482216433.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kChildProcessSecurityPolicyRust);
+
+// Determines how the experimental Rust ChildProcessSecurityPolicy
+// implementation should be enabled.
+enum class RustPolicy {
+  // The Rust ChildProcessSecurityPolicy implementation is not used, and only
+  // the legacy C++ implementation is used.
+  kCppOnly,
+  // The Rust ChildProcessSecurityPolicy implementation is used, and the legacy
+  // C++ implementation is not used.
+  kRustOnly,
+  // Both Rust and C++ ChildProcessSecurityPolicy implementations run in
+  // parallel, and runtime checks ensure that they match.
+  kRustAndCpp,
+};
+
+CONTENT_EXPORT extern const base::FeatureParam<RustPolicy> kRustPolicyParam;
 
 // Note: This class's implementation is migrating to Rust in
 // https://crbug.com/482216433. Existing functions will be replaced with
@@ -660,6 +682,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void ClearRegisteredSchemeForTesting(const std::string& scheme);
   void ClearRegisteredSchemeForTesting_Cpp(const std::string& scheme);
 
+  // Clears and re-registers the default web-safe and pseudo schemes. Used to
+  // reset state between unit tests.
+  void ResetRegisteredSchemesForTesting();
+
   // Checks if the provided `url` matches any committed origin in the process
   // `child_id`. Currently only exposed for testing, since normally this check
   // happens within CanAccessMaybeOpaqueOrigin().
@@ -1082,6 +1108,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Helper used by CanAccessOrigin to impose additional restrictions on a
   // process that only hosts PDF documents.
   bool IsAccessAllowedForPdfProcess(AccessType access_type);
+
+  // Helper to register the default web-safe and pseudo schemes.
+  void RegisterDefaultSchemes();
 
   // Utility function to simplify lookups for OriginAgentClusterOptInEntry
   // values by origin.

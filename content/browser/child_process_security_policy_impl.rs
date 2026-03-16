@@ -23,7 +23,8 @@ mod ffi {
         fn register_web_safe_request_only_scheme(scheme: &str);
         fn is_web_safe_scheme(scheme: &str) -> bool;
         fn can_commit_scheme_in_any_process(scheme: &str) -> bool;
-        fn clear_web_safe_scheme_for_testing(scheme: &str);
+        fn clear_registered_scheme_for_testing(scheme: &str);
+        fn clear_all_registered_schemes_for_testing();
         fn register_pseudo_scheme(scheme: &str);
         fn is_pseudo_scheme(scheme: &str) -> bool;
     }
@@ -72,11 +73,17 @@ fn can_commit_scheme_in_any_process(scheme: &str) -> bool {
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.schemes_ok_to_commit_in_any_process.contains(scheme)
 }
-fn clear_web_safe_scheme_for_testing(scheme: &str) {
+fn clear_registered_scheme_for_testing(scheme: &str) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.schemes_ok_to_request_in_any_process.remove(scheme);
     cpsp.schemes_ok_to_commit_in_any_process.remove(scheme);
     cpsp.pseudo_schemes.remove(scheme);
+}
+fn clear_all_registered_schemes_for_testing() {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.schemes_ok_to_request_in_any_process.clear();
+    cpsp.schemes_ok_to_commit_in_any_process.clear();
+    cpsp.pseudo_schemes.clear();
 }
 fn register_pseudo_scheme(scheme: &str) {
     let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
