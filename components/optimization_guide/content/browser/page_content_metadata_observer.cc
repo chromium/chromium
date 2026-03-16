@@ -45,7 +45,7 @@ void MediaTranscriptObserver::AddOwner(
   auto* provider = MediaTranscriptProvider::GetFor(
       content::WebContents::FromRenderFrameHost(rfh));
 
-  if (provider && !provider->GetTranscriptsForFrame(rfh).empty()) {
+  if (provider && provider->HasTranscriptsForFrame(*rfh)) {
     owner->OnTranscriptionBegin(rfh);
   }
 }

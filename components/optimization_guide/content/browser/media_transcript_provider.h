@@ -36,6 +36,11 @@ class MediaTranscriptProvider : public base::SupportsUserData::Data {
   virtual std::vector<optimization_guide::proto::MediaTranscript>
   GetTranscriptsForFrame(content::RenderFrameHost* rfh) = 0;
 
+  // Returns whether there are any final media transcripts captured in the given
+  // `rfh`.
+  virtual bool HasTranscriptsForFrame(
+      const content::RenderFrameHost& rfh) const = 0;
+
   // Notifies that transcription has begun for a frame.
   virtual void OnTranscriptionBeginForFrame(content::RenderFrameHost* rfh) = 0;
 

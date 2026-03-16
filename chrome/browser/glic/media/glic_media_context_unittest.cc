@@ -498,6 +498,37 @@ TEST_F(GlicMediaContextTest, GetTranscriptChunks_ReturnsCorrectChunks) {
   EXPECT_EQ(it->GetEndTime(), base::Seconds(3));
 }
 
+TEST_F(GlicMediaContextTest, HasTranscriptChunks) {
+  // Initially false.
+  EXPECT_FALSE(context()->HasTranscriptChunks());
+
+  // Non-final result doesn't make it true.
+  context()->OnResult(CreateSpeechRecognitionResult("Non-final one. ", false));
+  EXPECT_FALSE(context()->HasTranscriptChunks());
+
+  // Final result makes it true.
+  context()->OnResult(CreateSpeechRecognitionResult("Final one. ", true));
+  EXPECT_TRUE(context()->HasTranscriptChunks());
+
+  // Exclusion (e.g., peer connection) makes it false even if chunks exist.
+  context()->OnPeerConnectionAdded();
+  EXPECT_FALSE(context()->HasTranscriptChunks());
+  context()->OnPeerConnectionRemoved();
+  EXPECT_TRUE(context()->HasTranscriptChunks());
+
+  // If the media session title changes to something new, it's false for that
+  // new title.
+  media_session::MediaMetadata metadata;
+  metadata.title = u"New Title";
+  SetMetadata(metadata);
+  EXPECT_FALSE(context()->HasTranscriptChunks());
+
+  // Back to old title, it's true again.
+  metadata.title = u"Unknown";  // Default in SetUp
+  SetMetadata(metadata);
+  EXPECT_TRUE(context()->HasTranscriptChunks());
+}
+
 TEST_F(GlicMediaContextTest, GetTranscriptChunks) {
   context()->OnResult(CreateSpeechRecognitionResult("Non-final one. ", false));
   // No transcripts are returned if we don't have any final chunks.

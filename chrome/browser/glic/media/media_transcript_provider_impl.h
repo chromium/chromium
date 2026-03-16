@@ -24,6 +24,8 @@ class MediaTranscriptProviderImpl
   // optimization_guide::MediaTranscriptProvider:
   std::vector<optimization_guide::proto::MediaTranscript>
   GetTranscriptsForFrame(content::RenderFrameHost* rfh) override;
+  bool HasTranscriptsForFrame(
+      const content::RenderFrameHost& rfh) const override;
   void OnTranscriptionBeginForFrame(content::RenderFrameHost* rfh) override;
 };
 

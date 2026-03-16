@@ -263,6 +263,13 @@ GlicMediaContext::GetTranscriptChunks() const {
   return transcript->transcript_chunks_;
 }
 
+bool GlicMediaContext::HasTranscriptChunks() const {
+  const Transcript* transcript = GetTranscriptIfExists();
+  // We don't have transcripts if we don't have any final chunk.
+  return transcript && transcript->next_sequence_number_ > 0 &&
+         !transcript->transcript_chunks_.empty();
+}
+
 void GlicMediaContext::OnPeerConnectionAdded() {
   num_peer_connections_++;
 }

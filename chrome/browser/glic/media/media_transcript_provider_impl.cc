@@ -44,6 +44,12 @@ MediaTranscriptProviderImpl::GetTranscriptsForFrame(
   return transcripts;
 }
 
+bool MediaTranscriptProviderImpl::HasTranscriptsForFrame(
+    const content::RenderFrameHost& rfh) const {
+  auto* context = GlicMediaContext::GetForCurrentDocument(&rfh);
+  return context && context->HasTranscriptChunks();
+}
+
 void MediaTranscriptProviderImpl::OnTranscriptionBeginForFrame(
     content::RenderFrameHost* rfh) {
   CHECK(rfh);

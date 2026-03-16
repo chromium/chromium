@@ -81,6 +81,9 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   // Returns a copy of the transcript chunks.
   std::list<TranscriptChunk> GetTranscriptChunks() const;
 
+  // Returns whether there are any final transcript chunks.
+  bool HasTranscriptChunks() const;
+
  protected:
   // Gets the current media session, if one exists. Virtual for testing.
   virtual content::MediaSession* GetMediaSessionIfExists() const;

@@ -77,6 +77,7 @@ TEST_F(MediaTranscriptProviderImplTest, GetTranscriptsForFrame) {
   // Verify the returned transcripts.
   auto transcripts = provider().GetTranscriptsForFrame(rfh());
   ASSERT_EQ(transcripts.size(), 3u);
+  EXPECT_TRUE(provider().HasTranscriptsForFrame(*rfh()));
 
   // The timed chunk should come first due to sorting.
   EXPECT_EQ(transcripts[0].text(), "timed chunk");
@@ -93,11 +94,14 @@ TEST_F(MediaTranscriptProviderImplTest, GetTranscriptsForFrame) {
 
 TEST_F(MediaTranscriptProviderImplTest, GetTranscriptsForFrameEdgeCases) {
   EXPECT_TRUE(provider().GetTranscriptsForFrame(nullptr).empty());
+
   EXPECT_TRUE(provider().GetTranscriptsForFrame(rfh()).empty());
+  EXPECT_FALSE(provider().HasTranscriptsForFrame(*rfh()));
 
   // No transcripts are provided.
   GlicMediaContext::GetOrCreateForCurrentDocument(rfh());
   EXPECT_TRUE(provider().GetTranscriptsForFrame(rfh()).empty());
+  EXPECT_FALSE(provider().HasTranscriptsForFrame(*rfh()));
 }
 
 TEST_F(MediaTranscriptProviderImplTest, OnTranscriptionBeginForFrame) {
