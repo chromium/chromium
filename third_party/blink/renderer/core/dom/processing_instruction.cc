@@ -80,8 +80,9 @@ bool ProcessingInstruction::IsXSL() const {
 }
 
 EventListener* ProcessingInstruction::EventListenerForXSLT() {
-  if (!listener_for_xslt_)
+  if (!listener_for_xslt_) {
     return nullptr;
+  }
 
   return listener_for_xslt_->ToEventListener();
 }
@@ -128,47 +129,18 @@ void ProcessingInstruction::UpdateStylesheetIfNeeded() {
   }
 }
 
-void ProcessingInstruction::ProcessAttributesIfNeeded() {
-  if (!attributes_dirty_) {
-    return;
-  }
-
-  attributes_dirty_ = false;
-  attributes_.clear();
-
-  if (GetDocument().IsXMLDocument() ||
-      (IsXMLStylesheet() &&
-       !RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled())) {
-    // see http://www.w3.org/TR/xml-stylesheet/
-    // ### support stylesheet included in a fragment of this (or another)
-    // document
-    // ### make sure this gets called when adding from javascript
-    bool attrs_ok;
-    HashMap<String, String> attrs;
-    if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
-      attrs = ParseAttributesRust(data_, attrs_ok);
-    } else {
-      attrs = ParseAttributes(data_, attrs_ok);
-    }
-    if (!attrs_ok) {
-      return;
-    }
-
-    for (const auto& pair : attrs) {
-      attributes_.push_back(
-          KeyValuePair<AtomicString, AtomicString>(pair.key, pair.value));
-    }
-    return;
-  }
-
-  CHECK(GetDocument().IsHTMLDocument());
-
+namespace {
+void ParseAttributesUsingHTML(
+    Document& document,
+    const String& data,
+    Vector<KeyValuePair<AtomicString, AtomicString>>& attributes) {
   StringBuilder fake_html;
   fake_html.Append("<attrs ");
-  fake_html.Append(data_);
+  fake_html.Append(data);
   fake_html.Append("></attrs>");
   const DocumentFragment* fragment = CreateFragmentFromMarkup(
-      GetDocument(), fake_html.ToString(), GetDocument().BaseURL(),
+      document.EnsureTemplateDocument(), fake_html.ToString(),
+      document.BaseURL(),
       ParserContentPolicy::kDisallowScriptingAndPluginContent);
   const Node* first = fragment->firstChild();
   if (!first || !first->IsElementNode()) {
@@ -180,14 +152,48 @@ void ProcessingInstruction::ProcessAttributesIfNeeded() {
   CHECK_EQ(fake_element.localName(), "attrs");
 
   for (const auto& attribute : fake_element.Attributes()) {
-    attributes_.push_back(KeyValuePair<AtomicString, AtomicString>(
-        attribute.LocalName(), attribute.Value()));
+    attributes.push_back(KeyValuePair<AtomicString, AtomicString>(
+        attribute.GetName().ToString(), attribute.Value()));
   }
 }
 
-AtomicString ProcessingInstruction::LowercaseIfNeeded(
-    const AtomicString& name) const {
-  return GetDocument().IsHTMLDocument() ? name.ToAsciiLower() : name;
+void ParseAttributesUsingXML(
+    const String& data,
+    Vector<KeyValuePair<AtomicString, AtomicString>>& attributes) {
+  // see http://www.w3.org/TR/xml-stylesheet/
+  // ### support stylesheet included in a fragment of this (or another)
+  // document
+  // ### make sure this gets called when adding from javascript
+  bool attrs_ok;
+  HashMap<String, String> attrs;
+  if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
+    attrs = blink::ParseAttributesRust(data, attrs_ok);
+  } else {
+    attrs = blink::ParseAttributes(data, attrs_ok);
+  }
+  if (!attrs_ok) {
+    return;
+  }
+
+  for (const auto& pair : attrs) {
+    attributes.push_back(
+        KeyValuePair<AtomicString, AtomicString>(pair.key, pair.value));
+  }
+}
+}  // namespace
+
+void ProcessingInstruction::ProcessAttributesIfNeeded() {
+  if (!attributes_dirty_) {
+    return;
+  }
+
+  attributes_dirty_ = false;
+  attributes_.clear();
+  if (RuntimeEnabledFeatures::HTMLProcessingInstructionEnabled()) {
+    ParseAttributesUsingHTML(GetDocument(), data_, attributes_);
+  } else {
+    ParseAttributesUsingXML(data_, attributes_);
+  }
 }
 
 bool ProcessingInstruction::ValidateAttributeName(
@@ -204,7 +210,7 @@ bool ProcessingInstruction::ValidateAttributeName(
 const AtomicString& ProcessingInstruction::GetAttributeValue(
     const AtomicString& name,
     const AtomicString& default_value) {
-  DCHECK_EQ(name, LowercaseIfNeeded(name));
+  DCHECK_EQ(name, name.ToAsciiLower());
   ProcessAttributesIfNeeded();
   for (const auto& pair : attributes_) {
     if (pair.key == name) {
@@ -215,7 +221,7 @@ const AtomicString& ProcessingInstruction::GetAttributeValue(
 }
 
 bool ProcessingInstruction::HasAttribute(const AtomicString& name) {
-  DCHECK_EQ(name, LowercaseIfNeeded(name));
+  DCHECK_EQ(name, name.ToAsciiLower());
   ProcessAttributesIfNeeded();
   for (const auto& pair : attributes_) {
     if (pair.key == name) {
@@ -227,7 +233,7 @@ bool ProcessingInstruction::HasAttribute(const AtomicString& name) {
 
 void ProcessingInstruction::SetAttribute(const AtomicString& name,
                                          const AtomicString& value) {
-  DCHECK_EQ(name, LowercaseIfNeeded(name));
+  DCHECK_EQ(name, name.ToAsciiLower());
   DCHECK(ValidateAttributeName(name, ASSERT_NO_EXCEPTION));
 
   ProcessAttributesIfNeeded();
@@ -243,7 +249,7 @@ void ProcessingInstruction::SetAttribute(const AtomicString& name,
 }
 
 void ProcessingInstruction::RemoveAttribute(const AtomicString& name) {
-  DCHECK_EQ(name, LowercaseIfNeeded(name));
+  DCHECK_EQ(name, name.ToAsciiLower());
   ProcessAttributesIfNeeded();
   const wtf_size_t size = attributes_.size();
   for (wtf_size_t i = 0; i < size; ++i) {
@@ -262,7 +268,7 @@ void ProcessingInstruction::ToggleAttribute(const AtomicString& name,
     return;
   }
 
-  DCHECK_EQ(name, LowercaseIfNeeded(name));
+  DCHECK_EQ(name, name.ToAsciiLower());
   const bool already_there = HasAttribute(name);
   force = force.value_or(!already_there);
 
@@ -331,8 +337,9 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   is_xsl_ = (type == "text/xml" || type == "text/xsl" ||
              type == "application/xml" || type == "application/xhtml+xml" ||
              type == "application/rss+xml" || type == "application/atom+xml");
-  if (!is_css_ && !is_xsl_)
+  if (!is_css_ && !is_xsl_) {
     return false;
+  }
 
   if (is_xsl_ && !RuntimeEnabledFeatures::XSLTEnabled()) {
     XSLTProcessor::ReportXSLTDisabled(GetDocument(),
@@ -415,17 +422,20 @@ void ProcessingInstruction::ProcessStylesheet(const String& href,
 }
 
 bool ProcessingInstruction::IsLoading() const {
-  if (loading_)
+  if (loading_) {
     return true;
-  if (!sheet_)
+  }
+  if (!sheet_) {
     return false;
+  }
   return sheet_->IsLoading();
 }
 
 bool ProcessingInstruction::SheetLoaded() {
   if (!IsLoading()) {
-    if (!DocumentXSLT::SheetLoaded(GetDocument(), this))
+    if (!DocumentXSLT::SheetLoaded(GetDocument(), this)) {
       RemovePendingSheet();
+    }
     return true;
   }
   return false;
@@ -454,8 +464,9 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
         Referrer(style_resource->GetResponse().ResponseUrl(),
                  style_resource->GetReferrerPolicy()),
         style_resource->Encoding());
-    if (style_resource->GetResourceRequest().IsAdResource())
+    if (style_resource->GetResourceRequest().IsAdResource()) {
       parser_context->SetIsAdRelated();
+    }
 
     auto* new_sheet = MakeGarbageCollected<StyleSheetContents>(
         parser_context, style_resource->Url());
@@ -480,10 +491,11 @@ void ProcessingInstruction::NotifyFinished(Resource* resource) {
   ClearResource();
   loading_ = false;
 
-  if (is_css_)
+  if (is_css_) {
     To<CSSStyleSheet>(sheet_.Get())->Contents()->CheckLoaded();
-  else if (is_xsl_)
+  } else if (is_xsl_) {
     To<XSLStyleSheet>(sheet_.Get())->CheckLoaded();
+  }
 }
 
 Node::InsertionNotificationRequest ProcessingInstruction::InsertedInto(
@@ -502,16 +514,19 @@ void ProcessingInstruction::DidNotifySubtreeInsertionsToDocument() {
   String charset;
   bool is_valid = CheckStyleSheet(href, charset);
   if (!DocumentXSLT::ProcessingInstructionInsertedIntoDocument(GetDocument(),
-                                                               this))
+                                                               this)) {
     GetDocument().GetStyleEngine().AddStyleSheetCandidateNode(*this);
-  if (is_valid)
+  }
+  if (is_valid) {
     ProcessStylesheet(href, charset);
+  }
 }
 
 void ProcessingInstruction::RemovedFrom(ContainerNode& insertion_point) {
   CharacterData::RemovedFrom(insertion_point);
-  if (!insertion_point.isConnected())
+  if (!insertion_point.isConnected()) {
     return;
+  }
 
   // No need to remove XSLStyleSheet from StyleEngine.
   if (!DocumentXSLT::ProcessingInstructionRemovedFromDocument(GetDocument(),
@@ -520,8 +535,9 @@ void ProcessingInstruction::RemovedFrom(ContainerNode& insertion_point) {
         *this, insertion_point);
   }
 
-  if (IsLoading())
+  if (IsLoading()) {
     RemovePendingSheet();
+  }
 
   if (sheet_) {
     DCHECK_EQ(sheet_->ownerNode(), this);
@@ -538,8 +554,9 @@ void ProcessingInstruction::ClearSheet() {
 }
 
 void ProcessingInstruction::RemovePendingSheet() {
-  if (is_xsl_)
+  if (is_xsl_) {
     return;
+  }
   GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
       *this, PendingSheetType::kBlocking);
 }

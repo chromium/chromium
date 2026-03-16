@@ -73,29 +73,29 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
   void ClearEventListenerForXSLT();
 
   const AtomicString& getAttribute(const AtomicString& name) {
-    return GetAttributeValue(LowercaseIfNeeded(name));
+    return GetAttributeValue(name.ToAsciiLower());
   }
   bool hasAttribute(const AtomicString& name) {
-    return HasAttribute(LowercaseIfNeeded(name));
+    return HasAttribute(name.ToAsciiLower());
   }
   void setAttribute(const AtomicString& name,
                     const AtomicString& value,
                     ExceptionState& exception_state) {
     if (ValidateAttributeName(name, exception_state)) {
-      SetAttribute(LowercaseIfNeeded(name), value);
+      SetAttribute(name.ToAsciiLower(), value);
     }
   }
   void removeAttribute(const AtomicString& name) {
-    RemoveAttribute(LowercaseIfNeeded(name));
+    RemoveAttribute(name.ToAsciiLower());
   }
   void toggleAttribute(const AtomicString& name,
                        ExceptionState& exception_state) {
-    ToggleAttribute(LowercaseIfNeeded(name), std::nullopt, exception_state);
+    ToggleAttribute(name.ToAsciiLower(), std::nullopt, exception_state);
   }
   void toggleAttribute(const AtomicString& name,
                        bool force,
                        ExceptionState& exception_state) {
-    ToggleAttribute(LowercaseIfNeeded(name), force, exception_state);
+    ToggleAttribute(name.ToAsciiLower(), force, exception_state);
   }
   bool hasAttributes();
   Vector<AtomicString> getAttributeNames();
