@@ -606,6 +606,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="V8.GC.Cycle{Priority}.Full{InputState}" units="MB"
+    expires_after="M154">
+  <owner>thiabaud@google.com</owner>
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Same as &quot;V8.GC.Cycle{Priority}.Full&quot;, but split on whether we are
+    currently in input-handling mode.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+  <token key="InputState">
+    <variant name=".IsInputHandling" summary="in input mode"/>
+    <variant name=".NotInputHandling" summary="not in input mode"/>
+  </token>
+</histogram>
+
 <histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Compact{Heap}"
     units="ms" expires_after="2026-08-23">
   <owner>omerkatz@chromium.org</owner>
@@ -880,6 +901,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full{InputState}" units="MB"
+    expires_after="M154">
+  <owner>thiabaud@google.com</owner>
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Same as &quot;V8.GC.Cycle{Priority}.MainThread.Full&quot;, but split on
+    whether we are currently in input-handling mode.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+  <token key="InputState">
+    <variant name=".IsInputHandling" summary="in input mode"/>
+    <variant name=".NotInputHandling" summary="not in input mode"/>
+  </token>
+</histogram>
+
 <histogram name="V8.GC.Cycle{Priority}.MainThread.Young" units="ms"
     expires_after="2026-08-23">
   <owner>nikolaos@chromium.org</owner>
@@ -990,6 +1032,27 @@ chromium-metrics-reviews@google.com.
     <variant name=".BestEffort" summary="best effort"/>
     <variant name=".UserBlocking" summary="user blocking"/>
     <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Reason.Full{InputState}"
+    enum="GarbageCollectionReason" expires_after="M154">
+  <owner>thiabaud@google.com</owner>
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Same as &quot;V8.GC.Cycle{Priority}.Reason.Full&quot;, but split on whether
+    we are currently in input-handling mode.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+  <token key="InputState">
+    <variant name=".IsInputHandling" summary="in input mode"/>
+    <variant name=".NotInputHandling" summary="not in input mode"/>
   </token>
 </histogram>
 
