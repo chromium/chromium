@@ -66,6 +66,9 @@ class InitialWebUIWindowMetricsManager {
   // This handles reload button metrics in both startup window and new window.
   void OnReloadButtonFirstContentfulPaint(base::TimeTicks timestamp);
 
+  // Called when the renderer process is created.
+  void OnReloadButtonRendererProcessCreated(base::TimeTicks timestamp);
+
   // Skips recording startup metrics for testing.
   void SkipStartupForTesting();
 
