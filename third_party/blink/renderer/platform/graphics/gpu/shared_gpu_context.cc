@@ -453,25 +453,16 @@ bool SharedGpuContext::LowLatencyUsageSupportedForWebGL() {
 
 #if BUILDFLAG(IS_ANDROID)
   // Low-latency usage on Android is possible only with SurfaceControl.
-  if (!IsSurfaceControlEnabled()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS)
+  return IsSurfaceControlEnabled() &&
+         base::FeatureList::IsEnabled(
+             features::kLowLatencyUsageSupportedForWebGL);
+#elif BUILDFLAG(IS_CHROMEOS)
   // Whether WebGL canvases should be given low-latency usage is specified on a
   // per-board basis by passing (or not) the relevant command-line flag.
   static const bool enable_web_gl_image_chromium =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           blink::switches::kEnableWebGLImageChromium);
-  if (enable_web_gl_image_chromium) {
-    return true;
-  }
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(
-      features::kLowLatencyUsageSupportedForWebGL);
+  return enable_web_gl_image_chromium;
 #else
   // NOTE: crbug.com/41435781 would need to be resolved in order to support
   // low-latency usage on Mac (currently setting the desynchronized attribute
