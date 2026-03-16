@@ -29,7 +29,7 @@ struct OutOfFlowItemPlacement {
 struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   GridItemData() = default;
   GridItemData(const GridItemData&) = default;
-  GridItemData& operator=(const GridItemData&) = default;
+  GridItemData& operator=(const GridItemData&) = delete;
 
   GridItemData(BlockNode item_node,
                const ComputedStyle& parent_grid_style,

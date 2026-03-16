@@ -68,8 +68,8 @@ struct CORE_EXPORT GridPlacementData {
 class CORE_EXPORT GridLayoutData : public GarbageCollected<GridLayoutData> {
  public:
   GridLayoutData() = default;
-  GridLayoutData(GridLayoutData&&) = default;
-  GridLayoutData& operator=(GridLayoutData&&) = default;
+  GridLayoutData(GridLayoutData&&) = delete;
+  GridLayoutData& operator=(GridLayoutData&&) = delete;
 
   GridLayoutData(const GridLayoutData& other) {
     // Do a deep copy of the track collections if they have baselines, since

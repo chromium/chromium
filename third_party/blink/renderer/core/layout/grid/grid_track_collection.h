@@ -416,9 +416,9 @@ class CORE_EXPORT GridSizingTrackCollection final
   typedef SetIteratorBase<true> ConstSetIterator;
 
   GridSizingTrackCollection() = delete;
-  GridSizingTrackCollection(GridSizingTrackCollection&&) = default;
+  GridSizingTrackCollection(GridSizingTrackCollection&&) = delete;
   GridSizingTrackCollection(const GridSizingTrackCollection&) = delete;
-  GridSizingTrackCollection& operator=(GridSizingTrackCollection&&) = default;
+  GridSizingTrackCollection& operator=(GridSizingTrackCollection&&) = delete;
   GridSizingTrackCollection& operator=(const GridSizingTrackCollection&) =
       delete;
 
