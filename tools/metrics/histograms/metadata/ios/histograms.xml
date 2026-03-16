@@ -5738,11 +5738,15 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-09-06">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
+  <owner>gujen@google.com</owner>
+  <owner>ioanabalas@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
   <summary>
     Logs the permission status, stored in iOS settings, the user has given for
     whether Chrome can receive push notifications on the device. This histogram
     is logged each time Chrome requests the device's APNS token from the APNS
-    server.
+    server: on cold start-up, on primary account set, and after the user is
+    presented with the notification permission OS dialog.
   </summary>
 </histogram>
 
