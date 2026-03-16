@@ -6,6 +6,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -16,7 +17,9 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 class UIViewWindowCoordinatesTest : public PlatformTest {
  protected:
   UIViewWindowCoordinatesTest()
-      : window_([[UIWindow alloc] init]), view_([[UIView alloc] init]) {}
+      : window_([[UIWindow alloc]
+            initWithWindowScene:chrome_test_util::GetAnyWindowScene()]),
+        view_([[UIView alloc] init]) {}
 
   UIWindow* window_;
   UIView* view_;

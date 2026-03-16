@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -68,7 +69,8 @@ TEST_F(UIKitUIUtilTest, ViewHierarchyRootForView) {
   [view1 addSubview:view2];
   EXPECT_EQ(ViewHierarchyRootForView(view2), view1);
 
-  UIWindow* window = [[UIWindow alloc] init];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
   [window addSubview:view1];
 
   EXPECT_EQ(ViewHierarchyRootForView(view1), window);
