@@ -107,8 +107,13 @@ bool WebUIToolbarConfig::IsWebUIEnabled(
 void WebUIToolbarUI::BindInterface(
     mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
         receiver) {
-  CHECK(dependency_provider_)
-      << "Dependency provider is not set, make sure to call Init() first";
+  if (!dependency_provider_) {
+    // This can happen if the WebContents is destroyed while it is still loading
+    // (e.g. when the user closes the browser window).
+    LOG(WARNING)
+        << "Attempting a connection before Init() is called. Aborting Bind.";
+    return;
+  }
 
   auto* command_updater = GetCommandUpdater();
   auto is_probably_shutting_down = command_updater == nullptr;
@@ -134,8 +139,13 @@ void WebUIToolbarUI::BindInterface(
 
 void WebUIToolbarUI::BindInterface(
     mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> receiver) {
-  CHECK(dependency_provider_)
-      << "Dependency provider is not set, make sure to call Init() first";
+  if (!dependency_provider_) {
+    // This can happen if the WebContents is destroyed while it is still loading
+    // (e.g. when the user closes the browser window).
+    LOG(WARNING)
+        << "Attempting a connection before Init() is called. Aborting Bind.";
+    return;
+  }
 
   auto* web_contents = web_ui()->GetWebContents();
   MetricsReporterService* metrics_service =
