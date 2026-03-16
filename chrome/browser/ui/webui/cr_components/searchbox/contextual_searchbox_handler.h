@@ -89,8 +89,6 @@ class ContextualSearchboxHandler
       public SearchboxHandler,
       public TabStripModelObserver {
  public:
-  DECLARE_FEATURE(kExhaustiveGetRecentTabs);
-
   explicit ContextualSearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
