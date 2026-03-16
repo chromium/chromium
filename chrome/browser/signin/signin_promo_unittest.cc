@@ -169,24 +169,6 @@ TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithExplicitSignin) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-TEST(SigninPromoTest, IsSignInPromo_BookmarksWithExplicitSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode},
-      /*disabled_features=*/{});
-
-  EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
-}
-
-TEST(SigninPromoTest, IsSignInPromo_BookmarksWithoutExplicitSignin) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kSyncEnableBookmarksInTransportMode});
-
-  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
-}
-
 class ShowPromoTest : public testing::Test {
  public:
   ShowPromoTest() {
@@ -202,6 +184,11 @@ class ShowPromoTest : public testing::Test {
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+  }
+
+  void SetUp() override {
+    ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
+        .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
   }
 
   syncer::MockSyncService* sync_service() {
@@ -236,6 +223,12 @@ class ShowPromoTest : public testing::Test {
             {syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY})));
   }
 
+  autofill::AutofillProfile CreateAddress(
+      const std::string& country_code = "US") {
+    return autofill::test::StandardProfile(
+        autofill::AddressCountryCode(country_code));
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
@@ -244,48 +237,30 @@ class ShowPromoTest : public testing::Test {
   scoped_refptr<const extensions::Extension> extension_;
 };
 
-TEST_F(ShowPromoTest, DoNotShowBookmarkSignInPromoWithoutExplicitSignIn) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{switches::kSyncEnableBookmarksInTransportMode});
-
-  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
-}
-
 #if !BUILDFLAG(IS_ANDROID)
-// Verifies that ShouldShowSyncPromo returns false if sync is disabled by
-// policy.
-TEST_F(ShowPromoTest, DoNotShowSyncPromoWithSyncDisabled) {
+TEST_F(ShowPromoTest, ShouldShowSigninPromoSyncDisabled) {
   DisableSync();
-  EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
+  EXPECT_FALSE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
 }
 
-// Verifies that ShouldShowSyncPromo returns true if all conditions to
-// show the promo are met.
-TEST_F(ShowPromoTest, ShouldShowSyncPromoSyncEnabled) {
+TEST_F(ShowPromoTest, ShouldShowSigninPromoSyncEnabled) {
 #if BUILDFLAG(IS_CHROMEOS)
-  // No sync promo on Ash.
-  EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
+  // No signin promos on Ash.
+  EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
+  EXPECT_FALSE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
 #else
-  EXPECT_TRUE(ShouldShowSyncPromo(*profile()));
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowExtensionSignInPromo(*profile(), *CreateExtension()));
 #endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(ShowPromoTest, ShowSyncPromoWithSignedInAccount) {
-  MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
-                              ConsentLevel::kSignin);
-  EXPECT_TRUE(ShouldShowSyncPromo(*profile()));
-}
-
-TEST_F(ShowPromoTest, DoNotShowSyncPromoWithSyncingAccount) {
-  MakePrimaryAccountAvailable(identity_manager(), "test@email.com",
-                              ConsentLevel::kSync);
-  EXPECT_FALSE(ShouldShowSyncPromo(*profile()));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
@@ -294,24 +269,15 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
     ShowPromoTest::SetUp();
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {switches::kSyncEnableBookmarksInTransportMode,
-         syncer::kReplaceSyncPromosWithSignInPromos,
+        {syncer::kReplaceSyncPromosWithSignInPromos,
          syncer::kUnoPhase2FollowUp},
         /*disabled_features=*/{});
-    ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
-        .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
   }
 
   GaiaId gaia_id() {
     return identity_manager()
         ->GetPrimaryAccountInfo(ConsentLevel::kSignin)
         .gaia;
-  }
-
-  autofill::AutofillProfile CreateAddress(
-      const std::string& country_code = "US") {
-    return autofill::test::StandardProfile(
-        autofill::AddressCountryCode(country_code));
   }
 
  protected:
@@ -731,10 +697,7 @@ class ShowSigninPromoTestWithoutPhase2FollowUp
   void SetUp() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {
-            switches::kSyncEnableBookmarksInTransportMode,
-            syncer::kReplaceSyncPromosWithSignInPromos,
-        },
+        {syncer::kReplaceSyncPromosWithSignInPromos},
         /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
     ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
         .WillByDefault(testing::Return(syncer::DataTypeSet::All()));

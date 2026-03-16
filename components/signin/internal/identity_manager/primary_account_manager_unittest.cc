@@ -984,29 +984,6 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefNewUser) {
 // Explicit sign-in prefs for bookmarks and extensions are only used on Dice
 // platforms.
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Test that the user cannot perform an explicit signin for bookmarks if the
-// feature flag is disabled.
-TEST_F(PrimaryAccountManagerTest, ExplicitSigninBookmarksPref_FlagNotEnabled) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(switches::kSyncEnableBookmarksInTransportMode);
-
-  CreatePrimaryAccountManager();
-  GaiaId gaia_id("account_id");
-  CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
-
-  ASSERT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-  // Sign in through the bookmark bubble, but this won't be an explicit signin
-  // since the feature flag is disabled.
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  signin::ConsentLevel::kSignin,
-                                  signin_metrics::AccessPoint::kBookmarkBubble);
-
-  EXPECT_FALSE(
-      SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-}
-
 // Test that the bookmarks explicit signin pref is preserved across restarts if
 // the feature flag is still enabled, but is reset to its default value (false)
 // if rhe feature flag is disabled.
@@ -1016,12 +993,8 @@ TEST_F(PrimaryAccountManagerTest,
   ASSERT_FALSE(
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 
-  // Explicit sign in with `switches::kSyncEnableBookmarksInTransportMode`
-  // on.
+  // Explicit sign in through `signin_metrics::AccessPoint::kBookmarkBubble`.
   {
-    base::test::ScopedFeatureList feature{
-        switches::kSyncEnableBookmarksInTransportMode};
-
     CreatePrimaryAccountManager();
     CoreAccountId account_id = AddToAccountTracker(gaia_id, "user@gmail.com");
 
@@ -1036,15 +1009,11 @@ TEST_F(PrimaryAccountManagerTest,
         SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
   }
 
-  // Simulate a restart by shutting down the manager and creating a new one with
-  // `switches::kSyncEnableBookmarksInTransportMode` on.
+  // Simulate a restart by shutting down the manager.
   ShutDownManager();
   {
     ASSERT_TRUE(
         SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-    base::test::ScopedFeatureList feature{
-        switches::kSyncEnableBookmarksInTransportMode};
 
     CreatePrimaryAccountManager();
 
@@ -1052,38 +1021,13 @@ TEST_F(PrimaryAccountManagerTest,
     EXPECT_TRUE(
         SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
   }
-
-  // Simulate a restart by shutting down the manager and creating a new one with
-  // `switches::kSyncEnableBookmarksInTransportMode` off.
-  ShutDownManager();
-  {
-    ASSERT_TRUE(
-        SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-
-    base::test::ScopedFeatureList feature;
-    feature.InitAndDisableFeature(
-        switches::kSyncEnableBookmarksInTransportMode);
-
-    CreatePrimaryAccountManager();
-
-    // The explicit signin pref should now be reset to its default value, which
-    // is false.
-    EXPECT_FALSE(
-        SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
-  }
 }
 
 // TODO(crbug.com/475822503): Delete this test once Dice migration is complete.
 TEST_F(PrimaryAccountManagerTest,
        ExplicitSigninPrefsClearedWhenImplicitlySigningIn) {
-  base::test::ScopedFeatureList feature;
-  feature.InitWithFeatures(
-      /*enabled_features=*/
-      {
-          switches::kEnablePreferencesAccountStorage,
-          switches::kSyncEnableBookmarksInTransportMode,
-      },
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList feature{
+      switches::kEnablePreferencesAccountStorage};
   GaiaId gaia_id("account_id");
   // Set prefs set during an explicit signin.
   prefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
@@ -1235,9 +1179,7 @@ class PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest
   PrimaryAccountManagerExplicitSigninForExtensionsAndBookmarksTest() {
     const std::string param_state = GetParam() ? "true" : "false";
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{switches::kSyncEnableBookmarksInTransportMode,
-                               {}},
-                              {syncer::kReplaceSyncPromosWithSignInPromos,
+        /*enabled_features=*/{{syncer::kReplaceSyncPromosWithSignInPromos,
                                {{syncer::kExplicitSigninForExtensions.name,
                                  param_state},
                                 {syncer::kExplicitSigninForBookmarks.name,

@@ -475,62 +475,6 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
          dismiss_count < kSigninPromoDismissedThreshold;
 }
 
-// Performs base checks for whether the sign in promos should be shown.
-// Needs additional checks depending on the type of the promo (see
-// `ShouldShowAddressSignInPromo` and `ShouldShowPasswordSignInPromo`).
-// `profile` is the profile of the tab the promo would be shown on.
-bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
-  if (profile.IsOffTheRecord()) {
-    return false;
-  }
-
-  // Don't show the promo if it does not pass the sync base checks.
-  if (!signin::ShouldShowSyncPromo(profile)) {
-    return false;
-  }
-
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(&profile);
-
-  // Don't show the promo if the sync service is not available, e.g. if the
-  // profile is off-the-record.
-  if (!sync_service) {
-    return false;
-  }
-
-  syncer::DataType data_type = GetDataTypeFromSignInPromoType(type);
-
-  // Don't show the promo if policies disallow account storage.
-  if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
-          GetUserSelectableTypeFromDataType(data_type).value()) ||
-      !sync_service->GetDataTypesForTransportOnlyMode().Has(data_type)) {
-    return false;
-  }
-
-  SignedInState signed_in_state = signin_util::GetSignedInState(
-      IdentityManagerFactory::GetForProfile(&profile));
-
-  switch (signed_in_state) {
-    case signin_util::SignedInState::kSignedIn:
-    case signin_util::SignedInState::kSyncing:
-    case signin_util::SignedInState::kSyncPaused:
-      // Don't show the promo if the user is already signed in or syncing.
-      return false;
-    case signin_util::SignedInState::kSignInPending:
-      // Always show the promo in sign in pending state.
-      return true;
-    case signin_util::SignedInState::kSignedOut:
-    case signin_util::SignedInState::kWebOnlySignedIn:
-      break;
-  }
-
-  return ShouldShowPromoBasedOnImpressionOrDismissalCount(profile, type);
-}
-
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-}  // namespace
-
 #if !BUILDFLAG(IS_ANDROID)
 bool ShouldShowSyncPromo(Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -586,6 +530,62 @@ bool ShouldShowSyncPromo(Profile& profile) {
 #endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+// Performs base checks for whether the sign in promos should be shown.
+// Needs additional checks depending on the type of the promo (see
+// `ShouldShowAddressSignInPromo` and `ShouldShowPasswordSignInPromo`).
+// `profile` is the profile of the tab the promo would be shown on.
+bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
+  if (profile.IsOffTheRecord()) {
+    return false;
+  }
+
+  // Don't show the promo if it does not pass the sync base checks.
+  if (!signin::ShouldShowSyncPromo(profile)) {
+    return false;
+  }
+
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(&profile);
+
+  // Don't show the promo if the sync service is not available, e.g. if the
+  // profile is off-the-record.
+  if (!sync_service) {
+    return false;
+  }
+
+  syncer::DataType data_type = GetDataTypeFromSignInPromoType(type);
+
+  // Don't show the promo if policies disallow account storage.
+  if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+          GetUserSelectableTypeFromDataType(data_type).value()) ||
+      !sync_service->GetDataTypesForTransportOnlyMode().Has(data_type)) {
+    return false;
+  }
+
+  SignedInState signed_in_state = signin_util::GetSignedInState(
+      IdentityManagerFactory::GetForProfile(&profile));
+
+  switch (signed_in_state) {
+    case signin_util::SignedInState::kSignedIn:
+    case signin_util::SignedInState::kSyncing:
+    case signin_util::SignedInState::kSyncPaused:
+      // Don't show the promo if the user is already signed in or syncing.
+      return false;
+    case signin_util::SignedInState::kSignInPending:
+      // Always show the promo in sign in pending state.
+      return true;
+    case signin_util::SignedInState::kSignedOut:
+    case signin_util::SignedInState::kWebOnlySignedIn:
+      break;
+  }
+
+  return ShouldShowPromoBasedOnImpressionOrDismissalCount(profile, type);
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+}  // namespace
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 bool ShouldShowExtensionSignInPromo(Profile& profile,
@@ -652,11 +652,6 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
 
 bool ShouldShowBookmarkSignInPromo(Profile& profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (!base::FeatureList::IsEnabled(
-          switches::kSyncEnableBookmarksInTransportMode)) {
-    return false;
-  }
-
   if (!ShouldShowSignInPromoCommon(profile, SignInPromoType::kBookmark)) {
     return false;
   }
@@ -697,17 +692,18 @@ bool IsBubbleSigninPromo(signin_metrics::AccessPoint access_point) {
 }
 
 bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
-  if (IsBubbleSigninPromo(access_point)) {
+  if (
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      // Remove this condition when `syncer::kUnoPhase2FollowUp` is launched as
+      // it is already checked in `IsBubbleSigninPromo()`.
+      access_point == signin_metrics::AccessPoint::kBookmarkBubble ||
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+      IsBubbleSigninPromo(access_point)) {
     return true;
   }
 
   if (access_point == signin_metrics::AccessPoint::kExtensionInstallBubble) {
     return switches::IsExtensionsExplicitBrowserSigninEnabled();
-  }
-
-  if (access_point == signin_metrics::AccessPoint::kBookmarkBubble) {
-    return base::FeatureList::IsEnabled(
-        switches::kSyncEnableBookmarksInTransportMode);
   }
 
   return false;

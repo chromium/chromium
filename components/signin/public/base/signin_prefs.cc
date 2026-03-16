@@ -109,8 +109,7 @@ constexpr char kExtensionsExplicitBrowserSigninEnabled[] =
     "ExtensionsExplicitBrowserSigninEnabled";
 
 // Registers that the sign in occurred with an explicit user action from the
-// bookmark sig in promo. False by default. Note: this pref is only set to true
-// when `syncer::kSyncEnableBookmarksInTransportMode` is enabled.
+// bookmark sig in promo. False by default.
 constexpr char kBookmarksExplicitBrowserSigninEnabled[] =
     "BookmarksExplicitBrowserSigninEnabled";
 
@@ -405,10 +404,6 @@ bool SigninPrefs::GetExtensionsExplicitBrowserSignin(
 
 void SigninPrefs::SetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id,
                                                     bool enabled) {
-  // The pref can only be set to true if the
-  // `switches::kSyncEnableBookmarksInTransportMode` flag is enabled.
-  CHECK(!enabled || base::FeatureList::IsEnabled(
-                        switches::kSyncEnableBookmarksInTransportMode));
   SetBooleanPrefForAccount(gaia_id, kBookmarksExplicitBrowserSigninEnabled,
                            enabled);
 }

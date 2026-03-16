@@ -37,11 +37,6 @@ namespace signin {
 
 enum class SignInPromoType;
 
-#if !BUILDFLAG(IS_ANDROID)
-// Whether we should show the sync promo.
-bool ShouldShowSyncPromo(Profile& profile);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Whether we should show the sign in promo after an extension was installed.
 bool ShouldShowExtensionSignInPromo(Profile& profile,
