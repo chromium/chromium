@@ -639,7 +639,7 @@ ci.thin_tester(
                 mixins = [
                     targets.mixin(
                         swarming = targets.swarming(
-                            shards = 7,
+                            shards = 8,
                         ),
                     ),
                 ],
