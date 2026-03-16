@@ -24,10 +24,34 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace content {
 
 namespace {
+
+// Validates that the specified `disposition` could be legitimately sent by the
+// renderer, as defined by NavigationPolicyToDisposition() in
+// render_frame_impl.cc.
+bool IsValidRendererDisposition(WindowOpenDisposition disposition) {
+  switch (disposition) {
+    case WindowOpenDisposition::CURRENT_TAB:
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+    case WindowOpenDisposition::NEW_POPUP:
+    case WindowOpenDisposition::NEW_WINDOW:
+    case WindowOpenDisposition::SAVE_TO_DISK:
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      return true;
+    default:
+      // Certain dispositions, such as SWITCH_TO_TAB, are only used internally
+      // within the browser process and should not be triggerable by a renderer
+      // process. Allowing a compromised renderer to send those could let it
+      // manipulate other tabs in unintended ways. See
+      // https://crbug.com/486761170.
+      return false;
+  }
+}
 
 // Validates that |received_token| is non-null iff associated with a blob: URL.
 bool VerifyBlobToken(
@@ -264,6 +288,14 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
     }
   }
 
+  // Certain dispositions should never be sent from the renderer, so terminate
+  // the renderer process if an unexpected disposition is encountered.
+  if (!IsValidRendererDisposition(params->disposition)) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::RFH_OPEN_URL_INVALID_DISPOSITION);
+    return false;
+  }
+
   // Verification succeeded.
   return true;
 }
@@ -345,6 +377,14 @@ bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
                                  const mojom::CreateNewWindowParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderProcessHost* process = current_rfh.GetProcess();
+
+  // Certain dispositions should never be sent from the renderer, so terminate
+  // the renderer process if an unexpected disposition is encountered.
+  if (!IsValidRendererDisposition(params.disposition)) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::RFH_CREATE_NEW_WINDOW_INVALID_DISPOSITION);
+    return false;
+  }
 
   // Verify `form_submission_post_data`.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();

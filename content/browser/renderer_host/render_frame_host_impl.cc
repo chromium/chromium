@@ -10069,15 +10069,6 @@ void RenderFrameHostImpl::CreateNewWindow(
     return;
   }
 
-  // Filter out invalid UNKNOWN disposition to prevent renderer-triggered
-  // browser crashes.
-  if (params->disposition == WindowOpenDisposition::UNKNOWN) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFH_CREATE_NEW_WINDOW_INVALID_DISPOSITION);
-    std::move(callback).Run(mojom::CreateNewWindowStatus::kBlocked, nullptr);
-    return;
-  }
-
   // Only top-most frames can open picture-in-picture windows.
   if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE &&
       !IsOutermostMainFrame()) {
