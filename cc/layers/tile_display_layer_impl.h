@@ -190,7 +190,7 @@ class CC_EXPORT TileDisplayLayerImpl
       const {
     return proposed_tiling_scales_for_deletion_;
   }
-  bool nearest_neighbor() const { return nearest_neighbor_; }
+  bool GetNearestNeighbor() const override;
 
   // LayerImpl overrides:
   mojom::LayerType GetLayerType() const override;
@@ -240,20 +240,6 @@ class CC_EXPORT TileDisplayLayerImpl
   TilingResolution GetTilingResolutionForDebugBorders(
       const TileDisplayLayerTiling* tiling) const override;
   bool ComputeCheckerboardedNeedsRecord() override;
-
-  bool AppendQuadForTile(TilingSetCoverageIterator<TileDisplayLayerTiling> iter,
-                         const AppendQuadsContext& context,
-                         viz::CompositorRenderPass* render_pass,
-                         AppendQuadsData* append_quads_data,
-                         viz::SharedQuadState* shared_quad_state,
-                         const Occlusion& scaled_occlusion,
-                         const gfx::Rect& offset_geometry_rect,
-                         const gfx::Rect& offset_visible_geometry_rect,
-                         const gfx::Rect& visible_geometry_rect,
-                         bool needs_blending,
-                         const std::optional<gfx::Rect>& scaled_cull_rect,
-                         float max_contents_scale,
-                         AppendQuadsCustomSharedData* custom_data) override;
 
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;

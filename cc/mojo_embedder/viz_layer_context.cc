@@ -1002,7 +1002,8 @@ void SerializeLayer(LayerImpl& layer,
             picture_layer.is_backdrop_filter_mask();
         tile_display_extra->is_directly_composited_image =
             picture_layer.IsDirectlyCompositedImage();
-        tile_display_extra->nearest_neighbor = picture_layer.nearest_neighbor();
+        tile_display_extra->nearest_neighbor =
+            picture_layer.GetNearestNeighbor();
         tile_display_extra->content_color_usage =
             picture_layer.GetContentColorUsage();
         tile_display_extra->recorded_bounds =

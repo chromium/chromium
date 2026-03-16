@@ -1954,7 +1954,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   auto* tile_display_layer_impl =
       static_cast<cc::TileDisplayLayerImpl*>(layer_impl_base);
 
-  EXPECT_FALSE(tile_display_layer_impl->nearest_neighbor());
+  EXPECT_FALSE(tile_display_layer_impl->GetNearestNeighbor());
 
   // Second update: Set nearest_neighbor to true.
   auto update2 = CreateDefaultUpdate();
@@ -1969,7 +1969,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
 
-  EXPECT_TRUE(tile_display_layer_impl->nearest_neighbor());
+  EXPECT_TRUE(tile_display_layer_impl->GetNearestNeighbor());
 
   // Third update: Set nearest_neighbor to false.
   auto update3 = CreateDefaultUpdate();
@@ -1984,7 +1984,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,
   EXPECT_TRUE(
       layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
 
-  EXPECT_FALSE(tile_display_layer_impl->nearest_neighbor());
+  EXPECT_FALSE(tile_display_layer_impl->GetNearestNeighbor());
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTileDisplayLayerPropertiesTest,

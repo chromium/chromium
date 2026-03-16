@@ -157,6 +157,20 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
     return false;
   }
 
+  // Returns true if a missing tile at the given geometry rect should be
+  // reported as missing (i.e. increment the num_missing_tiles counter).
+  // NOTE: TileDisplayLayerImpl does not currently track missing tiles (i.e. it
+  // does not override the default implementation of this method), as that info
+  // is used only to pass to `AppendQuadsData::num_missing_tiles` on the client
+  // side.
+  // TODO(crbug.com/401566175): Determine if we need to track
+  // `num_missing_tiles` on the Viz side in the longer term.
+  virtual bool ShouldReportTileAsMissing(
+      const gfx::Rect& tile_geometry_rect,
+      AppendQuadsCustomSharedData* custom_data) const {
+    return false;
+  }
+
   // Invoked after a quad has been appended to allow subclasses to perform any
   // subclass-specific validation or tracking.
   virtual void DidAppendQuad(viz::DrawQuad* quad,
@@ -188,20 +202,20 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   // into this method to allow implementations to operate on the original state
   // (e.g., to locate tiles in layer space). However, it will be properly
   // adjusted before AppendQuads() returns to the caller.
-  virtual bool AppendQuadForTile(
-      TilingSetCoverageIterator<Tiling> iter,
-      const AppendQuadsContext& context,
-      viz::CompositorRenderPass* render_pass,
-      AppendQuadsData* append_quads_data,
-      viz::SharedQuadState* shared_quad_state,
-      const Occlusion& scaled_occlusion,
-      const gfx::Rect& offset_geometry_rect,
-      const gfx::Rect& offset_visible_geometry_rect,
-      const gfx::Rect& visible_geometry_rect,
-      bool needs_blending,
-      const std::optional<gfx::Rect>& scaled_cull_rect,
-      float max_contents_scale,
-      AppendQuadsCustomSharedData* custom_data) = 0;
+  bool AppendQuadForTile(TilingSetCoverageIterator<Tiling> iter,
+                         const AppendQuadsContext& context,
+                         viz::CompositorRenderPass* render_pass,
+                         AppendQuadsData* append_quads_data,
+                         viz::SharedQuadState* shared_quad_state,
+                         const Occlusion& scaled_occlusion,
+                         const gfx::Rect& offset_geometry_rect,
+                         const gfx::Rect& offset_visible_geometry_rect,
+                         const gfx::Rect& visible_geometry_rect,
+                         bool needs_blending,
+                         float max_contents_scale,
+                         AppendQuadsCustomSharedData* custom_data);
+
+  virtual bool GetNearestNeighbor() const = 0;
 
   virtual bool IsDirectlyCompositedImage() const = 0;
 
@@ -376,9 +390,6 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
 
   auto custom_data = WillAppendQuads(max_contents_scale);
 
-  std::optional<gfx::Rect> scaled_cull_rect =
-      CalculateScaledCullRect(max_contents_scale);
-
   const gfx::Rect scaled_recorded_bounds =
       gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
 
@@ -415,11 +426,11 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
     append_quads_data->visible_layer_area +=
         visible_geometry_rect.size().Area64();
 
-    if (!AppendQuadForTile(
-            iter, context, render_pass, append_quads_data, shared_quad_state,
-            scaled_occlusion, offset_geometry_rect,
-            offset_visible_geometry_rect, visible_geometry_rect, needs_blending,
-            scaled_cull_rect, max_contents_scale, custom_data.get())) {
+    if (!AppendQuadForTile(iter, context, render_pass, append_quads_data,
+                           shared_quad_state, scaled_occlusion,
+                           offset_geometry_rect, offset_visible_geometry_rect,
+                           visible_geometry_rect, needs_blending,
+                           max_contents_scale, custom_data.get())) {
       missing_tile_count++;
     }
   }
@@ -438,6 +449,41 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 
   SanityCheckTilingState();
+}
+
+template <typename Tiling>
+bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
+    TilingSetCoverageIterator<Tiling> iter,
+    const AppendQuadsContext& context,
+    viz::CompositorRenderPass* render_pass,
+    AppendQuadsData* append_quads_data,
+    viz::SharedQuadState* shared_quad_state,
+    const Occlusion& scaled_occlusion,
+    const gfx::Rect& offset_geometry_rect,
+    const gfx::Rect& offset_visible_geometry_rect,
+    const gfx::Rect& visible_geometry_rect,
+    bool needs_blending,
+    float max_contents_scale,
+    AppendQuadsCustomSharedData* custom_data) {
+  bool has_draw_quad =
+      AppendQuad(iter, render_pass, shared_quad_state, offset_geometry_rect,
+                 offset_visible_geometry_rect, visible_geometry_rect,
+                 needs_blending, GetNearestNeighbor(), append_quads_data);
+
+  if (!has_draw_quad) {
+    // Checkerboard due to missing raster.
+    AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                           offset_visible_geometry_rect, iter,
+                           append_quads_data);
+
+    return /*tile_produced=*/!ShouldReportTileAsMissing(iter.geometry_rect(),
+                                                        custom_data);
+  }
+
+  produced_tile_last_append_quads_ = true;
+  AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
+
+  return /*tile_produced=*/true;
 }
 
 template <typename Tiling>

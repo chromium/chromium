@@ -203,7 +203,7 @@ class CC_EXPORT PictureLayerImpl
 
   bool IsDirectlyCompositedImage() const override;
   gfx::Rect RecordedBounds() const override;
-  bool nearest_neighbor() const { return nearest_neighbor_; }
+  bool GetNearestNeighbor() const override;
 
   void set_should_batch_updated_tiles() { should_batch_updated_tiles_ = true; }
 
@@ -427,29 +427,15 @@ class CC_EXPORT PictureLayerImpl
       const TilingSetCoverageIterator<PictureLayerTiling>& iter) override;
   bool ShouldUpdateApproximatedVisibleContentArea(
       TileResolution resolution) const override;
+  bool ShouldReportTileAsMissing(
+      const gfx::Rect& tile_geometry_rect,
+      AppendQuadsCustomSharedData* custom_data) const override;
   void DidAppendQuad(viz::DrawQuad* quad,
                      const TilingSetCoverageIterator<PictureLayerTiling>& iter,
                      AppendQuadsData* append_quads_data,
                      bool is_checkerboard) override;
 
-  bool AppendQuadForTile(TilingSetCoverageIterator<PictureLayerTiling> iter,
-                         const AppendQuadsContext& context,
-                         viz::CompositorRenderPass* render_pass,
-                         AppendQuadsData* append_quads_data,
-                         viz::SharedQuadState* shared_quad_state,
-                         const Occlusion& scaled_occlusion,
-                         const gfx::Rect& offset_geometry_rect,
-                         const gfx::Rect& offset_visible_geometry_rect,
-                         const gfx::Rect& visible_geometry_rect,
-                         bool needs_blending,
-                         const std::optional<gfx::Rect>& scaled_cull_rect,
-                         float max_contents_scale,
-                         AppendQuadsCustomSharedData* custom_data) override;
-
  private:
-  bool ShouldReportTileAsMissing(
-      const gfx::Rect& tile_geometry_rect,
-      AppendQuadsCustomSharedData* custom_data) const;
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
 };

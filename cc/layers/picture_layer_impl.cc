@@ -406,44 +406,6 @@ std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
   return std::move(custom_data);
 }
 
-bool PictureLayerImpl::AppendQuadForTile(
-    TilingSetCoverageIterator<PictureLayerTiling> iter,
-    const AppendQuadsContext& context,
-    viz::CompositorRenderPass* render_pass,
-    AppendQuadsData* append_quads_data,
-    viz::SharedQuadState* shared_quad_state,
-    const Occlusion& scaled_occlusion,
-    const gfx::Rect& offset_geometry_rect,
-    const gfx::Rect& offset_visible_geometry_rect,
-    const gfx::Rect& visible_geometry_rect,
-    bool needs_blending,
-    const std::optional<gfx::Rect>& scaled_cull_rect,
-    float max_contents_scale,
-    AppendQuadsCustomSharedData* custom_data) {
-  gfx::Rect geometry_rect = iter.geometry_rect();
-
-  bool has_draw_quad =
-      AppendQuad(iter, render_pass, shared_quad_state, offset_geometry_rect,
-                 offset_visible_geometry_rect, visible_geometry_rect,
-                 needs_blending, nearest_neighbor_, append_quads_data);
-
-  if (!has_draw_quad) {
-    // Checkerboard due to missing raster.
-    AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect, iter,
-                           append_quads_data);
-
-    return /*tile_produced=*/!ShouldReportTileAsMissing(geometry_rect,
-                                                        custom_data);
-  }
-
-  set_produced_tile_last_append_quads(true);
-
-  AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
-
-  return /*tile_produced=*/true;
-}
-
 bool PictureLayerImpl::UpdateTiles() {
   if (!CanHaveTilings()) {
     ideal_page_scale_ = 0.f;
@@ -947,6 +909,10 @@ bool PictureLayerImpl::IsDirectlyCompositedImage() const {
 
 gfx::Rect PictureLayerImpl::RecordedBounds() const {
   return raster_source_ ? raster_source_->recorded_bounds() : gfx::Rect();
+}
+
+bool PictureLayerImpl::GetNearestNeighbor() const {
+  return nearest_neighbor_;
 }
 
 std::vector<const DrawImage*> PictureLayerImpl::GetDiscardableImagesInRect(
