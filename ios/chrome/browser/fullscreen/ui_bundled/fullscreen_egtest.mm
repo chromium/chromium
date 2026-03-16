@@ -250,12 +250,6 @@ std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
 // Tests that reloading of a page shows the header even if it was not shown
 // previously.
 - (void)testShowHeaderOnReload {
-// TODO(crbug.com/482416484): Test fails on iphone device.
-#if !TARGET_IPHONE_SIMULATOR
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhone device.");
-  }
-#endif
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
