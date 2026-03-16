@@ -12,12 +12,12 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 
 @protocol AssistantAIMConsumer;
+@protocol AssistantContainerCommands;
+@class CobrowseContext;
 
 namespace web {
 class WebState;
 }
-
-@class CobrowseContext;
 
 // Mediator that manages the business logic and data for the AI mode Assistant.
 @interface AssistantAIMMediator : NSObject <ComposeboxURLLoader>
@@ -26,9 +26,11 @@ class WebState;
 @property(nonatomic, weak) id<AssistantAIMConsumer> consumer;
 
 // Initializes the mediator with a web state and a cobrowse context that defines
-// the AI mode assistant state.
+// the AI mode assistant state, and a container handler.
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
                          context:(CobrowseContext*)context
+                containerHandler:
+                    (id<AssistantContainerCommands>)containerHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

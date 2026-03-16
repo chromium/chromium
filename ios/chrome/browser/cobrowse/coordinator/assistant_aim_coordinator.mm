@@ -48,17 +48,18 @@
   _viewController = [[AssistantAIMViewController alloc] init];
   _viewController.delegate = self;
 
-  web::WebState::CreateParams params(self.browser->GetProfile());
-  _mediator = [[AssistantAIMMediator alloc]
-      initWithWebState:web::WebState::Create(params)
-               context:_context];
-  _mediator.consumer = _viewController;
-
   id<AssistantContainerCommands> containerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AssistantContainerCommands);
 
   [containerHandler showAssistantContainerWithContent:_viewController
                                              delegate:self];
+
+  web::WebState::CreateParams params(self.browser->GetProfile());
+  _mediator = [[AssistantAIMMediator alloc]
+      initWithWebState:web::WebState::Create(params)
+               context:_context
+      containerHandler:containerHandler];
+  _mediator.consumer = _viewController;
 
   _modeHolder = [[ComposeboxModeHolder alloc] init];
   ComposeboxTheme* theme = [[ComposeboxTheme alloc]

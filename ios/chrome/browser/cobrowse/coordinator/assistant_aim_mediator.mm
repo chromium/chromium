@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -12,20 +14,31 @@
 #import "net/base/url_util.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Sheet detent update animation duration.
+const CGFloat kSheetDetentAnimationDuration = 0.3;
+
+}  // namespace
+
 @implementation AssistantAIMMediator {
   std::unique_ptr<web::WebState> _webState;
   __weak id<AssistantAIMConsumer> _consumer;
   CobrowseContext* _context;
+  id<AssistantContainerCommands> _containerHandler;
 }
 
 @synthesize consumer = _consumer;
 
 - (instancetype)initWithWebState:(std::unique_ptr<web::WebState>)webState
-                         context:(CobrowseContext*)context {
+                         context:(CobrowseContext*)context
+                containerHandler:
+                    (id<AssistantContainerCommands>)containerHandler {
   self = [super init];
   if (self) {
     _webState = std::move(webState);
     _context = context;
+    _containerHandler = containerHandler;
   }
   return self;
 }
@@ -49,6 +62,10 @@
 
 // Loads the URL defined in the cobrowse context.
 - (void)loadAIMURL {
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMedium
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
   web::NavigationManager::WebLoadParams params(_context.url);
   _webState->GetNavigationManager()->LoadURLWithParams(params);
 }
