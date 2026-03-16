@@ -3237,8 +3237,6 @@ crbug.com/437940952 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/
 crbug.com/437953151 [ Win11-arm64 ] external/wpt/device-bound-session-credentials/set-early-challenge.https.html [ Crash ]
 crbug.com/437877027 [ Win11-arm64 ] external/wpt/bluetooth/bidi/requestDevice/not-processing-user-gesture.https.window.html [ Pass Timeout ]
 crbug.com/437877027 [ Win11-arm64 ] external/wpt/bluetooth/bidi/server/connect/garbage-collection-ran-during-success.https.window.html [ Pass Timeout ]
-crbug.com/437806804 [ Mac14 ] external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Timeout ]
-crbug.com/437806804 [ Mac14 ] external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/br/big-br-body.https.any.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/br/big-br-body.https.any.serviceworker.html [ Timeout ]
 crbug.com/437877028 [ Mac14 ] virtual/renderer-side-content-decoding/external/wpt/fetch/content-encoding/zstd/big-zstd-body.https.any.html [ Timeout ]
