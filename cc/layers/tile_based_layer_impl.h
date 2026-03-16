@@ -133,17 +133,6 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
                           const TilingSetCoverageIterator<Tiling>& iter,
                           AppendQuadsData* append_quads_data);
 
-  // Decides whether to append a TileDrawQuad or a SolidColorDrawQuad for the
-  // tile pointed to by `iter`. Returns true if a quad was appended.
-  bool AppendQuad(const TilingSetCoverageIterator<Tiling>& iter,
-                  viz::CompositorRenderPass* render_pass,
-                  viz::SharedQuadState* shared_quad_state,
-                  const gfx::Rect& offset_geometry_rect,
-                  const gfx::Rect& offset_visible_geometry_rect,
-                  const gfx::Rect& visible_geometry_rect,
-                  bool needs_blending,
-                  bool nearest_neighbor,
-                  AppendQuadsData* append_quads_data);
 
   // Invoked when a tile is determined to be ready to draw, allowing subclasses
   // to perform any subclass-specific side effects.
@@ -463,10 +452,31 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
     bool needs_blending,
     float max_contents_scale,
     AppendQuadsCustomSharedData* custom_data) {
-  bool has_draw_quad =
-      AppendQuad(iter, render_pass, shared_quad_state, offset_geometry_rect,
-                 offset_visible_geometry_rect, visible_geometry_rect,
-                 needs_blending, GetNearestNeighbor(), append_quads_data);
+  auto* tile = *iter;
+  bool has_draw_quad = false;
+  if (tile && tile->IsReadyToDraw()) {
+    WillProcessReadyToDrawTile(iter);
+
+    if (auto resource_id = tile->GetResourceId()) {
+      AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                         offset_visible_geometry_rect, needs_blending,
+                         *resource_id, iter.texture_rect(),
+                         GetNearestNeighbor(), iter, append_quads_data);
+      has_draw_quad = true;
+    } else if (auto color = tile->GetSolidColor()) {
+      AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
+                           offset_visible_geometry_rect, *color, iter,
+                           append_quads_data);
+      has_draw_quad = true;
+    }
+
+    if (has_draw_quad) {
+      if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
+        append_quads_data->approximated_visible_content_area +=
+            visible_geometry_rect.size().Area64();
+      }
+    }
+  }
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
@@ -577,49 +587,6 @@ void TileBasedLayerImpl<Tiling>::AppendTileDrawQuad(
                texture_rect, nearest_neighbor,
                !layer_tree_impl()->settings().enable_edge_anti_aliasing);
   DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/false);
-}
-
-template <typename Tiling>
-bool TileBasedLayerImpl<Tiling>::AppendQuad(
-    const TilingSetCoverageIterator<Tiling>& iter,
-    viz::CompositorRenderPass* render_pass,
-    viz::SharedQuadState* shared_quad_state,
-    const gfx::Rect& offset_geometry_rect,
-    const gfx::Rect& offset_visible_geometry_rect,
-    const gfx::Rect& visible_geometry_rect,
-    bool needs_blending,
-    bool nearest_neighbor,
-    AppendQuadsData* append_quads_data) {
-  auto* tile = *iter;
-  if (!tile || !tile->IsReadyToDraw()) {
-    return false;
-  }
-
-  WillProcessReadyToDrawTile(iter);
-
-  bool tile_produced = false;
-  if (auto resource_id = tile->GetResourceId()) {
-    gfx::RectF texture_rect = iter.texture_rect();
-    AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                       offset_visible_geometry_rect, needs_blending,
-                       *resource_id, texture_rect, nearest_neighbor, iter,
-                       append_quads_data);
-    tile_produced = true;
-  } else if (auto color = tile->GetSolidColor()) {
-    AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                         offset_visible_geometry_rect, *color, iter,
-                         append_quads_data);
-    tile_produced = true;
-  }
-
-  if (tile_produced) {
-    if (ShouldUpdateApproximatedVisibleContentArea(iter.resolution())) {
-      append_quads_data->approximated_visible_content_area +=
-          visible_geometry_rect.size().Area64();
-    }
-  }
-
-  return tile_produced;
 }
 
 template <typename Tiling>
