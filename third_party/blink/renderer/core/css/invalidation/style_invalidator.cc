@@ -185,7 +185,7 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
     return;
   }
   NodeInvalidationSets& pending_invalidations =
-      pending_invalidations_iterator->value;
+      *pending_invalidations_iterator->value;
 
   DCHECK(pending_nth_sets_.empty());
 
