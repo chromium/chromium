@@ -21,6 +21,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.view.KeyEvent;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
@@ -325,8 +326,43 @@ public class MediaNotificationController {
         }
     }
 
+    /**
+     * Toggles playback if the media is currently paused and a specific media button event is
+     * received. This is primarily to support Bluetooth headsets that send KEYCODE_MEDIA_PAUSE
+     * shortly after media is paused when intending to resume playback.
+     *
+     * @param mediaButtonIntent The intent containing the media button event.
+     * @return True if the event was handled by toggling playback, false otherwise.
+     */
+    @VisibleForTesting
+    public boolean maybeTogglePausedPlayback(Intent mediaButtonIntent) {
+        KeyEvent event =
+                IntentUtils.safeGetParcelableExtra(mediaButtonIntent, Intent.EXTRA_KEY_EVENT);
+        if (event != null && event.getAction() == KeyEvent.ACTION_DOWN) {
+            int keyCode = event.getKeyCode();
+            // When media is already paused, receiving KEYCODE_MEDIA_PAUSE with a 0 timestamp
+            // indicates that the external controller is out of sync (e.g. it believes the
+            // audio stream is active when it is not). We interpret this redundant PAUSE as a
+            // user intent to resume playback.
+            if (mMediaNotificationInfo != null
+                    && mMediaNotificationInfo.isPaused
+                    && keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE
+                    && event.getEventTime() == 0) {
+                onPlay(MediaNotificationListener.ACTION_SOURCE_MEDIA_SESSION);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private final MediaSessionCompat.Callback mMediaSessionCallback =
             new MediaSessionCompat.Callback() {
+                @Override
+                public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+                    if (maybeTogglePausedPlayback(mediaButtonIntent)) return true;
+                    return super.onMediaButtonEvent(mediaButtonIntent);
+                }
+
                 @Override
                 public void onPlay() {
                     MediaNotificationController.this.onPlay(
@@ -368,6 +404,10 @@ public class MediaNotificationController {
                     MediaNotificationController.this.onMediaSessionSeekTo(pos);
                 }
             };
+
+    public MediaSessionCompat.Callback getMediaSessionCallbackForTesting() {
+        return mMediaSessionCallback;
+    }
 
     /**
      * Finishes starting the service on O+.
@@ -585,22 +625,7 @@ public class MediaNotificationController {
         // is no longer available. It's unclear if it is a Support Library issue
         // or something that isn't properly cleaned up but given that the
         // crashes are rare and the fix is simple, null check was enough.
-        if (mMediaNotificationInfo == null) return;
-
-        if (mMediaNotificationInfo.isPaused) {
-            // If already paused, receiving a PAUSE command from the MediaSession indicates
-            // the external controller is out of sync (e.g. it believes the audio stream is active).
-            // We interpret this redundant PAUSE as a user intent to resume playback.
-            //
-            // We specifically check for ACTION_SOURCE_MEDIA_SESSION to avoid side effects from
-            // other pause sources, such as unplugging headphones (ACTION_SOURCE_HEADSET_UNPLUG),
-            // which should never trigger playback.
-            if (actionSource == MediaNotificationListener.ACTION_SOURCE_MEDIA_SESSION) {
-                onPlay(actionSource);
-            }
-            return;
-        }
-
+        if (mMediaNotificationInfo == null || mMediaNotificationInfo.isPaused) return;
         mMediaNotificationInfo.listener.onPause(actionSource);
     }
 
