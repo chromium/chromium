@@ -47,6 +47,9 @@ static const char* const kConsoleErrorUrls[] = {
     // assertion failure because there are no dialog args.
     "chrome://cloud-upload",
     "chrome://crostini-installer",
+    // TODO(https://crbug.com/487113801): Fix file manager flaky console
+    // errors on load.
+    "chrome://file-manager",
     "chrome://office-fallback",
     "chrome://os-feedback",
     "chrome://parent-access",
@@ -90,11 +93,10 @@ class WebUIUrlNoConsoleErrorsTest : public WebUIAllUrlsBrowserTest {
 
 // Verify that there's no console errors when loading any `kChromeUrls`.
 // Note: If one test case fails, move the failing WebUI URL to the
-// untested list in webui_urls_for_test.h. Do not globally disable
-// all tests in this suite.
-//
-// TODO(https://crbug.com/487113801): Fix the flakiness.
-IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, DISABLED_NoConsoleErrors) {
+// untested list in webui_urls_for_test.h or to the list of failures
+// in this file. DO NOT globally disable all tests in this suite, this
+// causes valuable test coverage to be lost for new and existing UIs.
+IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, NoConsoleErrors) {
   CheckNoConsoleErrors(GetParam());
   WaitBeforeNavigation();
 }
