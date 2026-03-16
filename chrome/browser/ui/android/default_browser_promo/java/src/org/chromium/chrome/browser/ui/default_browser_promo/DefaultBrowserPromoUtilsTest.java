@@ -585,6 +585,22 @@ public class DefaultBrowserPromoUtilsTest {
                         DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.SET_UP_LIST));
     }
 
+    @Test
+    public void testPromo_SuppressedByDelegate() {
+        DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate delegate =
+                Mockito.mock(DefaultBrowserPromoUtils.DefaultBrowserPromoDelegate.class);
+        when(delegate.shouldSuppressPromo()).thenReturn(true);
+        DefaultBrowserPromoUtils.setDelegate(delegate);
+
+        Assert.assertFalse(
+                "Should not promo when suppressed by delegate.",
+                mUtils.shouldShowRoleManagerPromo(
+                        mActivity,
+                        DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.CHROME_STARTUP));
+
+        DefaultBrowserPromoUtils.setDelegate(null);
+    }
+
     private void verifyOSSettingsFallbackIntentLaunched() {
         // Should fallback to System Settings Intent.
         Intent intent = shadowOf(mActivity).getNextStartedActivity();
