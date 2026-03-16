@@ -54,6 +54,7 @@ void MITMSoftwareUI::PopulateStringsForHTML(base::DictValue& load_time_data) {
                      l10n_util::GetStringUTF16(IDS_MITM_SOFTWARE_HEADING));
   load_time_data.Set("primaryButtonText", "");
   load_time_data.Set("finalParagraph", "");
+  load_time_data.Set("disableKeyboardOverride", true);
 
   if (is_enterprise_managed_) {
     MITMSoftwareUI::PopulateEnterpriseUserStringsForHTML(load_time_data);

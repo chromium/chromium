@@ -338,7 +338,13 @@ function setupEvents() {
   setupExtendedReportingCheckbox();
   setupEnhancedProtectionMessage();
   setupSSLDebuggingInfo();
-  document.addEventListener('keypress', handleKeypress);
+
+  const disableKeyboardOverride =
+      loadTimeData.valueExists('disableKeyboardOverride') &&
+      loadTimeData.getBoolean('disableKeyboardOverride');
+  if (!disableKeyboardOverride) {
+    document.addEventListener('keypress', handleKeypress);
+  }
 
   // Begin tracking for the clickjacking delay.
   timePageLastFocused = window.performance.now();
