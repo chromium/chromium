@@ -20,6 +20,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -89,21 +90,31 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
     return content::NavigationThrottle::PROCEED;
   }
 
-  // If the form is in a prerendered page, cancel it. Even though the form
-  // submission wouldn't include user data (a prerender cannot provide any
-  // input), the prerendered form submission could still leak data over the
-  // network (e.g. the path).
-  // There's an exception to this: Reloading a GET form will proceed since a
-  // prerender shouldn't check the InsecureFormTabStorage, which is a per-tab
-  // object. This is done in the check above.
-  if (handle->IsInPrerenderedMainFrame()) {
-    return content::NavigationThrottle::CANCEL;
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrerenderActivationByFormSubmission)) {
+    // If the form is in a prerendered page, cancel it. Even though the form
+    // submission wouldn't include user data (a prerender cannot provide any
+    // input), the prerendered form submission could still leak data over the
+    // network (e.g. the path).
+    // There's an exception to this: Reloading a GET form will proceed since a
+    // prerender shouldn't check the InsecureFormTabStorage, which is a per-tab
+    // object. This is done in the check above.
+    if (handle->IsInPrerenderedMainFrame()) {
+      return content::NavigationThrottle::CANCEL;
+    }
   }
 
-  // If user has just chosen to proceed on an interstitial, we don't show
-  // another one.
-  if (tab_storage && tab_storage->IsProceeding()) {
-    return content::NavigationThrottle::PROCEED;
+  // `InsecureFormTabStorage` is stored on WebContents, and the state is
+  // configured when non-prerendering, so the prerendering shouldn't refer to
+  // the state to determine the outcome of the `InsecureFormNavigationThrottle`.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrerenderActivationByFormSubmission) ||
+      !handle->IsInPrerenderedMainFrame()) {
+    // If user has just chosen to proceed on an interstitial, we don't show
+    // another one.
+    if (tab_storage && tab_storage->IsProceeding()) {
+      return content::NavigationThrottle::PROCEED;
+    }
   }
 
   // Do not set special error page HTML for insecure forms in subframes; those
@@ -137,6 +148,14 @@ InsecureFormNavigationThrottle::GetThrottleResultForMixedForm(
 
   if (should_proceed) {
     return content::NavigationThrottle::PROCEED;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrerenderActivationByFormSubmission) &&
+      handle->IsInPrerenderedMainFrame()) {
+    // Cancel prerendering to avoid logging any metrics or showing an
+    // interstitial for an invisible page.
+    return content::NavigationThrottle::CANCEL;
   }
 
   std::unique_ptr<InsecureFormBlockingPage> blocking_page =
