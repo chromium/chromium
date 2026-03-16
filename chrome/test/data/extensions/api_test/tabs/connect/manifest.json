@@ -1,11 +1,10 @@
 {
   "name": "chrome.tabs",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "end-to-end browser test for chrome.tab.connect API",
   "background": {
-    "persistent": true,
-    "scripts": ["test.js"]
+    "service_worker": "test.js"
   },
   "content_scripts": [
     {

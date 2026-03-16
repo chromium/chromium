@@ -1,11 +1,10 @@
 {
   "name": "tabs/no_permissions",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests access to the tabs API from extensions lacking the tabs permission",
   "background": {
-    "scripts": ["test.js"],
-    "persistent": false
+    "service_worker": "test.js"
   },
   "permissions": []
 }

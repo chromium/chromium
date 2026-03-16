@@ -1,11 +1,12 @@
 {
   "name": "tabs/host_permission",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Tests that tabs API returns sensitive data with host permission.",
   "background": {
-    "scripts": ["test.js"],
-    "persistent": false
+    "service_worker": "test.js"
   },
-  "permissions": ["http://a.com/*"]
+  "host_permissions": [
+    "http://a.com/*"
+  ]
 }

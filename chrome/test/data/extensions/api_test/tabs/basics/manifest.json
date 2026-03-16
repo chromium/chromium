@@ -1,6 +1,8 @@
 {
   "name": "chrome.tabs",
   "version": "0.1",
+  // TODO(https://crbug.com/491516661): This explicitly uses an MV2 extension
+  // because it relies on deprecated tabs APIs, like tabs.getAllInWindow().
   "manifest_version": 2,
   "description": "end-to-end browser test for chrome.tabs API",
   "permissions": ["tabs"]

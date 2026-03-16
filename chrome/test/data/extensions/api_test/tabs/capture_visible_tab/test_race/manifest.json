@@ -4,7 +4,7 @@
   "manifest_version": 3,
   "description": "end-to-end browser test for chrome.tabs.captureVisibleTab",
   "background": {
-    "service_worker": "test_race.js",
+    "service_worker": "test_race.js"
   },
   "permissions": ["tabs"],
   "host_permissions": [

@@ -1,6 +1,9 @@
 {
   "name": "chrome.tabs for prerendering into a new tab",
   "version": "0.1",
+  // TODO(https://crbug.com/491516661): This explicitly uses an MV2 extension
+  // because the script currently relies on tabs.getSelected(), which is
+  // deprecated in MV3.
   "manifest_version": 2,
   "description": "end-to-end browser test for chrome.tabs API with prerendering into a new tab",
   "background": {

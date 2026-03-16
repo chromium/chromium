@@ -1,7 +1,8 @@
 {
   "name": "tabs/last_focused_window",
   "version": "0.1",
-  "manifest_version": 2,
-  "background": { "scripts": ["background.js"], "persistent": false},
+  "manifest_version": 3,
+  "background": { "service_worker": "background.js"
+  },
   "permissions": ["tabs"]
 }
