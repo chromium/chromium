@@ -159,14 +159,6 @@ void TestAppBannerManagerDesktop::OnBannerPromptReply() {
   }
 }
 
-void TestAppBannerManagerDesktop::OnBannerShown() {
-  RunInstallableQuitClosureIfNeeded();
-  if (on_complete_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(on_complete_));
-  }
-}
-
 void TestAppBannerManagerDesktop::OnComplete() {
   RunInstallableQuitClosureIfNeeded();
   if (on_complete_) {

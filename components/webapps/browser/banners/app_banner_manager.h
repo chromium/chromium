@@ -74,9 +74,6 @@ class AppBannerManager final : public content::WebContentsObserver,
     // Callback when an app is installed.
     virtual void OnInstall() {}
 
-    // Called after the manager calls `ShowBannerUi`
-    virtual void OnBannerShown() {}
-
     // Called after the manager sends a message to the renderer regarding its
     // intention to show a prompt.
     virtual void OnBannerPromptReply() {}
@@ -324,9 +321,6 @@ class AppBannerManager final : public content::WebContentsObserver,
   // currently AppBannerManagerAndroid use it.
   void ReportStatus(InstallableStatusCode code);
 
-  void ResetCurrentPageDataForTesting();
-  void OverrideInstallableParamsForTesting(const InstallableParams& params);
-
  private:
   AppBannerManager(AppBannerManager::Delegate* delegate,
                    content::WebContents* web_contents);
@@ -481,8 +475,6 @@ class AppBannerManager final : public content::WebContentsObserver,
       InstallableWebAppCheckResult::kUnknown;
 
   bool triggering_disabled_for_testing_;
-
-  std::optional<InstallableParams> installable_params_for_testing_;
 
   // This stores the last result calculated by this AppBannerManager pipeline,
   // which allows some classes (like WebAppMetrics) continue to use the result
