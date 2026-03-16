@@ -212,10 +212,12 @@ void RuleData::ComputeBloomFilterHashes(const StyleScope* style_scope,
   // captures most of the benefits. (It is fairly common, especially with
   // nesting, to have the same sets of parents in consecutive rules.)
   if (bloom_hash_size_ > 0 && bloom_hash_pos_ >= bloom_hash_size_ &&
-      UNSAFE_BUFFERS(std::equal(
-          bloom_hash_backing.begin() + bloom_hash_pos_ - bloom_hash_size_,
-          bloom_hash_backing.begin() + bloom_hash_pos_,
-          bloom_hash_backing.begin() + bloom_hash_pos_))) {
+      std::ranges::equal(base::span(bloom_hash_backing)
+                             .subspan(static_cast<wtf_size_t>(bloom_hash_pos_ -
+                                                              bloom_hash_size_),
+                                      bloom_hash_size_),
+                         base::span(bloom_hash_backing)
+                             .subspan(bloom_hash_pos_, bloom_hash_size_))) {
     bloom_hash_backing.resize(bloom_hash_pos_);
     bloom_hash_pos_ -= bloom_hash_size_;
   }
