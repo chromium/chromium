@@ -64,9 +64,6 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
 
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
 
-  static ScriptPromise<IDLBoolean> isConditionalMediationAvailable(
-      ScriptState*);
-
   static const PublicKeyCredentialCreationOptions* parseCreationOptionsFromJSON(
       ScriptState*,
       const PublicKeyCredentialCreationOptionsJSON*,
@@ -95,6 +92,8 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       ExceptionState&);
 
   // Credential:
+  static ScriptPromise<IDLBoolean> isConditionalMediationAvailable(
+      ScriptState*);
   void Trace(Visitor*) const override;
   bool IsPublicKeyCredential() const override;
 

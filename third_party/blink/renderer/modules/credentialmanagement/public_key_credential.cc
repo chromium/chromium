@@ -199,6 +199,7 @@ PublicKeyCredential::getClientExtensionResults() const {
 }
 
 // static
+// Credential:
 ScriptPromise<IDLBoolean> PublicKeyCredential::isConditionalMediationAvailable(
     ScriptState* script_state) {
   auto* resolver =

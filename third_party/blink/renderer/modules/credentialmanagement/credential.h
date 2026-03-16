@@ -14,6 +14,10 @@ namespace blink {
 
 class ExceptionState;
 class KURL;
+class ScriptState;
+template <typename IDLType>
+class ScriptPromise;
+struct IDLBoolean;
 
 class MODULES_EXPORT Credential : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -32,6 +36,8 @@ class MODULES_EXPORT Credential : public ScriptWrappable {
   // Credential.idl
   const String& id() const { return id_; }
   const String& type() const { return type_; }
+  static ScriptPromise<IDLBoolean> isConditionalMediationAvailable(
+      ScriptState*);
 
  protected:
   Credential(const String& id, const String& type);

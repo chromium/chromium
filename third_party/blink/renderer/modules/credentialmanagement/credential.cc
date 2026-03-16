@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -38,6 +40,16 @@ KURL Credential::ParseStringAsURLOrThrow(const String& url,
         StrCat({"'", url, "' is not a valid URL."}));
   }
   return parsed_url;
+}
+
+// static
+ScriptPromise<IDLBoolean> Credential::isConditionalMediationAvailable(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
+  auto promise = resolver->Promise();
+  resolver->Resolve(false);
+  return promise;
 }
 
 void Credential::Trace(Visitor* visitor) const {
