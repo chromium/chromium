@@ -44,8 +44,6 @@ const std::string testemptystring("");
 const std::wstring testwstring(L"Hello, world");
 const std::u16string teststring16(u"Hello, world");
 const char testrawstring[] = "Hello new world";  // Test raw string writing
-// Test raw char16_t writing, assumes UTF16 encoding is ANSI for alpha chars.
-const char16_t testrawstring16[] = {'A', 'l', 'o', 'h', 'a', 0};
 const std::array<const uint8_t, 9> testdata = {"AAA\0BBB\0"};
 
 // Pickle::Header must be a trivial type because Pickle manages memory as raw
@@ -112,10 +110,6 @@ void VerifyResult(const Pickle& pickle) {
   EXPECT_TRUE(iter.ReadStringPiece(&outstringpiece));
   EXPECT_EQ(testrawstring, outstringpiece);
 
-  std::u16string_view outstringpiece16;
-  EXPECT_TRUE(iter.ReadStringPiece16(&outstringpiece16));
-  EXPECT_EQ(testrawstring16, outstringpiece16);
-
   std::optional<base::span<const uint8_t>> outdata = iter.ReadData();
   EXPECT_TRUE(outdata.has_value());
   EXPECT_EQ(*outdata, testdata);
@@ -153,7 +147,6 @@ TEST(PickleTest, EncodeDecode) {
   pickle.WriteString(testemptystring);
   pickle.WriteString16(teststring16);
   pickle.WriteString(testrawstring);
-  pickle.WriteString16(testrawstring16);
   pickle.WriteData(testdata);
   VerifyResult(pickle);
 

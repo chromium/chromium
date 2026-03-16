@@ -15,7 +15,7 @@
 namespace {
 constexpr int kIterations = 16;
 constexpr int kReadControlBytes = 32;
-constexpr int kReadDataTypes = 18;
+constexpr int kReadDataTypes = 17;
 constexpr int kMaxReadLength = 1024;
 constexpr int kMaxSkipBytes = 1024;
 }  // namespace
@@ -97,15 +97,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         break;
       }
       case 12: {
-        std::u16string_view result;
-        std::ignore = iter.ReadStringPiece16(&result);
-        break;
-      }
-      case 13: {
         std::ignore = iter.ReadData();
         break;
       }
-      case 14: {
+      case 13: {
         const char* data_result = nullptr;
         int read_length =
             data_provider.ConsumeIntegralInRange(0, kMaxReadLength);
@@ -113,18 +108,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             iter.ReadBytes(&data_result, static_cast<size_t>(read_length));
         break;
       }
-      case 15: {
+      case 14: {
         int read_length =
             data_provider.ConsumeIntegralInRange(0, kMaxReadLength);
         std::ignore = iter.ReadBytes(static_cast<size_t>(read_length));
         break;
       }
-      case 16: {
+      case 15: {
         size_t result = 0;
         std::ignore = iter.ReadLength(&result);
         break;
       }
-      case 17: {
+      case 16: {
         std::ignore = iter.SkipBytes(static_cast<size_t>(
             data_provider.ConsumeIntegralInRange(0, kMaxSkipBytes)));
         break;

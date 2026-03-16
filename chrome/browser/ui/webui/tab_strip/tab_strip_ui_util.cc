@@ -162,14 +162,23 @@ bool IsDraggedTab(const ui::OSExchangeData& drop_data) {
     return false;
   }
 
+  // Declared outside the loop to avoid multiple allocations when possible.
+  std::u16string str;
   for (uint32_t i = 0; i < entry_count; ++i) {
-    std::u16string_view type;
-    std::u16string_view data;
-    if (!iter.ReadStringPiece16(&type) || !iter.ReadStringPiece16(&data)) {
+    // Read the type.
+    if (!iter.ReadString16(&str)) {
       return false;
     }
 
-    if (type == kWebUITabIdDataType || type == kWebUITabGroupIdDataType) {
+    bool matches =
+        str == kWebUITabIdDataType || str == kWebUITabGroupIdDataType;
+
+    // Read the data.
+    if (!iter.ReadString16(&str)) {
+      return false;
+    }
+
+    if (matches) {
       return true;
     }
   }

@@ -57,9 +57,6 @@ class BASE_EXPORT PickleIterator {
   // message.
   [[nodiscard]] bool ReadStringPiece(std::string_view* result);
   [[nodiscard]] bool ReadString16(std::u16string* result);
-  // The std::u16string_view data will only be valid for the lifetime of the
-  // message.
-  [[nodiscard]] bool ReadStringPiece16(std::u16string_view* result);
 
   // Similar, but using span for convenience.
   [[nodiscard]] std::optional<span<const uint8_t>> ReadData();

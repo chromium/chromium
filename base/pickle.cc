@@ -225,22 +225,10 @@ bool PickleIterator::ReadString16(std::u16string* result) {
     return false;
   }
 
+  // TODO(https://crbug.com/478784025): The resulting pointer is not necessarily
+  // aligned for reading a char16_t. Replace the cast with a copying loop
+  // (reserve + push_back).
   result->assign(reinterpret_cast<const char16_t*>(read_from), len);
-  return true;
-}
-
-bool PickleIterator::ReadStringPiece16(std::u16string_view* result) {
-  size_t len;
-  if (!ReadLength(&len)) {
-    return false;
-  }
-  const char* read_from = GetReadPointerAndAdvance(len, sizeof(char16_t));
-  if (!read_from) {
-    return false;
-  }
-
-  *result =
-      std::u16string_view(reinterpret_cast<const char16_t*>(read_from), len);
   return true;
 }
 

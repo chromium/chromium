@@ -334,12 +334,12 @@ bool ParamTraits<double>::Read(const base::Pickle* m,
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
-  std::u16string_view piece16;
-  if (!iter->ReadStringPiece16(&piece16)) {
+  std::u16string str16;
+  if (!iter->ReadString16(&str16)) {
     return false;
   }
 
-  *r = base::AsWString(piece16);
+  *r = base::AsWString(str16);
   return true;
 }
 #endif
