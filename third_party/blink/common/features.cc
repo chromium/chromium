@@ -1570,11 +1570,11 @@ BASE_FEATURE(kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
 // Allow low latency canvas 2D to be in overlay (generally meaning scanned out
 // directly to display), even if regular canvases are not in overlay.
 BASE_FEATURE(kLowLatencyUsageSupportedForCanvas2D,
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 );
 
 // Allow low latency WebGL to be in overlay (generally meaning scanned out
