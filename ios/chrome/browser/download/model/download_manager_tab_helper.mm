@@ -31,6 +31,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
@@ -78,9 +80,12 @@ bool DownloadManagerTabHelper::ShouldRestrictDownload(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   PrefService* pref_service = profile->GetPrefs();
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
   bool is_save_to_drive_available = drive::IsSaveToDriveAvailable(
       profile->IsOffTheRecord(), IdentityManagerFactory::GetForProfile(profile),
-      drive::DriveServiceFactory::GetForProfile(profile), pref_service);
+      drive::DriveServiceFactory::GetForProfile(profile), pref_service,
+      auth_service);
   return ShouldRestrictDownloadToFile(web_state) && !is_save_to_drive_available;
 }
 

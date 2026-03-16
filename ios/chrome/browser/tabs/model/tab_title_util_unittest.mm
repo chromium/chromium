@@ -12,6 +12,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -35,15 +38,27 @@ class TabTitleUtilTest : public PlatformTest {
     DownloadManagerTabHelper::CreateForWebState(&web_state_);
   }
 
+  void SetUp() override {
+    PlatformTest::SetUp();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+  }
+
+  // ScopedTestingLocalState needed for the authentication service.
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::FakeWebState web_state_;
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<web::FakeNavigationManager> navigation_manager_ = nullptr;
 };
 
 // Tests GetTabTitle when there is a download task in the download manager.
 TEST_F(TabTitleUtilTest, GetTabTitleWithDownloadTest) {
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
-  web_state_.SetBrowserState(profile.get());
+  web_state_.SetBrowserState(profile_.get());
   DownloadManagerTabHelper* tab_helper =
       DownloadManagerTabHelper::FromWebState(&web_state_);
   auto task = std::make_unique<web::FakeDownloadTask>(

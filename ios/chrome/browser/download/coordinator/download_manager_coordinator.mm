@@ -65,6 +65,8 @@
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
@@ -150,6 +152,8 @@
   _mediator.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
   _mediator.SetDriveService(drive::DriveServiceFactory::GetForProfile(profile));
   _mediator.SetPrefService(profile->GetPrefs());
+  _mediator.SetAuthenticationService(
+      AuthenticationServiceFactory::GetForProfile(profile));
   if (IsDownloadListEnabled()) {
     _mediator.SetDownloadRecordService(
         DownloadRecordServiceFactory::GetForProfile(profile));
@@ -185,6 +189,7 @@
 
   _mediator.SetDriveService(nullptr);
   _mediator.SetPrefService(nullptr);
+  _mediator.SetAuthenticationService(nullptr);
   _mediator.SetIdentityManager(nullptr);
   if (IsDownloadListEnabled()) {
     _mediator.SetDownloadRecordService(nullptr);

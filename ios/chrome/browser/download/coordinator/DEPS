@@ -16,6 +16,8 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public/overlay_request_queue.h",
   "+ios/chrome/browser/presenters/ui_bundled/contained_presenter.h",
   "+ios/chrome/browser/presenters/ui_bundled/contained_presenter_delegate.h",
+  "+ios/chrome/browser/signin/model/authentication_service.h",
+  "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/signin/model/system_identity.h",
   "+ios/chrome/browser/store_kit/model/store_kit_coordinator.h",

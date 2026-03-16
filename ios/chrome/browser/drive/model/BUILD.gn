@@ -15,6 +15,7 @@ source_set("drive_availability") {
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
   ]
 }
 
