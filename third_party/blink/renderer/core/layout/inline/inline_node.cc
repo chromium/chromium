@@ -170,9 +170,9 @@ class ReusingTextShaper final {
     };
     if (allow_shape_cache_) {
       return font.PrimaryFont()->GetShapeCache().GetOrCreate(
-          ShapeCacheKey(shaper_.GetText(), start_item.StartOffset(),
-                        end_offset),
-          start_item.Direction(), ShapeFunc);
+          ShapeCacheKey(shaper_.GetText(), start_item.StartOffset(), end_offset,
+                        start_item.Direction()),
+          ShapeFunc);
     }
     return ShapeFunc().shape_result;
   }

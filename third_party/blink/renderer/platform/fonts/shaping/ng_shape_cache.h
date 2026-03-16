@@ -73,8 +73,14 @@ struct ShapeCacheKey {
 
  public:
   ShapeCacheKey() = default;
-  ShapeCacheKey(const String& text, unsigned start_offset, unsigned end_offset)
-      : text_(text), start_offset_(start_offset), end_offset_(end_offset) {
+  ShapeCacheKey(const String& text,
+                unsigned start_offset,
+                unsigned end_offset,
+                TextDirection direction)
+      : text_(text),
+        start_offset_(start_offset),
+        end_offset_(end_offset),
+        direction_(direction) {
     DCHECK_NE(text_, g_empty_string);
   }
   explicit ShapeCacheKey(HashTableDeletedValueType) : text_(g_empty_string) {}
@@ -85,12 +91,13 @@ struct ShapeCacheKey {
     unsigned hash = blink::GetHash(text_);
     AddIntToHash(hash, start_offset_);
     AddIntToHash(hash, end_offset_);
+    AddIntToHash(hash, static_cast<unsigned>(direction_));
     return hash;
   }
 
   bool operator==(const ShapeCacheKey& other) const {
     return text_ == other.text_ && start_offset_ == other.start_offset_ &&
-           end_offset_ == other.end_offset_;
+           end_offset_ == other.end_offset_ && direction_ == other.direction_;
   }
 
   const String& GetText() const { return text_; }
@@ -99,6 +106,7 @@ struct ShapeCacheKey {
   String text_;
   unsigned start_offset_ = 0u;
   unsigned end_offset_ = 0u;
+  TextDirection direction_ = TextDirection::kLtr;
 };
 
 template <>
@@ -129,10 +137,8 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
   NGShapeCache& operator=(const NGShapeCache&) = delete;
 
   void Trace(Visitor* visitor) const {
-    visitor->Trace(ltr_string_map_);
-    visitor->Trace(rtl_string_map_);
-    visitor->Trace(ltr_string_map_strong_);
-    visitor->Trace(rtl_string_map_strong_);
+    visitor->Trace(weak_map_);
+    visitor->Trace(strong_map_);
     visitor->Trace(primary_font_);
   }
 
@@ -144,15 +150,12 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
 
   void OnUpdateMemoryLimit() override {}
   void OnReleaseMemory() override {
-    ltr_string_map_.clear();
-    rtl_string_map_.clear();
-    ltr_string_map_strong_.clear();
-    rtl_string_map_strong_.clear();
+    weak_map_.clear();
+    strong_map_.clear();
   }
 
   template <typename ShapeResultFunc>
   const ShapeResult* GetOrCreate(const ShapeCacheKey& key,
-                                 TextDirection direction,
                                  const ShapeResultFunc& shape_result_func) {
     DCHECK(!key.GetText().empty());
 
@@ -161,13 +164,9 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
     }
 
     if (RuntimeEnabledFeatures::MemoryConsumerForNGShapeCacheEnabled()) {
-      return GetOrCreateImpl(
-          IsLtr(direction) ? ltr_string_map_strong_ : rtl_string_map_strong_,
-          key, shape_result_func);
+      return GetOrCreateImpl(strong_map_, key, shape_result_func);
     } else {
-      return GetOrCreateImpl(
-          IsLtr(direction) ? ltr_string_map_ : rtl_string_map_, key,
-          shape_result_func);
+      return GetOrCreateImpl(weak_map_, key, shape_result_func);
     }
   }
 
@@ -246,10 +245,8 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
     return shape_result;
   }
 
-  WeakMap ltr_string_map_;
-  WeakMap rtl_string_map_;
-  StrongMap ltr_string_map_strong_;
-  StrongMap rtl_string_map_strong_;
+  WeakMap weak_map_;
+  StrongMap strong_map_;
   Member<const SimpleFontData> primary_font_;
 
   std::unique_ptr<MemoryConsumerRegistration> memory_consumer_registration_;
