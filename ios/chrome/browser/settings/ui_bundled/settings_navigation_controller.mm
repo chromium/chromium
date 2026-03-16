@@ -58,6 +58,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -791,6 +793,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self.privacySettingsCoordinator start];
 }
 
+// Push the sync services at the top of self. Do nothing if it’s already
+// presents. The user must be signed-in and sign-in must be enabled.
 - (void)showSyncServices {
   if ([self.topViewController
           isKindOfClass:[ManageSyncSettingsCoordinator class]]) {
@@ -798,7 +802,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     // No need to open it.
     return;
   }
-  DCHECK(!self.manageSyncSettingsCoordinator);
+  CHECK(!self.manageSyncSettingsCoordinator, base::NotFatalUntil::M155);
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
+  CHECK(authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M155);
+  CHECK(authService->SigninEnabled(), base::NotFatalUntil::M155);
   self.manageSyncSettingsCoordinator = [[ManageSyncSettingsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser];

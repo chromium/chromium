@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -84,7 +86,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 }  // namespace
 
-@interface RecentTabsMediator () <IdentityManagerObserverBridgeDelegate,
+@interface RecentTabsMediator () <AuthenticationServiceObserving,
+                                  IdentityManagerObserverBridgeDelegate,
                                   SyncedSessionsObserver> {
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
       _syncedSessionsObserver;
@@ -94,6 +97,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // Time to ensure that the updates to the consumer are only happening once all
   // the updates are complete.
   std::unique_ptr<base::RetainingOneShotTimer> _timer;
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -113,14 +118,24 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 - (instancetype)
     initWithSessionSyncService:
         (sync_sessions::SessionSyncService*)sessionSyncService
+                   authService:(AuthenticationService*)authService
                identityManager:(signin::IdentityManager*)identityManager
                 restoreService:(sessions::TabRestoreService*)restoreService
                  faviconLoader:(FaviconLoader*)faviconLoader
                    syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
+    CHECK(authService, base::NotFatalUntil::M155);
+    CHECK(sessionSyncService, base::NotFatalUntil::M155);
+    CHECK(identityManager, base::NotFatalUntil::M155);
+    CHECK(restoreService, base::NotFatalUntil::M155);
+    CHECK(faviconLoader, base::NotFatalUntil::M155);
+    CHECK(syncService, base::NotFatalUntil::M155);
     _sessionSyncService = sessionSyncService;
     _identityManager = identityManager;
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(authService,
+                                                              self);
     _restoreService = restoreService;
     _faviconLoader = faviconLoader;
     _syncService = syncService;
@@ -168,6 +183,7 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _sessionSyncService = nullptr;
     _identityManager = nullptr;
     _restoreService = nullptr;
+    _authServiceObserverBridge.reset();
     _faviconLoader = nullptr;
     _syncService = nullptr;
   }
@@ -209,6 +225,13 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
       [self refreshSessionsView];
       break;
   }
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  // If sign-in get enabled/disabled, the promo may have to be refreshed.
+  [self refreshSessionsView];
 }
 
 #pragma mark - ClosedTabsObserving

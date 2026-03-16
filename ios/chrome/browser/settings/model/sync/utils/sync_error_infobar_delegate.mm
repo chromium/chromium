@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -142,10 +144,22 @@ bool SyncErrorInfoBarDelegate::Accept() {
       [sync_presenter_handler_ showPrimaryAccountReauth];
       break;
 
-    case syncer::SyncService::UserActionableError::kNone:
+    case syncer::SyncService::UserActionableError::kNone: {
       CHECK(ShouldShowSyncSettings(error_state_), base::NotFatalUntil::M151);
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForProfile(profile_);
+      if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
+          !authService->SigninEnabled()) {
+        // Due to race condition, the user may be signed-out, or sign-in may be
+        // disabled between the time the user tap on the button and the
+        // execution of this method. In this case, do nothing, the button will
+        // disappear by itself.
+        break;
+      }
+
       [sync_presenter_handler_ showAccountSettings];
       break;
+    }
 
     case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       // TODO(crbug.com/370026230): Update this case once

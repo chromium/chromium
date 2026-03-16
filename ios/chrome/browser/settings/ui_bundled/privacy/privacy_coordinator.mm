@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ui/base/device_form_factor.h"
 
@@ -116,8 +118,22 @@
 
 - (void)privacyTableViewControllerWasRemoved:
     (PrivacyTableViewController*)controller {
-  DCHECK_EQ(self.viewController, controller);
+  CHECK_EQ(self.viewController, controller, base::NotFatalUntil::M155);
   [self.delegate privacyCoordinatorViewControllerWasRemoved:self];
+}
+
+- (void)showSyncSettingsWithViewController:
+    (PrivacyTableViewController*)controller {
+  CHECK_EQ(self.viewController, controller, base::NotFatalUntil::M155);
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin) ||
+      !authService->SigninEnabled()) {
+    // The user is signed-out, so there is not reason to display sync settings.
+    return;
+  }
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(), SettingsCommands)
+      showSyncSettingsFromViewController:controller];
 }
 
 #pragma mark - PrivacyNavigationCommands

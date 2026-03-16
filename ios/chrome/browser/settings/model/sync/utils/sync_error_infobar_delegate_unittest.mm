@@ -17,13 +17,20 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/sync_presenter_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -39,6 +46,8 @@ using ::testing::Return;
 
 constexpr SyncErrorInfoBarTrigger kSyncErrorInfoBarTrigger =
     SyncErrorInfoBarTrigger::kNewTabOpened;
+
+const FakeSystemIdentity* kPrimaryIdentity = [FakeSystemIdentity fakeIdentity1];
 
 class MockInfoBarManager : public infobars::InfoBarManager {
  public:
@@ -62,6 +71,10 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     presenter_ = OCMStrictProtocolMock(@protocol(SyncPresenterCommands));
     web_state_.SetBrowserState(profile_.get());
@@ -69,9 +82,16 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(&web_state_);
+    fake_system_identity_manager_ =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    authentication_service_ =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   void TearDown() override {
+    fake_system_identity_manager_ = nullptr;
+    authentication_service_ = nullptr;
     EXPECT_OCMOCK_VERIFY((id)presenter_);
     PlatformTest::TearDown();
   }
@@ -85,6 +105,10 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
     return InfoBarManagerImpl::FromWebState(&web_state_);
   }
 
+  // ScopedTestingLocalState needed for the authentication service.
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  raw_ptr<FakeSystemIdentityManager> fake_system_identity_manager_;
+  raw_ptr<AuthenticationService> authentication_service_;
   id<SyncPresenterCommands> presenter_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -131,6 +155,9 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdateAndSignout) {
 }
 
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceUnrecoverableError) {
+  fake_system_identity_manager_->AddIdentity(kPrimaryIdentity);
+  authentication_service_->SignIn(kPrimaryIdentity,
+                                  signin_metrics::AccessPoint::kStartPage);
   OCMExpect([presenter_ showAccountSettings]);
   auto delegate = std::make_unique<SyncErrorInfoBarDelegate>(
       profile_.get(), presenter_, kSyncErrorInfoBarTrigger);

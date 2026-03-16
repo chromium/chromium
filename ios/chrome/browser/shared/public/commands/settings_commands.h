@@ -43,6 +43,7 @@ enum class PushNotificationClientId;
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the Sync settings UI, presenting from `baseViewController`.
 // If `baseViewController` is nil BVC will be used as presenterViewController.
+// The user must be signed-in and sign-in must be enabled.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController;
 

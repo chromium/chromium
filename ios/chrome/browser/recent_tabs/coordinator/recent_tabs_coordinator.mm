@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
@@ -147,8 +148,11 @@
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
   _syncService = SyncServiceFactory::GetForProfile(profile);
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(profile);
   self.mediator =
       [[RecentTabsMediator alloc] initWithSessionSyncService:sessionSyncService
+                                                 authService:authService
                                              identityManager:identityManager
                                               restoreService:restoreService
                                                faviconLoader:faviconLoader

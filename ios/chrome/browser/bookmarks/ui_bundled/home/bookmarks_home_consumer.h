@@ -70,6 +70,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 - (void)mediatorDidClearEditNodes:(BookmarksHomeMediator*)mediator;
 
 // Displays the account settings.
+// The user must be signed-in and sign-in must be enabled.
 - (void)showAccountSettings;
 
 // Called when this folder is deleted.

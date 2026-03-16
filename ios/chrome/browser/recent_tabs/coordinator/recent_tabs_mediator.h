@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_bridge.h"
 
+class AuthenticationService;
 class FaviconLoader;
 @protocol RecentTabsConsumer;
 
@@ -45,6 +46,7 @@ class TabRestoreService;
 - (instancetype)
     initWithSessionSyncService:
         (sync_sessions::SessionSyncService*)sessionSyncService
+                   authService:(AuthenticationService*)authService
                identityManager:(signin::IdentityManager*)identityManager
                 restoreService:(sessions::TabRestoreService*)restoreService
                  faviconLoader:(FaviconLoader*)faviconLoader

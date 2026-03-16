@@ -1066,6 +1066,7 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 // Shows account settings.
+// The user must be signed-in and sign-in must be enabled.
 - (void)showAccountSettings {
   DCHECK(self.accountSettingsPresenter);
   self.signinPromoViewState = SigninPromoViewState::kUsedAtLeastOnce;

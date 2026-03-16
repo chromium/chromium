@@ -140,8 +140,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
               prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
-    DCHECK(syncService);
-    CHECK(authenticationService);
+    CHECK(syncService, base::NotFatalUntil::M155);
+    CHECK(authenticationService, base::NotFatalUntil::M155);
     CHECK(authenticationService->SigninEnabled(), base::NotFatalUntil::M144);
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
@@ -156,6 +156,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     _chromeAccountManagerService = accountManagerService;
     _signedInIdentity = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
+    CHECK(_signedInIdentity, base::NotFatalUntil::M155);
     _prefService = prefService;
     // Register for font size change notifications
     [[NSNotificationCenter defaultCenter]

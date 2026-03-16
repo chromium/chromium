@@ -725,11 +725,11 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   if (URL.gurl == GURL(kGoogleServicesSettingsURL)) {
-    // kGoogleServicesSettingsURL is not a realy link. It should be handled
+    // kGoogleServicesSettingsURL is not a real link. It should be handled
     // with a special case.
     [self.settingsHandler showGoogleServicesSettingsFromViewController:self];
   } else if (URL.gurl == GURL(kSyncSettingsURL)) {
-    [self.settingsHandler showSyncSettingsFromViewController:self];
+    [self.presentationDelegate showSyncSettingsWithViewController:self];
   } else {
     [super view:view didTapLinkURL:URL];
   }

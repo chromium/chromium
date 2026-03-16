@@ -1031,6 +1031,7 @@ void OnListFamilyMembersResponse(
 }
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
+// The user must be signed-in and sign-in must be enabled.
 - (void)showSyncSettingsFromViewController:
     (UIViewController*)baseViewController {
   DCHECK(!self.isSigninInProgress);

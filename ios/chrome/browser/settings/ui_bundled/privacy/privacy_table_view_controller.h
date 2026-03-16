@@ -25,6 +25,10 @@ extern NSString* const kPrivacyTableViewId;
 - (void)privacyTableViewControllerWasRemoved:
     (PrivacyTableViewController*)controller;
 
+// Called when the user tapped on the show sync settings links.
+- (void)showSyncSettingsWithViewController:
+    (PrivacyTableViewController*)controller;
+
 @end
 
 @interface PrivacyTableViewController

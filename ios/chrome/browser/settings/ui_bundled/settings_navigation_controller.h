@@ -93,9 +93,10 @@ extern NSString* const kSettingsDoneButtonId;
                                   (id<SettingsNavigationControllerDelegate>)
                                       delegate;
 
-// Creates a new SettingsNavigationController that displays the sync management
-// UI. `browser` is the browser where settings are being displayed and
-// should not be nil. `delegate` may be nil.
+// Creates a new SettingsNavigationController that contains only the sync
+// management UI. `browser` is the browser where settings are being displayed
+// and should not be nil. `delegate` may be nil. The user must be signed-in and
+// sign-in must be enabled.
 + (instancetype)
     syncSettingsControllerForBrowser:(Browser*)browser
                             delegate:(id<SettingsNavigationControllerDelegate>)

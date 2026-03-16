@@ -424,12 +424,6 @@ enum class PresentedState {
   }
 }
 
-- (void)showAccountSettings {
-  id<SettingsCommands> settingsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SettingsCommands);
-  [settingsHandler showSyncSettingsFromViewController:self.baseViewController];
-}
-
 #pragma mark - BookmarksEditorCoordinatorDelegate
 
 - (void)bookmarksEditorCoordinatorShouldStop:

@@ -9,6 +9,7 @@
 @protocol AccountSettingsPresenter
 
 // Asks the presenter to display account settings.
+// The user must be signed-in and sign-in must be enabled.
 - (void)showAccountSettings;
 
 @end
