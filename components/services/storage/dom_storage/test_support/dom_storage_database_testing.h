@@ -38,6 +38,9 @@ DomStorageDatabase::MapMetadata CloneMapMetadata(
 std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadataVector(
     base::span<const DomStorageDatabase::MapMetadata> source_span);
 
+DomStorageDatabase::Metadata CloneMetadata(
+    const DomStorageDatabase::Metadata& source);
+
 // All `DomStorageDatabase` implementations can share this test, which calls
 // `DomStorageDatabase::UpdateMaps()` three times to:
 // (1) Add key/value pairs to two maps.

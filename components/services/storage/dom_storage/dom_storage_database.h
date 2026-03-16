@@ -345,6 +345,14 @@ class DomStorageDatabaseFactory {
 
   using StatusCallback = base::OnceCallback<void(DbStatus)>;
 
+  using CreateCallback =
+      base::RepeatingCallback<base::SequenceBound<DomStorageDatabase>(
+          StorageType,
+          bool,
+          scoped_refptr<base::SequencedTaskRunner>)>;
+  using DestroyCallback =
+      base::RepeatingCallback<void(const base::FilePath&, StatusCallback)>;
+
   // Destroys the persistent database on the filesystem identified by the
   // absolute path in `database_path`.
   //
@@ -359,6 +367,21 @@ class DomStorageDatabaseFactory {
   friend class DomStorageDatabaseTest;
   friend class SessionStorageLevelDBTest;
   friend class SessionStorageSqliteTest;
+  friend class ScopedDomStorageDatabaseFactoryForTesting;
+
+  // Production implementations.
+  static base::SequenceBound<DomStorageDatabase> CreateImpl(
+      StorageType storage_type,
+      bool is_in_memory,
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+  static void DestroyImpl(const base::FilePath& database_path,
+                          StatusCallback callback);
+
+  // Returns the create/destroy callbacks, lazily initialized on first call.
+  // Defaults point to `CreateImpl`/`DestroyImpl`. Tests can swap in custom
+  // implementations via `ScopedDomStorageDatabaseFactoryForTesting`.
+  static CreateCallback& GetCreateCallback();
+  static DestroyCallback& GetDestroyCallback();
 
   // Allow unit tests to create a database instance without `SequenceBound`.
   static PassKey CreatePassKeyForTesting();

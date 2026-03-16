@@ -607,6 +607,10 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
       // We already tried to recover from a high commit error rate before, but
       // are still having problems: there isn't really anything left to try, so
       // just ignore errors.
+      base::UmaHistogramEnumeration(
+          "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+          DomStorageDatabaseRecoveryOutcome::
+              kOngoingErrorsAfterAttemptedRecovery);
       return;
     }
     tried_to_recover_from_commit_errors_ = true;
@@ -614,7 +618,8 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
     // Deleting StorageAreas in here could cause more commits (and commit
     // errors), but those commits won't reach OnCommitResult because the area
     // will have been deleted before the commit finishes.
-    DeleteAndRecreateDatabase();
+    DeleteAndRecreateDatabase(
+        DomStorageRecoveryReason::kCommitErrorThresholdExceeded);
   }
 }
 
@@ -760,7 +765,7 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
   if (!status.ok()) {
     // If we failed to open the database, try to delete and recreate the
     // database, or ultimately fallback to an in-memory database.
-    DeleteAndRecreateDatabase();
+    DeleteAndRecreateDatabase(DomStorageRecoveryReason::kOpenFailure);
     return;
   }
 
@@ -779,7 +784,7 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
 void SessionStorageImpl::OnGotDatabaseMetadata(
     StatusOr<DomStorageDatabase::Metadata> all_metadata) {
   if (!all_metadata.has_value()) {
-    DeleteAndRecreateDatabase();
+    DeleteAndRecreateDatabase(DomStorageRecoveryReason::kMetadataReadFailure);
     return;
   }
 
@@ -795,6 +800,14 @@ void SessionStorageImpl::OnConnectionFinished() {
   // to enable recreating the database on future errors.
   if (database_)
     tried_to_recreate_during_open_ = false;
+
+  // Emit recovery histogram if we just completed a recovery cycle.
+  if (recovery_state_) {
+    LogDomStorageRecoveryOutcome("SessionStorage", *recovery_state_,
+                                 /*has_database=*/database_ != nullptr,
+                                 in_memory_);
+    recovery_state_.reset();
+  }
 
   // |database_| should be known to either be valid or invalid by now. Run our
   // delayed bindings.
@@ -814,7 +827,14 @@ void SessionStorageImpl::PurgeAllNamespaces() {
   DCHECK(data_maps_.empty());
 }
 
-void SessionStorageImpl::DeleteAndRecreateDatabase() {
+void SessionStorageImpl::DeleteAndRecreateDatabase(
+    DomStorageRecoveryReason reason) {
+  // Record the reason that initiated this recovery cycle. Only the first
+  // reason is kept when recovery re-enters (e.g. open-fail after destroy).
+  if (!recovery_state_) {
+    recovery_state_.emplace(reason, in_memory_);
+  }
+
   // We're about to set database_ to null, so delete the StorageAreas
   // that might still be using the old database.
   PurgeAllNamespaces();
@@ -858,8 +878,8 @@ void SessionStorageImpl::DeleteAndRecreateDatabase() {
 
 void SessionStorageImpl::OnDBDestroyed(bool recreate_in_memory,
                                        DbStatus status) {
-  // We're essentially ignoring the status here. Even if destroying failed we
-  // still want to go ahead and try to recreate.
+  CHECK(recovery_state_);
+  recovery_state_->AddDestroyResult(status.ok());
   InitiateConnection(recreate_in_memory);
 }
 

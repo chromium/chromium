@@ -27,6 +27,12 @@ chromium-metrics-reviews@google.com.
   <variant name="OnDisk" summary="on-disk database"/>
 </variants>
 
+<variants name="DomStorageRecoveryReason">
+  <variant name="CommitErrorThresholdExceeded"/>
+  <variant name="MetadataReadFailure"/>
+  <variant name="OpenFailure"/>
+</variants>
+
 <variants name="DomStorageType">
   <variant name="LocalStorage" summary="local storage"/>
   <variant name="SessionStorage" summary="session storage"/>
@@ -2941,6 +2947,37 @@ chromium-metrics-reviews@google.com.
     How did the user interact with the StoragePressure Bubble? Ignored means the
     user did not click on the positive button before the bubble is closed
     (either manually closed or when the browser closes).
+  </summary>
+</histogram>
+
+<histogram name="Storage.{DomStorageType}.Recovery.{DomStorageRecoveryReason}"
+    enum="DomStorageDatabaseRecoveryOutcome" expires_after="2027-02-24">
+  <owner>fergal@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the outcome of a database recovery attempt for {DomStorageType}.
+    Emitted once per recovery cycle when reaching a terminal state (successful
+    reconnection or gave up). Also emitted each time the commit-error threshold
+    is exceeded after a prior recovery attempt, to track ongoing instability.
+    The {DomStorageRecoveryReason} suffix indicates what initiated the recovery.
+  </summary>
+</histogram>
+
+<histogram
+    name="Storage.{DomStorageType}.Recovery.{DomStorageRecoveryReason}.InMemory"
+    enum="BooleanSuccess" expires_after="2027-02-24">
+  <owner>fergal@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records whether the database recovery attempt for {DomStorageType} succeeded
+    when the database was originally in-memory. True means recovery succeeded
+    (re-opened successfully), false means we gave up after attempting and
+    failing to reopen. {DomStorageRecoveryReason} indicates what initiated the
+    recovery.
   </summary>
 </histogram>
 

@@ -6,7 +6,9 @@
 
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -189,7 +191,32 @@ base::FilePath DomStorageDatabase::GetPath(
 }
 
 // static
+DomStorageDatabaseFactory::CreateCallback&
+DomStorageDatabaseFactory::GetCreateCallback() {
+  static base::NoDestructor<CreateCallback> callback(
+      base::BindRepeating(&DomStorageDatabaseFactory::CreateImpl));
+  return *callback;
+}
+
+// static
+DomStorageDatabaseFactory::DestroyCallback&
+DomStorageDatabaseFactory::GetDestroyCallback() {
+  static base::NoDestructor<DestroyCallback> callback(
+      base::BindRepeating(&DomStorageDatabaseFactory::DestroyImpl));
+  return *callback;
+}
+
+// static
 base::SequenceBound<DomStorageDatabase> DomStorageDatabaseFactory::Create(
+    StorageType storage_type,
+    bool is_in_memory,
+    scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
+  return GetCreateCallback().Run(storage_type, is_in_memory,
+                                 std::move(blocking_task_runner));
+}
+
+// static
+base::SequenceBound<DomStorageDatabase> DomStorageDatabaseFactory::CreateImpl(
     StorageType storage_type,
     bool is_in_memory,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner) {
@@ -217,6 +244,12 @@ base::SequenceBound<DomStorageDatabase> DomStorageDatabaseFactory::Create(
 // static
 void DomStorageDatabaseFactory::Destroy(const base::FilePath& database_path,
                                         StatusCallback callback) {
+  GetDestroyCallback().Run(database_path, std::move(callback));
+}
+
+// static
+void DomStorageDatabaseFactory::DestroyImpl(const base::FilePath& database_path,
+                                            StatusCallback callback) {
   CHECK(!database_path.empty());
   CHECK(database_path.IsAbsolute());
 

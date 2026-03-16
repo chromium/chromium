@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
@@ -126,7 +128,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   void InitiateConnection(bool in_memory_only = false);
   void OnDatabaseOpened(DbStatus status);
   void OnConnectionFinished();
-  void DeleteAndRecreateDatabase();
+  void DeleteAndRecreateDatabase(DomStorageRecoveryReason reason);
   void OnDBDestroyed(bool recreate_in_memory, DbStatus status);
 
   StorageAreaHolder* GetOrCreateStorageArea(
@@ -184,6 +186,11 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   // whole database is thrown away.
   int commit_error_count_ = 0;
   bool tried_to_recover_from_commit_errors_ = false;
+
+  // Tracks the state of the current recovery cycle, including what triggered
+  // it and the outcome of each Destroy() attempt. Populated in
+  // DeleteAndRecreateDatabase() and consumed in OnConnectionFinished().
+  std::optional<DomStorageRecoveryState> recovery_state_;
 
   // The set of Origins which should be cleared on shutdown.
   // this is used by ApplyPolicyUpdates to store which origin

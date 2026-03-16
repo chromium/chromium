@@ -4,6 +4,7 @@
 
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 
+#include <limits>
 #include <string_view>
 #include <tuple>
 
@@ -24,8 +25,11 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/db_status.h"
+#include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/features.h"
 #include "components/services/storage/dom_storage/test_support/dom_storage_database_testing.h"
+#include "components/services/storage/dom_storage/test_support/fake_dom_storage_database.h"
+#include "components/services/storage/dom_storage/test_support/fake_dom_storage_database_factory.h"
 #include "components/services/storage/dom_storage/test_support/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -127,6 +131,7 @@ class LocalStorageImplTestBase : public testing::Test {
     feature_list_.InitWithFeatureStates(
         {{kDomStorageSqlite, is_sqlite_enabled},
          {kDomStorageSqliteInMemory, is_sqlite_enabled}});
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>();
     EXPECT_TRUE(temp_path_.CreateUniqueTempDir());
   }
 
@@ -263,7 +268,7 @@ class LocalStorageImplTestBase : public testing::Test {
   // Pumps both the main-thread sequence and the background database sequence
   // until both are idle. Prefer other means of waiting, such as `RunUntil` or
   // `TestFuture`.
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void RunUntilIdle() { task_environment_->RunUntilIdle(); }
 
   void DoTestPut(const std::vector<uint8_t>& key,
                  const std::vector<uint8_t>& value) {
@@ -386,7 +391,12 @@ class LocalStorageImplTestBase : public testing::Test {
   // Enables or disables SQLite.
   base::test::ScopedFeatureList feature_list_;
 
-  base::test::TaskEnvironment task_environment_;
+  // TaskEnvironment initialization results in threads calling
+  // `FeatureList::IsEnabled()`. On Android tests, this can race with
+  // `FeatureList::InitWithFeatureState()` in the constructor. So, we hold the
+  // TaskEnvironment in a `unique_ptr` which allows us to delay its
+  // initialization until after the feature list is set up.
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   base::ScopedTempDir temp_path_;
 
   std::unique_ptr<LocalStorageImpl> storage_;
@@ -1228,6 +1238,11 @@ TEST_P(LocalStorageImplTest, CorruptionOnDisk) {
   uint8_t sample = IsSqliteEnabled() ? /*kCorruption=*/2 : /*kIoError=*/5;
   histograms.ExpectBucketCount("Storage.LocalStorage.OpenDatabase.OnDisk",
                                sample, 1);
+
+  // Verify recovery histogram was emitted for the open failure.
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
 }
 
 TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
@@ -1367,9 +1382,16 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
   // Sum > 0 means at least one non-zero (failure) sample was recorded.
   EXPECT_GT(histograms.GetTotalSum("Storage.LocalStorage.UpdateMaps.OnDisk"),
             0);
+
+  // Verify recovery histogram was emitted for the commit error threshold.
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+      DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
 }
 
 TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
+  base::HistogramTester histograms;
+
   // Ensure that the opened database always fails on write.
   std::optional<base::RunLoop> open_loop;
   size_t num_database_open_requests = 0;
@@ -1463,6 +1485,228 @@ TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   // Should still be connected after all that.
   area.FlushForTesting();
   EXPECT_TRUE(area.is_connected());
+
+  // Verify recovery histogram was emitted for the first recovery.
+  histograms.ExpectBucketCount(
+      "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+      DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroySucceeded, 1);
+
+  // Verify that ongoing errors after recovery were reported.
+  EXPECT_GE(histograms.GetBucketCount(
+                "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+                DomStorageDatabaseRecoveryOutcome::
+                    kOngoingErrorsAfterAttemptedRecovery),
+            1);
+}
+
+// Both disk opens fail, destroy succeeds, in-memory open succeeds.
+TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroySucceeded) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
+                                             /*num_destroy_failures=*/0);
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample("Storage.LocalStorage.Recovery.OpenFailure",
+                                DomStorageDatabaseRecoveryOutcome::
+                                    kRecoveredToInMemoryBothDestroysSucceeded,
+                                1);
+}
+
+// Both disk opens fail, destroy also fails, in-memory open succeeds.
+TEST_P(LocalStorageImplTest, FallbackToInMemory_DestroyFailed) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
+                                             /*num_destroy_failures=*/2);
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kRecoveredToInMemoryBothDestroysFailed,
+      1);
+}
+
+// All three opens fail (disk, disk retry, in-memory), destroys succeed.
+TEST_P(LocalStorageImplTest, GaveUp_DestroySucceeded) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/3,
+                                             /*num_destroy_failures=*/0);
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kGaveUpBothDestroysSucceeded, 1);
+}
+
+// All three opens fail, destroy also fails.
+TEST_P(LocalStorageImplTest, GaveUp_DestroyFailed) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/3,
+                                             /*num_destroy_failures=*/1);
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kGaveUpFirstDestroyFailed, 1);
+}
+
+// First open fails, destroy fails, second open succeeds on disk.
+TEST_P(LocalStorageImplTest, RecoveredToDisk_DestroyFailed) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(
+      /*num_open_failures=*/1,
+      /*num_destroy_failures=*/std::numeric_limits<int>::max());
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kRecoveredToDiskDestroyFailed, 1);
+}
+
+// Both disk opens fail, first destroy fails, second succeeds, in-memory open
+// succeeds.
+TEST_P(LocalStorageImplTest, FallbackToInMemory_FirstDestroyFailed) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
+                                             /*num_destroy_failures=*/1);
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kRecoveredToInMemoryFirstDestroyFailed,
+      1);
+}
+
+// Both disk opens fail, first destroy succeeds, second fails, in-memory open
+// succeeds.
+TEST_P(LocalStorageImplTest, FallbackToInMemory_SecondDestroyFailed) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  // First destroy succeeds, second fails.
+  int destroy_count = 0;
+  FakeDomStorageDatabaseFactory fake_factory(
+      /*num_open_failures=*/2,
+      base::BindLambdaForTesting(
+          [&destroy_count](const base::FilePath&,
+                           DomStorageDatabaseFactory::StatusCallback cb) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(cb), destroy_count++ >= 1
+                                                  ? DbStatus::IOError("test")
+                                                  : DbStatus::OK()));
+          }));
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample("Storage.LocalStorage.Recovery.OpenFailure",
+                                DomStorageDatabaseRecoveryOutcome::
+                                    kRecoveredToInMemorySecondDestroyFailed,
+                                1);
+}
+
+// All three opens fail, first destroy succeeds, second fails.
+TEST_P(LocalStorageImplTest, GaveUp_SecondDestroyFailed) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  // First destroy succeeds, second fails.
+  int destroy_count = 0;
+  FakeDomStorageDatabaseFactory fake_factory(
+      /*num_open_failures=*/3,
+      base::BindLambdaForTesting(
+          [&destroy_count](const base::FilePath&,
+                           DomStorageDatabaseFactory::StatusCallback cb) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(cb), destroy_count++ >= 1
+                                                  ? DbStatus::IOError("test")
+                                                  : DbStatus::OK()));
+          }));
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kGaveUpSecondDestroyFailed, 1);
+}
+
+// All three opens fail, both destroys fail.
+TEST_P(LocalStorageImplTest, GaveUp_BothDestroysFailed) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(
+      /*num_open_failures=*/3,
+      /*num_destroy_failures=*/std::numeric_limits<int>::max());
+
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure",
+      DomStorageDatabaseRecoveryOutcome::kGaveUpBothDestroysFailed, 1);
+}
+
+// In-memory open fails, retry succeeds. No Destroy() because there is nothing
+// on disk.
+TEST_P(LocalStorageImplTest, InMemoryRecovery_Succeeded) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/1,
+                                             /*num_destroy_failures=*/0);
+
+  InitializeStorage(base::FilePath());
+  WaitForDatabaseOpen();
+
+  // Recovery should succeed.
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure.InMemory",
+      /*sample=*/true, 1);
+}
+
+// Both in-memory opens fail, gave up. No Destroy() because there is nothing on
+// disk.
+TEST_P(LocalStorageImplTest, InMemoryRecovery_GaveUp) {
+  base::HistogramTester histograms;
+  ShutDownStorage();
+
+  FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
+                                             /*num_destroy_failures=*/0);
+
+  InitializeStorage(base::FilePath());
+  WaitForDatabaseOpen();
+
+  // Recovery should fail.
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure.InMemory",
+      /*sample=*/false, 1);
 }
 
 class LocalStorageImplStaleDeletionTest

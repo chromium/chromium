@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,6 +24,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "components/services/storage/dom_storage/session_storage_namespace_impl.h"
@@ -174,7 +176,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
       StatusOr<DomStorageDatabase::Metadata> all_metadata);
   void OnConnectionFinished();
   void PurgeAllNamespaces();
-  void DeleteAndRecreateDatabase();
+  void DeleteAndRecreateDatabase(DomStorageRecoveryReason reason);
   void OnDBDestroyed(bool recreate_in_memory, DbStatus status);
 
   void GetStatistics(size_t* total_cache_size, size_t* unused_areas_count);
@@ -240,6 +242,11 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   // whole database is thrown away.
   int commit_error_count_ = 0;
   bool tried_to_recover_from_commit_errors_ = false;
+
+  // Tracks the state of the current recovery cycle, including what triggered
+  // it and the outcome of each Destroy() attempt. Populated in
+  // DeleteAndRecreateDatabase() and consumed in OnConnectionFinished().
+  std::optional<DomStorageRecoveryState> recovery_state_;
 
   base::WeakPtrFactory<SessionStorageImpl> weak_ptr_factory_{this};
 };

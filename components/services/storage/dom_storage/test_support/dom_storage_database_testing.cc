@@ -108,6 +108,14 @@ std::vector<DomStorageDatabase::MapMetadata> CloneMapMetadataVector(
   return results;
 }
 
+DomStorageDatabase::Metadata CloneMetadata(
+    const DomStorageDatabase::Metadata& source) {
+  DomStorageDatabase::Metadata copy;
+  copy.next_map_id = source.next_map_id;
+  copy.map_metadata = CloneMapMetadataVector(source.map_metadata);
+  return copy;
+}
+
 void TestUpdateMaps(DomStorageDatabase& database,
                     const DomStorageDatabase::MapLocator& map1_locator,
                     const DomStorageDatabase::MapLocator& map2_locator) {
