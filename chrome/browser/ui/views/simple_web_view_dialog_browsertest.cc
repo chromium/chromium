@@ -51,10 +51,10 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, HttpAuthWebDialog) {
   auto* dialog = delegate->SetContentsView(std::move(dialog_ptr));
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  params.delegate = delegate.release();  // Pass ownership to widget.
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.delegate = delegate.get();
 
-  views::UniqueWidgetPtr widget(std::make_unique<ChromeTestWidget>());
+  auto widget = std::make_unique<ChromeTestWidget>();
   widget->Init(std::move(params));
 
   // Load a http auth challenged page.
@@ -106,10 +106,10 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, NoHttpsUpgradeOnInitialLoad) {
   auto* dialog = delegate->SetContentsView(std::move(dialog_ptr));
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  params.delegate = delegate.release();  // Pass ownership to widget.
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.delegate = delegate.get();
 
-  views::UniqueWidgetPtr widget(std::make_unique<ChromeTestWidget>());
+  auto widget = std::make_unique<ChromeTestWidget>();
   widget->Init(std::move(params));
 
   base::HistogramTester histograms;

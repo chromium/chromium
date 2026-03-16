@@ -58,14 +58,14 @@ CaptivePortalWidget::GetCustomTheme() const {
 
 // The captive portal dialog is system-modal, but uses the web-content-modal
 // dialog manager (odd) and requires this atypical dialog widget initialization.
-views::Widget* CreateWindowAsFramelessChild(
-    std::unique_ptr<views::WidgetDelegate> delegate,
+std::unique_ptr<views::Widget> CreateWindowAsFramelessChild(
+    views::WidgetDelegate* delegate,
     gfx::NativeView parent) {
-  views::Widget* widget = new CaptivePortalWidget();
+  auto widget = std::make_unique<CaptivePortalWidget>();
 
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
-  params.delegate = delegate.release();
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.delegate = delegate;
   params.child = true;
   params.parent = parent;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
@@ -85,10 +85,7 @@ CaptivePortalWindowProxy::CaptivePortalWindowProxy(
 CaptivePortalWindowProxy::~CaptivePortalWindowProxy() {
   if (widget_) {
     DCHECK_EQ(STATE_DISPLAYED, GetState());
-    widget_->RemoveObserver(this);
-    widget_->Close();
   }
-  CHECK(!IsInObserverList());
 }
 
 void CaptivePortalWindowProxy::ShowIfRedirected(
@@ -122,18 +119,18 @@ void CaptivePortalWindowProxy::Show(const std::string& network_name) {
 
   InitCaptivePortalView(network_name);
 
-  std::unique_ptr<views::WidgetDelegate> delegate =
-      captive_portal_view_->simple_web_view()->MakeWidgetDelegate();
+  delegate_ = captive_portal_view_->simple_web_view()->MakeWidgetDelegate();
   CaptivePortalView* portal =
-      delegate->SetContentsView(std::move(captive_portal_view_));
+      delegate_->SetContentsView(std::move(captive_portal_view_));
   auto* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_);
   widget_ = CreateWindowAsFramelessChild(
-      std::move(delegate), manager->delegate()
-                               ->GetWebContentsModalDialogHost(web_contents_)
-                               ->GetHostView());
+      delegate_.get(), manager->delegate()
+                           ->GetWebContentsModalDialogHost(web_contents_)
+                           ->GetHostView());
+  widget_->MakeCloseSynchronous(base::BindOnce(
+      &CaptivePortalWindowProxy::CloseWidget, weak_factory_.GetWeakPtr()));
   portal->Init();
-  widget_->AddObserver(this);
   constrained_window::ShowModalDialog(widget_->GetNativeView(), web_contents_);
 }
 
@@ -163,19 +160,6 @@ void CaptivePortalWindowProxy::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void CaptivePortalWindowProxy::OnWidgetDestroyed(views::Widget* widget) {
-  DCHECK_EQ(STATE_DISPLAYED, GetState());
-  DCHECK_EQ(widget, widget_);
-
-  DetachFromWidget(widget);
-
-  DCHECK_EQ(STATE_IDLE, GetState());
-
-  for (auto& observer : observers_) {
-    observer.OnAfterCaptivePortalHidden();
-  }
-}
-
 void CaptivePortalWindowProxy::InitCaptivePortalView(
     const std::string& network_name) {
   DCHECK(GetState() == STATE_IDLE ||
@@ -196,12 +180,18 @@ CaptivePortalWindowProxy::State CaptivePortalWindowProxy::GetState() const {
   return STATE_DISPLAYED;
 }
 
-void CaptivePortalWindowProxy::DetachFromWidget(views::Widget* widget) {
-  if (!widget_ || widget_ != widget) {
-    return;
+void CaptivePortalWindowProxy::CloseWidget(
+    views::Widget::ClosedReason closed_reason) {
+  DCHECK_EQ(STATE_DISPLAYED, GetState());
+
+  widget_.reset();
+  delegate_.reset();
+
+  DCHECK_EQ(STATE_IDLE, GetState());
+
+  for (auto& observer : observers_) {
+    observer.OnAfterCaptivePortalHidden();
   }
-  widget_->RemoveObserver(this);
-  widget_ = nullptr;
 }
 
 }  // namespace ash
