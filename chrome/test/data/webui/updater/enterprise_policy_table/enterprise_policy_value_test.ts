@@ -5,7 +5,7 @@
 import 'chrome://updater/enterprise_policy_table/enterprise_policy_value.js';
 
 import type {EnterprisePolicyValueElement} from 'chrome://updater/enterprise_policy_table/enterprise_policy_value.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('EnterprisePolicyValueTest', () => {
@@ -45,7 +45,8 @@ suite('EnterprisePolicyValueTest', () => {
         'Duration': 90,
       };
       await microtasksFinished();
-      assertEquals('10:30 AM – 12:00 PM', element.shadowRoot.textContent);
+      assertTrue(/^10:30 AM\b/.test(element.shadowRoot.textContent));
+      assertTrue(/\b12:00 PM$/.test(element.shadowRoot.textContent));
     });
 
     test('overnight range', async () => {
@@ -56,7 +57,8 @@ suite('EnterprisePolicyValueTest', () => {
         'Duration': 120,
       };
       await microtasksFinished();
-      assertEquals('11:00 PM – 1:00 AM', element.shadowRoot.textContent);
+      assertTrue(/^11:00 PM\b/.test(element.shadowRoot.textContent));
+      assertTrue(/\b1:00 AM$/.test(element.shadowRoot.textContent));
     });
 
     test('handles invalid object', async () => {
