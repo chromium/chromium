@@ -7718,6 +7718,7 @@ class ServiceWorkerSyntheticResponseBrowserTest
               "Connection: close\r\n"
               "Content-Type: text/html\r\n"
               "Service-Worker-Synthetic-Response: ?1\r\n"
+              "Content-Security-Policy: script-src 'unsafe-inline'\r\n"
               "Date: Fri, 27 Jun 2025 10:50:00 JST\r\n"
               "Test-Duplicated-Header: x\r\n";
 
@@ -8205,6 +8206,8 @@ class InterceptorURLLoader : public network::mojom::URLLoader {
     auto response = network::mojom::URLResponseHead::New();
     response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         "HTTP/1.1 200 OK\r\n"
+        "Service-Worker-Synthetic-Response: ?1\r\n"
+        "Content-Security-Policy: script-src 'unsafe-inline'\r\n"
         "Content-Type: text/html\r\n\r\n");
 
     mojo::ScopedDataPipeProducerHandle producer;
