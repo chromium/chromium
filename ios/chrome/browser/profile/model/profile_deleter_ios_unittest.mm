@@ -11,6 +11,7 @@
 #import "base/test/task_environment.h"
 #import "base/uuid.h"
 #import "components/prefs/json_pref_store.h"
+#import "components/unexportable_keys/scoped_mock_unexportable_key_provider.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -36,6 +37,14 @@ class ProfileDeleterIOSTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+
+    // By default, ignore calls to the mock provider to prevent warnings in
+    // tests that don't explicitly verify key deletion behavior.
+    EXPECT_CALL(scoped_mock_key_provider_.mock(),
+                AsStatefulUnexportableKeyProvider())
+        .WillRepeatedly(testing::Return(&scoped_mock_key_provider_.mock()));
+    EXPECT_CALL(scoped_mock_key_provider_.mock(), DeleteAllSigningKeysSlowly())
+        .WillRepeatedly(testing::Return(std::nullopt));
   }
 
   const base::FilePath& storage_dir() const {
@@ -72,6 +81,10 @@ class ProfileDeleterIOSTest : public PlatformTest {
 
     return result;
   }
+
+ protected:
+  unexportable_keys::ScopedMockUnexportableKeyProvider
+      scoped_mock_key_provider_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -143,4 +156,20 @@ TEST_F(ProfileDeleterIOSTest, DeleteProfile_WebKitStorageIdInPrefs) {
   // The profile data should have been deleted and the success reported.
   EXPECT_EQ(result, ProfileDeleterIOS::Result::kSuccess);
   EXPECT_FALSE(base::DirectoryExists(profile_dir));
+}
+
+// Tests that DeleteProfile(...) deletes client certificate keys.
+TEST_F(ProfileDeleterIOSTest, DeleteProfile_DeletesClientCertificateKeys) {
+  const base::Uuid profile_uuid = base::Uuid::GenerateRandomV4();
+  const std::string profile_name = profile_uuid.AsLowercaseString();
+  const base::FilePath profile_dir = storage_dir().Append(profile_name);
+
+  CreateProfileStorage(profile_name, profile_uuid);
+  ASSERT_TRUE(base::DirectoryExists(profile_dir));
+
+  EXPECT_CALL(scoped_mock_key_provider_.mock(), DeleteAllSigningKeysSlowly())
+      .Times(1)
+      .WillOnce(testing::Return(1));
+
+  DeleteProfile(profile_name);
 }

@@ -160,7 +160,8 @@ ChromeBrowserCloudManagementControllerIOS::
     certificate_store_ =
         std::make_unique<client_certificates::PrefsCertificateStore>(
             GetApplicationContext()->GetLocalState(),
-            client_certificates::CreatePrivateKeyFactory());
+            client_certificates::CreatePrivateKeyFactory(
+                client_certificates::kBrowserLevelApplicationTag));
   }
 
   return client_certificates::CreateBrowserCertificateProvisioningService(

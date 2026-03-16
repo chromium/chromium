@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/content_settings/model",
+  "+ios/chrome/browser/enterprise/client_certificates/cert_utils.h",
   "+ios/chrome/browser/language_detection/model",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/policy/model",
@@ -110,4 +111,7 @@ specific_include_rules = {
   'test_with_profile.mm': [
     "+ios/chrome/browser/optimization_guide/model",
   ],
+  'profile_deleter_ios_unittest.mm': [
+    "+components/unexportable_keys/scoped_mock_unexportable_key_provider.h",
+  ]
 }

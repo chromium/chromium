@@ -35,9 +35,9 @@ std::unique_ptr<KeyedService> CertificateStoreFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return LevelDbCertificateStore::Create(profile->GetStatePath(),
-                                         profile->GetProtoDatabaseProvider(),
-                                         CreatePrivateKeyFactory());
+  return LevelDbCertificateStore::Create(
+      profile->GetStatePath(), profile->GetProtoDatabaseProvider(),
+      CreatePrivateKeyFactory(profile->GetProfileName()));
 }
 
 }  // namespace client_certificates

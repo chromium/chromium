@@ -18,7 +18,8 @@ ProfileContextDelegateIOS::~ProfileContextDelegateIOS() = default;
 
 void ProfileContextDelegateIOS::OnClientCertificateDeleted(
     scoped_refptr<net::X509Certificate> certificate) {
-  // TODO(crbug.com/483299588): Flush stored certificates.
+  // No cleanup required on iOS. Certificates will be cleaned up upon profile
+  // directory deletion.
 }
 
 std::string ProfileContextDelegateIOS::GetIdentityName() {

@@ -16,7 +16,8 @@ BrowserContextDelegateIOS::~BrowserContextDelegateIOS() = default;
 
 void BrowserContextDelegateIOS::OnClientCertificateDeleted(
     scoped_refptr<net::X509Certificate> certificate) {
-  // TODO(crbug.com/483299588): flush stored certificates
+  // No cleanup required on iOS. Certificates will be cleaned up upon profile
+  // directory deletion.
 }
 
 std::string BrowserContextDelegateIOS::GetIdentityName() {

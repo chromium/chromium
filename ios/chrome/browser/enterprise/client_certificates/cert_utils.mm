@@ -87,12 +87,16 @@ std::optional<std::string> GetAccessGroup() {
 
 }  // namespace
 
-std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory() {
+std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory(
+    std::string_view application_tag) {
   PrivateKeyFactory::PrivateKeyFactoriesMap sub_factories;
   crypto::UnexportableKeyProvider::Config config;
   auto access_group = GetAccessGroup();
   if (access_group.has_value()) {
     config.keychain_access_group = access_group.value();
+    if (!application_tag.empty()) {
+      config.application_tag = std::string(application_tag);
+    }
   }
   auto unexportable_key_factory =
       UnexportablePrivateKeyFactory::TryCreate(std::move(config));
@@ -104,6 +108,24 @@ std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory() {
   }
 
   return PrivateKeyFactory::Create(std::move(sub_factories));
+}
+
+void DeleteClientCertificateKeys(std::string_view profile_name) {
+  if (profile_name.empty()) {
+    return;
+  }
+
+  crypto::UnexportableKeyProvider::Config config;
+  auto access_group = GetAccessGroup();
+  if (access_group.has_value()) {
+    config.keychain_access_group = access_group.value();
+    config.application_tag = std::string(profile_name);
+    auto provider = crypto::GetUnexportableKeyProvider(std::move(config));
+    if (provider && provider->AsStatefulUnexportableKeyProvider()) {
+      provider->AsStatefulUnexportableKeyProvider()
+          ->DeleteAllSigningKeysSlowly();
+    }
+  }
 }
 
 std::unique_ptr<client_certificates::CertificateProvisioningServiceIOS>
