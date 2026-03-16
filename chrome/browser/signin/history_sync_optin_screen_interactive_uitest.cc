@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +19,7 @@
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -31,17 +34,40 @@
 #include "ui/events/event_modifiers.h"
 
 namespace {
+
+using DeepQuery = ::WebContentsInteractionTestUtil::DeepQuery;
+
 const char kMainEmail[] = "main_email@example.com";
-const InteractiveBrowserTest::DeepQuery kHistoryOptinAcceptButton = {
-    "history-sync-optin-app", "#acceptButton"};
-const InteractiveBrowserTest::DeepQuery kHistoryOptinRejectButton = {
-    "history-sync-optin-app", "#rejectButton"};
 const char kIsVisibleFn[] =
     "(el) => {"
     "  if (el.hidden) return false;"
     "  const style = window.getComputedStyle(el);"
     "  return style.display !== 'none' && style.visibility !== 'hidden';"
     "}";
+
+const DeepQuery& GetHistoryOptinAcceptButtonQuery() {
+  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app-refresh", "#acceptButton"});
+    return *kQuery;
+  } else {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app", "#acceptButton"});
+    return *kQuery;
+  }
+}
+
+const DeepQuery& GetHistoryOptinRejectButtonQuery() {
+  if (base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app-refresh", "#rejectButton"});
+    return *kQuery;
+  } else {
+    static const base::NoDestructor<DeepQuery> kQuery(
+        {"history-sync-optin-app", "#rejectButton"});
+    return *kQuery;
+  }
+}
 
 std::unique_ptr<KeyedService> BuildTestSyncService(
     content::BrowserContext* context) {
@@ -118,11 +144,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
       WaitForElementVisible(kHistorySyncOptinDialogContentsId,
-                            kHistoryOptinAcceptButton),
+                            GetHistoryOptinAcceptButtonQuery()),
       WaitForElementVisible(kHistorySyncOptinDialogContentsId,
-                            kHistoryOptinRejectButton),
+                            GetHistoryOptinRejectButtonQuery()),
       ClickElement(kHistorySyncOptinDialogContentsId,
-                   kHistoryOptinAcceptButton),
+                   GetHistoryOptinAcceptButtonQuery()),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
   EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
@@ -179,11 +205,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                               SigninViewController::kHistorySyncOptinViewId),
       // Check that the buttons are visible.
       WaitForElementVisible(kHistorySyncOptinDialogContentsId,
-                            kHistoryOptinAcceptButton),
+                            GetHistoryOptinAcceptButtonQuery()),
       WaitForElementVisible(kHistorySyncOptinDialogContentsId,
-                            kHistoryOptinRejectButton),
+                            GetHistoryOptinRejectButtonQuery()),
       ClickElement(kHistorySyncOptinDialogContentsId,
-                   kHistoryOptinAcceptButton),
+                   GetHistoryOptinAcceptButtonQuery()),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
   EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
@@ -255,16 +281,18 @@ IN_PROC_BROWSER_TEST_P(
                               SigninViewController::kHistorySyncOptinViewId),
       // Check that the buttons are initially hidden.
       CheckJsResultAt(kHistorySyncOptinDialogContentsId,
-                      kHistoryOptinAcceptButton, kIsVisibleFn, false),
+                      GetHistoryOptinAcceptButtonQuery(), kIsVisibleFn, false),
       CheckJsResultAt(kHistorySyncOptinDialogContentsId,
-                      kHistoryOptinRejectButton, kIsVisibleFn, false),
+                      GetHistoryOptinRejectButtonQuery(), kIsVisibleFn, false),
       // Wait until the buttons are visible.
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
-      WaitForStateChange(kHistorySyncOptinDialogContentsId,
-                         UiElementHasAppeared(kHistoryOptinRejectButton)),
+      WaitForStateChange(
+          kHistorySyncOptinDialogContentsId,
+          UiElementHasAppeared(GetHistoryOptinAcceptButtonQuery())),
+      WaitForStateChange(
+          kHistorySyncOptinDialogContentsId,
+          UiElementHasAppeared(GetHistoryOptinRejectButtonQuery())),
       ClickElement(kHistorySyncOptinDialogContentsId,
-                   kHistoryOptinAcceptButton),
+                   GetHistoryOptinAcceptButtonQuery()),
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
   EXPECT_TRUE(SyncServiceFactory::GetForProfile(browser()->profile())
@@ -334,11 +362,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
       InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
                               SigninViewController::kHistorySyncOptinViewId),
       WaitForElementVisible(kHistorySyncOptinDialogContentsId,
-                            kHistoryOptinAcceptButton),
+                            GetHistoryOptinAcceptButtonQuery()),
       WaitForElementVisible(kHistorySyncOptinDialogContentsId,
-                            kHistoryOptinRejectButton),
+                            GetHistoryOptinRejectButtonQuery()),
       ClickElement(kHistorySyncOptinDialogContentsId,
-                   kHistoryOptinRejectButton),
+                   GetHistoryOptinRejectButtonQuery()),
 
       WaitForHide(SigninViewController::kHistorySyncOptinViewId));
 
