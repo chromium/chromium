@@ -205,12 +205,37 @@ final class CursorAnchorInfoController {
         return true;
     }
 
-    public void updateCursorAnchorInfoData(InputCursorAnchorInfo cursorAnchorInfo, View view) {
+    /** Did the selection move since the last cursor anchor info update? */
+    private boolean didSelectionMove(InputCursorAnchorInfo cursorAnchorInfo) {
+        // No selection move if no current selection.
+        if (cursorAnchorInfo.insertionMarker == null) return false;
+
+        // Always a selection move if no previous selection.
+        if (mLastCursorAnchorInfo == null) return true;
+
+        // Otherwise check previous selection against current.
+        return (mLastCursorAnchorInfo.getSelectionStart()
+                        != mComposingTextDelegate.getSelectionStart())
+                || (mLastCursorAnchorInfo.getSelectionEnd()
+                        != mComposingTextDelegate.getSelectionEnd());
+    }
+
+    /**
+     * Updates the CursorAnchorInfo instance if necessary to match the provided information.
+     *
+     * @return Did the selection move since the last update?
+     */
+    public boolean updateCursorAnchorInfoData(InputCursorAnchorInfo cursorAnchorInfo, View view) {
+        // Check selection move before previous information is overwritten.
+        boolean isSelectionMove = didSelectionMove(cursorAnchorInfo);
+
         mInputCursorAnchorInfo = cursorAnchorInfo;
         mLastCursorAnchorInfo = null;
         if (cursorAnchorInfo.requested || mMonitorModeEnabled) {
             updateCursorAnchorInfo(view);
         }
+
+        return isSelectionMove;
     }
 
     /** Computes the CursorAnchorInfo instance and notify to InputMethodManager if needed. */
