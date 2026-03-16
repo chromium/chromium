@@ -256,8 +256,8 @@ void AnchoredMessageBubbleView::ChipCallback() {
   // bubble (and |this|), so member access after that is a use-after-free.
   auto chip_callback = chip_callback_;
   auto close_callback = close_callback_;
-  close_callback.Run();
   chip_callback.Run();
+  close_callback.Run();
 }
 
 BEGIN_METADATA(AnchoredMessageBubbleView)
