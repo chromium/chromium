@@ -135,6 +135,7 @@ source_set("feedback_impl") {
       "//components/device_event_log",
       "//components/feedback",
       "//components/performance_manager",
+      "//components/safe_browsing/content/browser:client_side_detection",
       "//components/supervised_user/core/browser",
       "//content/public/browser",
       "//extensions/browser",
