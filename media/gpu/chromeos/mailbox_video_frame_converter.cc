@@ -4,6 +4,7 @@
 
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -64,6 +65,20 @@ inline gfx::Size to_coded_size(scoped_refptr<FrameResource> frame) {
              ? frame->coded_size()
              : GetRectSizeFromOrigin(frame->visible_rect());
 }
+
+// If this feature is enabled, we use the default color space depending on
+// format instead of passing around an invalid color space.
+BASE_FEATURE(kUseDefaultColorSpaceForMailboxVFConverter,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Provides a default color space if the frame color space was invalid.
+// TODO(b/425634684): Perform this fallback higher up the stack on
+// FrameResource.
+gfx::ColorSpace GetDefaultColorSpace(const viz::SharedImageFormat& format) {
+  return format.is_single_plane() ? gfx::ColorSpace::CreateSRGB()
+                                  : gfx::ColorSpace::CreateREC709();
+}
+
 }  // namespace
 
 // static
@@ -147,6 +162,16 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
   TRACE_EVENT1("media,gpu", "ConvertFrameImpl", "FrameResource id",
                origin_frame->unique_id());
 
+  gfx::ColorSpace color_space = frame->ColorSpace();
+  if (!color_space.IsValid() &&
+      base::FeatureList::IsEnabled(
+          kUseDefaultColorSpaceForMailboxVFConverter)) {
+    auto si_format = VideoPixelFormatToSharedImageFormat(frame->format());
+    if (si_format) {
+      color_space = GetDefaultColorSpace(si_format.value());
+    }
+  }
+
   auto shared_image_it = shared_images_.find(origin_frame->unique_id());
   // If there's a |stored_shared_image| associated with |origin_frame|, update
   // it and call the continuation callback, otherwise create a SharedImage and
@@ -157,7 +182,7 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
     if (stored_shared_image &&
         stored_shared_image->size() ==
             to_shared_image_size(origin_frame, frame) &&
-        stored_shared_image->color_space() == frame->ColorSpace()) {
+        stored_shared_image->color_space() == color_space) {
       shared_image_interface_->UpdateSharedImage(
           gpu::SyncToken(), stored_shared_image->mailbox());
       WrapSharedImageAndVideoFrameAndOutput(
@@ -259,10 +284,18 @@ MailboxVideoFrameConverter::GenerateSharedImage(
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
+  gfx::ColorSpace color_space = frame->ColorSpace();
+  // Set a default color space on the SharedImage if the frame color space is
+  // invalid.
+  if (!color_space.IsValid() &&
+      base::FeatureList::IsEnabled(
+          kUseDefaultColorSpaceForMailboxVFConverter)) {
+    color_space = GetDefaultColorSpace(si_format.value());
+  }
   scoped_refptr<gpu::ClientSharedImage> client_shared_image =
       shared_image_interface_->CreateSharedImage(
-          {*si_format, shared_image_size, frame->ColorSpace(),
-           shared_image_usage, "MailboxVideoFrameConverter"},
+          {*si_format, shared_image_size, color_space, shared_image_usage,
+           "MailboxVideoFrameConverter"},
           std::move(gpu_memory_buffer_handle));
   if (!client_shared_image) {
     OnError(FROM_HERE, "Failed to create shared image.");
