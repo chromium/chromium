@@ -5,10 +5,10 @@
 // The extension ID for the .../activity_log_private/friend extension, which
 // this extension communicates with.  This should correspond to the public key
 // defined in .../activity_log_private/friend/manifest.json.
-var FRIEND_EXTENSION_ID = 'pknkgggnfecklokoggaggchhaebkajji';
+const FRIEND_EXTENSION_ID = 'pknkgggnfecklokoggaggchhaebkajji';
 
 // Setup the test cases.
-var testCases = [];
+const testCases = [];
 testCases.push({
   func: function triggerApiCall() {
     chrome.runtime.sendMessage(FRIEND_EXTENSION_ID,
@@ -215,7 +215,7 @@ testCases.push({
   ]
 });
 
-var domExpectedActivity = [
+const domExpectedActivity = [
     'tabs.onUpdated',
     'tabs.onUpdated',
     'tabs.onUpdated',
@@ -252,13 +252,13 @@ var domExpectedActivity = [
 ];
 
 // add the hook activity
-hookNames = ['click', 'dblclick', 'drag', 'dragend', 'dragenter',
+const hookNames = ['click', 'dblclick', 'drag', 'dragend', 'dragenter',
              'dragleave', 'dragover', 'dragstart', 'drop', 'input',
              'keydown', 'keypress', 'keyup', 'mousedown',
              'mouseenter', 'mouseleave', 'mousemove', 'mouseout',
              'mouseover', 'mouseup', 'mousewheel'];
 
-for (var i = 0; i < hookNames.length; i++) {
+for (let i = 0; i < hookNames.length; i++) {
   domExpectedActivity.push('blinkAddEventListener BODY ' + hookNames[i]);
   domExpectedActivity.push('blinkAddEventListener #document ' + hookNames[i]);
   domExpectedActivity.push('blinkAddEventListener DOMWindow ' + hookNames[i]);
@@ -287,7 +287,7 @@ testCases.push({
 
 testCases.push({
   func: function checkSavedHistory() {
-    var filter = new Object();
+    const filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.apiCall = 'tabs.onUpdated';
@@ -305,7 +305,7 @@ testCases.push({
 
 testCases.push({
   func: function checkHistoryForURL() {
-    var filter = new Object();
+    const filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.pageUrl = 'http://www.google.com';
@@ -321,7 +321,7 @@ testCases.push({
 
 testCases.push({
   func: function checkOtherObject() {
-    var filter = new Object();
+    let filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'dom_access';
     filter.apiCall = 'blinkSetAttribute';
@@ -336,7 +336,7 @@ testCases.push({
               result['activities'][0]['other']['domVerb']);
           chrome.test.succeed();
         });
-    var filter = new Object();
+    filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.apiCall = 'webRequest.onHeadersReceived';
@@ -356,14 +356,14 @@ testCases.push({
 
 testCases.push({
   func: function deleteActivities() {
-    var activityIds = [];
-    var filter = new Object();
+    const activityIds = [];
+    const filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.apiCall = 'tabs.executeScript';
     chrome.activityLogPrivate.getExtensionActivities(filter, function(result) {
       chrome.test.assertEq(6, result['activities'].length);
-      for (var i = 0; i < result['activities'].length; i++)
+      for (let i = 0; i < result['activities'].length; i++)
         activityIds.push(result['activities'][i]['activityId']);
       chrome.test.assertEq(6, activityIds.length);
       chrome.activityLogPrivate.deleteActivities(['-1', '-2', '-3']);
@@ -374,7 +374,7 @@ testCases.push({
             chrome.activityLogPrivate.getExtensionActivities(filter,
                 function(result) {
                   chrome.test.assertEq(5, result['activities'].length);
-                  for (var i = 0; i < result['activities'].length; i++)
+                  for (let i = 0; i < result['activities'].length; i++)
                     chrome.test.assertFalse(activityIds[0] ==
                         result['activities'][i]['activityId']);
                   chrome.activityLogPrivate.deleteActivities(activityIds);
@@ -395,7 +395,7 @@ testCases.push({
       chrome.activityLogPrivate.deleteUrls(
           ['http://www.google.com:' + config.testServer.port]);
 
-      var filter = new Object();
+      const filter = new Object();
       filter.extensionId = FRIEND_EXTENSION_ID;
       filter.activityType = 'any';
       filter.pageUrl = 'http://www.google.com';
@@ -412,7 +412,7 @@ testCases.push({
 testCases.push({
   func: function deleteAllUrls() {
     chrome.activityLogPrivate.deleteUrls([]);
-    var filter = new Object();
+    const filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.pageUrl = 'http://';
@@ -428,7 +428,7 @@ testCases.push({
 testCases.push({
   func: function deleteAllHistory() {
     chrome.activityLogPrivate.deleteDatabase();
-    var filter = new Object();
+    const filter = new Object();
     filter.extensionId = FRIEND_EXTENSION_ID;
     filter.activityType = 'any';
     filter.apiCall = '';
@@ -444,8 +444,8 @@ testCases.push({
 function checkIncognito(url, incognitoExpected) {
   if (url) {
     incognitoExpected = Boolean(incognitoExpected);
-    var kIncognitoMarker = '<incognito>';
-    var isIncognito =
+    const kIncognitoMarker = '<incognito>';
+    const isIncognito =
         (url.substr(0, kIncognitoMarker.length) == kIncognitoMarker);
     chrome.test.assertEq(incognitoExpected, isIncognito,
                          'Bad incognito state for URL ' + url);
@@ -453,28 +453,28 @@ function checkIncognito(url, incognitoExpected) {
 }
 
 // Listener to check the expected logging is done in the test cases.
-var testCaseIndx = 0;
-var callIndx = -1;
-var blinkArgs = {
+let testCaseIndx = 0;
+let callIndx = -1;
+const blinkArgs = {
   'blinkRequestResource': 2,
   'blinkSetAttribute': 3
 };
 
 chrome.activityLogPrivate.onExtensionActivity.addListener(
     function(activity) {
-      var activityId = activity['extensionId'];
+      const activityId = activity['extensionId'];
       chrome.test.assertEq(FRIEND_EXTENSION_ID, activityId);
 
       // Check the api call is the one we expected next.
-      var apiCall = activity['apiCall'];
+      let apiCall = activity['apiCall'];
       if (apiCall.indexOf('blink') == 0) {
-        var args = JSON.parse(activity['args']);
+        let args = JSON.parse(activity['args']);
         if (blinkArgs[apiCall])
           args = args.splice(0, blinkArgs[apiCall] - 1);
         apiCall += ' ' + args.join(' ');
       }
-      expectedCall = 'runtime.onMessageExternal';
-      var testCase = testCases[testCaseIndx];
+      let expectedCall = 'runtime.onMessageExternal';
+      const testCase = testCases[testCaseIndx];
       if (callIndx > -1) {
         expectedCall = testCase.expected_activity[callIndx];
       }
