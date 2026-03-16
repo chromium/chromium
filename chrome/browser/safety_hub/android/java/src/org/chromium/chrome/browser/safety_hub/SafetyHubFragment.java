@@ -394,5 +394,7 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    SafetyHubFragment.class.getName(), ChromeBaseSearchIndexProvider.INDEX_OPT_OUT);
+                    SafetyHubFragment.class.getName(),
+                    R.xml.safety_hub_preferences,
+                    /* isSearchable= */ false);
 }

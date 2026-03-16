@@ -29,6 +29,10 @@ public class ChromeBaseSearchIndexProvider extends BaseSearchIndexProvider
         super(fragmentName, xmlRes);
     }
 
+    public ChromeBaseSearchIndexProvider(String fragmentName, int xmlRes, boolean isSearchable) {
+        super(fragmentName, xmlRes, isSearchable);
+    }
+
     /**
      * Override of {@link SearchIndexProvider#initPreferenceXml()} that also accepts {@link Profile}
      * to determine the preference xml resource.
@@ -48,7 +52,13 @@ public class ChromeBaseSearchIndexProvider extends BaseSearchIndexProvider
         if (xmlRes == 0) return;
 
         PreferenceParser.parseAndPopulate(
-                context, xmlRes, indexData, getPrefFragmentName(), getExtras(), providerMap);
+                context,
+                xmlRes,
+                indexData,
+                getPrefFragmentName(),
+                getExtras(context),
+                providerMap,
+                isSearchable());
     }
 
     /**

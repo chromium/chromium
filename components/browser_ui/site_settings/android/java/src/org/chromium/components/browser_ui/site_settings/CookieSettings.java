@@ -182,5 +182,7 @@ public class CookieSettings extends BaseSiteSettingsFragment
 
     public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new BaseSearchIndexProvider(
-                    CookieSettings.class.getName(), BaseSearchIndexProvider.INDEX_OPT_OUT);
+                    CookieSettings.class.getName(),
+                    R.xml.cookie_settings,
+                    /* isSearchable= */ false);
 }

@@ -24,6 +24,7 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
 
     private final int mXmlRes;
     private final String mPrefFragment;
+    private final boolean mIsSearchable;
 
     /**
      * Constructor for Fragment without XML resource.
@@ -31,7 +32,7 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
      * @param prefFragment {@link PreferenceFragment} owning this {@link SearchIndexProvider}.
      */
     public BaseSearchIndexProvider(String prefFragment) {
-        this(prefFragment, 0);
+        this(prefFragment, 0, /* isSearchable= */ true);
     }
 
     /**
@@ -41,8 +42,23 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
      * @param xmlRes Preference XML resource.
      */
     public BaseSearchIndexProvider(String prefFragment, @XmlRes int xmlRes) {
+        this(prefFragment, xmlRes, /* isSearchable= */ true);
+    }
+
+    /**
+     * Constructor for Fragment.
+     *
+     * @param prefFragment {@link PreferenceFragment} owning this {@link SearchIndexProvider}.
+     * @param xmlRes Preference XML resource.
+     * @param isSearchable If true, preferences are indexed and appear in user search results. If
+     *     false, the XML is parsed solely to build the parent-child structural graph (e.g., for
+     *     generating deep link breadcrumbs) but the items will remain hidden from user search
+     *     queries.
+     */
+    public BaseSearchIndexProvider(String prefFragment, @XmlRes int xmlRes, boolean isSearchable) {
         mPrefFragment = prefFragment;
         mXmlRes = xmlRes;
+        mIsSearchable = isSearchable;
     }
 
     /**
@@ -67,6 +83,20 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
         return mXmlRes;
     }
 
+    /**
+     * Returns whether the preferences from this provider should appear in user search results.
+     *
+     * <p>If this returns {@code false}, the preferences are still parsed to build the structural
+     * parent-child graph (used for generating breadcrumbs on deep links), but they are explicitly
+     * hidden from the search results UI.
+     *
+     * @return {@code true} if searchable, {@code false} if used for structure only.
+     */
+    @Override
+    public boolean isSearchable() {
+        return mIsSearchable;
+    }
+
     @Override
     public void registerFragmentHeaders(
             Context context,
@@ -84,7 +114,13 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
             Map<String, SearchIndexProvider> providerMap) {
         if (mXmlRes != 0 && mXmlRes != INDEX_OPT_OUT) {
             PreferenceParser.parseAndPopulate(
-                    context, mXmlRes, indexData, mPrefFragment, getExtras(), providerMap);
+                    context,
+                    mXmlRes,
+                    indexData,
+                    mPrefFragment,
+                    getExtras(context),
+                    providerMap,
+                    isSearchable());
         }
     }
 }
