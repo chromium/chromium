@@ -70,8 +70,6 @@ class SystemDisplayGetDisplayLayoutFunction
   ~SystemDisplayGetDisplayLayoutFunction() override = default;
   ResponseAction Run() override;
   bool ShouldRestrictToKioskAndWebUI() override;
-
-  void Response(std::vector<api::system_display::DisplayLayout> display_layout);
 };
 
 class SystemDisplaySetDisplayPropertiesFunction
