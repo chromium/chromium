@@ -313,17 +313,20 @@ class InstallTest(fake_filesystem_unittest.TestCase):
             install.ExtensionInfo(name='workspace-enabled',
                                   installed='2.0.0',
                                   linked=False,
-                                  enabled_for_workspace=True),
+                                  enabled_for_workspace=True,
+                                  enabled_for_user=False),
             'user-enabled':
             install.ExtensionInfo(name='user-enabled',
                                   installed='1.0.0',
                                   linked=True,
-                                  enabled_for_workspace=False),
+                                  enabled_for_workspace=False,
+                                  enabled_for_user=True),
             'both-enabled':
             install.ExtensionInfo(name='both-enabled',
                                   installed='3.0.0',
                                   linked=False,
-                                  enabled_for_workspace=True),
+                                  enabled_for_workspace=True,
+                                  enabled_for_user=True),
             'sample_1':
             install.ExtensionInfo(name='sample_1', available='1.0.0'),
         }
@@ -370,8 +373,9 @@ class InstallTest(fake_filesystem_unittest.TestCase):
                 install.main()
                 output = mock_stdout.getvalue()
                 expected_output = (
-                    'EXTENSION  AVAILABLE  INSTALLED  LINKED  ENABLED\n'
-                    '---------  ---------  ---------  ------  -------\n')
+                    'EXTENSION  AVAILABLE  INSTALLED  LINKED  WORKSPACE  USER\n'
+                    '---------  ---------  ---------  ------  ---------  ----\n'
+                )
                 self.assertEqual(output, expected_output)
 
     def test_print_extensions_table_formatting(self):
@@ -382,7 +386,8 @@ class InstallTest(fake_filesystem_unittest.TestCase):
                                   available='1.0.0',
                                   installed='1.0.0',
                                   linked=True,
-                                  enabled_for_workspace=True),
+                                  enabled_for_workspace=True,
+                                  enabled_for_user=True),
             'another_extension':
             install.ExtensionInfo(name='another_extension',
                                   available='2.0.0',
@@ -397,11 +402,16 @@ class InstallTest(fake_filesystem_unittest.TestCase):
                                   enabled_for_workspace=True),
         }
         expected_output = (
-            'EXTENSION          AVAILABLE  INSTALLED  LINKED  ENABLED  \n'
-            '-----------------  ---------  ---------  ------  ---------\n'
-            'another_extension  2.0.0      -          no      -        \n'
-            'ext_a              1.0.0      1.0.0      yes     workspace\n'
-            'third_ext          -          3.0.0      no      workspace\n')
+            'EXTENSION          AVAILABLE  INSTALLED  LINKED  WORKSPACE  '
+            'USER   \n'
+            '-----------------  ---------  ---------  ------  ---------  '
+            '-------\n'
+            'another_extension  2.0.0      -          no      -          '
+            '-      \n'
+            'ext_a              1.0.0      1.0.0      yes     enabled    '
+            'enabled\n'
+            'third_ext          -          3.0.0      no      enabled    '
+            '-      \n')
         with unittest.mock.patch('sys.stdout',
                                  new_callable=io.StringIO) as mock_stdout:
             install._print_extensions_table(extensions_data)

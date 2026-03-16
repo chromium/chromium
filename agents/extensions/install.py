@@ -36,6 +36,7 @@ class ExtensionInfo:
     installed: str = '-'
     linked: bool = False
     enabled_for_workspace: bool = False
+    enabled_for_user: bool = False
 
 
 def _get_extension_version(extension_path: Path) -> str:
@@ -99,13 +100,18 @@ def _parse_installed_extensions_output(
             elif (stripped_line.startswith('Enabled (Workspace):')
                   and 'true' in stripped_line):
                 current_ext.enabled_for_workspace = True
+            elif (stripped_line.startswith('Enabled (User):')
+                  and 'true' in stripped_line):
+                current_ext.enabled_for_user = True
 
     return data
 
 
 def _print_extensions_table(data: dict[str, ExtensionInfo]) -> None:
     """Prints a formatted table of extensions."""
-    headers = ['EXTENSION', 'AVAILABLE', 'INSTALLED', 'LINKED', 'ENABLED']
+    headers = [
+        'EXTENSION', 'AVAILABLE', 'INSTALLED', 'LINKED', 'WORKSPACE', 'USER'
+    ]
     col_widths = {h: len(h) for h in headers}
     for name, ext_data in data.items():
         col_widths['EXTENSION'] = max(col_widths['EXTENSION'], len(name))
@@ -113,9 +119,9 @@ def _print_extensions_table(data: dict[str, ExtensionInfo]) -> None:
                                       len(ext_data.available))
         col_widths['INSTALLED'] = max(col_widths['INSTALLED'],
                                       len(ext_data.installed))
-        col_widths['ENABLED'] = max(
-            col_widths['ENABLED'],
-            len('workspace') if ext_data.enabled_for_workspace else 0)
+        col_widths['USER'] = max(
+            col_widths['USER'],
+            len('enabled') if ext_data.enabled_for_user else 1)
 
     col_sep = '  '
     header_line = col_sep.join(h.ljust(col_widths[h]) for h in headers)
@@ -129,8 +135,10 @@ def _print_extensions_table(data: dict[str, ExtensionInfo]) -> None:
             ext_data.available.ljust(col_widths['AVAILABLE']),
             ext_data.installed.ljust(col_widths['INSTALLED']),
             ('yes' if ext_data.linked else 'no').ljust(col_widths['LINKED']),
-            ('workspace' if ext_data.enabled_for_workspace else '-').ljust(
-                col_widths['ENABLED']),
+            ('enabled' if ext_data.enabled_for_workspace else '-').ljust(
+                col_widths['WORKSPACE']),
+            ('enabled' if ext_data.enabled_for_user else '-').ljust(
+                col_widths['USER']),
         ]
         print(col_sep.join(row))
 
@@ -163,6 +171,7 @@ def _handle_list_command(
             all_data[name].installed = data.installed
             all_data[name].linked = data.linked
             all_data[name].enabled_for_workspace = data.enabled_for_workspace
+            all_data[name].enabled_for_user = data.enabled_for_user
 
     _print_extensions_table(all_data)
 
