@@ -131,17 +131,20 @@ String DateTimeLocalInputType::FormatDateTimeFieldsState(
     // from the milliseconds field.
     auto milliseconds =
         String::Format("%03u", date_time_fields_state.Millisecond());
-    while (milliseconds.length() &&
-           milliseconds[milliseconds.length() - 1] == '0') {
-      milliseconds.Truncate(milliseconds.length() - 1);
+    StringView milliseconds_view(milliseconds);
+    while (milliseconds_view.ends_with('0')) {
+      milliseconds_view.remove_suffix(1);
     }
-    return String::Format(
-        "%04u-%02u-%02uT%02u:%02u:%02u.%s", date_time_fields_state.Year(),
-        date_time_fields_state.Month(), date_time_fields_state.DayOfMonth(),
-        date_time_fields_state.Hour24(), date_time_fields_state.Minute(),
-        date_time_fields_state.HasSecond() ? date_time_fields_state.Second()
-                                           : 0,
-        milliseconds.Ascii().c_str());
+    return StrCat({String::Format("%04u-%02u-%02uT%02u:%02u:%02u.",
+                                  date_time_fields_state.Year(),
+                                  date_time_fields_state.Month(),
+                                  date_time_fields_state.DayOfMonth(),
+                                  date_time_fields_state.Hour24(),
+                                  date_time_fields_state.Minute(),
+                                  date_time_fields_state.HasSecond()
+                                      ? date_time_fields_state.Second()
+                                      : 0),
+                   milliseconds_view});
   }
 
   if (date_time_fields_state.HasSecond() && date_time_fields_state.Second()) {

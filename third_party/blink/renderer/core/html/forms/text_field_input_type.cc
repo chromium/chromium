@@ -660,7 +660,7 @@ void TextFieldInputType::HandleBeforeTextInsertedEvent(
   unsigned text_length = event_text.length();
   while (text_length > 0 && IsASCIILineBreak(event_text[text_length - 1]))
     text_length--;
-  event_text.Truncate(text_length);
+  event_text = event_text.substr(0, text_length);
   event_text.Replace("\r\n", " ");
   event_text.Replace('\r', ' ');
   event_text.Replace('\n', ' ');

@@ -121,11 +121,6 @@ void String::Ensure16Bit() {
   }
 }
 
-void String::Truncate(size_type length) {
-  if (impl_)
-    impl_ = impl_->Truncate(length);
-}
-
 String& String::erase(size_type pos, size_type len) {
   CHECK_LE(pos, length());
   if (impl_) {

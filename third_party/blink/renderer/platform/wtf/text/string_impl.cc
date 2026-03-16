@@ -511,14 +511,6 @@ scoped_refptr<StringImpl> StringImpl::FoldCase() {
   return new_impl;
 }
 
-scoped_refptr<StringImpl> StringImpl::Truncate(wtf_size_t length) {
-  if (length >= length_)
-    return this;
-  if (Is8Bit())
-    return Create(Span8().first(length));
-  return Create(Span16().first(length));
-}
-
 template <class UCharPredicate>
 inline scoped_refptr<StringImpl> StringImpl::StripMatchedCharacters(
     UCharPredicate predicate) {

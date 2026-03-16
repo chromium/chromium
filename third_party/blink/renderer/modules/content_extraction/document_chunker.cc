@@ -94,7 +94,7 @@ Vector<String> DocumentChunker::Chunk(const Node& tree) {
     passages.Shrink(max_passages_);
   }
   for (String& passage : passages) {
-    passage.Truncate(1024);
+    passage = passage.substr(0, 1024);
   }
 
   return passages;

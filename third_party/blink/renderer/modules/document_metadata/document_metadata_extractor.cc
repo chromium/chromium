@@ -133,14 +133,14 @@ bool ParseRepeatedValue(const JSONArray& arr,
         double v;
         element->AsDouble(&v);
         String s = String::Number(v);
-        s.Truncate(kMaxStringLength);
+        s = s.substr(0, kMaxStringLength);
         values->get_string_values().push_back(s);
         continue;
       }
       case JSONValue::ValueType::kTypeString: {
         String v;
         element->AsString(&v);
-        v.Truncate(kMaxStringLength);
+        v = v.substr(0, kMaxStringLength);
         values->get_string_values().push_back(v);
         continue;
       }
@@ -195,13 +195,13 @@ void ExtractEntity(const JSONObject& val, int recursion_level, Entity& entity) {
         double v;
         val.GetDouble(entry.first, &v);
         String s = String::Number(v);
-        s.Truncate(kMaxStringLength);
+        s = s.substr(0, kMaxStringLength);
         property->values = Values::NewStringValues({s});
       } break;
       case JSONValue::ValueType::kTypeString: {
         String v;
         val.GetString(entry.first, &v);
-        v.Truncate(kMaxStringLength);
+        v = v.substr(0, kMaxStringLength);
         property->values = Values::NewStringValues({v});
       } break;
       case JSONValue::ValueType::kTypeObject: {

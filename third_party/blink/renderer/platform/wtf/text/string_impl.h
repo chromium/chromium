@@ -433,8 +433,6 @@ class WTF_EXPORT StringImpl {
   // ASCII?
   scoped_refptr<StringImpl> FoldCase();
 
-  scoped_refptr<StringImpl> Truncate(wtf_size_t length);
-
   wtf_size_t LengthWithStrippedWhiteSpace() const;
 
   scoped_refptr<StringImpl> StripWhiteSpace();

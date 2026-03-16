@@ -269,10 +269,6 @@ class WTF_EXPORT String {
     }
   }
 
-  // Truncates the string to the given length. This function does nothing if
-  // `length` is greater than the string length.
-  void Truncate(size_type length);
-
   // [string.operations] --------------------------------------------
 
   bool Is8Bit() const { return impl_->Is8Bit(); }
