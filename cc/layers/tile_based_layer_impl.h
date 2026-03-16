@@ -104,38 +104,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
     return std::ranges::contains(last_append_quads_scales_, scale);
   }
 
-  // Appends a solid-color quad with color `color`.
-  void AppendSolidColorQuad(viz::CompositorRenderPass* render_pass,
-                            viz::SharedQuadState* shared_quad_state,
-                            const gfx::Rect& offset_geometry_rect,
-                            const gfx::Rect& offset_visible_geometry_rect,
-                            SkColor4f color,
-                            const TilingSetCoverageIterator<Tiling>& iter,
-                            AppendQuadsData* append_quads_data);
-
-  // Appends a solid-color quad for checkerboarding.
-  void AppendCheckerboardQuad(viz::CompositorRenderPass* render_pass,
-                              viz::SharedQuadState* shared_quad_state,
-                              const gfx::Rect& offset_geometry_rect,
-                              const gfx::Rect& offset_visible_geometry_rect,
-                              const TilingSetCoverageIterator<Tiling>& iter,
-                              AppendQuadsData* append_quads_data);
-
-  // Appends a TileDrawQuad.
-  void AppendTileDrawQuad(viz::CompositorRenderPass* render_pass,
-                          viz::SharedQuadState* shared_quad_state,
-                          const gfx::Rect& offset_geometry_rect,
-                          const gfx::Rect& offset_visible_geometry_rect,
-                          bool needs_blending,
-                          viz::ResourceId resource_id,
-                          const gfx::RectF& texture_rect,
-                          bool nearest_neighbor,
-                          const TilingSetCoverageIterator<Tiling>& iter,
-                          AppendQuadsData* append_quads_data);
-
-
   // Invoked when a tile is determined to be ready to draw, allowing subclasses
-  // to perform any subclass-specific side effects.
   virtual void WillProcessReadyToDrawTile(
       const TilingSetCoverageIterator<Tiling>& iter) {}
 
@@ -458,15 +427,23 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
     WillProcessReadyToDrawTile(iter);
 
     if (auto resource_id = tile->GetResourceId()) {
-      AppendTileDrawQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                         offset_visible_geometry_rect, needs_blending,
-                         *resource_id, iter.texture_rect(),
-                         GetNearestNeighbor(), iter, append_quads_data);
+      auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
+      quad->SetNew(shared_quad_state, offset_geometry_rect,
+                   offset_visible_geometry_rect, needs_blending, *resource_id,
+                   iter.texture_rect(), GetNearestNeighbor(),
+                   !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+      DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/false);
       has_draw_quad = true;
     } else if (auto color = tile->GetSolidColor()) {
-      AppendSolidColorQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect, *color, iter,
-                           append_quads_data);
+      float alpha = color->fA * shared_quad_state->opacity;
+      if (alpha >= std::numeric_limits<float>::epsilon()) {
+        auto* quad =
+            render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+        quad->SetNew(shared_quad_state, offset_geometry_rect,
+                     offset_visible_geometry_rect, *color,
+                     !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+        DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/false);
+      }
       has_draw_quad = true;
     }
   }
@@ -478,9 +455,16 @@ bool TileBasedLayerImpl<Tiling>::AppendQuadForTile(
     }
   } else {
     // Checkerboard due to missing raster.
-    AppendCheckerboardQuad(render_pass, shared_quad_state, offset_geometry_rect,
-                           offset_visible_geometry_rect, iter,
-                           append_quads_data);
+    SkColor4f color = safe_opaque_background_color();
+    if (ShowDebugBorders(DebugBorderType::LAYER)) {
+      // Fill the whole tile with the missing tile color.
+      color = DebugColors::DefaultCheckerboardColor();
+    }
+    auto* quad =
+        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+    quad->SetNew(shared_quad_state, offset_geometry_rect,
+                 offset_visible_geometry_rect, color, false);
+    DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/true);
 
     return /*tile_produced=*/!ShouldReportTileAsMissing(iter.geometry_rect(),
                                                         custom_data);
@@ -526,65 +510,6 @@ void TileBasedLayerImpl<Tiling>::AppendSolidQuad(
       render_pass, occlusion, shared_quad_state, scaled_visible_layer_rect,
       color, !layer_tree_impl()->settings().enable_edge_anti_aliasing,
       effect_node->blend_mode, append_quads_data);
-}
-
-template <typename Tiling>
-void TileBasedLayerImpl<Tiling>::AppendSolidColorQuad(
-    viz::CompositorRenderPass* render_pass,
-    viz::SharedQuadState* shared_quad_state,
-    const gfx::Rect& offset_geometry_rect,
-    const gfx::Rect& offset_visible_geometry_rect,
-    SkColor4f color,
-    const TilingSetCoverageIterator<Tiling>& iter,
-    AppendQuadsData* append_quads_data) {
-  float alpha = color.fA * shared_quad_state->opacity;
-  if (alpha < std::numeric_limits<float>::epsilon()) {
-    return;
-  }
-  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, offset_geometry_rect,
-               offset_visible_geometry_rect, color,
-               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-  DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/false);
-}
-
-template <typename Tiling>
-void TileBasedLayerImpl<Tiling>::AppendCheckerboardQuad(
-    viz::CompositorRenderPass* render_pass,
-    viz::SharedQuadState* shared_quad_state,
-    const gfx::Rect& offset_geometry_rect,
-    const gfx::Rect& offset_visible_geometry_rect,
-    const TilingSetCoverageIterator<Tiling>& iter,
-    AppendQuadsData* append_quads_data) {
-  SkColor4f color = safe_opaque_background_color();
-  if (ShowDebugBorders(DebugBorderType::LAYER)) {
-    // Fill the whole tile with the missing tile color.
-    color = DebugColors::DefaultCheckerboardColor();
-  }
-  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-  quad->SetNew(shared_quad_state, offset_geometry_rect,
-               offset_visible_geometry_rect, color, false);
-  DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/true);
-}
-
-template <typename Tiling>
-void TileBasedLayerImpl<Tiling>::AppendTileDrawQuad(
-    viz::CompositorRenderPass* render_pass,
-    viz::SharedQuadState* shared_quad_state,
-    const gfx::Rect& offset_geometry_rect,
-    const gfx::Rect& offset_visible_geometry_rect,
-    bool needs_blending,
-    viz::ResourceId resource_id,
-    const gfx::RectF& texture_rect,
-    bool nearest_neighbor,
-    const TilingSetCoverageIterator<Tiling>& iter,
-    AppendQuadsData* append_quads_data) {
-  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
-  quad->SetNew(shared_quad_state, offset_geometry_rect,
-               offset_visible_geometry_rect, needs_blending, resource_id,
-               texture_rect, nearest_neighbor,
-               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
-  DidAppendQuad(quad, iter, append_quads_data, /*is_checkerboard=*/false);
 }
 
 template <typename Tiling>
