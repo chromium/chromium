@@ -58,6 +58,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
@@ -115,6 +116,20 @@ class WebUIToolbarInternalWebView : public views::WebView {
       web_contents()->FocusThroughTabTraversal(/*reverse=*/false);
     }
   }
+
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const input::NativeWebKeyboardEvent& event) override {
+    // Used to handle the focus event triggered by keyboard (e.g. cmd+L to focus
+    // on the omnibox from macOS). See crbug.com/491963415.
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, GetFocusManager());
+  }
+
+ private:
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 BEGIN_METADATA(WebUIToolbarInternalWebView)
