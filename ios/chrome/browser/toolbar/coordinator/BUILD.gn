@@ -88,6 +88,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/web/public",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

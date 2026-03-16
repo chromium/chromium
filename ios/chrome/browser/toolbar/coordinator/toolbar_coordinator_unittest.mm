@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -240,7 +241,8 @@ TEST_F(ToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   // Add the coordinator's view to a window to ensure it has a window property.
-  UIWindow* window = [[UIWindow alloc] init];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
   [window addSubview:coordinator_.baseViewController.view];
 
   // Remove the primary toolbar from the view hierarchy to simulate the race
