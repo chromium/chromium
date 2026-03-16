@@ -313,6 +313,12 @@ void GraphiteSharedContext::submit(skgpu::graphite::SyncToCpu syncToCpu) {
 bool GraphiteSharedContext::SubmitImpl(skgpu::graphite::SyncToCpu syncToCpu) {
   num_pending_recordings_ = 0;
 
+  if (syncToCpu == skgpu::graphite::SyncToCpu::kNo &&
+      !graphite_context_->hasPendingGPUWork()) {
+      // Skip submitting if there is no pending GPU work.
+      return true;
+  }
+
   return graphite_context_->submit(syncToCpu);
 }
 
