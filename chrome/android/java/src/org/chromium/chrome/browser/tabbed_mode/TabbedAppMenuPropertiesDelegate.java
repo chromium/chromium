@@ -43,6 +43,9 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.HubManager;
+import org.chromium.chrome.browser.hub.Pane;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -143,6 +146,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     private final PageZoomMenuItemCoordinator mPageZoomMenuItemCoordinator;
 
+    private final OneshotSupplier<HubManager> mHubManagerSupplier;
+
     public TabbedAppMenuPropertiesDelegate(
             Context context,
             ActivityTabProvider activityTabProvider,
@@ -159,6 +164,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             OneshotSupplier<IncognitoReauthController> incognitoReauthControllerOneshotSupplier,
             MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             PageZoomManager pageZoomManager,
+            OneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         super(
                 context,
@@ -176,6 +182,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         mModalDialogManager = modalDialogManager;
         mSnackbarManager = snackbarManager;
         mPageZoomMenuItemCoordinator = new PageZoomMenuItemCoordinator(pageZoomManager);
+        mHubManagerSupplier = hubManagerSupplier;
 
         incognitoReauthControllerOneshotSupplier.onAvailable(
                 mIncognitoReauthCallbackController.makeCancelable(
@@ -525,7 +532,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         modelList.add(buildNewTabGroupItem());
         modelList.add(buildCloseAllTabsItem());
         if (shouldShowTinkerTank()) modelList.add(buildTinkerTankItem());
-        modelList.add(buildSelectTabsItem());
+        if (shouldShowSelectTabsItem()) modelList.add(buildSelectTabsItem());
         if (shouldShowQuickDeleteItem()) modelList.add(buildQuickDeleteItem());
         modelList.add(buildSettingsItem());
     }
@@ -1180,6 +1187,17 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.tinker_tank_menu_id,
                         R.string.menu_tinker_tank,
                         shouldShowIconBeforeItem() ? R.drawable.ic_add_box_rounded_corner : 0));
+    }
+
+    private boolean shouldShowSelectTabsItem() {
+        HubManager hubManager = mHubManagerSupplier.get();
+        if (hubManager == null) return false;
+
+        Pane focusedPane = hubManager.getPaneManager().getFocusedPaneSupplier().get();
+        if (focusedPane == null) return false;
+
+        return focusedPane.getPaneId() == PaneId.TAB_SWITCHER
+                || focusedPane.getPaneId() == PaneId.INCOGNITO_TAB_SWITCHER;
     }
 
     private MVCListAdapter.ListItem buildSelectTabsItem() {

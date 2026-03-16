@@ -3674,6 +3674,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
                 mRootUiCoordinator.getReadAloudControllerSupplier(),
                 mRootUiCoordinator.getPageZoomManager(),
+                mHubManagerSupplier,
                 mRootUiCoordinator.getOpenInAppMenuItemProvider());
     }
 
