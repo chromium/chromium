@@ -15512,11 +15512,13 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "CyclingPlaceholders": "true",
-                        "RealboxLayoutMode": "TallTopContext"
+                        "NtpComposeboxContextMenuEnableMultiTabSelection": "true",
+                        "NtpNextShowStaticRecentTabChipParam": "false",
+                        "NtpNextShowStaticTextParam": "true"
                     },
                     "enable_features": [
                         "IPH_DesktopRealboxContextualSearchFeature",
+                        "NtpNextFeatures",
                         "NtpRealboxNext"
                     ]
                 },
