@@ -4721,36 +4721,6 @@
 
   <!-- Strings for the Easy Unlock setup dialog -->
   <!-- Easy Unlock strings shown on the lock screen -->
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_NO_BLUETOOTH" desc="Tooltip for an icon on a user's lock screen pod shown by Easy Unlock when the Chromebook doesn't have Bluetooth enabled.">
-    Bluetooth is off on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Enter your password, and turn on Bluetooth.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_NO_PHONE" desc="Tooltip for an icon on a user's lock screen pod shown by Easy Unlock when a phone eligible to unlock the Chromebook cannot be found.">
-    Can’t connect. Make sure your phone’s Bluetooth is turned on.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PHONE_NOT_AUTHENTICATED" desc="Tooltip for an icon on a user's lock screen pod shown by Easy Unlock when no phones eligible to unlock the Chromebook can be authenticated.">
-    Unable to unlock. Enter your password.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PHONE_LOCKED" desc="Tooltip for an icon on a user's lock screen pod shown by Easy Unlock when a phone eligible to unlock the Chromebook is detected, but it's locked and thus not allowed to unlock the Chromebook.">
-    Your phone is locked. Unlock it to enter.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PHONE_UNLOCKABLE" desc="Tooltip for an icon on a user's lock screen pod shown by Easy Unlock when a phone eligible to unlock the Chromebook is detected, but it does not have lock screen enabled, in which case it is not allowed to unlock Chromebooks.">
-    To keep your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> safe, Smart Lock requires a screen lock on your phone.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_RSSI_TOO_LOW" desc="Tooltip for an icon on a user's lock screen pod shown by Easy Unlock when a phone eligible to unlock the Chromebook is detected, but it's not in the Chromebook's proximity (> 30 feet away).">
-    Bring your phone closer to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PHONE_LOCKED_AND_RSSI_TOO_LOW" desc="Tooltip for an icon on a user's lock screen pod shown by Easy Unlock when a phone eligible to unlock the Chromebook is detected, but it's both (a) locked and (b) not in the Chromebook's proximity (> 1 foot away).">
-    Unlock your phone and bring it closer to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_LOGIN_FAILURE" desc="Tooltip text shown on a user's sign-in screen when Smart Lock sign-in attempt fails.">
-    Smart Lock couldn’t verify your account. Type your password to enter.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_LOGIN_DISABLED" desc="Tooltip for an icon on user's sign-in screen pod shown by EasyUnlock when the feature is only enabled for unlock, not sign-in.">
-    To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.
-  </message>
-  <message name="IDS_EASY_UNLOCK_SCREENLOCK_TOOLTIP_PRIMARY_USER_ABSENT" desc="Tooltip for the icon on user's lock screen pod shown by Easy Unlock when a phone set up to unlock the Chromebook is detected, but the primary user profile is in the background on the phone or the user is a secondary user profile. The user is asked to switch to the primary user.">
-    To use Smart Lock, switch to the primary user profile on your phone
-  </message>
   <message name="IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE" desc="Message on lock screen user pod shown in place of password field when Easy Unlock is enabled and a phone that can unlock the Chromebook is detected in proximity.">
     Select your photo
   </message>
