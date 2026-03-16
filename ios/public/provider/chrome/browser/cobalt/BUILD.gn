@@ -4,4 +4,8 @@
 
 source_set("cobalt_api") {
   sources = [ "cobalt_api.h" ]
+  public_deps = [
+    "//base",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
+  ]
 }

@@ -5,8 +5,15 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_COBALT_COBALT_API_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_COBALT_COBALT_API_H_
 
+#import <Foundation/Foundation.h>
+
+#import "base/ios/block_types.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
+
 class Browser;
+@class ChromeCoordinator;
 class TabHelperAttacher;
+@class UIViewController;
 
 namespace ios::provider {
 
@@ -18,6 +25,23 @@ void AttachCobaltBrowserAgentsForActiveBrowser(Browser* browser);
 
 // Ensures the Cobalt profile keyed service factories are built.
 void EnsureCobaltProfileKeyedServiceFactoriesBuilt();
+
+// Parameters which can be used to create an overflow menu destination.
+struct OverflowMenuDestinationParameters {
+  int destination_name_id;
+  overflow_menu::Destination destination;
+  NSString* symbol_name;
+  BOOL system_symbol;
+  NSString* accessibility_id;
+};
+
+// Returns the parameters for the Cobalt overflow menu destination.
+OverflowMenuDestinationParameters GetCobaltOverflowMenuDestinationParameters();
+
+// Returns the coordinator for Cobalt.
+ChromeCoordinator* CreateCobaltCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser);
 
 }  // namespace ios::provider
 

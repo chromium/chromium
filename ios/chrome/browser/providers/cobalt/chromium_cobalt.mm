@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <Foundation/Foundation.h>
+
 #import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
 
 namespace ios::provider {
@@ -16,6 +18,16 @@ void AttachCobaltBrowserAgentsForActiveBrowser(Browser* browser) {
 
 void EnsureCobaltProfileKeyedServiceFactoriesBuilt() {
   // Nothing to do.
+}
+
+OverflowMenuDestinationParameters GetCobaltOverflowMenuDestinationParameters() {
+  return {};
+}
+
+ChromeCoordinator* CreateCobaltCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser) {
+  return nil;
 }
 
 }  // namespace ios::provider
