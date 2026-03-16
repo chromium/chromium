@@ -291,6 +291,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Divider
         maybeAddDividerLine(modelList, R.id.divider_line_id);
 
+        // Page info
+        if (shouldShowPageInfoItem()) {
+            modelList.add(buildPageInfoItem(currentTab));
+        }
+
         // History parent
         if (shouldShowHistoryParentItem()) {
             modelList.add(buildHistoryParentItem());
@@ -676,6 +681,23 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.manage_all_windows_menu_id,
                         R.string.menu_manage_all_windows,
                         shouldShowIconBeforeItem() ? R.drawable.ic_select_window : 0));
+    }
+
+    // TODO(b/493264902): Remove page info icon omnibox for secure websites.
+    private boolean shouldShowPageInfoItem() {
+        return ChromeFeatureList.sAndroidPageInfoAsAppMenuItem.isEnabled();
+    }
+
+    private MVCListAdapter.ListItem buildPageInfoItem(@Nullable Tab currentTab) {
+        MVCListAdapter.ListItem item =
+                new MVCListAdapter.ListItem(
+                        AppMenuHandler.AppMenuItemType.STANDARD,
+                        buildModelForStandardMenuItem(
+                                R.id.info_menu_id,
+                                R.string.menu_page_info,
+                                shouldShowIconBeforeItem() ? R.drawable.ic_settings_tune_24dp : 0));
+        item.model.set(AppMenuItemProperties.ENABLED, currentTab != null);
+        return item;
     }
 
     private boolean shouldShowHistoryParentItem() {
