@@ -109,8 +109,15 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
       [&]() { return !delegate->HasActorTaskSubscriptionForTesting(); }));
 }
 
+// TODO(https://crbug.com/492810570): Fix the flakiness.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FormWaiterFindsFormAndSubmits \
+  DISABLED_FormWaiterFindsFormAndSubmits
+#else
+#define MAYBE_FormWaiterFindsFormAndSubmits FormWaiterFindsFormAndSubmits
+#endif
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
-                       FormWaiterFindsFormAndSubmits) {
+                       MAYBE_FormWaiterFindsFormAndSubmits) {
   Profile* profile = browser()->profile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
