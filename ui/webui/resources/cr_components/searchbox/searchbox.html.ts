@@ -15,7 +15,7 @@ export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
-    @keydown="${this.onInputWrapperKeydown_}"
+    @keydown="${this.onInputWrapperKeydown}"
     @dragenter="${this.dragAndDropHandler?.handleDragEnter}"
     @dragover="${this.dragAndDropHandler?.handleDragOver}"
     @dragleave="${this.dragAndDropHandler?.handleDragLeave}"
@@ -33,14 +33,13 @@ export function getHtml(this: SearchboxElement) {
       placeholder-text="${this.computePlaceholderText_(this.placeholderText)}"
       searchbox-aria-description="${this.searchboxAriaDescription}"
       searchbox-icon="${this.searchboxIcon_}"
-      .selectedMatch="${this.selectedMatch_}"
+      .selectedMatch="${this.selectedMatch}"
       ?input-has-matches="${this.inputHasMatches_()}"
       ?allow-file-paste="${this.ntpRealboxNextEnabled}"
       @focusin="${this.onInputFocus_}"
-      @focusout="${this.onInputFocusout_}"
-      @searchbox-input-text-updated="${this.onSearchboxInputTextUpdated_}"
-      @searchbox-input-tab-or-mouse-clicked="${this.onSearchboxInputTabOrMouseClicked_}"
-      @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}">
+      @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
+      @searchbox-input-text-updated="${this.onInputTextUpdated_}"
+      @searchbox-input-tab-or-mouse-clicked="${this.onInputFocusChanged}">
     ${this.ntpRealboxNextEnabled && this.useCompactLayout_() ? html`
       <div class="contextualEntrypointContainer contextualEntrypointContainerCompact" slot="contextual-entrypoint">
         ${getContextualEntrypointHtml.bind(this)()}

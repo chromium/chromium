@@ -27,6 +27,7 @@ build_webui("build") {
     "searchbox_input.ts",
     "searchbox_match.html.ts",
     "searchbox_match.ts",
+    "searchbox_mixin.ts",
     "searchbox_recent_tab_chip.html.ts",
     "searchbox_searchbox_dropdown.html.ts",
     "searchbox_thumbnail.html.ts",

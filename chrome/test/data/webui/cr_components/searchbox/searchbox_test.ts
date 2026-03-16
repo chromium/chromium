@@ -606,7 +606,9 @@ suite('SearchboxTest', () => {
     let args = await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals(args.input, realbox.$.input.inputElement.value);
     assertFalse(args.preventInlineAutocomplete);
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(
+        1, testProxy.handler.getCallCount('queryAutocomplete'),
+        'query autocomplete count');
 
     testProxy.handler.reset();
 
@@ -621,7 +623,7 @@ suite('SearchboxTest', () => {
     const matchEls =
         realbox.getSuggestionsElement().shadowRoot.querySelectorAll(
             'cr-searchbox-match');
-    assertEquals(2, matchEls.length);
+    assertEquals(2, matchEls.length, 'match count');
 
     // Tabbing into input does not query autocomplete when matches are
     // showing.
@@ -631,7 +633,12 @@ suite('SearchboxTest', () => {
       composed: true,
       key: 'Tab',
     }));
-    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(
+        0,
+        testProxy.handler.getCallCount(
+            'queryAutocomplete',
+            ),
+        'query autocomplete count when matches showing');
 
     // Hide the matches by focusing out.
     matchEls[0]!.dispatchEvent(new FocusEvent('focusout', {
@@ -726,7 +733,6 @@ suite('SearchboxTest', () => {
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
-  // TODO: Fix before submitting.
   test('arrow up/down keys in non-empty input query autocomplete', async () => {
     // Query matches.
     realbox.$.input.inputElement.value = 'hello';
@@ -734,7 +740,9 @@ suite('SearchboxTest', () => {
     let args = await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals(args.input, realbox.$.input.inputElement.value);
     assertFalse(args.preventInlineAutocomplete);
-    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+    assertEquals(
+        1, testProxy.handler.getCallCount('queryAutocomplete'),
+        'autocomplete queried');
 
     testProxy.handler.reset();
 
@@ -745,7 +753,7 @@ suite('SearchboxTest', () => {
           input: 'hello',
           matches: matches,
         }));
-    assertTrue(await areMatchesShowing());
+    assertTrue(await areMatchesShowing(), 'matches showing');
 
     const matchEls =
         realbox.getSuggestionsElement().shadowRoot.querySelectorAll(

@@ -73,7 +73,7 @@ suite('SearchboxFocusTest', () => {
     realbox.$.input.inputElement.dispatchEvent(new InputEvent('input'));
 
     let args = await testProxy.handler.whenCalled('queryAutocomplete');
-    assertEquals(args.input, realbox.$.input.inputElement.value);
+    assertEquals(args.input, realbox.$.input.inputElement.value, 'input');
     testProxy.handler.reset();
 
     const matches = [createSearchMatchForTesting({
@@ -86,8 +86,8 @@ suite('SearchboxFocusTest', () => {
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
         }));
-    assertTrue(await areMatchesShowing());
-    assertEquals('google', realbox.$.input.inputElement.value);
+    assertTrue(await areMatchesShowing(), 'matches showing');
+    assertEquals('google', realbox.$.input.inputElement.value, 'input value');
 
     let start = realbox.$.input.inputElement.selectionStart!;
     let end = realbox.$.input.inputElement.selectionEnd!;
@@ -107,7 +107,7 @@ suite('SearchboxFocusTest', () => {
     });
     realbox.$.inputWrapper.dispatchEvent(tabEvent);
 
-    assertTrue(tabEvent.defaultPrevented);
+    assertTrue(tabEvent.defaultPrevented, 'default prevented');
 
     args = await testProxy.handler.whenCalled('queryAutocomplete');
     assertEquals('google', args.input);
@@ -130,8 +130,8 @@ suite('SearchboxFocusTest', () => {
           input: realbox.$.input.inputElement.value.trimStart(),
           matches: matches,
         }));
-    assertTrue(await areMatchesShowing());
-    assertEquals('google', realbox.$.input.inputElement.value);
+    assertTrue(await areMatchesShowing(), 'matches showing');
+    assertEquals('google', realbox.$.input.inputElement.value, 'input value');
 
     start = realbox.$.input.inputElement.selectionStart!;
     end = realbox.$.input.inputElement.selectionEnd!;

@@ -757,8 +757,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
     // If the backend handshake has completed, then it is safe to issue the
     // autocomplete query immediately.
-    if (this.isBackendHandshakeComplete) {
-      this.$.searchbox.queryAutocomplete();
+    if (this.isBackendHandshakeComplete && this.$.searchbox.dropdownIsVisible) {
+      this.$.searchbox.queryInputAutocomplete();
       return;
     }
 

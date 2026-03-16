@@ -11,9 +11,7 @@ export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`
 <cr-composebox-file-inputs @file-change="${this.onFileChange_}">
-  <div class="context-menu-container" id="contextMenuContainer"
-      @mousedown="${this.onContextMenuContainerMousedown_}"
-      @click="${this.onContextMenuContainerClick_}">
+  <div class="context-menu-container" id="contextMenuContainer">
     <cr-composebox-contextual-entrypoint-and-menu id="context"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button"
