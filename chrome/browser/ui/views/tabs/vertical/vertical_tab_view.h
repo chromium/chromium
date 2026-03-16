@@ -131,6 +131,10 @@ class VerticalTabView : public views::View,
     int padding;
     bool align_leading;
     bool expand;
+    // Some alert indicators need to decorate the close button when the tab
+    // strip is collapsed. In that case, center the child and set a size of (0,
+    // 0).
+    bool decorate_on_collapse;
   };
 
   gfx::Rect GetChildBounds(const gfx::Rect& container,
