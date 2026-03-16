@@ -16,6 +16,7 @@ class VerticalTabStripStateController;
 }
 
 namespace views {
+class ScrollView;
 class Widget;
 }
 
@@ -27,6 +28,7 @@ class TabGroupEditorBubbleTracker : public views::WidgetObserver {
       tabs::VerticalTabStripStateController* state_controller);
   ~TabGroupEditorBubbleTracker() override;
 
+  void SetScrollView(views::ScrollView* scroll_view);
   void Opened(views::Widget* bubble_widget);
   bool is_open() const { return is_open_; }
   views::Widget* widget() const { return widget_; }
@@ -42,12 +44,14 @@ class TabGroupEditorBubbleTracker : public views::WidgetObserver {
  private:
   void OnVerticalTabStripModeWillChange(
       tabs::VerticalTabStripStateController* controller);
+  void OnContentsScrolled();
 
   bool is_open_ = false;
   raw_ptr<views::Widget, AcrossTasksDanglingUntriaged> widget_;
   base::RepeatingCallbackList<void()> on_bubble_opened_callback_list_;
   base::RepeatingCallbackList<void()> on_bubble_closed_callback_list_;
   base::CallbackListSubscription vertical_tab_mode_will_change_subscription_;
+  base::CallbackListSubscription scroll_view_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_TRACKER_H_
