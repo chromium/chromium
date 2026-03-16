@@ -12,8 +12,8 @@
 
 @implementation ComposeboxAppInterface
 
-+ (void)setAimEligible:(BOOL)eligible {
-  ON_CALL(*[self mockService], IsAimEligible)
++ (void)setFuseboxEligible:(BOOL)eligible {
+  ON_CALL(*[self mockService], IsFuseboxEligible)
       .WillByDefault(testing::Return(eligible));
 }
 

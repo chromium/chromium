@@ -19,6 +19,7 @@
 #import "components/feed/feed_feature_list.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #import "components/ntp_tiles/pref_names.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
@@ -89,6 +91,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
@@ -287,6 +290,8 @@
   BOOL _fakeboxTapped;
   // The account menu coordinator.
   AccountMenuCoordinator* _accountMenuCoordinator;
+  // Service to check for AI mode eligibility.
+  raw_ptr<AimEligibilityService> _aimEligibilityService;
   // The sign in coordinator displayed on top of the NTP.
   SigninCoordinator* _signinCoordinator;
   // Logo mediator to display the doodle on the NTP.
@@ -449,6 +454,7 @@
   self.authService = nil;
   self.templateURLService = nil;
   self.prefService = nil;
+  _aimEligibilityService = nullptr;
 
   [self.NTPMediator shutdown];
   self.NTPMediator = nil;
@@ -631,6 +637,8 @@
       ios::TemplateURLServiceFactory::GetForProfile(profile);
   self.discoverFeedService = DiscoverFeedServiceFactory::GetForProfile(profile);
   self.prefService = profile->GetPrefs();
+  _aimEligibilityService =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(self.profile);
 }
 
 // Starts all NTP observers.
@@ -1871,6 +1879,7 @@
 - (void)openMIA {
   [self.NTPMetricsRecorder recordMIATapped];
   if (!IsDisableComposeboxFromAIMNTPEnabled() && !IsComposeboxAIMDisabled() &&
+      _aimEligibilityService->IsFuseboxEligible() &&
       MaybeShowComposebox(self.browser, ComposeboxEntrypoint::kNTPAIMButton)) {
     return;
   }

@@ -1639,7 +1639,7 @@ CreateInputDataFromAnnotatedPageContent(
   if (!_aimEligibilityService) {
     return NO;
   }
-  return _aimEligibilityService->IsAimEligible();
+  return _aimEligibilityService->IsFuseboxEligible();
 }
 
 // Checks if the user is allowed to create images, taking into account

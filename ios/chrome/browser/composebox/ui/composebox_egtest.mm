@@ -220,6 +220,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -253,7 +254,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
 
-  [ComposeboxAppInterface setAimEligible:NO];
+  [ComposeboxAppInterface setFuseboxEligible:NO];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -271,6 +272,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -305,6 +307,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ComposeboxAppInterface setCreateImagesEligible:YES];
 
@@ -339,6 +342,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ComposeboxAppInterface setCreateImagesEligible:NO];
 
@@ -368,7 +372,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
 
-  [ComposeboxAppInterface setAimEligible:YES];
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -412,6 +416,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
@@ -463,6 +468,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   OpenTabPicker();
@@ -530,6 +536,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewTab];
@@ -570,6 +577,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
+  [ComposeboxAppInterface setFuseboxEligible:YES];
 
   std::vector<GURL> URLS;
   NSUInteger totalNumberOfTabs = kAttachmentLimit + 1;
@@ -674,7 +682,7 @@ void RemoveAttachmentWithTitle(NSString* title) {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
   }
-
+  [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setCreateImagesEligible:YES];
 
   // Add a tab and attach it.
