@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -48,8 +47,7 @@ const LayoutBlockFlow* GetInlineFormattingContext(const Node& node) {
   const LayoutBlockFlow* block_flow =
       OffsetMapping::GetInlineFormattingContextOf(*node.GetLayoutObject());
   // For <textarea>, ignore internal anonymous IFCs for backward compatibility.
-  if (RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
-      block_flow && block_flow->IsAnonymous() &&
+  if (block_flow && block_flow->IsAnonymous() &&
       node.IsInUserAgentShadowRoot()) {
     for (const LayoutBlock* parent = block_flow->ContainingBlock(); parent;
          parent = parent->ContainingBlock()) {
@@ -330,8 +328,7 @@ const Node& FindBuffer::GetFirstBlockLevelAncestorInclusive(const Node& node) {
   for (const Node& ancestor : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
     if (!ancestor.GetLayoutObject())
       continue;
-    if (RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
-        ancestor.GetLayoutObject()->IsAnonymous() &&
+    if (ancestor.GetLayoutObject()->IsAnonymous() &&
         node.IsInUserAgentShadowRoot()) {
       continue;
     }
@@ -628,9 +625,7 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
                                  HeapVector<BufferNodeMapping>* mappings) {
   LayoutBlockFlow& block_flow = *OffsetMapping::GetInlineFormattingContextOf(
       *text_node.GetLayoutObject());
-  if (!offset_mapping_ ||
-      (RuntimeEnabledFeatures::FindAcrossParagraphsInTextareaEnabled() &&
-       text_node.IsInUserAgentShadowRoot())) {
+  if (!offset_mapping_ || text_node.IsInUserAgentShadowRoot()) {
     offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
     if (!offset_mapping_) [[unlikely]] {
