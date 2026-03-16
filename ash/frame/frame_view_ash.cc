@@ -13,7 +13,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
-#include "ash/wm/wm_highlight_border_overlay_delegate.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +20,7 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/default_highlight_border_overlay_delegate.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
@@ -397,7 +397,8 @@ void FrameViewAsh::AddedToWidget() {
   }
 
   highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(
-      GetWidget(), std::make_unique<ash::WmHighlightBorderOverlayDelegate>());
+      GetWidget(),
+      std::make_unique<chromeos::DefaultHighlightBorderOverlayDelegate>());
 }
 
 chromeos::FrameCaptionButtonContainerView*

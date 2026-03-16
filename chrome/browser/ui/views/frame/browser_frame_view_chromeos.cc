@@ -11,7 +11,6 @@
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
-#include "ash/wm/wm_highlight_border_overlay_delegate.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/user_metrics.h"
@@ -52,6 +51,7 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
+#include "chromeos/ui/frame/default_highlight_border_overlay_delegate.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "content/public/browser/render_view_host.h"
@@ -921,7 +921,8 @@ void BrowserFrameViewChromeOS::AddedToWidget() {
   }
 
   highlight_border_overlay_ = std::make_unique<HighlightBorderOverlay>(
-      GetWidget(), std::make_unique<ash::WmHighlightBorderOverlayDelegate>());
+      GetWidget(),
+      std::make_unique<chromeos::DefaultHighlightBorderOverlayDelegate>());
 }
 
 BrowserFrameViewChromeOS::BoundsAndMargins

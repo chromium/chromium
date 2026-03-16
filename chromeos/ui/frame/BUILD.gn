@@ -22,6 +22,8 @@ source_set("frame") {
     "caption_buttons/snap_controller.h",
     "default_frame_header.cc",
     "default_frame_header.h",
+    "default_highlight_border_overlay_delegate.cc",
+    "default_highlight_border_overlay_delegate.h",
     "desks/move_to_desks_menu_delegate.cc",
     "desks/move_to_desks_menu_delegate.h",
     "desks/move_to_desks_menu_model.cc",
