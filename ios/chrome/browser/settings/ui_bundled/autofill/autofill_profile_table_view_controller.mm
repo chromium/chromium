@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/settings_autofill_edit_profile_bottom_sheet_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/utils/autofill_settings_ui_util.h"
@@ -652,6 +653,7 @@ bool CanDeleteItemType(NSInteger itemType) {
   switchItem.enabled = [self.reauthenticationModule canAttemptReauth];
   switchItem.target = self;
   switchItem.selector = @selector(verificationSwitchChanged:);
+  switchItem.accessibilityIdentifier = kAutofillVerificationSwitchTableViewId;
   return switchItem;
 }
 
@@ -688,7 +690,11 @@ bool CanDeleteItemType(NSInteger itemType) {
 }
 
 - (ReauthenticationModule*)reauthenticationModule {
-  // TODO(crbug.com/480934776): Add scoped reauth module override for EG tests.
+  id<ReauthenticationProtocol> overrideModule =
+      ScopedAutofillPaymentReauthModuleOverride::Get();
+  if (overrideModule) {
+    return overrideModule;
+  }
 
   if (!_reauthenticationModule) {
     _reauthenticationModule = [[ReauthenticationModule alloc] init];

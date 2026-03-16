@@ -11,7 +11,8 @@ NSString* const kAutofillAddressSwitchViewId = @"kAutofillAddressSwitchViewId";
 NSString* const kAutofillAddressManagedViewId =
     @"kAutofillAddressManagedViewId";
 NSString* const kEnhancedAutofillTableViewId = @"kEnhancedAutofillTableViewId";
-
+NSString* const kAutofillVerificationSwitchTableViewId =
+    @"kAutofillVerificationSwitchTableViewId";
 NSString* const kAutofillCreditCardTableViewId =
     @"kAutofillCreditCardTableViewId";
 NSString* const kAutofillCreditCardSwitchViewId =

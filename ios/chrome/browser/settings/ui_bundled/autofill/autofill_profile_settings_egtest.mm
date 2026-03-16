@@ -139,6 +139,16 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
         autofill::features::kAutofillAiWithDataSchema);
   }
 
+  if ([self isRunningTest:@selector(testVerificationSwitchReauthFailure)] ||
+      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiCreateEntityDataManager);
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiReauthRequired);
+    config.features_enabled.push_back(
+        autofill::features::kAutofillAiWithDataSchema);
+  }
+
   return config;
 }
 
@@ -963,6 +973,60 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
   [self exitSettingsMenu];
   [SigninEarlGrey signOut];
+}
+
+// Tests that the verification switch does not change if reauthentication fails.
+- (void)testVerificationSwitchReauthFailure {
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kFailure];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+
+  [AutofillAppInterface saveExampleProfile];
+  [self openAutofillProfilesSettings];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillVerificationSwitchTableViewId,
+                                   /*is_toggled_on=*/YES,
+                                   /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillVerificationSwitchTableViewId,
+                                   /*is_toggled_on=*/YES,
+                                   /*is_enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [AutofillAppInterface clearMockReauthenticationModule];
+}
+
+// Tests that the verification switch changes if reauthentication succeeds.
+- (void)testVerificationSwitchReauthSuccess {
+  [AutofillAppInterface setUpMockReauthenticationModule];
+  [AutofillAppInterface mockReauthenticationModuleExpectedResult:
+                            ReauthenticationResult::kSuccess];
+  [AutofillAppInterface mockReauthenticationModuleCanAttempt:YES];
+
+  [AutofillAppInterface saveExampleProfile];
+  [self openAutofillProfilesSettings];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillVerificationSwitchTableViewId,
+                                   /*is_toggled_on=*/YES,
+                                   /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                   kAutofillVerificationSwitchTableViewId,
+                                   /*is_toggled_on=*/NO,
+                                   /*is_enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [AutofillAppInterface clearMockReauthenticationModule];
 }
 
 @end

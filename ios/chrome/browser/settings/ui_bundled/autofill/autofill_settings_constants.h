@@ -13,6 +13,7 @@ extern NSString* const kAutofillPaymentMethodsToolbarId;
 extern NSString* const kAutofillAddressSwitchViewId;
 extern NSString* const kAutofillAddressManagedViewId;
 extern NSString* const kEnhancedAutofillTableViewId;
+extern NSString* const kAutofillVerificationSwitchTableViewId;
 
 extern NSString* const kAutofillCreditCardTableViewId;
 extern NSString* const kAutofillCreditCardSwitchViewId;
