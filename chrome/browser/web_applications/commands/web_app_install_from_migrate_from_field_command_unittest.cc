@@ -58,14 +58,15 @@ class WebAppInstallFromMigrateFromFieldCommandTest : public WebAppTest {
 };
 
 TEST_F(WebAppInstallFromMigrateFromFieldCommandTest, NoSourceAppInstalled) {
-  GURL target_url("https://target.com");
+  GURL target_url("https://app.com/target");
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = target_url;
+  manifest->manifest_url = target_url;
   manifest->start_url = target_url;
   manifest->scope = target_url;
 
   auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
-  migrate_from->id = GURL("https://source.com");
+  migrate_from->id = GURL("https://app.com/source");
   manifest->migrate_from.push_back(std::move(migrate_from));
 
   webapps::AppId target_app_id = GenerateAppIdFromManifest(*manifest);
@@ -80,12 +81,13 @@ TEST_F(WebAppInstallFromMigrateFromFieldCommandTest, NoSourceAppInstalled) {
 }
 
 TEST_F(WebAppInstallFromMigrateFromFieldCommandTest, SuccessInstalled) {
-  GURL source_url("https://source.com");
+  GURL source_url("https://app.com/source");
   test::InstallDummyWebApp(profile(), "Source App", source_url);
 
-  GURL target_url("https://target.com");
+  GURL target_url("https://app.com/target");
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = target_url;
+  manifest->manifest_url = target_url;
   manifest->start_url = target_url;
   manifest->scope = target_url;
   manifest->name = u"Target App";

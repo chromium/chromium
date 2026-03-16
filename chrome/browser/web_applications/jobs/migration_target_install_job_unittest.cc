@@ -82,6 +82,7 @@ TEST_F(MigrationTargetInstallJobTest, InstallNewApp) {
   manifest->scope = GURL("https://example.com/");
   manifest->name = u"New App";
   manifest->id = GURL("https://example.com/start");
+  manifest->manifest_url = GURL("https://example.com/start");
 
   auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
   migrate_from->id = GURL("https://example.com/old_app");
@@ -108,6 +109,7 @@ TEST_F(MigrationTargetInstallJobTest, UpdateInstalledApp) {
   manifest->scope = GURL("https://example.com/");
   manifest->name = u"Old App Name";
   manifest->id = GURL("https://example.com/start");
+  manifest->manifest_url = GURL("https://example.com/start");
 
   blink::Manifest::ImageResource icon_info;
   icon_info.src = GURL("https://example.com/icon.png");
@@ -156,6 +158,7 @@ TEST_F(MigrationTargetInstallJobTest, NoUpdateSuggestedApp) {
   manifest->scope = GURL("https://example.com/");
   manifest->name = u"Old App Name";
   manifest->id = GURL("https://example.com/start");
+  manifest->manifest_url = GURL("https://example.com/start");
 
   blink::Manifest::ImageResource icon_info;
   icon_info.src = GURL("https://example.com/icon.png");

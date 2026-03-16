@@ -730,6 +730,26 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, CrossOriginUrls_DropFields) {
   EXPECT_TRUE(web_app_info->note_taking_new_note_url.is_empty());
 }
 
+TEST_F(ManifestToWebAppInstallInfoJobTest, MigrateFromDropsCrossSiteData) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->manifest_url = GURL("https://www.foo.bar/manifest.json");
+
+  auto migrate_same_site = blink::mojom::ManifestMigrateFrom::New();
+  migrate_same_site->id = GURL("https://old.foo.bar/id");
+  manifest->migrate_from.push_back(std::move(migrate_same_site));
+
+  auto migrate_cross_site = blink::mojom::ManifestMigrateFrom::New();
+  migrate_cross_site->id = GURL("https://malicious-site.com/id");
+  manifest->migrate_from.push_back(std::move(migrate_cross_site));
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+
+  ASSERT_EQ(1u, web_app_info->migration_sources.size());
+  EXPECT_EQ(GURL("https://old.foo.bar/id").spec(),
+            web_app_info->migration_sources[0].manifest_id());
+}
+
 TEST_F(ManifestToWebAppInstallInfoJobTest, InvalidManifestUrl) {
   SetupBasicPageState();
   auto& manifest = GetPageManifest();

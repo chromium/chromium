@@ -114,6 +114,7 @@ class MODULES_EXPORT ManifestParser {
   enum class ParseURLRestrictions {
     kNoRestrictions = 0,
     kSameOriginOnly,  // Parsed URLs must be same origin as the document URL.
+    kSameSiteOnly,    // Parsed URLs must be same site as the document URL.
     kWithinScope,     // Parsed URLs must be within scope of the manifest scope
                       // (implies same origin as document URL).
   };

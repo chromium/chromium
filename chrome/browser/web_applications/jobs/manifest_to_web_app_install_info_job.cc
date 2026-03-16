@@ -48,6 +48,7 @@
 #include "components/webapps/browser/installable/installable_evaluator.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -855,6 +856,10 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
                                        application_locale);
 
   for (const auto& migrate_from : manifest_->migrate_from) {
+    if (!net::SchemefulSite::IsSameSite(manifest_->manifest_url,
+                                        migrate_from->id)) {
+      continue;
+    }
     install_info().migration_sources.push_back(
         ToMigrationSource(*migrate_from));
   }

@@ -5497,7 +5497,8 @@ TEST_F(ManifestParserTest, MigrateToParseRules) {
     EXPECT_TRUE(manifest->migrate_to.is_null());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
-        "property 'migrate_to' ignored, 'id' is missing or not a valid URL.",
+        "property 'migrate_to' ignored, 'id' is missing, not a valid URL, or "
+        "should be same site as document.",
         errors()[0]);
   }
 
@@ -5508,14 +5509,15 @@ TEST_F(ManifestParserTest, MigrateToParseRules) {
     EXPECT_TRUE(manifest->migrate_to.is_null());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
-        "property 'migrate_to' ignored, 'id' is missing or not a valid URL.",
+        "property 'migrate_to' ignored, 'id' is missing, not a valid URL, or "
+        "should be same site as document.",
         errors()[0]);
   }
 
   // Missing install_url, null and error.
   {
     auto& manifest =
-        ParseManifest(R"({"migrate_to": {"id": "http://new.example.com/"}})");
+        ParseManifest(R"({"migrate_to": {"id": "http://new.foo.com/"}})");
     EXPECT_TRUE(manifest->migrate_to.is_null());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
@@ -5526,7 +5528,7 @@ TEST_F(ManifestParserTest, MigrateToParseRules) {
   // Invalid install_url, null and error.
   {
     auto& manifest = ParseManifest(
-        R"({"migrate_to": {"id": "http://new.example.com/", "install_url": "http://www.foo.com:co&uk"}})");
+        R"({"migrate_to": {"id": "http://new.foo.com/", "install_url": "http://www.foo.com:co&uk"}})");
     EXPECT_TRUE(manifest->migrate_to.is_null());
     EXPECT_EQ(2u, GetErrorCount());
     EXPECT_EQ("property 'install_url' ignored, URL is invalid.", errors()[0]);
@@ -5538,7 +5540,7 @@ TEST_F(ManifestParserTest, MigrateToParseRules) {
   // Cross-origin install_url, null and error.
   {
     auto& manifest = ParseManifest(
-        R"({"migrate_to": {"id": "http://new.example.com/", "install_url": "http://other.example.com/install"}})");
+        R"({"migrate_to": {"id": "http://new.foo.com/", "install_url": "http://other.foo.com/install"}})");
     EXPECT_TRUE(manifest->migrate_to.is_null());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
@@ -5550,12 +5552,41 @@ TEST_F(ManifestParserTest, MigrateToParseRules) {
   // Valid migrate_to object.
   {
     auto& manifest = ParseManifest(
-        R"({"migrate_to": {"id": "http://new.example.com/", "install_url": "http://new.example.com/install"}})");
+        R"({"migrate_to": {"id": "http://new.foo.com/", "install_url": "http://new.foo.com/install"}})");
     EXPECT_FALSE(manifest->migrate_to.is_null());
-    EXPECT_EQ(manifest->migrate_to->id, "http://new.example.com/");
+    EXPECT_EQ(manifest->migrate_to->id, "http://new.foo.com/");
     EXPECT_FALSE(manifest->migrate_to->install_url.IsEmpty());
     EXPECT_EQ(manifest->migrate_to->install_url.GetString(),
-              "http://new.example.com/install");
+              "http://new.foo.com/install");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Cross-site migrate_to.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({"migrate_to": {"id": "https://bar.com/app", "install_url": "https://bar.com/install"}})",
+        KURL("https://foo.com/manifest.json"),
+        KURL("https://foo.com/index.html"));
+    EXPECT_TRUE(manifest->migrate_to.is_null());
+    ASSERT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("property 'id' ignored, should be same site as document.",
+              errors()[0]);
+    EXPECT_EQ(
+        "property 'migrate_to' ignored, 'id' is missing, not a valid URL, or "
+        "should be same site as document.",
+        errors()[1]);
+  }
+
+  // Same-site cross-origin migrate_to.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({"migrate_to": {"id": "https://sub.foo.com/app", "install_url": "https://sub.foo.com/install"}})",
+        KURL("https://foo.com/manifest.json"),
+        KURL("https://foo.com/index.html"));
+    EXPECT_FALSE(manifest->migrate_to.is_null());
+    EXPECT_EQ(manifest->migrate_to->id, "https://sub.foo.com/app");
+    EXPECT_EQ(manifest->migrate_to->install_url.GetString(),
+              "https://sub.foo.com/install");
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
@@ -5627,17 +5658,19 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
   // Object with missing id.
   {
     auto& manifest = ParseManifest(
-        R"({"id": "this_id", "migrate_from": [{"install_url": "http://example.com/install"}]})");
+        R"({"id": "this_id", "migrate_from": [{"install_url": "http://foo.com/install"}]})");
     EXPECT_EQ(0u, manifest->migrate_from.size());
     ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("migrate_from entry ignored, 'id' is missing or not a valid URL.",
-              errors()[0]);
+    EXPECT_EQ(
+        "migrate_from entry ignored, 'id' is missing, not a valid URL, or "
+        "should be same site as document.",
+        errors()[0]);
   }
 
   // Object with cross-origin install_url.
   {
     auto& manifest = ParseManifest(
-        R"({"id": "this_id", "migrate_from": [{"id": "http://foo.com/app", "install_url": "http://example.com/install"}]})");
+        R"({"id": "this_id", "migrate_from": [{"id": "http://foo.com/app", "install_url": "http://other.foo.com/install"}]})");
     EXPECT_EQ(0u, manifest->migrate_from.size());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
@@ -5703,6 +5736,46 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
               mojom::blink::ManifestMigrationBehavior::kSuggest);
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("behavior value 'invalid' ignored, unknown value.", errors()[0]);
+  }
+
+  // Cross-site migrate_from ID.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({"id": "this_id", "migrate_from": ["https://bar.com/app"]})",
+        KURL("https://foo.com/manifest.json"),
+        KURL("https://foo.com/index.html"));
+    EXPECT_EQ(0u, manifest->migrate_from.size());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("migrate_from entry ignored, id should be same site as document.",
+              errors()[0]);
+  }
+
+  // Same-site cross-origin migrate_from ID.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({"id": "this_id", "migrate_from": ["https://sub.foo.com/app"]})",
+        KURL("https://foo.com/manifest.json"),
+        KURL("https://foo.com/index.html"));
+    ASSERT_EQ(1u, manifest->migrate_from.size());
+    EXPECT_EQ("https://sub.foo.com/app",
+              manifest->migrate_from[0]->id.GetString());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Object with cross-site migrate_from ID.
+  {
+    auto& manifest = ParseManifestWithURLs(
+        R"({"id": "this_id", "migrate_from": [{"id": "https://bar.com/app"}]})",
+        KURL("https://foo.com/manifest.json"),
+        KURL("https://foo.com/index.html"));
+    EXPECT_EQ(0u, manifest->migrate_from.size());
+    ASSERT_EQ(2u, GetErrorCount());
+    EXPECT_EQ("property 'id' ignored, should be same site as document.",
+              errors()[0]);
+    EXPECT_EQ(
+        "migrate_from entry ignored, 'id' is missing, not a valid URL, or "
+        "should be same site as document.",
+        errors()[1]);
   }
 }
 

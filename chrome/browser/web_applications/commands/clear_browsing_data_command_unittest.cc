@@ -245,16 +245,17 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
 TEST_F(ClearBrowsingDataCommandTest, ClearMigrationApps) {
   Init();
 
-  GURL source_url("https://source.com");
+  GURL source_url("https://app.com/source");
   auto source_app_id =
       test::InstallDummyWebApp(profile(), "Source App", source_url);
 
-  GURL target_url("https://target.com");
+  GURL target_url("https://app.com/target");
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = target_url;
   manifest->start_url = target_url;
   manifest->scope = target_url;
   manifest->name = u"Target App";
+  manifest->manifest_url = target_url;
 
   auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
   migrate_from->id = source_url;

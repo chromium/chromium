@@ -38,13 +38,13 @@ namespace web_app {
 
 class InstallMigrateToAppCommandTest : public WebAppTest {
  public:
-  const GURL kSourceUrl = GURL("https://source.com");
+  const GURL kSourceUrl = GURL("https://app.com/source");
   const webapps::ManifestId kSourceManifestId =
-      webapps::ManifestId(GURL("https://source.com/id"));
-  const GURL kTargetUrl = GURL("https://target.com");
+      webapps::ManifestId(GURL("https://app.com/source/id"));
+  const GURL kTargetUrl = GURL("https://app.com/target");
   const webapps::ManifestId kTargetManifestId =
-      webapps::ManifestId(GURL("https://target.com/id"));
-  const GURL kTargetInstallUrl = GURL("https://target.com/install");
+      webapps::ManifestId(GURL("https://app.com/target/id"));
+  const GURL kTargetInstallUrl = GURL("https://app.com/target/install");
 
   InstallMigrateToAppCommandTest() = default;
 
@@ -86,11 +86,13 @@ class InstallMigrateToAppCommandTest : public WebAppTest {
     manifest->start_url = kTargetUrl;
     manifest->id = manifest_id;
     manifest->name = u"Target App";
+    manifest->manifest_url = kTargetUrl;
 
     auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
     migrate_from->id = migrate_from_id;
     manifest->migrate_from.push_back(std::move(migrate_from));
 
+    page_state.manifest_url = kTargetUrl;
     page_state.manifest_before_default_processing = std::move(manifest);
   }
 
@@ -219,7 +221,7 @@ TEST_F(InstallMigrateToAppCommandTest, UrlLoadFailure) {
 
 TEST_F(InstallMigrateToAppCommandTest, ManifestIdMismatch) {
   webapps::AppId source_app_id = InstallSourceApp();
-  SetupTargetPageState(GURL("https://wrong-id.com"), kSourceManifestId);
+  SetupTargetPageState(GURL("https://app.com/wrong-id"), kSourceManifestId);
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
                                    kTargetInstallUrl),
@@ -231,7 +233,7 @@ TEST_F(InstallMigrateToAppCommandTest, ManifestIdMismatch) {
 
 TEST_F(InstallMigrateToAppCommandTest, MigrateFromMismatch) {
   webapps::AppId source_app_id = InstallSourceApp();
-  SetupTargetPageState(kTargetManifestId, GURL("https://wrong-source.com"));
+  SetupTargetPageState(kTargetManifestId, GURL("https://app.com/wrong-source"));
 
   EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
                                    kTargetInstallUrl),
@@ -239,6 +241,55 @@ TEST_F(InstallMigrateToAppCommandTest, MigrateFromMismatch) {
   histogram_tester_.ExpectUniqueSample(
       "WebApp.InstallMigrateToApp.Result",
       InstallMigrateToAppResult::kMigrateFromMismatch, 1);
+}
+
+TEST_F(InstallMigrateToAppCommandTest, SuccessInstallSameSiteCrossOrigin) {
+  const GURL kSourceUrl = GURL("https://a.app.com/source");
+  const webapps::ManifestId kSourceManifestId =
+      webapps::ManifestId(GURL("https://a.app.com/source/id"));
+  const GURL kTargetUrl = GURL("https://b.app.com/target");
+  const webapps::ManifestId kTargetManifestId =
+      webapps::ManifestId(GURL("https://b.app.com/target/id"));
+  const GURL kTargetInstallUrl = GURL("https://b.app.com/target/install");
+
+  // Install Source App at a.app.com
+  auto web_app_install_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kSourceUrl);
+  web_app_install_info->title = u"Source App";
+  web_app_install_info->SetManifestIdAndStartUrl(kSourceManifestId, kSourceUrl);
+  test::InstallWebApp(profile(), std::move(web_app_install_info));
+
+  // Setup Target App at b.app.com with migrate_from pointing to a.app.com
+  auto& page_state =
+      web_contents_manager().GetOrCreatePageState(kTargetInstallUrl);
+  page_state.url_load_result = webapps::WebAppUrlLoaderResult::kUrlLoaded;
+  page_state.valid_manifest_for_web_app = true;
+  page_state.error_code = webapps::InstallableStatusCode::NO_ERROR_DETECTED;
+
+  auto manifest = blink::mojom::Manifest::New();
+  manifest->start_url = kTargetUrl;
+  manifest->id = kTargetManifestId;
+  manifest->name = u"Target App";
+  manifest->manifest_url = kTargetUrl;
+
+  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
+  migrate_from->id = kSourceManifestId;
+  manifest->migrate_from.push_back(std::move(migrate_from));
+
+  page_state.manifest_url = kTargetUrl;
+  page_state.manifest_before_default_processing = std::move(manifest);
+
+  EXPECT_EQ(ScheduleCommandAndWait(kSourceManifestId, kTargetManifestId,
+                                   kTargetInstallUrl),
+            InstallMigrateToAppResult::kSuccessNewInstall);
+
+  webapps::AppId target_app_id = GenerateAppIdFromManifestId(kTargetManifestId);
+  EXPECT_TRUE(fake_provider()
+                  .registrar_unsafe()
+                  .GetInstallState(target_app_id)
+                  .has_value());
+  EXPECT_EQ(fake_provider().registrar_unsafe().GetInstallState(target_app_id),
+            proto::InstallState::SUGGESTED_FROM_MIGRATION);
 }
 
 }  // namespace web_app
