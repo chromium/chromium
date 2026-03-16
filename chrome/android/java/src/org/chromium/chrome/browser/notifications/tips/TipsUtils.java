@@ -20,6 +20,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -496,5 +497,14 @@ public class TipsUtils {
                                 context.getString(R.string.history_sync_subtitle))
                         .build();
         return config;
+    }
+
+    /**
+     * Checks if the current device type is supported. Tips notifications are not designed for
+     * Automotive, TV and XR form factors, but more specifically the activity used to handle
+     * notification settings is not supported so the opt in should not be triggered.
+     */
+    public static boolean isSupportedDeviceType() {
+        return !DeviceInfo.isAutomotive() && !DeviceInfo.isXr() && !DeviceInfo.isTV();
     }
 }
