@@ -445,7 +445,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
   const GURL kUrl =
       embedded_test_server()->GetURL("/send_tab_to_self/scroll.html");
   constexpr char kGuid[] = "kGuid";
-  constexpr char kTextStart[] = "unique sentence";
+  constexpr char kTextStart[] = "quick brown fox";
 
   sync_pb::EntitySpecifics specifics;
   sync_pb::SendTabToSelfSpecifics* send_tab_to_self =
@@ -510,15 +510,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
                   .Wait());
 }
 
-// TODO(crbug.com/492401326, crbug.com/492352020): Flaky on multiple Windows
-// bots.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SendTextFragment DISABLED_SendTextFragment
-#else
-#define MAYBE_SendTextFragment SendTextFragment
-#endif
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
-                       MAYBE_SendTextFragment) {
+                       SendTextFragment) {
   ASSERT_TRUE(SetupSync());
 
   GURL test_url =
@@ -568,11 +561,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
   // viewport size and layout on different platforms/bots.
   const sync_pb::TextFragmentData& tf =
       specifics.page_context().scroll_position().text_fragment();
-  EXPECT_THAT(tf.text_start(), testing::AnyOf(testing::HasSubstr("unique"),
-                                              testing::HasSubstr("sentence"),
-                                              testing::HasSubstr("fragment"),
-                                              testing::HasSubstr("testing"),
-                                              testing::HasSubstr("be")));
+  EXPECT_THAT(tf.text_start(), testing::AnyOf(testing::HasSubstr("fox"),
+                                              testing::HasSubstr("jumps")));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
