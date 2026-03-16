@@ -29,6 +29,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   ComposeboxInputPlateViewController* _inputViewController;
   AssistantAIMHeaderView* _headerView;
   NSLayoutConstraint* _headerTopMargin;
+  NSLayoutConstraint* _inputPlateBottomMargin;
 }
 
 @synthesize delegate = _delegate;
@@ -86,17 +87,12 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 }
 
 - (void)setupConstraints {
-  NSLayoutConstraint* attachInputPlateToKeyboard =
-      [_inputViewController.view.bottomAnchor
-          constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
-                         constant:-kInputPlateMargin];
-  attachInputPlateToKeyboard.priority = UILayoutPriorityDefaultHigh;
+  _inputPlateBottomMargin = [_inputViewController.view.bottomAnchor
+      constraintEqualToAnchor:self.view.bottomAnchor
+                     constant:-kInputPlateMargin];
 
   [NSLayoutConstraint activateConstraints:@[
-    attachInputPlateToKeyboard,
-    [_inputViewController.view.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                 constant:-kInputPlateMargin],
+    _inputPlateBottomMargin,
     [_inputViewController.view.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor
                        constant:kInputPlateMargin],
@@ -104,6 +100,16 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
         constraintEqualToAnchor:self.view.trailingAnchor
                        constant:-kInputPlateMargin]
   ]];
+
+  // TODO(crbug.com/493187015): Investigate why `keyboardLayoutGuide` cannot be
+  // used here. When the keyboard is hidden, `keyboardLayoutGuide.topAnchor`
+  // currently pushes the container downwards below its intended position. We
+  // manually observe keyboard frames and update constraints as a workaround.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(keyboardWillChangeFrame:)
+             name:UIKeyboardWillChangeFrameNotification
+           object:nil];
 }
 
 #pragma mark - AssistantAIMConsumer
@@ -117,7 +123,40 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [self setUpWebStateView];
 }
 
-#pragma mark - Private helpers
+#pragma mark - Private
+
+// Adjusts the input plate's bottom margin to account for the keyboard's frame.
+- (void)keyboardWillChangeFrame:(NSNotification*)notification {
+  if (!self.isViewLoaded || !self.view.window) {
+    return;
+  }
+  NSDictionary* userInfo = notification.userInfo;
+  NSValue* rectValue = userInfo[UIKeyboardFrameEndUserInfoKey];
+  CGRect keyboardFrameInWindow = rectValue.CGRectValue;
+  CGRect keyboardFrameInView = [self.view convertRect:keyboardFrameInWindow
+                                             fromView:nil];
+  // The distance between the bottom of the view and the top of the keyboard.
+  CGFloat overlap =
+      CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(keyboardFrameInView);
+
+  // The bottom margin of the input plate should be the overlap plus the margin
+  // between the input plate and the keyboard.
+  CGFloat bottomMargin = MAX(kInputPlateMargin, overlap + kInputPlateMargin);
+  _inputPlateBottomMargin.constant = -bottomMargin;
+
+  NSTimeInterval duration =
+      [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
+      [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
+
+  [UIView animateWithDuration:duration
+                        delay:0
+                      options:curve
+                   animations:^{
+                     [self.view layoutIfNeeded];
+                   }
+                   completion:nil];
+}
 
 // Sets up the web state view.
 - (void)setUpWebStateView {
