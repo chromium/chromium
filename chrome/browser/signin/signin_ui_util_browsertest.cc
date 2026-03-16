@@ -35,6 +35,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -993,9 +994,10 @@ IN_PROC_BROWSER_TEST_F(DiceSigninUiUtilBrowserTest,
   ShowExtensionSigninPrompt(new_profile, /*enable_sync=*/false,
                             /*email_hint=*/std::string());
   // `ShowExtensionSigninPrompt()` creates a new browser.
-  Browser* browser = chrome::FindBrowserWithProfile(new_profile);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithProfile(new_profile);
   ASSERT_TRUE(browser);
-  EXPECT_EQ(1, browser->tab_strip_model()->count());
+  EXPECT_EQ(1, browser->GetTabStripModel()->count());
 
   // Scheduling a profile for deletion closes the browser. Prevent Profile from
   // being destroyed before we attempt to show the signin prompt.

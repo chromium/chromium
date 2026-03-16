@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -2821,10 +2822,11 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest,
   Click(focused_item);
   content::WebContents* new_web_contents = waiter.Wait();
   ASSERT_TRUE(new_web_contents);
-  Browser* new_browser = chrome::FindBrowserWithProfile(second_profile);
+  BrowserWindowInterface* new_browser =
+      chrome::FindBrowserWithProfile(second_profile);
   ASSERT_TRUE(new_browser);
-  EXPECT_TRUE(new_browser->is_type_app());
-  EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_TRUE(new_browser->GetType() == BrowserWindowInterface::TYPE_APP);
+  EXPECT_EQ(new_browser->GetTabStripModel()->GetActiveWebContents(),
             new_web_contents);
   EXPECT_EQ(new_web_contents->GetVisibleURL(), GURL(kPasswordManagerPWAUrl));
 }
@@ -2863,10 +2865,11 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebAppTest, SelectingOtherProfile) {
   content::WebContents* new_web_contents = waiter.Wait();
   ASSERT_TRUE(new_web_contents);
   EXPECT_FALSE(chrome::FindBrowserWithProfile(profile2));
-  Browser* new_browser = chrome::FindBrowserWithProfile(profile3);
+  BrowserWindowInterface* new_browser =
+      chrome::FindBrowserWithProfile(profile3);
   ASSERT_TRUE(new_browser);
-  EXPECT_TRUE(new_browser->is_type_app());
-  EXPECT_EQ(new_browser->tab_strip_model()->GetActiveWebContents(),
+  EXPECT_TRUE(new_browser->GetType() == BrowserWindowInterface::TYPE_APP);
+  EXPECT_EQ(new_browser->GetTabStripModel()->GetActiveWebContents(),
             new_web_contents);
   EXPECT_EQ(new_web_contents->GetVisibleURL(), GURL("https://test.org"));
 }

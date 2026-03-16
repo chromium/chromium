@@ -523,6 +523,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/prefs:util",
       "//chrome/browser/sessions",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",
       "//chrome/test:test_support",

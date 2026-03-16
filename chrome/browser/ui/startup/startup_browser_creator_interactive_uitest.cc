@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -82,36 +83,36 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
     base::RunLoop().RunUntilIdle();
   }
 
-  Browser* new_browser = nullptr;
+  BrowserWindowInterface* new_browser = nullptr;
 
   // The last used profile (the profile_2 in this case) must be active.
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_2));
   new_browser = chrome::FindBrowserWithProfile(&profile_2);
   ASSERT_TRUE(new_browser);
-  EXPECT_TRUE(new_browser->window()->IsVisible());
+  EXPECT_TRUE(new_browser->GetWindow()->IsVisible());
 
   // When bubble dialog surface is used for default browser prompts, focus will
   // be on the bubble dialog instead.
   if (default_browser::GetDefaultBrowserPromptSurface() !=
       default_browser::DefaultBrowserPromptSurface::kBubbleDialog) {
-    EXPECT_TRUE(new_browser->window()->IsActive());
+    EXPECT_TRUE(new_browser->GetWindow()->IsActive());
   }
 
   // All other profiles browser should not be active.
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_1));
   new_browser = chrome::FindBrowserWithProfile(&profile_1);
   ASSERT_TRUE(new_browser);
-  EXPECT_FALSE(new_browser->window()->IsActive());
+  EXPECT_FALSE(new_browser->GetWindow()->IsActive());
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_3));
   new_browser = chrome::FindBrowserWithProfile(&profile_3);
   ASSERT_TRUE(new_browser);
-  EXPECT_FALSE(new_browser->window()->IsActive());
+  EXPECT_FALSE(new_browser->GetWindow()->IsActive());
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_4));
   new_browser = chrome::FindBrowserWithProfile(&profile_4);
   ASSERT_TRUE(new_browser);
-  EXPECT_FALSE(new_browser->window()->IsActive());
+  EXPECT_FALSE(new_browser->GetWindow()->IsActive());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC)
 

@@ -145,6 +145,7 @@ if (!is_chromeos) {
       "//chrome/browser:browser_process",
       "//chrome/browser/profiles",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/startup",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",

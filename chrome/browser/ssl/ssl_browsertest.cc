@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -2636,8 +2637,10 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MAYBE_TestCloseTabWithUnsafePopup) {
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   // Last activated browser should be the popup.
-  Browser* popup_browser = chrome::FindBrowserWithProfile(browser()->profile());
-  WebContents* popup = popup_browser->tab_strip_model()->GetActiveWebContents();
+  BrowserWindowInterface* popup_browser =
+      chrome::FindBrowserWithProfile(browser()->profile());
+  WebContents* popup =
+      popup_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_NE(popup, tab1);
   nav_observer.Wait();
   ASSERT_TRUE(popup->GetController().GetVisibleEntry());

@@ -119,7 +119,7 @@ void ProfileLaunchObserver::MaybeActivateProfile() {
     if (opened_profiles_.find(*i) == opened_profiles_.end()) {
       return;
     }
-    Browser* browser = chrome::FindBrowserWithProfile(*i);
+    BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(*i);
     // Defer the profile activation if the initial WebUI is pending.
     if (browser && InitialWebUIManager::From(browser) &&
         InitialWebUIManager::From(browser)->RequestDeferShow(
@@ -141,12 +141,13 @@ void ProfileLaunchObserver::MaybeActivateProfile() {
 void ProfileLaunchObserver::ActivateProfile() {
   // We need to test again, in case the profile got deleted in the mean time.
   if (profile_to_activate_) {
-    Browser* browser = chrome::FindBrowserWithProfile(profile_to_activate_);
+    BrowserWindowInterface* browser =
+        chrome::FindBrowserWithProfile(profile_to_activate_);
     // |profile| may never get launched, e.g., if it only had
     // incognito Windows and one of them was used to exit Chrome.
     // So it won't have a browser in that case.
     if (browser) {
-      browser->window()->Activate();
+      browser->GetWindow()->Activate();
     }
     // No need try to activate this profile again.
     profile_to_activate_ = nullptr;

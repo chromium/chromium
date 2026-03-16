@@ -30,6 +30,7 @@
 #else
 #include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/safe_browsing/tailored_security_desktop_dialog_manager.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #endif
@@ -129,7 +130,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
                      base::Unretained(this)),
       /*is_requested_by_synced_esb=*/false);
 #else
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser) {
     if (is_enabled) {
       RecordEnabledNotificationResult(
@@ -137,7 +138,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
     }
     return;
   }
-  if (!browser->window()) {
+  if (!browser->GetWindow()) {
     if (is_enabled) {
       RecordEnabledNotificationResult(
           TailoredSecurityNotificationResult::kNoBrowserWindowAvailable);
@@ -168,7 +169,7 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
   if (base::FeatureList::IsEnabled(safe_browsing::kNoticeQueueForEsb)) {
     QueueNotice(is_enabled);
   } else {
-    DisplayDesktopDialog(browser, is_enabled);
+    DisplayDesktopDialog(browser->GetBrowserForMigrationOnly(), is_enabled);
   }
 
 #endif

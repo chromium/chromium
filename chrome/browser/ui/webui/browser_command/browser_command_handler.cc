@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -270,8 +271,9 @@ void BrowserCommandHandler::OnTutorialStarted(
 }
 
 void BrowserCommandHandler::StartTutorial(StartTutorialInPage::Params params) {
-  auto* browser = chrome::FindBrowserWithProfile(profile_);
-  StartTutorialInPage::Start(browser, std::move(params));
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
+  StartTutorialInPage::Start(browser->GetBrowserForMigrationOnly(),
+                             std::move(params));
 }
 
 bool BrowserCommandHandler::TutorialServiceExists() {
@@ -281,8 +283,8 @@ bool BrowserCommandHandler::TutorialServiceExists() {
 }
 
 bool BrowserCommandHandler::BrowserSupportsTabGroups() {
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  return browser->tab_strip_model()->SupportsTabGroups();
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
+  return browser->GetTabStripModel()->SupportsTabGroups();
 }
 
 void BrowserCommandHandler::StartTabGroupTutorial() {
@@ -317,11 +319,11 @@ bool BrowserCommandHandler::DefaultSearchProviderIsGoogle() {
 }
 
 bool BrowserCommandHandler::BrowserSupportsSavedTabGroups() {
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile_);
 
   // Duplicated from chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
   // Which cannot be included here
-  return browser->profile()->IsRegularProfile();
+  return browser->GetProfile()->IsRegularProfile();
 }
 
 void BrowserCommandHandler::OpenNTPAndStartCustomizeChromeTutorial() {

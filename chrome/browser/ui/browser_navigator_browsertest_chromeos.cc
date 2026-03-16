@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -246,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
       /*incognito=*/false, /*should_trigger_session_restore=*/false);
 
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
-  Browser* browser = chrome::FindBrowserWithProfile(primary_user_profile);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithProfile(primary_user_profile);
   ASSERT_TRUE(browser);
 
   // Start multi-user sign-in.
@@ -266,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
     // Teleport the primary user's browser window to the secondary user's
     // desktop.
     window_manager->ShowWindowForUser(
-        browser->window()->GetNativeWindow()->GetToplevelWindow(),
+        browser->GetWindow()->GetNativeWindow()->GetToplevelWindow(),
         kSecondaryAccountId);
     EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
@@ -293,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorMultiUserTestChromeOS,
   {
     // Move the browser window back to the primary user's desktop.
     window_manager->ShowWindowForUser(
-        browser->window()->GetNativeWindow()->GetToplevelWindow(),
+        browser->GetWindow()->GetNativeWindow()->GetToplevelWindow(),
         kPrimaryAccountId);
     // Teleporting the window also triggers to switch the active session.
     ASSERT_EQ(session_manager::SessionManager::Get()

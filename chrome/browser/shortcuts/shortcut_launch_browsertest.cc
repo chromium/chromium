@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/chrome_switches.h"
@@ -67,11 +68,12 @@ IN_PROC_BROWSER_TEST_F(ShortcutLaunchTestFoundProfile, SpecifiedProfileUsed) {
       GetStartupProfilePath(
           /*cur_dir=*/{}, command_line, /*ignore_profile_picker=*/false));
 
-  Browser* browser = chrome::FindBrowserWithProfile(&other_profile);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithProfile(&other_profile);
   ASSERT_TRUE(browser);
 
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             embedded_test_server()->GetURL("/title1.html"));

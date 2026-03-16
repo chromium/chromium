@@ -1363,14 +1363,15 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       if ([self userWillWaitForInProgressDownloads:downloadCount]) {
         // Create a new browser window (if necessary) and navigate to the
         // downloads page if the user chooses to wait.
-        Browser* browser = chrome::FindBrowserWithProfile(profile);
+        BrowserWindowInterface* browser =
+            chrome::FindBrowserWithProfile(profile);
         if (!browser) {
           browser = Browser::Create(Browser::CreateParams(profile, true));
-          browser->window()->Show();
+          browser->GetWindow()->Show();
         }
         [[ConfirmQuitPanelController sharedController] cancel];
         DCHECK(browser);
-        chrome::ShowDownloads(browser);
+        chrome::ShowDownloads(browser->GetBrowserForMigrationOnly());
         return NO;
       }
 

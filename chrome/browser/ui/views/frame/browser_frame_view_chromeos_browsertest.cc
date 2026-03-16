@@ -1747,11 +1747,12 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshTestNoWebUiTabStrip,
 
   ash::NewWindowDelegate::GetInstance()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false);
-  Browser* browser = chrome::FindBrowserWithProfile(primary_user_profile);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithProfile(primary_user_profile);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   BrowserFrameViewChromeOS* frame_view = GetFrameViewChromeOS(browser_view);
   BrowserFrameViewChromeOSTestApi test_api(frame_view);
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
 
   EXPECT_FALSE(BrowserFrameViewChromeOS::ShouldShowAvatarForTesting(window));
   EXPECT_FALSE(test_api.GetProfileIndicatorIcon());

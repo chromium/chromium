@@ -12,6 +12,7 @@
 #include "components/signin/public/base/consent_level.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 namespace login_ui_test_utils {
 
@@ -40,7 +41,7 @@ void SigninInOldGaiaFlow(content::WebContents* web_contents,
 
 // A function to sign in a user using Chrome sign-in UI interface.
 // This will block until a signin succeeded or failed notification is observed.
-bool SignInWithUI(Browser* browser,
+bool SignInWithUI(BrowserWindowInterface* browser,
                   const std::string& email,
                   const std::string& password,
                   signin::ConsentLevel consent_level);

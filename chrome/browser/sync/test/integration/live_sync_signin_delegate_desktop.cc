@@ -9,7 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -47,13 +49,15 @@ bool LiveSyncSigninDelegateDesktop::SignIn(SyncTestAccount account,
   profiles::testing::SwitchToProfileSync(profile_->GetPath(),
                                          /*always_create=*/true);
 
-  Browser* browser = chrome::FindBrowserWithProfile(profile_.get());
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithProfile(profile_.get());
   if (!browser) {
     LOG(ERROR) << "Failed to open browser to sign in.";
     return false;
   }
 
-  if (!login_ui_test_utils::SignInWithUI(browser, username, password,
+  if (!login_ui_test_utils::SignInWithUI(
+          browser, username, password,
                                          consent_level)) {
     LOG(ERROR) << "Could not sign in to GAIA servers.";
     return false;

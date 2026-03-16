@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/common/webui_url_utils.h"
@@ -118,9 +119,9 @@ const ui::ThemeProvider* GetThemeProviderDeprecated(
   // WebContents during navigation.
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  const Browser* browser = chrome::FindBrowserWithProfile(profile);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile);
   if (browser) {
-    return browser->window()->GetThemeProvider();
+    return browser->GetBrowserForMigrationOnly()->window()->GetThemeProvider();
   }
 
   // Fallback 2: get the theme provider from the last created browser.
