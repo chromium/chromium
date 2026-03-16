@@ -22,6 +22,7 @@
 #include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/browser/service_worker_running_info.h"
+#include "content/public/common/child_process_id.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/service_worker/extended_service_worker_status_code.h"
@@ -109,7 +110,7 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
 
   // Called when a console message is reported for the service worker with id
   // |version_id|.
-  virtual void OnReportConsoleMessageSync(int render_process_id,
+  virtual void OnReportConsoleMessageSync(ChildProcessId render_process_id,
                                           int64_t version_id,
                                           const GURL& scope,
                                           const ConsoleMessage& message) {}
@@ -170,7 +171,7 @@ class CONTENT_EXPORT ServiceWorkerContext {
 
   using StartWorkerCallback =
       base::OnceCallback<void(int64_t version_id,
-                              int process_id,
+                              ChildProcessId process_id,
                               int thread_id,
                               const blink::ServiceWorkerToken& token)>;
 

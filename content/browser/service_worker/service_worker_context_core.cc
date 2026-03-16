@@ -1361,9 +1361,12 @@ void ServiceWorkerContextCore::OnReportConsoleMessage(
       version->version_id(), version->scope(), version->key(), console_message);
 
   for (auto& observer : sync_observer_list_->observers) {
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     observer.OnReportConsoleMessageSync(
-        version->embedded_worker() ? version->embedded_worker()->process_id()
-                                   : ChildProcessHost::kInvalidUniqueID,
+        version->embedded_worker()
+            ? ChildProcessId::FromUnsafeValue(
+                  version->embedded_worker()->process_id())
+            : ChildProcessId(),
         version->version_id(), version->scope(), console_message);
   }
 }

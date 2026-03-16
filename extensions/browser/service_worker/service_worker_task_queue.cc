@@ -1126,7 +1126,7 @@ void ServiceWorkerTaskQueue::OnRegistrationStoredSync(int64_t registration_id,
 }
 
 void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     int64_t version_id,
     const GURL& scope,
     const content::ConsoleMessage& message) {
@@ -1135,6 +1135,7 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
     return;
   }
 
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   auto error_instance = std::make_unique<RuntimeError>(
       scope.GetHost(), browser_context_->IsOffTheRecord(),
       base::UTF8ToUTF16(content::MessageSourceToString(message.source)),
@@ -1147,7 +1148,7 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
       message.source_url,
       content::ConsoleMessageLevelToLogSeverity(message.message_level),
       -1 /* a service worker does not have a render_view_id */,
-      render_process_id,
+      render_process_id.GetUnsafeValue(),
       /*is_from_service_worker=*/true);
 
   ExtensionsBrowserClient::Get()->ReportError(browser_context_,

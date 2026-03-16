@@ -137,12 +137,13 @@ class ServiceWorkerProcessBrowserTest
 
   // Returns the process id of the running service worker. There must be exactly
   // one service worker running.
-  int GetServiceWorkerProcessId() {
+  ChildProcessId GetServiceWorkerProcessId() {
     const base::flat_map<int64_t, ServiceWorkerRunningInfo>& infos =
         wrapper()->GetRunningServiceWorkerInfos();
     DCHECK_EQ(infos.size(), 1u);
     const ServiceWorkerRunningInfo& info = infos.begin()->second;
-    return info.render_process_id;
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+    return ChildProcessId::FromUnsafeValue(info.render_process_id);
   }
 
   ServiceWorkerContextWrapper* wrapper() { return wrapper_.get(); }
@@ -185,10 +186,10 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   observer.WaitUntilRunning();
 
   // The page and service worker should be in the same process.
-  int page_process_id = current_frame_host()->GetProcess()->GetDeprecatedID();
-  EXPECT_NE(page_process_id, ChildProcessHost::kInvalidUniqueID);
+  ChildProcessId page_process_id = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(page_process_id);
   ASSERT_EQ(GetRunningServiceWorkerCount(), 1u);
-  int worker_process_id = GetServiceWorkerProcessId();
+  ChildProcessId worker_process_id = GetServiceWorkerProcessId();
   EXPECT_EQ(page_process_id, worker_process_id);
 }
 
@@ -218,17 +219,17 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   scoped_refptr<SiteInstanceImpl> site_instance =
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(GURL(), site_instance->GetSiteURL());
-  int page_process_id = current_frame_host()->GetProcess()->GetDeprecatedID();
-  EXPECT_NE(page_process_id, ChildProcessHost::kInvalidUniqueID);
+  ChildProcessId page_process_id = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(page_process_id);
 
   // Start the service worker.
   base::RunLoop loop;
   GURL scope = embedded_test_server()->GetURL("/service_worker/");
-  int worker_process_id;
+  ChildProcessId worker_process_id;
   wrapper()->ServiceWorkerContextWrapper::StartWorkerForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
-      base::BindLambdaForTesting([&](int64_t version_id, int process_id,
-                                     int thread_id,
+      base::BindLambdaForTesting([&](int64_t version_id,
+                                     ChildProcessId process_id, int thread_id,
                                      const blink::ServiceWorkerToken& token) {
         worker_process_id = process_id;
         loop.Quit();
@@ -248,8 +249,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   // same process as the original page.
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/service_worker/empty.html")));
-  EXPECT_EQ(page_process_id,
-            current_frame_host()->GetProcess()->GetDeprecatedID());
+  EXPECT_EQ(page_process_id, current_frame_host()->GetProcess()->GetID());
 }
 
 // Toggle Site Isolation.

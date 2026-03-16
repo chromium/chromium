@@ -242,7 +242,7 @@ class ServiceWorkerTaskQueue
   void OnRegistrationStoredSync(int64_t registration_id,
                                 const GURL& scope) override;
   void OnReportConsoleMessageSync(
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       int64_t version_id,
       const GURL& scope,
       const content::ConsoleMessage& message) override;

@@ -121,7 +121,7 @@ void ServiceWorkerState::DidStartWorkerForScope(
     const SequencedContextId& context_id,
     base::Time start_time,
     int64_t version_id,
-    int process_id,
+    content::ChildProcessId process_id,
     int thread_id,
     const blink::ServiceWorkerToken& token) {
   UMA_HISTOGRAM_BOOLEAN("Extensions.ServiceWorkerBackground.StartWorkerStatus",
@@ -133,9 +133,8 @@ void ServiceWorkerState::DidStartWorkerForScope(
       << "Worker was already loaded";
 
   const ExtensionId& extension_id = context_id.extension_id;
-  const WorkerId worker_id = {
-      extension_id, content::ChildProcessId::FromUnsafeValue(process_id),
-      version_id, thread_id, token};
+  const WorkerId worker_id = {extension_id, process_id, version_id, thread_id,
+                              token};
 
   // HACK: The service worker layer might invoke this callback with an ID for a
   // RenderProcessHost that has already terminated. This isn't the right fix for
