@@ -2013,6 +2013,12 @@ CreateInputDataFromAnnotatedPageContent(
                 isSearchType:(BOOL)isSearchType {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
+  if (![self isActiveTabAttached]) {
+    // If we are initiating a new navigation while the active tab is not
+    // attached to the composebox, hide the tab-specific assistant sheet.
+    [_sceneHandler hideAssistant];
+  }
+
   [self.URLLoader prepareLoadForQueryText:[NSString cr_fromString16:text]];
 
   switch (_modeHolder.mode) {

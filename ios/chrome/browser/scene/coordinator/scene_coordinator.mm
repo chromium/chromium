@@ -618,6 +618,10 @@ void OnListFamilyMembersResponse(
   [_assistantAIMCoordinator start];
 }
 
+- (void)hideAssistant {
+  [self stopAssistantAIMCoordinator];
+}
+
 - (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
   DCHECK([command fromChrome]);
   UrlLoadParams params = UrlLoadParams::InNewTab([command URL]);
