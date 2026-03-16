@@ -18,6 +18,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
@@ -354,6 +355,35 @@ TEST_F(ExtensionAlarmsLogTest, CreateDelayBelowMinimum) {
   EXPECT_THAT(local_frame.last_message(),
               testing::HasSubstr(
                   "delay is less than the minimum duration of 30 seconds"));
+}
+
+// TODO(crbug.com/445720439): Clean up this test after long alarm name
+// deprecation.
+TEST_F(ExtensionAlarmsLogTest, CreateLongAlarmName) {
+  // Set up context for the test.
+  ConsoleLogMessageLocalFrame local_frame;
+  local_frame.Init(
+      contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces());
+  ASSERT_EQ(local_frame.message_count(), 0u);
+
+  // Short alarm names (no longer than 1024 characters) do not result in
+  // warnings.
+  CreateAlarm("[\"" + std::string(1024, 'a') + "\", {\"when\": 0}]");
+  this->alarm_delegate_->WaitForAlarm();
+  ASSERT_EQ(local_frame.message_count(), 0u);
+
+  // Long alarm names (1025 characters and longer) cause a warning.
+  CreateAlarm("[\"" + std::string(1025, 'a') + "\", {\"when\": 0}]");
+  this->alarm_delegate_->WaitForAlarm();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return local_frame.message_count() == 1u; }));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
+            local_frame.last_level());
+  EXPECT_EQ(
+      local_frame.last_message(),
+      "Alarm length is 1025 characters which exceeds future limit of 1024 "
+      "characters. Chrome 150 will throw an error for alarm creation with "
+      "names longer than 1024 characters.");
 }
 
 TEST_F(ExtensionAlarmsTest, Get) {

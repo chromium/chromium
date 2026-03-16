@@ -42,6 +42,13 @@ constexpr char kWarningMinimumReleaseDelay[] =
     "Alarm %s is less than the minimum duration of %zu seconds."
     " Alarm \"%s\" will fire after the minimum duration.";
 
+constexpr size_t kMaximumNameLength = 1024;
+
+constexpr char kWarningMaximumNameLength[] =
+    "Alarm length is %u characters which exceeds future limit of %u "
+    "characters. Chrome 150 will throw an error for alarm creation with names "
+    "longer than %u characters.";
+
 bool ValidateAlarmCreateInfo(const std::string& alarm_name,
                              const alarms::AlarmCreateInfo& create_info,
                              const Extension* extension,
@@ -98,6 +105,15 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
     }
   }
 
+  // W3C WECG plans to restrict overly long alarm names. Raise awareness about
+  // this upcoming limit to encourage migration to local StorageArea
+  // (chrome.storage.local).
+  // TODO(crbug.com/445720439): Convert this warning into an error.
+  if (alarm_name.length() > kMaximumNameLength) {
+    warnings->push_back(
+        base::StringPrintf(kWarningMaximumNameLength, alarm_name.length(),
+                           kMaximumNameLength, kMaximumNameLength));
+  }
   return true;
 }
 
