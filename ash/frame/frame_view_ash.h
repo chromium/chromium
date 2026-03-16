@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/frame/frame_context_menu_controller.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ui/frame/frame_context_menu_controller.h"
 #include "chromeos/ui/frame/frame_view_chromeos.h"
 #include "chromeos/ui/frame/header_view.h"
 #include "chromeos/ui/frame/highlight_border_overlay.h"
@@ -37,9 +37,10 @@ class FrameViewAshImmersiveHelper;
 // The window header overlay slides onscreen when the user hovers the mouse at
 // the top of the screen. See also views::DefaultFrameView and
 // BrowserFrameViewAsh.
-class ASH_EXPORT FrameViewAsh : public chromeos::FrameViewChromeOS,
-                                public FrameContextMenuController::Delegate,
-                                public aura::WindowObserver {
+class ASH_EXPORT FrameViewAsh
+    : public chromeos::FrameViewChromeOS,
+      public chromeos::FrameContextMenuController::Delegate,
+      public aura::WindowObserver {
   METADATA_HEADER(FrameViewAsh, chromeos::FrameViewChromeOS)
 
  public:
@@ -138,7 +139,8 @@ class ASH_EXPORT FrameViewAsh : public chromeos::FrameViewChromeOS,
 
   std::unique_ptr<FrameViewAshImmersiveHelper> immersive_helper_;
 
-  std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;
+  std::unique_ptr<chromeos::FrameContextMenuController>
+      frame_context_menu_controller_;
 
   // Observes property changes to window of `target_widget_`.
   base::ScopedObservation<aura::Window, aura::WindowObserver>

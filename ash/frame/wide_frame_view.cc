@@ -96,7 +96,8 @@ void WideFrameView::SetCaptionButtonModel(
 WideFrameView::WideFrameView(views::Widget* target)
     : target_(target),
       frame_context_menu_controller_(
-          std::make_unique<FrameContextMenuController>(target_, this)) {
+          std::make_unique<chromeos::FrameContextMenuController>(target_,
+                                                                 this)) {
   aura::Window* target_window = target->GetNativeWindow();
   target_window->AddObserver(this);
   // Use the HeaderView itself as a frame view because WideFrameView is

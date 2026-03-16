@@ -153,7 +153,8 @@ class FrameViewAshImmersiveHelper : public WindowStateObserver,
 FrameViewAsh::FrameViewAsh(views::Widget* widget)
     : chromeos::FrameViewChromeOS(widget),
       frame_context_menu_controller_(
-          std::make_unique<FrameContextMenuController>(widget, this)) {
+          std::make_unique<chromeos::FrameContextMenuController>(widget,
+                                                                 this)) {
   header_view_->set_immersive_mode_changed_callback(base::BindRepeating(
       &FrameViewAsh::InvalidateLayout, weak_factory_.GetWeakPtr(),
       // This will always be on a fresh call stack, never mid-layout so the

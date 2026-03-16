@@ -6,10 +6,10 @@
 #define ASH_FRAME_WIDE_FRAME_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/frame/frame_context_menu_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
+#include "chromeos/ui/frame/frame_context_menu_controller.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -41,7 +41,7 @@ class ASH_EXPORT WideFrameView
       public aura::WindowObserver,
       public display::DisplayObserver,
       public chromeos::ImmersiveFullscreenControllerDelegate,
-      public FrameContextMenuController::Delegate {
+      public chromeos::FrameContextMenuController::Delegate {
  public:
   explicit WideFrameView(views::Widget* target);
 
@@ -97,7 +97,8 @@ class ASH_EXPORT WideFrameView
 
   raw_ptr<chromeos::HeaderView> header_view_ = nullptr;
 
-  std::unique_ptr<FrameContextMenuController> frame_context_menu_controller_;
+  std::unique_ptr<chromeos::FrameContextMenuController>
+      frame_context_menu_controller_;
 
   // Called when |target_|'s "paint as active" state has changed.
   void PaintAsActiveChanged();

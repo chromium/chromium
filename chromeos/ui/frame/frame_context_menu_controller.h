@@ -2,30 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_FRAME_FRAME_CONTEXT_MENU_CONTROLLER_H_
-#define ASH_FRAME_FRAME_CONTEXT_MENU_CONTROLLER_H_
+#ifndef CHROMEOS_UI_FRAME_FRAME_CONTEXT_MENU_CONTROLLER_H_
+#define CHROMEOS_UI_FRAME_FRAME_CONTEXT_MENU_CONTROLLER_H_
 
-#include "ash/ash_export.h"
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/context_menu_controller.h"
-
-namespace chromeos {
-class MoveToDesksMenuModel;
-}  // namespace chromeos
+#include "ui/views/controls/menu/menu_runner.h"
 
 namespace views {
-class View;
 class Widget;
-class MenuRunner;
 }  // namespace views
 
-namespace ash {
+namespace chromeos {
+
+class MoveToDesksMenuModel;
 
 // FrameContextMenuController is used to house the common code for displaying
 // the context menu of frames like `FrameViewAsh` and `WideFrameView`.
-class ASH_EXPORT FrameContextMenuController
+class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameContextMenuController
     : public views::ContextMenuController {
  public:
   class Delegate {
@@ -60,10 +57,10 @@ class ASH_EXPORT FrameContextMenuController
   // should be shown at a point.
   raw_ptr<Delegate> delegate_;
 
-  std::unique_ptr<chromeos::MoveToDesksMenuModel> move_to_desks_menu_model_;
+  std::unique_ptr<MoveToDesksMenuModel> move_to_desks_menu_model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // ASH_FRAME_FRAME_CONTEXT_MENU_CONTROLLER_H_
+#endif  // CHROMEOS_UI_FRAME_FRAME_CONTEXT_MENU_CONTROLLER_H_

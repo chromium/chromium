@@ -712,8 +712,6 @@ component("ash") {
     "focus/scoped_arrow_key_traversal_controller.h",
     "focus/shutdown_focus_rules.cc",
     "focus/shutdown_focus_rules.h",
-    "frame/frame_context_menu_controller.cc",
-    "frame/frame_context_menu_controller.h",
     "frame/frame_view_ash.cc",
     "frame/frame_view_ash.h",
     "frame/multitask_menu_nudge_delegate_ash.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/frame/frame_context_menu_controller.h"
+#include "chromeos/ui/frame/frame_context_menu_controller.h"
 
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
@@ -11,7 +11,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-namespace ash {
+namespace chromeos {
 
 FrameContextMenuController::FrameContextMenuController(views::Widget* widget,
                                                        Delegate* delegate)
@@ -23,19 +23,19 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
+  if (!MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu()) {
     return;
   }
 
   DCHECK(delegate_);
-  if (!delegate_->ShouldShowContextMenu(source, point))
+  if (!delegate_->ShouldShowContextMenu(source, point)) {
     return;
+  }
 
   if (!move_to_desks_menu_model_) {
-    move_to_desks_menu_model_ =
-        std::make_unique<chromeos::MoveToDesksMenuModel>(
-            std::make_unique<chromeos::MoveToDesksMenuDelegate>(widget_),
-            /*add_title=*/true);
+    move_to_desks_menu_model_ = std::make_unique<MoveToDesksMenuModel>(
+        std::make_unique<MoveToDesksMenuDelegate>(widget_),
+        /*add_title=*/true);
   }
 
   // Recreate the `menu_runner_` so the checked label of
@@ -47,4 +47,4 @@ void FrameContextMenuController::ShowContextMenuForViewImpl(
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
-}  // namespace ash
+}  // namespace chromeos
