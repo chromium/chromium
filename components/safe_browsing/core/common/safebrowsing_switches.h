@@ -22,7 +22,6 @@ extern const char kSkipCSDAllowlistOnPreclassification[];
 extern const char kOverrideCsdModelFlag[];
 extern const char kArtificialCachedPhishGuardVerdictFlag[];
 extern const char kMarkAsPasswordProtectionAllowlisted[];
-extern const char kWpMaxParallelActiveRequests[];
 extern const char kWpMaxFileOpeningThreads[];
 extern const char kCloudBinaryUploadServiceUrlFlag[];
 extern const char kSbManualDownloadBlocklist[];

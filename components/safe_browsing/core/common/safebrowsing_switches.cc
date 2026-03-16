@@ -76,9 +76,6 @@ const char kMarkAsPasswordProtectionAllowlisted[] =
 // Cloud content scanning switches
 //
 
-// The command line flag to control the max amount of concurrent active
-// requests.
-const char kWpMaxParallelActiveRequests[] = "wp-max-parallel-active-requests";
 const char kWpMaxFileOpeningThreads[] = "wp-max-file-opening-threads";
 const char kCloudBinaryUploadServiceUrlFlag[] = "binary-upload-service-url";
 
