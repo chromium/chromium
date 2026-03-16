@@ -18,7 +18,7 @@
 namespace policy {
 class ManagementService;
 class PolicyService;
-}
+}  // namespace policy
 namespace signin {
 class IdentityManager;
 }
@@ -33,6 +33,10 @@ enum class SearchEngineChoiceScreenConditions;
 namespace TemplateURLPrepopulateData {
 class Resolver;
 }
+
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -109,7 +113,8 @@ class SearchEngineChoiceService : public KeyedService {
       regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
       TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       signin::IdentityManager& identity_manager,
-      policy::ManagementService& platform_management_service);
+      policy::ManagementService& platform_management_service,
+      metrics::ProfileMetricsService& profile_metrics_service);
   ~SearchEngineChoiceService() override;
 
   // Runs the initialisation step for this service, checking consistency in the
@@ -303,6 +308,7 @@ class SearchEngineChoiceService : public KeyedService {
       prepopulate_data_resolver_;
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<policy::ManagementService> platform_management_service_;
+  const raw_ref<metrics::ProfileMetricsService> profile_metrics_service_;
   base::ObserverList<Observer> observers_;
 
   std::optional<regional_capabilities::SearchEngineChoiceScreenConditions>

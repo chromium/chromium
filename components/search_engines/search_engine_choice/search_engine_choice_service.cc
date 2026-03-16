@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -29,6 +30,7 @@
 #include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "components/country_codes/country_codes.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -524,14 +526,16 @@ SearchEngineChoiceService::SearchEngineChoiceService(
     regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
     TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     signin::IdentityManager& identity_manager,
-    policy::ManagementService& platform_management_service)
+    policy::ManagementService& platform_management_service,
+    metrics::ProfileMetricsService& profile_metrics_service)
     : client_(std::move(client)),
       profile_prefs_(profile_prefs),
       local_state_(local_state),
       regional_capabilities_service_(regional_capabilities),
       prepopulate_data_resolver_(prepopulate_data_resolver),
       identity_manager_(identity_manager),
-      platform_management_service_(platform_management_service) {}
+      platform_management_service_(platform_management_service),
+      profile_metrics_service_(profile_metrics_service) {}
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
@@ -742,8 +746,8 @@ void SearchEngineChoiceService::RecordChoiceScreenEvent(
                                   event);
   }
 
-  base::UmaHistogramEnumeration(kSearchEngineChoiceScreenEventsHistogram,
-                                event);
+  profile_metrics_service_->UmaHistogramEnumeration(
+      kSearchEngineChoiceScreenEventsHistogram, event);
   base::PumaHistogramEnumeration(base::PumaType::kRc,
                                  kPumaSearchChoiceScreenEventsHistogram, event);
 

@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "components/country_codes/country_codes.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/regional_capabilities/regional_capabilities_prefs.h"
@@ -97,13 +98,15 @@ void TemplateURLServiceUnitTestBase::SetUp() {
   management_service_ = std::make_unique<policy::ManagementService>(
       std::vector<std::unique_ptr<policy::ManagementStatusProvider>>{});
 
+  profile_metrics_service_ = std::make_unique<metrics::ProfileMetricsService>();
+
   search_engine_choice_service_ =
       std::make_unique<search_engines::SearchEngineChoiceService>(
           std::make_unique<FakeSearchEngineChoiceServiceClient>(),
           pref_service_, &local_state_, *regional_capabilities_service_,
           *prepopulate_data_resolver_,
           CHECK_DEREF(identity_test_env_.identity_manager()),
-          *management_service_);
+          *management_service_, *profile_metrics_service_);
 
   template_url_service_ = CreateService();
 }

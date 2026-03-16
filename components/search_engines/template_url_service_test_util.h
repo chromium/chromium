@@ -99,6 +99,7 @@ class TemplateURLServiceUnitTestBase : public testing::Test {
   std::unique_ptr<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
   std::unique_ptr<policy::ManagementService> management_service_;
+  std::unique_ptr<metrics::ProfileMetricsService> profile_metrics_service_;
   std::unique_ptr<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;

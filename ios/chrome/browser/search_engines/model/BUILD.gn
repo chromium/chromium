@@ -47,6 +47,7 @@ source_set("model") {
     "//components/version_info",
     "//ios/chrome/browser/google/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/shared/model/application_context",

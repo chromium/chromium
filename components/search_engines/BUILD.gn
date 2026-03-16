@@ -196,6 +196,7 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/country_codes",
+    "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/os_crypt/async/browser:test_support",
     "//components/policy/core/common",

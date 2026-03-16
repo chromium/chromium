@@ -8,6 +8,7 @@
 
 #import "base/check_deref.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
+#import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
@@ -24,6 +25,7 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
                                     ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::RegionalCapabilitiesServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLPrepopulateDataResolverFactory::GetInstance());
+  DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
 }
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;
@@ -55,7 +57,8 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
           profile)),
       CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)),
-      CHECK_DEREF(policy::BrowserManagementServiceFactory::GetForPlatform()));
+      CHECK_DEREF(policy::BrowserManagementServiceFactory::GetForPlatform()),
+      CHECK_DEREF(IOSProfileMetricsServiceFactory::GetForProfile(profile)));
 
   service->Init();
   return service;

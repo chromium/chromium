@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_client.h"
@@ -33,7 +34,8 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
       CHECK_DEREF(
           TemplateURLPrepopulateData::ResolverFactory::GetForProfile(&profile)),
       CHECK_DEREF(IdentityManagerFactory::GetForProfile(&profile)),
-      CHECK_DEREF(policy::ManagementServiceFactory::GetForPlatform()));
+      CHECK_DEREF(policy::ManagementServiceFactory::GetForPlatform()),
+      CHECK_DEREF(ProfileMetricsServiceFactory::GetForProfile(&profile)));
   service->Init();
   return service;
 }
@@ -55,6 +57,7 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
   DependsOn(TemplateURLPrepopulateData::ResolverFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
+  DependsOn(ProfileMetricsServiceFactory::GetInstance());
 }
 
 SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;

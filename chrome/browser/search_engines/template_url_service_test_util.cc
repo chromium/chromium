@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
@@ -200,31 +201,32 @@ TemplateURLServiceTestUtil::SetUpRequiredServicesWithCustomLocalState(
 
   testing_factories.push_back({
       search_engines::SearchEngineChoiceServiceFactory::GetInstance(),
-      base::BindLambdaForTesting(
-          [local_state_override](content::BrowserContext* browser_context)
-              -> std::unique_ptr<KeyedService> {
-            Profile* profile = Profile::FromBrowserContext(browser_context);
-            regional_capabilities::RegionalCapabilitiesService*
-                regional_capabilities =
-                    regional_capabilities::RegionalCapabilitiesServiceFactory::
-                        GetInstance()
-                            ->GetForProfile(profile);
-            PrefService* local_state =
-                local_state_override
-                    ? local_state_override
-                    : TestingBrowserProcess::GetGlobal()->local_state();
-            CHECK(local_state);
+      base::BindLambdaForTesting([local_state_override](
+                                     content::BrowserContext* browser_context)
+                                     -> std::unique_ptr<KeyedService> {
+        Profile* profile = Profile::FromBrowserContext(browser_context);
+        regional_capabilities::RegionalCapabilitiesService*
+            regional_capabilities =
+                regional_capabilities::RegionalCapabilitiesServiceFactory::
+                    GetInstance()
+                        ->GetForProfile(profile);
+        PrefService* local_state =
+            local_state_override
+                ? local_state_override
+                : TestingBrowserProcess::GetGlobal()->local_state();
+        CHECK(local_state);
 
-            return std::make_unique<search_engines::SearchEngineChoiceService>(
-                std::make_unique<FakeSearchEngineChoiceServiceClient>(),
-                *profile->GetPrefs(), local_state, *regional_capabilities,
-                CHECK_DEREF(
-                    TemplateURLPrepopulateData::ResolverFactory::GetInstance()
-                        ->GetForProfile(profile)),
-                CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)),
-                CHECK_DEREF(
-                    policy::ManagementServiceFactory::GetForProfile(profile)));
-          }),
+        return std::make_unique<search_engines::SearchEngineChoiceService>(
+            std::make_unique<FakeSearchEngineChoiceServiceClient>(),
+            *profile->GetPrefs(), local_state, *regional_capabilities,
+            CHECK_DEREF(
+                TemplateURLPrepopulateData::ResolverFactory::GetInstance()
+                    ->GetForProfile(profile)),
+            CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)),
+            CHECK_DEREF(
+                policy::ManagementServiceFactory::GetForProfile(profile)),
+            CHECK_DEREF(ProfileMetricsServiceFactory::GetForProfile(profile)));
+      }),
   });
 
   return testing_factories;

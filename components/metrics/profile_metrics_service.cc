@@ -20,7 +20,8 @@ constexpr size_t kMaxProfileIndexForIndividualLog = 19;
 constexpr std::string_view kHistogramSuffixMaxProfileCountCombinedName =
     ".Profile%dPlus";
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:ProfileIndexSignin,
-// //tools/metrics/histograms/metadata/profile/histograms.xml:ProfileIndexProfile)
+// //tools/metrics/histograms/metadata/profile/histograms.xml:ProfileIndexProfile,
+// //tools/metrics/histograms/metadata/search/histograms.xml:ProfileIndexSearch)
 
 std::string GetHistogramSuffix(std::optional<size_t> profile_index) {
   if (!profile_index.has_value()) {
