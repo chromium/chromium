@@ -7,8 +7,7 @@ package org.chromium.chrome.browser.messages;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
-
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import android.view.ViewGroup;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
@@ -61,8 +60,8 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         if (mContainer.getVisibility() != View.VISIBLE) {
             return;
         }
-        CoordinatorLayout.LayoutParams params =
-                (CoordinatorLayout.LayoutParams) mContainer.getLayoutParams();
+        ViewGroup.MarginLayoutParams params =
+                (ViewGroup.MarginLayoutParams) mContainer.getLayoutParams();
         params.topMargin = getContainerTopOffset();
         mContainer.setLayoutParams(params);
     }
