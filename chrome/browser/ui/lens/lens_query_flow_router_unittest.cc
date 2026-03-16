@@ -728,6 +728,9 @@ class LensQueryFlowRouterContextualTaskEnabledTest
 
   void SetUp() override {
     LensQueryFlowRouterTest::SetUp();
+    PrefService* prefs = profile_->GetPrefs();
+    prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
     mock_context_controller_ = std::make_unique<
         contextual_search::MockContextualSearchContextController>();
     contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()

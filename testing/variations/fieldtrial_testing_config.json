@@ -5391,28 +5391,6 @@
             ]
         }
     ],
-    "ChromnientNonBlockingPrivacyNotice": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "id": "4"
-                    },
-                    "enable_features": [
-                        "LensOverlayEntrypointLabelAlt",
-                        "LensOverlayNonBlockingPrivacyNotice"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientReinvocationAffordance": [
         {
             "platforms": [

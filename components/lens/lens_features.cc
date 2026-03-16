@@ -96,7 +96,7 @@ BASE_FEATURE(kLensSearchAimM3UseAimEligibility,
 BASE_FEATURE(kLensSearchReinvocationAffordance,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayEntrypointLabelAlt, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLensOverlayEntrypointLabelAlt, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -120,7 +120,7 @@ BASE_FEATURE(kLensUpdatedFeedbackEntrypoint, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLensOverlayOptimizationFilter, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayNonBlockingPrivacyNotice,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensUseSeparateRequestIdForViewportImages,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -568,7 +568,7 @@ constexpr base::FeatureParam<bool> kEnableClientSideHeader{
     &kLensSearchAimM3, "enable-client-side-header", true};
 
 const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId{
-    &kLensOverlayEntrypointLabelAlt, "id", 0};
+    &kLensOverlayEntrypointLabelAlt, "id", 4};
 
 constexpr base::FeatureParam<bool>
     kLensOverlayTextSelectionContextMenuEntrypointContextualize{
