@@ -37,6 +37,7 @@
 
 :host([is-refreshed-ui_]) .in-dialog-design #header {
   background: center 18px no-repeat;
+  height: 124px;
 }
 
 #avatarContainer {
@@ -57,7 +58,7 @@
 :host([is-refreshed-ui_]) .in-dialog-design #avatarContainer {
   --avatar-size: 88px;
   border-radius: 50%;
-  top: 24px;
+  top: 48px;
 }
 
 #avatar {
@@ -130,7 +131,7 @@
 }
 
 :host([is-refreshed-ui_]) #title {
-  margin: 0 0 24px;
+  margin: 24px 0 24px;
 }
 
 #inputTitle {
