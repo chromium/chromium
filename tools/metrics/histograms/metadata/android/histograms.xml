@@ -2437,7 +2437,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.GridTabSwitcher.Animation.TotalDuration.{GridTabSwitcherAnimationType}"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-10-26">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-isochron-team@google.com</owner>
   <summary>
@@ -5796,7 +5796,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.TabContentManager.CaptureThumbnail.{PageType}.Duration"
-    units="ms" expires_after="2026-04-26">
+    units="ms" expires_after="2026-10-26">
   <owner>acondor@chromium.org</owner>
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
