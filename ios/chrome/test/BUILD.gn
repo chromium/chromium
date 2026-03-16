@@ -89,6 +89,7 @@ source_set("test_support") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/common",
+    "//ios/chrome/test/app:test_support",
     "//ios/components/security_interstitials/safe_browsing:test_support",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/additional_features:additional_features_api",
