@@ -2921,8 +2921,19 @@ ScriptPromise<ScrollResult> Element::scrollBy(ScriptState* script_state,
 ScriptPromise<ScrollResult> Element::scrollBy(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) {
+  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
+  if (script_state &&
+      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
+    resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
+  }
+  auto scoped_resolver =
+      std::make_unique<ScopedScrollPromiseResolver>(resolver);
+  ScriptPromise<ScrollResult> promise =
+      resolver ? resolver->Promise() : EmptyPromise();
+
   if (!InActiveDocument()) {
-    return CreateScrollResolvedPromise(script_state);
+    return promise;
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -2934,22 +2945,13 @@ ScriptPromise<ScrollResult> Element::scrollBy(
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
-  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
-  if (script_state &&
-      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
-    resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
-  }
-  auto scoped_resolver =
-      std::make_unique<ScopedScrollPromiseResolver>(resolver);
-
   if (GetDocument().ScrollingElementNoLayout() == this) {
     ScrollFrameBy(scroll_to_options, std::move(scoped_resolver));
   } else {
     ScrollLayoutBoxBy(scroll_to_options, std::move(scoped_resolver));
   }
 
-  return resolver ? resolver->Promise() : EmptyPromise();
+  return promise;
 }
 
 ScriptPromise<ScrollResult> Element::scrollTo(ScriptState* script_state,
