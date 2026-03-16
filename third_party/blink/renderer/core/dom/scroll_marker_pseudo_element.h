@@ -33,6 +33,9 @@ class ScrollMarkerPseudoElement : public PseudoElement {
   void Dispose() final;
   void Trace(Visitor* v) const final;
 
+  void SetHovered(bool hovered) final;
+  void SetActive(bool active) final;
+
   // Focused ::scroll-marker should set :focus-within on its
   // ::scroll-marker-group, its scroll container and all ancestors, but since
   // ::scroll-marker-group is not ancestor of ::scroll-marker in the flat tree,

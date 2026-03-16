@@ -255,6 +255,26 @@ void ScrollMarkerPseudoElement::SetHasFocusWithinUpToAncestor(
       has_focus_within, ancestor, need_snap_container_search);
 }
 
+void ScrollMarkerPseudoElement::SetHovered(bool hovered) {
+  if (hovered == IsHovered()) {
+    return;
+  }
+  PseudoElement::SetHovered(hovered);
+  if (scroll_marker_group_) {
+    scroll_marker_group_->SetHovered(hovered);
+  }
+}
+
+void ScrollMarkerPseudoElement::SetActive(bool active) {
+  if (active == IsActive()) {
+    return;
+  }
+  PseudoElement::SetActive(active);
+  if (scroll_marker_group_) {
+    scroll_marker_group_->SetActive(active);
+  }
+}
+
 void ScrollMarkerPseudoElement::Dispose() {
   SetScrollMarkerGroup(nullptr);
   PseudoElement::Dispose();
