@@ -153,6 +153,7 @@ per-file third_party/libgav1/src=*
 per-file third_party/libipp/libipp=*
 per-file third_party/libjpeg_turbo=*
 per-file third_party/liblouis/src=*
+per-file third_party/libpfm4/src=*
 per-file third_party/libphonenumber/dist=*
 per-file third_party/libprotobuf-mutator/src=*
 per-file third_party/libsrtp=*
