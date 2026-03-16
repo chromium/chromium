@@ -4061,7 +4061,7 @@
     {
       // https://chromestatus.com/feature/5261280285949952
       name: "OverscrollGestures",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "PagePopup",
@@ -6621,4 +6621,3 @@
     },
   ],
 }
-
