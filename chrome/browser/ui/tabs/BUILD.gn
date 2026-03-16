@@ -376,6 +376,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/call_to_action",
+      "//chrome/browser/ui/views/toolbar",
       "//chrome/common:buildflags",
       "//chrome/common:chrome_features",
       "//components/prefs",

@@ -14,6 +14,7 @@
 class Profile;
 class BrowserWindowInterface;
 class TabStripActionContainer;
+class ToolbarView;
 
 namespace tabs {
 
@@ -24,7 +25,8 @@ class GlicActorNudgeController {
  public:
   explicit GlicActorNudgeController(
       BrowserWindowInterface* browser,
-      TabStripActionContainer* tab_strip_action_container);
+      TabStripActionContainer* tab_strip_action_container,
+      ToolbarView* toolbar_view);
   GlicActorNudgeController(const GlicActorNudgeController&) = delete;
   GlicActorNudgeController& operator=(const GlicActorNudgeController& other) =
       delete;
@@ -51,6 +53,9 @@ class GlicActorNudgeController {
   void UpdateNudgeLabelOrRetrigger(std::u16string nudge_label_text,
                                    bool show_bubble);
 
+  // Trigger GlicActor nudge on all views that contain one.
+  void TriggerGlicActorNudgeOnAll(std::u16string nudge_label_text);
+
   // Close the task list bubble if it is visible.
   void CloseBubble();
 
@@ -60,6 +65,7 @@ class GlicActorNudgeController {
   const raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<TabStripActionContainer> tab_strip_action_container_;
+  const raw_ptr<ToolbarView> toolbar_view_;
 
   std::vector<base::CallbackListSubscription>
       actor_nudge_state_change_callback_subscription_;
