@@ -48,14 +48,6 @@ class InlineNodeForTest : public InlineNode {
   std::string Text() const { return Data().text_content.Utf8(); }
   InlineItems& Items() { return MutableData()->items; }
   static InlineItems& Items(InlineNodeData& data) { return data.items; }
-  bool IsNGShapeCacheAllowed(const String& text_content,
-                             const Font* override_font,
-                             const InlineItems& items,
-                             ShapeResultSpacing& spacing) const {
-    return InlineNode::IsNGShapeCacheAllowed(text_content, override_font, items,
-                                             spacing);
-  }
-
   void Append(const String& text, LayoutObject* layout_object) {
     InlineNodeData* data = MutableData();
     unsigned start = data->text_content.length();
@@ -1720,35 +1712,6 @@ TEST_F(InlineNodeTest, FontFeaturesInitial) {
   };
   EXPECT_TRUE(is_initial("initial"));
   EXPECT_FALSE(is_initial("no-kern"));
-}
-
-TEST_F(InlineNodeTest, ShapeCacheMultiItems) {
-  SetupHtml("t", "<div id=t>abc<span>def</span>ghi</div>");
-  InlineNodeForTest node = CreateInlineNode();
-  node.CollectInlines();
-
-  const String& text_content(node.Text().c_str());
-  InlineItems& items = node.Items();
-  EXPECT_EQ(5u, items.size());
-  ShapeResultSpacing spacing(text_content, node.IsSvgText());
-
-  EXPECT_FALSE(
-      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
-}
-
-TEST_F(InlineNodeTest, ShapeCacheSpacingRequired) {
-  SetupHtml("t",
-            "<style>div { letter-spacing: 5px; }</style>"
-            "<div id=t>abc</div>");
-  InlineNodeForTest node = CreateInlineNode();
-  node.CollectInlines();
-
-  const String& text_content(node.Text().c_str());
-  InlineItems& items = node.Items();
-  ShapeResultSpacing spacing(text_content, node.IsSvgText());
-
-  EXPECT_FALSE(
-      node.IsNGShapeCacheAllowed(text_content, nullptr, items, spacing));
 }
 
 // crbug.com/437612643

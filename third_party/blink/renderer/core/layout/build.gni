@@ -766,6 +766,7 @@ blink_core_tests_layout = [
   "inline/inline_cursor_test.cc",
   "inline/inline_items_builder_test.cc",
   "inline/inline_layout_algorithm_test.cc",
+  "inline/inline_node_shape_cache_test.cc",
   "inline/inline_node_test.cc",
   "inline/justification_utils_test.cc",
   "inline/line_break_candidate_test.cc",
