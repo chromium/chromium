@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,9 @@ class PinInfoBarController : public infobars::InfoBarManager::Observer {
   // Callback passed to `BrowserWindowInterface::RegisterBrowserDidClose()`.
   void OnBrowserClosed(BrowserWindowInterface* browser);
 
-  // InfoBarManager::Observer:
+  // infobars::InfoBarManager::Observer:
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
+  void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
   // Shows the pin-to-taskbar infobar on `browser` if `another_infobar_shown` is
   // false and it's appropriate to do so (see `MaybeShowInfoBar()` for
