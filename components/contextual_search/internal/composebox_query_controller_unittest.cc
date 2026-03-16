@@ -283,9 +283,11 @@ class ComposeboxQueryControllerTest
   void WaitForFileUpload(
       const base::UnguessableToken& file_token,
       lens::MimeType mime_type,
-      FileUploadStatus expected_status = FileUploadStatus::kUploadSuccessful,
+      FileUploadStatus expected_status =
+          FileUploadStatus::kUploadSuccessful,
       std::optional<FileUploadErrorType> expected_error_type = std::nullopt,
-      bool expect_suggest_signals_ready = true) {
+      bool expect_suggest_signals_ready = true,
+      bool expect_upload_started = true) {
     FileUploadStatusTuple processing_file_upload_status =
         file_upload_status_future_.Take();
     EXPECT_EQ(file_token, std::get<0>(processing_file_upload_status));
@@ -305,7 +307,8 @@ class ComposeboxQueryControllerTest
                 std::get<3>(processing_suggest_file_upload_status));
     }
 
-    if (expected_status != FileUploadStatus::kValidationFailed) {
+    if (expected_status != FileUploadStatus::kValidationFailed &&
+        expect_upload_started) {
       // For client-side validation failures, the state will never change to
       // kUploadStarted.
       FileUploadStatusTuple upload_started_file_upload_status =
@@ -324,8 +327,11 @@ class ComposeboxQueryControllerTest
     EXPECT_EQ(expected_status, std::get<2>(final_file_upload_status));
     EXPECT_EQ(expected_error_type, std::get<3>(final_file_upload_status));
 
-    if (expected_status == FileUploadStatus::kValidationFailed) {
-      // For client-side validation failures, the file upload request will not
+    if (expected_status == FileUploadStatus::kValidationFailed ||
+        (!expect_upload_started &&
+         expected_status == FileUploadStatus::kUploadFailed)) {
+      // For client-side validation failures or early upload failures
+      // (like failing to fetch cluster info), the file upload request will not
       // be sent.
       EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);
     } else {
@@ -618,6 +624,141 @@ TEST_F(ComposeboxQueryControllerTest,
   // Assert: Validate cluster info request and state changes.
   WaitForClusterInfo(
       /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ClusterInfoFailureFailsActiveUploads) {
+  // Arrange: Simulate an error in the cluster info request.
+  controller().set_next_cluster_info_request_should_return_error(true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow (this also triggers the cluster info
+  // fetch retry under the hood, but doesn't resolve immediately).
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate cluster info request and state changes.
+  // The first fetch fails.
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
+
+  // The active file upload should fail with kServerError since cluster info
+  // couldn't be fetched.
+  WaitForFileUpload(
+      file_token, lens::MimeType::kPdf,
+      /*expected_status=*/FileUploadStatus::kUploadFailed,
+      /*expected_error_type=*/FileUploadErrorType::kServerError,
+      /*expect_suggest_signals_ready=*/false,
+      /*expect_upload_started=*/false);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ClusterInfoFailureRetries) {
+  // Arrange: Simulate errors in the cluster info request.
+  controller().set_next_cluster_info_request_should_return_error(true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  // Assert: Validate cluster info request and state changes.
+  // InitializeIfNeeded sets state to kAwaitingClusterInfoResponse then
+  // kClusterInfoInvalid.
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid,
+      /*fetch_request_count=*/1);
+
+  // Act: Start file uploads to trigger retries.
+  for (int i = 2; i <= 3; ++i) {
+    controller().set_next_cluster_info_request_should_return_error(true);
+    task_environment().FastForwardBy(base::Seconds(10));
+    const base::UnguessableToken file_token = base::UnguessableToken::Create();
+    // StartPdfFileUploadFlow will check if state is kClusterInfoInvalid.
+    // If fewer than 5 retries, it calls FetchClusterInfo, which sets
+    // state to kAwaitingClusterInfoResponse.
+    StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+    // Validate cluster info request retried.
+    WaitForClusterInfo(
+        /*expected_state=*/QueryControllerState::kClusterInfoInvalid,
+        /*fetch_request_count=*/i);
+
+    // Validate the active file upload failed.
+    WaitForFileUpload(
+        file_token, lens::MimeType::kPdf,
+        /*expected_status=*/FileUploadStatus::kUploadFailed,
+        /*expected_error_type=*/FileUploadErrorType::kServerError,
+        /*expect_suggest_signals_ready=*/false,
+        /*expect_upload_started=*/false);
+  }
+
+  // Act: Start another file upload. This time, no fetch should be attempted.
+  // Set the next fetch request to succeed, if it happens.
+  controller().set_next_cluster_info_request_should_return_error(false);
+  const base::UnguessableToken last_file_token =
+      base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(last_file_token, /*file_data=*/std::vector<uint8_t>());
+
+  // Validate the active file upload failed immediately.
+  WaitForFileUpload(
+      last_file_token, lens::MimeType::kPdf,
+      /*expected_status=*/FileUploadStatus::kUploadFailed,
+      /*expected_error_type=*/FileUploadErrorType::kServerError,
+      /*expect_suggest_signals_ready=*/false,
+      /*expect_upload_started=*/false);
+
+  // Assert: The number of fetch requests should still be 3
+  // (kMaxClusterInfoRetries).
+  EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 3);
+}
+
+TEST_F(ComposeboxQueryControllerTest, ClearClusterInfoResetsRetries) {
+  // Arrange: Simulate an error in the cluster info request.
+  controller().set_next_cluster_info_request_should_return_error(true);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid,
+      /*fetch_request_count=*/1);
+
+  // Act: Exhaust retries.
+  for (int i = 2; i <= 3; ++i) {
+    controller().set_next_cluster_info_request_should_return_error(true);
+    task_environment().FastForwardBy(base::Seconds(10));
+    const base::UnguessableToken file_token = base::UnguessableToken::Create();
+    StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+
+    // Validate cluster info request retried.
+    WaitForClusterInfo(
+        /*expected_state=*/QueryControllerState::kClusterInfoInvalid,
+        /*fetch_request_count=*/i);
+
+    // Validate the active file upload failed.
+    WaitForFileUpload(
+        file_token, lens::MimeType::kPdf,
+        /*expected_status=*/FileUploadStatus::kUploadFailed,
+        /*expected_error_type=*/FileUploadErrorType::kServerError,
+        /*expect_suggest_signals_ready=*/false,
+        /*expect_upload_started=*/false);
+  }
+
+  // Clear query controller info.
+  controller().ClearClusterInfo();
+  EXPECT_EQ(QueryControllerState::kOff, controller_state_future_.Take());
+
+  // Arrange: Simulate another error.
+  controller().set_next_cluster_info_request_should_return_error(true);
+
+  // Start the session again.
+  // Since retries were reset, a new fetch should be issued and fail.
+  controller().InitializeIfNeeded();
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo(
+      /*expected_state=*/QueryControllerState::kClusterInfoInvalid,
+      /*fetch_request_count=*/4);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadFileRequestFailure) {
@@ -1183,6 +1324,17 @@ TEST_F(ComposeboxQueryControllerTest,
             std::get<2>(processing_file_upload_status));
   EXPECT_EQ(std::nullopt, std::get<3>(processing_file_upload_status));
 
+  // The active file upload should fail with kServerError since cluster info
+  // couldn't be fetched.
+  FileUploadStatusTuple final_file_upload_status =
+      file_upload_status_future_.Take();
+  EXPECT_EQ(file_token, std::get<0>(final_file_upload_status));
+  EXPECT_EQ(lens::MimeType::kPdf, std::get<1>(final_file_upload_status));
+  EXPECT_EQ(FileUploadStatus::kUploadFailed,
+            std::get<2>(final_file_upload_status));
+  EXPECT_EQ(FileUploadErrorType::kServerError,
+            std::get<3>(final_file_upload_status));
+
   // Assert: file_upload_status_future_ is empty.
   EXPECT_TRUE(file_upload_status_future_.IsEmpty());
 }
@@ -1347,12 +1499,14 @@ TEST_F(ComposeboxQueryControllerTest,
   WaitForFileUpload(file_token, lens::MimeType::kPdf);
 
   // Act: Fast forward time to expire the cluster info.
-  // The default cluster info lifetime is 1 hour.
-  task_environment().FastForwardBy(base::Hours(1) + base::Seconds(1));
+  // The default cluster info lifetime is 30 minutes.
+  task_environment().FastForwardBy(base::Minutes(30) + base::Seconds(1));
 
   // Assert: Validate cluster info request and state changes.
   // The cluster info should be re-fetched.
-  // First, the state becomes kClusterInfoInvalid.
+  // First, the cluster info is cleared (state becomes kOff).
+  EXPECT_EQ(QueryControllerState::kOff, controller_state_future_.Take());
+  // Then, the state becomes kClusterInfoInvalid.
   EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
             controller_state_future_.Take());
   // Then, it starts fetching and becomes kAwaitingClusterInfoResponse.
@@ -1362,7 +1516,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_EQ(QueryControllerState::kClusterInfoReceived,
             controller_state_future_.Take());
 
-  EXPECT_GE(controller().num_cluster_info_fetch_requests_sent(), 2);
+  EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 2);
 
   // Assert: The file should still be in the active files map.
   ASSERT_TRUE(controller().GetFileInfoForTesting(file_token));
