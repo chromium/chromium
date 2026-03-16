@@ -6133,11 +6133,6 @@ inline constexpr char kEnableMediaLinkHelpersName[] = "Media Link Helpers";
 inline constexpr char kEnableMediaLinkHelpersDescription[] =
     "Enable customized per-site media link processing.";
 
-inline constexpr char kEnableCrOSLiveTranslateName[] = "Live Translate CrOS";
-inline constexpr char kEnableCrOSLiveTranslateDescription[] =
-    "Enables the live translate feature on ChromeOS which allows for live "
-    "translation of captions into a target language.";
-
 inline constexpr char kEnableCrOSSodaConchLanguagesName[] =
     "SODA Conch Languages.";
 inline constexpr char kEnableCrOSSodaConchLanguagesDescription[] =

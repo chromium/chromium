@@ -7621,11 +7621,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kHeadlessCaptionEarlyStart)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"enable-chromeos-live-translate",
-     flag_descriptions::kEnableCrOSLiveTranslateName,
-     flag_descriptions::kEnableCrOSLiveTranslateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kLiveTranslate)},
-
     {"enable-chromeos-soda-conch",
      flag_descriptions::kEnableCrOSSodaConchLanguagesName,
      flag_descriptions::kEnableCrOSSodaConchLanguagesDescription, kOsCrOS,

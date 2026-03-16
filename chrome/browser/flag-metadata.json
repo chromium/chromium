@@ -3054,11 +3054,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-chromeos-live-translate",
-    "owners": ["robsc@chromium.org", "amoylan@chromium.org", "zufeng@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-chromeos-soda-conch",
     "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
     "expiry_milestone": 149
