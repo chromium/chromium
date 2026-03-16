@@ -3502,15 +3502,12 @@ TEST_P(CanvasRenderingContext2DTestAcceleratedMultipleDisables,
   EXPECT_FALSE(CanvasElement().IsAccelerated());
 }
 
-class CanvasRenderingContext2DTestImageChromium
+class CanvasRenderingContext2DTestLowLatency
     : public CanvasRenderingContext2DTestAccelerated {
  protected:
-  CanvasRenderingContext2DTestImageChromium()
+  CanvasRenderingContext2DTestLowLatency()
       : CanvasRenderingContext2DTestAccelerated() {
-    // This test relies on overlays being supported and enabled for low latency
-    // canvas.  The latter is true only on ChromeOS in production.
-    feature_list_.InitAndEnableFeature(
-        features::kLowLatencyUsageSupportedForCanvas2D);
+    SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(true);
   }
 
   void ConfigureContextProvider(
@@ -3523,16 +3520,11 @@ class CanvasRenderingContext2DTestImageChromium
     shared_image_caps.supports_scanout_shared_images = true;
     context_provider.SharedImageInterface()->SetCapabilities(shared_image_caps);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestImageChromium);
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestLowLatency);
 
-TEST_P(CanvasRenderingContext2DTestImageChromium, LowLatencyIsSingleBuffered) {
-  SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(true);
-
+TEST_P(CanvasRenderingContext2DTestLowLatency, LowLatencyIsSingleBuffered) {
   CreateContext(kNonOpaque, kLowLatency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
