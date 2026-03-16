@@ -344,7 +344,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/android/messages:java",
       "//chrome/browser/android/metrics:java",
-      "//chrome/browser/android/tinker_tank:delegate_java",
       "//chrome/browser/autofill/android:java",
       "//chrome/browser/auxiliary_search:java",
       "//chrome/browser/auxiliary_search/proto:proto_java",
