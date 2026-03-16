@@ -71,6 +71,7 @@ def check_scripts(commands_to_check: List[TestableScript],
     proc = subprocess.Popen(testable_script.cmd,
                             stdout=out_f,
                             stderr=err_f,
+                            shell=sys.platform == 'win32',
                             cwd=cwd)
     running_processes.append((testable_script, proc, out_f, err_f))
 
