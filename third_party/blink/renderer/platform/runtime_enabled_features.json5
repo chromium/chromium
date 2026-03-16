@@ -1842,11 +1842,6 @@
       status: "stable",
     },
     {
-      // crbug.com/40321528
-      name: "CssTextJustify",
-      status: "stable",
-    },
-    {
       // crbug.com/1463890, crbug.com/1463891: CSS `text-spacing` shorthand
       name: "CSSTextSpacing",
       status: "test",

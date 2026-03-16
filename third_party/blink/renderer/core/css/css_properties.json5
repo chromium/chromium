@@ -6134,7 +6134,6 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       invalidate: ["layout"],
-      runtime_flag: "CssTextJustify",
     },
     {
       name: "text-overflow",

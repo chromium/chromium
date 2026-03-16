@@ -144,12 +144,7 @@ float JustifyResults(ShapeResultSpacing& spacing, InlineItemResults& results) {
         item_result.spacing_before = spacing_before.To<LayoutUnit>();
       } else {
         item_result.inline_size += spacing_before + spacing_after;
-        if (RuntimeEnabledFeatures::CssTextJustifyEnabled()) {
-          item_result.spacing_before = spacing_before.To<LayoutUnit>();
-        } else {
-          // |spacing_before| is non-zero only before CJK characters.
-          DCHECK_EQ(spacing_before, TextRunLayoutUnit());
-        }
+        item_result.spacing_before = spacing_before.To<LayoutUnit>();
       }
     } else if (item_result.IsRubyColumn()) {
       LineInfo& base_line = item_result.ruby_column->base_line;
@@ -166,16 +161,12 @@ float JustifyResults(ShapeResultSpacing& spacing, InlineItemResults& results) {
         last_glyph_spacing = 0;
         [[maybe_unused]] const auto [spacing_before, spacing_after] =
             spacing.ComputeExpansion(method, kBaseShorterRubyMarker);
-        if (RuntimeEnabledFeatures::CssTextJustifyEnabled()) {
-          // A base-shorter ruby following a cursive script character can have
-          // non-zero spacing_before. Currently we just shift the ruby by
-          // spacing_before, and don't change the ruby annotation width.
-          LayoutUnit spacing_before_layout = spacing_before.To<LayoutUnit>();
-          item_result.inline_size += spacing_before_layout;
-          item_result.spacing_before = spacing_before_layout;
-        } else {
-          DCHECK_EQ(spacing_before, TextRunLayoutUnit());
-        }
+        // A base-shorter ruby following a cursive script character can have
+        // non-zero spacing_before. Currently we just shift the ruby by
+        // spacing_before, and don't change the ruby annotation width.
+        LayoutUnit spacing_before_layout = spacing_before.To<LayoutUnit>();
+        item_result.inline_size += spacing_before_layout;
+        item_result.spacing_before = spacing_before_layout;
         // ShapeResultSpacing doesn't ask for adding space to
         // kBaseShorterRubyMarker, which is OBJECT REPLACEMENT CHARACTER, and
         // asks for adding space to the next item instead.
