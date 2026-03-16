@@ -302,18 +302,10 @@ void ComposeboxQueryControllerBridge::GetAimUrlFromInputState(
       CreateSearchUrlRequestInfoFromUrl(std::move(url));
 
   if (input_state_model_) {
-    const omnibox::InputState& state = input_state_model_->GetInputState();
-    auto it = std::find_if(state.tool_configs.begin(), state.tool_configs.end(),
-                           [&](const omnibox::ToolConfig& config) {
-                             return config.tool() == state.active_tool;
-                           });
-    if (it != state.tool_configs.end()) {
-      for (const auto& param : it->aim_url_params()) {
-        DCHECK(!search_url_request_info->additional_params.contains(
-            param.param_key()));
-        search_url_request_info->additional_params[param.param_key()] =
-            param.param_value();
-      }
+    for (const auto& [key, value] :
+         input_state_model_->GetAdditionalQueryParams()) {
+      DCHECK(!search_url_request_info->additional_params.contains(key));
+      search_url_request_info->additional_params[key] = value;
     }
   }
 
