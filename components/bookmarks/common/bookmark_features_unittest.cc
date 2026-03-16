@@ -26,6 +26,11 @@ class BookmarkFeaturesWithEncryptionTest
     return GetParam() == BookmarkEncryptionStage::kWriteBothReadPreferEncrypted;
   }
 
+  bool IsWriteOnlyEncryptedReadPreferEncryptedStage() {
+    return GetParam() ==
+           BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted;
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -46,7 +51,8 @@ TEST_P(BookmarkFeaturesWithEncryptionTest,
 TEST_P(BookmarkFeaturesWithEncryptionTest,
        ShouldUseEncryptedBookmarksAsPrimarySource) {
   EXPECT_EQ(ShouldUseEncryptedBookmarksAsPrimarySource(),
-            IsWriteBothReadPreferEncryptedStage());
+            IsWriteBothReadPreferEncryptedStage() ||
+                IsWriteOnlyEncryptedReadPreferEncryptedStage());
 }
 
 INSTANTIATE_TEST_SUITE_P(

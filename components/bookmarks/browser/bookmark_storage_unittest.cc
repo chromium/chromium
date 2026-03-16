@@ -76,85 +76,136 @@ std::optional<base::DictValue> ReadEncryptedFileToDict(
 
 }  // namespace
 
-TEST(BookmarkStorageTest, ShouldSaveFileToDiskAfterDelay) {
+class BookmarkStorageWithSingleFileTest
+    : public testing::TestWithParam<BookmarkEncryptionStage> {
+ protected:
+  BookmarkStorageWithSingleFileTest()
+      : clear_text_file_path_(GetTestBookmarksFileNameInNewTempDir()),
+        encrypted_file_path_(GetTestEncryptedBookmarksFileNameInNewTempDir()) {
+    test::InitFeaturesForBookmarkTestEncryptionStage(feature_list_, GetParam());
+    if (IsEncryptedFilePrimary()) {
+      encryptor_ = base::MakeRefCounted<
+          base::RefCountedData<const os_crypt_async::Encryptor>>(
+          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+    }
+  }
+
+  bool IsEncryptedFilePrimary() {
+    return GetParam() ==
+           BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted;
+  }
+
+  const base::FilePath& GetPrimaryFilepath() {
+    if (IsEncryptedFilePrimary()) {
+      return encrypted_file_path_;
+    }
+    return clear_text_file_path_;
+  }
+
+  const base::FilePath& GetSecondaryFilepath() {
+    if (IsEncryptedFilePrimary()) {
+      return clear_text_file_path_;
+    }
+    return encrypted_file_path_;
+  }
+
+  std::optional<base::DictValue> GetPrimaryFileContent() {
+    if (IsEncryptedFilePrimary()) {
+      return ReadEncryptedFileToDict(encrypted_file_path_, encryptor_->data);
+    }
+    return ReadFileToDict(clear_text_file_path_);
+  }
+
+  std::string GetHistogramImportantFileSuffix() {
+    if (IsEncryptedFilePrimary()) {
+      return ".BookmarkStorageEncrypted";
+    }
+    return ".BookmarkStorage";
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor_;
+  const base::FilePath clear_text_file_path_;
+  const base::FilePath encrypted_file_path_;
+};
+
+TEST_P(BookmarkStorageWithSingleFileTest, ShouldSaveFileToDiskAfterDelay) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
-
-  const base::FilePath bookmarks_file_path =
-      GetTestBookmarksFileNameInNewTempDir();
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   BookmarkStorage storage(
-      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes,
-      /*encryptor=*/nullptr, bookmarks_file_path,
-      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes, encryptor_,
+      clear_text_file_path_, encrypted_file_path_);
 
   ASSERT_FALSE(storage.HasScheduledSaveForTesting());
-  ASSERT_FALSE(base::PathExists(bookmarks_file_path));
+  ASSERT_FALSE(base::PathExists(GetPrimaryFilepath()));
+  ASSERT_FALSE(base::PathExists(GetSecondaryFilepath()));
 
   storage.ScheduleSave();
   EXPECT_TRUE(storage.HasScheduledSaveForTesting());
-  EXPECT_FALSE(base::PathExists(bookmarks_file_path));
+  EXPECT_FALSE(base::PathExists(GetPrimaryFilepath()));
+  EXPECT_FALSE(base::PathExists(GetSecondaryFilepath()));
 
   // Advance clock until immediately before saving takes place.
   task_environment.FastForwardBy(BookmarkStorage::kSaveDelay -
                                  base::Milliseconds(10));
   EXPECT_TRUE(storage.HasScheduledSaveForTesting());
-  EXPECT_FALSE(base::PathExists(bookmarks_file_path));
+  EXPECT_FALSE(base::PathExists(GetPrimaryFilepath()));
+  EXPECT_FALSE(base::PathExists(GetSecondaryFilepath()));
 
   // Advance clock past the saving moment.
   task_environment.FastForwardBy(base::Milliseconds(20));
   EXPECT_FALSE(storage.HasScheduledSaveForTesting());
-  EXPECT_TRUE(base::PathExists(bookmarks_file_path));
+  EXPECT_TRUE(base::PathExists(GetPrimaryFilepath()));
   histogram_tester.ExpectTotalCount(
       "Bookmarks.Storage.TimeSinceLastScheduledSave", 1);
   histogram_tester.ExpectTotalCount(
-      "ImportantFile.WriteDuration.BookmarkStorage", 1);
+      base::StrCat(
+          {"ImportantFile.WriteDuration", GetHistogramImportantFileSuffix()}),
+      1);
+  EXPECT_FALSE(base::PathExists(GetSecondaryFilepath()));
 }
 
-TEST(BookmarkStorageTest, ShouldSaveFileDespiteShutdownWhileScheduled) {
+TEST_P(BookmarkStorageWithSingleFileTest,
+       ShouldSaveFileDespiteShutdownWhileScheduled) {
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
-
-  const base::FilePath bookmarks_file_path =
-      GetTestBookmarksFileNameInNewTempDir();
-
   {
     base::test::TaskEnvironment task_environment{
         base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-    BookmarkStorage storage(model.get(),
-                            BookmarkStorage::kSelectLocalOrSyncableNodes,
-                            /*encryptor=*/nullptr, bookmarks_file_path,
-                            /*encrypted_file_path=*/
-                            GetTestEncryptedBookmarksFileNameInNewTempDir());
+    BookmarkStorage storage(
+        model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes, encryptor_,
+        clear_text_file_path_, encrypted_file_path_);
 
     storage.ScheduleSave();
     ASSERT_TRUE(storage.HasScheduledSaveForTesting());
-    ASSERT_FALSE(base::PathExists(bookmarks_file_path));
+    ASSERT_FALSE(base::PathExists(GetPrimaryFilepath()));
+    ASSERT_FALSE(base::PathExists(GetSecondaryFilepath()));
   }
 
   // TaskEnvironment and BookmarkStorage both have been destroyed, mimic-ing a
   // browser shutdown.
-  EXPECT_TRUE(base::PathExists(bookmarks_file_path));
+  EXPECT_TRUE(base::PathExists(GetPrimaryFilepath()));
+  EXPECT_FALSE(base::PathExists(GetSecondaryFilepath()));
 }
 
-TEST(BookmarkStorageTest, ShouldGenerateBackupFileUponFirstSave) {
+TEST_P(BookmarkStorageWithSingleFileTest,
+       ShouldGenerateBackupFileUponFirstSave) {
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
-  const base::FilePath bookmarks_file_path =
-      GetTestBookmarksFileNameInNewTempDir();
   const base::FilePath backup_file_path =
-      bookmarks_file_path.ReplaceExtension(FILE_PATH_LITERAL("bak"));
+      GetPrimaryFilepath().ReplaceExtension(FILE_PATH_LITERAL("bak"));
 
   // Create a dummy JSON file, to verify backups are created.
-  ASSERT_TRUE(base::WriteFile(bookmarks_file_path, "{}"));
+  ASSERT_TRUE(base::WriteFile(GetPrimaryFilepath(), "{}"));
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   BookmarkStorage storage(
-      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes,
-      /*encryptor=*/nullptr, bookmarks_file_path,
-      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes, encryptor_,
+      clear_text_file_path_, encrypted_file_path_);
 
   // The backup file should be created upon first save, not earlier.
   task_environment.RunUntilIdle();
@@ -176,22 +227,18 @@ TEST(BookmarkStorageTest, ShouldGenerateBackupFileUponFirstSave) {
   EXPECT_FALSE(base::PathExists(backup_file_path));
 }
 
-TEST(BookmarkStorageTest, RecordTimeSinceLastScheduledSave) {
+TEST_P(BookmarkStorageWithSingleFileTest, RecordTimeSinceLastScheduledSave) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
-
-  const base::FilePath bookmarks_file_path =
-      GetTestBookmarksFileNameInNewTempDir();
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   BookmarkStorage storage(
-      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes,
-      /*encryptor=*/nullptr, bookmarks_file_path,
-      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes, encryptor_,
+      clear_text_file_path_, encrypted_file_path_);
 
   ASSERT_FALSE(storage.HasScheduledSaveForTesting());
-  ASSERT_FALSE(base::PathExists(bookmarks_file_path));
+  ASSERT_FALSE(base::PathExists(GetPrimaryFilepath()));
 
   storage.ScheduleSave();
 
@@ -200,19 +247,19 @@ TEST(BookmarkStorageTest, RecordTimeSinceLastScheduledSave) {
   task_environment.FastForwardBy(delay_ms);
   storage.ScheduleSave();
   EXPECT_TRUE(storage.HasScheduledSaveForTesting());
-  EXPECT_FALSE(base::PathExists(bookmarks_file_path));
+  EXPECT_FALSE(base::PathExists(GetPrimaryFilepath()));
 
   // Advance clock past the saving moment.
   task_environment.FastForwardBy(BookmarkStorage::kSaveDelay + delay_ms);
   EXPECT_FALSE(storage.HasScheduledSaveForTesting());
-  EXPECT_TRUE(base::PathExists(bookmarks_file_path));
+  EXPECT_TRUE(base::PathExists(GetPrimaryFilepath()));
   histogram_tester.ExpectTotalCount(
       "Bookmarks.Storage.TimeSinceLastScheduledSave", 2);
   histogram_tester.ExpectTimeBucketCount(
       "Bookmarks.Storage.TimeSinceLastScheduledSave", delay_ms, 1);
 }
 
-TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
+TEST_P(BookmarkStorageWithSingleFileTest, ShouldSaveAccountNodes) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
@@ -220,60 +267,59 @@ TEST(BookmarkStorageTest, ShouldSaveAccountNodes) {
   model->CreateAccountPermanentFolders();
   ASSERT_NE(nullptr, model->account_bookmark_bar_node());
 
-  const base::FilePath bookmarks_file_path =
-      GetTestBookmarksFileNameInNewTempDir();
   const base::FilePath backup_file_path =
-      bookmarks_file_path.ReplaceExtension(FILE_PATH_LITERAL("bak"));
+      GetPrimaryFilepath().ReplaceExtension(FILE_PATH_LITERAL("bak"));
 
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BookmarkStorage storage(
-      model.get(), BookmarkStorage::kSelectAccountNodes,
-      /*encryptor=*/nullptr, bookmarks_file_path,
-      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
+  BookmarkStorage storage(model.get(), BookmarkStorage::kSelectAccountNodes,
+                          encryptor_, clear_text_file_path_,
+                          encrypted_file_path_);
 
-  ASSERT_FALSE(base::PathExists(bookmarks_file_path));
+  ASSERT_FALSE(base::PathExists(GetPrimaryFilepath()));
   ASSERT_FALSE(base::PathExists(backup_file_path));
 
   storage.ScheduleSave();
   task_environment.FastForwardUntilNoTasksRemain();
 
-  EXPECT_TRUE(base::PathExists(bookmarks_file_path));
+  EXPECT_TRUE(base::PathExists(GetPrimaryFilepath()));
   EXPECT_FALSE(base::PathExists(backup_file_path));
 
-  std::optional<base::DictValue> file_content =
-      ReadFileToDict(bookmarks_file_path);
+  std::optional<base::DictValue> file_content = GetPrimaryFileContent();
   ASSERT_TRUE(file_content.has_value());
   EXPECT_FALSE(file_content->empty());
 }
 
-TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
+TEST_P(BookmarkStorageWithSingleFileTest,
+       ShouldSaveDespiteAccountBookmarksEmpty) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
   ASSERT_EQ(nullptr, model->account_bookmark_bar_node());
 
-  const base::FilePath bookmarks_file_path =
-      GetTestBookmarksFileNameInNewTempDir();
-
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BookmarkStorage storage(
-      model.get(), BookmarkStorage::kSelectAccountNodes,
-      /*encryptor=*/nullptr, bookmarks_file_path,
-      /*encrypted_file_path=*/GetTestEncryptedBookmarksFileNameInNewTempDir());
+  BookmarkStorage storage(model.get(), BookmarkStorage::kSelectAccountNodes,
+                          encryptor_, clear_text_file_path_,
+                          encrypted_file_path_);
 
-  ASSERT_EQ(ReadFileToDict(bookmarks_file_path), std::nullopt);
+  ASSERT_EQ(GetPrimaryFileContent(), std::nullopt);
 
   storage.ScheduleSave();
   task_environment.FastForwardUntilNoTasksRemain();
 
-  std::optional<base::DictValue> file_content =
-      ReadFileToDict(bookmarks_file_path);
+  std::optional<base::DictValue> file_content = GetPrimaryFileContent();
   ASSERT_TRUE(file_content.has_value());
   EXPECT_FALSE(file_content->empty());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    BookmarkStorageWithSingleFileTest,
+    BookmarkStorageWithSingleFileTest,
+    ::testing::Values(
+        BookmarkEncryptionStage::kDisabled,
+        BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted));
 
 class BookmarkStorageWithSecondayFileTest
     : public testing::TestWithParam<BookmarkEncryptionStage> {

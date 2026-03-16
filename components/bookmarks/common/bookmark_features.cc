@@ -41,8 +41,11 @@ BASE_FEATURE(kEncryptBookmarks, base::FEATURE_DISABLED_BY_DEFAULT);
 // encrypted files. The encrypted file is used as the source of truth when
 // loading bookmarks. We'll fall back to the unencrypted file if the encrypted
 // file is missing.
-// TODO(crbug.com/435317726): Support other stages as we implement them:
-// -write & read encrypted only; unencrypted file is deleted.
+// - write_only_encrypted_read_prefer_encrypted: Bookmarks are written in the
+// encrypted file only. The encrypted file is used as the source of truth when
+// loading bookmarks. We'll fall back to the unencrypted file if the encrypted
+// file is missing. After a successful load from the encrypted file, the
+// clear text file is deleted.
 const base::FeatureParam<std::string> kBookmarkEncryptionStageParam{
     &kEncryptBookmarks, "stage", "write_both_read_only_clear"};
 
@@ -51,7 +54,9 @@ constexpr auto kBookmarkEncryptionStageMap =
         {{"write_both_read_only_clear",
           BookmarkEncryptionStage::kWriteBothReadOnlyClear},
          {"write_both_read_prefer_encrypted",
-          BookmarkEncryptionStage::kWriteBothReadPreferEncrypted}});
+          BookmarkEncryptionStage::kWriteBothReadPreferEncrypted},
+         {"write_only_encrypted_read_prefer_encrypted",
+          BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted}});
 
 BookmarkEncryptionStage GetBookmarkEncryptionStage() {
   if (!base::FeatureList::IsEnabled(kEncryptBookmarks)) {
@@ -66,6 +71,7 @@ bool ShouldWriteBookmarksToSecondaryFileOnDisk() {
     case BookmarkEncryptionStage::kWriteBothReadPreferEncrypted:
       return true;
     case BookmarkEncryptionStage::kDisabled:
+    case BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted:
       return false;
   }
   NOTREACHED();
@@ -77,6 +83,7 @@ bool ShouldVerifyBookmarksDataInSecondaryFileOnLoad() {
     case BookmarkEncryptionStage::kWriteBothReadPreferEncrypted:
       return true;
     case BookmarkEncryptionStage::kDisabled:
+    case BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted:
       return false;
   }
   NOTREACHED();
@@ -85,6 +92,7 @@ bool ShouldVerifyBookmarksDataInSecondaryFileOnLoad() {
 bool ShouldUseEncryptedBookmarksAsPrimarySource() {
   switch (GetBookmarkEncryptionStage()) {
     case BookmarkEncryptionStage::kWriteBothReadPreferEncrypted:
+    case BookmarkEncryptionStage::kWriteOnlyEncryptedReadPreferEncrypted:
       return true;
     case BookmarkEncryptionStage::kWriteBothReadOnlyClear:
     case BookmarkEncryptionStage::kDisabled:

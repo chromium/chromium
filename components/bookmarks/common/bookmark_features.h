@@ -52,6 +52,7 @@ enum class BookmarkEncryptionStage {
   kDisabled,
   kWriteBothReadOnlyClear,
   kWriteBothReadPreferEncrypted,
+  kWriteOnlyEncryptedReadPreferEncrypted,
 };
 
 // Return the name of the given bookmark encryption stage that should be used to

@@ -270,7 +270,6 @@ void BookmarkStorage::SaveNowIfScheduled() {
 
 void BookmarkStorage::SaveToSingleFileNow(
     StorageFileEncryptionType encryption_type) {
-  CHECK(ShouldWriteBookmarksToSecondaryFileOnDisk());
   CHECK(encryptor_);
   if (writer_.HasPendingWrite()) {
     // There is a pending write, just wait for it to complete.
