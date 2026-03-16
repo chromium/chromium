@@ -78,8 +78,6 @@ class MessageRetryHandler {
   //     service hasn't yet determined whether a retry is necessary.
   // |retry_callback|: The callback to be executed when retrying the action.
   //     This callback should perform the action that needs to be retried.
-  // |history_sync_enabled|: Whether history sync is enabled for the user.
-  //     This can be used to determine if the retry logic should be triggered.
   // |histogram_name|: The name of the histogram to use for logging retry
   //     outcomes (e.g., "MyFeature.RetryOutcome").
   // |last_update_timestamp_pref|: The name of the preference that stores the

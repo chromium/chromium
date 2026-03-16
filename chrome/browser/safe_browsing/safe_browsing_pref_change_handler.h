@@ -69,6 +69,10 @@ class SafeBrowsingPrefChangeHandler {
 #endif
 
  private:
+  // Returns true if the notification should be suppressed for Tailored
+  // Security.
+  bool SuppressNotificationForTailoredSecurity();
+
   // Member variable to store the Profile*.
   raw_ptr<Profile> profile_;
 
@@ -99,6 +103,8 @@ class SafeBrowsingPrefChangeHandler {
   FRIEND_TEST_ALL_PREFIXES(
       SafeBrowsingPrefChangeHandlerAndroidTest,
       MaybeShowEnhancedProtectionSettingChangeNotificationResetsPref);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingPrefChangeHandlerAndroidTest,
+                           NoRetryAfterTailoredSecuritySync);
 
   // Functions used for testing.
   // Sets the TabModel for testing purposes.

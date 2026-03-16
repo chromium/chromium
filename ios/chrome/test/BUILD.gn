@@ -450,6 +450,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/safari_data_import/model:unit_tests",
     "//ios/chrome/browser/safe_browsing/model:unit_tests",
     "//ios/chrome/browser/safe_browsing/model/tailored_security:unit_tests",
+    "//ios/chrome/browser/safe_browsing/ui_bundled:unit_tests",
     "//ios/chrome/browser/safe_mode/model:unit_tests",
     "//ios/chrome/browser/safe_mode/ui_bundled:unit_tests",
     "//ios/chrome/browser/safety_check/model:unit_tests",

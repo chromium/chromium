@@ -83,6 +83,10 @@ void TailoredSecurityTabHelper::OnSyncNotificationMessageRequest(
     return;
   }
 
+  // When this object goes out of scope, the service's flag will be reset.
+  safe_browsing::TailoredSecurityService::ScopedSyncNotificationGuard guard(
+      *service_);
+
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
   SetSafeBrowsingState(

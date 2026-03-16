@@ -230,6 +230,13 @@ TailoredSecurityService::Request::Request() = default;
 
 TailoredSecurityService::Request::~Request() = default;
 
+TailoredSecurityService::ScopedSyncNotificationGuard::
+    ScopedSyncNotificationGuard(TailoredSecurityService& service)
+    : auto_reset_(&service.is_handling_sync_notification_, true) {}
+
+TailoredSecurityService::ScopedSyncNotificationGuard::
+    ~ScopedSyncNotificationGuard() = default;
+
 TailoredSecurityService::TailoredSecurityService(
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
@@ -557,6 +564,25 @@ void TailoredSecurityService::SetCanQuery(bool can_query) {
   } else {
     timer_.Stop();
   }
+}
+
+// static
+bool TailoredSecurityService::IsResponsibleForNotification(
+    PrefService* prefs,
+    TailoredSecurityService* service) {
+  if (service && service->is_handling_sync_notification()) {
+    return true;
+  }
+
+  bool is_enhanced_enabled = IsEnhancedProtectionEnabled(*prefs);
+  if (is_enhanced_enabled &&
+      prefs->GetBoolean(prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
+    // The TailoredSecurityService was responsible for enabling enhanced
+    // protection and will show its own UI.
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace safe_browsing

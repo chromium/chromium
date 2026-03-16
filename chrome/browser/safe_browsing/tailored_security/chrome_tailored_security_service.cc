@@ -118,6 +118,8 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
   base::UmaHistogramBoolean("SafeBrowsing.TailoredSecurity.IsRecoveryTriggered",
                             kRetryMechanismNotTriggered);
 
+  TailoredSecurityService::ScopedSyncNotificationGuard guard(*this);
+
   // Since the Android UX is a notice, we simply set Safe Browsing state.
   SetSafeBrowsingState(profile_->GetPrefs(),
                        is_enabled ? SafeBrowsingState::ENHANCED_PROTECTION
@@ -145,6 +147,8 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
     }
     return;
   }
+  TailoredSecurityService::ScopedSyncNotificationGuard guard(*this);
+
   // TODO(crbug.com/483786422): Register preference change handlers in each
   // relevant generated.*pref class that acts whenever the settings bundle
   // setting changes.

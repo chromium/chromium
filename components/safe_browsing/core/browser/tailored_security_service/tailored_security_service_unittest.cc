@@ -784,6 +784,37 @@ TEST_P(TailoredSecurityServiceCallbackTest, RunsCallbackWithCorrectValue) {
   }
 }
 
+TEST_F(TailoredSecurityServiceTest, InitialSyncStateIsFalse) {
+  EXPECT_FALSE(tailored_security_service()->is_handling_sync_notification());
+}
+
+TEST_F(TailoredSecurityServiceTest, ScopedSyncGuardSetsAndResetsState) {
+  EXPECT_FALSE(tailored_security_service()->is_handling_sync_notification());
+  {
+    TailoredSecurityService::ScopedSyncNotificationGuard guard(
+        *tailored_security_service());
+    EXPECT_TRUE(tailored_security_service()->is_handling_sync_notification());
+  }
+  EXPECT_FALSE(tailored_security_service()->is_handling_sync_notification());
+}
+
+TEST_F(TailoredSecurityServiceTest, NestedScopedSyncGuards) {
+  EXPECT_FALSE(tailored_security_service()->is_handling_sync_notification());
+  {
+    TailoredSecurityService::ScopedSyncNotificationGuard guard_1(
+        *tailored_security_service());
+    EXPECT_TRUE(tailored_security_service()->is_handling_sync_notification());
+    {
+      TailoredSecurityService::ScopedSyncNotificationGuard guard_2(
+          *tailored_security_service());
+      EXPECT_TRUE(tailored_security_service()->is_handling_sync_notification());
+    }
+    // With base::AutoReset, the state should still be true here.
+    EXPECT_TRUE(tailored_security_service()->is_handling_sync_notification());
+  }
+  EXPECT_FALSE(tailored_security_service()->is_handling_sync_notification());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     TailoredSecurityServiceCallbackTest,

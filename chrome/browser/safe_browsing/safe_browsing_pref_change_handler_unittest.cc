@@ -6,10 +6,12 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/base/features.h"
@@ -21,6 +23,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
+
+class MockTailoredSecurityService : public TailoredSecurityService {
+ public:
+  MockTailoredSecurityService()
+      : TailoredSecurityService(nullptr, nullptr, nullptr) {}
+  ~MockTailoredSecurityService() override = default;
+
+  MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
+              GetURLLoaderFactory,
+              (),
+              (override));
+};
 
 class MockToastController : public ToastController {
  public:
@@ -45,6 +59,13 @@ class SafeBrowsingPrefChangeHandlerTest : public BrowserWithTestWindowTest {
           return test_sync_service;
         }));
 
+    TailoredSecurityServiceFactory::GetInstance()->SetTestingFactory(
+        profile(), base::BindRepeating([](content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+          return std::make_unique<
+              testing::NiceMock<MockTailoredSecurityService>>();
+        }));
+
     handler_ = std::make_unique<SafeBrowsingPrefChangeHandler>(profile());
 
     ON_CALL(toast_controller_, MaybeShowToast(testing::_))
@@ -62,6 +83,11 @@ class SafeBrowsingPrefChangeHandlerTest : public BrowserWithTestWindowTest {
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetForProfile(profile()));
+  }
+
+  MockTailoredSecurityService* tailored_security_service() {
+    return static_cast<MockTailoredSecurityService*>(
+        TailoredSecurityServiceFactory::GetForProfile(profile()));
   }
 
   void SetSignedIn() {
@@ -117,12 +143,12 @@ TEST_F(SafeBrowsingPrefChangeHandlerTest,
   handler_->MaybeShowEnhancedProtectionSettingChangeNotification();
 }
 
+// This test simulates a scenario where a user enables ESB on a different
+// device, and then signs into a new device for the first time. In this case,
+// we don't want to show the toast because the Tailored Security flow hasn't
+// run locally yet.
 TEST_F(SafeBrowsingPrefChangeHandlerTest,
        ToastSuppressedForStalePrefOnInitialSync) {
-  // This test simulates a scenario where a user enables ESB on a different
-  // device, and then signs into a new device for the first time. In this case,
-  // we don't want to show the toast because the user has not yet had a chance
-  // to go through the Tailored Security flow on this device.
   SetSignedIn();
   profile()->GetTestingPrefService()->SetTime(
       prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time());
@@ -152,16 +178,35 @@ TEST_F(SafeBrowsingPrefChangeHandlerTest,
   profile()->GetTestingPrefService()->SetTime(
       prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time::Now());
 
-  // Mock the account level integration values.
+  // Simulate enabling ESB through a tailored security service update.
+  TailoredSecurityService::ScopedSyncNotificationGuard guard(
+      *tailored_security_service());
+  ASSERT_TRUE(tailored_security_service()->is_handling_sync_notification());
   profile()->GetTestingPrefService()->SetUserPref(
       prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
-  profile()->GetTestingPrefService()->SetUserPref(
-      prefs::kEnhancedProtectionEnabledViaTailoredSecurity,
-      std::make_unique<base::Value>(true));
 
   // We do not show the toast when it's enabled through tailored security
   // service.
   EXPECT_CALL(toast_controller_, MaybeShowToast(testing::_)).Times(0);
+
+  handler_->MaybeShowEnhancedProtectionSettingChangeNotification();
+}
+
+TEST_F(SafeBrowsingPrefChangeHandlerTest,
+       ToastShownForNonTailoredSecurityChange) {
+  // Verify the toast is shown when the pref change is NOT from an active
+  // Tailored Security update.
+  SetSignedIn();
+  profile()->GetTestingPrefService()->SetTime(
+      prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time::Now());
+
+  ASSERT_FALSE(tailored_security_service()->is_handling_sync_notification());
+
+  profile()->GetTestingPrefService()->SetUserPref(
+      prefs::kSafeBrowsingEnhanced, std::make_unique<base::Value>(true));
+
+  // We expect 1 call because we are NOT suppressed.
+  EXPECT_CALL(toast_controller_, MaybeShowToast(testing::_)).Times(1);
 
   handler_->MaybeShowEnhancedProtectionSettingChangeNotification();
 }

@@ -6,8 +6,10 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/base/features.h"
@@ -59,6 +61,13 @@ SafeBrowsingPrefChangeHandler::~SafeBrowsingPrefChangeHandler() {
 #endif
 }
 
+bool SafeBrowsingPrefChangeHandler::SuppressNotificationForTailoredSecurity() {
+  TailoredSecurityService* tailored_security_service =
+      TailoredSecurityServiceFactory::GetForProfile(profile_);
+  return TailoredSecurityService::IsResponsibleForNotification(
+      profile_->GetPrefs(), tailored_security_service);
+}
+
 // TODO(crbug.com/378888301): Add tests for Chrome Toast and Android modal
 // logic.
 void SafeBrowsingPrefChangeHandler::
@@ -93,6 +102,10 @@ void SafeBrowsingPrefChangeHandler::
         return;
       }
     }
+  }
+
+  if (SuppressNotificationForTailoredSecurity()) {
+    return;
   }
 
   // Do not show a notification toast if the setting is managed by enterprise
@@ -131,14 +144,6 @@ void SafeBrowsingPrefChangeHandler::
   // Extract the enhanced protection pref value.
   bool is_enhanced_enabled = IsEnhancedProtectionEnabled(*profile_->GetPrefs());
 
-  if (is_enhanced_enabled &&
-      profile_->GetPrefs()->GetBoolean(
-          prefs::kEnhancedProtectionEnabledViaTailoredSecurity)) {
-    // The TailoredSecurityService just ran and showed its modal. Suppress this
-    // toast.
-    return;
-  }
-
   // The enhanced protection setting has been updated. To reflect this
   // change, we will show toasts to the user, taking into account both the
   // new setting value and whether they are currently on the settings page.
@@ -165,6 +170,17 @@ void SafeBrowsingPrefChangeHandler::
       !profile_) {
     return;
   }
+
+  if (SuppressNotificationForTailoredSecurity()) {
+    // If enhanced protection was enabled via Tailored Security, we don't need
+    // to retry the synced ESB notification.
+    if (retry_handler_) {
+      retry_handler_->SaveRetryState(
+          MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
+    }
+    return;
+  }
+
   content::WebContents* web_contents = nullptr;
   for (const TabModel* tab_model : TabModelList::models()) {
     if (tab_model->GetProfile() != profile_) {
@@ -209,7 +225,7 @@ void SafeBrowsingPrefChangeHandler::
           MessageRetryHandler::RetryState::NO_RETRY_NEEDED);
       return;
     }
-    // Extract the enhanced protection pref value.
+
     bool is_enhanced_enabled =
         IsEnhancedProtectionEnabled(*profile_->GetPrefs());
     message_ = std::make_unique<TailoredSecurityConsentedModalAndroid>(

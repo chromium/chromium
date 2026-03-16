@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -84,6 +85,31 @@ class TailoredSecurityService : public KeyedService {
 
   using CompletionCallback = base::OnceCallback<void(Request*, bool success)>;
 
+  // RAII helper to manage the `is_handling_sync_notification_` flag. This is
+  // used to indicate that the service is in the middle of a Tailored Security
+  // flow. When this flag is set, generic Safe Browsing preference change
+  // notifications should be suppressed to avoid showing redundant or confusing
+  // UI.
+  class [[nodiscard]] ScopedSyncNotificationGuard {
+   public:
+    explicit ScopedSyncNotificationGuard(TailoredSecurityService& service);
+    ~ScopedSyncNotificationGuard();
+
+    ScopedSyncNotificationGuard(const ScopedSyncNotificationGuard&) = delete;
+    ScopedSyncNotificationGuard& operator=(const ScopedSyncNotificationGuard&) =
+        delete;
+
+   private:
+    base::AutoReset<bool> auto_reset_;
+  };
+
+  // Returns true if the Tailored Security Service is responsible for showing
+  // a notification for the current preference change. If this returns true,
+  // generic pref change notifications should be suppressed to avoid showing
+  // redundant or confusing UI.
+  static bool IsResponsibleForNotification(PrefService* prefs,
+                                           TailoredSecurityService* service);
+
   TailoredSecurityService(signin::IdentityManager* identity_manager,
                           syncer::SyncService* sync_service,
                           PrefService* prefs);
@@ -91,6 +117,11 @@ class TailoredSecurityService : public KeyedService {
 
   void AddObserver(TailoredSecurityServiceObserver* observer);
   void RemoveObserver(TailoredSecurityServiceObserver* observer);
+
+  // Returns true if the service is currently handling a sync notification.
+  bool is_handling_sync_notification() const {
+    return is_handling_sync_notification_;
+  }
 
   // Called to increment/decrement |active_query_request_|. When
   // |active_query_request_| goes from zero to nonzero, we begin querying the
@@ -223,6 +254,11 @@ class TailoredSecurityService : public KeyedService {
 
   // The preferences for the given profile.
   raw_ptr<PrefService> prefs_;
+
+  // Set during the Tailored Security flow to suppress redundant generic
+  // pref change notifications. See `ScopedSyncNotificationGuard` for details
+  // on how this is managed.
+  bool is_handling_sync_notification_ = false;
 
   // This is used to observe when sync users update their Tailored Security
   // setting.
