@@ -1311,7 +1311,8 @@ void AutofillAgent::TriggerSuggestions(
   if (trigger_source ==
           AutofillSuggestionTriggerSource::kComposeDialogLostFocus ||
       trigger_source ==
-          AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge) {
+          AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge ||
+      trigger_source == AutofillSuggestionTriggerSource::kAtMemoryContextMenu) {
     if (WebElement content_editable =
             form_util::GetContentEditableByRendererId(field_id)) {
       ShowSuggestionsForContentEditable(content_editable, trigger_source);

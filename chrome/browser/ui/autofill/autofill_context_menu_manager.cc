@@ -85,15 +85,18 @@ const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kEmailIcon;
 #endif
 
 bool ShouldShowAutofillContextMenu(const content::ContextMenuParams& params) {
+  if (params.is_content_editable_for_autofill) {
+    return true;
+  }
   if (!params.form_control_type) {
     return false;
   }
   // Return true (only) on text fields.
   //
   // Note that this switch is over `blink::mojom::FormControlType`, not
-  // `autofill::FormControlType`. Therefore, it does not handle
-  // `autofill::FormControlType::kContentEditable`, which is covered by the
-  // above if-condition `!params.form_control_type`.
+  // `autofill::FormControlType`. Standard form controls are handled by this
+  // switch, while `contenteditable` elements are handled by the
+  // `is_content_editable_for_autofill` check above.
   //
   // TODO(crbug.com/40285492): Unify with functions from form_autofill_util.cc.
   switch (*params.form_control_type) {
@@ -207,6 +210,11 @@ AutofillContextMenuManager::AutofillContextMenuManager(
 AutofillContextMenuManager::~AutofillContextMenuManager() = default;
 
 void AutofillContextMenuManager::AppendItems() {
+  if (params_.is_content_editable_for_autofill) {
+    MaybeAddAutofillAtMemoryItem();
+    return;
+  }
+
   MaybeAddAutofillManualFallbackItems();
   MaybeAddAutofillAtMemoryItem();
   MaybeAddAutofillFeedbackItem();
