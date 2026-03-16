@@ -36,6 +36,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/pdf/common/constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -625,12 +626,10 @@ bool GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(Profile* profile) {
          base::FeatureList::IsEnabled(features::kGlicTrustFirstOnboarding);
 }
 
-bool GlicEnabling::ShouldBypassFreUi(
-    Profile* profile,
-    mojom::InvocationSource invocation_source) {
-  return invocation_source == mojom::InvocationSource::kAutoOpenedForPdf &&
-         base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf) &&
-         !HasConsentedForProfile(profile);
+bool GlicEnabling::ShouldBypassFreUi(Profile* profile,
+                                     content::WebContents* web_contents) {
+  return web_contents->GetContentsMimeType() == pdf::kPDFMimeType &&
+         IsAutoOpenForPdfEnabled(profile) && !HasConsentedForProfile(profile);
 }
 
 bool GlicEnabling::IsAutoOpenForPdfEnabled(Profile* profile) {

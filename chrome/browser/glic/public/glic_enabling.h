@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 
 class Profile;
 class ProfileAttributesStorage;
@@ -158,7 +159,7 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   // Returns true if the FRE UI (standard FRE or Trust-First Onboarding) should
   // be bypassed for certain invocation sources for unconsented users.
   static bool ShouldBypassFreUi(Profile* profile,
-                                mojom::InvocationSource invocation_source);
+                                content::WebContents* web_contents);
 
   // Whether the auto open for pdf flow is enabled.
   static bool IsAutoOpenForPdfEnabled(Profile* profile);
