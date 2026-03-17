@@ -661,10 +661,10 @@ void Proofreader::OnLabelComplete(
     return;
   }
 
-  // Default correction type
+  // Set default correction type.
   String label = "Grammar";
 
-  // Parse the label from the response of the format {"label": "label0"}
+  // Parse the label from the response of the format {"label": "label0"}.
   RE2 pattern("{\"label\":\\s*\"([^\"]+)\"}");
   StringUtf8Adaptor adaptor(model_response);
   std::string_view response = adaptor.AsStringView();
@@ -672,8 +672,8 @@ void Proofreader::OnLabelComplete(
   if (RE2::FullMatch(response, pattern, &label_value)) {
     label = String::FromUTF8(label_value);
   }
-  result->corrections()[correction_index]->setType(
-      GetV8CorrectionTypeFromString(label));
+  result->corrections()[correction_index]->setTypes(
+      {GetV8CorrectionTypeFromString(label)});
 
   uint32_t next_index = correction_index + 1;
 
