@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/audio/delay.h"
-
 #include <xmmintrin.h>
 
 #include <array>
 
+#include "base/bit_cast.h"
 #include "base/compiler_specific.h"
+#include "third_party/blink/renderer/platform/audio/delay.h"
 
 namespace blink {
 
@@ -109,14 +109,14 @@ std::tuple<size_t, size_t> Delay::ProcessARateVector(
     const __m128 interpolation_factor =
         _mm_sub_ps(v_read_position, _mm_cvtepi32_ps(v_read_index1));
 
-    const uint32_t* read_index1 =
-        reinterpret_cast<const uint32_t*>(&v_read_index1);
-    const uint32_t* read_index2 =
-        reinterpret_cast<const uint32_t*>(&v_read_index2);
+    const std::array<uint32_t, 4> read_index1 =
+        base::bit_cast<std::array<uint32_t, 4>>(v_read_index1);
+    const std::array<uint32_t, 4> read_index2 =
+        base::bit_cast<std::array<uint32_t, 4>>(v_read_index2);
 
     for (int m = 0; m < 4; ++m) {
-      sample1[m] = buffer_[UNSAFE_TODO(read_index1[m])];
-      sample2[m] = buffer_[UNSAFE_TODO(read_index2[m])];
+      sample1[m] = buffer_[read_index1[m]];
+      sample2[m] = buffer_[read_index2[m]];
     }
 
     const __m128 v_sample1 = _mm_load_ps(sample1.data());
