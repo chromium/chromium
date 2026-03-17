@@ -3,7 +3,6 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Writes a .build_config.json file.
 
 This script collects information about a target and all of its transitive
@@ -12,7 +11,6 @@ steps. It also performs a few validations.
 
 See //build/android/docs/build_config.md for more information.
 """
-
 
 import argparse
 import itertools
@@ -54,6 +52,7 @@ class OrderedSet(dict):
 
 class AndroidManifest:
   """Helper class to inspect properties of an AndroidManifest.xml file."""
+
   def __init__(self, path):
     self.path = path
     dom = xml.dom.minidom.parse(path)
@@ -75,9 +74,8 @@ class AndroidManifest:
       instrumented_package = instr.getAttributeNS(
           'http://schemas.android.com/apk/res/android', 'targetPackage')
       if instrumented_package != expected_package:
-        raise Exception(
-            'Wrong instrumented package. Expected %s, got %s'
-            % (expected_package, instrumented_package))
+        raise Exception('Wrong instrumented package. Expected %s, got %s' %
+                        (expected_package, instrumented_package))
 
   def GetPackageName(self):
     return self.manifest.getAttribute('package')
