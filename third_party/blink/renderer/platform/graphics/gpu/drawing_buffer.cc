@@ -280,11 +280,13 @@ DrawingBuffer::DrawingBuffer(
                                 : kOpaque_SkAlphaType),
       requested_format_(want_alpha_channel ? GL_RGBA8 : GL_RGB8),
       context_info_(context_info),
+#if BUILDFLAG(IS_WIN)
       using_swap_chain_(ContextProvider()
                             ->SharedImageInterface()
                             ->GetCapabilities()
                             .shared_image_swap_chain &&
                         desynchronized),
+#endif
       low_latency_enabled_(desynchronized),
       want_depth_(want_depth),
       want_stencil_(want_stencil),
@@ -926,11 +928,13 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
 
   auto webgl_preferences = ContextProvider()->GetWebglPreferences();
 
+  bool supports_implicit_resolve = extensions_util_->SupportsExtension(
+      "GL_EXT_multisampled_render_to_texture");
+#if BUILDFLAG(IS_WIN)
   // We can't use anything other than explicit resolve for swap chain, as the
   // D3D11 texture backing the back buffer is single-sampled.
-  bool supports_implicit_resolve =
-      !using_swap_chain_ && extensions_util_->SupportsExtension(
-                                "GL_EXT_multisampled_render_to_texture");
+  supports_implicit_resolve = supports_implicit_resolve && !using_swap_chain_;
+#endif
 
   const auto& gpu_feature_info = ContextProvider()->GetGpuFeatureInfo();
   // With graphite, Skia is not using ANGLE, so ANGLE will never be able to know
@@ -1992,10 +1996,12 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
 #endif  // BUILDFLAG(IS_MAC)
 
   SkAlphaType back_buffer_alpha_type = kPremul_SkAlphaType;
+#if BUILDFLAG(IS_WIN)
   if (using_swap_chain_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
   } else {
+#endif
     // First see if creating a SharedImage that can be used as an overlay is
     // feasible.
     bool use_as_overlay = false;
@@ -2060,7 +2066,9 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
         !usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
       back_buffer_alpha_type = kUnpremul_SkAlphaType;
     }
+#if BUILDFLAG(IS_WIN)
   }
+#endif
 
   back_buffer_shared_image = sii->CreateSharedImage(
       {color_buffer_format_, size, color_space_, origin, back_buffer_alpha_type,

@@ -29,7 +29,9 @@ bool StructTraits<gpu::mojom::SharedImageCapabilitiesDataView,
   out->disable_one_component_textures = data.disable_one_component_textures();
 
   out->shared_image_d3d = data.shared_image_d3d();
+#if BUILDFLAG(IS_WIN)
   out->shared_image_swap_chain = data.shared_image_swap_chain();
+#endif
 
 #if BUILDFLAG(IS_MAC)
   out->texture_target_for_io_surfaces = data.texture_target_for_io_surfaces();

@@ -107,7 +107,9 @@ class CanvasResourceProviderTest : public Test {
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
+#if BUILDFLAG(IS_WIN)
     shared_image_caps.shared_image_swap_chain = true;
+#endif
     test_context_provider_->SharedImageInterface()->SetCapabilities(
         shared_image_caps);
 

@@ -74,10 +74,12 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return input.shared_image_d3d;
   }
 
+#if BUILDFLAG(IS_WIN)
   static bool shared_image_swap_chain(
       const gpu::SharedImageCapabilities& input) {
     return input.shared_image_swap_chain;
   }
+#endif
 
 #if BUILDFLAG(IS_MAC)
   static uint32_t texture_target_for_io_surfaces(

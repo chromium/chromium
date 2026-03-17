@@ -415,6 +415,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
     return false;
   }
 
+#if BUILDFLAG(IS_WIN)
   // Swapchain-backed SharedImages always support low-latency usages.
   bool can_use_swapchain = ContextProviderWrapper()
                                ->ContextProvider()
@@ -424,6 +425,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
   if (can_use_swapchain) {
     return true;
   }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Low-latency usage on Android is possible only with SurfaceControl.

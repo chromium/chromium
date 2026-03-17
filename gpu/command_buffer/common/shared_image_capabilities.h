@@ -36,7 +36,9 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageCapabilities {
   bool disable_one_component_textures = false;
 
   bool shared_image_d3d = false;
+#if BUILDFLAG(IS_WIN)
   bool shared_image_swap_chain = false;
+#endif
 
 #if BUILDFLAG(IS_MAC)
   uint32_t texture_target_for_io_surfaces = 0;

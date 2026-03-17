@@ -21,6 +21,7 @@ struct SharedImageCapabilities {
   bool disable_one_component_textures;
 
   bool shared_image_d3d;
+  [EnableIf=is_win]
   bool shared_image_swap_chain;
 
   [EnableIf=is_mac]
