@@ -12,7 +12,7 @@ This is a testharness.js-based test.
 [FAIL] Testing 'flood-color'.
   assert_equals: Default value. expected "" but got "rgb(0, 0, 0)"
 [FAIL] Testing 'font-family'.
-  assert_equals: Default value. expected "Times New Roman" but got "\\"times new roman\\""
+  assert_equals: Default value. expected "Times New Roman" but got "times new roman"
 [FAIL] Testing 'glyph-orientation-horizontal'.
   assert_equals: Default value. expected "0deg" but got ""
 [FAIL] Testing 'glyph-orientation-vertical'.

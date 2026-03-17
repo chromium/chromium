@@ -167,7 +167,7 @@ FontFace* FontFace::Create(ExecutionContext* context,
                            const FontFaceDescriptors* descriptors) {
   FontFace* font_face =
       MakeGarbageCollected<FontFace>(context, family, descriptors);
-  font_face->SetIsInvalidFontFamilyIfNeeded(family);
+  font_face->SetFontFamilyNeedsQuoting(family);
 
   const CSSValue* src = ParseCSSValue(context, source, AtRuleDescriptorID::Src);
   if (!src || !src->IsValueList()) {
@@ -291,8 +291,8 @@ FontFace::FontFace(ExecutionContext* context,
 FontFace::~FontFace() = default;
 
 AtomicString FontFace::family() const {
-  return is_invalid_font_family_ ? AtomicString(SerializeFontFamily(family_))
-                                 : family_;
+  return font_family_needs_quoting_ ? AtomicString(SerializeFontFamily(family_))
+                                    : family_;
 }
 
 String FontFace::style() const {
@@ -551,8 +551,9 @@ void FontFace::SetFamilyValue(const CSSFontFamilyValue& family_value) {
   family_ = family_value.Value();
 }
 
-void FontFace::SetIsInvalidFontFamilyIfNeeded(const AtomicString& family_name) {
-  is_invalid_font_family_ = css_parsing_utils::IsInvalidFontFamily(family_name);
+void FontFace::SetFontFamilyNeedsQuoting(const AtomicString& family_name) {
+  font_family_needs_quoting_ =
+      css_parsing_utils::FontFamilyNeedsQuoting(family_name);
 }
 
 V8FontFaceLoadStatus FontFace::status() const {

@@ -1518,6 +1518,13 @@
       name: "CssFitWidthTextReshaping",
     },
     {
+      // crbug.com/483689942
+      // Serialize font-family names as space-separated idents when possible,
+      // per CSSWG resolution. See https://github.com/w3c/csswg-drafts/issues/5846.
+      name: "CSSFontFamilySerialization",
+      status: "stable",
+    },
+    {
       name: "CSSFontSizeAdjust",
       status: "stable",
     },

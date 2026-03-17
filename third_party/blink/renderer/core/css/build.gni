@@ -871,6 +871,7 @@ blink_core_tests_css = [
   "css_image_value_test.cc",
   "css_invalid_variable_value_test.cc",
   "css_light_dark_value_pair_test.cc",
+  "css_markup_test.cc",
   "css_math_expression_node_test.cc",
   "css_page_rule_test.cc",
   "css_paint_value_test.cc",

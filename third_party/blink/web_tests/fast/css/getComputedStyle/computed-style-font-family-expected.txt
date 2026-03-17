@@ -1,6 +1,6 @@
 Font attributes. The font-family should list three families:
 
-font-family: monospace, "Lucida Grande", sans-serif;
+font-family: monospace, Lucida Grande, sans-serif;
 font-feature-settings: normal;
 font-kerning: auto;
 font-language-override: normal;

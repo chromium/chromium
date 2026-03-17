@@ -10,7 +10,7 @@ wrapperDiv.innerHTML =
 '<div id="cursiveDiv" style="font-family: cursive;">should be cursive</div>' +
 '</div>';
 
-shouldBeEqualToString("window.getComputedStyle(outerDiv, null).fontFamily", '"courier new", cursive');
+shouldBeEqualToString("window.getComputedStyle(outerDiv, null).fontFamily", "courier new, cursive");
 shouldBeEqualToString("window.getComputedStyle(timesDiv, null).fontFamily", "foo");
 shouldBeEqualToString("window.getComputedStyle(cursiveDiv, null).fontFamily", "cursive");
 

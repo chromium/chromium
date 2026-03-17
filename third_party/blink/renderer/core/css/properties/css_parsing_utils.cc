@@ -4147,11 +4147,21 @@ bool IsCSSWideKeyword(StringView keyword) {
   // This function should match the overload before it.
 }
 
-bool IsInvalidFontFamily(const AtomicString& string) {
+bool FontFamilyNeedsQuoting(const AtomicString& string) {
+  // Returns true if the font family name must be quoted when serialized.
+  // Names that are CSS-wide keywords, 'default', generic families, or not
+  // valid CSS identifiers need quoting.
+  // When CSSFontFamilySerialization is enabled, use the ident-sequence
+  // check so that multi-word family names like "Twisty Tie" serialize as
+  // unquoted space-separated idents per w3c/csswg-drafts#5846.
+  bool can_serialize_unquoted =
+      RuntimeEnabledFeatures::CSSFontFamilySerializationEnabled()
+          ? IsCSSTokenizerIdentSequence(string)
+          : IsCSSTokenizerIdentifier(string);
   return (IsCSSWideKeyword(string) || IsDefaultKeyword(string) ||
           FontFamily::InferredTypeFor(string) ==
               FontFamily::Type::kGenericFamily ||
-          !IsCSSTokenizerIdentifier(string));
+          !can_serialize_unquoted);
 }
 
 // https://drafts.csswg.org/css-cascade/#default

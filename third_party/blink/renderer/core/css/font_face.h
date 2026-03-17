@@ -207,7 +207,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
   void SetFamilyValue(const CSSFontFamilyValue&);
-  void SetIsInvalidFontFamilyIfNeeded(const AtomicString&);
+  void SetFontFamilyNeedsQuoting(const AtomicString&);
   ScriptPromise<FontFace> FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
@@ -215,7 +215,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   HeapVector<Member<LoadFontCallback>> callbacks_;
   AtomicString family_;
-  bool is_invalid_font_family_;
+  bool font_family_needs_quoting_;
   String ots_parse_message_;
   Member<const CSSValue> style_;
   Member<const CSSValue> weight_;

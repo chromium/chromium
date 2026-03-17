@@ -32,5 +32,5 @@ font-weight: normal
 font-stretch: normal
 font-size: 24px
 line-height: normal
-font-family: "Lucida Grande"
+font-family: Lucida Grande
 

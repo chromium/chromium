@@ -10,20 +10,20 @@
 rule = document.styleSheets[0].cssRules[0];
 
 test(function() {
-  assert_equals(rule.style.getPropertyValue('font-family'), '"Foo Bar"');
+  assert_equals(rule.style.getPropertyValue('font-family'), 'Foo Bar');
   rule.style.setProperty('font-family', rule.style.getPropertyValue('font-family'));
-  assert_equals(rule.style.getPropertyValue('font-family'), '"Foo Bar"');
+  assert_equals(rule.style.getPropertyValue('font-family'), 'Foo Bar');
   rule.style.fontFamily = rule.style.fontFamily;
-  assert_equals(rule.style.getPropertyValue('font-family'), '"Foo Bar"');
+  assert_equals(rule.style.getPropertyValue('font-family'), 'Foo Bar');
   rule.style['font-family'] = rule.style['font-family'];
-  assert_equals(rule.style.getPropertyValue('font-family'), '"Foo Bar"');
+  assert_equals(rule.style.getPropertyValue('font-family'), 'Foo Bar');
 }, 'Should be parsed using font-face descriptor parsing rules and accepted.');
 
 test(function() {
   rule.style.setProperty('font-family', "'Test', serif");
-  assert_equals(rule.style.getPropertyValue('font-family'), '"Foo Bar"');
+  assert_equals(rule.style.getPropertyValue('font-family'), 'Foo Bar');
   rule.style.setProperty('font-family', "Verdana, Arial, Helvetica");
-  assert_equals(rule.style.getPropertyValue('font-family'), '"Foo Bar"');
+  assert_equals(rule.style.getPropertyValue('font-family'), 'Foo Bar');
 }, 'Should be parsed using font-face descriptor parsing rules and rejected.');
 
 </script>
