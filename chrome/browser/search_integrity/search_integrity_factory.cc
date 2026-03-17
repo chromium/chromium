@@ -41,7 +41,7 @@ SearchIntegrityFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SearchIntegrity>(
-      TemplateURLServiceFactory::GetForProfile(profile), profile->GetPath());
+      TemplateURLServiceFactory::GetForProfile(profile), profile);
 }
 
 }  // namespace search_integrity

@@ -31,7 +31,7 @@ class SearchIntegrityTest : public testing::Test {
     test_util_ = std::make_unique<TemplateURLServiceTestUtil>();
     test_util_->VerifyLoad();
     search_integrity_ = std::make_unique<SearchIntegrity>(
-        test_util_->model(), test_util_->profile()->GetPath());
+        test_util_->model(), test_util_->profile());
   }
 
   void TearDown() override {

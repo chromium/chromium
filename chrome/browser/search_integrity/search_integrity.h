@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+class Profile;
 class TemplateURLService;
 
 namespace search_integrity {
@@ -51,8 +52,7 @@ class SearchIntegrity : public KeyedService {
   // engines.
   // `profile_path`: The path to the profile directory, used for storing
   // the bloom filter.
-  SearchIntegrity(TemplateURLService* template_url_service,
-                  const base::FilePath& profile_path);
+  SearchIntegrity(TemplateURLService* template_url_service, Profile* profile);
   ~SearchIntegrity() override;
 
   SearchIntegrity(const SearchIntegrity&) = delete;
@@ -74,8 +74,9 @@ class SearchIntegrity : public KeyedService {
 
   // The template URL service, used to access se list.
   raw_ptr<TemplateURLService> template_url_service_;
-  // The path to the profile, used to locate the bloom filter file.
-  const base::FilePath profile_path_;
+  // The profile, used to check management status and locate the bloom filter
+  // file.
+  raw_ptr<Profile> profile_;
 
   // Factory for creating weak pointers to this instance, used for safe
   // asynchronous callbacks.

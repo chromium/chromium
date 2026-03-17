@@ -22,6 +22,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"  //nogncheck
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_integrity/search_integrity_allowlist.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/search_engines/template_url_service.h"
@@ -89,13 +91,15 @@ bool IsDisallowedCustomSearchEngine(const TemplateURL* template_url) {
 }  // namespace
 
 SearchIntegrity::SearchIntegrity(TemplateURLService* template_url_service,
-                                 const base::FilePath& profile_path)
-    : template_url_service_(template_url_service),
-      profile_path_(profile_path) {}
+                                 Profile* profile)
+    : template_url_service_(template_url_service), profile_(profile) {}
 
 SearchIntegrity::~SearchIntegrity() = default;
 
 void SearchIntegrity::CheckSearchEngines() {
+  if (enterprise_util::IsBrowserManaged(profile_)) {
+    return;
+  }
   // Asynchronously initialize the search engine allowlist on a background
   // thread to avoid blocking the UI thread.
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -124,7 +128,7 @@ void SearchIntegrity::CheckSearchEngines() {
             return SearchEngineAllowlist::LoadBloomFilterData(
                 json_path, bloom_filter_path);
           },
-          profile_path_),
+          profile_->GetPath()),
 
       // Once the background task is complete, run OnAllowlistInitialized on the
       // original (UI) thread.
