@@ -1118,6 +1118,9 @@
     <message name="IDS_FRE_NATIVE_TOOLBAR_DONT_SIGN_IN_BUTTON_LABEL" translateable="false" desc="A label for a button on the native toolbar to decline a prompt to sign in">
       Don't sign in
     </message>
+    <message name="IDS_FRE_NEXT_BUTTON_TITLE" translateable="false" desc="A title for a button that advances a user to the next step (sign in screen) in the first run experience flow.">
+      Next
+    </message>
 
     <!-- Default Browser Promo -->
     <message name="IDS_FRE_DEFAULT_BROWSER_TITLE_NEW" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">

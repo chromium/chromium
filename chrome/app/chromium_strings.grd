@@ -2559,6 +2559,9 @@ Chromium is unable to recover your settings.
           desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chromium with their Google Account. It appears when the user launches Chromium for the first time. When they sign in, they can personalize and customize Chromium and remember their settings in their Google Account. The tone should be inviting and alluring.">
           Sign in to Chromium
         </message>
+        <message name="IDS_FRE_GET_YOUR_BROWSER_READY_TITLE" meaning="Title" translateable="false" desc="">
+          Let's get your Chromium ready
+        </message>
 
         <!-- Default Browser Promo -->
         <message name="IDS_FRE_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chromium as their default browser in the first run experience.">

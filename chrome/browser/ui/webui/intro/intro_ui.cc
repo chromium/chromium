@@ -47,7 +47,14 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
                                   ? IDR_INTRO_INTRO_REFRESH_HTML
                                   : IDR_INTRO_INTRO_HTML);
 
-  int title_id = IDS_FRE_SIGN_IN_TITLE_0;
+  const bool is_dont_sign_in_on_gaia_page_variation =
+      is_first_run_desktop_refresh_enabled &&
+      switches::kFirstRunDesktopSignInPromoVariation.Get() ==
+          switches::FirstRunDesktopSignInPromoVariation::kDontSignInOnGaiaPage;
+
+  const int title_id = is_dont_sign_in_on_gaia_page_variation
+                           ? IDS_FRE_GET_YOUR_BROWSER_READY_TITLE
+                           : IDS_FRE_SIGN_IN_TITLE_0;
 
   // Setting the title here instead of relying on the one provided from the
   // page itself makes it available much earlier, and avoids having to fallback
@@ -95,6 +102,11 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
           switches::kProfileCreationDeclineSigninCTAExperiment)
           ? IDS_FRE_STAY_SIGNED_OUT_BUTTON_TITLE
           : IDS_FRE_DECLINE_SIGN_IN_BUTTON_TITLE);
+
+  source->AddLocalizedString("acceptSignInButtonTitle",
+                             is_dont_sign_in_on_gaia_page_variation
+                                 ? IDS_FRE_NEXT_BUTTON_TITLE
+                                 : IDS_FRE_ACCEPT_SIGN_IN_BUTTON_TITLE);
 
   const bool is_device_managed =
       policy::ManagementServiceFactory::GetForPlatform()->IsManaged();
@@ -145,9 +157,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  source->AddResourcePath(
-      "images/refresh_showcase_illustration.png",
-      IDR_DEFAULT_BROWSER_SHOWCASE_CHROME);
+  source->AddResourcePath("images/refresh_showcase_illustration.png",
+                          IDR_DEFAULT_BROWSER_SHOWCASE_CHROME);
 #else
   source->AddResourcePath(
       "images/refresh_showcase_illustration.png",

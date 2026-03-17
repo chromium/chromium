@@ -51,7 +51,7 @@ ${this.isTopRightCornerVariation_ ? html`
 
 <div id="buttonRow" class="fade-in">
   <div id="buttonContainer">
-    ${!this.isTopRightCornerVariation_ ? html`
+    ${this.isDefaultVariation_ ? html`
     <cr-button id="declineSignInButton"
         class="tangible-button ${this.usePrimaryAndTonalButtonsForPromos_ ?
             'tonal-button' : ''}"

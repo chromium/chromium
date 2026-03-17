@@ -2590,6 +2590,9 @@ Google Chrome is unable to recover your settings.
           desc="This string appears as a heading on a full-page screen that asks the user to sign in to Chrome with their Google Account. It appears when the user launches Chrome for the first time. When they sign in, they can personalize and customize Chrome and remember their settings in their Google Account. The tone should be inviting and alluring.">
           Sign in to Chrome
         </message>
+        <message name="IDS_FRE_GET_YOUR_BROWSER_READY_TITLE" meaning="Title" translateable="false" desc="">
+          Let's get your Chrome ready
+        </message>
 
         <!-- Default Browser Promo -->
         <message name="IDS_FRE_DEFAULT_BROWSER_TITLE" desc="Title for the page that prompts user to set Chrome as their default browser in the first run experience.">
