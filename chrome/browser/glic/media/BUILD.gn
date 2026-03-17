@@ -29,6 +29,7 @@ source_set("media") {
       "media_transcript_provider_impl.h",
     ]
     deps += [
+      "//chrome/browser:browser_process",
       "//chrome/browser/glic:mojo_bindings",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/picture_in_picture",
