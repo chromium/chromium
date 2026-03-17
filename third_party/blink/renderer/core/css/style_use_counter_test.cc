@@ -72,6 +72,11 @@ TEST_F(StyleUseCounterTest, CSSDiscardedVarWithValidArgumentGrammar) {
   EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(--foo, blue); }"));
   EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(!); }"));
   EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(/**/); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(/* foo */); }"));
+  EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(/* foo */, ); }"));
+  EXPECT_FALSE(
+      IsCountedOnParsing(feature, "html { --p: var(/* foo */, foo); }"));
   EXPECT_FALSE(IsCountedOnParsing(feature, "html { --p: var(--foo;); }"));
   EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(foo); }"));
   EXPECT_TRUE(IsCountedOnParsing(feature, "html { --p: var(--foo bar); }"));

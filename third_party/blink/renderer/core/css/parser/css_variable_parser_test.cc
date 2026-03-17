@@ -84,6 +84,10 @@ const char* valid_attr_values[] = {
     "attr(p type(<url>))",
     "attr(p string)",
     "attr(p, p, p)",
+    "attr(a/**/)",
+    "attr(a/**/, )",
+    "attr(a/**/, a)",
+    "attr(a/* foo */, a)",
     // clang-format on
 };
 
@@ -93,6 +97,11 @@ const char* invalid_attr_values[] = {
     "attr(p !)",
     "attr(, p)",
     "attr(p;, p)",
+    "attr()",
+    "attr(/**/)",
+    "attr(/* foo */)",
+    "attr(/**/, a)",
+    "attr(/* foo */, a)",
     // clang-format on
 };
 
