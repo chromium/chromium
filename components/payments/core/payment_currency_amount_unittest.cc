@@ -4,8 +4,10 @@
 
 #include "components/payments/core/payment_currency_amount.h"
 
+#include "base/test/fuzztest_support.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace payments {
 
@@ -98,5 +100,13 @@ TEST(PaymentRequestTest, PopulatedCurrencyAmountDictionary) {
   EXPECT_EQ(expected_value,
             PaymentCurrencyAmountToValueDict(payment_currency_amount));
 }
+
+void FromValueDictDoesNotCrash(const base::DictValue& dict) {
+  mojom::PaymentCurrencyAmount amount;
+  PaymentCurrencyAmountFromValueDict(dict, &amount);
+}
+
+FUZZ_TEST(PaymentCurrencyAmountFuzzTest, FromValueDictDoesNotCrash)
+    .WithDomains(fuzztest::Arbitrary<base::DictValue>());
 
 }  // namespace payments
