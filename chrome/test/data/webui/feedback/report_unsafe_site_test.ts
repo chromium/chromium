@@ -51,6 +51,20 @@ suite('ReportUnsafeSiteTest', () => {
     assertEquals(1, browserProxy.getPageHandler().getCallCount('closeDialog'));
   });
 
+  test('ClickSend', async () => {
+    const app = document.createElement('report-unsafe-site-app');
+    document.body.appendChild(app);
+
+    await browserProxy.getPageHandler().whenCalled('getTriggeringPageInfo');
+    await microtasksFinished();
+    const sendButton =
+        app.shadowRoot.querySelector<HTMLInputElement>('.action-button');
+    assertTrue(!!sendButton);
+    sendButton.click();
+    await browserProxy.getPageHandler().whenCalled('sendReport');
+    assertEquals(1, browserProxy.getPageHandler().getCallCount('closeDialog'));
+  });
+
   test('IncludeScreenshotCheckbox_HasScreenshot', async () => {
     browserProxy.setScreenshot(
         'data:image/png;data:image/png;base64,fakescreenshot');

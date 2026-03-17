@@ -26,6 +26,7 @@ static_library("report_unsafe_site") {
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/common",
+    "//components/safe_browsing/content/browser:client_side_detection",
     "//mojo/public/cpp/bindings",
   ]
 }
