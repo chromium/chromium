@@ -142,7 +142,7 @@ static bool CanReplaceHandler(const ProtocolHandler& handler1,
 
 bool ProtocolHandlerRegistry::AttemptReplace(const ProtocolHandler& handler) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ProtocolHandler old_default = GetHandlerFor(handler.protocol());
+  ProtocolHandler old_default = GetHandlerForInternal(handler.protocol());
   bool make_new_handler_default = CanReplaceHandler(handler, old_default);
   ProtocolHandlerList to_replace(GetReplacedHandlers(handler));
   if (to_replace.empty())
@@ -186,7 +186,7 @@ void ProtocolHandlerRegistry::ClearDefault(const std::string& scheme) {
 
 bool ProtocolHandlerRegistry::IsDefault(const ProtocolHandler& handler) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GetHandlerFor(handler.protocol()) == handler;
+  return GetHandlerForInternal(handler.protocol()) == handler;
 }
 
 void ProtocolHandlerRegistry::InstallPredefinedHandlers() {
@@ -236,7 +236,7 @@ void ProtocolHandlerRegistry::InitProtocolSettings() {
 
 int ProtocolHandlerRegistry::GetHandlerIndex(std::string_view scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const ProtocolHandler& candidate = GetHandlerFor(scheme);
+  const ProtocolHandler& candidate = GetHandlerForInternal(scheme);
   if (candidate.IsEmpty())
     return -1;
   const ProtocolHandlerList* handlers = GetHandlerList(scheme);
@@ -419,24 +419,19 @@ void ProtocolHandlerRegistry::RemoveIgnoredHandler(
 
 bool ProtocolHandlerRegistry::HasDefaultHandler(std::string_view scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return enabled_ && !GetHandlerFor(scheme).IsEmpty();
+  return enabled_ && !GetHandlerForInternal(scheme).IsEmpty();
 }
 
 bool ProtocolHandlerRegistry::IsHandledProtocol(std::string_view scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!enabled_) {
-    return false;
-  }
-  ProtocolHandler handler = GetHandlerFor(scheme);
-  DCHECK(handler.IsEmpty() || handler.is_confirmed() ||
-         handler.IsExtensionHandler());
+  const ProtocolHandler& handler = GetHandlerFor(scheme);
   return !handler.IsEmpty() && handler.is_confirmed();
 }
 
 void ProtocolHandlerRegistry::ConfirmProtocolHandler(std::string_view scheme,
                                                      bool save) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ProtocolHandler handler = GetHandlerFor(scheme);
+  ProtocolHandler handler = GetHandlerForInternal(scheme);
   CHECK(handler.IsValid());
   if (handler.is_confirmed()) {
     return;
@@ -454,17 +449,13 @@ void ProtocolHandlerRegistry::ConfirmProtocolHandler(std::string_view scheme,
 bool ProtocolHandlerRegistry::IsProtocolHandlerConfirmed(
     std::string_view scheme) const {
   DCHECK(HasDefaultHandler(scheme));
-  return GetHandlerFor(scheme).is_confirmed();
+  return GetHandlerForInternal(scheme).is_confirmed();
 }
 
 bool ProtocolHandlerRegistry::ProtocolHandlerNeedsConfirmation(
     std::string_view scheme) const {
-  if (!enabled_) {
-    return false;
-  }
-  ProtocolHandler handler = GetHandlerFor(scheme);
-  DCHECK(handler.IsEmpty() || handler.is_confirmed() ||
-         handler.IsExtensionHandler());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const ProtocolHandler& handler = GetHandlerFor(scheme);
   return !handler.IsEmpty() && !handler.is_confirmed();
 }
 
@@ -507,15 +498,25 @@ void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler,
 
 void ProtocolHandlerRegistry::RemoveDefaultHandler(std::string_view scheme) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ProtocolHandler current_default = GetHandlerFor(scheme);
+  ProtocolHandler current_default = GetHandlerForInternal(scheme);
   if (!current_default.IsEmpty())
     RemoveHandler(current_default);
+}
+
+const ProtocolHandler& ProtocolHandlerRegistry::GetHandlerForInternal(
+    std::string_view scheme) const {
+  return LookupHandler(default_handlers_, scheme);
 }
 
 const ProtocolHandler& ProtocolHandlerRegistry::GetHandlerFor(
     std::string_view scheme) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return LookupHandler(default_handlers_, scheme);
+  const ProtocolHandler& handler =
+      enabled_ ? GetHandlerForInternal(scheme)
+               : ProtocolHandler::EmptyProtocolHandler();
+  CHECK(handler.IsEmpty() || handler.is_confirmed() ||
+        handler.IsExtensionHandler());
+  return handler;
 }
 
 GURL ProtocolHandlerRegistry::Translate(const GURL& url) const {

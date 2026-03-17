@@ -262,6 +262,12 @@ class ProtocolHandlerRegistry : public KeyedService {
 
   friend class ProtocolHandlerRegistryTest;
 
+  // Returns the default handler for this protocol, or an empty handler if none
+  // exists.
+  // Unlike GetHandlerFor, it returns the handler independently of the enabled_
+  // value and it doesn't run the ProtocolHandler integrity checks.
+  const ProtocolHandler& GetHandlerForInternal(std::string_view scheme) const;
+
   // Install default protocol handlers for chromeos which must be done
   // prior to calling InitProtocolSettings.
   void InstallPredefinedHandlers();
