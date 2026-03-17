@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.Android.DownloadProtectionOutcome"
     enum="SBClientDownloadAndroidDownloadProtectionOutcome"
-    expires_after="2026-07-05">
+    expires_after="2026-09-13">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.CheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2026-07-12">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2026-09-13">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -410,7 +410,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}DeepScanEvent3"
-    enum="SBDeepScanEvent" expires_after="2026-06-28">
+    enum="SBDeepScanEvent" expires_after="2026-09-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -756,7 +756,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy{RequestType}"
-    enum="BooleanMatched" expires_after="2026-07-12">
+    enum="BooleanMatched" expires_after="2026-09-13">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -914,7 +914,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime{IntelligentScanRequestType}"
-    enum="BooleanSuccess" expires_after="2026-07-12">
+    enum="BooleanSuccess" expires_after="2026-09-13">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1231,7 +1231,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="SBClientPhishing.OnDeviceModelStartModelDownloadFunctionRunTime.Android"
-    units="ms" expires_after="2026-07-09">
+    units="ms" expires_after="2026-09-13">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -182,7 +182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.NearbyNetworkPrintersCount" units="printers"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -577,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.PrintAttemptOutcome" enum="PrintAttemptOutcome"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>gavinwill@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>

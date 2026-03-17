@@ -615,7 +615,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceInsights.PriceTracking.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2026-06-28">
+    enum="PriceInsightsPriceBucket" expires_after="2026-09-13">
   <owner>mdjones@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>qib@google.com</owner>

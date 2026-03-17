@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.AfterStartupTaskDelayedUntilTime" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>michaeln@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>
@@ -366,7 +366,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent2" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>yfriedman@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>

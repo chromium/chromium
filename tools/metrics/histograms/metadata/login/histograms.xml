@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.SuccessReason" enum="LoginSuccessReason"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>achuith@chromium.org</owner>
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>

@@ -418,7 +418,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PerformanceMonitor.IdleWakeups2.Total{UsageScenario}"
-    units="WakeupsPerSecond" expires_after="2026-07-12">
+    units="WakeupsPerSecond" expires_after="2026-09-13">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

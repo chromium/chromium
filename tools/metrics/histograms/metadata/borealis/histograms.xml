@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.OverallTime2" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.Result" enum="BorealisStartupResult"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>philpearson@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

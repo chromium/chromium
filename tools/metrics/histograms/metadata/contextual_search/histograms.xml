@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.ErrorPageShown.{ContextualSearchSource}"
-    enum="ContextualSearchErrorPage" expires_after="2026-06-21">
+    enum="ContextualSearchErrorPage" expires_after="2026-09-13">
   <owner>nguyenbryan@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -656,7 +656,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Session.QuerySubmittedWithoutSessionStart.{ContextualSearchSource}"
-    enum="Boolean" expires_after="2026-06-21">
+    enum="Boolean" expires_after="2026-09-13">
   <owner>hujasonx@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ClassificationRequest.TotalDuration.{SegmentationKey}"
-    units="ms" expires_after="2026-07-12">
+    units="ms" expires_after="2026-09-13">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -606,7 +606,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Result.{Index}.{SegmentationModel}"
-    units="score" expires_after="2026-07-12">
+    units="score" expires_after="2026-09-13">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.Status.{SegmentationModel}"
-    enum="SegmentationPlatformModelExecutionStatus" expires_after="2026-07-12">
+    enum="SegmentationPlatformModelExecutionStatus" expires_after="2026-09-13">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -722,7 +722,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.ModelExecution.ZeroValuePercent.{SegmentationModel}"
-    units="%" expires_after="2026-07-12">
+    units="%" expires_after="2026-09-13">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -787,7 +787,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SegmentationPlatform.SelectionFailedReason.{SegmentationKey}"
-    enum="SegmentationSelectionFailureReason" expires_after="2026-07-12">
+    enum="SegmentationSelectionFailureReason" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -954,7 +954,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SegmentationPlatform.TrainingDataCollectionEvents.{SegmentationModel}"
     enum="SegmentationPlatformTrainingDataCollectionEvent"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -980,7 +980,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.{SegmentationKey}.PostProcessing.TopLabel.Computed"
-    units="index" expires_after="2026-07-12">
+    units="index" expires_after="2026-09-13">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -994,7 +994,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.{SegmentationKey}.PostProcessing.TopLabel.Switched"
-    units="index" expires_after="2026-07-12">
+    units="index" expires_after="2026-09-13">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

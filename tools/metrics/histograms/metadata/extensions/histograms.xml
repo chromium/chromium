@@ -217,7 +217,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.BlockCRX" enum="ExtensionLocation"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -244,7 +244,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionBlacklist.UnblacklistInstalled"
-    enum="ExtensionLocation" expires_after="2026-07-12">
+    enum="ExtensionLocation" expires_after="2026-09-13">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -493,7 +493,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CommandLineInstalled" units="count"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -505,7 +505,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.CommandLineManifestSettingsOverride"
-    enum="ManifestSettingsOverrideType" expires_after="2026-07-12">
+    enum="ManifestSettingsOverrideType" expires_after="2026-09-13">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1228,7 +1228,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.LoadRulesetResult"
-    enum="LoadRulesetResult" expires_after="2026-07-12">
+    enum="LoadRulesetResult" expires_after="2026-09-13">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1482,7 +1482,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeveloperModeEnabled" enum="Boolean"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1497,7 +1497,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.DeveloperModeStatusEnabled" enum="Boolean"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2057,7 +2057,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExtensionDisabledRemotely2"
-    enum="ExtensionUpdateCheckDataKey" expires_after="2026-07-12">
+    enum="ExtensionUpdateCheckDataKey" expires_after="2026-09-13">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2109,7 +2109,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExtensionReenabledRemotely" units="count"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>richche@chromium.org</owner>
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2438,7 +2438,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ForceInstalledManagementAuthorityTrustworthiness"
-    enum="ManagementAuthorityTrustworthiness" expires_after="2026-07-12">
+    enum="ManagementAuthorityTrustworthiness" expires_after="2026-09-13">
   <owner>richche@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2948,7 +2948,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.GreylistedForceInstalled.{TrustLevel}.Enabled"
-    enum="Boolean" expires_after="2026-07-12">
+    enum="Boolean" expires_after="2026-09-13">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3484,7 +3484,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadingFromCommandLine" enum="LoadExtensionFlag"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3694,7 +3694,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelStatus{WorkerStatus}{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2026-07-12">
+    enum="OpenChannelMessagePipelineResult" expires_after="2026-09-13">
   <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3937,7 +3937,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides2" units="units"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>anunoy@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4188,7 +4188,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.ServiceWorkerBackground.MultiWorkerVersionStatus.{WorkerType}"
-    enum="ServiceWorkerVersionStatus" expires_after="2026-07-12">
+    enum="ServiceWorkerVersionStatus" expires_after="2026-09-13">
   <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>

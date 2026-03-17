@@ -1850,7 +1850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Modules.InfoButtonClicked" enum="NtpModules"
-    expires_after="2026-07-13">
+    expires_after="2026-09-13">
   <owner>pauladedeji@google.com</owner>
   <owner>danpeng@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2626,7 +2626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ThreadsRail.Action" enum="NTPThreadsRailAction"
-    expires_after="2026-07-15">
+    expires_after="2026-09-13">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -2637,7 +2637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.ThreadsRail.Shown" enum="BooleanShown"
-    expires_after="2026-07-15">
+    expires_after="2026-09-13">
   <owner>romanarora@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -2869,7 +2869,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.Width" units="pixels" expires_after="2026-07-12">
+<histogram name="NewTabPage.Width" units="pixels" expires_after="2026-09-13">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//cc/metrics/scroll_jank_v4_result.h:JankReason) -->
 
 <histogram name="Event.Android.GestureScrollEnd.TimeSpentInBinder" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Android.GestureScrollEnd.TotalBinderTransactions"
-    units="counts" expires_after="2026-07-12">
+    units="counts" expires_after="2026-09-13">
   <owner>nafisabedin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>

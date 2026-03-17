@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.CountUse.WebFeature" units="WebFeature"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2022,7 +2022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.HasSearchPrefetchCache"
-    enum="Boolean" expires_after="2026-07-05">
+    enum="Boolean" expires_after="2026-09-13">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

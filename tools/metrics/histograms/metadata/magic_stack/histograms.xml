@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.SetupList.ItemClick.Active" enum="ModuleType"
-    expires_after="2026-05-26">
+    expires_after="2026-09-13">
   <owner>agazal@google.com</owner>
   <owner>clank-start-surface@google.com</owner>
   <summary>
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.SetupList.ItemImpression.{State}"
-    enum="ModuleType" expires_after="2026-05-26">
+    enum="ModuleType" expires_after="2026-09-13">
   <owner>agazal@google.com</owner>
   <owner>clank-start-surface@google.com</owner>
   <summary>

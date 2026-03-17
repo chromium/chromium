@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2026-07-12">
+<histogram name="Kiosk.RamUsagePercentage" units="%" expires_after="2026-09-13">
   <owner>vkovalova@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.SessionDuration.Normal" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>pbond@chromium.org</owner>
   <owner>chromeos-kiosk-eng@chromium.org</owner>
   <summary>

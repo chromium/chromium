@@ -447,7 +447,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.VizScheduledDrawToDependencyResolvedUs"
-    units="microseconds" expires_after="2026-07-12">
+    units="microseconds" expires_after="2026-09-13">
   <owner>vasilyt@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

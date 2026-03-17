@@ -125,7 +125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
-    expires_after="2026-07-13">
+    expires_after="2026-09-13">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
@@ -1514,7 +1514,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.KeyRotationInfoSource"
-    enum="KeyDistributionComponentSource" expires_after="2026-07-12">
+    enum="KeyDistributionComponentSource" expires_after="2026-09-13">
   <owner>greengrape@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -1869,7 +1869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>phillis@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2933,7 +2933,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Update.ApplyPendingManifestUpdateResult"
-    enum="WebAppApplyPendingManifestUpdateResult" expires_after="2026-07-12">
+    enum="WebAppApplyPendingManifestUpdateResult" expires_after="2026-09-13">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2947,7 +2947,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Update.ManifestSilentUpdateCheckResult"
-    enum="WebAppManifestSilentUpdateCheckResult" expires_after="2026-07-12">
+    enum="WebAppManifestSilentUpdateCheckResult" expires_after="2026-09-13">
   <owner>msiem@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

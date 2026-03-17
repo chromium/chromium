@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions"
-    enum="Boolean" expires_after="2026-07-12">
+    enum="Boolean" expires_after="2026-09-13">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ContextualCueing.GlicSuggestions.PageContextIneligibilityReason{EngagementType}"
     enum="ContextualCueingZeroStateSuggestionsPageContextIneligibilityType"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>

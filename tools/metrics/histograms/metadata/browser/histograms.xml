@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.CookieAccessObserver.{CookieAccessReceiver}.Duration.Subsampled"
-    units="microseconds" expires_after="2026-07-12">
+    units="microseconds" expires_after="2026-09-13">
   <owner>acondor@chromium.org</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
@@ -1486,7 +1486,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.NoSpareRenderer.AllocationSource.{NoSpareRendererReason}"
-    enum="ProcessAllocationSource" expires_after="2026-07-12">
+    enum="ProcessAllocationSource" expires_after="2026-09-13">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1514,7 +1514,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="BrowserRenderProcessHost.NoSpareRenderer.NavigationStage.{NoSpareRendererReason}"
-    enum="ProcessAllocationNavigationStage" expires_after="2026-07-12">
+    enum="ProcessAllocationNavigationStage" expires_after="2026-09-13">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

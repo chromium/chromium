@@ -771,7 +771,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.HintCacheLevelDBStore.Status"
     enum="OptimizationGuideHintCacheLevelDBStoreStatus"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>rajendrant@chromium.org</owner>
   <owner>catliu@chromium.org</owner>
   <summary>
@@ -1154,7 +1154,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceFirstResponseTime.{ModelExecutionFeature}"
-    units="ms" expires_after="2026-07-12">
+    units="ms" expires_after="2026-09-13">
   <owner>cduvall@chromium.org</owner>
   <owner>holte@chromium.org</owner>
   <summary>
@@ -1637,7 +1637,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable.{OptimizationTarget}"
-    units="ms" expires_after="2026-07-12">
+    units="ms" expires_after="2026-09-13">
   <owner>wittman@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -1931,7 +1931,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.AddPageContentResult"
-    enum="BooleanSuccess" expires_after="2026-07-12">
+    enum="BooleanSuccess" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1941,7 +1941,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.AvgPageSize" units="KB"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1951,7 +1951,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.CachedTabsCount"
-    units="tabs" expires_after="2026-07-12">
+    units="tabs" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1962,7 +1962,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentCache.EligibleTabsCachedPercentage"
-    units="%" expires_after="2026-07-12">
+    units="%" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1973,7 +1973,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.ExtractionAndCachingStatus"
-    enum="PageContentExtractionAndCachingStatus" expires_after="2026-07-12">
+    enum="PageContentExtractionAndCachingStatus" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1983,7 +1983,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.NotCachedTabsCount"
-    units="tabs" expires_after="2026-07-12">
+    units="tabs" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1994,7 +1994,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentCache.RemovePageContentForTabResult"
-    enum="BooleanSuccess" expires_after="2026-07-12">
+    enum="BooleanSuccess" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2004,7 +2004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.StaleCacheEntriesCount"
-    units="entries" expires_after="2026-07-12">
+    units="entries" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2014,7 +2014,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OptimizationGuide.PageContentCache.TotalCacheSize" units="KB"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

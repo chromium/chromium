@@ -1148,7 +1148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -1175,7 +1175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
-    enum="AudioStreamFormatRelatedInitError" expires_after="2026-07-12">
+    enum="AudioStreamFormatRelatedInitError" expires_after="2026-09-13">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1441,7 +1441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.CatapAudioInputStream.HostTimeStatus"
-    enum="CatapAudioInputStreamHostTimeStatus" expires_after="2026-06-28">
+    enum="CatapAudioInputStreamHostTimeStatus" expires_after="2026-09-13">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1632,7 +1632,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.OvertimeCount" units="count"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
@@ -1647,7 +1647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.OutputDeviceMixer.StreamStatus"
-    enum="AudioOutputDeviceMixerStreamStatus" expires_after="2026-07-12">
+    enum="AudioOutputDeviceMixerStreamStatus" expires_after="2026-09-13">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -1856,7 +1856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputStreamDuration2" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2008,7 +2008,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.{Type}.LargestGlitchMs2" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2179,7 +2179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioDuckerWin.UnduckSessionResult"
-    enum="BooleanSuccess" expires_after="2026-07-12">
+    enum="BooleanSuccess" expires_after="2026-09-13">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -2279,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioOutputController.ProxyStreamCreationResult"
-    enum="AudioOutputStreamCreationResult" expires_after="2026-07-12">
+    enum="AudioOutputStreamCreationResult" expires_after="2026-09-13">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -5970,7 +5970,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
@@ -7657,7 +7657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Roughness{VideoFrameRateRange}" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>eugene@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -8830,7 +8830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaLauncherActivityStarted"
-    enum="MediaLauncherActivityEnabledReason" expires_after="2026-06-01">
+    enum="MediaLauncherActivityEnabledReason" expires_after="2026-09-13">
   <owner>steimel@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>

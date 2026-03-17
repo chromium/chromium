@@ -1154,7 +1154,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.ClassManagementEnabled" enum="ClassManagementEnabled"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>zifanzhang@google.com</owner>
   <owner>cros-client-wa@google.com</owner>
   <summary>
@@ -1850,7 +1850,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.HaTS.{Survey}" enum="HaTSSurvey"
-    expires_after="2026-07-05">
+    expires_after="2026-09-13">
   <owner>aalsum@chromium.org</owner>
   <owner>jackshira@google.com</owner>
   <owner>iby@chromium.org</owner>

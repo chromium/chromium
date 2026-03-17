@@ -1917,7 +1917,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IdentityConfirmationSnackbarDecision"
-    enum="IdentityConfirmationSnackbarDecision" expires_after="2026-07-12">
+    enum="IdentityConfirmationSnackbarDecision" expires_after="2026-09-13">
   <owner>jlebel@chromium.org</owner>
   <owner>jood@google.com</owner>
   <owner>treib@chromium.org</owner>
@@ -3580,7 +3580,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SyncErrorMessage{SyncErrorReason}"
-    enum="SyncErrorPromptUIAction" expires_after="2026-07-12">
+    enum="SyncErrorPromptUIAction" expires_after="2026-09-13">
   <owner>triploblastic@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <summary>
@@ -3808,7 +3808,7 @@ for as long as we store refresh tokens in an SQLite DB. -->
 
 <histogram name="Signin.TokenTable.GetAllWrappedBindingKeysResult"
     enum="SigninTokenTableGetAllWrappedBindingKeysResult"
-    expires_after="2026-06-08">
+    expires_after="2026-09-13">
   <owner>alexilin@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -3880,7 +3880,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
 <!-- LINT.IfChange(WebSignintrackerLatency) -->
 
 <histogram name="Signin.WebSigninTracker.Latency.{Result}" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>mlbipin@google.com</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
   <summary>

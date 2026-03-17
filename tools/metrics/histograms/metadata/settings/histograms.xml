@@ -253,7 +253,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.DefaultBrowserFromSource"
-    enum="IOSDefaultBrowserSettingsPageSource" expires_after="2026-07-12">
+    enum="IOSDefaultBrowserSettingsPageSource" expires_after="2026-09-13">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -515,7 +515,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Fledge.Enabled" enum="BooleanEnabled"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -570,7 +570,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.RestrictedNoticeCheckIsMismatched"
-    enum="Boolean" expires_after="2026-07-12">
+    enum="Boolean" expires_after="2026-09-13">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -580,7 +580,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.Topics.Enabled" enum="BooleanEnabled"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>boujane@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -753,7 +753,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <histogram
     name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.{NotificationRevocationSource}.{RevokedStatus}.PermissionChanged"
-    enum="ContentSetting" expires_after="2026-07-12">
+    enum="ContentSetting" expires_after="2026-09-13">
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1274,7 +1274,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.ListCount"
-    units="suggestions" expires_after="2026-07-05">
+    units="suggestions" expires_after="2026-09-13">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>

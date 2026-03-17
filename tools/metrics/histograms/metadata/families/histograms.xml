@@ -758,7 +758,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ManagedMode.BlockingInterstitialCommand"
-    enum="ManagedModeBlockingCommand" expires_after="2026-07-12">
+    enum="ManagedModeBlockingCommand" expires_after="2026-09-13">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -777,7 +777,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ManagedUsers.FilteringResult"
-    enum="SupervisedUserSafetyFilterResult" expires_after="2026-07-12">
+    enum="SupervisedUserSafetyFilterResult" expires_after="2026-09-13">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -790,7 +790,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ManagedUsers.RequestPermissionSource"
-    enum="ManagedUserURLRequestPermissionSource" expires_after="2026-07-12">
+    enum="ManagedUserURLRequestPermissionSource" expires_after="2026-09-13">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -1210,7 +1210,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="{RequestType}.{Status}.Latency" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>tju@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
   <summary>

@@ -58,7 +58,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.EngineLifetime" units="ms" expires_after="2026-07-12">
+<histogram name="PDF.EngineLifetime" units="ms" expires_after="2026-09-13">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2026-07-12">
+<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2026-09-13">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2026-07-12">
+<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2026-09-13">
   <owner>dhoss@chromium.org</owner>
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
@@ -283,7 +283,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2026-07-12">
+<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2026-09-13">
   <owner>rhalavati@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>

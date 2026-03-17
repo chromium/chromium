@@ -515,7 +515,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Ash.Accelerators.Actions.{ActionName}" units="Shortcuts"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -936,7 +936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BatterySaver.BatteryPercent{BatteryPercentWhen}" units="%"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>cwd@google.com</owner>
   <owner>ckwyee@google.com</owner>
   <summary>The battery charge percent when {BatteryPercentWhen}</summary>
@@ -2020,7 +2020,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.QuickAction"
-    enum="CaptureQuickAction" expires_after="2026-05-21">
+    enum="CaptureQuickAction" expires_after="2026-09-13">
   <owner>minch@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
@@ -4026,7 +4026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FullRestore.Browser.FirstInputDelay" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>vincentchiang@chromium.org</owner>
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
@@ -4041,7 +4041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FullRestore.ShowInformedRestoreDialog" enum="BooleanHit"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>hewer@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Emmited every time the informed restore dialog shows up.</summary>
@@ -4088,7 +4088,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.GameDashboard.RecordingStartSource"
-    enum="GameDashboardMenu" expires_after="2026-07-12">
+    enum="GameDashboardMenu" expires_after="2026-09-13">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>
@@ -4097,7 +4097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.GameDashboard.ScreenshotTakeSource"
-    enum="GameDashboardMenu" expires_after="2026-07-12">
+    enum="GameDashboardMenu" expires_after="2026-09-13">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>
@@ -4135,7 +4135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.GameDashboard.ToolbarToggleState" enum="BooleanEnabled"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>cuicuiruan@google.com</owner>
   <owner>phshah@chromium.org</owner>
   <summary>Records whether the tool bar is toggled on or off.</summary>
@@ -7331,7 +7331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Report.IsOobeCompleted" enum="BooleanSuccess"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>troywang@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>

@@ -25,7 +25,7 @@ histograms along with a detailed description for each histogram.
 </variants>
 
 <histogram name="OnDeviceModel.Android.GenerateResult{ModelExecutionFeature}"
-    enum="OnDeviceModelAndroidGenerateResult" expires_after="2026-05-24">
+    enum="OnDeviceModelAndroidGenerateResult" expires_after="2026-09-13">
   <owner>ssid@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <summary>

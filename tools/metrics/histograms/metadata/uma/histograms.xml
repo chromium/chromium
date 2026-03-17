@@ -219,7 +219,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2026-06-21">
+<histogram name="UMA.ClientIdCleared" enum="Boolean" expires_after="2026-09-13">
   <owner>pdyson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>

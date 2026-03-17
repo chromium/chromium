@@ -1010,7 +1010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexHwis.ServerPostSuccess" enum="BooleanSuccess"
-    expires_after="2026-07-15">
+    expires_after="2026-09-13">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1029,7 +1029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FlexHwis.ServerPutSuccess" enum="BooleanSuccess"
-    expires_after="2026-07-15">
+    expires_after="2026-09-13">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -1538,7 +1538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Meminfo{PlatformMeminfoSize}" units="KB"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>
   <owner>sonnyrao@chromium.org</owner>

@@ -439,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLECanEmulateGLES3" enum="BooleanANGLECanEmulateGLES3"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>blundell@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
   <summary>
@@ -914,7 +914,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DrDcEnabled" enum="Boolean" expires_after="2026-07-10">
+<histogram name="GPU.DrDcEnabled" enum="Boolean" expires_after="2026-09-13">
   <owner>magchen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -1433,7 +1433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.OutputSurface.ScheduleOverlaysUs" units="microseconds"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>magchen@chromium.org</owner>
   <owner>ccameron@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>

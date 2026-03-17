@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BookmarkManager.ResultsRenderedTime" units="ms"
-    expires_after="2026-07-12">
+    expires_after="2026-09-13">
   <owner>johntlee@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <summary>
@@ -701,7 +701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ReorderDropTarget{ParentNode}"
-    enum="BookmarkReorderDropTarget" expires_after="2026-07-12">
+    enum="BookmarkReorderDropTarget" expires_after="2026-09-13">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
