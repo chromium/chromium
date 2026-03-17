@@ -24,9 +24,8 @@ class WebContentsImpl;
 // Owned by |WebContentsViewAndroid|.
 class ContentUiEventHandler {
  public:
-  ContentUiEventHandler(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& obj,
-                        WebContentsImpl* web_contents);
+  explicit ContentUiEventHandler(WebContentsImpl* web_contents);
+  ~ContentUiEventHandler();
 
   ContentUiEventHandler(const ContentUiEventHandler&) = delete;
   ContentUiEventHandler& operator=(const ContentUiEventHandler&) = delete;
@@ -55,9 +54,6 @@ class ContentUiEventHandler {
 
  private:
   RenderWidgetHostViewAndroid* GetRenderWidgetHostView();
-
-  // A weak reference to the Java ContentUiEventHandler object.
-  JavaObjectWeakGlobalRef java_ref_;
 
   const raw_ptr<WebContentsImpl> web_contents_;
 };
