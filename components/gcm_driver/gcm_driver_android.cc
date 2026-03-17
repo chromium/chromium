@@ -66,8 +66,8 @@ void GCMDriverAndroid::OnMessageReceived(
     const std::string& sender_id,
     const std::optional<std::string>& message_id,
     const std::optional<std::string>& collapse_key,
-    const std::vector<uint8_t>& raw_data,
-    const std::vector<std::string>& data_keys_and_values) {
+    const std::optional<std::vector<uint8_t>>& raw_data,
+    const std::optional<std::vector<std::string>>& data_keys_and_values) {
   int message_byte_size = 0;
 
   IncomingMessage message;
@@ -81,14 +81,16 @@ void GCMDriverAndroid::OnMessageReceived(
   }
 
   // Expand data_keys_and_values from array to map.
-  for (size_t i = 0; i + 1 < data_keys_and_values.size(); i += 2) {
-    message.data[data_keys_and_values[i]] = data_keys_and_values[i + 1];
-    message_byte_size += data_keys_and_values[i + 1].size();
+  if (data_keys_and_values) {
+    for (size_t i = 0; i + 1 < data_keys_and_values->size(); i += 2) {
+      message.data[(*data_keys_and_values)[i]] = (*data_keys_and_values)[i + 1];
+      message_byte_size += (*data_keys_and_values)[i + 1].size();
+    }
   }
 
   // Convert raw_data from std::vector<uint8_t> to binary std::string.
-  if (!raw_data.empty()) {
-    message.raw_data.assign(raw_data.begin(), raw_data.end());
+  if (raw_data && !raw_data->empty()) {
+    message.raw_data.assign(raw_data->begin(), raw_data->end());
     message_byte_size += message.raw_data.size();
   }
 

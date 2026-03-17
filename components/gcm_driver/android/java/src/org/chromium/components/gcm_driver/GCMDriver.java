@@ -183,7 +183,8 @@ public class GCMDriver {
                 @JniType("std::string") @Nullable String senderId,
                 @JniType("std::optional<std::string>") @Nullable String messageId,
                 @JniType("std::optional<std::string>") @Nullable String collapseKey,
-                @JniType("std::vector<uint8_t>") byte @Nullable [] rawData,
-                @JniType("std::vector<std::string>") String @Nullable [] dataKeysAndValues);
+                @JniType("std::optional<std::vector<uint8_t>>") byte @Nullable [] rawData,
+                @JniType("std::optional<std::vector<std::string>>")
+                        String @Nullable [] dataKeysAndValues);
     }
 }

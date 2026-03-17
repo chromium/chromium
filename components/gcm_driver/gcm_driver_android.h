@@ -46,13 +46,14 @@ class GCMDriverAndroid : public GCMDriver,
   void OnUnregisterFinished(JNIEnv* env,
                             const std::string& app_id,
                             bool success);
-  void OnMessageReceived(JNIEnv* env,
-                         const std::string& app_id,
-                         const std::string& sender_id,
-                         const std::optional<std::string>& message_id,
-                         const std::optional<std::string>& collapse_key,
-                         const std::vector<uint8_t>& raw_data,
-                         const std::vector<std::string>& data_keys_and_values);
+  void OnMessageReceived(
+      JNIEnv* env,
+      const std::string& app_id,
+      const std::string& sender_id,
+      const std::optional<std::string>& message_id,
+      const std::optional<std::string>& collapse_key,
+      const std::optional<std::vector<uint8_t>>& raw_data,
+      const std::optional<std::vector<std::string>>& data_keys_and_values);
 
   // GCMDriver implementation:
   void ValidateRegistration(const std::string& app_id,
