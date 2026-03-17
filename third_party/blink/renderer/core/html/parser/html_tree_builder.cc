@@ -851,16 +851,20 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       should_skip_leading_newline_ = true;
       frameset_ok_ = false;
       break;
-    case HTMLTag::kForm:
-      if (tree_.IsFormElementPointerNonNull() && !IsParsingTemplateContents()) {
+    case HTMLTag::kForm: {
+      bool is_parsing_template_contents = IsParsingTemplateContents();
+      if (tree_.IsFormElementPointerNonNull() &&
+          !is_parsing_template_contents) {
         ParseError(token);
         UseCounter::Count(tree_.CurrentNode()->GetDocument(),
                           WebFeature::kHTMLParseErrorNestedForm);
         break;
       }
       ProcessFakePEndTagIfPInButtonScope();
-      tree_.InsertHTMLFormElement(token);
+      tree_.InsertHTMLFormElement(token, /*is_demoted=*/false,
+                                  is_parsing_template_contents);
       break;
+    }
     case HTMLTag::kDd:
     case HTMLTag::kDt:
       ProcessCloseWhenNestedTag<IsDdOrDt>(token);
@@ -1267,13 +1271,18 @@ void HTMLTreeBuilder::ProcessStartTagForInTable(AtomicHTMLToken* token) {
       // break to hit "anything else" case.
       break;
     }
-    case HTMLTag::kForm:
+    case HTMLTag::kForm: {
+      bool is_parsing_template_contents = IsParsingTemplateContents();
       ParseError(token);
-      if (tree_.IsFormElementPointerNonNull() && !IsParsingTemplateContents())
+      if (tree_.IsFormElementPointerNonNull() &&
+          !is_parsing_template_contents) {
         return;
-      tree_.InsertHTMLFormElement(token, true);
+      }
+      tree_.InsertHTMLFormElement(token, /*is_demoted=*/true,
+                                  is_parsing_template_contents);
       tree_.OpenElements()->Pop();
       return;
+    }
     case HTMLTag::kTemplate:
       ProcessTemplateStartTag(token);
       return;

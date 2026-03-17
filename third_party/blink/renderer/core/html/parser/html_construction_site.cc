@@ -562,7 +562,9 @@ HTMLConstructionSite::HTMLConstructionSite(
   if (fragment_target) {
     DCHECK_EQ(document_, &fragment_target->GetDocument());
     DCHECK_EQ(in_quirks_mode_, fragment_target->GetDocument().InQuirksMode());
-    if (!context_element->GetDocument().IsTemplateDocument()) {
+    if (!context_element->GetDocument().IsTemplateDocument() &&
+        (!RuntimeEnabledFeatures::CorrectTemplateFormParsingEnabled() ||
+         !IsA<HTMLTemplateElement>(context_element))) {
       form_ = Traversal<HTMLFormElement>::FirstAncestorOrSelf(*context_element);
     }
   }
@@ -917,12 +919,15 @@ void HTMLConstructionSite::InsertHTMLBodyElement(AtomicHTMLToken* token) {
     document_->WillInsertBody();
 }
 
-void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
-                                                 bool is_demoted) {
+void HTMLConstructionSite::InsertHTMLFormElement(
+    AtomicHTMLToken* token,
+    bool is_demoted,
+    bool is_parsing_template_contents) {
   auto* form_element =
       To<HTMLFormElement>(CreateElement(token, html_names::xhtmlNamespaceURI));
-  if (!OpenElements()->HasTemplateInHTMLScope())
+  if (!is_parsing_template_contents) {
     form_ = form_element;
+  }
   if (is_demoted) {
     UseCounter::Count(OwnerDocumentForCurrentNode(),
                       WebFeature::kDemotedFormElement);

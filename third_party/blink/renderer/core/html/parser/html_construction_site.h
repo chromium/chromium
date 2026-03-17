@@ -162,7 +162,9 @@ class HTMLConstructionSite final {
   void InsertFormattingElement(AtomicHTMLToken*);
   void InsertHTMLHeadElement(AtomicHTMLToken*);
   void InsertHTMLBodyElement(AtomicHTMLToken*);
-  void InsertHTMLFormElement(AtomicHTMLToken*, bool is_demoted = false);
+  void InsertHTMLFormElement(AtomicHTMLToken*,
+                             bool is_demoted,
+                             bool is_parsing_template_contents);
   void InsertScriptElement(AtomicHTMLToken*);
   void InsertTextNode(const StringView&,
                       WhitespaceMode = WhitespaceMode::kWhitespaceUnknown);
