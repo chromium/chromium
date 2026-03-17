@@ -16,10 +16,9 @@ constexpr CGFloat kShadowRadius = 21.0;
 constexpr CGSize kShadowOffset = {0, 11};
 
 // Grabber styling.
-constexpr CGFloat kGrabberWidth = 33.0;
+constexpr CGFloat kGrabberWidth = 32.0;
 constexpr CGFloat kGrabberHeight = 4.0;
-constexpr CGFloat kGrabberTopMargin = 5.0;
-constexpr CGFloat kGrabberAlpha = 0.24;
+constexpr CGFloat kGrabberTopMargin = 8.0;
 
 }  // namespace
 
@@ -136,8 +135,7 @@ constexpr CGFloat kGrabberAlpha = 0.24;
 - (UIView*)createGrabberView {
   UIView* grabberView = [[UIView alloc] init];
   grabberView.translatesAutoresizingMaskIntoConstraints = NO;
-  grabberView.backgroundColor =
-      [[UIColor blackColor] colorWithAlphaComponent:kGrabberAlpha];
+  grabberView.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
   grabberView.layer.cornerRadius = kGrabberHeight / 2.0;
   return grabberView;
 }
