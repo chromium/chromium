@@ -1411,6 +1411,11 @@ const char kReaderModeContentSettingsForLinksDescription[] =
     "Enables Content Settings options for disabling/enabling links in Reading "
     "Mode.";
 
+const char kReaderModeIgnoreBadgeThresholdName[] =
+    "Reader Mode ignore badge threshold";
+const char kReaderModeIgnoreBadgeThresholdDescription[] =
+    "When enabled, the badge threshold is ignored for Reader Mode.";
+
 const char kReaderModeOmniboxEntrypointInUSName[] =
     "Reader Mode Omnibox Entrypoint In US";
 const char kReaderModeOmniboxEntrypointInUSDescription[] =

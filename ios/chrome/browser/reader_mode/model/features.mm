@@ -43,6 +43,9 @@ BASE_FEATURE(kEnableReaderModeOptimizationGuideEligibility,
 BASE_FEATURE(kEnableContentSettingsOptionForLinks,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReaderModeIgnoreBadgeThreshold,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsReaderModeAvailable() {
   if (IsUSCountryCode() &&
       !experimental_flags::ShouldIgnoreDeviceLocaleConditions()) {
@@ -66,4 +69,8 @@ bool IsReaderModeOptimizationGuideEligibilityAvailable() {
 
 bool IsReaderModeContentSettingsForLinkEnabled() {
   return base::FeatureList::IsEnabled(kEnableContentSettingsOptionForLinks);
+}
+
+bool ShouldIgnoreReaderModeBadgeThreshold() {
+  return base::FeatureList::IsEnabled(kReaderModeIgnoreBadgeThreshold);
 }

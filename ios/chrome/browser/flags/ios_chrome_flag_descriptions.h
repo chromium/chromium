@@ -864,6 +864,9 @@ extern const char kRcapsDynamicProfileCountryDescription[];
 extern const char kReaderModeContentSettingsForLinksName[];
 extern const char kReaderModeContentSettingsForLinksDescription[];
 
+extern const char kReaderModeIgnoreBadgeThresholdName[];
+extern const char kReaderModeIgnoreBadgeThresholdDescription[];
+
 extern const char kReaderModeOmniboxEntrypointInUSName[];
 extern const char kReaderModeOmniboxEntrypointInUSDescription[];
 
