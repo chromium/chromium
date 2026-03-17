@@ -1,0 +1,9 @@
+[default.extend-identifiers]
+ZIP64_BYTES_THR = "ZIP64_BYTES_THR"
+ZIP64_ENTRY_THR = "ZIP64_ENTRY_THR"
+flate2 = "flate2"
+"00ba" = "00ba"
+
+
+[files]
+extend-exclude = ["tests/data", "fuzz/read/in", "fuzz/write/in"]

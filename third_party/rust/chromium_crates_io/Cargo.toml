@@ -156,6 +156,6 @@ default-features = false
 features = ["float64_representable_durations"]
 
 [dependencies.zip]
-version = "7.1.0"
+version = "8.2.0"
 default-features = false
 features = ["deflate-flate2"]
