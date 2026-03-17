@@ -99,6 +99,9 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   net::HttpStatusCode HandleCommand(const std::string& request,
                                     std::string* response);
 
+  // Handles a /chrome-sync/event request.
+  void HandleEvent(const sync_pb::EventRequest& request);
+
   // Helpers for fetching the last Commit or GetUpdates messages, respectively.
   // Returns true if the specified message existed, and false if no message has
   // been received.

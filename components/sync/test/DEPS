@@ -8,6 +8,7 @@ include_rules = [
   "+components/signin/public",
   "+components/sync",
   "+components/sync_preferences",
+  "+components/sync_device_info",
   "+components/trusted_vault",
   "+mojo/public/cpp/bindings",
   "+net",

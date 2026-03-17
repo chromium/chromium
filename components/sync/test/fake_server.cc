@@ -22,11 +22,14 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info_util.h"
 #include "net/http/http_status_code.h"
 
 using syncer::DataType;
@@ -230,6 +233,24 @@ bool AreFullUpdateTypeDataProgressMarkersEquivalent(
     const sync_pb::DataTypeProgressMarker& marker2) {
   return UnpackProgressMarkerToken(marker1.token()).hash ==
          UnpackProgressMarkerToken(marker2.token()).hash;
+}
+
+void FakeServer::HandleEvent(const sync_pb::EventRequest& request) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (request.has_sync_disabled()) {
+    const std::string& cache_guid = request.sync_disabled().cache_guid();
+    sync_pb::DeviceInfoSpecifics specifics;
+    specifics.set_cache_guid(cache_guid);
+    std::string client_tag = syncer::DeviceInfoUtil::SpecificsToTag(specifics);
+    syncer::ClientTagHash client_tag_hash =
+        syncer::ClientTagHash::FromUnhashed(syncer::DEVICE_INFO, client_tag);
+    std::string id = syncer::LoopbackServerEntity::CreateId(
+        syncer::DEVICE_INFO, client_tag_hash.value());
+
+    InjectEntity(syncer::PersistentTombstoneEntity::CreateNew(
+        id, client_tag_hash.value()));
+  }
 }
 
 net::HttpStatusCode FakeServer::HandleCommand(const std::string& request,

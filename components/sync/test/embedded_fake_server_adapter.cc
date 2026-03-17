@@ -12,6 +12,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -24,7 +25,7 @@ namespace fake_server {
 namespace {
 
 constexpr std::string_view kCommandPath = "/chrome-sync/command/";
-constexpr std::string_view kEventPath = "/chrome-sync/event/";
+constexpr std::string_view kEventPath = "/chrome-sync/event";
 
 }  // namespace
 
@@ -100,14 +101,8 @@ EmbeddedFakeServerAdapter::HandleRequestOnBackendThread(
   CHECK(fake_server_task_runner);
   CHECK(pending_response_tracker);
 
-  if (request.GetURL().path() == kEventPath) {
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content("ok");
-    return response;
-  }
-
-  if (request.GetURL().path() != kCommandPath) {
+  if (request.GetURL().path() != kCommandPath &&
+      request.GetURL().path() != kEventPath) {
     return nullptr;
   }
 
@@ -123,10 +118,17 @@ EmbeddedFakeServerAdapter::HandleRequestOnBackendThread(
   // Post the actual task to handle the command in the UI thread. Note that this
   // is done regardless of shutdown state, because if FakeServer is destroyed it
   // is handled gracefully.
-  fake_server_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&HandleCommandRequestOnFakeServerSequence, fake_server,
-                     request.content, pending_response));
+  if (request.GetURL().path() == kEventPath) {
+    fake_server_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HandleEventRequestOnFakeServerSequence, fake_server,
+                       request.content, pending_response));
+  } else {
+    fake_server_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HandleCommandRequestOnFakeServerSequence, fake_server,
+                       request.content, pending_response));
+  }
 
   // Block until network request completes or is aborted.
   base::ScopedAllowBlockingForTesting allow_wait;
@@ -147,6 +149,35 @@ EmbeddedFakeServerAdapter::HandleRequestOnBackendThread(
   // `HandleCommandRequestOnFakeServerSequence` must have completed for this
   // request.
   return std::move(pending_response->response);
+}
+
+// static
+void EmbeddedFakeServerAdapter::HandleEventRequestOnFakeServerSequence(
+    base::WeakPtr<FakeServer> fake_server,
+    const std::string& request_content,
+    scoped_refptr<PendingResponse> pending_response) {
+  CHECK(pending_response);
+
+  if (!fake_server) {
+    pending_response->response->set_code(
+        net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE);
+    pending_response->completion_event.Signal();
+    return;
+  }
+
+  sync_pb::EventRequest event_request;
+  if (!event_request.ParseFromString(request_content)) {
+    DLOG(ERROR) << "Failed to parse EventRequest";
+    pending_response->response->set_code(net::HTTP_BAD_REQUEST);
+    pending_response->completion_event.Signal();
+    return;
+  }
+
+  fake_server->HandleEvent(event_request);
+
+  pending_response->response->set_code(net::HTTP_OK);
+  pending_response->response->set_content("ok");
+  pending_response->completion_event.Signal();
 }
 
 // static

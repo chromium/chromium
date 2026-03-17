@@ -107,6 +107,13 @@ class EmbeddedFakeServerAdapter {
       scoped_refptr<PendingResponseTracker> pending_response_tracker,
       const net::test_server::HttpRequest& request);
 
+  // Function for event requests specifically that runs in FakeServer's
+  // sequence (UI thread).
+  static void HandleEventRequestOnFakeServerSequence(
+      base::WeakPtr<FakeServer> fake_server,
+      const std::string& request_content,
+      scoped_refptr<PendingResponse> response);
+
   // Function for command requests specifically that runs in FakeServer's
   // sequence (UI thread).
   static void HandleCommandRequestOnFakeServerSequence(

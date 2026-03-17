@@ -308,6 +308,26 @@ IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest, CommitLocalDevice) {
                   .Wait());
 }
 
+// ChromeOS doesn't support sign-out.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest,
+                       ShouldDeleteDeviceInfoOnServerWhenSignedOut) {
+  ASSERT_TRUE(SetupSync());
+
+  // The local device should eventually be committed to the server.
+  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
+
+  // Sign out. This should trigger a SyncDisabledEvent to the server.
+  GetClient(0)->SignOutPrimaryAccount();
+
+  // The FakeServer should receive a SyncDisabledEvent and generate a tombstone,
+  // leaving 0 normal DeviceInfo entities. Wait for it.
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(IsEmpty()).Wait());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 IN_PROC_BROWSER_TEST_P(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
   InjectDeviceInfoEntityToServer(/*suffix=*/1);
   InjectDeviceInfoEntityToServer(/*suffix=*/2);
