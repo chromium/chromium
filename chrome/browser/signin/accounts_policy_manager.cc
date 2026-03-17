@@ -86,7 +86,8 @@ class AccountsPolicyManager::DeleteProfileDialogManager
         ProfileBrowserCollection::GetForProfile(profile);
     browser_collection_observation_.Observe(browser_collection);
     // Find the last active browser window for the profile.
-    Browser* active_browser = chrome::FindLastActiveWithProfile(profile);
+    BrowserWindowInterface* const active_browser =
+        chrome::FindLastActiveWithProfile(profile);
     if (active_browser) {
       OnBrowserActivated(active_browser);
     }

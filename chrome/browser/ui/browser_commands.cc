@@ -752,7 +752,8 @@ Browser* OpenEmptyWindow(Profile* profile,
   params.should_trigger_session_restore = should_trigger_session_restore;
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
-    Browser* last_active_browser = chrome::FindLastActiveWithProfile(profile);
+    BrowserWindowInterface* const last_active_browser =
+        chrome::FindLastActiveWithProfile(profile);
     if (last_active_browser) {
       if (auto* controller = tabs::VerticalTabStripStateController::From(
               last_active_browser)) {

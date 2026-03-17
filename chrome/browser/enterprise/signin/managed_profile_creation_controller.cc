@@ -228,10 +228,11 @@ void ManagedProfileCreationController::OnProfileSeparationPoliciesReceived(
 void ManagedProfileCreationController::ShowManagementDisclaimer() {
   CHECK(policies_received_);
   CHECK(source_profile_);
-  Browser* browser = chrome::FindLastActiveWithProfile(source_profile_);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(source_profile_);
   bool has_browser_with_tab =
-      browser &&
-      browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureTabStrip);
+      browser && browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
+                     Browser::WindowFeature::kFeatureTabStrip);
 
   if (user_choice_for_testing_.has_value()) {
     CHECK_IS_TEST();

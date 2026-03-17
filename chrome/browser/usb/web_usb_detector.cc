@@ -77,12 +77,12 @@ void RecordNotificationClosure(WebUsbNotificationClosed disposition) {
 }
 
 GURL GetActiveTabURL() {
-  Browser* browser = chrome::FindLastActiveWithProfile(
+  BrowserWindowInterface* const browser = chrome::FindLastActiveWithProfile(
       ProfileManager::GetLastUsedProfileAllowedByPolicy());
   if (!browser)
     return GURL();
 
-  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  TabStripModel* tab_strip_model = browser->GetTabStripModel();
   content::WebContents* web_contents =
       tab_strip_model->GetWebContentsAt(tab_strip_model->active_index());
   if (!web_contents)

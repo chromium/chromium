@@ -55,7 +55,8 @@ void SendTabToSelfToolbarIconController::DisplayNewEntries(
   // If the active browser matches `profile_`, show the toolbar icon.
   // Otherwise, we will store this entry and wait to show on the next active
   // appropriate browser.
-  auto* browser = chrome::FindLastActiveWithProfile(profile_);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile_);
   if (browser && browser->IsActive() && CanShowOnBrowser(browser)) {
     ShowToolbarButton(*new_entry, browser);
     return;

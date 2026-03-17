@@ -218,10 +218,10 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
   // as kPrefValueLastAndURLs.
   if (!expected_urls_in_new_window_.empty()) {
     ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
-    Browser* pref_urls_opened_browser =
+    BrowserWindowInterface* const pref_urls_opened_browser =
         chrome::FindLastActiveWithProfile(browser()->profile());
     ASSERT_TRUE(pref_urls_opened_browser);
-    TabStripModel* model = pref_urls_opened_browser->tab_strip_model();
+    TabStripModel* model = pref_urls_opened_browser->GetTabStripModel();
     int size = static_cast<int>(expected_urls_in_new_window_.size());
     EXPECT_EQ(size, model->count());
     resource_coordinator::WaitForTransitionToLoaded(model);

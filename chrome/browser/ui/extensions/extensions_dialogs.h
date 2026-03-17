@@ -25,6 +25,7 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Browser;
+class BrowserWindowInterface;
 class ControlledHomeDialogControllerInterface;
 class SettingsOverriddenDialogController;
 class Profile;
@@ -125,7 +126,7 @@ void ShowMv2DeprecationDisabledDialog(
 
 // Shows a dialog when the user triggers the warning dismissal for an extension
 // affected by the MV2 deprecation.
-void ShowMv2DeprecationKeepDialog(Browser* browser,
+void ShowMv2DeprecationKeepDialog(BrowserWindowInterface* browser,
                                   const Extension& extension,
                                   base::OnceClosure accept_callback,
                                   base::OnceClosure cancel_callback);

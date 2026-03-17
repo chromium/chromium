@@ -5,7 +5,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/grit/branded_strings.h"
@@ -19,11 +19,11 @@ namespace extensions {
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kMv2KeepDialogOkButtonElementId);
 
-void ShowMv2DeprecationKeepDialog(Browser* browser,
+void ShowMv2DeprecationKeepDialog(BrowserWindowInterface* browser,
                                   const Extension& extension,
                                   base::OnceClosure accept_callback,
                                   base::OnceClosure cancel_callback) {
-  CHECK(ManifestV2ExperimentManager::Get(browser->profile())
+  CHECK(ManifestV2ExperimentManager::Get(browser->GetProfile())
             ->IsExtensionAffected(extension));
 
   auto split_cancel_callback =

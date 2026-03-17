@@ -225,11 +225,12 @@ void CertificateSelector::Show() {
   if (UseGlicDevFlow(web_contents_)) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-    Browser* browser = chrome::FindLastActiveWithProfile(profile);
+    BrowserWindowInterface* const browser =
+        chrome::FindLastActiveWithProfile(profile);
     if (browser) {
       SetModalType(ui::mojom::ModalType::kWindow);
       constrained_window::CreateBrowserModalDialogViews(
-          this, browser->GetBrowserView().GetNativeWindow())
+          this, browser->GetWindow()->GetNativeWindow())
           ->Show();
     } else {
       LOG(ERROR) << "Dev error. Make sure there's a browser window of the "

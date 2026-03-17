@@ -217,12 +217,13 @@ ExtensionErrorUIDesktop::ExtensionErrorUIDesktop(
 ExtensionErrorUIDesktop::~ExtensionErrorUIDesktop() = default;
 
 bool ExtensionErrorUIDesktop::ShowErrorInBubbleView() {
-  Browser* browser = chrome::FindLastActiveWithProfile(profile_);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile_);
   if (!browser)
     return false;
 
-  browser_ = browser;
-  global_error_->ShowBubbleView(browser);
+  browser_ = browser->GetBrowserForMigrationOnly();
+  global_error_->ShowBubbleView(browser_);
   return true;
 }
 

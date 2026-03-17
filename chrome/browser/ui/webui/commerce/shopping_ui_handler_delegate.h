@@ -9,7 +9,7 @@
 #include "components/commerce/core/webui/shopping_service_handler.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -40,7 +40,7 @@ class ShoppingUiHandlerDelegate : public ShoppingServiceHandler::Delegate {
   ukm::SourceId GetCurrentTabUkmSourceId() override;
 
  private:
-  void NavigateToUrl(Browser* browser, const GURL& url);
+  void NavigateToUrl(BrowserWindowInterface* browser, const GURL& url);
 
   raw_ptr<Profile> profile_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;

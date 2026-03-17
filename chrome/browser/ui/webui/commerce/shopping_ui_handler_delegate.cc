@@ -57,12 +57,13 @@ std::optional<GURL> ShoppingUiHandlerDelegate::GetCurrentTabUrl() {
 
 const bookmarks::BookmarkNode*
 ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
-  auto* browser = chrome::FindLastActiveWithProfile(profile_);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return nullptr;
   }
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return nullptr;
   }
@@ -87,7 +88,7 @@ ShoppingUiHandlerDelegate::GetOrAddBookmarkForCurrentUrl() {
 }
 
 void ShoppingUiHandlerDelegate::OpenUrlInNewTab(const GURL& url) {
-  auto* browser = chrome::FindLastActiveWithProfile(profile_);
+  BrowserWindowInterface* browser = chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }
@@ -132,12 +133,13 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
   return web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
 }
 
-void ShoppingUiHandlerDelegate::NavigateToUrl(Browser* browser,
+void ShoppingUiHandlerDelegate::NavigateToUrl(BrowserWindowInterface* browser,
                                               const GURL& url) {
   content::OpenURLParams params(url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  browser->GetBrowserForMigrationOnly()->OpenURL(
+      params, /*navigation_handle_callback=*/{});
 }
 
 }  // namespace commerce

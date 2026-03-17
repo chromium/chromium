@@ -80,7 +80,7 @@ content::WebContents* AddSelectedTabWithURL(Browser* browser,
 }
 
 content::WebContents* AddWebContents(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* source_contents,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,

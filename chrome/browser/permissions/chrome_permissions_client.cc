@@ -450,9 +450,10 @@ ChromePermissionsClient::DetermineIgnoreReason(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile);
   if (browser) {
-    if (browser->tab_strip_model()->empty()) {
+    if (browser->GetTabStripModel()->empty()) {
       return permissions::PermissionIgnoredReason::WINDOW_CLOSED;
     } else if (web_contents->IsBeingDestroyed()) {
       return permissions::PermissionIgnoredReason::TAB_CLOSED;

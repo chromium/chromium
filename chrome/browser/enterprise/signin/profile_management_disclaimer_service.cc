@@ -256,10 +256,11 @@ void ProfileManagementDisclaimerService::
     return;
   }
 
-  Browser* browser = chrome::FindLastActiveWithProfile(&profile_.get());
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(&profile_.get());
   bool has_browser_with_tab =
-      browser &&
-      browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureTabStrip);
+      browser && browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
+                     Browser::WindowFeature::kFeatureTabStrip);
   // If there is no browser and we are not in tests, abort.
   if (!has_browser_with_tab && !profile_separation_policies_for_testing_ &&
       !user_choice_for_testing_) {

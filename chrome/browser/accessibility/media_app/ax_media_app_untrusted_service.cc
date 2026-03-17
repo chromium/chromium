@@ -623,12 +623,13 @@ content::WebContents* AXMediaAppUntrustedService::GetMediaAppWebContents()
     const {
   Profile* profile =
       Profile::FromBrowserContext(base::to_address(browser_context_));
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile);
   if (!browser) {
     return nullptr;
   }
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   DCHECK(web_contents);
   return web_contents;
 }

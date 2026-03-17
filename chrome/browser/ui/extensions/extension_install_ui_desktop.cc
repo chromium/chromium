@@ -142,12 +142,13 @@ void ExtensionInstallUIDesktop::OnInstallFailure(
     return;
   }
 
-  Browser* browser = chrome::FindLastActiveWithProfile(profile());
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile());
   if (!browser) {  // Can be nullptr in unittests.
     return;
   }
   WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return;
   }

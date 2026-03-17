@@ -32,7 +32,8 @@ void PriceInsightsHandler::ShowSidePanelUI() {
 }
 
 void PriceInsightsHandler::ShowFeedback() {
-  auto* browser = chrome::FindLastActiveWithProfile(profile_);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile_);
   if (!browser) {
     return;
   }

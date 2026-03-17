@@ -64,7 +64,7 @@ content::WebContents* AddSelectedTabWithURL(Browser* browser,
 // Invariant: If `new_contents` is not nullptr, then the returned instance
 // should always match new_contents.get().
 content::WebContents* AddWebContents(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     content::WebContents* source_contents,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,

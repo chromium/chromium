@@ -42,13 +42,13 @@ gfx::AcceleratedWidget GetAcceleratedWidgetForContext(
     return gfx::kNullAcceleratedWidget;
   }
 
-  Browser* browser =
+  BrowserWindowInterface* const browser =
       chrome::FindLastActiveWithProfile(Profile::FromBrowserContext(context));
-  if (!browser || !browser->window()) {
+  if (!browser || !browser->GetWindow()) {
     return gfx::kNullAcceleratedWidget;
   }
 
-  auto* native_window = browser->window()->GetNativeWindow();
+  auto* native_window = browser->GetWindow()->GetNativeWindow();
   if (!native_window || !native_window->GetHost()) {
     return gfx::kNullAcceleratedWidget;
   }

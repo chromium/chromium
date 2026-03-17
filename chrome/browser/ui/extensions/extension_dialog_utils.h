@@ -23,7 +23,7 @@ namespace ui {
 class DialogModel;
 }  // namespace ui
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsToolbarDesktop;
 
 // Shows the dialog constructed from `dialog_model` for a single extension. This
@@ -57,7 +57,7 @@ void ShowDialog(ExtensionsToolbarDesktop* container,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
 // Shows the dialog constructed from `dialog_model` in `browser`.
-void ShowDialog(Browser* browser,
+void ShowDialog(BrowserWindowInterface* browser,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 #endif  // defined(TOOLKIT_VIEWS)
 

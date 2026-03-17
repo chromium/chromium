@@ -2590,7 +2590,7 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
         return AlreadyResponded();
       }
 
-      Browser* browser = chrome::FindLastActiveWithProfile(
+      BrowserWindowInterface* const browser = chrome::FindLastActiveWithProfile(
           Profile::FromBrowserContext(browser_context()));
       if (!browser) {
         return RespondNow(Error(kCouldNotFindWebContentsError));

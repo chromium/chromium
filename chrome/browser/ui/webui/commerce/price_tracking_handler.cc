@@ -208,7 +208,8 @@ void PriceTrackingHandler::ShowBookmarkEditorForCurrentUrl() {
   }
 
   auto* profile = Profile::FromWebUI(web_ui_);
-  auto* browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile);
   if (!browser) {
     return;
   }
@@ -219,7 +220,7 @@ void PriceTrackingHandler::ShowBookmarkEditorForCurrentUrl() {
     return;
   }
 
-  BookmarkEditor::Show(browser->window()->GetNativeWindow(), profile,
+  BookmarkEditor::Show(browser->GetWindow()->GetNativeWindow(), profile,
                        BookmarkEditor::EditDetails::EditNode(existing_node),
                        BookmarkEditor::SHOW_TREE);
 }
@@ -341,13 +342,13 @@ ukm::SourceId PriceTrackingHandler::GetCurrentTabUkmSourceId() {
 
 const bookmarks::BookmarkNode*
 PriceTrackingHandler::GetOrAddBookmarkForCurrentUrl() {
-  auto* browser =
+  BrowserWindowInterface* const browser =
       chrome::FindLastActiveWithProfile(Profile::FromWebUI(web_ui_));
   if (!browser) {
     return nullptr;
   }
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!web_contents) {
     return nullptr;
   }

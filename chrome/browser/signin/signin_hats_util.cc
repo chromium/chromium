@@ -222,7 +222,8 @@ void LaunchHatsSurveyForProfileInternal(
     return;
   }
 
-  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  BrowserWindowInterface* const browser =
+      chrome::FindLastActiveWithProfile(profile);
   if (!browser) {
     // An active browser is needed to launch the survey.
     if (defer_if_no_browser) {
