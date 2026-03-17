@@ -680,28 +680,30 @@ export class ClientRenderer {
   }
 
   appendEventToLog_(event) {
-    if (this.filterFunction(event.key)) {
-      const row = this.logTable.insertRow(-1);
-      row.classList.add('log-entry');
+    const row = this.logTable.insertRow(-1);
+    row.classList.add('log-entry');
+    row.dataset.key = event.key;
 
-      const timestampCell = row.insertCell(-1);
-      timestampCell.classList.add('log-timestamp');
-      timestampCell.textContent = millisecondsToString(event.time);
+    const timestampCell = row.insertCell(-1);
+    timestampCell.classList.add('log-timestamp');
+    timestampCell.textContent = millisecondsToString(event.time);
 
-      const propertyCell = row.insertCell(-1);
-      propertyCell.classList.add('log-property');
-      propertyCell.textContent = event.key;
+    const propertyCell = row.insertCell(-1);
+    propertyCell.classList.add('log-property');
+    propertyCell.textContent = event.key;
 
-      const valueCell = row.insertCell(-1);
-      valueCell.classList.add('log-value');
-      valueCell.appendChild(
-          this.createValueCellContent_(event.key, event.value));
+    const valueCell = row.insertCell(-1);
+    valueCell.classList.add('log-value');
+    valueCell.appendChild(this.createValueCellContent_(event.key, event.value));
 
-      if (event.key.toLowerCase().includes('error')) {
-        row.classList.add('log-error');
-      } else if (event.key.toLowerCase().includes('warning')) {
-        row.classList.add('log-warning');
-      }
+    if (event.key.toLowerCase().includes('error')) {
+      row.classList.add('log-error');
+    } else if (event.key.toLowerCase().includes('warning')) {
+      row.classList.add('log-warning');
+    }
+
+    if (!this.filterFunction(event.key)) {
+      row.hidden = true;
     }
   }
 
@@ -755,10 +757,16 @@ export class ClientRenderer {
       });
     };
 
-    if (this.selectedPlayer) {
-      removeChildren(this.logTable);
-      this.selectedPlayerLogIndex = 0;
-      this.drawLog_();
+    this.applyLogFilter_();
+  }
+
+  applyLogFilter_() {
+    for (const row of this.logTable.children) {
+      if (this.filterFunction(row.dataset.key)) {
+        row.hidden = false;
+      } else {
+        row.hidden = true;
+      }
     }
   }
 
