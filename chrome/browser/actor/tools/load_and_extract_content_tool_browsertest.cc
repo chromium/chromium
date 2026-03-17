@@ -513,8 +513,14 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
 }
 
 // Simulates the entire browser window being closed while the tool is running.
+// TODO(https://crbug.com/493408082): Fix the failure.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WindowClosedPrematurely DISABLED_WindowClosedPrematurely
+#else
+#define MAYBE_WindowClosedPrematurely WindowClosedPrematurely
+#endif
 IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
-                       WindowClosedPrematurely) {
+                       MAYBE_WindowClosedPrematurely) {
   const GURL url = embedded_test_server()->GetURL("/actor/simple.html");
   std::vector<GURL> urls = {url};
 
