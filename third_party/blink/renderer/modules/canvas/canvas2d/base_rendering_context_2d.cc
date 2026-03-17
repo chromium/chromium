@@ -1395,8 +1395,9 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   // A texture needs to exist on the GPU. If we aren't able to create an
   // accelerated SharedImage provider, we won't be able to transfer the canvas.
   // In that case, WebGPU access is not possible.
+  auto* base_provider = GetOrCreateResourceProvider();
   Canvas2DResourceProviderSharedImage* provider =
-      GetOrCreateResourceProvider()->As2DSharedImageProvider();
+      base_provider ? base_provider->As2DSharedImageProvider() : nullptr;
   if (!provider || !provider->IsAccelerated()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Unable to transfer canvas to GPU.");
