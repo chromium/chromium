@@ -33,6 +33,7 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
     EXPECT_EQ(key.IsRsa(), k->IsRsa());
     EXPECT_EQ(key.IsEc(), k->IsEc());
     EXPECT_EQ(key.IsEd25519(), k->IsEd25519());
+    EXPECT_EQ(key.IsX25519(), k->IsX25519());
   };
 
   expect_roundtrip(PrivateKey::GenerateRsa2048());
@@ -41,6 +42,7 @@ TEST(Keypair, GenerateAndRoundtripPrivateKey) {
   expect_roundtrip(PrivateKey::GenerateEcP384());
   expect_roundtrip(PrivateKey::GenerateEcP521());
   expect_roundtrip(PrivateKey::GenerateEd25519());
+  expect_roundtrip(PrivateKey::GenerateX25519());
 }
 
 TEST(Keypair, RoundtripEd25519Key) {
@@ -51,6 +53,17 @@ TEST(Keypair, RoundtripEd25519Key) {
 
   auto pub = k.ToEd25519PublicKey();
   auto npk = PublicKey::FromEd25519PublicKey(pub);
+  EXPECT_EQ(k.ToSubjectPublicKeyInfo(), npk.ToSubjectPublicKeyInfo());
+}
+
+TEST(Keypair, RoundtripX25519Key) {
+  auto k = PrivateKey::GenerateX25519();
+  auto priv = k.ToX25519PrivateKey();
+  auto nk = PrivateKey::FromX25519PrivateKey(priv);
+  EXPECT_EQ(k.ToPrivateKeyInfo(), nk.ToPrivateKeyInfo());
+
+  auto pub = k.ToX25519PublicKey();
+  auto npk = PublicKey::FromX25519PublicKey(pub);
   EXPECT_EQ(k.ToSubjectPublicKeyInfo(), npk.ToSubjectPublicKeyInfo());
 }
 
@@ -89,6 +102,7 @@ TEST(Keypair, PrivateKeyPredicates) {
   auto p521 = PrivateKey::GenerateEcP521();
   EXPECT_TRUE(p521.IsEc() && p521.IsEcP521());
   EXPECT_TRUE(PrivateKey::GenerateEd25519().IsEd25519());
+  EXPECT_TRUE(PrivateKey::GenerateX25519().IsX25519());
 }
 
 TEST(Keypair, PublicKeyPredicates) {
@@ -101,6 +115,8 @@ TEST(Keypair, PublicKeyPredicates) {
   EXPECT_TRUE(p521.IsEc() && p521.IsEcP521());
   EXPECT_TRUE(
       PublicKey::FromPrivateKey(PrivateKey::GenerateEd25519()).IsEd25519());
+  EXPECT_TRUE(
+      PublicKey::FromPrivateKey(PrivateKey::GenerateX25519()).IsX25519());
 }
 
 TEST(Keypair, X962UncompressedForm) {

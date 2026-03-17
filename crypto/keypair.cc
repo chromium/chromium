@@ -50,7 +50,7 @@ bssl::UniquePtr<EVP_PKEY> GenerateEc(int nid) {
 
 bool IsSupportedEvpId(int evp_id) {
   return evp_id == EVP_PKEY_RSA || evp_id == EVP_PKEY_EC ||
-         evp_id == EVP_PKEY_ED25519;
+         evp_id == EVP_PKEY_ED25519 || evp_id == EVP_PKEY_X25519;
 }
 
 std::vector<uint8_t> ExportEVPPublicKey(EVP_PKEY* pkey) {
@@ -160,6 +160,18 @@ PrivateKey PrivateKey::GenerateEd25519() {
 }
 
 // static
+PrivateKey PrivateKey::GenerateX25519() {
+  OpenSSLErrStackTracer err_tracer(FROM_HERE);
+
+  std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> unused_pubkey;
+  std::array<uint8_t, X25519_PRIVATE_KEY_LEN> privkey;
+
+  X25519_keypair(unused_pubkey.data(), privkey.data());
+
+  return FromX25519PrivateKey(privkey);
+}
+
+// static
 std::optional<PrivateKey> PrivateKey::FromPrivateKeyInfo(
     base::span<const uint8_t> pki) {
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
@@ -183,8 +195,16 @@ std::optional<PrivateKey> PrivateKey::FromPrivateKeyInfo(
 // static
 PrivateKey PrivateKey::FromEd25519PrivateKey(
     base::span<const uint8_t, 32> key) {
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new_raw_private_key(
-      EVP_PKEY_ED25519, nullptr, key.data(), key.size()));
+  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_from_raw_private_key(
+      EVP_pkey_ed25519(), key.data(), key.size()));
+  CHECK(pkey);
+  return PrivateKey(std::move(pkey));
+}
+
+// static
+PrivateKey PrivateKey::FromX25519PrivateKey(base::span<const uint8_t, 32> key) {
+  bssl::UniquePtr<EVP_PKEY> pkey(
+      EVP_PKEY_from_raw_private_key(EVP_pkey_x25519(), key.data(), key.size()));
   CHECK(pkey);
   return PrivateKey(std::move(pkey));
 }
@@ -217,6 +237,15 @@ std::array<uint8_t, 32> PrivateKey::ToEd25519PrivateKey() const {
   return result;
 }
 
+std::array<uint8_t, 32> PrivateKey::ToX25519PrivateKey() const {
+  CHECK(IsX25519());
+  std::array<uint8_t, 32> result;
+  size_t len = std::size(result);
+  CHECK(EVP_PKEY_get_raw_private_key(key_.get(), result.data(), &len));
+  CHECK(len == std::size(result));
+  return result;
+}
+
 std::vector<uint8_t> PrivateKey::ToSubjectPublicKeyInfo() const {
   return ExportEVPPublicKey(key_.get());
 }
@@ -234,6 +263,15 @@ std::array<uint8_t, 32> PrivateKey::ToEd25519PublicKey() const {
   return result;
 }
 
+std::array<uint8_t, 32> PrivateKey::ToX25519PublicKey() const {
+  CHECK(IsX25519());
+  std::array<uint8_t, 32> result;
+  size_t len = std::size(result);
+  CHECK(EVP_PKEY_get_raw_public_key(key_.get(), result.data(), &len));
+  CHECK(len == std::size(result));
+  return result;
+}
+
 bool PrivateKey::IsRsa() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_RSA;
 }
@@ -244,6 +282,10 @@ bool PrivateKey::IsEc() const {
 
 bool PrivateKey::IsEd25519() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_ED25519;
+}
+
+bool PrivateKey::IsX25519() const {
+  return EVP_PKEY_id(key_.get()) == EVP_PKEY_X25519;
 }
 
 bool PrivateKey::IsEcP256() const {
@@ -355,8 +397,18 @@ std::optional<PublicKey> PublicKey::FromEcP521Point(
 PublicKey PublicKey::FromEd25519PublicKey(base::span<const uint8_t, 32> key) {
   static_assert(std::size(key) == ED25519_PUBLIC_KEY_LEN);
 
-  bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new_raw_public_key(
-      EVP_PKEY_ED25519, nullptr, key.data(), key.size()));
+  bssl::UniquePtr<EVP_PKEY> pkey(
+      EVP_PKEY_from_raw_public_key(EVP_pkey_ed25519(), key.data(), key.size()));
+  CHECK(pkey);
+  return PublicKey(std::move(pkey));
+}
+
+// static
+PublicKey PublicKey::FromX25519PublicKey(base::span<const uint8_t, 32> key) {
+  static_assert(std::size(key) == X25519_PUBLIC_VALUE_LEN);
+
+  bssl::UniquePtr<EVP_PKEY> pkey(
+      EVP_PKEY_from_raw_public_key(EVP_pkey_x25519(), key.data(), key.size()));
   CHECK(pkey);
   return PublicKey(std::move(pkey));
 }
@@ -367,6 +419,24 @@ std::vector<uint8_t> PublicKey::ToSubjectPublicKeyInfo() const {
 
 std::vector<uint8_t> PublicKey::ToUncompressedX962Point() const {
   return EvpToUncompressedX962Point(key_.get());
+}
+
+std::array<uint8_t, 32> PublicKey::ToEd25519PublicKey() const {
+  CHECK(IsEd25519());
+  std::array<uint8_t, 32> result;
+  size_t len = std::size(result);
+  CHECK(EVP_PKEY_get_raw_public_key(key_.get(), result.data(), &len));
+  CHECK(len == std::size(result));
+  return result;
+}
+
+std::array<uint8_t, 32> PublicKey::ToX25519PublicKey() const {
+  CHECK(IsX25519());
+  std::array<uint8_t, 32> result;
+  size_t len = std::size(result);
+  CHECK(EVP_PKEY_get_raw_public_key(key_.get(), result.data(), &len));
+  CHECK(len == std::size(result));
+  return result;
 }
 
 std::vector<uint8_t> PublicKey::GetRsaExponent() const {
@@ -397,6 +467,10 @@ bool PublicKey::IsEc() const {
 
 bool PublicKey::IsEd25519() const {
   return EVP_PKEY_id(key_.get()) == EVP_PKEY_ED25519;
+}
+
+bool PublicKey::IsX25519() const {
+  return EVP_PKEY_id(key_.get()) == EVP_PKEY_X25519;
 }
 
 bool PublicKey::IsEcP256() const {

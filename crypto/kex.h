@@ -33,6 +33,13 @@ CRYPTO_EXPORT void EcdhP384(const crypto::keypair::PublicKey& theirs,
                             const crypto::keypair::PrivateKey& ours,
                             base::span<uint8_t, 48> out);
 
+// The caller is responsible for ensuring that `theirs` and `ours` are X25519
+// keys, e.g. with `IsX25519`. Passing keys of the wrong type will cause the
+// function to abort.
+CRYPTO_EXPORT void X25519(const crypto::keypair::PublicKey& theirs,
+                          const crypto::keypair::PrivateKey& ours,
+                          base::span<uint8_t, 32> out);
+
 }  // namespace crypto::kex
 
 #endif  // CRYPTO_KEX_H_
