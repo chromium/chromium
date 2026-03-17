@@ -473,6 +473,10 @@ std::optional<SessionService::DeferralParams> SessionServiceImpl::ShouldDefer(
     DbscRequest& request,
     HttpRequestHeaders* extra_headers,
     const FirstPartySetMetadata& first_party_set_metadata) {
+  if (!request.allows_device_bound_sessions()) {
+    return std::nullopt;
+  }
+
   if (pending_initialization_) {
     return DeferralParams();
   }
@@ -1448,26 +1452,29 @@ void SessionServiceImpl::HandleResponseHeaders(
     DbscRequest& request,
     HttpResponseHeaders* headers,
     const FirstPartySetMetadata& first_party_set_metadata) {
-  const auto& request_url = request.url();
-
-  // If response header Sec-Session-Registration is present and configured
-  // appropriately, trigger a registration request per header value to attempt
-  // to create a new session.
-  if (request.allows_device_bound_session_registration()) {
-    std::vector<device_bound_sessions::RegistrationFetcherParam> params =
-        device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
-            request_url, headers, restricted_sites_);
-    for (auto& param : params) {
-      RegisterBoundSession(request.device_bound_session_access_callback(),
-                           std::move(param), request.isolation_info(),
-                           request.net_log(), request.initiator());
-    }
+  // Only process device bound session headers if the request allows device
+  // bound sessions.
+  if (!request.allows_device_bound_sessions()) {
+    return;
   }
 
-  // If response header Sec-Session-Challenge is present and configured
-  // appropriately, for each header value, store the challenge in advance for
-  // the next relevant refresh request that gets triggered. This is to help
-  // avoid a round-trip for when the next refresh request is required.
+  const auto& request_url = request.url();
+
+  // If response header Sec-Session-Registration is present, trigger a
+  // registration request per header value to attempt to create a new session.
+  std::vector<device_bound_sessions::RegistrationFetcherParam> params =
+      device_bound_sessions::RegistrationFetcherParam::CreateIfValid(
+          request_url, headers, restricted_sites_);
+  for (auto& param : params) {
+    RegisterBoundSession(request.device_bound_session_access_callback(),
+                         std::move(param), request.isolation_info(),
+                         request.net_log(), request.initiator());
+  }
+
+  // If response header Sec-Session-Challenge is present, for each header
+  // value, store the challenge in advance for the next relevant refresh
+  // request that gets triggered. This is to help avoid a round-trip for when
+  // the next refresh request is required.
   std::vector<device_bound_sessions::SessionChallengeParam> challenge_params =
       device_bound_sessions::SessionChallengeParam::CreateIfValid(request_url,
                                                                   headers);

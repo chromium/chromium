@@ -578,8 +578,8 @@ void ConfigureUrlRequest(const ResourceRequest& request,
     url_request.set_socket_tag(request.socket_tag);
   }
 
-  url_request.set_allows_device_bound_session_registration(
-      request.allows_device_bound_session_registration);
+  url_request.set_allows_device_bound_sessions(
+      request.allows_device_bound_sessions);
 
   if (base::FeatureList::IsEnabled(features::kSendSameSiteLaxForFedCM) &&
       (request.destination == mojom::RequestDestination::kWebIdentity ||

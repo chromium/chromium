@@ -1366,7 +1366,7 @@ class URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest
     request_ = context_->CreateRequest(GURL("https://www.example.com"),
                                        DEFAULT_PRIORITY, &delegate_,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
-    request_->set_allows_device_bound_session_registration(true);
+    request_->set_allows_device_bound_sessions(true);
   }
 
   device_bound_sessions::SessionServiceMock& GetMockService() {
@@ -1766,7 +1766,7 @@ TEST_F(URLRequestHttpJobWithMockSocketsDeviceBoundSessionServiceTest,
   std::unique_ptr<URLRequest> request = context_->CreateRequest(
       GURL("wss://www.example.com"), DEFAULT_PRIORITY, &delegate_,
       TRAFFIC_ANNOTATION_FOR_TESTS, /*is_for_websockets=*/true);
-  request->set_allows_device_bound_session_registration(true);
+  request->set_allows_device_bound_sessions(true);
   HttpRequestHeaders headers = WebSocketCommonTestHeaders();
   request->SetExtraRequestHeaders(headers);
 

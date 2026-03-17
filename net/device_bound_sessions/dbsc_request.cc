@@ -97,8 +97,8 @@ NetworkDelegate* DbscRequest::network_delegate() const {
   return request_->network_delegate();
 }
 
-bool DbscRequest::allows_device_bound_session_registration() const {
-  return request_->allows_device_bound_session_registration();
+bool DbscRequest::allows_device_bound_sessions() const {
+  return request_->allows_device_bound_sessions();
 }
 
 int DbscRequest::load_flags() const {

@@ -634,10 +634,10 @@ struct URLRequest {
   // embedder.
   SocketTag socket_tag;
 
-  // Whether this request is allowed to register new device bound
-  // sessions or process challenges for existing device bound sessions
-  // (e.g. due to an Origin Trial).
-  bool allows_device_bound_session_registration;
+  // Whether this request is allowed to belong to a device bound session. This
+  // includes registering a new session, accepting challenges, or deferring the
+  // request until a session is refreshed.
+  bool allows_device_bound_sessions = true;
 
   // Permissions Policy of the request.
   // If it's nullopt then the request's initiator didn't set the permissions

@@ -957,15 +957,14 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 
-  // Whether device-bound session registration and challenge are allowed
-  // for this request (e.g. by Origin Trial)
-  bool allows_device_bound_session_registration() const {
-    return allows_device_bound_session_registration_;
+  // Whether this request is allowed to belong to a device bound session. This
+  // includes registering a new session, accepting challenges, or deferring the
+  // request until a session is refreshed.
+  bool allows_device_bound_sessions() const {
+    return allows_device_bound_sessions_;
   }
-  void set_allows_device_bound_session_registration(
-      bool allows_device_bound_session_registration) {
-    allows_device_bound_session_registration_ =
-        allows_device_bound_session_registration;
+  void set_allows_device_bound_sessions(bool allows_device_bound_sessions) {
+    allows_device_bound_sessions_ = allows_device_bound_sessions;
   }
 
   // Whether this request was in the scope of any device-bound session for this
@@ -1286,8 +1285,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   base::RepeatingCallback<void(const device_bound_sessions::SessionAccess&)>
       device_bound_session_access_callback_;
 
-  // Whether the request is allowed to register new device-bound sessions
-  bool allows_device_bound_session_registration_ = true;
+  // Whether the request is allowed to belong to a device bound session.
+  bool allows_device_bound_sessions_ = true;
   // How existing device-bound sessions for the request's site interacted with
   // this request.
   base::flat_map<device_bound_sessions::SessionKey,

@@ -67,7 +67,7 @@ class NET_EXPORT DbscRequest {
   bool ignore_unsafe_method_for_same_site_lax() const;
   const CookieAccessResultList& maybe_sent_cookies() const;
   NetworkDelegate* network_delegate() const;
-  bool allows_device_bound_session_registration() const;
+  bool allows_device_bound_sessions() const;
   int load_flags() const;
 
   // Methods that need to do WebSocket normalization:

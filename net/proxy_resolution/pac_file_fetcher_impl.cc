@@ -173,6 +173,11 @@ int PacFileFetcherImpl::Fetch(
   // requests, PAC requests are aren't blocked on them.
   cur_request_ = url_request_context_->CreateRequest(url, MAXIMUM_PRIORITY,
                                                      this, traffic_annotation);
+  // DBSC should be disabled for PAC fetches to avoid a circular dependency
+  // leading to a deadlock: fetching a PAC file might trigger a DBSC
+  // session refresh, which in turn might require another PAC fetch
+  // to resolve the proxy for the refresh request (crbug.com/483088603).
+  cur_request_->set_allows_device_bound_sessions(false);
 
   cur_request_->set_isolation_info(isolation_info());
 

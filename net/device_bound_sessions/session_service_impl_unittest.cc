@@ -51,6 +51,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::UnorderedElementsAre;
@@ -2387,6 +2388,76 @@ TEST_F(SessionServiceImplTest, SessionUsage) {
   EXPECT_EQ(request->device_bound_session_usage().size(), 1);
   EXPECT_EQ(request->device_bound_session_usage().at(session_key),
             SessionUsage::kDeferred);
+}
+
+TEST_F(SessionServiceImplTest, ShouldDeferRespectsAllowsDeviceBoundSessions) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  request->set_allows_device_bound_sessions(false);
+
+  HttpRequestHeaders extra_headers;
+  DbscRequest dbsc_request(request.get());
+  std::optional<SessionService::DeferralParams> deferral =
+      service().ShouldDefer(dbsc_request, &extra_headers,
+                            FirstPartySetMetadata());
+
+  EXPECT_FALSE(deferral.has_value());
+}
+
+TEST_F(SessionServiceImplTest,
+       HandleRegistrationHeaderRespectsAllowsDeviceBoundSessions) {
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_allows_device_bound_sessions(false);
+
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("Secure-Session-Registration",
+                     "(ES256);path=\"register\";challenge=\"challenge\"");
+
+  // Let registration succeed if request is made.
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
+      kSessionId, kRefreshUrlString, kOrigin);
+
+  DbscRequest dbsc_request(request.get());
+  service().HandleResponseHeaders(dbsc_request, headers.get(),
+                                  FirstPartySetMetadata());
+
+  // Registration should NOT be triggered.
+  base::test::TestFuture<std::vector<SessionKey>> future;
+  service().GetAllSessionsAsync(
+      future.GetCallback<const std::vector<SessionKey>&>());
+  EXPECT_THAT(future.Get(), IsEmpty());
+}
+
+TEST_F(SessionServiceImplTest,
+       HandleChallengeHeaderRespectsAllowsDeviceBoundSessions) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+  SessionKey session_key{SchemefulSite(GURL(kOrigin)), Session::Id(kSessionId)};
+  Session* session = service().GetSession(session_key);
+  ASSERT_TRUE(session);
+  EXPECT_FALSE(session->cached_challenge().has_value());
+
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context()->CreateRequest(kTestUrl, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(kTestUrl));
+  request->set_allows_device_bound_sessions(false);
+
+  auto headers = base::MakeRefCounted<HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("Secure-Session-Challenge",
+                     "\"challenge\";id=\"" + std::string(kSessionId) + "\"");
+
+  DbscRequest dbsc_request(request.get());
+  service().HandleResponseHeaders(dbsc_request, headers.get(),
+                                  FirstPartySetMetadata());
+
+  // Challenge should NOT be stored.
+  EXPECT_FALSE(session->cached_challenge().has_value());
 }
 
 }  // namespace

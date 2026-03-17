@@ -101,6 +101,7 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
                          CompletionOnceCallback callback,
                          GURL* new_url) override {
     EXPECT_TRUE(request->load_flags() & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+    EXPECT_FALSE(request->allows_device_bound_sessions());
     return OK;
   }
 };
