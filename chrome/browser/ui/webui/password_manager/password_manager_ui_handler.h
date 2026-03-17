@@ -70,6 +70,9 @@ class PasswordManagerUIHandler : public password_manager::mojom::PageHandler {
 
   void StartPasswordChange(int credential_id) override;
 
+  void GetPasswordManagerActionableError(
+      GetPasswordManagerActionableErrorCallback callback) override;
+
  private:
   password_manager::SavedPasswordsPresenter* GetSavedPasswordsPresenter();
 

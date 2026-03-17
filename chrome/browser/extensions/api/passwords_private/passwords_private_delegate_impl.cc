@@ -320,6 +320,27 @@ webauthn::PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
   return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
 }
 
+extensions::api::passwords_private::PasswordManagerActionableError
+ToActionableApiError(password_manager::ActionableError error) {
+  using extensions::api::passwords_private::PasswordManagerActionableError;
+  switch (error) {
+    case password_manager::ActionableError::kNoError:
+      return PasswordManagerActionableError::kNoError;
+    case password_manager::ActionableError::kInactionable:
+      return PasswordManagerActionableError::kInactionable;
+    case password_manager::ActionableError::kInactionableTemporaryError:
+      return PasswordManagerActionableError::kInactionableTemporaryError;
+    case password_manager::ActionableError::kSignInNeeded:
+      return PasswordManagerActionableError::kSignInNeeded;
+    case password_manager::ActionableError::kKeychainError:
+      return PasswordManagerActionableError::kKeychainError;
+    case password_manager::ActionableError::kTrustedVaultKeyNeeded:
+      return PasswordManagerActionableError::kTrustedVaultKeyNeeded;
+    case password_manager::ActionableError::kNeedsPassphrase:
+      return PasswordManagerActionableError::kNeedsPassphrase;
+  }
+}
+
 }  // namespace
 
 namespace extensions {
@@ -352,6 +373,15 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
                           weak_ptr_factory_.GetWeakPtr()));
   saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
+
+  if (auto profile_store = ProfilePasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS)) {
+    profile_password_store_observation_.Observe(profile_store.get());
+  }
+  if (auto account_store = AccountPasswordStoreFactory::GetForProfile(
+          profile_, ServiceAccessType::EXPLICIT_ACCESS)) {
+    account_password_store_observation_.Observe(account_store.get());
+  }
 
   if (syncer::SyncService* service =
           SyncServiceFactory::GetForProfile(profile_)) {
@@ -1270,6 +1300,24 @@ void PasswordsPrivateDelegateImpl::OnReauthCompleted(bool authenticated) {
 void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged(
     const password_manager::PasswordStoreChangeList& changes) {
   SetCredentials(saved_passwords_presenter_.GetSavedCredentials());
+}
+
+void PasswordsPrivateDelegateImpl::OnLoginsChanged(
+    password_manager::PasswordStoreInterface*,
+    const password_manager::PasswordStoreChangeList&) {}
+
+void PasswordsPrivateDelegateImpl::OnLoginsRetained(
+    password_manager::PasswordStoreInterface*,
+    const std::vector<password_manager::PasswordForm>&) {}
+
+void PasswordsPrivateDelegateImpl::OnErrorStateChanged(
+    password_manager::PasswordStoreInterface* store,
+    password_manager::ActionableError error) {
+  if (PasswordsPrivateEventRouter* router =
+          PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
+    router->OnPasswordManagerActionableErrorChanged(
+        ToActionableApiError(GetActionableError()));
+  }
 }
 
 void PasswordsPrivateDelegateImpl::OnWebAppInstalledWithOsHooks(

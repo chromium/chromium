@@ -21,6 +21,31 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace {
+
+password_manager::mojom::PasswordManagerActionableError ToActionableMojomError(
+    password_manager::ActionableError error) {
+  using password_manager::mojom::PasswordManagerActionableError;
+  switch (error) {
+    case password_manager::ActionableError::kNoError:
+      return PasswordManagerActionableError::kNoError;
+    case password_manager::ActionableError::kInactionable:
+      return PasswordManagerActionableError::kInactionable;
+    case password_manager::ActionableError::kInactionableTemporaryError:
+      return PasswordManagerActionableError::kInactionableTemporaryError;
+    case password_manager::ActionableError::kSignInNeeded:
+      return PasswordManagerActionableError::kSignInNeeded;
+    case password_manager::ActionableError::kKeychainError:
+      return PasswordManagerActionableError::kKeychainError;
+    case password_manager::ActionableError::kTrustedVaultKeyNeeded:
+      return PasswordManagerActionableError::kTrustedVaultKeyNeeded;
+    case password_manager::ActionableError::kNeedsPassphrase:
+      return PasswordManagerActionableError::kNeedsPassphrase;
+  }
+}
+
+}  // namespace
+
 PasswordManagerUIHandler::PasswordManagerUIHandler(
     mojo::PendingReceiver<password_manager::mojom::PageHandler> receiver,
     mojo::PendingRemote<password_manager::mojom::Page> page,
@@ -125,4 +150,10 @@ void PasswordManagerUIHandler::SwitchBiometricAuthBeforeFillingState(
 void PasswordManagerUIHandler::StartPasswordChange(int credential_id) {
   passwords_private_delegate_->StartPasswordChange(credential_id,
                                                    web_contents_);
+}
+
+void PasswordManagerUIHandler::GetPasswordManagerActionableError(
+    GetPasswordManagerActionableErrorCallback callback) {
+  std::move(callback).Run(ToActionableMojomError(
+      passwords_private_delegate_->GetActionableError()));
 }

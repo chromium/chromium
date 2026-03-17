@@ -329,4 +329,16 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   EXPECT_FALSE(future_false.Get());
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest,
+       GetPasswordManagerActionableError_ReturnsCorrectValue) {
+  test_delegate().SetActionableError(
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+
+  base::test::TestFuture<mojom::PasswordManagerActionableError> future;
+  handler().GetPasswordManagerActionableError(future.GetCallback());
+
+  EXPECT_EQ(future.Get(),
+            mojom::PasswordManagerActionableError::kTrustedVaultKeyNeeded);
+}
+
 }  // namespace password_manager

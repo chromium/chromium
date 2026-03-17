@@ -57,6 +57,7 @@ namespace extensions {
 class PasswordsPrivateDelegateImpl
     : public PasswordsPrivateDelegate,
       public password_manager::SavedPasswordsPresenter::Observer,
+      public password_manager::PasswordStoreInterface::Observer,
       public syncer::SyncServiceObserver,
       public web_app::WebAppInstallManagerObserver {
  public:
@@ -202,6 +203,16 @@ class PasswordsPrivateDelegateImpl
   void OnSavedPasswordsChanged(
       const password_manager::PasswordStoreChangeList& changes) override;
 
+  // password_manager::PasswordStoreInterface::Observer implementation.
+  void OnLoginsChanged(
+      password_manager::PasswordStoreInterface* store,
+      const password_manager::PasswordStoreChangeList& changes) override;
+  void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
+                        const std::vector<password_manager::PasswordForm>&
+                            retained_passwords) override;
+  void OnErrorStateChanged(password_manager::PasswordStoreInterface* store,
+                           password_manager::ActionableError error) override;
+
   // web_app::WebAppInstallManagerObserver implementation.
   void OnWebAppInstalledWithOsHooks(const webapps::AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;
@@ -316,6 +327,13 @@ class PasswordsPrivateDelegateImpl
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
+
+  base::ScopedObservation<password_manager::PasswordStoreInterface,
+                          password_manager::PasswordStoreInterface::Observer>
+      profile_password_store_observation_{this};
+  base::ScopedObservation<password_manager::PasswordStoreInterface,
+                          password_manager::PasswordStoreInterface::Observer>
+      account_password_store_observation_{this};
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

@@ -48,6 +48,16 @@ declare global {
         OTHER_ERROR = 'OTHER_ERROR',
       }
 
+      export enum PasswordManagerActionableError {
+        NO_ERROR = 'NO_ERROR',
+        INACTIONABLE = 'INACTIONABLE',
+        INACTIONABLE_TEMPORARY_ERROR = 'INACTIONABLE_TEMPORARY_ERROR',
+        SIGN_IN_NEEDED = 'SIGN_IN_NEEDED',
+        KEYCHAIN_ERROR = 'KEYCHAIN_ERROR',
+        TRUSTED_VAULT_KEY_NEEDED = 'TRUSTED_VAULT_KEY_NEEDED',
+        NEEDS_PASSPHRASE = 'NEEDS_PASSPHRASE',
+      }
+
       export enum ImportResultsStatus {
         UNKNOWN_ERROR = 'UNKNOWN_ERROR',
         SUCCESS = 'SUCCESS',
@@ -261,6 +271,8 @@ declare global {
           ChromeEvent<(status: PasswordCheckStatus) => void>;
       export const onPasswordManagerAuthTimeout:
           ChromeEvent<() => void>;
+      export const onPasswordManagerActionableErrorChanged:
+          ChromeEvent<(error: PasswordManagerActionableError) => void>;
     }
   }
 }

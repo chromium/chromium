@@ -137,4 +137,15 @@ void PasswordsPrivateEventRouter::OnPasswordManagerAuthTimeout() {
       api::passwords_private::OnPasswordManagerAuthTimeout::Create()));
 }
 
+void PasswordsPrivateEventRouter::OnPasswordManagerActionableErrorChanged(
+    api::passwords_private::PasswordManagerActionableError error) {
+  auto extension_event = std::make_unique<Event>(
+      events::PASSWORDS_PRIVATE_ON_PASSWORD_MANAGER_ACTIONABLE_ERROR_CHANGED,
+      api::passwords_private::OnPasswordManagerActionableErrorChanged::
+          kEventName,
+      api::passwords_private::OnPasswordManagerActionableErrorChanged::Create(
+          error));
+  event_router_->BroadcastEvent(std::move(extension_event));
+}
+
 }  // namespace extensions

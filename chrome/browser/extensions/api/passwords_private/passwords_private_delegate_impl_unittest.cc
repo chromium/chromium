@@ -556,6 +556,26 @@ TEST_F(PasswordsPrivateDelegateImplTest,
             delegate->GetActionableError());
 }
 
+TEST_F(PasswordsPrivateDelegateImplTest, ActionableErrorChanged) {
+  auto delegate = CreateDelegate();
+
+  PasswordEventObserver observer(
+      api::passwords_private::OnPasswordManagerActionableErrorChanged::
+          kEventName);
+  event_router_->AddEventObserver(&observer);
+
+  profile_store_->SetError(
+      password_manager::ActionableError::kTrustedVaultKeyNeeded);
+  profile_store_->NotifyAboutError();
+
+  base::Value args = observer.PassEventArgs();
+  ASSERT_TRUE(args.is_list());
+  ASSERT_EQ(1u, args.GetList().size());
+  EXPECT_EQ("TRUSTED_VAULT_KEY_NEEDED", args.GetList()[0].GetString());
+
+  event_router_->RemoveEventObserver(&observer);
+}
+
 TEST_F(PasswordsPrivateDelegateImplTest,
        PasswordsDuplicatedInStoresAreRepresentedAsSingleEntity) {
   auto delegate = CreateDelegate();

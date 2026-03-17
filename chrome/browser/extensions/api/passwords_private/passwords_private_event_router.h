@@ -76,6 +76,10 @@ class PasswordsPrivateEventRouter : public KeyedService {
   // Notifies listeners about the timeout for password manager access.
   void OnPasswordManagerAuthTimeout();
 
+  // Notifies listeners about a change to the password manager actionable error.
+  void OnPasswordManagerActionableErrorChanged(
+      api::passwords_private::PasswordManagerActionableError error);
+
  private:
   void SendSavedPasswordListToListeners();
   void SendPasswordExceptionListToListeners();
