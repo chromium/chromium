@@ -64,9 +64,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxAllowNoticeFor3PCBlockedTrial, false);
-#if BUILDFLAG(IS_ANDROID)
-  registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);
-#endif
   // TODO: b/462419925 - Deprecate these prefs post-Mode B rollback.
   registry->RegisterBooleanPref(prefs::kShowRollbackUiModeB, false);
   registry->RegisterBooleanPref(

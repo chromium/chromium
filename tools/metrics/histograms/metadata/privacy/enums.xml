@@ -407,28 +407,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/private_aggregation/private_aggregation_pending_contributions.h:TruncationResult) -->
 
-<enum name="PrivacySandboxStorageActivityType">
-  <int value="0" label="Received kOther (partial CCT or unknown) type"/>
-  <int value="1" label="Received kTabbed (BrowserApp) type"/>
-  <int value="2" label="Received kAGSACustomTab type"/>
-  <int value="3" label="Received kNonAGSACustomTab type"/>
-  <int value="4" label="Received kTrustedWebActivity type"/>
-  <int value="5" label="Received kWebapp type"/>
-  <int value="6" label="Received kWebApk type"/>
-  <int value="7" label="Received kPreFirstTab type"/>
-</enum>
-
-<enum name="PrivacySandboxStorageUserSegmentByRecentActivity">
-  <int value="0" label="kHasOther"/>
-  <int value="1" label="kHasBrowserApp"/>
-  <int value="2" label="kHasAGSACCT"/>
-  <int value="3" label="kHasNonAGSACCT"/>
-  <int value="4" label="kHasPWA"/>
-  <int value="5" label="kHasTWA"/>
-  <int value="6" label="kHasWebapp"/>
-  <int value="7" label="kHasPreFirstTab"/>
-</enum>
-
 <enum name="QuickDeleteAction">
   <int value="0" label="Entry from menu item clicked"/>
   <int value="1" label="Delete button on dialog clicked"/>

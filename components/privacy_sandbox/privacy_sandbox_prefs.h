@@ -145,11 +145,6 @@ inline constexpr char kPrivacySandboxTopicsConsentLastUpdateReason[] =
 inline constexpr char kPrivacySandboxTopicsConsentTextAtLastUpdate[] =
     "privacy_sandbox.topics_consent.text_at_last_update";
 
-// Pref which contains a list of the activity type from recent chrome launches.
-// Version 2 after enum values changed.
-inline constexpr char kPrivacySandboxActivityTypeRecord2[] =
-    "privacy_sandbox.activity_type.record2";
-
 inline constexpr char kPrivacySandboxAllowNoticeFor3PCBlockedTrial[] =
     "privacy_sandbox.allow_notice_for_3PC_blocked_trial";
 

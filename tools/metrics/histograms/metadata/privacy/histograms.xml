@@ -19,33 +19,6 @@ reviewer.
 
 <histograms>
 
-<variants name="ActivityTypeStoragePercentage">
-  <variant name="AGSACCT"
-      summary="Percentage of AGSACCT in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-  <variant name="BrApp"
-      summary="Percentage of BrApp in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-  <variant name="NonAGSACCT"
-      summary="Percentage of NonAGSACCT in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-  <variant name="Other"
-      summary="Percentage of Other in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-  <variant name="PreFirstTab"
-      summary="Percentage of PreFirstTab in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-  <variant name="TWA"
-      summary="Percentage of TWA in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-  <variant name="WebApk"
-      summary="Percentage of WebApk in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-  <variant name="WebApp"
-      summary="Percentage of WebApp in the list stored in the
-               privacy_sandbox.activity_type.record2 pref"/>
-</variants>
-
 <variants name="DIPSCookieMode">
   <variant name=".Block3PC"
       summary="in a NON-off-the-record profile, with third-party cookies
@@ -642,73 +615,6 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <summary>
     Recorded when we attempt to show a Privacy Guide NTP promotion as instructed
     by the server. True if the conditions to do so are met.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2"
-    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2026-07-12">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the user segment based on the 10 most recent records. Recorded at
-    most once on Clank startup.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2"
-    enum="PrivacySandboxStorageUserSegmentByRecentActivity"
-    expires_after="2026-05-07">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the user segment based on the 20 most recent records. Recorded at
-    most once on Clank startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord"
-    units="days" expires_after="2026-05-07">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the days since the oldest record in the Activity Type Storage list.
-    Recorded once on Clank startup.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.ActivityTypeStorage.Percentage.{ActivityTypeStoragePercentage}2"
-    units="%" expires_after="2026-08-02">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the percentage of each PrivacySandboxStorageActivityType launch from
-    the list stored in the privacy_sandbox.activity_type.record pref
-  </summary>
-  <token key="ActivityTypeStoragePercentage"
-      variants="ActivityTypeStoragePercentage"/>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.RecordsLength"
-    units="count" expires_after="2026-05-07">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the size of the activity type record log. Recorded once on Clank
-    startup.
-  </summary>
-</histogram>
-
-<histogram name="PrivacySandbox.ActivityTypeStorage.TypeReceived"
-    enum="PrivacySandboxStorageActivityType" expires_after="2026-07-12">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the PrivacySandboxStorageActivityType that privacy sandbox service
-    receives from the Clank side.
   </summary>
 </histogram>
 
