@@ -934,6 +934,8 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   last_committed_url_map_[request_type] = current_url_;
   current_outermost_main_frame_id_ = rfh->GetGlobalId();
 
+  last_request_type_ = request_type;
+
   LogClientSideDetectionEvent(
       ClientSideDetectionEvent::kTriggerStartsPreClassification, request_type);
 
@@ -972,6 +974,13 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   // interstitial for the wrong page.  Note that this won't cancel the server
   // ping back but only cancel the showing of the interstitial.
   weak_factory_.InvalidateWeakPtrs();
+
+  if (is_csd_running_) {
+    base::UmaHistogramExactLinear(
+        "SBClientPhishing.ClientSideDetection.InterruptedByNavigation",
+        last_request_type_, ClientSideDetectionType_MAX + 1);
+  }
+  is_csd_running_ = false;
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
     if (did_first_visually_non_empty_paint_ ^ on_first_contentful_paint_) {
@@ -1291,6 +1300,8 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
     return;
   }
 
+  is_csd_running_ = true;
+
   bool intelligent_scan_ongoing = intelligent_scan_id_.has_value();
   // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
   // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
@@ -1414,6 +1425,7 @@ void ClientSideDetectionHost::PhishingDetectionDone(
   // be sent.
   if (result != mojom::PhishingDetectorResult::SUCCESS &&
       result != mojom::PhishingDetectorResult::CLASSIFICATION_SKIPPED) {
+    is_csd_running_ = false;
     return;
   }
 
@@ -1457,6 +1469,8 @@ void ClientSideDetectionHost::PhishingDetectionDone(
     MaybeSendClientPhishingRequest(
         std::make_unique<ClientPhishingRequest>(verdict.value()),
         did_match_high_confidence_allowlist, result);
+  } else {
+    is_csd_running_ = false;
   }
 }
 
@@ -1642,6 +1656,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
           ClientSideDetectionType::TRIGGER_MODELS &&
       verdict->report_type() == ClientPhishingRequest::FULL_REPORT;
   if (trigger_models_request_skipped) {
+    is_csd_running_ = false;
     return;
   }
 
@@ -2347,6 +2362,9 @@ void ClientSideDetectionHost::SendRequest(
   delegate_->MaybeStartGeminiAntiscamProtection(
       GURL(verdict->url()), verdict->client_side_detection_type(),
       did_match_high_confidence_allowlist);
+
+  is_csd_running_ = false;
+
   LogClientSideDetectionEvent(ClientSideDetectionEvent::kNetworkRequestSent,
                               verdict->client_side_detection_type());
   ClientSideDetectionService::ClientReportPhishingRequestCallback callback =

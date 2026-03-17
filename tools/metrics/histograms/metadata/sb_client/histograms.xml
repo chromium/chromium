@@ -560,6 +560,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.ClientSideDetection.InterruptedByNavigation"
+    enum="ClientSideDetectionType" expires_after="2027-03-12">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the request type of an in-progress client-side detection process
+    that was interrupted by a new page navigation. The process is considered
+    in-progress from the completion of pre-classification until just prior to
+    sending a network request or the process is otherwise completed/cancelled.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ClientSideDetectionEvent{RequestType}"
     enum="ClientSideDetectionEvent" expires_after="2027-03-12">
   <owner>andysjlim@chromium.org</owner>
