@@ -9,6 +9,7 @@ import {$$, BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from '
 import {createAutocompleteMatch, createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
+import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import type {AutocompleteMatch} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -1204,12 +1205,11 @@ suite('SearchboxTest', () => {
   test('dropdown suppressed in multi-line mode', async () => {
     realbox = await createAndAppendRealbox({multiLineEnabled: true});
 
-    // The initial scroll height of the input.
-    (realbox as any).initialInputScrollHeight_ = 20;
+    const initialScrollHeight = realbox.$.input.scrollHeight;
 
     // The text currently fits on one line (no wrapping).
     Object.defineProperty(realbox.$.input, 'scrollHeight', {
-      value: 20,
+      value: initialScrollHeight,
       configurable: true,
     });
 
@@ -1227,9 +1227,8 @@ suite('SearchboxTest', () => {
     assertTrue(await areMatchesShowing());
 
     // Simulate text wrapping.
-    // Change 'scrollHeight' to 40, which is > initialInputScrollHeight_ (20).
     Object.defineProperty(realbox.$.input, 'scrollHeight', {
-      value: 40,
+      value: initialScrollHeight * 2,
       configurable: true,
     });
 
@@ -1247,7 +1246,7 @@ suite('SearchboxTest', () => {
 
     // Reset wrapping (simulate text deleted or unwrapped).
     Object.defineProperty(realbox.$.input, 'scrollHeight', {
-      value: 20,
+      value: initialScrollHeight,
       configurable: true,
     });
 
@@ -3139,6 +3138,51 @@ suite('SearchboxTest', () => {
     // Checking the input value after a backspace event doesn't work
     // so check the default behavior occurs (deleting a character).
     assertFalse(backspaceEvent.defaultPrevented);
+  });
+
+  //============================================================================
+  // Test Keyboard Events
+  //============================================================================
+
+  test('keyboard modifier keys behavior', () => {
+    const metaZEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: 'z',
+      metaKey: true,
+    });
+    const ctrlZEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      key: 'z',
+      ctrlKey: true,
+    });
+
+    let metaZPropagated = false;
+    let ctrlZPropagated = false;
+    realbox.addEventListener('keydown', e => {
+      if (e.metaKey && e.key === 'z') {
+        metaZPropagated = true;
+      }
+      if (e.ctrlKey && e.key === 'z') {
+        ctrlZPropagated = true;
+      }
+    });
+
+    // Dispatch events to the inputWrapper
+    realbox.$.inputWrapper.dispatchEvent(metaZEvent);
+    realbox.$.inputWrapper.dispatchEvent(ctrlZEvent);
+
+    // stopPropagation should be called on Mac for meta+Z, and on non-Mac for
+    // ctrl+Z.
+    assertEquals(!isMac, metaZPropagated);
+    assertEquals(isMac, ctrlZPropagated);
+
+    // Default isn't prevented for these explicitly in the handler.
+    assertFalse(metaZEvent.defaultPrevented);
+    assertFalse(ctrlZEvent.defaultPrevented);
   });
 
   test('pressing Enter in empty input prevents new line', async () => {
