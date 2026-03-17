@@ -1060,6 +1060,10 @@ void GeminiBrowserAgent::PresentFloatyWithState(
       ios::provider::AttachImage(image_attachment);
     }
     ios::provider::UpdatePageContext(pageContext);
+    if (prepopulated_prompt) {
+      // TODO(crbug.com/483004001): Update the prompt once the api is updated
+      // ios::provider::UpdatePromptAction(entry_point, prepopulated_prompt);
+    }
     ForceShowFloatyIfInvoked();
     ios::provider::UpdateGeminiViewState(
         ios::provider::GeminiViewState::kExpanded, /*animated=*/true);

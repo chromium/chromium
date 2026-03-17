@@ -58,6 +58,9 @@ void UpdateGeminiViewState(GeminiViewState view_state) {}
 
 void UpdateGeminiViewState(GeminiViewState view_state, bool animated) {}
 
+void UpdatePromptAction(gemini::EntryPoint entry_point,
+                        NSString* prepopulated_prompt) {}
+
 GeminiViewState GetCurrentGeminiViewState() {
   return GeminiViewState::kUnknown;
 }
