@@ -20,8 +20,9 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/credential_exchange/coordinator/credential_export_coordinator.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/passwords/coordinator/password_export_handler.h"
-#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -188,7 +189,8 @@ constexpr const char* kDeleteAllSavedDataButtonClicked =
 - (void)start {
   ProfileIOS* profile = self.profile;
 
-  _reauthModule = password_manager::BuildReauthenticationModule();
+  _reauthModule = ReauthenticationServiceFactory::GetForProfile(self.profile)
+                      ->GetReauthModule();
 
   webauthn::PasskeyModel* passkeyModel =
       IOSPasskeyModelFactory::GetForProfile(self.browser->GetProfile());

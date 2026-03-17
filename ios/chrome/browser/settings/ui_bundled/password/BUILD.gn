@@ -295,6 +295,7 @@ source_set("eg_app_support+eg2") {
     "//components/prefs",
     "//components/strings",
     "//components/webauthn/core/browser:passkey_model",
+    "//ios/chrome/browser/device_reauth/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

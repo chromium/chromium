@@ -12,8 +12,10 @@
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
+#import "ios/chrome/browser/device_reauth/model/fake_reauthentication_service_util.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -52,6 +54,8 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(ReauthenticationServiceFactory::GetInstance(),
+                              base::BindOnce(&CreateFakeReauthService));
 
     // Create scene state for reauthentication coordinator.
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
@@ -78,15 +82,15 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mocked_application_settings_command_handler
                      forProtocol:@protocol(SettingsCommands)];
 
-    mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
+    mock_reauth_module_ =
+        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+            ReauthenticationServiceFactory::GetForProfile(profile_.get())
+                ->GetReauthModule());
+
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
     mock_reauth_module_.shouldSkipReAuth = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
-    // Make coordinator use mock reauth module.
-    scoped_reauth_override_ =
-        ScopedPasswordSettingsReauthModuleOverride::MakeAndArmForTesting(
-            mock_reauth_module_);
 
     root_view_controller_ = [[UIViewController alloc] init];
     scoped_window_.Get().rootViewController = root_view_controller_;
@@ -129,8 +133,6 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
   UIViewController* root_view_controller_;
   ScopedKeyWindow scoped_window_;
   MockReauthenticationModule* mock_reauth_module_ = nil;
-  std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
-      scoped_reauth_override_;
   id mocked_scene_handler_;
   ManualFillAllPasswordCoordinator* coordinator_ = nil;
 };

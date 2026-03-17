@@ -252,6 +252,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/autofill/ui_bundled:bridges",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
+    "//ios/chrome/browser/device_reauth/model",
+    "//ios/chrome/browser/device_reauth/model:fake_reauthentication_service",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/passwords/model:store_factory",

@@ -16,11 +16,13 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/device_reauth/model/fake_reauthentication_service_util.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -66,6 +68,9 @@ class AddPasswordCoordinatorTest : public PlatformTest {
                   password_manager::PasswordRequirementsService>(nil);
             }));
 
+    builder.AddTestingFactory(ReauthenticationServiceFactory::GetInstance(),
+                              base::BindOnce(&CreateFakeReauthService));
+
     // Create scene state for reauthentication coordinator.
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
@@ -87,16 +92,14 @@ class AddPasswordCoordinatorTest : public PlatformTest {
 
     // Init root vc.
     base_view_controller_ = [[UIViewController alloc] init];
-    mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
+    mock_reauth_module_ =
+        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+            ReauthenticationServiceFactory::GetForProfile(profile_.get())
+                ->GetReauthModule());
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
     mock_reauth_module_.shouldSkipReAuth = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
-
-    // Replace reauthentication module with mock implementation for testing.
-    scoped_reauth_module_override_ =
-        ScopedPasswordSettingsReauthModuleOverride::MakeAndArmForTesting(
-            mock_reauth_module_);
 
     coordinator_ = [[AddPasswordCoordinator alloc]
         initWithBaseViewController:base_view_controller_
@@ -145,8 +148,6 @@ class AddPasswordCoordinatorTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
-  std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
-      scoped_reauth_module_override_;
   UIViewController* base_view_controller_ = nil;
   MockReauthenticationModule* mock_reauth_module_ = nil;
   base::test::ScopedFeatureList scoped_feature_list_;

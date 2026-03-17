@@ -69,6 +69,8 @@ source_set("unit_tests") {
     ":passwords_in_other_apps",
     ":passwords_in_other_apps_ui",
     "//base/test:test_support",
+    "//ios/chrome/browser/device_reauth/model",
+    "//ios/chrome/browser/device_reauth/model:fake_reauthentication_service",
     "//ios/chrome/browser/settings/ui_bundled/password/password_settings:common",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_ui",
     "//ios/chrome/browser/settings/ui_bundled/utils",

@@ -6,8 +6,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
+#import "ios/chrome/browser/device_reauth/model/fake_reauthentication_service_util.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -33,18 +36,20 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(ReauthenticationServiceFactory::GetInstance(),
+                              base::BindOnce(&CreateFakeReauthService));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
-    mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
+    mock_reauth_module_ =
+        base::apple::ObjCCastStrict<MockReauthenticationModule>(
+            ReauthenticationServiceFactory::GetForProfile(profile_.get())
+                ->GetReauthModule());
+
     // Delay auth result so auth doesn't pass right after starting coordinator.
     // Needed for verifying behavior when auth is required.
     mock_reauth_module_.shouldSkipReAuth = NO;
     mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
-    // Make coordinator use mock reauth module.
-    scoped_reauth_override_ =
-        ScopedPasswordSettingsReauthModuleOverride::MakeAndArmForTesting(
-            mock_reauth_module_);
 
     navigation_controller_ = [[UINavigationController alloc] init];
     scoped_window_.Get().rootViewController = navigation_controller_;
@@ -79,8 +84,6 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
   UINavigationController* navigation_controller_ = nil;
   ScopedKeyWindow scoped_window_;
   MockReauthenticationModule* mock_reauth_module_ = nil;
-  std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
-      scoped_reauth_override_;
   PasswordsInOtherAppsCoordinator* coordinator_ = nil;
 };
 

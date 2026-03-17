@@ -10,7 +10,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/passwords/coordinator/password_utils.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
@@ -98,12 +99,6 @@ enum class ReauthenticationState {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    // Build reauth module if none is supplied.
-    // Callers can supply one for testing or for reusing the authentication
-    // result. See ReauthenticationProtocol.
-    _reauthModule = reauthenticationModule
-                        ? reauthenticationModule
-                        : password_manager::BuildReauthenticationModule();
     _baseNavigationController = navigationController;
     _dispatcher =
         static_cast<id<SceneCommands>>(browser->GetCommandDispatcher());
@@ -118,6 +113,8 @@ enum class ReauthenticationState {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  _reauthModule = ReauthenticationServiceFactory::GetForProfile(self.profile)
+                      ->GetReauthModule();
   [self.browser->GetSceneState() addObserver:self];
 
   if (_reauthenticationState ==

@@ -22,6 +22,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
+#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_bulk_leak_check_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -256,14 +258,14 @@ bool ClearPasswordStores() {
 
 // Helper for accessing the scoped override's module.
 + (MockReauthenticationModule*)mockModule {
-  PasswordSettingsAppInterface* shared =
-      [PasswordSettingsAppInterface sharedInstance];
-  DCHECK(shared->_scopedReauthOverride);
-
   return base::apple::ObjCCastStrict<MockReauthenticationModule>(
-      shared->_scopedReauthOverride->module);
+      ReauthenticationServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile())
+          ->GetReauthModule());
 }
 
+// TODO(crbug.com/40144947): Clean up all reauth mocking methods after
+// transition to reauth service.
 + (void)setUpMockReauthenticationModule {
   PasswordSettingsAppInterface* shared =
       [PasswordSettingsAppInterface sharedInstance];
@@ -283,8 +285,6 @@ bool ClearPasswordStores() {
 }
 
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt {
-  DCHECK([PasswordSettingsAppInterface sharedInstance]->_scopedReauthOverride);
-
   [self mockModule].canAttempt = canAttempt;
 }
 

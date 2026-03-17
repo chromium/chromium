@@ -106,6 +106,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/device_reauth/model",
+    "//ios/chrome/browser/device_reauth/model:fake_reauthentication_service",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/passwords/model:store_factory",

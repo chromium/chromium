@@ -36,3 +36,17 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+source_set("fake_reauthentication_service") {
+  testonly = true
+  sources = [
+    "fake_reauthentication_service_util.h",
+    "fake_reauthentication_service_util.mm",
+  ]
+  deps = [
+    ":model",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/common/ui/reauthentication:mock_reauthentication_module",
+  ]
+}
