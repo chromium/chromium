@@ -685,6 +685,7 @@ void ToolbarView::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
   should_display_vertical_tabs_ = controller->ShouldDisplayVerticalTabs();
   UpdateGlicButtonVisibility();
+  UpdateGlicActorVisibility();
 }
 
 std::unique_ptr<GlicAndActorButtonsContainer>
@@ -913,8 +914,8 @@ void ToolbarView::ShowGlicActorTaskIcon() {
   }
   glic_button_ =
       glic_actor_button_container_->InsertGlicButton(glic_button_.get());
-  glic_actor_task_icon_->SetVisible(true);
-  glic_actor_button_container_->SetVisible(true);
+  SetGlicActorShowState(true);
+  SetGlicShowState(true);
   glic_button_->Collapse();
   glic_button_->SetSplitButtonCornerStyling();
   UpdateGlicActorButtonContainerBorders();
@@ -932,14 +933,20 @@ void ToolbarView::HideGlicActorTaskIcon() {
   CHECK(glic_actor_task_icon_);
 
   // If it's already hidden, do nothing.
-  if (!glic_actor_task_icon_->GetVisible() ||
+  if (!glic_actor_task_icon_->GetVisible() &&
       !glic_actor_task_icon_->GetIsShowingNudge()) {
     return;
   }
   glic_actor_task_icon_->SetIsShowingNudge(false);
-  glic_actor_task_icon_->SetAnimationMode(glic::AnimationMode::kEntry);
 
   // TODO(crbug.com/484389669): Toolbar glic actor animations
+  if (glic_actor_task_icon_->GetAnimationMode() ==
+      glic::AnimationMode::kNudge) {
+    // TODO(crbug.com/484389669): Create animation session to being animation of
+    // nudge.
+    glic_actor_task_icon_->SetAnimationMode(glic::AnimationMode::kEntry);
+    glic_actor_task_icon_->SetWidthFactor(0.0);
+  }
 
   FinalizeHideGlicActorTaskIcon();
 }
@@ -1034,6 +1041,17 @@ void ToolbarView::ExecuteHideToolbarNudge(glic::GlicButtonInterface* button) {
   button->SetIsShowingNudge(false);
 }
 
+void ToolbarView::UpdateGlicActorVisibility() {
+  if (!glic_actor_task_icon_) {
+    return;
+  }
+
+  bool is_glic_actor_visible =
+      should_show_glic_actor_ && should_display_vertical_tabs_;
+
+  glic_actor_task_icon_->SetVisible(is_glic_actor_visible);
+}
+
 void ToolbarView::UpdateGlicButtonVisibility() {
   if (!glic_button_) {
     return;
@@ -1050,6 +1068,11 @@ void ToolbarView::UpdateGlicButtonVisibility() {
     // glic_button_.
     glic_actor_button_container_->SetVisible(is_glic_visible);
   }
+}
+
+void ToolbarView::SetGlicActorShowState(bool show) {
+  should_show_glic_actor_ = show;
+  UpdateGlicActorVisibility();
 }
 
 void ToolbarView::SetGlicShowState(bool show) {
