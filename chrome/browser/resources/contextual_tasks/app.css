@@ -389,6 +389,11 @@ error-page {
   width: var(--composebox-width);
 }
 
+:host(:not([is-shown-in-tab_])) #composebox {
+  inset-inline-start: 0;
+  margin: 0 auto;
+}
+
 :host([is-zero-state_]) #composebox {
   animation: zero-state-intro 600ms ease
       forwards;
