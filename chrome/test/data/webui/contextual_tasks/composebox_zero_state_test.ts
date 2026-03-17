@@ -723,6 +723,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
   test('deep search: thread change resets input', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kDeepSearch);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kDeepSearch,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -748,6 +752,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
   test('image gen: thread change resets input', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kImageGen);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kImageGen,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -774,6 +782,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
   test('canvas: thread change resets input', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kCanvas);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kCanvas,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();

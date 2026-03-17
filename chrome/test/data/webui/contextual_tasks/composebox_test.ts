@@ -9,7 +9,7 @@ import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_brows
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -560,6 +560,78 @@ suite('ContextualTasksComposeboxTest', () => {
     // Tick past the delay.
     mockTimer.tick(1);
     assertEquals(1, composeboxElement.numberOfTimesTooltipShownForTesting);
+  });
+
+  test('ToolChipVisibilityBasedOnInputState', async () => {
+    const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+
+    const getChip = (id: string) =>
+        innerComposebox.shadowRoot?.querySelector<HTMLElement>(`#${id}`);
+
+    // Initial state: No tool active.
+    let newInputState = {
+      ...mockInputState,
+      activeTool: ToolMode.kUnspecified,
+    };
+    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertFalse(isVisible(getChip('deepSearchChip')));
+    assertFalse(isVisible(getChip('nanoBananaChip')));
+    assertFalse(isVisible(getChip('canvasChip')));
+
+    // Activate Deep Search.
+    newInputState = {
+      ...mockInputState,
+      activeTool: ToolMode.kDeepSearch,
+    };
+    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertTrue(isVisible(getChip('deepSearchChip')));
+    assertFalse(isVisible(getChip('nanoBananaChip')));
+    assertFalse(isVisible(getChip('canvasChip')));
+
+    // Activate Image Gen (nanoBananaChip).
+    newInputState = {
+      ...mockInputState,
+      activeTool: ToolMode.kImageGen,
+    };
+    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertFalse(isVisible(getChip('deepSearchChip')));
+    assertTrue(isVisible(getChip('nanoBananaChip')));
+    assertFalse(isVisible(getChip('canvasChip')));
+
+    // Activate Canvas.
+    newInputState = {
+      ...mockInputState,
+      activeTool: ToolMode.kCanvas,
+    };
+    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertFalse(isVisible(getChip('deepSearchChip')));
+    assertFalse(isVisible(getChip('nanoBananaChip')));
+    assertTrue(isVisible(getChip('canvasChip')));
+
+    // Back to Unspecified.
+    newInputState = {
+      ...mockInputState,
+      activeTool: ToolMode.kUnspecified,
+    };
+    searchboxCallbackRouterRemote.onInputStateChanged(newInputState);
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    assertFalse(isVisible(getChip('deepSearchChip')));
+    assertFalse(isVisible(getChip('nanoBananaChip')));
+    assertFalse(isVisible(getChip('canvasChip')));
   });
 
   test('EnterKeyAfterSubmitDoesNotAddNewLine', async () => {

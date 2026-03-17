@@ -754,6 +754,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     // context menu mode, we just call the underlying function that responds to
     // both `tool-click` and individual `deep-search-click` events.
     composebox.onToolClickForTesting(ComposeboxToolMode.kDeepSearch);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kDeepSearch,
+    });
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -785,6 +789,11 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('Image tool is not reset after submitting a query', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kImageGen);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kImageGen,
+    });
+
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -813,6 +822,11 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('Canvas tool is not reset after submitting a query', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kCanvas);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kCanvas,
+    });
+
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -839,6 +853,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('Deepsearch mode: cancel resets mode', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kDeepSearch);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kDeepSearch,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -848,6 +866,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertTrue(!!deepSearchChip, 'Deep search chip should be present');
     // Simulate cancel button click without having to fully render button.
     composebox.onCancelClick_();
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kUnspecified,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -858,6 +880,11 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('Image mode: cancel resets mode', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kImageGen);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kImageGen,
+    });
+
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -866,6 +893,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertTrue(!!imageChip, 'Nano banana chip should be present');
     // Simulate cancel button click without having to fully render button.
     composebox.onCancelClick_();
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kUnspecified,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -876,6 +907,11 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('canvas mode: cancel resets mode', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kCanvas);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kCanvas,
+    });
+
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -885,6 +921,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertTrue(!!canvasChip, 'Canvas chip should be present');
     // Simulate cancel button click without having to fully render button.
     composebox.onCancelClick_();
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kUnspecified,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -895,6 +935,11 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('Deepsearch mode: esc resets mode', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kDeepSearch);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kDeepSearch,
+    });
+
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -902,6 +947,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     assertTrue(!!deepSearchChip, 'Deep search chip should be present');
     composebox.handleEscapeKeyLogic();
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kUnspecified,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -912,6 +961,11 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('Image mode: esc resets mode', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kImageGen);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kImageGen,
+    });
+
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -919,7 +973,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     assertTrue(!!imageChip, 'Nano banana chip should be present');
     composebox.handleEscapeKeyLogic();
-
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kUnspecified,
+    });
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -929,6 +986,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
   test('canvas mode: esc resets mode', async () => {
     composebox.onToolClickForTesting(ComposeboxToolMode.kCanvas);
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kCanvas,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
@@ -936,6 +997,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     assertTrue(!!canvasChip, 'Canvas chip should be present');
     composebox.handleEscapeKeyLogic();
+    searchboxCallbackRouterRemote.onInputStateChanged({
+      ...mockInputState,
+      activeTool: ComposeboxToolMode.kUnspecified,
+    });
 
     await composebox.updateComplete;
     await microtasksFinished();
