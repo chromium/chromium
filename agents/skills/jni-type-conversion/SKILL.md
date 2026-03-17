@@ -41,6 +41,8 @@ native types in C++.
    - For `String` parameters, `@JniType("std::string")` automatically converts
      Java `null` to C++ `""`. Prefer this over `std::optional<std::string>`
      unless the C++ logic specifically distinguishes between `null` and empty.
+   - For all other types, use `std::optional<T>` if the Java parameter is
+     `@Nullable`. Always maintain `@Nullable` annotations.
    - **Binary Data**: Use `@JniType("std::vector<uint8_t>")` for `byte[]`.
    - **Null Safety**: Keep `@Nullable` in Java if the parameter can be null. For
      `@Nullable String`, using `std::optional<std::string>` in C++ will map
