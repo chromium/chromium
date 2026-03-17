@@ -110,8 +110,10 @@ VerticalTabDragHandlerImpl::VerticalTabDragHandlerImpl(
 
 VerticalTabDragHandlerImpl::~VerticalTabDragHandlerImpl() = default;
 
-void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
-                                                const ui::MouseEvent& event) {
+void VerticalTabDragHandlerImpl::InitializeDrag(
+    TabCollectionNode& node,
+    const ui::ListSelectionModel& original_selection_model,
+    const ui::MouseEvent& event) {
   ResetDragState();
   drag_controller_ = std::make_unique<TabDragController>();
 
@@ -132,7 +134,7 @@ void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
   const gfx::Point offset_from_source = event.location();
   if (drag_controller_->Init(this, drag_init_data.source_dragged_view,
                              drag_init_data.dragged_views, offset_from_source,
-                             drag_init_data.list_selection_model,
+                             original_selection_model,
                              EventSourceFromEvent(event)) ==
       TabDragController::Liveness::kDeleted) {
     ResetDragState();

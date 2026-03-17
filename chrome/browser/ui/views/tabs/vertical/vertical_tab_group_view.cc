@@ -30,6 +30,7 @@
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -490,7 +491,10 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
 
 void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {
   CHECK(collection_node_);
-  GetDragHandler().InitializeDrag(*collection_node_, event);
+  const ui::ListSelectionModel original_selection_model =
+      collection_node_->GetController()->GetSelectionModel();
+  GetDragHandler().InitializeDrag(*collection_node_, original_selection_model,
+                                  event);
 }
 
 bool VerticalTabGroupView::ContinueHeaderDrag(const ui::MouseEvent& event) {

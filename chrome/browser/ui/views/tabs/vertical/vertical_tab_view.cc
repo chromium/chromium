@@ -54,6 +54,7 @@
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/list_selection_model.h"
 #include "ui/base/theme_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/favicon_size.h"
@@ -365,6 +366,10 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
   RecordMousePressedInTab();
   UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kEvent);
 
+  // Capture the selection model before selection changes.
+  const ui::ListSelectionModel original_selection_model =
+      controller->GetSelectionModel();
+
   if (event.IsOnlyLeftMouseButton() ||
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
     if (event.IsShiftDown() && IsSelectionModifierDown(event)) {
@@ -383,7 +388,8 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
     // Potentially start the drag for the mouse press.
     // Follow-up mouse-movement events will update the drag controller and
     // eventually kick off the drag-loop.
-    controller->GetDragHandler().InitializeDrag(*collection_node_, event);
+    controller->GetDragHandler().InitializeDrag(
+        *collection_node_, original_selection_model, event);
   }
   return true;
 }

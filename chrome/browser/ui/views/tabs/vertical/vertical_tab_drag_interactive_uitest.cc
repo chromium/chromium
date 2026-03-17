@@ -984,4 +984,34 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest, MAYBE_DetachPinnedTab) {
       }));
 }
 
+// TODO(crbug.com/40249472): Tab DnD tests not working on ChromeOS and Mac, and
+// flakes on Wayland
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
+#define MAYBE_DetachTabPreservesActiveTab DetachTabPreservesActiveTab
+#else
+#define MAYBE_DetachTabPreservesActiveTab DISABLED_DetachTabPreservesActiveTab
+#endif
+IN_PROC_BROWSER_TEST_F(VerticalTabDragDetachTest,
+                       MAYBE_DetachTabPreservesActiveTab) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      Do([&]() {
+        browser()->tab_strip_model()->ActivateTabAt(
+            0, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+      }),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); }, 0),
+      DragTabTo(2, GetBrowserView().GetBoundsInScreen().top_right() +
+                       gfx::Vector2d(50, 50)),
+      PollState(kBrowserCountPoller, GetBrowserCount()),
+      WaitForState(kBrowserCountPoller, 2), ReleaseMouseAsync(),
+      PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, false), Do([&]() {
+        EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+        EXPECT_EQ(2, browser()->tab_strip_model()->count());
+      }));
+}
+
 // TODO(crbug.com/490650365): Add regression test once detach tests are working.

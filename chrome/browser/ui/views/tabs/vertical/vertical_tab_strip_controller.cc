@@ -258,6 +258,11 @@ void VerticalTabStripController::ExtendSelectionTo(
   model_->ExtendSelectionTo(tab_index.value());
 }
 
+const ui::ListSelectionModel& VerticalTabStripController::GetSelectionModel()
+    const {
+  return model_->selection_model().GetListSelectionModel();
+}
+
 void VerticalTabStripController::ToggleTabGroupCollapsedState(
     const TabGroup* group,
     ToggleTabGroupCollapsedStateOrigin origin) {

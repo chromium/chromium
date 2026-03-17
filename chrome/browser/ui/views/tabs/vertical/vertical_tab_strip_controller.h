@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/models/list_selection_model.h"
 
 class BrowserView;
 class TabCollectionNode;
@@ -65,6 +66,7 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   void ToggleSelected(const tabs::TabInterface* tab_interface);
   void AddSelectionFromAnchorTo(const tabs::TabInterface* tab_interface);
   void ExtendSelectionTo(const tabs::TabInterface* tab_interface);
+  const ui::ListSelectionModel& GetSelectionModel() const;
   void ToggleTabGroupCollapsedState(const TabGroup* group,
                                     ToggleTabGroupCollapsedStateOrigin origin);
   void ShowGroupEditorBubble(const TabCollectionNode* group_node);

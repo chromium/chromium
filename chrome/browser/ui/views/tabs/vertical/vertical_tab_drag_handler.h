@@ -34,8 +34,10 @@ class VerticalTabDragHandler {
  public:
   virtual ~VerticalTabDragHandler() = default;
   // Initializes a drag using `node` as the tab node that received `event`.
-  virtual void InitializeDrag(TabCollectionNode& node,
-                              const ui::MouseEvent& event) = 0;
+  virtual void InitializeDrag(
+      TabCollectionNode& node,
+      const ui::ListSelectionModel& original_selection_model,
+      const ui::MouseEvent& event) = 0;
   // Triggers updates to tab dragging state based on the latest mouse event.
   // Returns a bool indicating whether the drag was successfully handled.
   virtual bool ContinueDrag(views::View& event_source_view,
@@ -122,6 +124,7 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   // VerticalTabDragHandler
   void InitializeDrag(TabCollectionNode& node,
+                      const ui::ListSelectionModel& original_selection_model,
                       const ui::MouseEvent& event) override;
   bool ContinueDrag(views::View& event_source_view,
                     const ui::MouseEvent& event) override;
