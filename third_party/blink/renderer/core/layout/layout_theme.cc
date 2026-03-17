@@ -873,19 +873,8 @@ void LayoutTheme::SetCustomFocusRingColor(const Color& c) {
 
 Color LayoutTheme::FocusRingColor(
     mojom::blink::ColorScheme color_scheme) const {
-#if !BUILDFLAG(IS_MAC)
-  // Keep focus rings visible in dark mode even when embedders provide a dark
-  // custom color (e.g. renderer prefs defaulting to 0x101010).
-  if (color_scheme == mojom::blink::ColorScheme::kDark &&
-      RuntimeEnabledFeatures::
-          FocusRingRespectExplicitOutlineColorInDarkModeEnabled()) {
-    return Color::kWhite;
-  }
-#endif
-  if (has_custom_focus_ring_color_) {
-    return custom_focus_ring_color_;
-  }
-  return GetTheme().PlatformFocusRingColor();
+  return has_custom_focus_ring_color_ ? custom_focus_ring_color_
+                                      : GetTheme().PlatformFocusRingColor();
 }
 
 String LayoutTheme::DisplayNameForFile(const File& file) const {
