@@ -1850,11 +1850,6 @@ const CGFloat kTopDynamicIslandInset = 24;
   }];
 }
 
-- (void)updateForFullscreenMinViewportInsets:(UIEdgeInsets)minViewportInsets
-                           maxViewportInsets:(UIEdgeInsets)maxViewportInsets {
-  [self updateForFullscreenProgress:self.fullscreenController->GetProgress()];
-}
-
 #pragma mark - FullscreenUIElement helpers
 
 // The minimum amount by which the top toolbar overlaps the browser content
@@ -1971,11 +1966,13 @@ const CGFloat kTopDynamicIslandInset = 24;
                      height <= (expandedToolbarHeight + FLT_EPSILON));
   if (IsChromeNextIaEnabled() ||
       ![self.toolbarCoordinator showingOmniboxPopup]) {
-    self.secondaryToolbarHeightConstraint.constant = height;
-    // Force a layout to cause the frame to be recalculated.
-    UIView* view = self.view;
-    [view setNeedsLayout];
-    [view layoutIfNeeded];
+    if (self.secondaryToolbarHeightConstraint.constant != height) {
+      self.secondaryToolbarHeightConstraint.constant = height;
+      // Force a layout to cause the frame to be recalculated.
+      UIView* view = self.view;
+      [view setNeedsLayout];
+      [view layoutIfNeeded];
+    }
   }
 }
 
