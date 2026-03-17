@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var normalWindow, normalTab;
+let normalWindow, normalTab;
 
-var pass = chrome.test.callbackPass;
-var assertEq = chrome.test.assertEq;
-var assertTrue = chrome.test.assertTrue;
+const pass = chrome.test.callbackPass;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
 
 chrome.test.runTests([
   function getAllWindows() {
@@ -24,9 +24,9 @@ chrome.test.runTests([
       assertTrue(!tab.incognito);
     });
 
-    chrome.test.sendMessage("createIncognitoTab", function(response) {
-      if (response == "created") {
-        chrome.tabs.create({url: "about:blank"}, pass());
+    chrome.test.sendMessage('createIncognitoTab', function(response) {
+      if (response == 'created') {
+        chrome.tabs.create({url: 'about:blank'}, pass());
       }
     });
   },

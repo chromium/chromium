@@ -5,8 +5,8 @@
 let normalWindow, normalTab;
 let incognitoWindow, incognitoTab;
 
-let assertEq = chrome.test.assertEq;
-let assertTrue = chrome.test.assertTrue;
+const assertEq = chrome.test.assertEq;
+const assertTrue = chrome.test.assertTrue;
 
 const crossProfileMoveErrorMsg =
     'Error: Tabs can only be moved between windows in the same profile.';
@@ -50,7 +50,7 @@ chrome.test.getConfig(config => {
           });
 
       // Update our tabs.
-      await chrome.tabs.update(incognitoTab.id, {'url': newUrl});
+      await chrome.tabs.update(incognitoTab.id, {url: newUrl});
     },
 
     // Tests a sequence of tab API calls.

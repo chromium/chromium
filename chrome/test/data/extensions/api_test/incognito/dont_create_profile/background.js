@@ -4,7 +4,7 @@
 
 chrome.test.runTests([
   function enumerateTabs() {
-    chrome.windows.getAll({"populate": true}, function (windows) {
+    chrome.windows.getAll({populate: true}, function(windows) {
       chrome.test.succeed();
     });
   },
