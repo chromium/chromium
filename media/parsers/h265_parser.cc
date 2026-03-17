@@ -1120,6 +1120,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
   shdr->nalu_data = nalu.data.data();
   shdr->nalu_size = nalu.data.size();
   shdr->temporal_id = nalu.nuh_temporal_id_plus1 - 1;
+  shdr->nuh_layer_id = nalu.nuh_layer_id;
 
   READ_BOOL_OR_RETURN(&shdr->first_slice_segment_in_pic_flag);
   shdr->irap_pic = (shdr->nal_unit_type >= H265NALU::BLA_W_LP &&
@@ -1154,6 +1155,14 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
       DVLOG(1) << "Cannot parse dependent slice w/out prior slice data";
       return kInvalidStream;
     }
+
+    // 7.4.7.1
+    if (shdr->nuh_layer_id != prior_shdr->nuh_layer_id) {
+      DVLOG(1) << "Dependent slice segment must have the same nuh_layer_id "
+               << "as the prior slice";
+      return kInvalidStream;
+    }
+
     // Copy everything in the structure starting at |slice_type| going forward.
     // This is copying the dependent slice data that we do not parse below.
     size_t skip_amount = offsetof(H265SliceHeader, slice_type);

@@ -246,7 +246,7 @@ source_set("filters") {
     }
   }
 
-  if (is_win || use_vaapi) {
+  if (is_win || use_vaapi || enable_hevc_parser_and_hw_decoder) {
     sources += [
       "h26x_annex_b_bitstream_builder.cc",
       "h26x_annex_b_bitstream_builder.h",

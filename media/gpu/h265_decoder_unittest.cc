@@ -17,6 +17,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/optional_util.h"
 #include "media/base/test_data_util.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
+#include "media/gpu/h265_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -128,6 +130,7 @@ class MockH265Accelerator : public H265Decoder::H265Accelerator {
     return format == VideoChromaSampling::k420;
   }
   void Reset() override {}
+  bool IsAlphaLayerSupported() override { return true; }
 };
 
 // Test H265Decoder by feeding different h265 frame sequences and make sure it
@@ -596,6 +599,156 @@ TEST_F(H265DecoderTest, ConfigChangeOnNonIRAP) {
   EXPECT_EQ(8u, decoder_->GetBitDepth());
 
   EXPECT_TRUE(decoder_->Flush());
+}
+
+// This test verifies that dependent slices crossing layer boundaries
+// (different nuh_layer_id) are correctly rejected by the parser,
+// preventing unvalidated slice header state from being propagated.
+TEST_F(H265DecoderTest, DependentSliceLongTermRefPics) {
+  H26xAnnexBBitstreamBuilder builder;
+  // VPS
+  constexpr uint8_t kVpsWithAlpha[] = {
+      0x40, 0x01, 0x0c, 0x11, 0xff, 0xff, 0x01, 0x60, 0x00, 0x00,
+      0x03, 0x00, 0xb0, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00,
+      0x3e, 0x19, 0x40, 0xbf, 0x3e, 0x08, 0x00, 0x08, 0x30, 0x20,
+      0xa4, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0xc5, 0x20,
+  };
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  for (uint8_t b : kVpsWithAlpha) {
+    builder.AppendBits(8, b);
+  }
+  builder.Flush();
+
+  // SPS
+  H265SPS sps = {};
+  sps.sps_video_parameter_set_id = 0;
+  sps.sps_max_sub_layers_minus1 = 0;
+  sps.sps_temporal_id_nesting_flag = true;
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.profile_tier_level.general_level_idc = 120;
+  sps.sps_seq_parameter_set_id = 0;
+  sps.chroma_format_idc = 1;
+  sps.pic_width_in_luma_samples = 320;
+  sps.pic_height_in_luma_samples = 184;
+  sps.log2_min_luma_coding_block_size_minus3 = 0;
+  sps.log2_diff_max_min_luma_coding_block_size = 1;
+  sps.log2_min_luma_transform_block_size_minus2 = 0;
+  sps.log2_diff_max_min_luma_transform_block_size = 0;
+  sps.max_transform_hierarchy_depth_inter = 0;
+  sps.max_transform_hierarchy_depth_intra = 0;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.sps_max_dec_pic_buffering_minus1[0] = 1;
+  sps.sps_max_num_reorder_pics[0] = 0;
+  sps.sps_max_latency_increase_plus1[0] = 0;
+  sps.scaling_list_enabled_flag = false;
+  sps.amp_enabled_flag = false;
+  sps.sample_adaptive_offset_enabled_flag = false;
+  sps.pcm_enabled_flag = false;
+  sps.num_short_term_ref_pic_sets = 0;
+  sps.long_term_ref_pics_present_flag = true;
+  sps.num_long_term_ref_pics_sps = 0;
+  sps.sps_temporal_mvp_enabled_flag = false;
+  sps.strong_intra_smoothing_enabled_flag = false;
+  sps.vui_parameters_present_flag = false;
+  BuildPackedH265SPS(builder, sps);
+
+  // PPS
+  H265PPS pps = {};
+  pps.pps_pic_parameter_set_id = 0;
+  pps.pps_seq_parameter_set_id = 0;
+  pps.dependent_slice_segments_enabled_flag = true;
+  pps.output_flag_present_flag = false;
+  pps.num_extra_slice_header_bits = 0;
+  pps.sign_data_hiding_enabled_flag = false;
+  pps.cabac_init_present_flag = false;
+  pps.num_ref_idx_l0_default_active_minus1 = 0;
+  pps.num_ref_idx_l1_default_active_minus1 = 0;
+  pps.init_qp_minus26 = 0;
+  pps.constrained_intra_pred_flag = false;
+  pps.transform_skip_enabled_flag = false;
+  pps.cu_qp_delta_enabled_flag = false;
+  pps.pps_slice_chroma_qp_offsets_present_flag = false;
+  pps.pps_loop_filter_across_slices_enabled_flag = false;
+  pps.deblocking_filter_control_present_flag = false;
+  pps.pps_scaling_list_data_present_flag = false;
+  pps.lists_modification_present_flag = false;
+  pps.log2_parallel_merge_level_minus2 = 0;
+  pps.slice_segment_header_extension_present_flag = false;
+  BuildPackedH265PPS(builder, pps);
+
+  // NALU 1: Aux Layer (nuh_layer_id = 1)
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                  // forbidden_zero_bit
+  builder.AppendBits(6, H265NALU::CRA_NUT);  // nal_unit_type
+  builder.AppendBits(6, 1);                  // nuh_layer_id = 1
+  builder.AppendBits(3, 1);                  // nuh_temporal_id_plus1 = 1
+
+  builder.AppendBool(true);   // first_slice_segment_in_pic_flag
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag (for IRAP)
+  builder.AppendUE(0);        // slice_pic_parameter_set_id
+  builder.AppendUE(2);        // slice_type = I (2)
+  builder.AppendBits(8, 0);   // slice_pic_order_cnt_lsb
+  builder.AppendBool(false);  // short_term_ref_pic_set_sps_flag
+  builder.AppendUE(0);        // num_negative_pics
+  builder.AppendUE(0);        // num_positive_pics
+
+  builder.AppendUE(32);  // num_long_term_pics = 32!
+  for (int i = 0; i < 32; ++i) {
+    builder.AppendBits(8, i);  // poc_lsb_lt
+    builder.AppendBool(
+        false);  // used_by_curr_pic_lt_flag = false -> goes to poc_lt_foll_
+    builder.AppendBool(false);  // delta_poc_msb_present_flag
+  }
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  // NALU 2: Base Layer (nuh_layer_id = 0) with dependent slice
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                  // forbidden_zero_bit
+  builder.AppendBits(6, H265NALU::CRA_NUT);  // nal_unit_type
+  builder.AppendBits(6, 0);                  // nuh_layer_id = 0
+  builder.AppendBits(3, 1);                  // nuh_temporal_id_plus1 = 1
+
+  builder.AppendBool(false);  // first_slice_segment_in_pic_flag
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag (for IRAP)
+  builder.AppendUE(0);        // slice_pic_parameter_set_id (MISSING BEFORE!)
+  builder.AppendBool(true);   // dependent_slice_segment_flag = true
+  builder.AppendBits(
+      8, 1);  // slice_segment_address = 1 (240 CTBs max, Log2Ceiling(240)=8)
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+
+  // Set EXPECT_CALLs for decoding so we can reach the vulnerable function
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).WillRepeatedly([]() {
+    return base::MakeRefCounted<H265Picture>();
+  });
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitDecode(_))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).WillRepeatedly(Return(true));
+
+  decoder_->SetStream(1, buffer);
+
+  // Decode until config change (VPS/SPS/PPS)
+  auto res1 = decoder_->Decode();
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, res1);
+
+  // Decode the frame (which would overflow the arrays if not rejected by the
+  // parser). It should be rejected as a decode error.
+  auto res2 = decoder_->Decode();
+  EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, res2);
 }
 
 }  // namespace media
