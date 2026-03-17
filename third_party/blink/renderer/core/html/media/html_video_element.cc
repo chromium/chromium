@@ -986,8 +986,22 @@ void HTMLVideoElement::RecordVideoOcclusionState(
 void HTMLVideoElement::AttributeChanged(
     const AttributeModificationParams& params) {
   HTMLElement::AttributeChanged(params);
-  if (params.name == html_names::kDisablepictureinpictureAttr)
-    UpdatePictureInPictureAvailability();
+
+  if (params.name != html_names::kDisablepictureinpictureAttr) {
+    return;
+  }
+
+  UpdatePictureInPictureAvailability();
+
+  if (params.new_value.IsNull()) {
+    return;
+  }
+
+  PictureInPictureController& controller =
+      PictureInPictureController::From(GetDocument());
+  if (controller.PictureInPictureElement(GetTreeScope()) == *this) {
+    controller.ExitPictureInPicture(this, nullptr);
+  }
 }
 
 void HTMLVideoElement::OnRequestVideoFrameCallback() {

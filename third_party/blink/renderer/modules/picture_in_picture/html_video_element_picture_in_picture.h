@@ -25,10 +25,6 @@ class HTMLVideoElementPictureInPicture {
 
   static bool FastHasAttribute(const HTMLVideoElement&, const QualifiedName&);
 
-  static void SetBooleanAttribute(HTMLVideoElement&,
-                                  const QualifiedName&,
-                                  bool);
-
   static void CheckIfPictureInPictureIsAllowed(HTMLVideoElement&,
                                                ExceptionState&);
 

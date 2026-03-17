@@ -70,25 +70,6 @@ bool HTMLVideoElementPictureInPicture::FastHasAttribute(
 }
 
 // static
-void HTMLVideoElementPictureInPicture::SetBooleanAttribute(
-    HTMLVideoElement& element,
-    const QualifiedName& name,
-    bool value) {
-  DCHECK(name == html_names::kDisablepictureinpictureAttr);
-  element.SetBooleanAttribute(name, value);
-
-  Document& document = element.GetDocument();
-  TreeScope& scope = element.GetTreeScope();
-  PictureInPictureController& controller =
-      PictureInPictureController::From(document);
-
-  if (name == html_names::kDisablepictureinpictureAttr && value &&
-      controller.PictureInPictureElement(scope) == &element) {
-    controller.ExitPictureInPicture(&element, nullptr);
-  }
-}
-
-// static
 void HTMLVideoElementPictureInPicture::CheckIfPictureInPictureIsAllowed(
     HTMLVideoElement& element,
     ExceptionState& exception_state) {
