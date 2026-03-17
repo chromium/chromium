@@ -60,6 +60,10 @@ export class TopToolbarElement extends CrLitElement {
         reflect: true,
         attribute: 'is-ai-page',
       },
+      enableOpenInNewTabButton: {
+        type: Boolean,
+        reflect: true,
+      },
       logoImageUrl_: {type: String},
       title: {type: String},
     };
@@ -69,6 +73,7 @@ export class TopToolbarElement extends CrLitElement {
   accessor contextInfos: ContextInfo[] = [];
   accessor darkMode: boolean = false;
   accessor isAiPage: boolean = false;
+  accessor enableOpenInNewTabButton: boolean = false;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   protected isExpandButtonEnabled: boolean =

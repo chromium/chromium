@@ -52,7 +52,7 @@ export function getHtml(this: TopToolbarElement) {
         class="no-overlap" title="$i18n{openInNewTab}"
         aria-label="$i18n{openInNewTab}"
         @click="${this.onOpenInNewTabClick_}"
-        ?disabled="${!this.isAiPage}">
+        ?disabled="${!this.enableOpenInNewTabButton}">
       </cr-icon-button>
     ` :html`
       <cr-icon-button id="more" iron-icon="cr:more-vert"
@@ -77,7 +77,7 @@ export function getHtml(this: TopToolbarElement) {
     <cr-action-menu>
       <button class="dropdown-item"
           @click="${this.onOpenInNewTabClick_}"
-          ?disabled="${!this.isAiPage}">
+          ?disabled="${!this.enableOpenInNewTabButton}">
         <cr-icon icon="contextual_tasks:open_in_full_tab"></cr-icon>
         $i18n{openInNewTab}
       </button>
