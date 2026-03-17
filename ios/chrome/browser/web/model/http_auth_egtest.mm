@@ -4,6 +4,7 @@
 
 #import <memory>
 
+#import "base/base64.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/threading/platform_thread.h"
@@ -12,12 +13,12 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_auth_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
@@ -63,13 +64,60 @@ void WaitForHttpAuthDialog() {
   GREYAssert(dialog_shown, @"HTTP Authentication dialog was not shown");
 }
 
+const char kAuthPageText[] = "authenticated";
+
+// Returns a response with the given `code` and `realm`.
+std::unique_ptr<net::test_server::HttpResponse> GetAuthResponse(
+    net::HttpStatusCode code,
+    const std::string& realm) {
+  std::unique_ptr<net::test_server::BasicHttpResponse> response =
+      std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(code);
+  if (code == net::HTTP_UNAUTHORIZED) {
+    response->AddCustomHeader("WWW-Authenticate",
+                              "Basic realm=\"" + realm + "\"");
+  } else {
+    response->set_content(kAuthPageText);
+  }
+  return response;
+}
+
+// Request handler for authentication.
+std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  if (request.relative_url == "/good-auth") {
+    auto it = request.headers.find("Authorization");
+    std::string expected_auth =
+        "Basic " + base::Base64Encode("gooduser:goodpass");
+    if (it != request.headers.end() && it->second == expected_auth) {
+      return GetAuthResponse(net::HTTP_OK, "");
+    }
+    return GetAuthResponse(net::HTTP_UNAUTHORIZED, "GoodRealm");
+  }
+  if (request.relative_url == "/bad-auth") {
+    // This will always request authentication.
+    return GetAuthResponse(net::HTTP_UNAUTHORIZED, "BadRealm");
+  }
+  if (request.relative_url == "/cancel-auth") {
+    return GetAuthResponse(net::HTTP_UNAUTHORIZED, "CancellingRealm");
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // Test case for HTTP Authentication flow.
-@interface HTTPAuthTestCase : WebHttpServerChromeTestCase
+@interface HTTPAuthTestCase : ChromeTestCase
 @end
 
 @implementation HTTPAuthTestCase
+
+- (void)setUp {
+  [super setUp];
+  self.testServer->RegisterRequestHandler(base::BindRepeating(&HandleRequest));
+  GREYAssertTrue(self.testServer->Start(),
+                 @"EmbeddedTestServer failed to start.");
+}
 
 // Tests Basic HTTP Authentication with correct username and password.
 - (void)testSuccessfullBasicAuth {
@@ -85,9 +133,7 @@ void WaitForHttpAuthDialog() {
     // EG synchronizes with WKWebView. Disable synchronization for EG interation
     // during when page is loading.
     ScopedSynchronizationDisabler disabler;
-    GURL URL = web::test::HttpServer::MakeUrl("http://good-auth");
-    web::test::SetUpHttpServer(std::make_unique<web::HttpAuthResponseProvider>(
-        URL, "GoodRealm", "gooduser", "goodpass"));
+    GURL URL = self.testServer->GetURL("/good-auth");
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
 
@@ -106,8 +152,7 @@ void WaitForHttpAuthDialog() {
         performAction:grey_tap()];
   }  // EG synchronization disabled block.
 
-  const std::string pageText = web::HttpAuthResponseProvider::page_text();
-  [ChromeEarlGrey waitForWebStateContainingText:pageText];
+  [ChromeEarlGrey waitForWebStateContainingText:kAuthPageText];
 }
 
 // Tests Basic HTTP Authentication with incorrect username and password.
@@ -124,9 +169,7 @@ void WaitForHttpAuthDialog() {
     // EG synchronizes with WKWebView. Disable synchronization for EG interation
     // during when page is loading.
     ScopedSynchronizationDisabler disabler;
-    GURL URL = web::test::HttpServer::MakeUrl("http://bad-auth");
-    web::test::SetUpHttpServer(std::make_unique<web::HttpAuthResponseProvider>(
-        URL, "BadRealm", "baduser", "badpass"));
+    GURL URL = self.testServer->GetURL("/bad-auth");
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
 
@@ -164,9 +207,7 @@ void WaitForHttpAuthDialog() {
     // EG synchronizes with WKWebView. Disable synchronization for EG interation
     // during when page is loading.
     ScopedSynchronizationDisabler disabler;
-    GURL URL = web::test::HttpServer::MakeUrl("http://cancel-auth");
-    web::test::SetUpHttpServer(std::make_unique<web::HttpAuthResponseProvider>(
-        URL, "CancellingRealm", "", ""));
+    GURL URL = self.testServer->GetURL("/cancel-auth");
     [ChromeEarlGrey loadURL:URL waitForCompletion:NO];
     WaitForHttpAuthDialog();
 
