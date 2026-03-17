@@ -56,6 +56,7 @@ source_set("unit_tests") {
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core/storage",
     "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/optimization_guide/core:model_execution_test_support",
     "//components/optimization_guide/core:test_support",
     "//components/page_content_annotations/content",

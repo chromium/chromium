@@ -17,7 +17,10 @@
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
 #include "components/accessibility_annotator/core/storage/accessibility_annotator_backend.h"
+#include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/test/history_service_test_util.h"
+#include "components/history/core/test/test_history_database.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -130,9 +133,13 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
         /*os_crypt_async=*/nullptr, base::FilePath(),
         /*tracker=*/nullptr);
 
+    history_service_ = std::make_unique<history::HistoryService>();
+    history_service_->Init(
+        history::TestHistoryDatabaseParamsForPath(temp_dir_.GetPath()));
+
     page_content_annotations_service_ =
         page_content_annotations::TestPageContentAnnotationsService::Create(
-            &optimization_guide_model_provider_, &history_service_);
+            &optimization_guide_model_provider_, history_service_.get());
 
     mock_remote_model_executor_ =
         std::make_unique<optimization_guide::MockRemoteModelExecutor>();
@@ -175,6 +182,10 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     page_content_extraction_service_.reset();
     mock_remote_model_executor_.reset();
     accessibility_annotator_backend_.reset();
+
+    // Ensure HistoryService tasks are complete before destroying it.
+    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+    history_service_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -220,7 +231,7 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
 
   base::ScopedTempDir temp_dir_;
   ContentAnnotatorFeatureList feature_list_;
-  history::HistoryService history_service_;
+  std::unique_ptr<history::HistoryService> history_service_;
   optimization_guide::TestOptimizationGuideModelProvider
       optimization_guide_model_provider_;
 
