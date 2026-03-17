@@ -17,6 +17,8 @@
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace actor_login {
 namespace {
@@ -174,11 +176,13 @@ TEST_F(ActorLoginPermissionsManagerTest, RevokePermission) {
 
 TEST_F(ActorLoginPermissionsManagerTest, GetAllPermissions_OnlyFederated) {
   FederatedPermission federated_permission_1;
-  federated_permission_1.rp_embedder_origin = "https://example.com/";
+  federated_permission_1.rp_embedder_origin =
+      url::Origin::Create(GURL("https://example.com/"));
   federated_permission_1.chosen_account_email = "user1";
 
   FederatedPermission federated_permission_2;
-  federated_permission_2.rp_embedder_origin = "https://example.com/";
+  federated_permission_2.rp_embedder_origin =
+      url::Origin::Create(GURL("https://example.com/"));
   federated_permission_2.chosen_account_email = "user2";
 
   EXPECT_CALL(actor_login_permission_service_, ListAllPermissions)
@@ -221,15 +225,18 @@ TEST_F(ActorLoginPermissionsManagerTest,
   run_loop.Run();
 
   FederatedPermission federated_permission_1;
-  federated_permission_1.rp_embedder_origin = "https://example.com/";
+  federated_permission_1.rp_embedder_origin =
+      url::Origin::Create(GURL("https://example.com/"));
   federated_permission_1.chosen_account_email = "user1";
 
   FederatedPermission federated_permission_2;
-  federated_permission_2.rp_embedder_origin = "https://example.com/";
+  federated_permission_2.rp_embedder_origin =
+      url::Origin::Create(GURL("https://example.com/"));
   federated_permission_2.chosen_account_email = "user2";
 
   FederatedPermission federated_permission_3;
-  federated_permission_3.rp_embedder_origin = "https://other.com/";
+  federated_permission_3.rp_embedder_origin =
+      url::Origin::Create(GURL("https://other.com/"));
   federated_permission_3.chosen_account_email = "user1";
 
   EXPECT_CALL(actor_login_permission_service_, ListAllPermissions)

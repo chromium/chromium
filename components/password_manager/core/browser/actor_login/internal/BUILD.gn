@@ -59,10 +59,7 @@ source_set("permission_service_impl") {
     "//components/password_manager/core/browser/actor_login:*",
   ]
 
-  deps = [
-    "//base",
-    "//components/password_manager/core/browser/actor_login:common",
-  ]
+  deps = [ "//components/password_manager/core/browser/actor_login:common" ]
   public_deps = [
     "//base",
     "//services/network/public/cpp",

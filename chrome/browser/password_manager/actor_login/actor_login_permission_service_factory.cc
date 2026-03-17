@@ -38,7 +38,8 @@ ActorLoginPermissionServiceFactory::~ActorLoginPermissionServiceFactory() =
 std::unique_ptr<KeyedService>
 ActorLoginPermissionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ActorLoginPermissionServiceImpl>();
+  return std::make_unique<ActorLoginPermissionServiceImpl>(
+      Profile::FromBrowserContext(context)->GetURLLoaderFactory());
 }
 
 }  // namespace actor_login

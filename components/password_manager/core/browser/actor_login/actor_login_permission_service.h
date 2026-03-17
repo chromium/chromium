@@ -10,8 +10,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "url/origin.h"
 
 namespace actor_login {
+
+// Convenience struct for holding a pair of origins used for a FedCM login
+// request.
+struct FederatedOrigins {
+  url::Origin embedder_origin;
+  url::Origin requester_origin;
+};
 
 // Represents a user's federated credential (FedCM, OpenID Connect) permission.
 struct FederatedPermission {
@@ -20,11 +28,18 @@ struct FederatedPermission {
   FederatedPermission& operator=(const FederatedPermission&);
   ~FederatedPermission();
 
-  std::string idp_origin;
-  std::string rp_embedder_origin;
-  std::string rp_requester_origin;
+  // IdP origin that identifies the identity provider. For example,
+  // "https://accounts.google.com".
+  url::Origin idp_origin;
+  // Origin of the main frame of the website where actor login was initiated.
+  url::Origin rp_embedder_origin;
+  // Origin of the iframe that initiated the FedCM flow.
+  url::Origin rp_requester_origin;
+  // Account ID of the account used for actor login.
   std::string chosen_account_id;
+  // Email of the account used for actor login.
   std::string chosen_account_email;
+  // Output only. Lists origins that are affiliated with the requester origin.
   std::vector<std::string> affiliated_requester_origins;
 };
 

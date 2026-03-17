@@ -39,16 +39,18 @@ base::flat_set<password_manager::ActorLoginPermission> MergePermissions(
        federated_permissions) {
     std::u16string username =
         base::UTF8ToUTF16(federated_permission.chosen_account_email);
-    if (!password_permissions_hash_set.contains(std::make_pair(
-            username, federated_permission.rp_embedder_origin))) {
+    if (!federated_permission.rp_embedder_origin.opaque() &&
+        !password_permissions_hash_set.contains(std::make_pair(
+            username,
+            federated_permission.rp_embedder_origin.GetURL().spec()))) {
       password_manager::ActorLoginPermission permission;
       permission.username = username;
       permission.domain_info.signon_realm =
-          federated_permission.rp_embedder_origin;
+          federated_permission.rp_embedder_origin.GetURL().spec();
       permission.domain_info.name = password_manager::GetShownOrigin(
-          url::Origin::Create(GURL(federated_permission.rp_embedder_origin)));
+          federated_permission.rp_embedder_origin);
       permission.domain_info.url =
-          GURL(federated_permission.rp_embedder_origin);
+          federated_permission.rp_embedder_origin.GetURL();
       // Favicon is not populated.
       merged_permissions.push_back(std::move(permission));
     }
