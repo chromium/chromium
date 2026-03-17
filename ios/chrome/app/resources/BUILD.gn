@@ -77,6 +77,7 @@ repack("repack_unscaled_resources") {
     "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/policy_resources.pak",
     "$root_gen_dir/components/regional_capabilities_internals_resources.pak",
+    "$root_gen_dir/components/safe_browsing_resources.pak",
     "$root_gen_dir/components/signin_internals_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
     "$root_gen_dir/components/translate_internals_resources.pak",

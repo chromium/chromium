@@ -16,6 +16,7 @@
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/ios/browser/web_ui/safe_browsing_ui.h"
 #import "components/version_info/channel.h"
 #import "components/webui/chrome_urls/pref_names.h"
 #import "components/webui/regional_capabilities_internals/constants.h"
@@ -180,6 +181,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
     return InternalDebugPagesEnabled()
                ? &NewWebUIIOS<ProfileInternalsUI>
                : &NewWebUIIOS<InternalDebugPagesDisabledUI>;
+  }
+  if (url_host == kChromeUISafeBrowsingHost) {
+    return &NewWebUIIOS<safe_browsing::SafeBrowsingUI>;
   }
   if (url_host == kChromeUISignInInternalsHost) {
     return &NewWebUIIOS<SignInInternalsUIIOS>;
