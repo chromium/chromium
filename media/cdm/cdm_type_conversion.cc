@@ -551,8 +551,7 @@ cdm::AudioDecoderConfig_2 ToCdmAudioDecoderConfig(
     const AudioDecoderConfig& config) {
   cdm::AudioDecoderConfig_2 cdm_config = {};
   cdm_config.codec = ToCdmAudioCodec(config.codec());
-  cdm_config.channel_count =
-      ChannelLayoutToChannelCount(config.channel_layout());
+  cdm_config.channel_count = config.channels();
   cdm_config.bits_per_channel = config.bytes_per_channel() * 8;
   cdm_config.samples_per_second = config.samples_per_second();
   cdm_config.extra_data = const_cast<uint8_t*>(config.extra_data().data());

@@ -110,8 +110,7 @@ openscreen::cast::AudioCaptureConfig ToAudioCaptureConfig(
 
   openscreen::cast::AudioCaptureConfig audio_capture_config;
   audio_capture_config.codec = ToAudioCaptureConfigCodec(audio_config.codec());
-  audio_capture_config.channels =
-      media::ChannelLayoutToChannelCount(audio_config.channel_layout());
+  audio_capture_config.channels = audio_config.channels();
   audio_capture_config.sample_rate = audio_config.samples_per_second();
   audio_capture_config.bit_rate = 0;  // Selected by the sender.
 

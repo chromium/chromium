@@ -406,8 +406,7 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateAudioDecoder(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
 
-  const int channel_count =
-      ChannelLayoutToChannelCount(config.channel_layout());
+  const int channel_count = config.channels();
 
   CodecSpecificData csd0, csd1, csd2;
   bool output_frame_has_adts_header;
