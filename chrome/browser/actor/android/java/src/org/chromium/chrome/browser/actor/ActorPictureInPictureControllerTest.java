@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,6 +16,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.RemoteAction;
+import android.content.Intent;
 import android.widget.FrameLayout;
 
 import androidx.activity.ComponentActivity;
@@ -23,6 +26,7 @@ import androidx.core.pip.PictureInPictureDelegate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -32,7 +36,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileResolver;
+import org.chromium.chrome.browser.profiles.ProfileResolverJni;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link ActorPictureInPictureController}. */
@@ -43,6 +50,7 @@ public class ActorPictureInPictureControllerTest {
     @Mock private ActorKeyedService mActorService;
     @Mock private ActorKeyedServiceFactory.Natives mActorKeyedServiceFactoryJni;
     @Mock private ActorPictureInPictureOverlayCoordinator mMockCoordinator;
+    @Mock private ProfileResolver.Natives mProfileResolverJni;
 
     private ComponentActivity mActivity;
     private Supplier<Profile> mProfileSupplier;
@@ -53,8 +61,10 @@ public class ActorPictureInPictureControllerTest {
         MockitoAnnotations.initMocks(this);
         ActorKeyedServiceFactoryJni.setInstanceForTesting(mActorKeyedServiceFactoryJni);
 
-        mActivity = Robolectric.buildActivity(ComponentActivity.class).create().get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ComponentActivity realActivity =
+                Robolectric.buildActivity(ComponentActivity.class).create().get();
+        realActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivity = spy(realActivity);
 
         FrameLayout contentView = new FrameLayout(mActivity);
         contentView.setId(android.R.id.content);
@@ -68,7 +78,21 @@ public class ActorPictureInPictureControllerTest {
                         mProfileSupplier,
                         () -> mActivity.findViewById(android.R.id.content));
         mController.setOverlayCoordinatorForTesting(mMockCoordinator);
+
+        ProfileResolverJni.setInstanceForTesting(mProfileResolverJni);
+        when(mProfileResolverJni.tokenizeProfile(any())).thenReturn("test_token");
+
         ActorKeyedServiceFactory.setForTesting(mActorService);
+    }
+
+    private ActorTask createMockActorTask(int taskId, String title, @ActorTaskState int state) {
+        ActorTask mockTask = mock(ActorTask.class);
+        when(mockTask.getId()).thenReturn(taskId);
+        when(mockTask.getTitle()).thenReturn(title);
+        when(mockTask.getState()).thenReturn(state);
+        when(mActorService.getCurrentActiveTask()).thenReturn(mockTask);
+        when(mActorService.getActiveTasksCount()).thenReturn(1);
+        return mockTask;
     }
 
     @Test
@@ -92,12 +116,7 @@ public class ActorPictureInPictureControllerTest {
 
     @Test
     public void testOnPictureInPictureEvent_Entered_ShowsOverlay() {
-        when(mActorService.getActiveTasksCount()).thenReturn(1);
-        ActorTask mockTask = mock(ActorTask.class);
-        when(mockTask.getTitle()).thenReturn("Test Title");
-        when(mockTask.getState()).thenReturn(ActorTaskState.ACTING);
-        when(mActorService.getCurrentActiveTask()).thenReturn(mockTask);
-
+        createMockActorTask(101, "Test Title", ActorTaskState.ACTING);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
 
         verify(mMockCoordinator).setVisibility(true);
@@ -114,11 +133,7 @@ public class ActorPictureInPictureControllerTest {
 
     @Test
     public void testOnTaskStateChanged_UpdatesOverlayWhenInPip() {
-        when(mActorService.getActiveTasksCount()).thenReturn(1);
-        ActorTask mockTask = mock(ActorTask.class);
-        when(mockTask.getTitle()).thenReturn("Shopping Task");
-        when(mockTask.getState()).thenReturn(ActorTaskState.CREATED);
-        when(mActorService.getCurrentActiveTask()).thenReturn(mockTask);
+        createMockActorTask(101, "Shopping Task", ActorTaskState.CREATED);
 
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
 
@@ -135,35 +150,19 @@ public class ActorPictureInPictureControllerTest {
     @Test
     public void testAttemptPictureInPicture_Success() {
         when(mActorService.getActiveTasksCount()).thenReturn(1);
-
-        ComponentActivity spyActivity = spy(mActivity);
-        doNothing().when(spyActivity).enterPictureInPictureMode();
-
-        mController =
-                new ActorPictureInPictureController(
-                        spyActivity,
-                        mProfileSupplier,
-                        () -> mActivity.findViewById(android.R.id.content));
+        doNothing().when(mActivity).enterPictureInPictureMode();
 
         mController.attemptPictureInPicture();
 
-        verify(spyActivity).enterPictureInPictureMode();
+        verify(mActivity).enterPictureInPictureMode();
     }
 
     @Test
     public void testAttemptPictureInPicture_NoTasks() {
-        when(mActorService.getActiveTasksCount()).thenReturn(0);
-        ComponentActivity spyActivity = spy(mActivity);
-
-        mController =
-                new ActorPictureInPictureController(
-                        spyActivity,
-                        mProfileSupplier,
-                        () -> mActivity.findViewById(android.R.id.content));
 
         mController.attemptPictureInPicture();
 
-        verify(spyActivity, never()).enterPictureInPictureMode();
+        verify(mActivity, never()).enterPictureInPictureMode();
     }
 
     @Test
@@ -179,14 +178,6 @@ public class ActorPictureInPictureControllerTest {
 
     @Test
     public void testOnTaskStateChanged_ExitsPipWhenNoTasks() {
-        when(mActorService.getActiveTasksCount()).thenReturn(1);
-        ComponentActivity spyActivity = spy(mActivity);
-        // Use spyActivity in controller
-        mController =
-                new ActorPictureInPictureController(
-                        spyActivity,
-                        mProfileSupplier,
-                        () -> mActivity.findViewById(android.R.id.content));
 
         mController.setOverlayCoordinatorForTesting(mMockCoordinator);
 
@@ -197,7 +188,50 @@ public class ActorPictureInPictureControllerTest {
         when(mActorService.getActiveTasksCount()).thenReturn(0);
         mController.onTaskStateChanged(1, 0); // 0 as dummy state
 
-        verify(spyActivity).moveTaskToBack(true);
+        verify(mActivity).moveTaskToBack(true);
         verify(mMockCoordinator).setVisibility(false);
+    }
+
+    @Test
+    public void testCreateIntentForPauseResumeAction() {
+        int taskId = 42;
+        String action = "test_action";
+
+        Intent intent = mController.createIntentForPauseResumeAction(taskId, action);
+
+        assertEquals(action, intent.getAction());
+        assertEquals(mActivity.getPackageName(), intent.getPackage());
+        assertEquals(taskId, intent.getIntExtra(ActorIntentConstants.EXTRA_TASK_ID, -1));
+    }
+
+    @Test
+    public void testUpdatePausePlayActions_ShowingPause() {
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+        mController.updatePipState();
+
+        ArgumentCaptor<android.app.PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(android.app.PictureInPictureParams.class);
+        verify(mActivity).setPictureInPictureParams(captor.capture());
+
+        List<RemoteAction> actions = captor.getValue().getActions();
+        assertEquals(1, actions.size());
+        assertEquals(
+                mActivity.getString(R.string.actor_pip_working_status), actions.get(0).getTitle());
+    }
+
+    @Test
+    public void testUpdatePausePlayActions_ShowingPlay() {
+        createMockActorTask(101, "Task", ActorTaskState.PAUSED_BY_USER);
+
+        mController.updatePipState();
+
+        ArgumentCaptor<android.app.PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(android.app.PictureInPictureParams.class);
+        verify(mActivity).setPictureInPictureParams(captor.capture());
+
+        List<RemoteAction> actions = captor.getValue().getActions();
+        assertEquals(1, actions.size());
+        assertEquals(
+                mActivity.getString(R.string.actor_pip_paused_status), actions.get(0).getTitle());
     }
 }

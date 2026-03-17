@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ActorBroadcastReceiver.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManager.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorIntentConstants.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorNotificationFactory.java",

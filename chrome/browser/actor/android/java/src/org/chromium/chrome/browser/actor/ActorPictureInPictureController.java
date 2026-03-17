@@ -5,12 +5,18 @@ package org.chromium.chrome.browser.actor;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.PendingIntent;
+import android.app.PictureInPictureParams;
+import android.app.RemoteAction;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.drawable.Icon;
 import android.util.Rational;
 import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.pip.BasicPictureInPicture;
 import androidx.core.pip.PictureInPictureDelegate;
@@ -19,8 +25,12 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
+import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -31,6 +41,7 @@ import java.util.function.Supplier;
 public class ActorPictureInPictureController
         implements ActorKeyedService.Observer,
                 PictureInPictureDelegate.OnPictureInPictureEventListener {
+
     private static final String TAG = "ActorPiPController";
     private final ComponentActivity mActivity;
     private final Supplier<Profile> mProfileSupplier;
@@ -86,6 +97,7 @@ public class ActorPictureInPictureController
         mPipDelegate.setEnabled(active);
         if (active) {
             mPipDelegate.setAspectRatio(new Rational(16, 9));
+            updatePausePlayActions();
         }
     }
 
@@ -130,6 +142,72 @@ public class ActorPictureInPictureController
         updatePipState();
     }
 
+    private void updatePausePlayActions() {
+        maybeGetActorService();
+        if (mActorService == null) return;
+
+        ActorTask task = mActorService.getCurrentActiveTask();
+        List<RemoteAction> actions = new ArrayList<>();
+
+        if (task != null) {
+            RemoteAction action = createPauseResumeActionForState(task.getId(), task.getState());
+            if (action != null) {
+                actions.add(action);
+            }
+        } else {
+            mActivity.setPictureInPictureParams(
+                    new PictureInPictureParams.Builder().setActions(new ArrayList<>()).build());
+            return;
+        }
+
+        updatePipActions(actions);
+    }
+
+    private void updatePipActions(List<RemoteAction> actions) {
+        PictureInPictureParams params =
+                new PictureInPictureParams.Builder().setActions(actions).build();
+        mActivity.setPictureInPictureParams(params);
+    }
+
+    private @Nullable RemoteAction createPauseResumeActionForState(
+            @ActorTaskId int taskId, @ActorTaskState int state) {
+        boolean isWorking =
+                (state == ActorTaskState.CREATED
+                        || state == ActorTaskState.ACTING
+                        || state == ActorTaskState.REFLECTING);
+
+        boolean isPaused =
+                (state == ActorTaskState.PAUSED_BY_ACTOR
+                        || state == ActorTaskState.PAUSED_BY_USER
+                        || state == ActorTaskState.WAITING_ON_USER);
+
+        if (!isWorking && !isPaused) return null;
+
+        String actionName =
+                isPaused ? ActorIntentConstants.ACTION_RESUME : ActorIntentConstants.ACTION_PAUSE;
+
+        int iconRes =
+                isPaused ? R.drawable.ic_play_arrow_white_24dp : R.drawable.ic_pause_white_24dp;
+
+        String text =
+                mActivity.getString(
+                        isPaused
+                                ? R.string.actor_pip_paused_status
+                                : R.string.actor_pip_working_status);
+
+        Intent intent = createIntentForPauseResumeAction(taskId, actionName);
+
+        PendingIntent pendingIntent =
+                PendingIntent.getBroadcast(
+                        mActivity,
+                        ActorIntentConstants.REQUEST_CODE_PAUSE_RESUME,
+                        intent,
+                        PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new RemoteAction(
+                Icon.createWithResource(mActivity, iconRes), text, text, pendingIntent);
+    }
+
     /** Handles when the Activity enters/exits PiP. */
     @Override
     public void onPictureInPictureEvent(
@@ -164,6 +242,19 @@ public class ActorPictureInPictureController
             mActorService = null;
         }
         mPipDelegate.setEnabled(false);
+    }
+
+    @VisibleForTesting
+    Intent createIntentForPauseResumeAction(@ActorTaskId int taskId, String actionName) {
+        Intent intent = new Intent(actionName).setPackage(mActivity.getPackageName());
+
+        Profile profile = mProfileSupplier.get();
+        if (profile != null) {
+            ProfileIntentUtils.addProfileToIntent(profile, intent);
+        }
+
+        intent.putExtra(ActorIntentConstants.EXTRA_TASK_ID, taskId);
+        return intent;
     }
 
     private void showOverlay() {
