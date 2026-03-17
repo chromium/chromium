@@ -1324,8 +1324,15 @@
 Manage in <ph name="BEGIN_LINK1">&lt;link_android_advanced_protection&gt;</ph>Android settings<ph name="END_LINK1">&lt;/link_android_advanced_protection&gt;</ph>
 
 Advanced Protection controls these Chrome settings:
-• "Always use secure connections" is on.
-• "JavaScript optimizer" is off. <ph name="BEGIN_LINK2">&lt;link_javascript_optimizer&gt;</ph>Manage Site exceptions<ph name="END_LINK2">&lt;/link_javascript_optimizer&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_AND_SECURITY_ADVANCED_PROTECTION_SECURE_CONNECTIONS_BULLET" desc="Bullet point indicating that Always use secure connections is on when Advanced Protection is on.">
+    "Always use secure connections" is on.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_AND_SECURITY_ADVANCED_PROTECTION_JAVASCRIPT_OPTIMIZER_BULLET" desc="Bullet point indicating that JavaScript optimizer is off when Advanced Protection is on.">
+    "JavaScript optimizer" is off. <ph name="BEGIN_LINK2">&lt;link_javascript_optimizer&gt;</ph>Manage Site exceptions<ph name="END_LINK2">&lt;/link_javascript_optimizer&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_AND_SECURITY_ADVANCED_PROTECTION_WEBGPU_DISABLED_BULLET" desc="Bullet point indicating that WebGPU is disabled when Advanced Protection is on.">
+    "WebGPU" is disabled.
   </message>
 
   <!-- Permission result announcement -->

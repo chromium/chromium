@@ -157,6 +157,7 @@ public abstract class ChromeFeatureList {
     // LINT.IfChange(FeaturesExposedToJava)
     // keep-sorted start group_prefixes=["public static final String"]
 
+    public static final String AAPM_BLOCKS_WEB_GPU = "AAPMBlocksWebGPU";
     public static final String ABORT_NAVIGATIONS_FROM_TAB_CLOSURES =
             "AbortNavigationsFromTabClosures";
     public static final String ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS =

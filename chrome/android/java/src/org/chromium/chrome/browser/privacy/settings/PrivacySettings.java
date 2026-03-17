@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -80,6 +81,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.ChromeBulletSpan;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -105,6 +107,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
     @VisibleForTesting static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
     private static final String PREF_ADVANCED_PROTECTION_INFO = "advanced_protection_info";
+    private static final int SECURE_CONNECTIONS_MESSAGE_ID =
+            R.string.settings_privacy_and_security_advanced_protection_secure_connections_bullet;
+    private static final int JAVASCRIPT_OPTIMIZER_MESSAGE_ID =
+            R.string.settings_privacy_and_security_advanced_protection_javascript_optimizer_bullet;
+    private static final int WEB_GPU_DISABLED_MESSAGE_ID =
+            R.string.settings_privacy_and_security_advanced_protection_webgpu_disabled_bullet;
 
     private IncognitoLockSettings mIncognitoLockSettings;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
@@ -517,24 +525,40 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                 (linkContext) -> {
                     PrivacySettings.onJavascriptOptimizerLinkClicked(linkContext);
                 };
-        SpanApplier.SpanInfo[] spans =
-                new SpanApplier.SpanInfo[] {
-                    createLink(
-                            context,
-                            "link_android_advanced_protection",
-                            androidAdvancedProtectionLinkAction),
-                    createLink(context, "link_javascript_optimizer", javascriptOptimizerLinkAction)
-                };
         String advancedProtectionSectionMessageTemplate =
                 getString(
                         R.string.settings_privacy_and_security_advanced_protection_section_message);
-        SpannableString span =
-                SpanApplier.applySpans(advancedProtectionSectionMessageTemplate, spans);
+        SpannableStringBuilder spannedText =
+                new SpannableStringBuilder(
+                        SpanApplier.applySpans(
+                                advancedProtectionSectionMessageTemplate,
+                                createLink(
+                                        context,
+                                        "link_android_advanced_protection",
+                                        androidAdvancedProtectionLinkAction)));
+
+        appendBullet(spannedText, context, getString(SECURE_CONNECTIONS_MESSAGE_ID));
+
+        appendBullet(
+                spannedText,
+                context,
+                SpanApplier.applySpans(
+                        getString(JAVASCRIPT_OPTIMIZER_MESSAGE_ID),
+                        createLink(
+                                context,
+                                "link_javascript_optimizer",
+                                javascriptOptimizerLinkAction)));
+
+        if (shouldIncludeWebGPUDescription()) {
+            appendBullet(spannedText, context, getString(WEB_GPU_DISABLED_MESSAGE_ID));
+        }
 
         PropertyModel advancedProtectionInfoModel =
                 new PropertyModel.Builder(SafetyHubModuleProperties.ALL_KEYS)
                         .with(SafetyHubModuleProperties.ICON, additionalSecurityIcon)
-                        .with(SafetyHubModuleProperties.SUMMARY, span)
+                        .with(
+                                SafetyHubModuleProperties.SUMMARY,
+                                SpannableString.valueOf(spannedText))
                         .build();
         PropertyModelChangeProcessor.create(
                 advancedProtectionInfoModel,
@@ -546,6 +570,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         @Nullable OsAdditionalSecurityProvider additionalSecurityProvider =
                 OsAdditionalSecurityUtil.getProviderInstance();
         return !shouldShowAdvancedProtectionInfo() || additionalSecurityProvider == null;
+    }
+
+    private boolean shouldIncludeWebGPUDescription() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.AAPM_BLOCKS_WEB_GPU);
     }
 
     /** Returns whether the advanced-protection section should be shown. */
@@ -560,6 +588,12 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
                                 0);
         return updateTimeMs == 0
                 || ((System.currentTimeMillis() - updateTimeMs) < TimeUnit.DAYS.toMillis(90));
+    }
+
+    private static void appendBullet(
+            SpannableStringBuilder builder, Context context, CharSequence text) {
+        builder.append("\n");
+        builder.append(text, new ChromeBulletSpan(context), 0);
     }
 
     @Override
