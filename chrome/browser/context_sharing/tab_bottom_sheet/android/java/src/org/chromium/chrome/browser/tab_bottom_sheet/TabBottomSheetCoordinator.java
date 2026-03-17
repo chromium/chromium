@@ -45,7 +45,7 @@ public class TabBottomSheetCoordinator {
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
-        mMediator = new TabBottomSheetMediator(mModel, coBrowseViews);
+        mMediator = new TabBottomSheetMediator();
 
         coBrowseViews.setWebUiTouchHandler(mMediator.getWebUiTouchHandler());
     }
@@ -135,13 +135,6 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
                 mMediator.onSheetStateChanged(state);
-            }
-
-            @Override
-            public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-                if (!TabBottomSheetUtils.canResizeWebView()) return;
-
-                mMediator.onSheetOffsetChanged(offsetPx);
             }
         };
     }

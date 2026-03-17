@@ -10,7 +10,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import org.jni_zero.CalledByNative;
 
@@ -101,40 +100,15 @@ public class CoBrowseViews {
         }
     }
 
-    /** Sets the WebUI container's height. */
-    public void setWebUiContainerHeight(int height) {
-        ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
-        LinearLayout.LayoutParams webUiContainerParams =
-                (LinearLayout.LayoutParams) webUiContainer.getLayoutParams();
-
-        if (webUiContainerParams.height != height) {
-            webUiContainerParams.height = height;
-            webUiContainerParams.weight = 0f;
-            webUiContainer.setLayoutParams(webUiContainerParams);
-        }
-    }
-
-    /** Sets the ThinWebView's height. */
-    public void setThinWebViewHeight(int height) {
-        if (mWebUi != null) {
-            View content = mWebUi.getWebUiView();
-            ViewGroup.LayoutParams contentParams = content.getLayoutParams();
-            if (contentParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
-                contentParams.height = height;
-                content.setLayoutParams(contentParams);
-            }
-        }
-    }
-
-    /** Sets the ThinWebView's insets. */
-    void setThinWebViewInsets(int top, int left, int bottom, int right) {
-        if (mWebUi != null) {
-            mWebUi.setInsets(top, left, bottom, right);
-        }
-    }
-
     @Nullable WebContents getWebContents() {
         return mWebUi != null ? mWebUi.getWebContents() : null;
+    }
+
+    int getToolbarHeight() {
+        if (mToolbar != null) {
+            return mToolbar.getToolbarView().getHeight();
+        }
+        return 0;
     }
 
     int getThinWebViewHeight() {
@@ -147,13 +121,6 @@ public class CoBrowseViews {
     int getFuseboxHeight() {
         if (mFusebox != null) {
             return mFusebox.getFuseboxView().getHeight();
-        }
-        return 0;
-    }
-
-    int getToolbarHeight() {
-        if (mToolbar != null) {
-            return mToolbar.getToolbarView().getHeight();
         }
         return 0;
     }

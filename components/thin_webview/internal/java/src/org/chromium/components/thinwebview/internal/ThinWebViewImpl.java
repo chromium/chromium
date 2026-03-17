@@ -172,12 +172,6 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     }
 
     @Override
-    public void setInsets(int top, int left, int bottom, int right) {
-        if (mNativeThinWebViewImpl == 0) return;
-        ThinWebViewImplJni.get().setInsets(mNativeThinWebViewImpl, top, left, bottom, right);
-    }
-
-    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         if (mNativeThinWebViewImpl == 0) return;
         if (w != oldw || h != oldh) {
@@ -202,8 +196,6 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
         long init(ThinWebViewImpl self, CompositorView compositorView, WindowAndroid windowAndroid);
 
         void destroy(long nativeThinWebView);
-
-        void setInsets(long nativeThinWebView, int top, int left, int bottom, int right);
 
         void setWebContents(
                 long nativeThinWebView,

@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.THIN_WEB_VIEW_HEIGHT;
-import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.THIN_WEB_VIEW_INSET_BOTTOM;
-import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.WEB_UI_CONTAINER_HEIGHT;
-
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,20 +20,5 @@ public class TabBottomSheetViewBinder {
      * @param view The inflated Android {@link View} of the promo sheet.
      * @param propertyKey The {@link PropertyKey} that changed.
      */
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (THIN_WEB_VIEW_HEIGHT == propertyKey) {
-            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
-            coBrowseViews.setThinWebViewHeight(model.get(THIN_WEB_VIEW_HEIGHT));
-        } else if (WEB_UI_CONTAINER_HEIGHT == propertyKey) {
-            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
-            coBrowseViews.setWebUiContainerHeight(model.get(WEB_UI_CONTAINER_HEIGHT));
-        } else if (THIN_WEB_VIEW_INSET_BOTTOM == propertyKey) {
-            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
-            coBrowseViews.setThinWebViewInsets(
-                    /* top= */ 0,
-                    /* left= */ 0,
-                    model.get(THIN_WEB_VIEW_INSET_BOTTOM),
-                    /* right= */ 0);
-        }
-    }
+    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {}
 }

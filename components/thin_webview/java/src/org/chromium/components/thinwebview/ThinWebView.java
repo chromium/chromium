@@ -65,17 +65,6 @@ public interface ThinWebView {
      */
     void setAlpha(float alpha);
 
-    /**
-     * Sets the insets for the WebContents. This reduces the viewport size of the WebContents and
-     * offsets it. The physical backing (surface) remains the size of the View.
-     *
-     * @param top The top inset.
-     * @param left The left inset.
-     * @param bottom The bottom inset.
-     * @param right The right inset.
-     */
-    void setInsets(int top, int left, int bottom, int right);
-
     /** Should be called for cleanup when the CompositorView instance is no longer used. */
     void destroy();
 }

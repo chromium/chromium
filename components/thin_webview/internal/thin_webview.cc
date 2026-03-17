@@ -103,18 +103,6 @@ void ThinWebView::SetContextMenuPopulatorFactory(
       web_contents_.get(), jpopulator_factory);
 }
 
-// TODO (crbug.com/489707823) : Investigate physical backing changes.
-void ThinWebView::SetInsets(JNIEnv* env,
-                            int32_t top,
-                            int32_t left,
-                            int32_t bottom,
-                            int32_t right) {
-  insets_ = gfx::Insets::TLBR(top, left, bottom, right);
-  if (web_contents_) {
-    ResizeWebContents(view_size_);
-  }
-}
-
 void ThinWebView::SizeChanged(JNIEnv* env, int32_t width, int32_t height) {
   view_size_ = gfx::Size(width, height);
 
@@ -130,19 +118,8 @@ void ThinWebView::ResizeWebContents(const gfx::Size& size) {
     return;
   }
 
-  int width = std::max(0, size.width() - insets_.width());
-  int height = std::max(0, size.height() - insets_.height());
-  gfx::Size viewport_size(width, height);
-
-  web_contents_->GetNativeView()->OnPhysicalBackingSizeChanged(viewport_size);
-  web_contents_->GetNativeView()->OnSizeChanged(viewport_size.width(),
-                                                viewport_size.height());
-
-  // Position the WebContents layer to account for top/left insets.
-  // Content is drawn at (0,0) in its own layer space, so we move the layer.
-  if (auto* layer = web_contents_->GetNativeView()->GetLayer()) {
-    layer->SetPosition(gfx::PointF(insets_.left(), insets_.top()));
-  }
+  web_contents_->GetNativeView()->OnPhysicalBackingSizeChanged(size);
+  web_contents_->GetNativeView()->OnSizeChanged(size.width(), size.height());
 }
 
 }  // namespace android

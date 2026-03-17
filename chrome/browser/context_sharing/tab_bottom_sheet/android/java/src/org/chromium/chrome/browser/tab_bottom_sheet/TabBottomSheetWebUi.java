@@ -63,11 +63,6 @@ public class TabBottomSheetWebUi {
         return mWebContents;
     }
 
-    /** Sets the size of the web contents. */
-    void setInsets(int top, int left, int bottom, int right) {
-        mThinWebView.setInsets(top, left, bottom, right);
-    }
-
     void destroy() {
         // We expect the life cycle of webContents to be managed by native.
         mWebContents = null;

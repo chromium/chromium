@@ -65,8 +65,10 @@ public class TabBottomSheetManager implements Destroyable {
      * Attempts to show the Tab BottomSheet.
      *
      * @param nativeInterfaceDelegate The native interface delegate.
-     * @param coBrowseViews The views to show in the bottom sheet.
-     * @param startsExpanded Whether the bottom sheet should start expanded.
+     * @param coBrowseViews The views to be displayed within the bottom sheet. These should be
+     *     obtained via {@link CoBrowseViewFactory}. Note that these views have a single-use
+     *     lifecycle; they are destroyed when the bottom sheet is closed and cannot be reused for
+     *     subsequent showings.
      * @return Whether the bottom sheet was shown.
      */
     boolean tryToShowBottomSheet(
