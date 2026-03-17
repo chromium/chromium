@@ -13,16 +13,6 @@ namespace media {
 
 AudioDecoderConfig::AudioDecoderConfig() {}
 
-AudioDecoderConfig::AudioDecoderConfig(AudioCodec codec,
-                                       SampleFormat sample_format,
-                                       ChannelLayout channel_layout,
-                                       int samples_per_second,
-                                       const std::vector<uint8_t>& extra_data,
-                                       EncryptionScheme encryption_scheme) {
-  Initialize(codec, sample_format, channel_layout, samples_per_second,
-             extra_data, encryption_scheme, base::TimeDelta(), 0);
-}
-
 AudioDecoderConfig::AudioDecoderConfig(
     AudioCodec codec,
     SampleFormat sample_format,
@@ -53,24 +43,8 @@ void AudioDecoderConfig::Initialize(AudioCodec codec,
                                     EncryptionScheme encryption_scheme,
                                     base::TimeDelta seek_preroll,
                                     int codec_delay) {
-  Initialize(codec, sample_format, channel_layout_config.channel_layout(),
-             samples_per_second, extra_data, encryption_scheme, seek_preroll,
-             codec_delay);
-  if (channel_layout_config.channel_layout() == CHANNEL_LAYOUT_DISCRETE) {
-    SetChannelsForDiscrete(channel_layout_config.channels());
-  }
-}
-
-void AudioDecoderConfig::Initialize(AudioCodec codec,
-                                    SampleFormat sample_format,
-                                    ChannelLayout channel_layout,
-                                    int samples_per_second,
-                                    const std::vector<uint8_t>& extra_data,
-                                    EncryptionScheme encryption_scheme,
-                                    base::TimeDelta seek_preroll,
-                                    int codec_delay) {
   codec_ = codec;
-  channel_layout_ = channel_layout;
+  channel_layout_config_ = channel_layout_config;
   samples_per_second_ = samples_per_second;
   sample_format_ = sample_format;
   bytes_per_channel_ = SampleFormatToBytesPerChannel(sample_format);
@@ -78,11 +52,7 @@ void AudioDecoderConfig::Initialize(AudioCodec codec,
   encryption_scheme_ = encryption_scheme;
   seek_preroll_ = seek_preroll;
   codec_delay_ = codec_delay;
-
-  // If |channel_layout_| is CHANNEL_LAYOUT_DISCRETE, |channels_| and
-  // |bytes_per_frame_| will be overwritten in SetChannelsForDiscrete()
-  channels_ = ChannelLayoutToChannelCount(channel_layout_);
-  bytes_per_frame_ = channels_ * bytes_per_channel_;
+  bytes_per_frame_ = channel_layout_config.channels() * bytes_per_channel_;
 
   should_discard_decoder_delay_ = true;
 }
@@ -91,7 +61,8 @@ AudioDecoderConfig::~AudioDecoderConfig() = default;
 
 bool AudioDecoderConfig::IsValidConfig() const {
   return codec_ != AudioCodec::kUnknown &&
-         channel_layout_ != CHANNEL_LAYOUT_UNSUPPORTED &&
+         channel_layout_config_.channel_layout() !=
+             CHANNEL_LAYOUT_UNSUPPORTED &&
          bytes_per_channel_ > 0 &&
          bytes_per_channel_ <= limits::kMaxBytesPerSample &&
          samples_per_second_ >= limits::kMinSampleRate &&
@@ -140,17 +111,6 @@ std::string AudioDecoderConfig::AsHumanReadableString() const {
     << ", target_output_sample_format: "
     << SampleFormatToString(target_output_sample_format());
   return s.str();
-}
-
-void AudioDecoderConfig::SetChannelsForDiscrete(int channels) {
-  DCHECK(channel_layout_ == CHANNEL_LAYOUT_DISCRETE ||
-         channels == ChannelLayoutToChannelCount(channel_layout_));
-  if (channels <= 0 || channels >= limits::kMaxChannels) {
-    DVLOG(1) << __func__ << ": Unsupported number of channels: " << channels;
-    return;
-  }
-  channels_ = channels;
-  bytes_per_frame_ = channels_ * bytes_per_channel_;
 }
 
 void AudioDecoderConfig::SetIsEncrypted(bool is_encrypted) {

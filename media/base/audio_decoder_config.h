@@ -27,15 +27,6 @@ class MEDIA_EXPORT AudioDecoderConfig {
   AudioDecoderConfig();
 
   // Constructs an initialized object.
-  // TODO(crbug.com/481380798): This ChannelLayout constructor is deprecated in
-  // favor of the ChannelLayoutConfig constructor. To be removed once all call
-  // sites have been updated.
-  AudioDecoderConfig(AudioCodec codec,
-                     SampleFormat sample_format,
-                     ChannelLayout channel_layout,
-                     int samples_per_second,
-                     const std::vector<uint8_t>& extra_data,
-                     EncryptionScheme encryption_scheme);
   AudioDecoderConfig(AudioCodec codec,
                      SampleFormat sample_format,
                      ChannelLayoutConfig channel_layout_config,
@@ -51,17 +42,6 @@ class MEDIA_EXPORT AudioDecoderConfig {
   ~AudioDecoderConfig();
 
   // Resets the internal state of this object. |codec_delay| is in frames.
-  // TODO(crbug.com/481380798): This ChannelLayout Initialize() is deprecated in
-  // favor of the ChannelLayoutConfig Initialize(). To be removed once all call
-  // sites have been updated.
-  void Initialize(AudioCodec codec,
-                  SampleFormat sample_format,
-                  ChannelLayout channel_layout,
-                  int samples_per_second,
-                  const std::vector<uint8_t>& extra_data,
-                  EncryptionScheme encryption_scheme,
-                  base::TimeDelta seek_preroll,
-                  int codec_delay);
   void Initialize(AudioCodec codec,
                   SampleFormat sample_format,
                   ChannelLayoutConfig channel_layout_config,
@@ -82,13 +62,12 @@ class MEDIA_EXPORT AudioDecoderConfig {
   // Returns a human-readable string describing |*this|.
   std::string AsHumanReadableString() const;
 
-  // Sets the number of channels if |channel_layout_| is CHANNEL_LAYOUT_DISCRETE
-  void SetChannelsForDiscrete(int channels);
-
   AudioCodec codec() const { return codec_; }
   int bytes_per_channel() const { return bytes_per_channel_; }
-  ChannelLayout channel_layout() const { return channel_layout_; }
-  int channels() const { return channels_; }
+  ChannelLayout channel_layout() const {
+    return channel_layout_config_.channel_layout();
+  }
+  int channels() const { return channel_layout_config_.channels(); }
   int samples_per_second() const { return samples_per_second_; }
   SampleFormat sample_format() const { return sample_format_; }
   int bytes_per_frame() const { return bytes_per_frame_; }
@@ -155,7 +134,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
 
   AudioCodec codec_ = AudioCodec::kUnknown;
   SampleFormat sample_format_ = kUnknownSampleFormat;
-  ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;
+  ChannelLayoutConfig channel_layout_config_;
   int samples_per_second_ = 0;
   std::vector<uint8_t> extra_data_;
   EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
@@ -187,10 +166,6 @@ class MEDIA_EXPORT AudioDecoderConfig {
 
   int bytes_per_channel_ = 0;
   int bytes_per_frame_ = 0;
-
-  // Count of channels. By default derived from `channel_layout_`, but can also
-  // be manually set in `SetChannelsForDiscrete()`;
-  int channels_ = 0;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is
