@@ -236,6 +236,20 @@ TEST_F(SearchIntegrityTest, IsNameMatch_ValidWordsMatch) {
   EXPECT_TRUE(report.is_default_custom_with_matching_policy_engine);
 }
 
+TEST_F(SearchIntegrityTest, IsNameMatch_PunctuationIsIgnored) {
+  // "Yahoo!" and "Yahoo" should match because "!" is stripped.
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"Goog", "http://custom.goog.com");
+  AddSearchEngine(u"Goog!", "http://policy.goog.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_TRUE(report.is_default_custom_with_matching_policy_engine);
+}
+
 TEST_F(SearchIntegrityTest, Histograms_LoggedCorrectly) {
   base::HistogramTester histogram_tester;
 
