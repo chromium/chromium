@@ -10292,6 +10292,221 @@ TEST_F(NetworkContextTest,
   EXPECT_EQ(client.completion_status().error_code, net::OK);
 }
 
+// Test the case where a URLLoaderFactory has no live pipes, and
+// RevokeNetworkForNonces() cancels all its URLLoaders, which may cause the
+// factory to be destroyed. This should not result in a UAF.
+TEST_F(NetworkContextTest, RevokeNetworkForNoncesUrlLoaderFactoryWithNoPipes) {
+  net::EmbeddedTestServer test_server;
+  net::test_server::RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  ResourceRequest request;
+  GURL test_url = test_server.GetURL("/hung");
+  request.url = test_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = OriginatingProcessId::browser();
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
+  HangingTestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  loader_factory->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Wait for OnBeforeSendHeaders.
+  header_client.WaitForOnBeforeSendHeaders();
+
+  // Close the URLLoaderFactory pipe.
+  loader_factory.reset();
+  // Unfortunately, can't flush a closed pipe to make sure the close message was
+  // received, can only spin the message loop to wait for the message to be
+  // received.
+  base::RunLoop().RunUntilIdle();
+
+  // Revoke network access for the nonce.
+  base::test::TestFuture<void> revoked;
+  auto revoked_nonce_pattern = CreateNonceAndAllowlistedPatterns(nonce);
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Continue sending headers.
+  header_client.CallOnBeforeSendHeadersCallback();
+
+  // Run the request to completion.
+  client.RunUntilComplete();
+
+  // The request should have been cancelled due to network revocation.
+  EXPECT_EQ(client.completion_status().error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
+// Test the case where a URLLoaderFactory has no live pipes, and
+// RevokeNetworkForNonces() destroys all its URLLoaders, which may cause the
+// factory to be destroyed it. This should not result in a UAF. This test is
+// different from the one above in that there is a live CorsURLLoader, but no
+// URLLoaders (which have very different deletion logic).
+TEST_F(NetworkContextTest,
+       RevokeNetworkForNoncesUrlLoaderFactoryWithNoPipesCorsUrlLoaderOnly) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  ResourceRequest request;
+  request.url = GURL("https://a.test/");
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = OriginatingProcessId::browser();
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
+
+  // Inject a URLLoaderFactoryOverride that just hangs. This will result in
+  // creating CorsURLLoaders which hang when they try to start URLLoaders.
+  auto url_loader_factory_override = mojom::URLLoaderFactoryOverride::New();
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+      loader_factory_receiver;
+  url_loader_factory_override->overriding_factory =
+      loader_factory_receiver.InitWithNewPipeAndPassRemote();
+  params->factory_override = std::move(url_loader_factory_override);
+
+  HangingTestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  // Create a CorsURLLoader.
+  mojo::Remote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  loader_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Wait for the request to make it across the Mojo pie.
+  loader.FlushForTesting();
+
+  // Close the URLLoaderFactory pipe.
+  loader_factory.reset();
+  // Unfortunately, can't flush a closed pipe to make sure the close message was
+  // received, can only spin the message loop to wait for the message to be
+  // received.
+  base::RunLoop().RunUntilIdle();
+
+  // Revoke network access for the nonce.
+  base::test::TestFuture<void> revoked;
+  auto revoked_nonce_pattern = CreateNonceAndAllowlistedPatterns(nonce);
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Run the request to completion.
+  client.RunUntilComplete();
+
+  // The request should have been cancelled due to network revocation.
+  EXPECT_EQ(client.completion_status().error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
+// Test the case where a URLLoaderFactory has no live pipes, and
+// RevokeNetworkForNonces() destroys all its URLLoaders, which may cause the
+// factory to be destroyed it. This should not result in a UAF. This test is
+// different from the ones above in that there is a live URLLoader, but no
+// CorsURLLoaders (which have very different deletion logic).
+TEST_F(NetworkContextTest,
+       RevokeNetworkForNoncesUrlLoaderFactoryWithNoPipesNonCorsUrlLoaderOnly) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  const base::UnguessableToken nonce = base::UnguessableToken::Create();
+  ResourceRequest request;
+  request.url = GURL("https://a.test/");
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
+
+  mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+  mojom::URLLoaderFactoryParamsPtr params =
+      mojom::URLLoaderFactoryParams::New();
+  params->process_id = OriginatingProcessId::browser();
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::CreateTransient(nonce);
+
+  auto url_loader_factory_override = mojom::URLLoaderFactoryOverride::New();
+  // Getet the underling URLLoaderFactory to use directly, bypassing the
+  // CorsURLLoaderFactory.
+  mojo::Remote<network::mojom::URLLoaderFactory> non_cors_factory;
+  url_loader_factory_override->overridden_factory_receiver =
+      non_cors_factory.BindNewPipeAndPassReceiver();
+  // Also inject a dummy URLLoaderFactoryOverride. It will not be used.
+  mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+      loader_factory_receiver;
+  url_loader_factory_override->overriding_factory =
+      loader_factory_receiver.InitWithNewPipeAndPassRemote();
+  params->factory_override = std::move(url_loader_factory_override);
+
+  HangingTestURLLoaderHeaderClient header_client(
+      params->header_client.InitWithNewPipeAndPassReceiver());
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  // Create a non-CORS URLLoader.
+  mojo::Remote<mojom::URLLoader> loader;
+  TestURLLoaderClient client;
+  non_cors_factory->CreateLoaderAndStart(
+      loader.BindNewPipeAndPassReceiver(), 0 /* request_id */,
+      mojom::kURLLoadOptionUseHeaderClient, request, client.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+
+  // Wait for the request to make it across the Mojo pie.
+  loader.FlushForTesting();
+
+  // Close both the URLLoaderFactory pipes. Have to close the CORS one as well,
+  // as it's the one that actually owns the non-CORS URLLoaders.
+  non_cors_factory.reset();
+  loader_factory.reset();
+  // Unfortunately, can't flush a closed pipe to make sure the close messages
+  // were received, can only spin the message loop to wait for that to happen.
+  base::RunLoop().RunUntilIdle();
+
+  // Revoke network access for the nonce.
+  base::test::TestFuture<void> revoked;
+  auto revoked_nonce_pattern = CreateNonceAndAllowlistedPatterns(nonce);
+  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> nonces_to_urls;
+  nonces_to_urls.push_back(std::move(revoked_nonce_pattern));
+  network_context->RevokeNetworkForNonces(
+      std::move(nonces_to_urls), base::BindOnce(revoked.GetCallback()));
+  EXPECT_TRUE(revoked.Wait());
+
+  // Run the request to completion.
+  client.RunUntilComplete();
+
+  // The request should have been cancelled due to network revocation.
+  EXPECT_EQ(client.completion_status().error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+}
+
 TEST_F(NetworkContextTest, RevokeNetworkForNoncesCancelsPreconnectRequests) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());

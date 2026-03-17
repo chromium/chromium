@@ -3548,7 +3548,13 @@ void NetworkContext::RevokeNetworkForNonces(
     // connection allowlist since there should not be any ongoing
     // requests.
     const std::set<GURL>& exemptions = network_revocation_exemptions_[nonce];
-    for (const auto& factory : url_loader_factories_) {
+    // Destroying all of a factory's URLLoaders may delete the factory,
+    // invalidating the iterator, so have to advance the iterator before calling
+    // CancelRequestsIfNonceMatchesAndUrlNotExempted().
+    for (auto factory_it = url_loader_factories_.begin();
+         factory_it != url_loader_factories_.end();) {
+      auto* factory = factory_it->get();
+      ++factory_it;
       factory->CancelRequestsIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
     }
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
