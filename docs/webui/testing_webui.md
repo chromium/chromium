@@ -149,6 +149,10 @@ the `\_test.ts` suffix. Any other TS supporting files that don't actually hold
 Mocha test cases should not finish with this suffix otherwise the automated
 check will trigger erroneously.
 
+`WebUIMochaBrowserTest` sets up a `WebUIDataSource` to serve all the test files
+from `chrome://webui-test` (or `chrome-untrusted://webui-test`, if configured
+via `set_test_loader_scheme`).
+
 ```ts
 // chrome/test/data/webui/foo_bar/search_box_test.ts
 
@@ -214,9 +218,9 @@ in your folder:
 
 import("../build_webui_tests.gni")
 
-assert(!is_android)
-
 build_webui_tests("build") {
+  cc_test_files = [ "foo_bar_browsertest.cc" ]
+
   # Test files go here
   files = [
     "app_test.ts",
