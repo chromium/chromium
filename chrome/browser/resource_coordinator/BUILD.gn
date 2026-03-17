@@ -13,7 +13,10 @@ mojom("mojo_bindings") {
 
 source_set("resource_coordinator") {
   sources = []
-  public_deps = []
+  public_deps = [
+    ":mojo_bindings",
+    ":mojo_bindings__generator",
+  ]
 
   if (!is_android) {
     sources += [
@@ -22,8 +25,6 @@ source_set("resource_coordinator") {
       "tab_load_tracker.h",
     ]
     public_deps += [
-      ":mojo_bindings",
-      ":mojo_bindings__generator",
       "//base",
       "//content/public/browser",
     ]
