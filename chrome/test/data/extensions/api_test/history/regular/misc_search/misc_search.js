@@ -7,57 +7,58 @@
 
 
 const scriptUrl = '_test_resources/api_test/history/regular/common.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(async function() {
-chrome.test.runTests([
-  function basicSearch() {
-    // basicSearch callback.
-    function basicSearchTestVerification() {
-      removeItemVisitedListener();
-      var query = { 'text': '' };
-      chrome.history.search(query, function(results) {
-        assertEq(1, results.length);
-        assertEq(GOOGLE_URL, results[0].url);
+  chrome.test.runTests([
+    function basicSearch() {
+      // basicSearch callback.
+      function basicSearchTestVerification() {
+        removeItemVisitedListener();
+        const query = {text: ''};
+        chrome.history.search(query, function(results) {
+          assertEq(1, results.length);
+          assertEq(GOOGLE_URL, results[0].url);
 
-        // The test has succeeded.
-        chrome.test.succeed();
+          // The test has succeeded.
+          chrome.test.succeed();
+        });
+      };
+
+      // basicSearch entry point.
+      chrome.history.deleteAll(function() {
+        setItemVisitedListener(basicSearchTestVerification);
+        populateHistory([GOOGLE_URL], function() {});
       });
-    };
+    },
 
-    // basicSearch entry point.
-    chrome.history.deleteAll(function() {
-      setItemVisitedListener(basicSearchTestVerification);
-      populateHistory([GOOGLE_URL], function() { });
-    });
-  },
+    function lengthScopedSearch() {
+      const urls = [GOOGLE_URL, PICASA_URL];
+      let urlsAdded = 0;
 
-  function lengthScopedSearch() {
-    var urls = [GOOGLE_URL, PICASA_URL];
-    var urlsAdded = 0;
+      function lengthScopedSearchTestVerification() {
+        // Ensure all urls have been added.
+        urlsAdded += 1;
+        if (urlsAdded < urls.length)
+          return;
 
-    function lengthScopedSearchTestVerification() {
-      // Ensure all urls have been added.
-      urlsAdded += 1;
-      if (urlsAdded < urls.length)
-        return;
+        removeItemVisitedListener();
 
-      removeItemVisitedListener();
+        const query = {text: '', maxResults: 1};
+        chrome.history.search(query, function(results) {
+          assertEq(1, results.length);
+          assertEq(PICASA_URL, results[0].url);
 
-      var query = { 'text': '', 'maxResults': 1 };
-      chrome.history.search(query, function(results) {
-        assertEq(1, results.length);
-        assertEq(PICASA_URL, results[0].url);
+          // The test has succeeded.
+          chrome.test.succeed();
+        });
+      };
 
-        // The test has succeeded.
-        chrome.test.succeed();
+      // lengthScopedSearch entry point.
+      chrome.history.deleteAll(function() {
+        setItemVisitedListener(lengthScopedSearchTestVerification);
+        populateHistory(urls, function() {});
       });
-    };
-
-    // lengthScopedSearch entry point.
-    chrome.history.deleteAll(function() {
-      setItemVisitedListener(lengthScopedSearchTestVerification);
-      populateHistory(urls, function() { });
-    });
-  },
-])});
+    },
+  ])
+});

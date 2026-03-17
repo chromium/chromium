@@ -12,13 +12,13 @@ function addItem() {
 }
 
 function countItemsInHistory() {
-  var query = {'text': ''};
+  const query = {text: ''};
   chrome.history.search(query, function(results) {
     chrome.test.sendScriptResult(results.length.toString());
   });
 }
 
 // Return a message to sync test with page load.
-let message = chrome.extension.inIncognitoContext ?
+const message = chrome.extension.inIncognitoContext ?
   'incognito ready' : 'regular ready';
 chrome.test.sendMessage(message);

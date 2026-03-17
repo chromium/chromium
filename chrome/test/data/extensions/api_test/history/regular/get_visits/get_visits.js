@@ -6,7 +6,7 @@
 // browser_tests.exe --gtest_filter=*HistoryApiTest.GetVisits*
 
 const scriptUrl = '_test_resources/api_test/history/regular/common.js';
-let loadScript = chrome.test.loadScript(scriptUrl);
+const loadScript = chrome.test.loadScript(scriptUrl);
 
 loadScript.then(async function() {
 chrome.test.runTests([
@@ -16,13 +16,13 @@ chrome.test.runTests([
       removeItemVisitedListener();
 
       // Verify that we received the url.
-      var query = { 'text': '' };
+      const query = {text: ''};
       chrome.history.search(query, function(results) {
         assertEq(1, results.length);
         assertEq(GOOGLE_URL, results[0].url);
 
-        var id = results[0].id;
-        chrome.history.getVisits({ 'url': GOOGLE_URL }, function(results) {
+        const id = results[0].id;
+        chrome.history.getVisits({url: GOOGLE_URL}, function(results) {
           assertEq(1, results.length);
           assertEq(id, results[0].id);
           assertTrue(results[0].isLocal);
